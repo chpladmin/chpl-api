@@ -17,6 +17,24 @@ import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("annualReportDao")
 public class AnnualReportDAOImpl extends BaseDAOImpl implements AnnualReportDAO {
+    private static final String ANNUAL_REPORT_HQL = "SELECT ar "
+            + " FROM AnnualReportEntity ar "
+            + " JOIN FETCH ar.acb acb "
+            + " LEFT JOIN FETCH acb.address "
+            + " WHERE ar.deleted = false ";
+
+    @Override
+    public List<AnnualReportDTO> getAll() {
+        Query query = entityManager.createQuery(ANNUAL_REPORT_HQL);
+        List<AnnualReportEntity> entityResults = query.getResultList();
+        List<AnnualReportDTO> results = new ArrayList<AnnualReportDTO>();
+        if (entityResults != null && entityResults.size() > 0) {
+            for (AnnualReportEntity entityResult : entityResults) {
+                results.add(new AnnualReportDTO(entityResult));
+            }
+        }
+        return results;
+    }
 
     /**
      * Get the report for a specific year and ACB.
@@ -24,10 +42,7 @@ public class AnnualReportDAOImpl extends BaseDAOImpl implements AnnualReportDAO 
      */
     @Override
     public AnnualReportDTO getByAcbAndYear(final Long acbId, final Integer year) {
-        String queryStr = "SELECT ar "
-                + " FROM AnnualReportEntity ar "
-                + " JOIN FETCH ar.acb acb "
-                + " WHERE ar.deleted = false "
+        String queryStr = ANNUAL_REPORT_HQL
                 + " AND ar.year = :year "
                 + " AND acb.id = :acbId";
         Query query = entityManager.createQuery(queryStr);
@@ -47,10 +62,7 @@ public class AnnualReportDAOImpl extends BaseDAOImpl implements AnnualReportDAO 
      */
     @Override
     public List<AnnualReportDTO> getByAcb(final Long acbId) {
-        String queryStr = "SELECT ar "
-                + " FROM AnnualReportEntity ar "
-                + " JOIN FETCH ar.acb acb "
-                + " WHERE ar.deleted = false "
+        String queryStr = ANNUAL_REPORT_HQL
                 + " AND acb.id = :acbId";
         Query query = entityManager.createQuery(queryStr);
         query.setParameter("acbId", acbId);
@@ -90,8 +102,16 @@ public class AnnualReportDAOImpl extends BaseDAOImpl implements AnnualReportDAO 
         toCreateEntity.setLastModifiedUser(AuthUtil.getAuditId());
 
         super.create(toCreateEntity);
-        toCreate.setId(toCreateEntity.getId());
-        return toCreate;
+
+        AnnualReportDTO createdDto = null;
+        try {
+            AnnualReportEntity createdEntity = getEntityById(toCreateEntity.getId());
+            createdDto = new AnnualReportDTO(createdEntity);
+        } catch (EntityRetrievalException ex) {
+            createdDto = toCreate;
+            createdDto.setId(toCreateEntity.getId());
+        }
+        return createdDto;
     }
 
     @Override
@@ -115,10 +135,7 @@ public class AnnualReportDAOImpl extends BaseDAOImpl implements AnnualReportDAO 
     }
 
     private AnnualReportEntity getEntityById(final Long id) throws EntityRetrievalException {
-        String queryStr = "SELECT ar "
-                + " FROM AnnualReportEntity ar "
-                + " JOIN FETCH ar.acb "
-                + " WHERE ar.deleted = false "
+        String queryStr = ANNUAL_REPORT_HQL
                 + " AND ar.id = :id";
         Query query = entityManager.createQuery(queryStr);
         query.setParameter("id", id);

@@ -71,11 +71,20 @@ public class CertifiedProductBasicSearchResultEntity {
     @Column(name = "surveillance_count")
     private Long surveillanceCount;
 
+    @Column(name = "open_surveillance_count")
+    private Long openSurveillanceCount;
+
+    @Column(name = "closed_surveillance_count")
+    private Long closedSurveillanceCount;
+
     @Column(name = "open_nonconformity_count")
     private Long openNonconformityCount;
 
     @Column(name = "closed_nonconformity_count")
     private Long closedNonconformityCount;
+
+    @Column(name = "surv_dates")
+    private String survDates;
 
     @Column(name = "meaningful_use_users")
     private Long meaningfulUseUserCount;
@@ -301,5 +310,29 @@ public class CertifiedProductBasicSearchResultEntity {
 
     public void setApiDocumentation(final String apiDocumentation) {
         this.apiDocumentation = apiDocumentation;
+    }
+
+    public Long getOpenSurveillanceCount() {
+        return openSurveillanceCount;
+    }
+
+    public void setOpenSurveillanceCount(final Long openSurveillanceCount) {
+        this.openSurveillanceCount = openSurveillanceCount;
+    }
+
+    public Long getClosedSurveillanceCount() {
+        return closedSurveillanceCount;
+    }
+
+    public void setClosedSurveillanceCount(final Long closedSurveillanceCount) {
+        this.closedSurveillanceCount = closedSurveillanceCount;
+    }
+
+    public String getSurvDates() {
+        return survDates;
+    }
+
+    public void setSurvDates(final String survDates) {
+        this.survDates = survDates;
     }
 }

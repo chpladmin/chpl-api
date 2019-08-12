@@ -21,11 +21,10 @@ public class UpdateQuarterlyReportActionPermissions extends ActionPermissions {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             QuarterlyReportDTO toUpdate = (QuarterlyReportDTO) obj;
-            if (toUpdate.getAnnualReport() == null || toUpdate.getAnnualReport().getAcb() == null
-                    || toUpdate.getAnnualReport().getAcb().getId() == null) {
+            if (toUpdate.getAcb() == null || toUpdate.getAcb().getId() == null) {
                 return false;
             }
-            return isAcbValidForCurrentUser(toUpdate.getAnnualReport().getAcb().getId());
+            return isAcbValidForCurrentUser(toUpdate.getAcb().getId());
         } else {
             return false;
         }

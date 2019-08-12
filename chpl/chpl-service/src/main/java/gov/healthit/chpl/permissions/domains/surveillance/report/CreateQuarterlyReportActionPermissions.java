@@ -21,11 +21,10 @@ public class CreateQuarterlyReportActionPermissions extends ActionPermissions {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             QuarterlyReportDTO toCreate = (QuarterlyReportDTO) obj;
-            if (toCreate.getAnnualReport() == null || toCreate.getAnnualReport().getAcb() == null
-                    || toCreate.getAnnualReport().getAcb().getId() == null) {
+            if (toCreate.getAcb() == null || toCreate.getAcb().getId() == null) {
                 return false;
             }
-            return isAcbValidForCurrentUser(toCreate.getAnnualReport().getAcb().getId());
+            return isAcbValidForCurrentUser(toCreate.getAcb().getId());
         } else {
             return false;
         }

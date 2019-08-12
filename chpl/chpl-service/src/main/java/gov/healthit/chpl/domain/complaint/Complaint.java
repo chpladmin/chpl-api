@@ -1,16 +1,26 @@
 package gov.healthit.chpl.domain.complaint;
 
+import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
 
-import gov.healthit.chpl.dao.ComplaintDTO;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
+import gov.healthit.chpl.dto.ComplaintCriterionMapDTO;
+import gov.healthit.chpl.dto.ComplaintDTO;
+import gov.healthit.chpl.dto.ComplaintListingMapDTO;
+import gov.healthit.chpl.dto.ComplaintSurveillanceMapDTO;
 
-public class Complaint {
+public class Complaint implements Serializable {
+    private static final long serialVersionUID = -7018474294841580851L;
+
     private Long id;
     private CertificationBody certificationBody;
-    private ComplaintType complaintType;
+    private ComplainantType complainantType;
+    private String complainantTypeOther;
     private ComplaintStatusType complaintStatusType;
     private String oncComplaintId;
     private String acbComplaintId;
@@ -22,6 +32,9 @@ public class Complaint {
     private boolean oncAtlContacted;
     private boolean flagForOncReview;
     private Date closedDate;
+    private Set<ComplaintListingMap> listings = new HashSet<ComplaintListingMap>();
+    private Set<ComplaintCriterionMap> criteria = new HashSet<ComplaintCriterionMap>();
+    private Set<ComplaintSurveillanceMap> surveillances = new HashSet<ComplaintSurveillanceMap>();
 
     public Complaint() {
 
@@ -29,9 +42,25 @@ public class Complaint {
 
     public Complaint(ComplaintDTO dto) {
         BeanUtils.copyProperties(dto, this);
+
+        listings = new HashSet<ComplaintListingMap>();
+        for (ComplaintListingMapDTO clDTO : dto.getListings()) {
+            listings.add(new ComplaintListingMap(clDTO));
+        }
+
+        criteria = new HashSet<ComplaintCriterionMap>();
+        for (ComplaintCriterionMapDTO criterionDTO : dto.getCriteria()) {
+            criteria.add(new ComplaintCriterionMap(criterionDTO));
+        }
+
+        surveillances = new HashSet<ComplaintSurveillanceMap>();
+        for (ComplaintSurveillanceMapDTO surveillanceDTO : dto.getSurveillances()) {
+            surveillances.add(new ComplaintSurveillanceMap(surveillanceDTO));
+        }
+
         this.certificationBody = new CertificationBody(dto.getCertificationBody());
         this.complaintStatusType = new ComplaintStatusType(dto.getComplaintStatusType());
-        this.complaintType = new ComplaintType(dto.getComplaintType());
+        this.complainantType = new ComplainantType(dto.getComplainantType());
     }
 
     public Long getId() {
@@ -50,12 +79,20 @@ public class Complaint {
         this.certificationBody = certificationBody;
     }
 
-    public ComplaintType getComplaintType() {
-        return complaintType;
+    public ComplainantType getComplainantType() {
+        return complainantType;
     }
 
-    public void setComplaintType(final ComplaintType complaintType) {
-        this.complaintType = complaintType;
+    public void setComplainantType(final ComplainantType complainantType) {
+        this.complainantType = complainantType;
+    }
+
+    public String getComplainantTypeOther() {
+        return complainantTypeOther;
+    }
+
+    public void setComplainantTypeOther(String complainantTypeOther) {
+        this.complainantTypeOther = complainantTypeOther;
     }
 
     public ComplaintStatusType getComplaintStatusType() {
@@ -144,6 +181,66 @@ public class Complaint {
 
     public void setClosedDate(final Date closedDate) {
         this.closedDate = closedDate;
+    }
+
+    public Set<ComplaintListingMap> getListings() {
+        return listings;
+    }
+
+    public void setListings(final Set<ComplaintListingMap> listings) {
+        this.listings = listings;
+    }
+
+    public Set<ComplaintCriterionMap> getCriteria() {
+        return criteria;
+    }
+
+    public void setCriteria(Set<ComplaintCriterionMap> criteria) {
+        this.criteria = criteria;
+    }
+
+    public Set<ComplaintSurveillanceMap> getSurveillances() {
+        return surveillances;
+    }
+
+    public void setSurveillances(Set<ComplaintSurveillanceMap> surveillances) {
+        this.surveillances = surveillances;
+    }
+
+    @Override
+    public boolean equals(Object another) {
+        if (another == null) {
+            return false;
+        }
+        if (!(another instanceof Complaint)) {
+            return false;
+        }
+        Complaint anotherComplaint = (Complaint) another;
+        if (this.getId() != null && anotherComplaint.getId() == null
+                || this.getId() == null && anotherComplaint.getId() != null) {
+            return false;
+        }
+        return this.getId().equals(anotherComplaint.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        if (this.getId() == null) {
+            return -1;
+        }
+        return this.getId().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Complaint [id=" + id + ", certificationBody=" + certificationBody + ", complainantType="
+                + complainantType + ", complainantTypeOther=" + complainantTypeOther + ", complaintStatusType="
+                + complaintStatusType + ", oncComplaintId=" + oncComplaintId + ", acbComplaintId=" + acbComplaintId
+                + ", receivedDate=" + receivedDate + ", summary=" + summary + ", actions=" + actions
+                + ", complainantContacted=" + complainantContacted + ", developerContacted=" + developerContacted
+                + ", oncAtlContacted=" + oncAtlContacted + ", flagForOncReview=" + flagForOncReview + ", closedDate="
+                + closedDate + ", listings=" + listings + ", criteria=" + criteria + ", surveillances=" + surveillances
+                + "]";
     }
 
 }

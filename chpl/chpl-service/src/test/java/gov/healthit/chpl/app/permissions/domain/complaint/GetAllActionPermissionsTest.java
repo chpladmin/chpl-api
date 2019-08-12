@@ -42,7 +42,7 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     @Test
     public void hasAccess_Admin() throws Exception {
         setupForAdminUser(resourcePermissions);
-        assertFalse(permissions.hasAccess());
+        assertTrue(permissions.hasAccess());
 
         Complaint complaint = new Complaint();
         assertTrue(permissions.hasAccess(complaint));
@@ -52,7 +52,7 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     @Test
     public void hasAccess_Onc() throws Exception {
         setupForOncUser(resourcePermissions);
-        assertFalse(permissions.hasAccess());
+        assertTrue(permissions.hasAccess());
 
         Complaint complaint = new Complaint();
         assertTrue(permissions.hasAccess(complaint));
@@ -62,7 +62,7 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     @Test
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
-        assertFalse(permissions.hasAccess());
+        assertTrue(permissions.hasAccess());
 
         Complaint complaint = new Complaint();
         complaint.setCertificationBody(new CertificationBody());

@@ -3,7 +3,7 @@ package gov.healthit.chpl.manager.rules.complaints;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import gov.healthit.chpl.dao.ComplaintDTO;
+import gov.healthit.chpl.dto.ComplaintDTO;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
 public class ComplaintAcbChanged extends ValidationRule<ComplaintValidationContext> {

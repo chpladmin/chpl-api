@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.complaint.Complaint;
+import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ComplaintManager;
@@ -29,14 +32,14 @@ public class ComplaintController {
     private ComplaintManager complaintManager;
     private FF4j ff4j;
     private ErrorMessageUtil errorMessageUtil;
-    
+
     @Autowired
     public ComplaintController(final ComplaintManager complaintManager, final FF4j ff4j, final ErrorMessageUtil errorMessageUtil) {
         this.complaintManager = complaintManager;
         this.ff4j = ff4j;
         this.errorMessageUtil = errorMessageUtil;
     }
-    
+
     @ApiOperation(value = "List all complaints the current user can view/edit.",
             notes = "Security Restrictions: Only complaints owned by the current user's ACB will be returned")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
@@ -50,19 +53,19 @@ public class ComplaintController {
             throw new NotImplementedException();
         }
     }
-    
+
     @ApiOperation(value = "Save complaint for use in Surveillance Quarterly Report.",
             notes = "")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public @ResponseBody Complaint create(@RequestBody final Complaint complaint) throws EntityRetrievalException, ValidationException {
+    public @ResponseBody Complaint create(@RequestBody final Complaint complaint) throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
         if (ff4j.check(FeatureList.COMPLAINTS)) {
             ValidationException error = new ValidationException();
             //Make sure there is an ACB
             if (complaint.getCertificationBody() == null || complaint.getCertificationBody().getId() == null) {
-                error.getErrorMessages().add(errorMessageUtil.getMessage("complaints.update.acbRequired"));
+                error.getErrorMessages().add(errorMessageUtil.getMessage("complaints.create.acbRequired"));
                 throw error;
             }
-            
+
             return complaintManager.create(complaint);
         } else {
             throw new NotImplementedException();
@@ -72,19 +75,26 @@ public class ComplaintController {
     @ApiOperation(value = "Update complaint for use in Surveillance Quarterly Report.",
             notes = "")
     @RequestMapping(value = "/{complaintId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
-    public @ResponseBody Complaint update(@RequestBody final Complaint complaint) throws EntityRetrievalException, ValidationException {
+    public @ResponseBody Complaint update(@RequestBody final Complaint complaint)
+            throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
         if (ff4j.check(FeatureList.COMPLAINTS)) {
+            ValidationException error = new ValidationException();
+            if (complaint.getCertificationBody() == null || complaint.getCertificationBody().getId() == null) {
+                error.getErrorMessages().add(errorMessageUtil.getMessage("complaints.update.acbRequired"));
+                throw error;
+            }
             return complaintManager.update(complaint);
         } else {
             throw new NotImplementedException();
         }
     }
-    
+
     @ApiOperation(value = "Delete complaint for use in Surveillance Quarterly Report.",
             notes = "")
     @RequestMapping(value = "/{complaintId}", method = RequestMethod.DELETE, produces = "application/json; charset=utf-8")
-    public @ResponseBody void delete(@PathVariable("complaintId") final Long complaintId) throws EntityRetrievalException {
-        if (ff4j.check(FeatureList.COMPLAINTS)) { 
+    public @ResponseBody void delete(@PathVariable("complaintId") final Long complaintId)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+        if (ff4j.check(FeatureList.COMPLAINTS)) {
             complaintManager.delete(complaintId);
         } else {
             throw new NotImplementedException();

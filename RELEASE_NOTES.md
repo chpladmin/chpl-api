@@ -1,5 +1,44 @@
 # Release Notes
 
+## Version 21.5.0
+_TBD_
+
+### Flagged Features
+* Support entry and edit of complaints 
+
+---
+
+## Version 21.4.0
+_TBD_
+
+### New Features
+* add activity tracking for complaints
+* add endpoint for relevant complaints to a quarterly report
+* add complaints associated with surv to the excel report
+* put complaints in excel report
+* add support for associating a surveillance with a complaint
+* remove insert missing split activity job
+* add fields for open/closed surv counts and surv dates
+
+### Bug Fixes
+* update permissions for announcements metadata activity endpoint
+
+---
+
+
+## Version 21.3.0
+_22 July 2019_
+
+## New Features
+* Add three more optional fields to the /collections/certified_products endpoint.
+  * openSurveillanceCount, closedSurveillanceCount, surveillanceDates
+* Remove insertMissingSplitActivity quartz job
+* Add new endpoint for activity metadata for announcements. Endpoint is:
+  * /activity/metadata/announcements
+
+---
+
+
 ## Version 21.2.0
 _17 June 2019_
 

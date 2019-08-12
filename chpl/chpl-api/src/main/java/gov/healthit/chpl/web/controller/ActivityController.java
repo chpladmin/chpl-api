@@ -12,8 +12,10 @@ import java.util.Set;
 
 import javax.persistence.EntityNotFoundException;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonParseException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
@@ -98,6 +101,8 @@ public class ActivityController {
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
     @Autowired
     private ResourcePermissions resourcePermissions;
+    @Autowired
+    private FF4j ff4j;
 
     @Autowired private MessageSource messageSource;
 
@@ -472,7 +477,9 @@ public class ActivityController {
     }
     
     @ApiOperation(value = "Get metadata about auditable records in the system for announcements.",
-            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results." 
+                    + "Security Restrictions: Anonymous users are only allowed to see activity for public " 
+                    + "announcements.  All other roles can see private and public announcements. ")
     @RequestMapping(value = "/metadata/announcements", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForAnnouncements(@RequestParam final Long start,
@@ -482,7 +489,71 @@ public class ActivityController {
         validateActivityDatesAndDateRange(start, end);
         return activityMetadataManager.getAnnouncementActivityMetadata(startDate, endDate);
     }
-    
+
+    @ApiOperation(value = "Get metadata about auditable records in the system for complaints.",
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results." 
+                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all complaints.  "
+                    + "ROLE_ACB can see activity for their own ACBs.")
+    @RequestMapping(value = "/metadata/complaints", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public List<ActivityMetadata> metadataForComplaints(@RequestParam final Long start,
+            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
+        if (ff4j.check(FeatureList.COMPLAINTS)) {
+            Date startDate = new Date(start);
+            Date endDate = new Date(end);
+            validateActivityDatesAndDateRange(start, end);
+            return activityMetadataManager.getComplaintActivityMetadata(startDate, endDate);
+        } else {
+            throw new NotImplementedException();
+        }
+    }
+
+    @ApiOperation(value = "Get metadata about auditable records in the system for quarterly reports.",
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
+                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all quarterly reports.  "
+                    + "ROLE_ACB can see activity for their own ACBs.")
+    @RequestMapping(value = "/metadata/quarterly-reports", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public List<ActivityMetadata> metadataForQuarterlyReports(@RequestParam final Long start,
+            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
+        if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
+            throw new NotImplementedException();
+        }
+
+        Date startDate = new Date(start);
+        Date endDate = new Date(end);
+        validateActivityDatesAndDateRange(start, end);
+        List<ActivityMetadata> results = new ArrayList<ActivityMetadata>();
+        List<ActivityMetadata> reportMetadata = activityMetadataManager.getQuarterlyReportActivityMetadata(startDate, endDate);
+        if (reportMetadata != null && reportMetadata.size() > 0) {
+            results.addAll(reportMetadata);
+        }
+        List<ActivityMetadata> relevantListingMetadata
+            = activityMetadataManager.getQuarterlyReportListingActivityMetadata(startDate, endDate);
+        if (relevantListingMetadata != null && relevantListingMetadata.size() > 0) {
+            results.addAll(relevantListingMetadata);
+        }
+        return results;
+    }
+
+    @ApiOperation(value = "Get metadata about auditable records in the system for annual reports.",
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
+                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all annual reports.  "
+                    + "ROLE_ACB can see activity for their own ACBs.")
+    @RequestMapping(value = "/metadata/annual-reports", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public List<ActivityMetadata> metadataForAnnualReports(@RequestParam final Long start,
+            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
+        if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
+            throw new NotImplementedException();
+        }
+
+        Date startDate = new Date(start);
+        Date endDate = new Date(end);
+        validateActivityDatesAndDateRange(start, end);
+        return activityMetadataManager.getAnnualReportActivityMetadata(startDate, endDate);
+    }
+
     @ApiOperation(value = "Get metadata about auditable records in the system for pending listings.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
     @RequestMapping(value = "/metadata/pending_listings", method = RequestMethod.GET,
@@ -593,7 +664,8 @@ public class ActivityController {
         return activityManager.getAcbActivity(acbs, startDate, endDate);
     }
 
-    @ApiOperation(value = "Get auditable data for all announcements",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED - Get auditable data for all announcements",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date "
                     + "range of the results. Anonymous users will only receive activity for public "
                     + "announcements.")
@@ -607,7 +679,8 @@ public class ActivityController {
         return getActivityEventsForAnnouncements(startDate, endDate);
     }
     
-    @ApiOperation(value = "Get auditable data for a specific announcement",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED - Get auditable data for a specific announcement",
             notes = "A start and end date may optionally be provided to limit activity results.  "
                     + "Security Restrictions: Anonymous users are only allowed to see activity for public "
                     + "announcements.  All other roles can see private and public announcements.")

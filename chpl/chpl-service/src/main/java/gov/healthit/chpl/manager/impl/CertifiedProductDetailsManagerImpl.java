@@ -467,7 +467,8 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         return certificationResults;
     }
 
-    private List<CertificationStatusEvent> getCertificationStatusEvents(final Long certifiedProductId)
+    @Override
+    public List<CertificationStatusEvent> getCertificationStatusEvents(final Long certifiedProductId)
             throws EntityRetrievalException {
 
         List<CertificationStatusEvent> certEvents = new ArrayList<CertificationStatusEvent>();

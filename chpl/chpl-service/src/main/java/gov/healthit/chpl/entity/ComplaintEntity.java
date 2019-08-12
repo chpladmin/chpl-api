@@ -1,7 +1,9 @@
 package gov.healthit.chpl.entity;
 
 import java.util.Date;
+import java.util.Set;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -9,8 +11,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Where;
+
+import gov.healthit.chpl.util.Util;
 
 @Entity
 @Table(name = "complaint")
@@ -29,11 +36,14 @@ public class ComplaintEntity {
     private Long certificationBodyId;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "complaint_type_id", insertable = false, updatable = false)
-    private ComplaintTypeEntity complaintType;
+    @JoinColumn(name = "complainant_type_id", insertable = false, updatable = false)
+    private ComplainantTypeEntity complainantType;
 
-    @Column(name = "complaint_type_id", nullable = false)
-    private Long complaintTypeId;
+    @Column(name = "complainant_type_other", nullable = true)
+    private String complainantTypeOther;
+
+    @Column(name = "complainant_type_id", nullable = false)
+    private Long complainantTypeId;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "complaint_status_type_id", insertable = false, updatable = false)
@@ -84,6 +94,24 @@ public class ComplaintEntity {
     @Column(name = "deleted", nullable = false)
     private Boolean deleted;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "complaintId")
+    @Basic(optional = true)
+    @Column(name = "complaint_id", nullable = false)
+    @Where(clause = "deleted <> 'true'")
+    private Set<ComplaintListingMapEntity> listings;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "complaintId")
+    @Basic(optional = true)
+    @Column(name = "complaint_id", nullable = false)
+    @Where(clause = "deleted <> 'true'")
+    private Set<ComplaintCriterionMapEntity> criteria;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "complaintId")
+    @Basic(optional = true)
+    @Column(name = "complaint_id", nullable = false)
+    @Where(clause = "deleted <> 'true'")
+    private Set<ComplaintSurveillanceMapEntity> surveillances;
+
     public Long getId() {
         return id;
     }
@@ -100,12 +128,20 @@ public class ComplaintEntity {
         this.certificationBody = certificationBody;
     }
 
-    public ComplaintTypeEntity getComplaintType() {
-        return complaintType;
+    public ComplainantTypeEntity getComplainantType() {
+        return complainantType;
     }
 
-    public void setComplaintType(final ComplaintTypeEntity complaintType) {
-        this.complaintType = complaintType;
+    public void setComplainantType(final ComplainantTypeEntity complainantType) {
+        this.complainantType = complainantType;
+    }
+
+    public String getComplainantTypeOther() {
+        return complainantTypeOther;
+    }
+
+    public void setComplainantTypeOther(final String complainantTypeOther) {
+        this.complainantTypeOther = complainantTypeOther;
     }
 
     public ComplaintStatusTypeEntity getComplaintStatusType() {
@@ -133,11 +169,11 @@ public class ComplaintEntity {
     }
 
     public Date getReceivedDate() {
-        return receivedDate;
+        return Util.getNewDate(receivedDate);
     }
 
     public void setReceivedDate(final Date receivedDate) {
-        this.receivedDate = receivedDate;
+        this.receivedDate = Util.getNewDate(receivedDate);
     }
 
     public String getSummary() {
@@ -236,12 +272,12 @@ public class ComplaintEntity {
         this.certificationBodyId = certificationBodyId;
     }
 
-    public Long getComplaintTypeId() {
-        return complaintTypeId;
+    public Long getComplainantTypeId() {
+        return complainantTypeId;
     }
 
-    public void setComplaintTypeId(Long complaintTypeId) {
-        this.complaintTypeId = complaintTypeId;
+    public void setComplainantTypeId(Long complainantTypeId) {
+        this.complainantTypeId = complainantTypeId;
     }
 
     public Long getComplaintStatusTypeId() {
@@ -252,14 +288,42 @@ public class ComplaintEntity {
         this.complaintStatusTypeId = complaintStatusTypeId;
     }
 
+    public Set<ComplaintListingMapEntity> getListings() {
+        return listings;
+    }
+
+    public void setListings(final Set<ComplaintListingMapEntity> listings) {
+        this.listings = listings;
+    }
+
+    public Set<ComplaintCriterionMapEntity> getCriteria() {
+        return criteria;
+    }
+
+    public void setCriteria(final Set<ComplaintCriterionMapEntity> criteria) {
+        this.criteria = criteria;
+    }
+
+    public Set<ComplaintSurveillanceMapEntity> getSurveillances() {
+        return surveillances;
+    }
+
+    public void setSurveillances(Set<ComplaintSurveillanceMapEntity> surveillances) {
+        this.surveillances = surveillances;
+    }
+
     @Override
     public String toString() {
-        return "ComplaintEntity [id=" + id + ", certificationBody=" + certificationBody + ", complaintType="
-                + complaintType + ", complaintStatusType=" + complaintStatusType + ", oncComplaintId=" + oncComplaintId
-                + ", acbComplaintId=" + acbComplaintId + ", receivedDate=" + receivedDate + ", summary=" + summary
-                + ", actions=" + actions + ", complainantContacted=" + complainantContacted + ", developerContacted="
-                + developerContacted + ", oncAtlContacted=" + oncAtlContacted + ", closedDate=" + closedDate
-                + ", creationDate=" + creationDate + ", lastModifiedDate=" + lastModifiedDate + ", lastModifiedUser="
-                + lastModifiedUser + ", deleted=" + deleted + "]";
+        return "ComplaintEntity [id=" + id + ", certificationBody=" + certificationBody + ", certificationBodyId="
+                + certificationBodyId + ", complainantType=" + complainantType + ", complainantTypeOther="
+                + complainantTypeOther + ", complainantTypeId=" + complainantTypeId + ", complaintStatusType="
+                + complaintStatusType + ", complaintStatusTypeId=" + complaintStatusTypeId + ", oncComplaintId="
+                + oncComplaintId + ", acbComplaintId=" + acbComplaintId + ", receivedDate=" + receivedDate
+                + ", summary=" + summary + ", actions=" + actions + ", complainantContacted=" + complainantContacted
+                + ", developerContacted=" + developerContacted + ", oncAtlContacted=" + oncAtlContacted
+                + ", flagForOncReview=" + flagForOncReview + ", closedDate=" + closedDate + ", creationDate="
+                + creationDate + ", lastModifiedDate=" + lastModifiedDate + ", lastModifiedUser=" + lastModifiedUser
+                + ", deleted=" + deleted + ", listings=" + listings + ", criteria=" + criteria + ", surveillances="
+                + surveillances + "]";
     }
 }

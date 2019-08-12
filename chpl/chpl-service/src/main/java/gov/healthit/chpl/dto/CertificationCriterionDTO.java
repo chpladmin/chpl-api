@@ -3,6 +3,7 @@ package gov.healthit.chpl.dto;
 import java.io.Serializable;
 import java.util.Date;
 
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.util.Util;
 
@@ -43,7 +44,18 @@ public class CertificationCriterionDTO implements Serializable {
 
         this.requiresSed = entity.isRequiresSed();
         this.title = entity.getTitle();
+    }
 
+    public CertificationCriterionDTO(CertificationCriterion domain) {
+
+        this.id = domain.getId();
+        this.certificationEditionId = domain.getCertificationEditionId();
+        if (domain.getCertificationEdition() != null) {
+            this.certificationEdition = domain.getCertificationEdition();
+        }
+        this.description = domain.getDescription();
+        this.number = domain.getNumber();
+        this.title = domain.getTitle();
     }
 
     public Long getId() {

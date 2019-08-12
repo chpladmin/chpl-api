@@ -39,16 +39,16 @@ import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.SearchableDimensionalData;
-import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
-import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
-import gov.healthit.chpl.domain.SurveillanceRequirementType;
-import gov.healthit.chpl.domain.SurveillanceResultType;
-import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.TestTool;
 import gov.healthit.chpl.domain.UploadTemplateVersion;
 import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
+import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityStatus;
+import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptions;
+import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
+import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
+import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AgeRangeDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -141,8 +141,8 @@ public class DimensionalDataManagerImpl implements DimensionalDataManager {
         List<QuarterDTO> quarters = quarterDao.getAll();
         Set<KeyValueModel> results = new HashSet<KeyValueModel>();
         for (QuarterDTO dto : quarters) {
-            String description = dto.getStartDay() + "/" + dto.getStartMonth()
-                + " - " + dto.getEndDay() + "/" + dto.getEndMonth();
+            String description = dto.getStartMonth() + "/" + dto.getStartDay()
+                + " - " + dto.getEndMonth() + "/" + dto.getEndDay();
             results.add(new KeyValueModel(dto.getId(), dto.getName(), description));
         }
         return results;

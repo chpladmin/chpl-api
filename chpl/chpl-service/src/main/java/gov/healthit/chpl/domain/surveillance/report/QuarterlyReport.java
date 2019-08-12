@@ -12,6 +12,8 @@ public class QuarterlyReport implements Serializable {
     private CertificationBody acb;
     private Integer year;
     private String quarter;
+    private Long startDate;
+    private Long endDate;
     private String surveillanceActivitiesAndOutcomes;
     private String reactiveSummary;
     private String prioritizedElementSummary;
@@ -21,7 +23,9 @@ public class QuarterlyReport implements Serializable {
     }
 
     public QuarterlyReport(final QuarterlyReportDTO dto) {
+        this();
         this.id = dto.getId();
+        this.year = dto.getYear();
         this.surveillanceActivitiesAndOutcomes = dto.getActivitiesOutcomesSummary();
         this.reactiveSummary = dto.getReactiveSummary();
         this.prioritizedElementSummary = dto.getPrioritizedElementSummary();
@@ -29,12 +33,11 @@ public class QuarterlyReport implements Serializable {
         if (dto.getQuarter() != null) {
             this.quarter = dto.getQuarter().getName();
         }
-        if (dto.getAnnualReport() != null) {
-            this.year = dto.getAnnualReport().getYear();
-            if (dto.getAnnualReport().getAcb() != null) {
-                this.acb = new CertificationBody(dto.getAnnualReport().getAcb());
-            }
+        if (dto.getAcb() != null) {
+            this.acb = new CertificationBody(dto.getAcb());
         }
+        this.startDate = dto.getStartDate().getTime();
+        this.endDate = dto.getEndDate().getTime();
     }
 
     public Long getId() {
@@ -99,5 +102,13 @@ public class QuarterlyReport implements Serializable {
 
     public void setTransparencyDisclosureSummary(final String transparencyDisclosureSummary) {
         this.transparencyDisclosureSummary = transparencyDisclosureSummary;
+    }
+
+    public Long getStartDate() {
+        return startDate;
+    }
+
+    public Long getEndDate() {
+        return endDate;
     }
 }

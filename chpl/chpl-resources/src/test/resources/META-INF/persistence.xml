@@ -30,6 +30,12 @@
         <class>gov.healthit.chpl.entity.CertificationIdEntity</class>
         <class>gov.healthit.chpl.entity.CertificationIdProductMapEntity</class>
         <class>gov.healthit.chpl.entity.CertificationStatusEntity</class>
+        <class>gov.healthit.chpl.entity.ComplainantTypeEntity</class>
+        <class>gov.healthit.chpl.entity.ComplaintCriterionMapEntity</class>
+        <class>gov.healthit.chpl.entity.ComplaintEntity</class>
+        <class>gov.healthit.chpl.entity.ComplaintListingMapEntity</class>
+        <class>gov.healthit.chpl.entity.ComplaintStatusTypeEntity</class>
+        <class>gov.healthit.chpl.entity.ComplaintSurveillanceMapEntity</class>
         <class>gov.healthit.chpl.entity.ContactEntity</class>
         <class>gov.healthit.chpl.entity.CriterionProductStatisticsEntity</class>
         <class>gov.healthit.chpl.entity.EducationTypeEntity</class>
@@ -97,6 +103,7 @@
         <class>gov.healthit.chpl.entity.listing.CertifiedProductTargetedUserEntity</class>
         <class>gov.healthit.chpl.entity.listing.CertifiedProductTestingLabMapEntity</class>
         <class>gov.healthit.chpl.entity.listing.ListingToListingMapEntity</class>
+        <class>gov.healthit.chpl.entity.listing.ListingWithPrivilegedSurveillanceEntity</class>
         <class>gov.healthit.chpl.entity.listing.TestTaskParticipantMapEntity</class>
         <class>gov.healthit.chpl.entity.listing.pending.PendingCertificationResultAdditionalSoftwareEntity</class>
         <class>gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity</class>
@@ -134,6 +141,7 @@
         <class>gov.healthit.chpl.entity.surveillance.PendingSurveillanceNonconformityEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.PendingSurveillanceRequirementEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.PendingSurveillanceValidationEntity</class>
+        <class>gov.healthit.chpl.entity.surveillance.SurveillanceBasicEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.SurveillanceEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityDocumentationEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity</class>
@@ -142,8 +150,14 @@
         <class>gov.healthit.chpl.entity.surveillance.SurveillanceResultTypeEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.SurveillanceTypeEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.report.AnnualReportEntity</class>
+        <class>gov.healthit.chpl.entity.surveillance.report.PrivilegedSurveillanceEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.report.QuarterEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.report.QuarterlyReportEntity</class>
+        <class>gov.healthit.chpl.entity.surveillance.report.QuarterlyReportExcludedListingMapEntity</class>
+        <class>gov.healthit.chpl.entity.surveillance.report.QuarterlyReportSurveillanceMapEntity</class>
+        <class>gov.healthit.chpl.entity.surveillance.report.SurveillanceOutcomeEntity</class>
+        <class>gov.healthit.chpl.entity.surveillance.report.SurveillanceProcessTypeEntity</class>
+
         <properties>
             <property name="hibernate.show_sql" value="false" />
             <property name="hibernate.format_sql" value="false" />

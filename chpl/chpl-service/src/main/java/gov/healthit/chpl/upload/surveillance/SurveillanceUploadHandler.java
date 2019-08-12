@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.commons.csv.CSVRecord;
 
-import gov.healthit.chpl.domain.Surveillance;
+import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 
 public interface SurveillanceUploadHandler {

@@ -16,10 +16,10 @@ import gov.healthit.chpl.domain.SimpleExplainableAction;
 import gov.healthit.chpl.domain.SplitDeveloperRequest;
 import gov.healthit.chpl.domain.SplitProductsRequest;
 import gov.healthit.chpl.domain.SplitVersionsRequest;
-import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.UpdateDevelopersRequest;
 import gov.healthit.chpl.domain.UpdateProductsRequest;
 import gov.healthit.chpl.domain.UpdateVersionsRequest;
+import gov.healthit.chpl.domain.surveillance.Surveillance;
 
 /**
  * Listener that determines when to update the main searchable cache of all listings.
