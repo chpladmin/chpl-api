@@ -97,8 +97,8 @@ public class CHPLTestConfig implements EnvironmentAware {
     @Bean
     public DataSource dataSource() {
         PGSimpleDataSource ds = new PGSimpleDataSource();
-        ds.setServerName("localhost");
-        ds.setDatabaseName("openchpl_test");
+        ds.setServerName(env.getRequiredProperty("testDbServer"));
+        ds.setDatabaseName(env.getRequiredProperty("testDbDatabase"));
         ds.setUser(env.getRequiredProperty("testDbUser"));
         ds.setPassword(env.getRequiredProperty("testDbPassword"));
         return ds;
