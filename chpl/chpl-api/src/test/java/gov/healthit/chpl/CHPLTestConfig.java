@@ -98,6 +98,7 @@ public class CHPLTestConfig implements EnvironmentAware {
     public DataSource dataSource() {
         PGSimpleDataSource ds = new PGSimpleDataSource();
         ds.setServerName(env.getRequiredProperty("testDbServer"));
+        ds.setDatabaseName(env.getRequiredProperty("testDbDatabase"));
         ds.setUser(env.getRequiredProperty("testDbUser"));
         ds.setPassword(env.getRequiredProperty("testDbPassword"));
         return ds;
