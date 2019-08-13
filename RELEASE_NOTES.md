@@ -1,7 +1,7 @@
 # Release Notes
 
 ## Version 21.5.0
-_TBD_
+_12 August 2019_
 
 ### Flagged Features
 * Support entry and edit of complaints 
@@ -9,7 +9,7 @@ _TBD_
 ---
 
 ## Version 21.4.0
-_TBD_
+_29 July 2019_
 
 ### New Features
 * add activity tracking for complaints
