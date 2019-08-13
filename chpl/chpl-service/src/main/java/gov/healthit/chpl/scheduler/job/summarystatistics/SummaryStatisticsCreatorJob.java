@@ -93,7 +93,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
             saveSummaryStatistics(emailBodyStats, endDate);
 
         } catch (Exception e) {
-            LOGGER.error(e);
+            LOGGER.error("Caught unexpected exception: " + e.getMessage(), e);
         }
         LOGGER.info("********* Completed the Summary Statistics Creation job. *********");
     }
