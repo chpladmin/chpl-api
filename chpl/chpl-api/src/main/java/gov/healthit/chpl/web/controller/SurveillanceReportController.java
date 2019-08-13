@@ -113,6 +113,14 @@ public class SurveillanceReportController {
             throw new InvalidArgumentsException(msgUtil.getMessage("report.annualSurveillance.missingAcb"));
         }
 
+        //at least one quarterly report must exist to create the annual report
+        List<QuarterlyReportDTO> quarterlyReports =
+                reportManager.getQuarterlyReports(createRequest.getAcb().getId(), createRequest.getYear());
+        if (quarterlyReports == null || quarterlyReports.size() == 0) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("report.annualSurveillance.missingQuarterly",
+                    createRequest.getYear(), "create"));
+        }
+
         //create the report
         AnnualReportDTO annualReport = new AnnualReportDTO();
         CertificationBodyDTO associatedAcb = new CertificationBodyDTO();
@@ -169,9 +177,18 @@ public class SurveillanceReportController {
     @RequestMapping(value = "/export/annual/{annualReportId}", method = RequestMethod.GET)
     public Job exportAnnualReport(@PathVariable("annualReportId") final Long annualReportId,
             final HttpServletResponse response) throws EntityRetrievalException, UserRetrievalException,
-            EntityCreationException, IOException {
+            EntityCreationException, IOException, InvalidArgumentsException {
         if (!ff4j.check(FeatureList.SURVEILLANCE_REPORTING)) {
             throw new NotImplementedException();
+        }
+
+        AnnualReportDTO reportToExport = reportManager.getAnnualReport(annualReportId);
+        //at least one quarterly report must exist to export the annual report
+        List<QuarterlyReportDTO> quarterlyReports =
+                reportManager.getQuarterlyReports(reportToExport.getAcb().getId(), reportToExport.getYear());
+        if (quarterlyReports == null || quarterlyReports.size() == 0) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("report.annualSurveillance.missingQuarterly",
+                    reportToExport.getYear(), "export"));
         }
 
         JobDTO exportJob = reportManager.exportAnnualReportAsBackgroundJob(annualReportId);

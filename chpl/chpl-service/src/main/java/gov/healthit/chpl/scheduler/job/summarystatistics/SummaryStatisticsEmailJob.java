@@ -88,8 +88,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
             LOGGER.info("Message to be sent: " + message);
             sendEmail(message, jobContext.getMergedJobDataMap().getString("email"));
         } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.error(e);
+            LOGGER.error("Caught unexpected exception: " + e.getMessage(), e);
         } finally {
             LOGGER.info("********* Completed the Summary Statistics Email job. *********");
         }
