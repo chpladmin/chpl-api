@@ -52,6 +52,7 @@ public class ResourcePermissions {
     @Autowired
     public ResourcePermissions(final PermissionEvaluator permissionEvaluator,
             final UserCertificationBodyMapDAO userCertificationBodyMapDAO,
+            final UserDeveloperMapDAO userDeveloperMapDAO,
             final CertificationBodyDAO acbDAO,
             final UserTestingLabMapDAO userTestingLabMapDAO, final TestingLabDAO atlDAO,
             final ErrorMessageUtil errorMessageUtil, final UserDAO userDAO,
@@ -64,6 +65,7 @@ public class ResourcePermissions {
         this.errorMessageUtil = errorMessageUtil;
         this.userDAO = userDAO;
         this.developerDAO = developerDAO;
+        this.userDeveloperMapDAO = userDeveloperMapDAO;
     }
 
     @Transactional(readOnly = true)
