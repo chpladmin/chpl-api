@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
-import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.SurveillanceReportManager;
 
 @Component("annualReportBuilder")
