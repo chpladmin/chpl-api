@@ -18,4 +18,6 @@ public interface UserPermissionsManager {
 
     void addDeveloperPermission(DeveloperDTO developer, Long userId) throws EntityRetrievalException, UserRetrievalException;
 
+    void deleteDeveloperPermission(Long developerId, Long userId) throws EntityRetrievalException;
+
 }

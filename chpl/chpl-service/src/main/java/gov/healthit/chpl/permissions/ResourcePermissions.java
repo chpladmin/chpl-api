@@ -52,6 +52,7 @@ public class ResourcePermissions {
     @Autowired
     public ResourcePermissions(final PermissionEvaluator permissionEvaluator,
             final UserCertificationBodyMapDAO userCertificationBodyMapDAO,
+            final UserDeveloperMapDAO userDeveloperMapDAO,
             final CertificationBodyDAO acbDAO,
             final UserTestingLabMapDAO userTestingLabMapDAO, final TestingLabDAO atlDAO,
             final ErrorMessageUtil errorMessageUtil, final UserDAO userDAO,
@@ -64,6 +65,7 @@ public class ResourcePermissions {
         this.errorMessageUtil = errorMessageUtil;
         this.userDAO = userDAO;
         this.developerDAO = developerDAO;
+        this.userDeveloperMapDAO = userDeveloperMapDAO;
     }
 
     @Transactional(readOnly = true)
@@ -104,6 +106,18 @@ public class ResourcePermissions {
         List<UserTestingLabMapDTO> dtos = userTestingLabMapDAO.getByAtlId(atl.getId());
 
         for (UserTestingLabMapDTO dto : dtos) {
+            userDtos.add(dto.getUser());
+        }
+
+        return userDtos;
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserDTO> getAllUsersOnDeveloper(final DeveloperDTO dev) {
+        List<UserDTO> userDtos = new ArrayList<UserDTO>();
+        List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByDeveloperId(dev.getId());
+
+        for (UserDeveloperMapDTO dto : dtos) {
             userDtos.add(dto.getUser());
         }
 
@@ -182,6 +196,16 @@ public class ResourcePermissions {
             }
         }
         return developers;
+    }
+
+    @Transactional(readOnly = true)
+    public List<DeveloperDTO> getAllDevelopersForUser(final Long userId) {
+        List<DeveloperDTO> devs = new ArrayList<DeveloperDTO>();
+        List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByUserId(userId);
+        for (UserDeveloperMapDTO dto : dtos) {
+            devs.add(dto.getDeveloper());
+        }
+        return devs;
     }
 
     @Transactional(readOnly = true)
@@ -279,6 +303,7 @@ public class ResourcePermissions {
      * Rules are: Admin and Onc can access all users.
      * Acb can access any other ROLE_ACB user who is also on their ACB.
      * Atl can access any other ROLE_ATL user who is also on their ATL.
+     * Developer Admin can access any other ROLE_DEVELOPER user who is also on their developer.
      * All users can access themselves.
      * @param user user to check permissions on
      * @return
@@ -307,6 +332,17 @@ public class ResourcePermissions {
             for (TestingLabDTO currUserAtl : currUserAtls) {
                 for (TestingLabDTO otherUserAtl : otherUserAtls) {
                     if (currUserAtl.getId().equals(otherUserAtl.getId())) {
+                        return true;
+                    }
+                }
+            }
+        } else if (isUserRoleDeveloperAdmin()) {
+            //is the user being checked on any of the same Developer(s) that the current user is on?
+            List<DeveloperDTO> currUserDevs = getAllDevelopersForCurrentUser();
+            List<DeveloperDTO> otherUserDevs = getAllDevelopersForUser(user.getId());
+            for (DeveloperDTO currUserDev : currUserDevs) {
+                for (DeveloperDTO otherUserDev : otherUserDevs) {
+                    if (currUserDev.getId().equals(otherUserDev.getId())) {
                         return true;
                     }
                 }

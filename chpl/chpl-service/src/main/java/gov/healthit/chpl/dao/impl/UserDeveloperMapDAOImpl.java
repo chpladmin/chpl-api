@@ -19,14 +19,14 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 public class UserDeveloperMapDAOImpl extends BaseDAOImpl implements UserDeveloperMapDAO {
 
     @Override
-    public UserDeveloperMapDTO create(UserDeveloperMapDTO dto) throws EntityRetrievalException {
+    public UserDeveloperMapDTO create(final UserDeveloperMapDTO dto) throws EntityRetrievalException {
         UserDeveloperMapEntity entity = new UserDeveloperMapEntity();
         entity = create(getUserDeveloperMapEntity(dto));
         return new UserDeveloperMapDTO(entity);
     }
 
     @Override
-    public void delete(UserDeveloperMapDTO dto) throws EntityRetrievalException {
+    public void delete(final UserDeveloperMapDTO dto) throws EntityRetrievalException {
         UserDeveloperMapEntity entity = getEntityById(dto.getId());
         entity.setDeleted(true);
         entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));

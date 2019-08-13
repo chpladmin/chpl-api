@@ -14,9 +14,8 @@ import gov.healthit.chpl.permissions.domains.userpermissions.AddAcbActionPermiss
 import gov.healthit.chpl.permissions.domains.userpermissions.AddAtlActionPermissions;
 import gov.healthit.chpl.permissions.domains.userpermissions.AddDeveloperActionPermissions;
 import gov.healthit.chpl.permissions.domains.userpermissions.DeleteAcbActionPermissions;
-import gov.healthit.chpl.permissions.domains.userpermissions.DeleteAllAcbPermissionsForUserActionPermissions;
-import gov.healthit.chpl.permissions.domains.userpermissions.DeleteAllAtlPermissionsForUserActionPermissions;
 import gov.healthit.chpl.permissions.domains.userpermissions.DeleteAtlActionPermissions;
+import gov.healthit.chpl.permissions.domains.userpermissions.DeleteDeveloperActionPermissions;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
@@ -28,7 +27,7 @@ public class UserPermissionsDomainPermissionsTest {
 
     @Test
     public void setupTest() {
-        assertTrue(permissions.getActionPermissions().size() == 8);
+        assertTrue(permissions.getActionPermissions().size() == 7);
 
         assertTrue(permissions.getActionPermissions()
                 .get(UserPermissionsDomainPermissions.ADD_ACB) instanceof AddAcbActionPermissions);
@@ -36,20 +35,17 @@ public class UserPermissionsDomainPermissionsTest {
         assertTrue(permissions.getActionPermissions()
                 .get(UserPermissionsDomainPermissions.DELETE_ACB) instanceof DeleteAcbActionPermissions);
 
-        assertTrue(permissions.getActionPermissions().get(
-                UserPermissionsDomainPermissions.DELETE_ALL_ACBS_FOR_USER) instanceof DeleteAllAcbPermissionsForUserActionPermissions);
-
         assertTrue(permissions.getActionPermissions()
                 .get(UserPermissionsDomainPermissions.ADD_ATL) instanceof AddAtlActionPermissions);
 
         assertTrue(permissions.getActionPermissions()
                 .get(UserPermissionsDomainPermissions.DELETE_ATL) instanceof DeleteAtlActionPermissions);
 
-        assertTrue(permissions.getActionPermissions().get(
-                UserPermissionsDomainPermissions.DELETE_ALL_ATLS_FOR_USER) instanceof DeleteAllAtlPermissionsForUserActionPermissions);
-
         assertTrue(permissions.getActionPermissions()
                 .get(UserPermissionsDomainPermissions.ADD_DEVELOPER) instanceof AddDeveloperActionPermissions);
+
+        assertTrue(permissions.getActionPermissions()
+                .get(UserPermissionsDomainPermissions.DELETE_DEVELOPER) instanceof DeleteDeveloperActionPermissions);
 
         assertTrue(permissions.getActionPermissions()
                 .get(UserPermissionsDomainPermissions.IMPERSONATE_USER) instanceof ImpersonateUserActionPermissions);
