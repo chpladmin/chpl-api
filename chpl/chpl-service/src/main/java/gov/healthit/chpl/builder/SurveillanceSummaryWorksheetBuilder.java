@@ -21,7 +21,6 @@ import gov.healthit.chpl.dao.surveillance.report.PrivilegedSurveillanceDAO;
 import gov.healthit.chpl.dao.surveillance.report.SurveillanceSummaryDAO;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.dto.SurveillanceTypeDTO;
 import gov.healthit.chpl.dto.surveillance.report.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
@@ -93,7 +92,7 @@ public class SurveillanceSummaryWorksheetBuilder {
         int colWidth = workbook.getColumnWidth(12);
         sheet.setColumnWidth(2,  colWidth);
         sheet.setColumnWidth(3, colWidth);
-        sheet.setColumnWidth(4,  colWidth);
+        sheet.setColumnWidth(4, colWidth);
 
         //column G needs a certain width to match the document format
         sheet.setColumnWidth(6, workbook.getColumnWidth(40));

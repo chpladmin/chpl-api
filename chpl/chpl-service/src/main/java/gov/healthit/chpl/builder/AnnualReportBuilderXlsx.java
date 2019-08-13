@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.SurveillanceReportManager;
 
 @Component("annualReportBuilder")
@@ -71,8 +72,8 @@ public class AnnualReportBuilderXlsx {
             reportInfoWorksheetBuilder.buildWorksheet(workbook, quarterlyReports);
             activitiesAndOutcomesWorksheetBuilder.buildWorksheet(workbook, quarterlyReports);
             complaintsWorksheetBuilder.buildWorksheet(workbook, quarterlyReports);
+            survSummaryWorksheetBuilder.buildWorksheet(workbook, quarterlyReports);
         }
-        survSummaryWorksheetBuilder.buildWorksheet(workbook, quarterlyReports);
         survExprienceWorksheetBuilder.buildWorksheet(workbook, annualReport);
 
         //hide the ListSheet
