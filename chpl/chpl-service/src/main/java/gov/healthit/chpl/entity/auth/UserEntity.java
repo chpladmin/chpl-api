@@ -18,21 +18,22 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "`user`")
-//Setting dynamic update makes the hql engine generate new sql for any update call
-//and will exclude any unmodified columns from the update.
-//We need this because of the user_soft_delete trigger which is getting called
-//whenever the delete column is updated. We don't want to un-delete associations
-//for the user that were already marked deleted any time the user "delete" column is
-//included in an update statement (even if its value hasn't changed).
-@org.hibernate.annotations.Entity(
-        dynamicUpdate = true
-)
+// Setting dynamic update makes the hql engine generate new sql for any update
+// call
+// and will exclude any unmodified columns from the update.
+// We need this because of the user_soft_delete trigger which is getting called
+// whenever the delete column is updated. We don't want to un-delete
+// associations
+// for the user that were already marked deleted any time the user "delete"
+// column is
+// included in an update statement (even if its value hasn't changed).
+@org.hibernate.annotations.Entity(dynamicUpdate = true)
 public class UserEntity {
     private static final long serialVersionUID = -5792083881155731413L;
 
     @Id
     @Column(name = "user_id")
-    @GeneratedValue(strategy  =  GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "user_name", unique = true)
@@ -42,7 +43,7 @@ public class UserEntity {
     private Long userPermissionId;
 
     @Column(name = "password")
-    private String password  =  null;
+    private String password = null;
 
     @Column(name = "account_expired")
     private boolean accountExpired;
@@ -61,6 +62,9 @@ public class UserEntity {
 
     @Column(name = "failed_login_count")
     private int failedLoginCount;
+
+    @Column(name = "last_logged_in_date")
+    private Date lastLoggedInDate;
 
     @Column(name = "deleted")
     private Boolean deleted;
@@ -202,16 +206,6 @@ public class UserEntity {
         this.contact = contact;
     }
 
-    @Override
-    public String toString() {
-        return "UserEntity [id=" + id + ", subjectName=" + subjectName + ", password=" + password + ", accountExpired="
-                + accountExpired + ", accountLocked=" + accountLocked + ", credentialsExpired=" + credentialsExpired
-                + ", accountEnabled=" + accountEnabled + ", passwordResetRequired=" + passwordResetRequired
-                + ", failedLoginCount=" + failedLoginCount + ", deleted=" + deleted + ", lastModifiedUser="
-                + lastModifiedUser + ", creationDate=" + creationDate + ", lastModifiedDate=" + lastModifiedDate
-                + ", permission=" + permission + ", contact=" + contact + "]";
-    }
-
     public Long getUserPermissionId() {
         return userPermissionId;
     }
@@ -219,4 +213,24 @@ public class UserEntity {
     public void setUserPermissionId(Long userPermissionId) {
         this.userPermissionId = userPermissionId;
     }
+
+    public Date getLastLoggedInDate() {
+        return lastLoggedInDate;
+    }
+
+    public void setLastLoggedInDate(final Date lastLoggedInDate) {
+        this.lastLoggedInDate = lastLoggedInDate;
+    }
+
+    @Override
+    public String toString() {
+        return "UserEntity [id=" + id + ", subjectName=" + subjectName + ", userPermissionId=" + userPermissionId
+                + ", password=" + password + ", accountExpired=" + accountExpired + ", accountLocked=" + accountLocked
+                + ", credentialsExpired=" + credentialsExpired + ", accountEnabled=" + accountEnabled
+                + ", passwordResetRequired=" + passwordResetRequired + ", failedLoginCount=" + failedLoginCount
+                + ", lastLoggedInDate=" + lastLoggedInDate + ", deleted=" + deleted + ", lastModifiedUser="
+                + lastModifiedUser + ", creationDate=" + creationDate + ", lastModifiedDate=" + lastModifiedDate
+                + ", permission=" + permission + ", contact=" + contact + "]";
+    }
+
 }
