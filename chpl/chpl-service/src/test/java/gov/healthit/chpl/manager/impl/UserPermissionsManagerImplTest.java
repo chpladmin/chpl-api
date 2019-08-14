@@ -16,6 +16,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
+import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dao.UserTestingLabMapDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -35,6 +36,9 @@ public class UserPermissionsManagerImplTest {
 
     @Mock
     private UserTestingLabMapDAO userTestingLabMapDAO;
+
+    @Mock
+    private UserDeveloperMapDAO userDeveloperMapDAO;
 
     @Mock
     private UserDAO userDAO;
