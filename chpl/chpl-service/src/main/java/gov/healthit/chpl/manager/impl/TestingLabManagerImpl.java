@@ -60,9 +60,6 @@ public class TestingLabManagerImpl extends SecuredManager implements TestingLabM
         // Create the atl itself
         TestingLabDTO result = testingLabDAO.create(atl);
 
-        // Grant the user administrative permission to the ATL
-        userPermissionsManager.addAtlPermission(result, AuthUtil.getAuditId());
-
         LOGGER.debug("Created testing lab " + result + " and granted admin permission to recipient "
                 + gov.healthit.chpl.util.AuthUtil.getUsername());
 
