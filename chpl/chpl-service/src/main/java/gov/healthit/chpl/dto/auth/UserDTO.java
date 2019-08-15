@@ -240,12 +240,20 @@ public class UserDTO implements UserDetails {
 
     @Override
     public String toString() {
-        String ret = "[UserDTO: " + "[id: " + this.id + "]" + "[subjectName: " + this.subjectName + "]" + "[fullName: "
-                + this.fullName + "]" + "[friendlyName: " + this.friendlyName + "]" + "[email: " + this.email + "]"
-                + "[phoneNumber: " + this.phoneNumber + "]" + "[title: " + this.title + "]" + "[signatureDate: "
-                + this.signatureDate + "]" + "[failedLoginCount: " + this.failedLoginCount + "]" + "[accountExpired: "
-                + this.accountExpired + "]" + "[accountLocked: " + this.accountLocked + "]" + "[credentialsExpired: "
-                + this.credentialsExpired + "]" + "[accountEnabled: " + this.accountEnabled + "]"
+        String ret = "[UserDTO: "
+                + "[id: " + this.id + "]"
+                + "[subjectName: " + this.subjectName + "]"
+                + "[fullName: " + this.fullName + "]"
+                + "[friendlyName: " + this.friendlyName + "]"
+                + "[email: " + this.email + "]"
+                + "[phoneNumber: " + this.phoneNumber + "]"
+                + "[title: " + this.title + "]"
+                + "[signatureDate: " + this.signatureDate + "]"
+                + "[failedLoginCount: " + this.failedLoginCount + "]"
+                + "[accountExpired: " + this.accountExpired + "]"
+                + "[accountLocked: " + this.accountLocked + "]"
+                + "[credentialsExpired: " + this.credentialsExpired + "]"
+                + "[accountEnabled: " + this.accountEnabled + "]"
                 + "[passwordResetRequired: " + this.passwordResetRequired + "]]";
         return ret;
     }

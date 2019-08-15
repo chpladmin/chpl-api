@@ -168,10 +168,15 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
     public UserDTO findUser(final UserDTO toSearch) {
         UserDTO foundUser = null;
 
-        String userQuery = "from UserEntity u " + " JOIN FETCH u.permission " + " JOIN FETCH u.contact "
-                + " WHERE (NOT u.deleted = true) " + " AND (u.subjectName = :subjectName) "
-                + " AND (u.contact.fullName = :fullName)" + " AND (u.contact.friendlyName = :friendlyName)"
-                + " AND (u.contact.email = :email)" + " AND (u.contact.phoneNumber = :phoneNumber)";
+        String userQuery = "from UserEntity u "
+                + " JOIN FETCH u.permission "
+                + " JOIN FETCH u.contact "
+                + " WHERE (NOT u.deleted = true) "
+                + " AND (u.subjectName = :subjectName) "
+                + " AND (u.contact.fullName = :fullName)"
+                + " AND (u.contact.friendlyName = :friendlyName)"
+                + " AND (u.contact.email = :email)"
+                + " AND (u.contact.phoneNumber = :phoneNumber)";
         if (toSearch.getTitle() != null) {
             userQuery += " AND (u.contact.title = :title)";
         } else {
@@ -198,15 +203,20 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 
     private List<UserEntity> getAllEntities() {
 
-        List<UserEntity> result = entityManager.createQuery("from UserEntity u " + "JOIN FETCH u.contact "
-                + "JOIN FETCH u.permission " + " WHERE (NOT u.deleted = true) ", UserEntity.class).getResultList();
+        List<UserEntity> result = entityManager.createQuery("from UserEntity u "
+                + "JOIN FETCH u.contact "
+                + "JOIN FETCH u.permission "
+                + "WHERE (NOT u.deleted = true) ", UserEntity.class).getResultList();
 
         return result;
     }
 
     private UserEntity getEntityById(final Long userId) throws UserRetrievalException {
-        Query query = entityManager.createQuery("from UserEntity u " + "JOIN FETCH u.contact "
-                + "JOIN FETCH u.permission " + "WHERE (NOT u.deleted = true) " + "AND (u.id = :userid) ",
+        Query query = entityManager.createQuery("from UserEntity u "
+                + "JOIN FETCH u.contact "
+                + "JOIN FETCH u.permission "
+                + "WHERE (NOT u.deleted = true) "
+                + "AND (u.id = :userid) ",
                 UserEntity.class);
         query.setParameter("userid", userId);
         List<UserEntity> result = query.getResultList();
@@ -226,9 +236,11 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 
     private UserEntity getEntityByName(final String uname) throws UserRetrievalException {
         Query query = entityManager
-                .createQuery(
-                        "from UserEntity u " + "JOIN FETCH u.contact " + "JOIN FETCH u.permission "
-                                + "where ((NOT u.deleted = true) " + "AND (u.subjectName = (:uname))) ",
+                .createQuery("from UserEntity u "
+                        + "JOIN FETCH u.contact "
+                        + "JOIN FETCH u.permission "
+                        + "where ((NOT u.deleted = true) "
+                        + "AND (u.subjectName = (:uname))) ",
                         UserEntity.class);
         query.setParameter("uname", uname);
         List<UserEntity> result = query.getResultList();
@@ -270,8 +282,11 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
      */
     @Override
     public List<UserDTO> getUsersWithPermission(final String permissionName) {
-        String hql = "SELECT u " + "FROM UserEntity u " + "JOIN FETCH u.contact contact "
-                + "JOIN FETCH u.permission permission " + "WHERE permission.authority = :permissionName";
+        String hql = "SELECT u "
+                + "FROM UserEntity u "
+                + "JOIN FETCH u.contact contact "
+                + "JOIN FETCH u.permission permission "
+                + "WHERE permission.authority = :permissionName";
         Query query = entityManager.createQuery(hql);
         query.setParameter("permissionName", permissionName);
         List<UserEntity> usersWithPermission = query.getResultList();

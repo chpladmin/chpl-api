@@ -49,7 +49,6 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
-import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
@@ -72,7 +71,6 @@ public class DeveloperController {
     @Autowired
     public DeveloperController(final DeveloperManager developerManager,
             final CertifiedProductManager cpManager,
-            final UserManager userManager,
             final UserPermissionsManager userPermissionsManager,
             final ErrorMessageUtil msgUtil,
             final ChplProductNumberUtil chplProductNumberUtil,
