@@ -577,6 +577,20 @@ public class QuarterlyReportManagerTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
+    @Test
+    @Rollback(true)
+    @Transactional
+    public void getByAcbAndYear() throws EntityCreationException, EntityRetrievalException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        QuarterlyReportDTO report = createReport();
+        List<QuarterlyReportDTO> fetchedReports =
+                reportManager.getQuarterlyReports(report.getAcb().getId(), report.getYear());
+        assertNotNull(fetchedReports);
+        assertEquals(1, fetchedReports.size());
+        assertEquals(report.getId(), fetchedReports.get(0).getId());
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
     @Test(expected = EntityRetrievalException.class)
     @Transactional
     public void getByIdDoesNotExist() throws EntityCreationException, EntityRetrievalException {

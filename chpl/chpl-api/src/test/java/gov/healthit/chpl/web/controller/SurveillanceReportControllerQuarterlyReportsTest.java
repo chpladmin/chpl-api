@@ -364,8 +364,8 @@ public class SurveillanceReportControllerQuarterlyReportsTest {
         reportController.deleteQuarterlyReport(-100L);
     }
 
-    private QuarterlyReport createReport(Long acbId, Integer year, String quarter, 
-            String activities, String pri, String react, String trans)
+    private QuarterlyReport createReport(final Long acbId, final Integer year, final String quarter, 
+            final String activities, final String pri, final String react, final String trans)
                     throws EntityCreationException, InvalidArgumentsException, EntityRetrievalException, JsonProcessingException {
         QuarterlyReport toCreate = new QuarterlyReport();
         CertificationBody acb = new CertificationBody();
