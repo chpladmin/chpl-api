@@ -15,7 +15,7 @@ public class AddDocumentActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess(Object obj) {
-        if (!(obj instanceof CertificationBodyDTO)) {
+        if (!(obj instanceof Long)) {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
             return true;
