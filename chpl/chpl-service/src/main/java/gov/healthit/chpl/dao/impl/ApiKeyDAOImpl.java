@@ -100,9 +100,9 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
     }
 
     @Override
-    public List<ApiKeyDTO> findAll() {
+    public List<ApiKeyDTO> findAll(final Boolean includeDeleted) {
 
-        List<ApiKeyEntity> entities = getAllEntities();
+        List<ApiKeyEntity> entities = getAllEntities(includeDeleted);
         List<ApiKeyDTO> dtos = new ArrayList<>();
 
         for (ApiKeyEntity entity : entities) {
@@ -227,10 +227,12 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 
     }
 
-    private List<ApiKeyEntity> getAllEntities() {
+    private List<ApiKeyEntity> getAllEntities(final Boolean includeDeleted) {
 
         List<ApiKeyEntity> result = entityManager
-                .createQuery("from ApiKeyEntity where (NOT deleted = true) ", ApiKeyEntity.class).getResultList();
+                .createQuery("from ApiKeyEntity where (deleted = :includeDeleted) ", ApiKeyEntity.class)
+                .setParameter("includeDeleted", includeDeleted)
+                .getResultList();
         return result;
     }
 
@@ -239,19 +241,19 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 
         List<ApiKeyEntity> result = entityManager
                 .createQuery("from ApiKeyEntity where (NOT deleted = true) AND whitelisted = true",
-                        ApiKeyEntity.class).getResultList();
+                        ApiKeyEntity.class)
+                .getResultList();
         return result;
     }
 
     private List<ApiKeyEntity> getAllNotUsedInXDays(final Integer days) {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_MONTH, (-1 * days));
-        List<ApiKeyEntity> result =
-                entityManager.createQuery(
-                        "from ApiKeyEntity where deleted <> true "
+        List<ApiKeyEntity> result = entityManager.createQuery(
+                "from ApiKeyEntity where deleted <> true "
                         + "AND lastUsedDate < :targetDate "
                         + "AND deleteWarningSentDate is null",
-                        ApiKeyEntity.class)
+                ApiKeyEntity.class)
                 .setParameter("targetDate", cal.getTime())
                 .getResultList();
         return result;
@@ -260,10 +262,9 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
     private List<ApiKeyEntity> getAllToBeRevoked(final Integer daysSinceWarningSent) {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_MONTH, (-1 * daysSinceWarningSent));
-        List<ApiKeyEntity> result =
-                entityManager.createQuery(
-                        "from ApiKeyEntity where deleted <> true AND deleteWarningSentDate < :targetDate",
-                        ApiKeyEntity.class)
+        List<ApiKeyEntity> result = entityManager.createQuery(
+                "from ApiKeyEntity where deleted <> true AND deleteWarningSentDate < :targetDate",
+                ApiKeyEntity.class)
                 .setParameter("targetDate", cal.getTime())
                 .getResultList();
         return result;
@@ -272,7 +273,9 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
     private ApiKeyEntity getEntityById(final Long entityId) throws EntityRetrievalException {
         ApiKeyEntity entity = null;
         Query query = entityManager.createQuery(
-                "from ApiKeyEntity where (NOT deleted = true) AND (api_key_id = :entityid) ", ApiKeyEntity.class);
+                // "from ApiKeyEntity where (NOT deleted = true) AND (api_key_id
+                // = :entityid) ", ApiKeyEntity.class);
+                "from ApiKeyEntity where (api_key_id = :entityid) ", ApiKeyEntity.class);
         query.setParameter("entityid", entityId);
         List<ApiKeyEntity> result = query.getResultList();
 

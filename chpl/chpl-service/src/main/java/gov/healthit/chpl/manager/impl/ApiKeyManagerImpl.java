@@ -110,7 +110,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 
         apiKeyActivityDAO.create(apiKeyActivityDto);
 
-        //Update the lastUsedDate...
+        // Update the lastUsedDate...
         apiKey.setLastUsedDate(new Date());
         apiKeyDAO.update(apiKey);
     }
@@ -180,8 +180,8 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public List<ApiKeyDTO> findAll() {
-        return apiKeyDAO.findAll();
+    public List<ApiKeyDTO> findAll(final Boolean includeDeleted) {
+        return apiKeyDAO.findAll(includeDeleted);
     }
 
     @Override
@@ -227,7 +227,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     public List<ApiKeyActivity> getApiKeyActivity(final String apiKeyFilter, final Integer pageNumber,
             final Integer pageSize, final boolean dateAscending, final Long startDateMilli, final Long endDateMilli)
-                    throws EntityRetrievalException {
+            throws EntityRetrievalException {
         List<ApiKeyActivityDTO> activityDTOs = apiKeyActivityDAO.getApiKeyActivity(apiKeyFilter, pageNumber, pageSize,
                 dateAscending, startDateMilli, endDateMilli);
         List<ApiKeyActivity> apiKeyActivitiesList = new ArrayList<ApiKeyActivity>();
