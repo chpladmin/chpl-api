@@ -20,6 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.auth.UserContactDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
+import gov.healthit.chpl.domain.auth.Authority;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.OrganizationDTO;
+import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.exception.UserCreationException;
@@ -28,6 +33,7 @@ import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.auth.SecuredUserManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 
 @Service
 public class SecuredUserManagerImpl extends SecuredManager implements SecuredUserManager {
@@ -35,13 +41,15 @@ public class SecuredUserManagerImpl extends SecuredManager implements SecuredUse
     private UserDAO userDAO;
     private UserContactDAO userContactDAO;
     private MutableAclService mutableAclService;
+    private ResourcePermissions resourcePermissions;
 
     @Autowired
-    public SecuredUserManagerImpl(UserDAO userDAO, UserContactDAO userContactDAO,
-            MutableAclService mutableAclService) {
+    public SecuredUserManagerImpl(final UserDAO userDAO, final UserContactDAO userContactDAO,
+            final MutableAclService mutableAclService, final ResourcePermissions resourcePermissions) {
         this.userDAO = userDAO;
         this.userContactDAO = userContactDAO;
         this.mutableAclService = mutableAclService;
+        this.resourcePermissions = resourcePermissions;
     }
 
     @Override
@@ -78,7 +86,7 @@ public class SecuredUserManagerImpl extends SecuredManager implements SecuredUse
             throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
 
         // remove all ACLs for this user
-        //should only be one - for themselves
+        // should only be one - for themselves
         ObjectIdentity oid = new ObjectIdentityImpl(UserDTO.class, user.getId());
         mutableAclService.deleteAcl(oid, false);
 
@@ -89,7 +97,30 @@ public class SecuredUserManagerImpl extends SecuredManager implements SecuredUse
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_ALL, filterObject)")
     public List<UserDTO> getAll() {
-        return userDAO.findAll();
+
+        List<UserDTO> users = userDAO.findAll();
+        for (UserDTO user : users) {
+
+            if (user.getPermission().getAuthority().equals(Authority.ROLE_ACB)) {
+                List<CertificationBodyDTO> acbs = resourcePermissions.getAllAcbsForCurrentUser();
+                for (CertificationBodyDTO acb : acbs) {
+                    user.getOrganizations().add(new OrganizationDTO(acb.getId(), acb.getName()));
+                }
+            }
+            if (user.getPermission().getAuthority().equals(Authority.ROLE_ATL)) {
+                List<TestingLabDTO> atls = resourcePermissions.getAllAtlsForCurrentUser();
+                for (TestingLabDTO atl : atls) {
+                    user.getOrganizations().add(new OrganizationDTO(atl.getId(), atl.getName()));
+                }
+            }
+            if (user.getPermission().getAuthority().equals(Authority.ROLE_DEVELOPER)) {
+                List<DeveloperDTO> devs = resourcePermissions.getAllDevelopersForCurrentUser();
+                for (DeveloperDTO dev : devs) {
+                    user.getOrganizations().add(new OrganizationDTO(dev.getId(), dev.getName()));
+                }
+            }
+        }
+        return users;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
