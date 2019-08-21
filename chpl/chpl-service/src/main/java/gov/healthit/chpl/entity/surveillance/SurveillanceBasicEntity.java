@@ -16,7 +16,7 @@ import javax.persistence.Transient;
 import gov.healthit.chpl.util.Util;
 
 @Entity
-@Table(name = "surveillance")
+@Table(name = "surveillance_basic")
 public class SurveillanceBasicEntity {
 
     @Id
@@ -45,6 +45,12 @@ public class SurveillanceBasicEntity {
 
     @Column(name = "randomized_sites_used")
     private Integer numRandomizedSites;
+
+    @Column(name = "open_nonconformity_count")
+    private Integer numOpenNonconformities;
+
+    @Column(name = "closed_nonconformity_count")
+    private Integer numClosedNonconformities;
 
     @Column(name = "deleted")
     private Boolean deleted;
@@ -184,5 +190,21 @@ public class SurveillanceBasicEntity {
                 + numRandomizedSites + ", deleted=" + deleted + ", lastModifiedUser=" + lastModifiedUser
                 + ", creationDate=" + creationDate + ", lastModifiedDate=" + lastModifiedDate + ", userPermissionId="
                 + userPermissionId + ", chplProductNumber=" + chplProductNumber + "]";
+    }
+
+    public Integer getNumOpenNonconformities() {
+        return numOpenNonconformities;
+    }
+
+    public void setNumOpenNonconformities(final Integer numOpenNonconformities) {
+        this.numOpenNonconformities = numOpenNonconformities;
+    }
+
+    public Integer getNumClosedNonconformities() {
+        return numClosedNonconformities;
+    }
+
+    public void setNumClosedNonconformities(final Integer numClosedNonconformities) {
+        this.numClosedNonconformities = numClosedNonconformities;
     }
 }
