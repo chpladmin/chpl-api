@@ -10,6 +10,10 @@ public class Organization implements Serializable {
     private Long id;
     private String name;
 
+    public Organization() {
+
+    }
+
     public Organization(final Long id, final String name) {
         this.id = id;
         this.name = name;
