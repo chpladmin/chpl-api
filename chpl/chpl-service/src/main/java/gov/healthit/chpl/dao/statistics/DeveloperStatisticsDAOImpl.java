@@ -161,10 +161,10 @@ public class DeveloperStatisticsDAOImpl extends BaseDAOImpl implements Developer
         List<CertifiedBodyStatistics> cbStats = new ArrayList<CertifiedBodyStatistics>();
         for (Object[] obj : results) {
             CertifiedBodyStatistics stat = new CertifiedBodyStatistics();
-            stat.setName(obj[0].toString());
-            stat.setYear(Integer.valueOf(obj[1].toString()));
-            stat.setTotalDevelopersWithListings(Long.valueOf(obj[2].toString()));
-            stat.setCertificationStatusName(obj[3].toString());
+            stat.setName(obj[0] != null ? obj[0].toString() : "");
+            stat.setYear(obj[1] != null ? Integer.valueOf(obj[1].toString()) : 0);
+            stat.setTotalDevelopersWithListings(obj[2] != null ? Long.valueOf(obj[2].toString()) : 0L);
+            stat.setCertificationStatusName(obj[3] != null ? obj[3].toString() : "");
             cbStats.add(stat);
         }
         return cbStats;
