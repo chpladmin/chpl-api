@@ -27,7 +27,7 @@ public class AnnouncementDomainPermissions extends DomainPermissions {
             @Qualifier("announcementDeleteActionPermissions") final DeleteActionPermissions deleteActionPermissions,
             @Qualifier("announcementGetAllActionPermissions") final GetAllActionPermissions getAllActionPermissions,
             @Qualifier("announcementGetByIdActionPermissions") final GetByIdActionPermissions getByIdActionPermissions,
-            @Qualifier("announcementGetAllIncudingDeletedActionPermissions") final GetAllIncludingFutureActionPermissions getAllIncludingFutureActionPermissions) {
+            @Qualifier("announcementGetAllIncludingFutureActionPermissions") final GetAllIncludingFutureActionPermissions getAllIncludingFutureActionPermissions) {
 
         getActionPermissions().put(CREATE, createActionPermissions);
         getActionPermissions().put(UPDATE, updateActionPermissions);
