@@ -2,7 +2,6 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -27,7 +26,6 @@ import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.dto.auth.UserPermissionDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -204,13 +202,13 @@ public class TestingLabController {
     @RequestMapping(value = "{atlId}/users/{userId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public String deleteUserFromAtl(@PathVariable final Long atlId, @PathVariable final Long userId)
-            throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
+            throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException, EntityCreationException {
 
         return deleteUser(atlId, userId);
     }
 
     private String deleteUser(final Long atlId, final Long userId)
-            throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
+            throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException, EntityCreationException {
 
         UserDTO user = userManager.getById(userId);
         TestingLabDTO atl = resourcePermissions.getAtlIfPermissionById(atlId);

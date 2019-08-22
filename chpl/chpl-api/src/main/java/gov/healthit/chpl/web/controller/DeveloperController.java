@@ -243,7 +243,7 @@ public class DeveloperController {
     produces = "application/json; charset=utf-8")
     public PermissionDeletedResponse deleteUserFromDeveloper(
             @PathVariable final Long developerId, @PathVariable final Long userId)
-        throws EntityRetrievalException {
+        throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         if (!ff4j.check(FeatureList.ROLE_DEVELOPER)) {
             throw new NotImplementedException();
         }
