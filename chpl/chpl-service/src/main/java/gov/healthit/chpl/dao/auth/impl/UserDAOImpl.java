@@ -9,6 +9,7 @@ import javax.persistence.Query;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ import gov.healthit.chpl.entity.auth.UserPermissionEntity;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.UserMapper;
 
 @Repository(value = "userDAO")
 public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
@@ -29,6 +31,10 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 
     @Autowired
     private UserContactDAO userContactDAO;
+
+    @Autowired
+    @Lazy
+    private UserMapper userMapper;
 
     @Override
     @Transactional
@@ -79,7 +85,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
             super.create(userEntity);
         }
 
-        return new UserDTO(userEntity);
+        return userMapper.from(userEntity);
     }
 
     @Override
@@ -104,7 +110,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
         userEntity.getContact().setLastModifiedUser(AuthUtil.getAuditId());
 
         super.update(userEntity);
-        return new UserDTO(userEntity);
+        return userMapper.from(userEntity);
     }
 
     @Override
@@ -140,7 +146,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
         List<UserDTO> users = new ArrayList<>();
 
         for (UserEntity entity : entities) {
-            UserDTO user = new UserDTO(entity);
+            UserDTO user = userMapper.from(entity);
             users.add(user);
         }
         return users;
@@ -159,7 +165,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
         List<UserEntity> result = query.getResultList();
         if (result.size() >= 1) {
             UserEntity entity = result.get(0);
-            foundUser = new UserDTO(entity);
+            foundUser = userMapper.from(entity);
         }
 
         return foundUser;
@@ -195,7 +201,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
         List<UserEntity> result = query.getResultList();
         if (result.size() >= 1) {
             UserEntity entity = result.get(0);
-            foundUser = new UserDTO(entity);
+            foundUser = userMapper.from(entity);
         }
 
         return foundUser;
@@ -261,7 +267,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
         if (userEntity == null) {
             return null;
         }
-        return new UserDTO(userEntity);
+        return userMapper.from(userEntity);
     }
 
     @Override
@@ -270,7 +276,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
         if (userEntity == null) {
             return null;
         }
-        return new UserDTO(userEntity);
+        return userMapper.from(userEntity);
     }
 
     /**
@@ -293,7 +299,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
         List<UserDTO> results = new ArrayList<UserDTO>();
         if (usersWithPermission != null && usersWithPermission.size() > 0) {
             for (UserEntity result : usersWithPermission) {
-                results.add(new UserDTO(result));
+                results.add(userMapper.from(result));
             }
         }
         return results;

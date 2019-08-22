@@ -25,7 +25,6 @@ import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.OrganizationDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.dto.UserDeveloperMapDTO;
@@ -93,11 +92,6 @@ public class ResourcePermissions {
         List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByAcbId(acb.getId());
 
         for (UserCertificationBodyMapDTO dto : dtos) {
-            // Populate the organizations for the user
-            List<CertificationBodyDTO> acbs = getAllAcbsForUser(dto.getUser().getId());
-            for (CertificationBodyDTO certBody : acbs) {
-                dto.getUser().getOrganizations().add(new OrganizationDTO(certBody.getId(), certBody.getName()));
-            }
             userDtos.add(dto.getUser());
         }
 
@@ -110,11 +104,6 @@ public class ResourcePermissions {
         List<UserTestingLabMapDTO> dtos = userTestingLabMapDAO.getByAtlId(atl.getId());
 
         for (UserTestingLabMapDTO dto : dtos) {
-            // Populate the organizations for the user
-            List<TestingLabDTO> atls = getAllAtlsForUser(dto.getUser().getId());
-            for (TestingLabDTO testingLab : atls) {
-                dto.getUser().getOrganizations().add(new OrganizationDTO(testingLab.getId(), testingLab.getName()));
-            }
             userDtos.add(dto.getUser());
         }
 
@@ -127,11 +116,6 @@ public class ResourcePermissions {
         List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByDeveloperId(dev.getId());
 
         for (UserDeveloperMapDTO dto : dtos) {
-            // Populate the organizations for the user
-            List<DeveloperDTO> developers = getAllDevelopersForUser(dto.getUser().getId());
-            for (DeveloperDTO developer : developers) {
-                dto.getUser().getOrganizations().add(new OrganizationDTO(developer.getId(), developer.getName()));
-            }
             userDtos.add(dto.getUser());
         }
 

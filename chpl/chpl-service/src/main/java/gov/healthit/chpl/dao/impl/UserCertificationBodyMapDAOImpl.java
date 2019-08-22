@@ -5,24 +5,35 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.entity.UserCertificationBodyMapEntity;
 import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.UserMapper;
 
 @Repository(value = "userCertificationBodyMapDAO")
 public class UserCertificationBodyMapDAOImpl extends BaseDAOImpl implements UserCertificationBodyMapDAO {
+
+    private UserMapper userMapper;
+
+    @Autowired
+    public UserCertificationBodyMapDAOImpl(@Lazy final UserMapper userMapper) {
+        this.userMapper = userMapper;
+    }
 
     @Override
     public UserCertificationBodyMapDTO create(UserCertificationBodyMapDTO dto) throws EntityRetrievalException {
         UserCertificationBodyMapEntity entity = new UserCertificationBodyMapEntity();
         entity = create(getUserCertificationBodyMapEntity(dto));
-        return new UserCertificationBodyMapDTO(entity);
+        return mapEntityToDto(entity);
     }
 
     @Override
@@ -49,7 +60,29 @@ public class UserCertificationBodyMapDAOImpl extends BaseDAOImpl implements User
         List<UserCertificationBodyMapDTO> dtos = new ArrayList<UserCertificationBodyMapDTO>();
         if (result != null) {
             for (UserCertificationBodyMapEntity entity : result) {
-                dtos.add(new UserCertificationBodyMapDTO(entity));
+                dtos.add(mapEntityToDto(entity));
+            }
+        }
+        return dtos;
+    }
+
+    @Override
+    public List<CertificationBodyDTO> getCertificationBodyByUserId(Long userId) {
+        Query query = entityManager.createQuery(
+                "from UserCertificationBodyMapEntity ucbm "
+                        + "join fetch ucbm.certificationBody acb "
+                        + "join fetch ucbm.user u "
+                        + "join fetch u.permission perm "
+                        + "join fetch u.contact contact "
+                        + "where (ucbm.deleted != true) AND (u.id = :userId) ",
+                UserCertificationBodyMapEntity.class);
+        query.setParameter("userId", userId);
+        List<UserCertificationBodyMapEntity> result = query.getResultList();
+
+        List<CertificationBodyDTO> dtos = new ArrayList<CertificationBodyDTO>();
+        if (result != null) {
+            for (UserCertificationBodyMapEntity entity : result) {
+                dtos.add(new CertificationBodyDTO(entity.getCertificationBody()));
             }
         }
         return dtos;
@@ -71,7 +104,7 @@ public class UserCertificationBodyMapDAOImpl extends BaseDAOImpl implements User
 
         List<UserCertificationBodyMapDTO> dtos = new ArrayList<UserCertificationBodyMapDTO>();
         for (UserCertificationBodyMapEntity entity : result) {
-            dtos.add(new UserCertificationBodyMapDTO(entity));
+            dtos.add(mapEntityToDto(entity));
         }
         return dtos;
     }
@@ -92,7 +125,7 @@ public class UserCertificationBodyMapDAOImpl extends BaseDAOImpl implements User
         if (result.size() == 0) {
             return null;
         }
-        return new UserCertificationBodyMapDTO(result.get(0));
+        return mapEntityToDto(result.get(0));
     }
 
     private UserCertificationBodyMapEntity getEntityById(Long id) {
@@ -184,4 +217,9 @@ public class UserCertificationBodyMapDAOImpl extends BaseDAOImpl implements User
         return entity;
     }
 
+    private UserCertificationBodyMapDTO mapEntityToDto(UserCertificationBodyMapEntity entity) {
+        UserCertificationBodyMapDTO dto = new UserCertificationBodyMapDTO(entity);
+        dto.setUser(userMapper.from(entity.getUser()));
+        return dto;
+    }
 }

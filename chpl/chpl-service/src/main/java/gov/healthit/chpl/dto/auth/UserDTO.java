@@ -11,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.OrganizationDTO;
-import gov.healthit.chpl.entity.auth.UserEntity;
 
 /**
  * User data transfer object.
@@ -52,30 +51,30 @@ public class UserDTO implements UserDetails {
      * @param entity
      *            the entity
      */
-    public UserDTO(final UserEntity entity) {
-        if (entity != null) {
-            this.id = entity.getId();
-            this.subjectName = entity.getSubjectName();
-            this.failedLoginCount = entity.getFailedLoginCount();
-            this.accountExpired = entity.isAccountExpired();
-            this.accountLocked = entity.isAccountLocked();
-            this.accountEnabled = entity.isAccountEnabled();
-            this.credentialsExpired = entity.isCredentialsExpired();
-            this.passwordResetRequired = entity.isPasswordResetRequired();
-            this.lastLoggedInDate = entity.getLastLoggedInDate();
-            if (entity.getContact() != null) {
-                this.fullName = entity.getContact().getFullName();
-                this.friendlyName = entity.getContact().getFriendlyName();
-                this.email = entity.getContact().getEmail();
-                this.phoneNumber = entity.getContact().getPhoneNumber();
-                this.title = entity.getContact().getTitle();
-                this.signatureDate = entity.getContact().getSignatureDate();
-            }
-            if (entity.getPermission() != null) {
-                this.permission = new UserPermissionDTO(entity.getPermission());
-            }
-        }
-    }
+    // public UserDTO(final UserEntity entity) {
+    // if (entity != null) {
+    // this.id = entity.getId();
+    // this.subjectName = entity.getSubjectName();
+    // this.failedLoginCount = entity.getFailedLoginCount();
+    // this.accountExpired = entity.isAccountExpired();
+    // this.accountLocked = entity.isAccountLocked();
+    // this.accountEnabled = entity.isAccountEnabled();
+    // this.credentialsExpired = entity.isCredentialsExpired();
+    // this.passwordResetRequired = entity.isPasswordResetRequired();
+    // this.lastLoggedInDate = entity.getLastLoggedInDate();
+    // if (entity.getContact() != null) {
+    // this.fullName = entity.getContact().getFullName();
+    // this.friendlyName = entity.getContact().getFriendlyName();
+    // this.email = entity.getContact().getEmail();
+    // this.phoneNumber = entity.getContact().getPhoneNumber();
+    // this.title = entity.getContact().getTitle();
+    // this.signatureDate = entity.getContact().getSignatureDate();
+    // }
+    // if (entity.getPermission() != null) {
+    // this.permission = new UserPermissionDTO(entity.getPermission());
+    // }
+    // }
+    // }
 
     public Long getId() {
         return id;
