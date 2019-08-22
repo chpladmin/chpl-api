@@ -20,8 +20,8 @@ public class AddDocumentActionPermissions extends ActionPermissions {
         } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
-            CertificationBodyDTO acb = (CertificationBodyDTO) obj;
-            return isAcbValidForCurrentUser(acb.getId());
+            Long acb = (Long) obj;
+            return isAcbValidForCurrentUser(acb);
         } else {
             return false;
         }
