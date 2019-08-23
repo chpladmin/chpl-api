@@ -33,7 +33,7 @@ public class GetUserMaintenanceMetadataActionPermissions extends ActionPermissio
 
     @Override
     public boolean hasAccess() {
-        if (getResourcePermissions().isUserAnonymous()) {
+        if (getResourcePermissions().isUserAnonymous() || getResourcePermissions().isUserRoleDeveloperAdmin()) {
             return false;
         } else {
             return true;
@@ -43,7 +43,7 @@ public class GetUserMaintenanceMetadataActionPermissions extends ActionPermissio
 
     @Override
     @Transactional
-    public boolean hasAccess(Object obj) {
+    public boolean hasAccess(final Object obj) {
         if (!(obj instanceof ActivityMetadata)) {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
