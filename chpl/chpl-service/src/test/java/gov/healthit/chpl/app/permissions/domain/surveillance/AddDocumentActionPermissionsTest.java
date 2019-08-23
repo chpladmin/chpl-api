@@ -46,9 +46,8 @@ public class AddDocumentActionPermissionsTest extends ActionPermissionsBaseTest 
         assertFalse(permissions.hasAccess());
 
         // Since it is admin it has access to all - param value does not matter.
-        CertificationBodyDTO dto = new CertificationBodyDTO();
-        dto.setId(1l);
-        assertTrue(permissions.hasAccess(dto));
+        Long id = 1L;
+        assertTrue(permissions.hasAccess(id));
     }
 
     @Override
@@ -60,9 +59,8 @@ public class AddDocumentActionPermissionsTest extends ActionPermissionsBaseTest 
         assertFalse(permissions.hasAccess());
 
         // Since it is onc it has access to all - param value does not matter.
-        CertificationBodyDTO dto = new CertificationBodyDTO();
-        dto.setId(1l);
-        assertTrue(permissions.hasAccess(dto));
+        Long id = 1L;
+        assertTrue(permissions.hasAccess(id));
     }
 
     @Override
@@ -73,12 +71,11 @@ public class AddDocumentActionPermissionsTest extends ActionPermissionsBaseTest 
         // This should always be false
         assertFalse(permissions.hasAccess());
 
-        CertificationBodyDTO dto = new CertificationBodyDTO();
-        dto.setId(2l);
-        assertTrue(permissions.hasAccess(dto));
+        Long idThatShouldPass = 2L;
+        assertTrue(permissions.hasAccess(idThatShouldPass));
 
-        dto.setId(1l);
-        assertFalse(permissions.hasAccess(dto));
+        Long idThatShouldFail = 1L;
+        assertFalse(permissions.hasAccess(idThatShouldFail));
     }
 
     @Override
@@ -90,9 +87,8 @@ public class AddDocumentActionPermissionsTest extends ActionPermissionsBaseTest 
         assertFalse(permissions.hasAccess());
 
         // Atl has no access - the param shouldn't even matter
-        CertificationBodyDTO dto = new CertificationBodyDTO();
-        dto.setId(2l);
-        assertFalse(permissions.hasAccess(dto));
+        Long id = 1L;
+        assertFalse(permissions.hasAccess(id));
     }
 
     @Override
@@ -105,9 +101,8 @@ public class AddDocumentActionPermissionsTest extends ActionPermissionsBaseTest 
 
         // Cms has no access - the param shouldn't even matter
         // Atl has no access - the param shouldn't even matter
-        CertificationBodyDTO dto = new CertificationBodyDTO();
-        dto.setId(2l);
-        assertFalse(permissions.hasAccess(dto));
+        Long id = 1L;
+        assertFalse(permissions.hasAccess(id));
     }
 
     @Override
@@ -120,8 +115,7 @@ public class AddDocumentActionPermissionsTest extends ActionPermissionsBaseTest 
 
         // Anon has no access - the param shouldn't even matter
         // Atl has no access - the param shouldn't even matter
-        CertificationBodyDTO dto = new CertificationBodyDTO();
-        dto.setId(2l);
-        assertFalse(permissions.hasAccess(dto));
+        Long id = 1L;
+        assertFalse(permissions.hasAccess(id));
     }
 }
