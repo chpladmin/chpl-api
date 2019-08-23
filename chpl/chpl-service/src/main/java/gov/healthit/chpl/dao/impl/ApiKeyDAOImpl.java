@@ -228,11 +228,16 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
     }
 
     private List<ApiKeyEntity> getAllEntities(final Boolean includeDeleted) {
-
-        List<ApiKeyEntity> result = entityManager
-                .createQuery("from ApiKeyEntity where (deleted = :includeDeleted) ", ApiKeyEntity.class)
-                .setParameter("includeDeleted", includeDeleted)
-                .getResultList();
+        List<ApiKeyEntity> result;
+        if (includeDeleted) {
+            result = entityManager
+                    .createQuery("from ApiKeyEntity ", ApiKeyEntity.class)
+                    .getResultList();
+        } else {
+            result = entityManager
+                    .createQuery("from ApiKeyEntity where (deleted = false) ", ApiKeyEntity.class)
+                    .getResultList();
+        }
         return result;
     }
 
