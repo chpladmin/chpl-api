@@ -19,6 +19,8 @@ public class SurveillanceBasic implements Serializable {
     private Long surveillanceTypeId;
     private SurveillanceType surveillanceType;
     private Integer numRandomizedSites;
+    private Integer numOpenNonconformities;
+    private Integer numClosedNonconformities;
     private Long userPermissionId;
     private String chplProductNumber;
 
@@ -107,8 +109,24 @@ public class SurveillanceBasic implements Serializable {
         return chplProductNumber;
     }
 
-    public void setChplProductNumber(String chplProductNumber) {
+    public void setChplProductNumber(final String chplProductNumber) {
         this.chplProductNumber = chplProductNumber;
+    }
+
+    public Integer getNumOpenNonconformities() {
+        return numOpenNonconformities;
+    }
+
+    public void setNumOpenNonconformities(final Integer numOpenNonconformities) {
+        this.numOpenNonconformities = numOpenNonconformities;
+    }
+
+    public Integer getNumClosedNonconformities() {
+        return numClosedNonconformities;
+    }
+
+    public void setNumClosedNonconformities(final Integer numClosedNonconformities) {
+        this.numClosedNonconformities = numClosedNonconformities;
     }
 
     @Override
