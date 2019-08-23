@@ -148,9 +148,9 @@ public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO 
 
     }
 
-    public List<AnnouncementDTO> findAll(boolean isLoggedIn) {
+    public List<AnnouncementDTO> findAll() {
 
-        List<AnnouncementEntity> entities = getAllEntities(isLoggedIn);
+        List<AnnouncementEntity> entities = getAllEntities();
         List<AnnouncementDTO> announcements = new ArrayList<>();
 
         for (AnnouncementEntity entity : entities) {
@@ -223,24 +223,16 @@ public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO 
 
     }
 
-    private List<AnnouncementEntity> getAllEntities(boolean isLoggedIn) {
+    private List<AnnouncementEntity> getAllEntities() {
 
-        List<AnnouncementEntity> result = null;
-        if (isLoggedIn) {
-            result = entityManager
+        List<AnnouncementEntity> result = entityManager
                     .createQuery("from AnnouncementEntity" + " where deleted = false"
                             + " AND start_date <= now() AND end_date > now()", AnnouncementEntity.class)
                     .getResultList();
-        } else {
-            result = entityManager.createQuery(
-                    "from AnnouncementEntity where" + " deleted = false"
-                            + " AND (start_date <= now() AND end_date > now())" + " AND ispublic = true",
-                    AnnouncementEntity.class).getResultList();
-        }
         return result;
     }
 
-    private AnnouncementEntity getEntityById(Long entityId,  boolean includeDeleted) throws EntityRetrievalException {
+    private AnnouncementEntity getEntityById(final Long entityId, final boolean includeDeleted) throws EntityRetrievalException {
 
         List<AnnouncementEntity> results = null;
         AnnouncementEntity entity = null;

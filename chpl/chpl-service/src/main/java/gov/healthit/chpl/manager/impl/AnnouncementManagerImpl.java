@@ -3,11 +3,9 @@ package gov.healthit.chpl.manager.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ApplicationObjectSupport;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +20,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.AnnouncementManager;
-import gov.healthit.chpl.util.AuthUtil;
 
 @Service
 public class AnnouncementManagerImpl extends ApplicationObjectSupport implements AnnouncementManager {
@@ -33,11 +30,11 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
     @Autowired
     private ActivityManager activityManager;
 
-    @Autowired private MessageSource messageSource;
-
+    @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public AnnouncementDTO create(AnnouncementDTO announcement)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ANNOUNCEMENT, "
+            + "T(gov.healthit.chpl.permissions.domains.AnnouncementDomainPermissions).CREATE)")
+    public AnnouncementDTO create(final AnnouncementDTO announcement)
             throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
         // Create the announcement itself
         AnnouncementDTO result = announcementDAO.create(announcement);
@@ -49,9 +46,11 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
         return result;
     }
 
+    @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public AnnouncementDTO update(AnnouncementDTO announcement)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ANNOUNCEMENT, "
+            + "T(gov.healthit.chpl.permissions.domains.AnnouncementDomainPermissions).UPDATE)")
+    public AnnouncementDTO update(final AnnouncementDTO announcement)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 
         AnnouncementDTO result = null;
@@ -67,8 +66,9 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
     }
 
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public void delete(AnnouncementDTO announcement)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ANNOUNCEMENT, "
+            + "T(gov.healthit.chpl.permissions.domains.AnnouncementDomainPermissions).DELETE)")
+    public void delete(final AnnouncementDTO announcement)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
 
         // mark the announcement deleted
@@ -80,40 +80,45 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
     }
 
     @Transactional(readOnly = true)
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ANNOUNCEMENT, "
+            + "T(gov.healthit.chpl.permissions.domains.AnnouncementDomainPermissions).GET_ALL, filterObject)")
     public List<AnnouncementDTO> getAll() {
-        boolean isLoggedIn = AuthUtil.getCurrentUser() == null ? false : true;
-        return announcementDAO.findAll(isLoggedIn);
+        return announcementDAO.findAll();
     }
 
+    @Override
     @Transactional(readOnly = true)
-    public AnnouncementDTO getById(Long id) throws EntityRetrievalException, AccessDeniedException {
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ANNOUNCEMENT, "
+            + "T(gov.healthit.chpl.permissions.domains.AnnouncementDomainPermissions).GET_BY_ID, #id)")
+    public AnnouncementDTO getById(final Long id) throws EntityRetrievalException, AccessDeniedException {
         return getById(id, false);
     }
 
+    @Override
     @Transactional(readOnly = true)
-    public AnnouncementDTO getById(Long id, boolean includeDeleted)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ANNOUNCEMENT, "
+            + "T(gov.healthit.chpl.permissions.domains.AnnouncementDomainPermissions).GET_BY_ID, #id)")
+    public AnnouncementDTO getById(final Long id, final boolean includeDeleted)
             throws EntityRetrievalException, AccessDeniedException {
-        AnnouncementDTO result =  announcementDAO.getById(id, includeDeleted);
-        boolean isLoggedIn = AuthUtil.getCurrentUser() == null ? false : true;
-        if (!result.getIsPublic().booleanValue() && !isLoggedIn) {
-            String msg = String.format(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("announcement.accessDenied"),
-                    LocaleContextHolder.getLocale()), id);
-            throw new AccessDeniedException(msg);
-        }
-        return result;
+        return announcementDAO.getById(id, includeDeleted);
     }
 
     public void setAnnouncementDAO(final AnnouncementDAO announcementDAO) {
         this.announcementDAO = announcementDAO;
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
+    @Override
+    @Transactional(readOnly = true)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ANNOUNCEMENT, "
+            + "T(gov.healthit.chpl.permissions.domains.AnnouncementDomainPermissions).GET_ALL_INCLUDING_FUTURE)")
     public List<AnnouncementDTO> getAllFuture() {
         return announcementDAO.findAllFuture();
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
+    @Override
+    @Transactional(readOnly = true)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ANNOUNCEMENT, "
+            + "T(gov.healthit.chpl.permissions.domains.AnnouncementDomainPermissions).GET_ALL_INCLUDING_FUTURE)")
     public List<AnnouncementDTO> getAllCurrentAndFuture() {
         return announcementDAO.findAllCurrentAndFuture();
     }

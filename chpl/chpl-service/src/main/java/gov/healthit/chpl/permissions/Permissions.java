@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.permissions.domains.ActivityDomainPermissions;
+import gov.healthit.chpl.permissions.domains.AnnouncementDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertificationResultsDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions;
@@ -53,6 +54,7 @@ public class Permissions {
     public static final String COMPLAINT = "COMPLAINT";
     public static final String ACTIVITY_METADATA = "ACTIVTY_METADATA";
     public static final String FUZZY_MATCH = "FUZZY_MATCH";
+    public static final String ANNOUNCEMENT = "ANNOUNCEMENT";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
@@ -76,7 +78,8 @@ public class Permissions {
             final TestingLabDomainPermissions testingLabDomainPermissions,
             final FilterDomainPermissions filterDomainPermissions,
             final ComplaintDomainPermissions complaintDomainPermissions,
-            final FuzzyMatchPermissions fuzzyMatchPermissions) {
+            final FuzzyMatchPermissions fuzzyMatchPermissions,
+            final AnnouncementDomainPermissions announcementDomainPermissions) {
 
         domainPermissions.put(PENDING_SURVEILLANCE, pendingSurveillanceDomainPermissions);
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
@@ -99,6 +102,7 @@ public class Permissions {
         domainPermissions.put(FILTER, filterDomainPermissions);
         domainPermissions.put(COMPLAINT, complaintDomainPermissions);
         domainPermissions.put(FUZZY_MATCH, fuzzyMatchPermissions);
+        domainPermissions.put(ANNOUNCEMENT, announcementDomainPermissions);
     }
 
     public boolean hasAccess(final String domain, final String action) {
