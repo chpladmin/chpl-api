@@ -87,24 +87,6 @@ public class CertificationBodyDaoTest extends TestCase {
     @Test
     @Transactional
     @Rollback
-    public void testCreateAcbWithoutAddress() throws EntityCreationException, EntityRetrievalException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-        CertificationBodyDTO acb = new CertificationBodyDTO();
-        acb.setName("ACB TEST");
-        acb.setWebsite("http://www.google.com");
-
-        acb = acbDao.create(acb);
-
-        assertNotNull(acb);
-        assertNotNull(acb.getId());
-        assertTrue(acb.getId() > 0L);
-        assertNull(acb.getAddress());
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
-    @Test
-    @Transactional
-    @Rollback
     public void testCreateAcbWithAddress() throws EntityCreationException, EntityRetrievalException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 

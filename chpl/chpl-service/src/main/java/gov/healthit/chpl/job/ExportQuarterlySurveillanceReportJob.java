@@ -84,6 +84,12 @@ public class ExportQuarterlySurveillanceReportJob extends RunnableJob {
             LOGGER.error(msg);
             addJobMessage(msg);
             updateStatus(100, JobStatusType.Error);
+        } catch (Exception general) {
+            //catch any other type of exception
+            String msg = errorMessageUtil.getMessage("report.annualSurveillance.export.builder.buildError");
+            LOGGER.error(msg);
+            addJobMessage(msg);
+            updateStatus(100, JobStatusType.Error);
         }
 
         if (workbook != null && report != null) {

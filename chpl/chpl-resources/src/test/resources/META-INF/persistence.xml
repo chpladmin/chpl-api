@@ -67,6 +67,7 @@
         <class>gov.healthit.chpl.entity.TestingLabEntity</class>
         <class>gov.healthit.chpl.entity.UcdProcessEntity</class>
         <class>gov.healthit.chpl.entity.UserCertificationBodyMapEntity</class>
+        <class>gov.healthit.chpl.entity.UserDeveloperMapEntity</class>
         <class>gov.healthit.chpl.entity.UserTestingLabMapEntity</class>
         <class>gov.healthit.chpl.entity.developer.DeveloperACBMapEntity</class>
         <class>gov.healthit.chpl.entity.developer.DeveloperACBTransparencyMapEntity</class>
@@ -103,6 +104,7 @@
         <class>gov.healthit.chpl.entity.listing.CertifiedProductTargetedUserEntity</class>
         <class>gov.healthit.chpl.entity.listing.CertifiedProductTestingLabMapEntity</class>
         <class>gov.healthit.chpl.entity.listing.ListingToListingMapEntity</class>
+        <class>gov.healthit.chpl.entity.listing.ListingWithPrivilegedSurveillanceEntity</class>
         <class>gov.healthit.chpl.entity.listing.TestTaskParticipantMapEntity</class>
         <class>gov.healthit.chpl.entity.listing.pending.PendingCertificationResultAdditionalSoftwareEntity</class>
         <class>gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity</class>
@@ -149,9 +151,14 @@
         <class>gov.healthit.chpl.entity.surveillance.SurveillanceResultTypeEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.SurveillanceTypeEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.report.AnnualReportEntity</class>
+        <class>gov.healthit.chpl.entity.surveillance.report.PrivilegedSurveillanceEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.report.QuarterEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.report.QuarterlyReportEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.report.QuarterlyReportExcludedListingMapEntity</class>
+        <class>gov.healthit.chpl.entity.surveillance.report.QuarterlyReportSurveillanceMapEntity</class>
+        <class>gov.healthit.chpl.entity.surveillance.report.SurveillanceOutcomeEntity</class>
+        <class>gov.healthit.chpl.entity.surveillance.report.SurveillanceProcessTypeEntity</class>
+
         <properties>
             <property name="hibernate.show_sql" value="false" />
             <property name="hibernate.format_sql" value="false" />

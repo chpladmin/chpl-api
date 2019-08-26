@@ -1,6 +1,9 @@
 package gov.healthit.chpl.web.controller;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -13,7 +16,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
@@ -25,6 +27,7 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
@@ -35,6 +38,7 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.surveillance.report.AnnualReport;
+import gov.healthit.chpl.domain.surveillance.report.QuarterlyReport;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -50,9 +54,6 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 @DatabaseSetup("classpath:data/testData.xml")
 public class SurveillanceReportControllerAnnualReportsTest {
     private static JWTAuthenticatedUser adminUser, acbUser;
-
-    @Autowired
-    private Environment env;
 
     @Autowired
     private SurveillanceReportController reportController;
@@ -106,7 +107,8 @@ public class SurveillanceReportControllerAnnualReportsTest {
     @Transactional
     @Rollback(true)
     @Test
-    public void createReport_AllDataProvided() throws EntityCreationException, InvalidArgumentsException {
+    public void createReport_AllDataProvided()
+            throws EntityCreationException, InvalidArgumentsException, EntityRetrievalException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         Long acbId = -1L;
         Integer year = 2019;
@@ -128,7 +130,7 @@ public class SurveillanceReportControllerAnnualReportsTest {
     @Rollback(true)
     @Test
     public void createReport_allowsNullFields()
-            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException {
+            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         AnnualReport created = createReport(-1L, 2019, null, null);
         assertNotNull(created);
@@ -141,11 +143,12 @@ public class SurveillanceReportControllerAnnualReportsTest {
     @Transactional
     @Rollback(true)
     @Test
-    public void createReportAsAcbUserForAllowedAcb() throws EntityCreationException, InvalidArgumentsException {
+    public void createReportAsAcbUserForAllowedAcb()
+            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(acbUser);
         Long acbId = -1L;
         Integer year = 2019;
-        String obstacles = "some obstacled";
+        String obstacles = "some obstacles";
         String findings = "some findings";
 
         AnnualReport created = createReport(acbId, year, obstacles, findings);
@@ -162,7 +165,8 @@ public class SurveillanceReportControllerAnnualReportsTest {
     @Transactional
     @Rollback(true)
     @Test(expected = AccessDeniedException.class)
-    public void createReportAsAcbUserNotAllowedAcb() throws EntityCreationException, InvalidArgumentsException {
+    public void createReportAsAcbUserNotAllowedAcb()
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException, InvalidArgumentsException {
         SecurityContextHolder.getContext().setAuthentication(acbUser);
         createReport(-2L, 2019, "", "");
     }
@@ -170,7 +174,8 @@ public class SurveillanceReportControllerAnnualReportsTest {
     @Transactional
     @Rollback(true)
     @Test(expected = InvalidArgumentsException.class)
-    public void createReport_MissingYear() throws EntityCreationException, InvalidArgumentsException {
+    public void createReport_MissingYear()
+            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         createReport(-1L, null, "", "");
     }
@@ -178,7 +183,8 @@ public class SurveillanceReportControllerAnnualReportsTest {
     @Transactional
     @Rollback(true)
     @Test(expected = InvalidArgumentsException.class)
-    public void createReport_MissingAcb() throws EntityCreationException, InvalidArgumentsException {
+    public void createReport_MissingAcb()
+            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         createReport(null, 2019, "", "");
     }
@@ -187,7 +193,7 @@ public class SurveillanceReportControllerAnnualReportsTest {
     @Rollback(true)
     @Test
     public void updateReport_Obstacles()
-            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException {
+            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         String oldObstacles = "old obstacles";
         String newObstacles = "new obstacles!";
@@ -208,7 +214,7 @@ public class SurveillanceReportControllerAnnualReportsTest {
     @Rollback(true)
     @Test
     public void updateReport_Findings()
-            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException {
+            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         String oldFindings = "old findings";
         String newFindings = "new findings!";
@@ -229,7 +235,7 @@ public class SurveillanceReportControllerAnnualReportsTest {
     @Rollback(true)
     @Test
     public void updateReport_allowsNullFields()
-            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException {
+            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         AnnualReport created = createReport(-1L, 2019, "test", "test");
         assertNotNull(created);
@@ -248,7 +254,7 @@ public class SurveillanceReportControllerAnnualReportsTest {
     @Rollback(true)
     @Test(expected = EntityRetrievalException.class)
     public void deleteReport()
-            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException {
+            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         AnnualReport created = createReport(-1L, 2019, "test", "test");
         assertNotNull(created);
@@ -263,12 +269,17 @@ public class SurveillanceReportControllerAnnualReportsTest {
     @Rollback(true)
     @Test(expected = EntityRetrievalException.class)
     public void deleteReport_BadId()
-            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException {
+            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         reportController.deleteAnnualReport(-100L);
     }
 
-    private AnnualReport createReport(Long acbId, Integer year, String obstacles, String findings) throws EntityCreationException, InvalidArgumentsException {
+    private AnnualReport createReport(final Long acbId, final Integer year,
+            final String obstacles, final String findings)
+            throws EntityCreationException, InvalidArgumentsException, EntityRetrievalException, JsonProcessingException {
+        //quarterly report must exist to create annual report
+        createQuarterlyReport(acbId, year, "Q1", null, null, null, null);
+        //now create annual report
         AnnualReport toCreate = new AnnualReport();
         CertificationBody acb = new CertificationBody();
         acb.setId(acbId);
@@ -278,6 +289,24 @@ public class SurveillanceReportControllerAnnualReportsTest {
         toCreate.setPriorityChangesFromFindingsSummary(findings);
 
         AnnualReport created = reportController.createAnnualReport(toCreate);
+        return created;
+    }
+
+    private QuarterlyReport createQuarterlyReport(final Long acbId, final Integer year, final String quarter, 
+            final String activities, final String pri, final String react, final String trans)
+                    throws EntityCreationException, InvalidArgumentsException, EntityRetrievalException, JsonProcessingException {
+        QuarterlyReport toCreate = new QuarterlyReport();
+        CertificationBody acb = new CertificationBody();
+        acb.setId(acbId);
+        toCreate.setAcb(acb);
+        toCreate.setYear(year);
+        toCreate.setQuarter(quarter);
+        toCreate.setSurveillanceActivitiesAndOutcomes(activities);
+        toCreate.setPrioritizedElementSummary(pri);
+        toCreate.setReactiveSummary(react);
+        toCreate.setTransparencyDisclosureSummary(trans);
+
+        QuarterlyReport created = reportController.createQuarterlyReport(toCreate);
         return created;
     }
 }

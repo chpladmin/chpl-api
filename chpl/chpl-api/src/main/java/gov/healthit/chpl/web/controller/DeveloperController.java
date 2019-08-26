@@ -3,6 +3,8 @@ package gov.healthit.chpl.web.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.NotImplementedException;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,29 +20,39 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.domain.PermissionDeletedResponse;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.SplitDeveloperRequest;
 import gov.healthit.chpl.domain.TransparencyAttestationMap;
 import gov.healthit.chpl.domain.UpdateDevelopersRequest;
+import gov.healthit.chpl.domain.auth.User;
+import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.dto.AddressDTO;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MissingReasonException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
+import gov.healthit.chpl.manager.UserPermissionsManager;
+import gov.healthit.chpl.manager.auth.UserManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
@@ -53,14 +65,27 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/developers")
 public class DeveloperController {
 
-    @Autowired
     private DeveloperManager developerManager;
-    @Autowired
     private CertifiedProductManager cpManager;
-    @Autowired
     private ErrorMessageUtil msgUtil;
-    @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
+    private UserPermissionsManager userPermissionsManager;
+    private FF4j ff4j;
+
+    @Autowired
+    public DeveloperController(final DeveloperManager developerManager,
+            final CertifiedProductManager cpManager,
+            final UserPermissionsManager userPermissionsManager,
+            final ErrorMessageUtil msgUtil,
+            final ChplProductNumberUtil chplProductNumberUtil,
+            final FF4j ff4j) {
+        this.developerManager = developerManager;
+        this.cpManager = cpManager;
+        this.userPermissionsManager = userPermissionsManager;
+        this.msgUtil = msgUtil;
+        this.chplProductNumberUtil = chplProductNumberUtil;
+        this.ff4j = ff4j;
+    }
 
     @ApiOperation(value = "List all developers in the system.",
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, and ROLE_ACB can see deleted "
@@ -211,6 +236,50 @@ public class DeveloperController {
             responseHeaders.set("CHPL-Id-Changed", buf.toString());
         }
         return new ResponseEntity<SplitDeveloperResponse>(response, responseHeaders, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Remove user permissions from a developer.",
+            notes = "The logged in user must have ROLE_ADMIN, ROLE_ONC, ROLE_ACB, or ROLE_DEVELOPER "
+                    + "and have administrative authority on the "
+                    + " specified developer. The user specified in the request will have all authorities "
+                    + " removed that are associated with the specified developer.")
+    @RequestMapping(value = "{developerId}/users/{userId}", method = RequestMethod.DELETE,
+    produces = "application/json; charset=utf-8")
+    public PermissionDeletedResponse deleteUserFromDeveloper(
+            @PathVariable final Long developerId, @PathVariable final Long userId)
+        throws EntityRetrievalException {
+        if (!ff4j.check(FeatureList.ROLE_DEVELOPER)) {
+            throw new NotImplementedException();
+        }
+
+        // delete all permissions on that developer
+        userPermissionsManager.deleteDeveloperPermission(developerId, userId);
+        PermissionDeletedResponse response = new PermissionDeletedResponse();
+        response.setPermissionDeleted(true);
+        return response;
+    }
+
+    @ApiOperation(value = "List users with permissions on a specified developer.",
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ACB, or have administrative "
+                    + "authority on the specified developer.")
+    @RequestMapping(value = "/{developerId}/users", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public @ResponseBody UsersResponse getUsers(@PathVariable("developerId") final Long developerId)
+            throws InvalidArgumentsException, EntityRetrievalException {
+        if (!ff4j.check(FeatureList.ROLE_DEVELOPER)) {
+            throw new NotImplementedException();
+        }
+
+        List<UserDTO> users = developerManager.getAllUsersOnDeveloper(developerId);
+        List<User> domainUsers = new ArrayList<User>(users.size());
+        for (UserDTO userDto : users) {
+            User domainUser = new User(userDto);
+            domainUsers.add(domainUser);
+        }
+
+        UsersResponse results = new UsersResponse();
+        results.setUsers(domainUsers);
+        return results;
     }
 
     private synchronized ResponseEntity<Developer> update(final UpdateDevelopersRequest developerInfo)

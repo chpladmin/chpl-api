@@ -15,7 +15,7 @@ public class GetComplaintActivityMetadataActionPermissions extends ActionPermiss
     }
 
     @Override
-    public boolean hasAccess(Object obj) {
+    public boolean hasAccess(final Object obj) {
         if (!(obj instanceof ComplaintActivityMetadata)) {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {

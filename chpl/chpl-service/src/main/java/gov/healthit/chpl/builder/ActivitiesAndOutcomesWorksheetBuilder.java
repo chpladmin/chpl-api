@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,6 +33,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.dao.surveillance.report.PrivilegedSurveillanceDAO;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
@@ -40,6 +42,7 @@ import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
+import gov.healthit.chpl.dto.surveillance.report.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
@@ -52,11 +55,10 @@ import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 @Component
 public class ActivitiesAndOutcomesWorksheetBuilder {
     private static final Logger LOGGER = LogManager.getLogger(ActivitiesAndOutcomesWorksheetBuilder.class);
-    private static final int LAST_DATA_COLUMN = 35;
+    private static final int LAST_DATA_COLUMN = 37;
 
     private static final int COL_CHPL_ID = 1;
     private static final int COL_SURV_ID = 2;
-    //cols 3-8 get hidden
     private static final int COL_SURV_ACTIVITY_TRACKER = 3;
     private static final int COL_RELATED_COMPLAINT = 4;
     private static final int COL_Q1 = 5;
@@ -73,24 +75,29 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
     private static final int COL_SURV_BEGIN = 16;
     private static final int COL_SURV_END = 17;
     private static final int COL_SURV_OUTCOME = 18;
-    private static final int COL_NONCONFORMITY_TYPES_RESULTANT = 19;
-    private static final int COL_CERT_STATUS_RESULTANT = 20;
-    private static final int COL_SUSPENDED = 21;
-    private static final int COL_SURV_PROCESS_TYPE = 22;
-    private static final int COL_SURV_GROUNDS = 23;
-    private static final int COL_NONCONFORMITY_CAUSES = 24;
-    private static final int COL_NONCONFORMITY_NATURES = 25;
-    private static final int COL_SURV_STEPS = 26;
-    private static final int COL_ENGAGEMENT_STEPS = 27;
-    private static final int COL_ADDITIONAL_COSTS = 28;
-    private static final int COL_LIMITATIONS_EVAL = 29;
-    private static final int COL_NONDISCLOSURE_EVAL = 30;
-    private static final int COL_DEV_RESOLUTION = 31;
-    private static final int COL_COMPLETED_CAP = 32;
+    private static final int COL_SURV_OUTCOME_OTHER = 19;
+    private static final int COL_NONCONFORMITY_TYPES_RESULTANT = 20;
+    private static final int COL_CERT_STATUS_RESULTANT = 21;
+    private static final int COL_SUSPENDED = 22;
+    private static final int COL_SURV_PROCESS_TYPE = 23;
+    private static final int COL_SURV_PROCESS_TYPE_OTHER = 24;
+    private static final int COL_SURV_GROUNDS = 25;
+    private static final int COL_NONCONFORMITY_CAUSES = 26;
+    private static final int COL_NONCONFORMITY_NATURES = 27;
+    private static final int COL_SURV_STEPS = 28;
+    private static final int COL_ENGAGEMENT_STEPS = 29;
+    private static final int COL_ADDITIONAL_COSTS = 30;
+    private static final int COL_LIMITATIONS_EVAL = 31;
+    private static final int COL_NONDISCLOSURE_EVAL = 32;
+    private static final int COL_DEV_RESOLUTION = 33;
+    private static final int COL_COMPLETED_CAP = 34;
+    private static final int[] HIDDEN_COLS =
+        {COL_SURV_ACTIVITY_TRACKER, COL_RELATED_COMPLAINT, COL_Q1, COL_Q2, COL_Q3, COL_Q4};
 
     private SurveillanceReportManager reportManager;
     private CertifiedProductDetailsManager detailsManager;
     private SurveillanceManager survManager;
+    private PrivilegedSurveillanceDAO privilegedSurvDao;
     private int lastDataRow;
     private SimpleDateFormat dateFormatter;
     private PropertyTemplate pt;
@@ -98,10 +105,11 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
     @Autowired
     public ActivitiesAndOutcomesWorksheetBuilder(final SurveillanceReportManager reportManager,
             final CertifiedProductDetailsManager detailsManager,
-            final SurveillanceManager survManager) {
+            final SurveillanceManager survManager, final PrivilegedSurveillanceDAO privilegedSurvDao) {
         this.reportManager = reportManager;
         this.detailsManager = detailsManager;
         this.survManager = survManager;
+        this.privilegedSurvDao = privilegedSurvDao;
         dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
     }
 
@@ -158,10 +166,12 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         sheet.setColumnWidth(COL_SURV_BEGIN, sharedColWidth);
         sheet.setColumnWidth(COL_SURV_END, sharedColWidth);
         sheet.setColumnWidth(COL_SURV_OUTCOME, workbook.getColumnWidth(51.44));
+        sheet.setColumnWidth(COL_SURV_OUTCOME_OTHER, workbook.getColumnWidth(51.44));
         sheet.setColumnWidth(COL_NONCONFORMITY_TYPES_RESULTANT, workbook.getColumnWidth(27));
         sheet.setColumnWidth(COL_CERT_STATUS_RESULTANT, workbook.getColumnWidth(17.78));
         sheet.setColumnWidth(COL_SUSPENDED, workbook.getColumnWidth(17.78));
         sheet.setColumnWidth(COL_SURV_PROCESS_TYPE, workbook.getColumnWidth(30.67));
+        sheet.setColumnWidth(COL_SURV_PROCESS_TYPE_OTHER, workbook.getColumnWidth(30.67));
         int longTextColWidth = workbook.getColumnWidth(59.44);
         sheet.setColumnWidth(COL_SURV_GROUNDS, longTextColWidth);
         sheet.setColumnWidth(COL_NONCONFORMITY_CAUSES, longTextColWidth);
@@ -247,8 +257,8 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         sheet.addValidationData(validation);
 
         //hide some rows the ACBs are not expected to fill out (columns D-I)
-        for (int i = 3; i < 9; i++) {
-            sheet.setColumnHidden(i, true);
+        for (int i = 0; i < HIDDEN_COLS.length; i++) {
+            sheet.setColumnHidden(HIDDEN_COLS[i], true);
         }
 
         //apply the borders after the sheet has been created
@@ -287,11 +297,13 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         addHeadingCell(workbook, row, COL_SURV_BEGIN, "Surveillance Began");
         addHeadingCell(workbook, row, COL_SURV_END, "Surveillance Ended");
         addHeadingCell(workbook, row, COL_SURV_OUTCOME, "Outcome of Surveillance");
+        addHeadingCell(workbook, row, COL_SURV_OUTCOME_OTHER, "Outcome of Surveillance - Other Explanation");
         addHeadingCell(workbook, row, COL_NONCONFORMITY_TYPES_RESULTANT,
                 "Non-Conformity Type(s) Resultant of Surveillance (i.e. \"170.xxx (x)(x)\")");
         addHeadingCell(workbook, row, COL_CERT_STATUS_RESULTANT, "Certification Status Resultant of Surveillance");
         addHeadingCell(workbook, row, COL_SUSPENDED, "Suspended During Surveillance?");
         addHeadingCell(workbook, row, COL_SURV_PROCESS_TYPE, "Surveillance Process Type");
+        addHeadingCell(workbook, row, COL_SURV_PROCESS_TYPE_OTHER, "Surveillance Process Type - Other Explanation");
 
         //these headings are more complicated with various fonts throughout the cell
         String cellTitle = "Grounds for Initiating Surveillance";
@@ -400,6 +412,11 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
                     listing = currListing;
                 }
             }
+            //get the privileged data for this surveillance
+            //it may be different across quarters
+            List<PrivilegedSurveillanceDTO> privilegedSurvQuarterlyData =
+                    privilegedSurvDao.getBySurveillance(surv.getId());
+
             Row row = workbook.getRow(sheet, rowNum);
             addDataCell(workbook, row, COL_CHPL_ID, listing.getChplProductNumber());
             addDataCell(workbook, row, COL_SURV_ID, surv.getFriendlyId());
@@ -423,19 +440,45 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
             addDataCell(workbook, row, COL_PRODUCT_NAME, listing.getProduct().getName());
             addDataCell(workbook, row, COL_PRODUCT_VERSION, listing.getVersion().getVersion());
             //user has to enter this field
-            addDataCell(workbook, row, COL_K1_REVIEWED, "");
+            addDataCell(workbook, row, COL_K1_REVIEWED, generateK1ReviewedValue(quarterlyReports, privilegedSurvQuarterlyData));
             addDataCell(workbook, row, COL_SURV_TYPE, surv.getType().getName());
             addDataCell(workbook, row, COL_SURV_LOCATION_COUNT,
                     surv.getRandomizedSitesUsed() == null ? "" : surv.getRandomizedSitesUsed().toString());
             addDataCell(workbook, row, COL_SURV_BEGIN, dateFormatter.format(surv.getStartDate()));
             addDataCell(workbook, row, COL_SURV_END, surv.getEndDate() == null ? "" : dateFormatter.format(surv.getEndDate()));
             //user has to enter this field
-            addDataCell(workbook, row, COL_SURV_OUTCOME, "");
+            addDataCell(workbook, row, COL_SURV_OUTCOME,
+                    generateSurveillanceOutcomeValue(quarterlyReports, privilegedSurvQuarterlyData));
+            addDataCell(workbook, row, COL_SURV_OUTCOME_OTHER,
+                    generateSurveillanceOutcomeOtherValue(quarterlyReports, privilegedSurvQuarterlyData));
             addDataCell(workbook, row, COL_NONCONFORMITY_TYPES_RESULTANT, determineNonconformityTypes(surv));
             addDataCell(workbook, row, COL_CERT_STATUS_RESULTANT, determineResultantCertificationStatus(listing, surv));
             addDataCell(workbook, row, COL_SUSPENDED, determineSuspendedStatus(listing, surv));
             //user has to enter this field
-            addDataCell(workbook, row, COL_SURV_PROCESS_TYPE, "");
+            addDataCell(workbook, row, COL_SURV_PROCESS_TYPE,
+                    generateSurveillanceProcessTypeValue(quarterlyReports, privilegedSurvQuarterlyData));
+            addDataCell(workbook, row, COL_SURV_PROCESS_TYPE_OTHER,
+                    generateSurveillanceProcessTypeOtherValue(quarterlyReports, privilegedSurvQuarterlyData));
+            addDataCell(workbook, row, COL_SURV_GROUNDS,
+                    generateGroundsForInitiatingValue(quarterlyReports, privilegedSurvQuarterlyData));
+            addDataCell(workbook, row, COL_NONCONFORMITY_CAUSES,
+                    generateNonconformityCausesValue(quarterlyReports, privilegedSurvQuarterlyData));
+            addDataCell(workbook, row, COL_NONCONFORMITY_NATURES,
+                    generateNonconformityNatureValue(quarterlyReports, privilegedSurvQuarterlyData));
+            addDataCell(workbook, row, COL_SURV_STEPS,
+                    generateStepsToSurveilValue(quarterlyReports, privilegedSurvQuarterlyData));
+            addDataCell(workbook, row, COL_ENGAGEMENT_STEPS,
+                    generateStepsToEngageValue(quarterlyReports, privilegedSurvQuarterlyData));
+            addDataCell(workbook, row, COL_ADDITIONAL_COSTS,
+                    generateAdditionalCostsValue(quarterlyReports, privilegedSurvQuarterlyData));
+            addDataCell(workbook, row, COL_LIMITATIONS_EVAL,
+                    generateLimitationsValue(quarterlyReports, privilegedSurvQuarterlyData));
+            addDataCell(workbook, row, COL_NONDISCLOSURE_EVAL,
+                    generateNondisclosureValue(quarterlyReports, privilegedSurvQuarterlyData));
+            addDataCell(workbook, row, COL_DEV_RESOLUTION,
+                    generateDeveloperResolutionValue(quarterlyReports, privilegedSurvQuarterlyData));
+            addDataCell(workbook, row, COL_COMPLETED_CAP,
+                    generateCompletedCapValue(quarterlyReports, privilegedSurvQuarterlyData));
             pt.drawBorders(new CellRangeAddress(rowNum, rowNum, 1, LAST_DATA_COLUMN - 1),
                     BorderStyle.HAIR, BorderExtent.HORIZONTAL);
             addedRows++;
@@ -452,7 +495,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
             //the details object included on the quarterly report has some of the data that is needed
             //to build activities and outcomes worksheet but not all of it so we need to do
             //some other work to get the necessary data and put it all together
-            List<QuarterlyReportRelevantListingDTO> qrRelevantListings = reportManager.getRelevantListings(currReport);
+            List<QuarterlyReportRelevantListingDTO> qrRelevantListings = reportManager.getListingsWithRelevantSurveillance(currReport);
             List<QuarterlyReportRelevantListingDTO> missingListingDtos = new ArrayList<QuarterlyReportRelevantListingDTO>();
             for (QuarterlyReportRelevantListingDTO listingFromReport : qrRelevantListings) {
                 boolean alreadyGotDetails = false;
@@ -474,7 +517,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
     }
 
     /**
-     * The relevant listings objects in the quarterly report some have information about the listing
+     * The relevant listings objects in the quarterly report has some information about the listing
      * itself but not everything that is needed to build the reports.
      * This method queries for certification status events as well as relevant surveillance
      * (surveillance that occurred during the quarter) and adds it into a new details object.
@@ -572,6 +615,630 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
                     && surv.getEndDate() != null && surv.getEndDate().getTime() >= quarterlyReport.getStartDate().getTime()) {
                 result = true;
             }
+        }
+        return result;
+    }
+
+    /**
+     * Creates a consolidated string for all quarterly reports.
+     * @param quarterlyReports
+     * @param privilegedSurvData
+     * @return
+     */
+    private String generateK1ReviewedValue(final List<QuarterlyReportDTO> quarterlyReports,
+            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+        String result = "";
+        if (quarterlyReports.size() == 1) {
+            //find the privileged surv data for the single report
+            QuarterlyReportDTO report = quarterlyReports.get(0);
+            for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                if (currSurv.getQuarterlyReport().getId().longValue() == report.getId().longValue()
+                        && currSurv.getK1Reviewed() != null) {
+                    result = (currSurv.getK1Reviewed().booleanValue() ? "Yes" : "No");
+                }
+            }
+        } else {
+            //there are multiple reports... combine the values for this field in a nice way for the user
+            //key is k1reviewed yes/no and value is applicable quarter name(s) like 'Q1, Q2'
+            Map<String, ArrayList<String>> valueMap = new LinkedHashMap<String, ArrayList<String>>();
+            for (QuarterlyReportDTO currReport : quarterlyReports) {
+                for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                    if (currSurv.getQuarterlyReport().getId().longValue() == currReport.getId().longValue()
+                            && currSurv.getK1Reviewed() != null) {
+                        String k1Val = (currSurv.getK1Reviewed().booleanValue() ? "Yes" : "No");
+                        if (valueMap.get(k1Val) != null) {
+                            valueMap.get(k1Val).add(currReport.getQuarter().getName());
+                        } else {
+                            ArrayList<String> quarterNameList = new ArrayList<String>();
+                            quarterNameList.add(currReport.getQuarter().getName());
+                            valueMap.put(k1Val, quarterNameList);
+                        }
+                    }
+                }
+            }
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
+        }
+        return result;
+    }
+
+    /**
+     * Creates a consolidated string for all quarterly reports.
+     * @param quarterlyReports
+     * @param privilegedSurvData
+     * @return
+     */
+    private String generateSurveillanceOutcomeValue(final List<QuarterlyReportDTO> quarterlyReports,
+            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+        String result = "";
+        if (quarterlyReports.size() == 1) {
+            //find the privileged surv data for the single report
+            QuarterlyReportDTO report = quarterlyReports.get(0);
+            for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                if (currSurv.getQuarterlyReport().getId().longValue() == report.getId().longValue()
+                        && currSurv.getSurveillanceOutcome() != null) {
+                    result = currSurv.getSurveillanceOutcome().getName();
+                }
+            }
+        } else {
+            //there are multiple reports... combine the values for this field in a nice way for the user
+            //key is surveillance outcome name and value is applicable quarter name(s) like 'Q1, Q2'
+            Map<String, ArrayList<String>> valueMap = new LinkedHashMap<String, ArrayList<String>>();
+            for (QuarterlyReportDTO currReport : quarterlyReports) {
+                for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                    if (currSurv.getQuarterlyReport().getId().longValue() == currReport.getId().longValue()
+                            && currSurv.getSurveillanceOutcome() != null) {
+                        String survOutcomeVal = currSurv.getSurveillanceOutcome().getName();
+                        if (valueMap.get(survOutcomeVal) != null) {
+                            valueMap.get(survOutcomeVal).add(currReport.getQuarter().getName());
+                        } else {
+                            ArrayList<String> quarterNameList = new ArrayList<String>();
+                            quarterNameList.add(currReport.getQuarter().getName());
+                            valueMap.put(survOutcomeVal, quarterNameList);
+                        }
+                    }
+                }
+            }
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
+        }
+        return result;
+    }
+
+    private String generateSurveillanceOutcomeOtherValue(final List<QuarterlyReportDTO> quarterlyReports,
+            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+        String result = "";
+        if (quarterlyReports.size() == 1) {
+            //find the privileged surv data for the single report
+            QuarterlyReportDTO report = quarterlyReports.get(0);
+            for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                if (currSurv.getQuarterlyReport().getId().longValue() == report.getId().longValue()
+                        && !StringUtils.isEmpty(currSurv.getSurveillanceOutcomeOther())) {
+                    result = currSurv.getSurveillanceOutcomeOther();
+                }
+            }
+        } else {
+            //there are multiple reports... combine the values for this field in a nice way for the user
+            //key is surveillance outcome name and value is applicable quarter name(s) like 'Q1, Q2'
+            Map<String, ArrayList<String>> valueMap = new LinkedHashMap<String, ArrayList<String>>();
+            for (QuarterlyReportDTO currReport : quarterlyReports) {
+                for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                    if (currSurv.getQuarterlyReport().getId().longValue() == currReport.getId().longValue()
+                            && !StringUtils.isEmpty(currSurv.getSurveillanceOutcomeOther())) {
+                        String survOutcomeVal = currSurv.getSurveillanceOutcomeOther();
+                        if (valueMap.get(survOutcomeVal) != null) {
+                            valueMap.get(survOutcomeVal).add(currReport.getQuarter().getName());
+                        } else {
+                            ArrayList<String> quarterNameList = new ArrayList<String>();
+                            quarterNameList.add(currReport.getQuarter().getName());
+                            valueMap.put(survOutcomeVal, quarterNameList);
+                        }
+                    }
+                }
+            }
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
+        }
+        return result;
+    }
+
+    /**
+     * Creates a consolidated string for all quarterly reports.
+     * @param quarterlyReports
+     * @param privilegedSurvData
+     * @return
+     */
+    private String generateSurveillanceProcessTypeValue(final List<QuarterlyReportDTO> quarterlyReports,
+            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+        String result = "";
+        if (quarterlyReports.size() == 1) {
+            //find the privileged surv data for the single report
+            QuarterlyReportDTO report = quarterlyReports.get(0);
+            for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                if (currSurv.getQuarterlyReport().getId().longValue() == report.getId().longValue()
+                        && currSurv.getSurveillanceProcessType() != null) {
+                    result = currSurv.getSurveillanceProcessType().getName();
+                }
+            }
+        } else {
+            //there are multiple reports... combine the values for this field in a nice way for the user
+            //key is surveillance process type name and value is applicable quarter name(s) like 'Q1, Q2'
+            Map<String, ArrayList<String>> valueMap = new LinkedHashMap<String, ArrayList<String>>();
+            for (QuarterlyReportDTO currReport : quarterlyReports) {
+                for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                    if (currSurv.getQuarterlyReport().getId().longValue() == currReport.getId().longValue()
+                            && currSurv.getSurveillanceProcessType() != null) {
+                        String survProcTypeVal = currSurv.getSurveillanceProcessType().getName();
+                        if (valueMap.get(survProcTypeVal) != null) {
+                            valueMap.get(survProcTypeVal).add(currReport.getQuarter().getName());
+                        } else {
+                            ArrayList<String> quarterNameList = new ArrayList<String>();
+                            quarterNameList.add(currReport.getQuarter().getName());
+                            valueMap.put(survProcTypeVal, quarterNameList);
+                        }
+                    }
+                }
+            }
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
+        }
+        return result;
+    }
+
+    /**
+     * Creates a consolidated string for all quarterly reports.
+     * @param quarterlyReports
+     * @param privilegedSurvData
+     * @return
+     */
+    private String generateSurveillanceProcessTypeOtherValue(final List<QuarterlyReportDTO> quarterlyReports,
+            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+        String result = "";
+        if (quarterlyReports.size() == 1) {
+            //find the privileged surv data for the single report
+            QuarterlyReportDTO report = quarterlyReports.get(0);
+            for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                if (currSurv.getQuarterlyReport().getId().longValue() == report.getId().longValue()
+                        && !StringUtils.isEmpty(currSurv.getSurveillanceProcessTypeOther())) {
+                    result = currSurv.getSurveillanceProcessTypeOther();
+                }
+            }
+        } else {
+            //there are multiple reports... combine the values for this field in a nice way for the user
+            //key is surveillance process type name and value is applicable quarter name(s) like 'Q1, Q2'
+            Map<String, ArrayList<String>> valueMap = new LinkedHashMap<String, ArrayList<String>>();
+            for (QuarterlyReportDTO currReport : quarterlyReports) {
+                for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                    if (currSurv.getQuarterlyReport().getId().longValue() == currReport.getId().longValue()
+                            && !StringUtils.isEmpty(currSurv.getSurveillanceProcessTypeOther())) {
+                        String survProcTypeVal = currSurv.getSurveillanceProcessTypeOther();
+                        if (valueMap.get(survProcTypeVal) != null) {
+                            valueMap.get(survProcTypeVal).add(currReport.getQuarter().getName());
+                        } else {
+                            ArrayList<String> quarterNameList = new ArrayList<String>();
+                            quarterNameList.add(currReport.getQuarter().getName());
+                            valueMap.put(survProcTypeVal, quarterNameList);
+                        }
+                    }
+                }
+            }
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
+        }
+        return result;
+    }
+
+    /**
+     * Creates a consolidated string for all quarterly reports.
+     * @param quarterlyReports
+     * @param privilegedSurvData
+     * @return
+     */
+    private String generateGroundsForInitiatingValue(final List<QuarterlyReportDTO> quarterlyReports,
+            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+        String result = "";
+        if (quarterlyReports.size() == 1) {
+            //find the privileged surv data for the single report
+            QuarterlyReportDTO report = quarterlyReports.get(0);
+            for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                if (currSurv.getQuarterlyReport().getId().longValue() == report.getId().longValue()
+                        && currSurv.getGroundsForInitiating() != null) {
+                    result = currSurv.getGroundsForInitiating();
+                }
+            }
+        } else {
+            //there are multiple reports... combine the values for this field in a nice way for the user
+            //key is grounds for initiating str and value is applicable quarter name(s) like 'Q1, Q2'
+            Map<String, ArrayList<String>> valueMap = new LinkedHashMap<String, ArrayList<String>>();
+            for (QuarterlyReportDTO currReport : quarterlyReports) {
+                for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                    if (currSurv.getQuarterlyReport().getId().longValue() == currReport.getId().longValue()
+                            && currSurv.getGroundsForInitiating() != null) {
+                        String survGroundsVal = currSurv.getGroundsForInitiating();
+                        if (valueMap.get(survGroundsVal) != null) {
+                            valueMap.get(survGroundsVal).add(currReport.getQuarter().getName());
+                        } else {
+                            ArrayList<String> quarterNameList = new ArrayList<String>();
+                            quarterNameList.add(currReport.getQuarter().getName());
+                            valueMap.put(survGroundsVal, quarterNameList);
+                        }
+                    }
+                }
+            }
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
+        }
+        return result;
+    }
+
+    /**
+     * Creates a consolidated string for all quarterly reports.
+     * @param quarterlyReports
+     * @param privilegedSurvData
+     * @return
+     */
+    private String generateNonconformityCausesValue(final List<QuarterlyReportDTO> quarterlyReports,
+            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+        String result = "";
+        if (quarterlyReports.size() == 1) {
+            //find the privileged surv data for the single report
+            QuarterlyReportDTO report = quarterlyReports.get(0);
+            for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                if (currSurv.getQuarterlyReport().getId().longValue() == report.getId().longValue()
+                        && currSurv.getNonconformityCauses() != null) {
+                    result = currSurv.getNonconformityCauses();
+                }
+            }
+        } else {
+            //there are multiple reports... combine the values for this field in a nice way for the user
+            //key is the causes str and value is applicable quarter name(s) like 'Q1, Q2'
+            Map<String, ArrayList<String>> valueMap = new LinkedHashMap<String, ArrayList<String>>();
+            for (QuarterlyReportDTO currReport : quarterlyReports) {
+                for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                    if (currSurv.getQuarterlyReport().getId().longValue() == currReport.getId().longValue()
+                            && currSurv.getNonconformityCauses() != null) {
+                        String causesVal = currSurv.getNonconformityCauses();
+                        if (valueMap.get(causesVal) != null) {
+                            valueMap.get(causesVal).add(currReport.getQuarter().getName());
+                        } else {
+                            ArrayList<String> quarterNameList = new ArrayList<String>();
+                            quarterNameList.add(currReport.getQuarter().getName());
+                            valueMap.put(causesVal, quarterNameList);
+                        }
+                    }
+                }
+            }
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
+        }
+        return result;
+    }
+
+    /**
+     * Creates a consolidated string for all quarterly reports.
+     * @param quarterlyReports
+     * @param privilegedSurvData
+     * @return
+     */
+    private String generateNonconformityNatureValue(final List<QuarterlyReportDTO> quarterlyReports,
+            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+        String result = "";
+        if (quarterlyReports.size() == 1) {
+            //find the privileged surv data for the single report
+            QuarterlyReportDTO report = quarterlyReports.get(0);
+            for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                if (currSurv.getQuarterlyReport().getId().longValue() == report.getId().longValue()
+                        && currSurv.getNonconformityNature() != null) {
+                    result = currSurv.getNonconformityNature();
+                }
+            }
+        } else {
+            //there are multiple reports... combine the values for this field in a nice way for the user
+            //key is the nature str and value is applicable quarter name(s) like 'Q1, Q2'
+            Map<String, ArrayList<String>> valueMap = new LinkedHashMap<String, ArrayList<String>>();
+            for (QuarterlyReportDTO currReport : quarterlyReports) {
+                for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                    if (currSurv.getQuarterlyReport().getId().longValue() == currReport.getId().longValue()
+                            && currSurv.getNonconformityNature() != null) {
+                        String natureVal = currSurv.getNonconformityNature();
+                        if (valueMap.get(natureVal) != null) {
+                            valueMap.get(natureVal).add(currReport.getQuarter().getName());
+                        } else {
+                            ArrayList<String> quarterNameList = new ArrayList<String>();
+                            quarterNameList.add(currReport.getQuarter().getName());
+                            valueMap.put(natureVal, quarterNameList);
+                        }
+                    }
+                }
+            }
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
+        }
+        return result;
+    }
+
+    /**
+     * Creates a consolidated string for all quarterly reports.
+     * @param quarterlyReports
+     * @param privilegedSurvData
+     * @return
+     */
+    private String generateStepsToSurveilValue(final List<QuarterlyReportDTO> quarterlyReports,
+            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+        String result = "";
+        if (quarterlyReports.size() == 1) {
+            //find the privileged surv data for the single report
+            QuarterlyReportDTO report = quarterlyReports.get(0);
+            for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                if (currSurv.getQuarterlyReport().getId().longValue() == report.getId().longValue()
+                        && currSurv.getStepsToSurveil() != null) {
+                    result = currSurv.getStepsToSurveil();
+                }
+            }
+        } else {
+            //there are multiple reports... combine the values for this field in a nice way for the user
+            //key is the steps to surveil str and value is applicable quarter name(s) like 'Q1, Q2'
+            Map<String, ArrayList<String>> valueMap = new LinkedHashMap<String, ArrayList<String>>();
+            for (QuarterlyReportDTO currReport : quarterlyReports) {
+                for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                    if (currSurv.getQuarterlyReport().getId().longValue() == currReport.getId().longValue()
+                            && currSurv.getStepsToSurveil() != null) {
+                        String stepsVal = currSurv.getStepsToSurveil();
+                        if (valueMap.get(stepsVal) != null) {
+                            valueMap.get(stepsVal).add(currReport.getQuarter().getName());
+                        } else {
+                            ArrayList<String> quarterNameList = new ArrayList<String>();
+                            quarterNameList.add(currReport.getQuarter().getName());
+                            valueMap.put(stepsVal, quarterNameList);
+                        }
+                    }
+                }
+            }
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
+        }
+        return result;
+    }
+
+    /**
+     * Creates a consolidated string for all quarterly reports.
+     * @param quarterlyReports
+     * @param privilegedSurvData
+     * @return
+     */
+    private String generateStepsToEngageValue(final List<QuarterlyReportDTO> quarterlyReports,
+            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+        String result = "";
+        if (quarterlyReports.size() == 1) {
+            //find the privileged surv data for the single report
+            QuarterlyReportDTO report = quarterlyReports.get(0);
+            for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                if (currSurv.getQuarterlyReport().getId().longValue() == report.getId().longValue()
+                        && currSurv.getStepsToEngage() != null) {
+                    result = currSurv.getStepsToEngage();
+                }
+            }
+        } else {
+            //there are multiple reports... combine the values for this field in a nice way for the user
+            //key is the steps to engage str and value is applicable quarter name(s) like 'Q1, Q2'
+            Map<String, ArrayList<String>> valueMap = new LinkedHashMap<String, ArrayList<String>>();
+            for (QuarterlyReportDTO currReport : quarterlyReports) {
+                for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                    if (currSurv.getQuarterlyReport().getId().longValue() == currReport.getId().longValue()
+                            && currSurv.getStepsToEngage() != null) {
+                        String stepsVal = currSurv.getStepsToEngage();
+                        if (valueMap.get(stepsVal) != null) {
+                            valueMap.get(stepsVal).add(currReport.getQuarter().getName());
+                        } else {
+                            ArrayList<String> quarterNameList = new ArrayList<String>();
+                            quarterNameList.add(currReport.getQuarter().getName());
+                            valueMap.put(stepsVal, quarterNameList);
+                        }
+                    }
+                }
+            }
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
+        }
+        return result;
+    }
+
+    /**
+     * Creates a consolidated string for all quarterly reports.
+     * @param quarterlyReports
+     * @param privilegedSurvData
+     * @return
+     */
+    private String generateAdditionalCostsValue(final List<QuarterlyReportDTO> quarterlyReports,
+            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+        String result = "";
+        if (quarterlyReports.size() == 1) {
+            //find the privileged surv data for the single report
+            QuarterlyReportDTO report = quarterlyReports.get(0);
+            for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                if (currSurv.getQuarterlyReport().getId().longValue() == report.getId().longValue()
+                        && currSurv.getAdditionalCostsEvaluation() != null) {
+                    result = currSurv.getAdditionalCostsEvaluation();
+                }
+            }
+        } else {
+            //there are multiple reports... combine the values for this field in a nice way for the user
+            //key is the additional costs str and value is applicable quarter name(s) like 'Q1, Q2'
+            Map<String, ArrayList<String>> valueMap = new LinkedHashMap<String, ArrayList<String>>();
+            for (QuarterlyReportDTO currReport : quarterlyReports) {
+                for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                    if (currSurv.getQuarterlyReport().getId().longValue() == currReport.getId().longValue()
+                            && currSurv.getAdditionalCostsEvaluation() != null) {
+                        String costsVal = currSurv.getAdditionalCostsEvaluation();
+                        if (valueMap.get(costsVal) != null) {
+                            valueMap.get(costsVal).add(currReport.getQuarter().getName());
+                        } else {
+                            ArrayList<String> quarterNameList = new ArrayList<String>();
+                            quarterNameList.add(currReport.getQuarter().getName());
+                            valueMap.put(costsVal, quarterNameList);
+                        }
+                    }
+                }
+            }
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
+        }
+        return result;
+    }
+
+    /**
+     * Creates a consolidated string for all quarterly reports.
+     * @param quarterlyReports
+     * @param privilegedSurvData
+     * @return
+     */
+    private String generateLimitationsValue(final List<QuarterlyReportDTO> quarterlyReports,
+            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+        String result = "";
+        if (quarterlyReports.size() == 1) {
+            //find the privileged surv data for the single report
+            QuarterlyReportDTO report = quarterlyReports.get(0);
+            for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                if (currSurv.getQuarterlyReport().getId().longValue() == report.getId().longValue()
+                        && currSurv.getLimitationsEvaluation() != null) {
+                    result = currSurv.getLimitationsEvaluation();
+                }
+            }
+        } else {
+            //there are multiple reports... combine the values for this field in a nice way for the user
+            //key is the limitations str and value is applicable quarter name(s) like 'Q1, Q2'
+            Map<String, ArrayList<String>> valueMap = new LinkedHashMap<String, ArrayList<String>>();
+            for (QuarterlyReportDTO currReport : quarterlyReports) {
+                for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                    if (currSurv.getQuarterlyReport().getId().longValue() == currReport.getId().longValue()
+                            && currSurv.getLimitationsEvaluation() != null) {
+                        String limitationsVal = currSurv.getLimitationsEvaluation();
+                        if (valueMap.get(limitationsVal) != null) {
+                            valueMap.get(limitationsVal).add(currReport.getQuarter().getName());
+                        } else {
+                            ArrayList<String> quarterNameList = new ArrayList<String>();
+                            quarterNameList.add(currReport.getQuarter().getName());
+                            valueMap.put(limitationsVal, quarterNameList);
+                        }
+                    }
+                }
+            }
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
+        }
+        return result;
+    }
+
+    /**
+     * Creates a consolidated string for all quarterly reports.
+     * @param quarterlyReports
+     * @param privilegedSurvData
+     * @return
+     */
+    private String generateNondisclosureValue(final List<QuarterlyReportDTO> quarterlyReports,
+            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+        String result = "";
+        if (quarterlyReports.size() == 1) {
+            //find the privileged surv data for the single report
+            QuarterlyReportDTO report = quarterlyReports.get(0);
+            for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                if (currSurv.getQuarterlyReport().getId().longValue() == report.getId().longValue()
+                        && currSurv.getNondisclosureEvaluation() != null) {
+                    result = currSurv.getNondisclosureEvaluation();
+                }
+            }
+        } else {
+            //there are multiple reports... combine the values for this field in a nice way for the user
+            //key is the nondisclosure str and value is applicable quarter name(s) like 'Q1, Q2'
+            Map<String, ArrayList<String>> valueMap = new LinkedHashMap<String, ArrayList<String>>();
+            for (QuarterlyReportDTO currReport : quarterlyReports) {
+                for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                    if (currSurv.getQuarterlyReport().getId().longValue() == currReport.getId().longValue()
+                            && currSurv.getNondisclosureEvaluation() != null) {
+                        String nondisclosureVal = currSurv.getNondisclosureEvaluation();
+                        if (valueMap.get(nondisclosureVal) != null) {
+                            valueMap.get(nondisclosureVal).add(currReport.getQuarter().getName());
+                        } else {
+                            ArrayList<String> quarterNameList = new ArrayList<String>();
+                            quarterNameList.add(currReport.getQuarter().getName());
+                            valueMap.put(nondisclosureVal, quarterNameList);
+                        }
+                    }
+                }
+            }
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
+        }
+        return result;
+    }
+
+    /**
+     * Creates a consolidated string for all quarterly reports.
+     * @param quarterlyReports
+     * @param privilegedSurvData
+     * @return
+     */
+    private String generateDeveloperResolutionValue(final List<QuarterlyReportDTO> quarterlyReports,
+            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+        String result = "";
+        if (quarterlyReports.size() == 1) {
+            //find the privileged surv data for the single report
+            QuarterlyReportDTO report = quarterlyReports.get(0);
+            for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                if (currSurv.getQuarterlyReport().getId().longValue() == report.getId().longValue()
+                        && currSurv.getDirectionDeveloperResolution() != null) {
+                    result = currSurv.getDirectionDeveloperResolution();
+                }
+            }
+        } else {
+            //there are multiple reports... combine the values for this field in a nice way for the user
+            //key is the developer resolution str and value is applicable quarter name(s) like 'Q1, Q2'
+            Map<String, ArrayList<String>> valueMap = new LinkedHashMap<String, ArrayList<String>>();
+            for (QuarterlyReportDTO currReport : quarterlyReports) {
+                for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                    if (currSurv.getQuarterlyReport().getId().longValue() == currReport.getId().longValue()
+                            && currSurv.getDirectionDeveloperResolution() != null) {
+                        String devResolutionVal = currSurv.getDirectionDeveloperResolution();
+                        if (valueMap.get(devResolutionVal) != null) {
+                            valueMap.get(devResolutionVal).add(currReport.getQuarter().getName());
+                        } else {
+                            ArrayList<String> quarterNameList = new ArrayList<String>();
+                            quarterNameList.add(currReport.getQuarter().getName());
+                            valueMap.put(devResolutionVal, quarterNameList);
+                        }
+                    }
+                }
+            }
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
+        }
+        return result;
+    }
+
+    /**
+     * Creates a consolidated string for all quarterly reports.
+     * @param quarterlyReports
+     * @param privilegedSurvData
+     * @return
+     */
+    private String generateCompletedCapValue(final List<QuarterlyReportDTO> quarterlyReports,
+            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+        String result = "";
+        if (quarterlyReports.size() == 1) {
+            //find the privileged surv data for the single report
+            QuarterlyReportDTO report = quarterlyReports.get(0);
+            for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                if (currSurv.getQuarterlyReport().getId().longValue() == report.getId().longValue()
+                        && currSurv.getCompletedCapVerification() != null) {
+                    result = currSurv.getCompletedCapVerification();
+                }
+            }
+        } else {
+            //there are multiple reports... combine the values for this field in a nice way for the user
+            //key is the completed cap str and value is applicable quarter name(s) like 'Q1, Q2'
+            Map<String, ArrayList<String>> valueMap = new LinkedHashMap<String, ArrayList<String>>();
+            for (QuarterlyReportDTO currReport : quarterlyReports) {
+                for (PrivilegedSurveillanceDTO currSurv : privilegedSurvData) {
+                    if (currSurv.getQuarterlyReport().getId().longValue() == currReport.getId().longValue()
+                            && currSurv.getCompletedCapVerification() != null) {
+                        String completedCapVal = currSurv.getCompletedCapVerification();
+                        if (valueMap.get(completedCapVal) != null) {
+                            valueMap.get(completedCapVal).add(currReport.getQuarter().getName());
+                        } else {
+                            ArrayList<String> quarterNameList = new ArrayList<String>();
+                            quarterNameList.add(currReport.getQuarter().getName());
+                            valueMap.put(completedCapVal, quarterNameList);
+                        }
+                    }
+                }
+            }
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
         }
         return result;
     }

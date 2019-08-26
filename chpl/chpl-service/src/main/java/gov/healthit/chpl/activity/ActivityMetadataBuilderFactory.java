@@ -26,6 +26,8 @@ public class ActivityMetadataBuilderFactory {
     private CorrectActionPlanActivityMetadataBuilder correctActionPlanActivityMetadataBuilder;
     private PendingSurveillanceActivityMetadataBuilder pendingSurveillanceActivityMetadataBuilder;
     private ComplaintActivityMetadataBuilder complaintActivityMetadataBuilder;
+    private QuarterlyReportActivityMetadataBuilder quarterlyReportActivityMetadataBuilder;
+    private AnnualReportActivityMetadataBuilder annualReportActivityMetadataBuilder;
 
     @Autowired
     public ActivityMetadataBuilderFactory(
@@ -40,7 +42,9 @@ public class ActivityMetadataBuilderFactory {
             @Qualifier("pendingListingActivityMetadataBuilder") final PendingListingActivityMetadataBuilder pendingListingActivityMetadataBuilder,
             @Qualifier("correctActionPlanActivityMetadataBuilder") final CorrectActionPlanActivityMetadataBuilder correctActionPlanActivityMetadataBuilder,
             @Qualifier("pendingSurveillanceActivityMetadataBuilder") final PendingSurveillanceActivityMetadataBuilder pendingSurveillanceActivityMetadataBuilder,
-            @Qualifier("complaintActivityMetadataBuilder") final ComplaintActivityMetadataBuilder complaintActivityMetadataBuilder) {
+            @Qualifier("complaintActivityMetadataBuilder") final ComplaintActivityMetadataBuilder complaintActivityMetadataBuilder,
+            @Qualifier("quarterlyReportActivityMetadataBuilder") final QuarterlyReportActivityMetadataBuilder quarterlyReportActivityMetadataBuilder,
+            @Qualifier("annualReportActivityMetadataBuilder") final  AnnualReportActivityMetadataBuilder annualReportActivityMetadataBuilder) {
         this.listingBuilder = listingBuilder;
         this.developerBuilder = developerBuilder;
         this.productBuilder = productBuilder;
@@ -53,6 +57,8 @@ public class ActivityMetadataBuilderFactory {
         this.correctActionPlanActivityMetadataBuilder = correctActionPlanActivityMetadataBuilder;
         this.pendingSurveillanceActivityMetadataBuilder = pendingSurveillanceActivityMetadataBuilder;
         this.complaintActivityMetadataBuilder = complaintActivityMetadataBuilder;
+        this.quarterlyReportActivityMetadataBuilder = quarterlyReportActivityMetadataBuilder;
+        this.annualReportActivityMetadataBuilder = annualReportActivityMetadataBuilder;
     }
 
     /**
@@ -101,6 +107,13 @@ public class ActivityMetadataBuilderFactory {
             break;
         case COMPLAINT:
             builder = complaintActivityMetadataBuilder;
+            break;
+        case QUARTERLY_REPORT:
+        case QUARTERLY_REPORT_LISTING:
+            builder = quarterlyReportActivityMetadataBuilder;
+            break;
+        case ANNUAL_REPORT:
+            builder = annualReportActivityMetadataBuilder;
             break;
         default:
             break;

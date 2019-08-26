@@ -140,6 +140,7 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
     public Complaint update(final Complaint complaint)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
         ComplaintDTO complaintDTO = new ComplaintDTO(complaint);
+        ComplaintDTO originalFromDB = complaintDAO.getComplaint(complaint.getId());
         ValidationException validationException = new ValidationException();
         validationException.getErrorMessages().addAll(runUpdateValidations(complaintDTO));
         if (validationException.getErrorMessages().size() > 0) {
@@ -148,7 +149,7 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
 
         ComplaintDTO updatedComplaint = complaintDAO.update(complaintDTO);
         activityManager.addActivity(ActivityConcept.COMPLAINT, updatedComplaint.getId(), "Complaint has been updated",
-                complaintDTO, updatedComplaint);
+                originalFromDB, updatedComplaint);
 
         return new Complaint(updatedComplaint);
 
@@ -158,8 +159,8 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).DELETE, #complaintId)")
-    public void delete(final Long complaintId) throws EntityRetrievalException,
-        JsonProcessingException, EntityCreationException {
+    public void delete(final Long complaintId)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         ComplaintDTO dto = complaintDAO.getComplaint(complaintId);
         if (dto != null) {
             complaintDAO.delete(dto);

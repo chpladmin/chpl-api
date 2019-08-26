@@ -293,7 +293,7 @@ public class ReportInfoWorksheetBuilder {
         int tableStartRow = currRow;
         for (String chplNumber : combinedExclusions.keySet()) {
             row = workbook.getRow(sheet, currRow++);
-            cell = workbook.createCell(row, 1);
+            cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
             cell.setCellValue(chplNumber);
             cell = workbook.createCell(row, 2, workbook.getTopAlignedWrappedStyle());
             List<QuarterlyExclusionReason> reasons = combinedExclusions.get(chplNumber);

@@ -3,7 +3,6 @@ package gov.healthit.chpl.dao.impl;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,8 +32,8 @@ import junit.framework.TestCase;
         gov.healthit.chpl.CHPLTestConfig.class
 })
 @TestExecutionListeners({
-    DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
 })
 @DatabaseSetup("classpath:data/testData.xml")
 public class AddressDaoTest extends TestCase {
@@ -60,19 +59,6 @@ public class AddressDaoTest extends TestCase {
         AddressDTO result = addressDao.getById(-1L);
         assertNotNull(result);
         assertTrue(result.getId() == -1L);
-    }
-
-    @Test
-    @Transactional
-    public void getAddressByValues() {
-        AddressDTO search = new AddressDTO();
-        search.setStreetLineOne("1 Test Road");
-        search.setCity("Baltimore");
-        search.setState("MD");
-        search.setZipcode("21220");
-        search.setCountry("USA");
-        AddressDTO found = addressDao.getByValues(search);
-        assertNotNull(found);
     }
 
     @Test
@@ -135,4 +121,3 @@ public class AddressDaoTest extends TestCase {
         }
     }
 }
-

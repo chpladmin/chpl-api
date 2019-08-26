@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dao.surveillance.report;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -7,14 +8,20 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.dto.surveillance.report.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportExclusionDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
+import gov.healthit.chpl.entity.listing.ListingWithPrivilegedSurveillanceEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceBasicEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
+import gov.healthit.chpl.entity.surveillance.report.PrivilegedSurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.report.QuarterlyReportEntity;
 import gov.healthit.chpl.entity.surveillance.report.QuarterlyReportExcludedListingMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -25,7 +32,7 @@ import gov.healthit.chpl.util.AuthUtil;
 public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyReportDAO {
     private static final String QUARTERLY_REPORT_HQL = "SELECT qr "
             + " FROM QuarterlyReportEntity qr "
-            + " JOIN FETCH qr.quarter "
+            + " JOIN FETCH qr.quarter quarter "
             + " JOIN FETCH qr.acb acb "
             + " LEFT JOIN FETCH acb.address "
             + " WHERE qr.deleted = false ";
@@ -34,7 +41,7 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
         String queryStr = QUARTERLY_REPORT_HQL
                 + " AND qr.year = :year "
                 + " AND acb.id = :acbId "
-                + " AND qr.id = :quarterId";
+                + " AND quarter.id = :quarterId";
         Query query = entityManager.createQuery(queryStr);
         query.setParameter("quarterId", quarterId);
         query.setParameter("year", year);
@@ -118,23 +125,40 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
     }
 
     /**
-     * Returns true if a listing has an open surveillance between startDate and endDate;
+     * Returns true if a listing exists for an ACB
      * false otherwise.
      */
-    public boolean isListingRelevant(final Long listingId, final Date startDate, final Date endDate) {
+    public boolean isListingRelevant(final Long acbId, final Long listingId) {
         String queryStr = "SELECT DISTINCT cp "
-                + "FROM CertifiedProductDetailsEntity cp, SurveillanceEntity surv "
+                + "FROM CertifiedProductEntity cp "
                 + "WHERE cp.id = :listingId "
-                + "AND surv.certifiedProductId = cp.id "
-                + "AND cp.deleted = false "
-                + "AND surv.deleted = false "
+                + "AND cp.certificationBodyId = :acbId ";
+        Query query = entityManager.createQuery(queryStr);
+        query.setParameter("listingId", listingId);
+        query.setParameter("acbId", acbId);
+        List<CertifiedProductDetailsEntity> entities = query.getResultList();
+        return entities != null && entities.size() > 0;
+    }
+
+    /**
+     * Returns true if the surveillance specified is related to a listing on the
+     * ACB that's relevant to the quartelry report 
+     * and was open during the reporting period; false otherwise.
+     */
+    public boolean isSurveillanceRelevant(final QuarterlyReportDTO quarterlyReport, final Long survId) {
+        String queryStr = "SELECT surv "
+                + "FROM SurveillanceEntity surv "
+                + "JOIN FETCH surv.certifiedProduct listing "
+                + "WHERE surv.id = :survId "
+                + "AND listing.certificationBodyId = :acbId "
                 + "AND surv.startDate <= :endDate "
                 + "AND (surv.endDate IS NULL OR surv.endDate >= :startDate)";
         Query query = entityManager.createQuery(queryStr);
-        query.setParameter("listingId", listingId);
-        query.setParameter("startDate", startDate);
-        query.setParameter("endDate", endDate);
-        List<CertifiedProductDetailsEntity> entities = query.getResultList();
+        query.setParameter("survId", survId);
+        query.setParameter("acbId", quarterlyReport.getAcb().getId());
+        query.setParameter("startDate", quarterlyReport.getStartDate());
+        query.setParameter("endDate", quarterlyReport.getEndDate());
+        List<SurveillanceEntity> entities = query.getResultList();
         return entities != null && entities.size() > 0;
     }
 
@@ -147,28 +171,26 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
      */
     @Override
     @Transactional(readOnly = true)
-    public List<QuarterlyReportRelevantListingDTO> getRelevantListings(final Long acbId,
-            final Date startDate, final Date endDate) {
-        String queryStr = "SELECT DISTINCT cp "
-                + "FROM CertifiedProductDetailsEntity cp, SurveillanceEntity surv "
-                + "WHERE cp.certificationBodyId = :acbId "
-                + "AND surv.certifiedProductId = cp.id "
-                + "AND cp.deleted = false "
-                + "AND surv.deleted = false "
+    public List<QuarterlyReportRelevantListingDTO> getListingsWithRelevantSurveillance(final QuarterlyReportDTO quarterlyReport) {
+        String queryStr = "SELECT DISTINCT listing "
+                + "FROM ListingWithPrivilegedSurveillanceEntity listing "
+                + "JOIN FETCH listing.surveillances surv "
+                + "LEFT JOIN FETCH surv.surveillanceType "
+                + "WHERE listing.certificationBodyId = :acbId "
+                + "AND listing.deleted = false "
                 + "AND surv.startDate <= :endDate "
                 + "AND (surv.endDate IS NULL OR surv.endDate >= :startDate)";
         Query query = entityManager.createQuery(queryStr);
-        query.setParameter("acbId", acbId);
-        query.setParameter("startDate", startDate);
-        query.setParameter("endDate", endDate);
-        List<CertifiedProductDetailsEntity> entities = query.getResultList();
+        query.setParameter("acbId", quarterlyReport.getAcb().getId());
+        query.setParameter("startDate", quarterlyReport.getStartDate());
+        query.setParameter("endDate", quarterlyReport.getEndDate());
 
-        List<QuarterlyReportRelevantListingDTO> products = new ArrayList<QuarterlyReportRelevantListingDTO>();
-        for (CertifiedProductDetailsEntity entity : entities) {
-            QuarterlyReportRelevantListingDTO product = new QuarterlyReportRelevantListingDTO(entity);
-            products.add(product);
+        List<ListingWithPrivilegedSurveillanceEntity> listingsWithSurvEntities = query.getResultList();
+        List<QuarterlyReportRelevantListingDTO> result = new ArrayList<QuarterlyReportRelevantListingDTO>();
+        for (ListingWithPrivilegedSurveillanceEntity listingsWithSurvEntity : listingsWithSurvEntities) {
+            result.add(new QuarterlyReportRelevantListingDTO(listingsWithSurvEntity));
         }
-        return products;
+        return result;
     }
 
     /**
@@ -177,24 +199,47 @@ public class QuarterlyReportDAOImpl extends BaseDAOImpl implements QuarterlyRepo
      */
     @Override
     public QuarterlyReportRelevantListingDTO getRelevantListing(final Long listingId,
-            final Date startDate, final Date endDate) {
-        String queryStr = "SELECT DISTINCT cp "
-                + "FROM CertifiedProductDetailsEntity cp, SurveillanceEntity surv "
-                + "WHERE cp.id = :listingId "
-                + "AND surv.certifiedProductId = cp.id "
-                + "AND cp.deleted = false "
-                + "AND surv.deleted = false "
-                + "AND surv.startDate <= :endDate "
-                + "AND (surv.endDate IS NULL OR surv.endDate >= :startDate)";
+            final QuarterlyReportDTO quarterlyReport) {
+        String queryStr = "SELECT DISTINCT listing "
+                + "FROM ListingWithPrivilegedSurveillanceEntity listing "
+                + "LEFT JOIN FETCH listing.surveillances surv "
+                + "LEFT JOIN FETCH surv.surveillanceType "
+                + "WHERE listing.id = :listingId "
+                + "AND listing.deleted = false "
+                + "AND listing.certificationBodyId = :acbId ";
         Query query = entityManager.createQuery(queryStr);
         query.setParameter("listingId", listingId);
-        query.setParameter("startDate", startDate);
-        query.setParameter("endDate", endDate);
-        List<CertifiedProductDetailsEntity> entities = query.getResultList();
+        query.setParameter("acbId", quarterlyReport.getAcb().getId());
+        List<ListingWithPrivilegedSurveillanceEntity> entities = query.getResultList();
 
-        QuarterlyReportRelevantListingDTO result = null;
+        QuarterlyReportRelevantListingDTO relevantListing = null;
         if (entities != null && entities.size() > 0) {
-            result = new QuarterlyReportRelevantListingDTO(entities.get(0));
+            relevantListing = new QuarterlyReportRelevantListingDTO(entities.get(0));
+        }
+        return relevantListing;
+    }
+
+    /**
+     * Returns listings owned by the ACB
+     * @param quarterly report return listings owned by this acb
+     * @return
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<QuarterlyReportRelevantListingDTO> getRelevantListings(final QuarterlyReportDTO quarterlyReport) {
+        String queryStr = "SELECT DISTINCT listing "
+                + "FROM ListingWithPrivilegedSurveillanceEntity listing "
+                + "LEFT JOIN FETCH listing.surveillances surv "
+                + "LEFT JOIN FETCH surv.surveillanceType "
+                + "WHERE listing.certificationBodyId = :acbId "
+                + "AND listing.deleted = false ";
+        Query query = entityManager.createQuery(queryStr);
+        query.setParameter("acbId", quarterlyReport.getAcb().getId());
+
+        List<ListingWithPrivilegedSurveillanceEntity> entities = query.getResultList();
+        List<QuarterlyReportRelevantListingDTO> result = new ArrayList<QuarterlyReportRelevantListingDTO>();
+        for (ListingWithPrivilegedSurveillanceEntity entity : entities) {
+            result.add(new QuarterlyReportRelevantListingDTO(entity));
         }
         return result;
     }

@@ -21,6 +21,7 @@ import gov.healthit.chpl.util.AuthUtil;
 
 /**
  * Data access methods for certification bodies (ACBs).
+ * 
  * @author kekey
  *
  */
@@ -50,11 +51,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
             throw new EntityCreationException("An entity with this ID already exists.");
         } else {
             entity = new CertificationBodyEntity();
-
-            if (dto.getAddress() != null) {
-                entity.setAddress(addressDao.mergeAddress(dto.getAddress()));
-            }
-
+            entity.setAddress(addressDao.create(dto.getAddress()));
             entity.setName(dto.getName());
             entity.setWebsite(dto.getWebsite());
             entity.setAcbCode(dto.getAcbCode());
@@ -79,7 +76,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 
         if (dto.getAddress() != null) {
             try {
-                entity.setAddress(addressDao.mergeAddress(dto.getAddress()));
+                entity.setAddress(addressDao.saveAddress(dto.getAddress()));
             } catch (final EntityCreationException ex) {
                 LOGGER.error("Could not create new address in the database.", ex);
                 entity.setAddress(null);
@@ -124,11 +121,10 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
      * Get all ACBs not marked retired.
      */
     public List<CertificationBodyDTO> findAllActive() {
-        List<CertificationBodyEntity> entities = entityManager.createQuery(
-                        "SELECT acb from CertificationBodyEntity acb "
-                        + "LEFT OUTER JOIN FETCH acb.address "
-                        + "WHERE acb.retired = false AND acb.deleted = false",
-                        CertificationBodyEntity.class).getResultList();
+        List<CertificationBodyEntity> entities = entityManager
+                .createQuery("SELECT acb from CertificationBodyEntity acb " + "LEFT OUTER JOIN FETCH acb.address "
+                        + "WHERE acb.retired = false AND acb.deleted = false", CertificationBodyEntity.class)
+                .getResultList();
         List<CertificationBodyDTO> acbs = new ArrayList<>();
 
         for (CertificationBodyEntity entity : entities) {
@@ -141,6 +137,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 
     /**
      * Finds an ACB by ID.
+     * 
      * @param acbId
      * @return the ACB
      */
@@ -156,6 +153,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 
     /**
      * Find an ACB by name.
+     * 
      * @param name
      * @return the ACB
      */
@@ -198,30 +196,27 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 
     /**
      * Get all ACBs.
+     * 
      * @return
      */
     private List<CertificationBodyEntity> getAllEntities() {
-        return entityManager.createQuery(
-                    "SELECT acb from CertificationBodyEntity acb "
-                    + "LEFT OUTER JOIN FETCH acb.address "
-                    + "WHERE (acb.deleted = false)",
-                    CertificationBodyEntity.class).getResultList();
+        return entityManager.createQuery("SELECT acb from CertificationBodyEntity acb "
+                + "LEFT OUTER JOIN FETCH acb.address " + "WHERE (acb.deleted = false)", CertificationBodyEntity.class)
+                .getResultList();
     }
 
     /**
      * Find an ACB by ID.
+     * 
      * @param entityId
      * @return
      * @throws EntityRetrievalException
      */
-    private CertificationBodyEntity getEntityById(final Long entityId)
-            throws EntityRetrievalException {
+    private CertificationBodyEntity getEntityById(final Long entityId) throws EntityRetrievalException {
         CertificationBodyEntity entity = null;
 
-        String queryStr = "SELECT acb from CertificationBodyEntity acb "
-                        + "LEFT OUTER JOIN FETCH acb.address "
-                        + "WHERE (acb.id = :entityid)"
-                        + " AND (acb.deleted = false)";
+        String queryStr = "SELECT acb from CertificationBodyEntity acb " + "LEFT OUTER JOIN FETCH acb.address "
+                + "WHERE (acb.id = :entityid)" + " AND (acb.deleted = false)";
 
         Query query = entityManager.createQuery(queryStr, CertificationBodyEntity.class);
         query.setParameter("entityid", entityId);
@@ -241,6 +236,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 
     /**
      * Find an ACB by name.
+     * 
      * @param name
      * @return
      */
@@ -248,10 +244,8 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
         CertificationBodyEntity entity = null;
 
         Query query = entityManager.createQuery(
-                "SELECT acb from CertificationBodyEntity acb "
-                + "LEFT OUTER JOIN FETCH acb.address "
-                + "WHERE (acb.deleted = false) "
-                + "AND (UPPER(acb.name) = :name) ",
+                "SELECT acb from CertificationBodyEntity acb " + "LEFT OUTER JOIN FETCH acb.address "
+                        + "WHERE (acb.deleted = false) " + "AND (UPPER(acb.name) = :name) ",
                 CertificationBodyEntity.class);
         query.setParameter("name", name.toUpperCase());
         List<CertificationBodyEntity> result = query.getResultList();

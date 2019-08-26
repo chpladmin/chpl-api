@@ -1,6 +1,26 @@
 # Release Notes
+
+## Version 21.6.0
+_26 August 2019_
+
+### Features
+* Remove address re-use between organizations
+
+### Bug Fixes
+* Summary Statistics error when listing w/o status exists (listing was deleted)
+
+---
+
+## Version 21.5.0
+_12 August 2019_
+
+### Flagged Features
+* Support entry and edit of complaints 
+
+---
+
 ## Version 21.4.0
-_TBD_
+_29 July 2019_
 
 ### New Features
 * add activity tracking for complaints
@@ -16,7 +36,6 @@ _TBD_
 
 ---
 
-
 ## Version 21.3.0
 _22 July 2019_
 
@@ -28,7 +47,6 @@ _22 July 2019_
   * /activity/metadata/announcements
 
 ---
-
 
 ## Version 21.2.0
 _17 June 2019_
