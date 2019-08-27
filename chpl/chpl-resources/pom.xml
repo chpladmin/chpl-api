@@ -51,11 +51,13 @@
             <artifactId>junit</artifactId>
             <version>4.8.1</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.hibernate.javax.persistence/hibernate-jpa-2.1-api -->
         <dependency>
             <groupId>org.hibernate.javax.persistence</groupId>
-            <artifactId>hibernate-jpa-2.0-api</artifactId>
-            <version>1.0.1.Final</version>
-        </dependency>
+            <artifactId>hibernate-jpa-2.1-api</artifactId>
+            <version>1.0.2.Final</version>
+         </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
@@ -63,6 +65,54 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>environment-specific</id>
+            <activation>
+                <property>
+                    <name>env</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <!-- this plugin will allow files in environment-specific
+                        folders like resources-prod or resources-test to be added in the resulting
+                        jar; to activate the profile, simply add
+                        '-Denv=production' to your maven build command this also works fine with
+                        war:inplace and war:exploded -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>2.7</version>
+                        <executions>
+                            <execution>
+                                <id>copy-resources</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                                    <resources>
+                                        <!-- note the order of the following resource
+                                            elements are important. if there are duplicate files, the first file copied
+                                            will win -->
+                                        <resource>
+                                            <directory>src/main/resources-${env}</directory>
+                                        </resource>
+                                        <resource>
+                                            <directory>src/main/resources</directory>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
   <build>
     <plugins>

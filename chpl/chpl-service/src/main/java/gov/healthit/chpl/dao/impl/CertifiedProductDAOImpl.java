@@ -26,6 +26,7 @@ import gov.healthit.chpl.util.AuthUtil;
 
 /**
  * Certified Product DAO.
+ * 
  * @author alarned
  *
  */
@@ -251,7 +252,8 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
     public List<CertifiedProductDetailsDTO> findWithInheritance() {
 
         List<CertifiedProductDetailsEntity> entities = entityManager.createQuery(
-                "SELECT DISTINCT cp " + "FROM CertifiedProductDetailsEntity cp " + "WHERE (icsCode != '0' OR ics = true)",
+                "SELECT DISTINCT cp " + "FROM CertifiedProductDetailsEntity cp "
+                        + "WHERE (icsCode != '0' OR ics = true)",
                 CertifiedProductDetailsEntity.class).getResultList();
 
         List<CertifiedProductDetailsDTO> products = new ArrayList<>();
@@ -360,7 +362,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
     @Transactional(readOnly = true)
     public CertifiedProductDetailsDTO getDetailsById(final Long cpId) throws EntityRetrievalException {
         Query query = entityManager.createQuery("from CertifiedProductDetailsEntity deets "
-                + "LEFT OUTER JOIN FETCH deets.product " + "where deets.id = :cpId)",
+                + "LEFT OUTER JOIN FETCH deets.product " + "where deets.id = :cpId",
                 CertifiedProductDetailsEntity.class);
         query.setParameter("cpId", cpId);
         List<CertifiedProductDetailsEntity> results = query.getResultList();
@@ -428,7 +430,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
     @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> getDetailsByVersionId(final Long versionId) {
         Query query = entityManager.createQuery("from CertifiedProductDetailsEntity deets "
-                + "LEFT OUTER JOIN FETCH deets.product " + "WHERE deets.productVersionId = :versionId)",
+                + "LEFT OUTER JOIN FETCH deets.product " + "WHERE deets.productVersionId = :versionId",
                 CertifiedProductDetailsEntity.class);
         query.setParameter("versionId", versionId);
         List<CertifiedProductDetailsEntity> results = query.getResultList();
@@ -444,7 +446,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
     @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> getDetailsByProductId(final Long productId) {
         Query query = entityManager.createQuery("from CertifiedProductDetailsEntity deets "
-                + "LEFT OUTER JOIN FETCH deets.product " + "WHERE deets.productId = :productId)",
+                + "LEFT OUTER JOIN FETCH deets.product " + "WHERE deets.productId = :productId",
                 CertifiedProductDetailsEntity.class);
         query.setParameter("productId", productId);
         List<CertifiedProductDetailsEntity> results = query.getResultList();
@@ -478,7 +480,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
             final List<Long> acbIds) {
         Query query = entityManager.createQuery(
                 "from CertifiedProductDetailsEntity where (NOT deleted = true) and "
-                + "certification_body_id IN :idList and product_version_id = :versionId",
+                        + "certification_body_id IN :idList and product_version_id = :versionId",
                 CertifiedProductDetailsEntity.class);
         query.setParameter("idList", acbIds);
         query.setParameter("versionId", versionId);
@@ -569,7 +571,8 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 
         Query query = entityManager.createQuery("from CertifiedProductDetailsEntity deets "
                 + "LEFT OUTER JOIN FETCH deets.product " + "where " + "deets.year = '20' || :yearCode AND "
-//                + "deets.testingLabCode = :atlCode AND " + "deets.certificationBodyCode = :acbCode AND "
+                // + "deets.testingLabCode = :atlCode AND " +
+                // "deets.certificationBodyCode = :acbCode AND "
                 + "deets.certificationBodyCode = :acbCode AND "
                 + "deets.developerCode = :developerCode AND " + "deets.productCode = :productCode AND "
                 + "deets.versionCode = :versionCode AND " + "deets.icsCode = :icsCode AND "
@@ -578,7 +581,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
                 + "deets.certifiedDateCode = :certifiedDateCode ", CertifiedProductDetailsEntity.class);
 
         query.setParameter("yearCode", yearCode);
-//        query.setParameter("atlCode", atlCode);
+        // query.setParameter("atlCode", atlCode);
         query.setParameter("acbCode", acbCode);
         query.setParameter("developerCode", developerCode);
         query.setParameter("productCode", productCode);
