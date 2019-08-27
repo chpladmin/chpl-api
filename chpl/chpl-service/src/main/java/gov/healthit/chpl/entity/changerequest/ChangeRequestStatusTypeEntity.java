@@ -9,7 +9,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "change_request_status_type")
@@ -25,22 +24,16 @@ public class ChangeRequestStatusTypeEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
     private Date creationDate;
 
-    @Basic(optional = false)
     @Column(name = "last_modified_date", nullable = false)
     private Date lastModifiedDate;
 
-    @Basic(optional = false)
-    @NotNull()
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
-    @Basic(optional = false)
-    @NotNull()
-    @Column(nullable = false)
+    @Column(name = "deleted", nullable = false)
     private Boolean deleted;
 
     public Long getId() {

@@ -5,14 +5,19 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.entity.CertificationBodyEntity;
+
 @Entity
-@Table(name = "change_request_type")
-public class ChangeRequestTypeEntity {
+@Table(name = "change_request_certification_body_map")
+public class ChangeRequestCertificationBodyMapEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,8 +26,16 @@ public class ChangeRequestTypeEntity {
     private Long id;
 
     @Basic(optional = false)
-    @Column(name = "name", nullable = false)
-    private String name;
+    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "change_request_id", nullable = false, insertable = false,
+            updatable = false)
+    private ChangeRequestEntity changeRequest;
+
+    @Basic(optional = false)
+    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "certification_body_id", nullable = false, insertable = false,
+            updatable = false)
+    private CertificationBodyEntity certificationBody;
 
     @Column(name = "creation_date", nullable = false)
     private Date creationDate;
@@ -44,12 +57,20 @@ public class ChangeRequestTypeEntity {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public ChangeRequestEntity getChangeRequest() {
+        return changeRequest;
     }
 
-    public void setName(final String name) {
-        this.name = name;
+    public void setChangeRequest(final ChangeRequestEntity changeRequest) {
+        this.changeRequest = changeRequest;
+    }
+
+    public CertificationBodyEntity getCertificationBody() {
+        return certificationBody;
+    }
+
+    public void setCertificationBody(final CertificationBodyEntity certificationBody) {
+        this.certificationBody = certificationBody;
     }
 
     public Date getCreationDate() {

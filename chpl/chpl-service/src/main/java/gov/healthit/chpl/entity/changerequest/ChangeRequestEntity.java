@@ -12,7 +12,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 
@@ -38,36 +37,16 @@ public class ChangeRequestEntity {
             updatable = false)
     private DeveloperEntity developer;
 
-    /*
-     * @Basic(optional = true)
-     * 
-     * @JoinTable(name = "change_request_certification_body_map", joinColumns =
-     * {
-     * 
-     * @JoinColumn(name = "change_request_id", referencedColumnName = "id") },
-     * inverseJoinColumns = {
-     * 
-     * @JoinColumn(name = "certification_body_id", referencedColumnName =
-     * "certification_body_id") }) private List<CertificationBodyEntity>
-     * certificationBodies;
-     */
-
-    @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
     private Date creationDate;
 
-    @Basic(optional = false)
     @Column(name = "last_modified_date", nullable = false)
     private Date lastModifiedDate;
 
-    @Basic(optional = false)
-    @NotNull()
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
-    @Basic(optional = false)
-    @NotNull()
-    @Column(nullable = false)
+    @Column(name = "deleted", nullable = false)
     private Boolean deleted;
 
     public Long getId() {

@@ -12,11 +12,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+
+import gov.healthit.chpl.entity.CertificationBodyEntity;
 
 @Entity
 @Table(name = "change_request_status")
-public class ChangeRequestStatus {
+public class ChangeRequestStatusEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,6 +37,12 @@ public class ChangeRequestStatus {
             updatable = false)
     private ChangeRequestStatusTypeEntity changeRequestStatusType;
 
+    @Basic(optional = true)
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "certification_body_id", nullable = true, insertable = true,
+            updatable = false)
+    private CertificationBodyEntity certificationBody;
+
     @Basic(optional = false)
     @Column(name = "status_change_date", nullable = false)
     private Date statusChangeDate;
@@ -44,22 +51,16 @@ public class ChangeRequestStatus {
     @Column(name = "comment", nullable = true)
     private String comment;
 
-    @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
     private Date creationDate;
 
-    @Basic(optional = false)
     @Column(name = "last_modified_date", nullable = false)
     private Date lastModifiedDate;
 
-    @Basic(optional = false)
-    @NotNull()
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
-    @Basic(optional = false)
-    @NotNull()
-    @Column(nullable = false)
+    @Column(name = "deleted", nullable = false)
     private Boolean deleted;
 
     public Long getId() {
@@ -84,6 +85,14 @@ public class ChangeRequestStatus {
 
     public void setChangeRequestStatusType(final ChangeRequestStatusTypeEntity changeRequestStatusType) {
         this.changeRequestStatusType = changeRequestStatusType;
+    }
+
+    public CertificationBodyEntity getCertificationBody() {
+        return certificationBody;
+    }
+
+    public void setCertificationBody(CertificationBodyEntity certificationBody) {
+        this.certificationBody = certificationBody;
     }
 
     public Date getStatusChangeDate() {

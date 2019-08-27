@@ -12,7 +12,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "change_request_website")
@@ -34,22 +33,16 @@ public class ChangeRequestWebsiteEntity {
     @Column(name = "website", nullable = false)
     private String website;
 
-    @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
     private Date creationDate;
 
-    @Basic(optional = false)
     @Column(name = "last_modified_date", nullable = false)
     private Date lastModifiedDate;
 
-    @Basic(optional = false)
-    @NotNull()
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
-    @Basic(optional = false)
-    @NotNull()
-    @Column(nullable = false)
+    @Column(name = "deleted", nullable = false)
     private Boolean deleted;
 
     public Long getId() {
