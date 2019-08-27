@@ -1,7 +1,6 @@
 package gov.healthit.chpl.dao.changerequest;
 
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.persistence.Query;
@@ -9,25 +8,25 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.changerequest.ChangeRequestConverter;
 import gov.healthit.chpl.domain.changerequest.ChangeRequestStatusType;
 import gov.healthit.chpl.entity.changerequest.ChangeRequestStatusTypeEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
-@Repository
-public class ChangeRequestStatusTypeDAOImpl extends BaseDAOImpl {
+@Repository("changeRequestStatusTypeDAO")
+public class ChangeRequestStatusTypeDAOImpl extends BaseDAOImpl implements ChangeRequestStatusTypeDAO {
 
     public ChangeRequestStatusType getChangeRequestStatusTypeById(Long changeRequestStatusTypeId)
             throws EntityRetrievalException {
-        return mapToChangeRequestStatusType.apply(getChangeRequestStatusTypeEntity(changeRequestStatusTypeId));
+        return ChangeRequestConverter.convert(getChangeRequestStatusTypeEntity(changeRequestStatusTypeId));
 
     }
 
     public List<ChangeRequestStatusType> getChangeRequestStatusTypes() {
-        List<ChangeRequestStatusTypeEntity> entities = getChangeRequestStatusTypeEntities();
-        List<ChangeRequestStatusType> domains = entities.stream()
-                .map(mapToChangeRequestStatusType)
+        return getChangeRequestStatusTypeEntities().stream()
+                .map(ChangeRequestConverter::convert)
                 .collect(Collectors.<ChangeRequestStatusType> toList());
-        return domains;
+
     }
 
     private List<ChangeRequestStatusTypeEntity> getChangeRequestStatusTypeEntities() {
@@ -57,15 +56,4 @@ public class ChangeRequestStatusTypeDAOImpl extends BaseDAOImpl {
         }
         return result.get(0);
     }
-
-    Function<ChangeRequestStatusTypeEntity, ChangeRequestStatusType> mapToChangeRequestStatusType = new Function<ChangeRequestStatusTypeEntity, ChangeRequestStatusType>() {
-        @Override
-        public ChangeRequestStatusType apply(ChangeRequestStatusTypeEntity t) {
-            ChangeRequestStatusType status = new ChangeRequestStatusType();
-            status.setId(t.getId());
-            status.setName(t.getName());
-            return status;
-        }
-    };
-
 }

@@ -1,7 +1,6 @@
 package gov.healthit.chpl.entity.changerequest;
 
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -11,12 +10,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 
 @Entity
@@ -41,13 +38,19 @@ public class ChangeRequestEntity {
             updatable = false)
     private DeveloperEntity developer;
 
-    @Basic(optional = true)
-    @JoinTable(name = "change_request_certification_body_map", joinColumns = {
-            @JoinColumn(name = "change_request_id", referencedColumnName = "id")
-    }, inverseJoinColumns = {
-            @JoinColumn(name = "certification_body_id", referencedColumnName = "certification_body_id")
-    })
-    private List<CertificationBodyEntity> certificationBodies;
+    /*
+     * @Basic(optional = true)
+     * 
+     * @JoinTable(name = "change_request_certification_body_map", joinColumns =
+     * {
+     * 
+     * @JoinColumn(name = "change_request_id", referencedColumnName = "id") },
+     * inverseJoinColumns = {
+     * 
+     * @JoinColumn(name = "certification_body_id", referencedColumnName =
+     * "certification_body_id") }) private List<CertificationBodyEntity>
+     * certificationBodies;
+     */
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
@@ -91,13 +94,13 @@ public class ChangeRequestEntity {
         this.developer = developer;
     }
 
-    public List<CertificationBodyEntity> getCertificationBodies() {
-        return certificationBodies;
-    }
-
-    public void setCertificationBodies(final List<CertificationBodyEntity> certificationBodies) {
-        this.certificationBodies = certificationBodies;
-    }
+    /*
+     * public List<CertificationBodyEntity> getCertificationBodies() { return
+     * certificationBodies; }
+     * 
+     * public void setCertificationBodies(final List<CertificationBodyEntity>
+     * certificationBodies) { this.certificationBodies = certificationBodies; }
+     */
 
     public Date getCreationDate() {
         return creationDate;
