@@ -34,7 +34,6 @@ import gov.healthit.chpl.domain.UpdateDevelopersRequest;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.dto.AddressDTO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
@@ -46,13 +45,11 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MissingReasonException;
-import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.manager.auth.UserManager;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
@@ -75,6 +72,7 @@ public class DeveloperController {
     @Autowired
     public DeveloperController(final DeveloperManager developerManager,
             final CertifiedProductManager cpManager,
+            final UserManager userManager,
             final UserPermissionsManager userPermissionsManager,
             final ErrorMessageUtil msgUtil,
             final ChplProductNumberUtil chplProductNumberUtil,
@@ -269,7 +267,6 @@ public class DeveloperController {
         if (!ff4j.check(FeatureList.ROLE_DEVELOPER)) {
             throw new NotImplementedException();
         }
-
         List<UserDTO> users = developerManager.getAllUsersOnDeveloper(developerId);
         List<User> domainUsers = new ArrayList<User>(users.size());
         for (UserDTO userDto : users) {
