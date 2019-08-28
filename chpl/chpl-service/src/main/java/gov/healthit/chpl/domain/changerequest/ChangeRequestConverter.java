@@ -9,6 +9,7 @@ import gov.healthit.chpl.entity.changerequest.ChangeRequestEntity;
 import gov.healthit.chpl.entity.changerequest.ChangeRequestStatusEntity;
 import gov.healthit.chpl.entity.changerequest.ChangeRequestStatusTypeEntity;
 import gov.healthit.chpl.entity.changerequest.ChangeRequestTypeEntity;
+import gov.healthit.chpl.entity.changerequest.ChangeRequestWebsiteEntity;
 
 public class ChangeRequestConverter {
 
@@ -55,5 +56,13 @@ public class ChangeRequestConverter {
             status.setCertificationBody(new CertificationBody(new CertificationBodyDTO(entity.getCertificationBody())));
         }
         return status;
+    }
+
+    public static ChangeRequestWebsite convert(ChangeRequestWebsiteEntity entity) {
+        ChangeRequestWebsite crWebsite = new ChangeRequestWebsite();
+        crWebsite.setId(entity.getId());
+        crWebsite.setChangeRequest(convert(entity.getChangeRequest()));
+        crWebsite.setWebsite(entity.getWebsite());
+        return crWebsite;
     }
 }

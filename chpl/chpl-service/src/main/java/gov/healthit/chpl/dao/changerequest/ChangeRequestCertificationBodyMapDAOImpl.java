@@ -62,5 +62,4 @@ public class ChangeRequestCertificationBodyMapDAOImpl extends BaseDAOImpl
         }
         return result.get(0);
     }
-
 }

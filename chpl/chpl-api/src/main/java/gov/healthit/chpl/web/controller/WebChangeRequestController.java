@@ -11,25 +11,26 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.dao.changerequest.ChangeRequestStatusTypeDAO;
-import gov.healthit.chpl.domain.changerequest.ChangeRequest;
 import gov.healthit.chpl.domain.changerequest.ChangeRequestStatusType;
+import gov.healthit.chpl.domain.changerequest.ChangeRequestWebsite;
+import gov.healthit.chpl.entity.changerequest.DeveloperWebsiteChangeRequest;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.changerequest.ChangeRequestBaseManager;
+import gov.healthit.chpl.manager.changerequest.ChangeRequestWebsiteManager;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Api(value = "web-change-requests")
+@Api(value = "change-requests")
 @RestController
-@RequestMapping("/web-change-requests")
+@RequestMapping("/change-requests")
 public class WebChangeRequestController {
     
     private ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO;
-    private ChangeRequestBaseManager changeRequestManager;
+    private ChangeRequestWebsiteManager changeRequestWebsiteManager;
     
     @Autowired
-    public WebChangeRequestController(final ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO, final ChangeRequestBaseManager changeRequestManager) {
+    public WebChangeRequestController(final ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO, final ChangeRequestWebsiteManager changeRequestWebsiteManager) {
         this.changeRequestStatusTypeDAO = changeRequestStatusTypeDAO;
-        this.changeRequestManager = changeRequestManager;
+        this.changeRequestWebsiteManager = changeRequestWebsiteManager;
     }
     
     @ApiOperation(value = "List all change request types", 
@@ -41,10 +42,10 @@ public class WebChangeRequestController {
     
     @ApiOperation(value = "Create a new testing lab.",
             notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC to create a new testing lab.")
-    @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
+    @RequestMapping(value = "/websites", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public ChangeRequest createChangeRequest(@RequestBody final ChangeRequest cr) throws EntityRetrievalException {
-        return changeRequestManager.create(cr);
+    public ChangeRequestWebsite createChangeRequest(@RequestBody final DeveloperWebsiteChangeRequest developerWebsiteChangeRequest) throws EntityRetrievalException {
+        return changeRequestWebsiteManager.create(developerWebsiteChangeRequest.getDeveloper(), developerWebsiteChangeRequest.getWebsite());
     }
     
 }
