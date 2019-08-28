@@ -27,13 +27,13 @@ public class ChangeRequestCertificationBodyMapEntity {
 
     @Basic(optional = false)
     @OneToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "change_request_id", nullable = false, insertable = false,
+    @JoinColumn(name = "change_request_id", nullable = false, insertable = true,
             updatable = false)
     private ChangeRequestEntity changeRequest;
 
     @Basic(optional = false)
     @OneToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "certification_body_id", nullable = false, insertable = false,
+    @JoinColumn(name = "certification_body_id", nullable = false, insertable = true,
             updatable = false)
     private CertificationBodyEntity certificationBody;
 

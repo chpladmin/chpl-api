@@ -14,7 +14,7 @@ import gov.healthit.chpl.dao.changerequest.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.domain.changerequest.ChangeRequest;
 import gov.healthit.chpl.domain.changerequest.ChangeRequestStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.changerequest.ChangeRequestManager;
+import gov.healthit.chpl.manager.changerequest.ChangeRequestBaseManager;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -24,10 +24,10 @@ import io.swagger.annotations.ApiOperation;
 public class WebChangeRequestController {
     
     private ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO;
-    private ChangeRequestManager changeRequestManager;
+    private ChangeRequestBaseManager changeRequestManager;
     
     @Autowired
-    public WebChangeRequestController(final ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO, final ChangeRequestManager changeRequestManager) {
+    public WebChangeRequestController(final ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO, final ChangeRequestBaseManager changeRequestManager) {
         this.changeRequestStatusTypeDAO = changeRequestStatusTypeDAO;
         this.changeRequestManager = changeRequestManager;
     }

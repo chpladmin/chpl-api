@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.changerequest.ChangeRequest;
-import gov.healthit.chpl.domain.changerequest.ChangeRequestCertificationBodyMap;
 import gov.healthit.chpl.domain.changerequest.ChangeRequestConverter;
 import gov.healthit.chpl.entity.changerequest.ChangeRequestEntity;
 import gov.healthit.chpl.entity.changerequest.ChangeRequestTypeEntity;
@@ -29,21 +28,10 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
     public ChangeRequest create(final ChangeRequest cr) throws EntityRetrievalException {
         ChangeRequestEntity entity = getNewEntity(cr);
         create(entity);
-        entity = getEntityById(entity.getId());
-        ChangeRequest newCr = ChangeRequestConverter.convert(entity);
-
-        // Save each of the ACBs
-        cr.getCertificationBodies().forEach(cb -> {
-            ChangeRequestCertificationBodyMap map = new ChangeRequestCertificationBodyMap();
-            map.setChangeRequest(cr);
-            map.setCertificationBody(cb);
-            map = crAcbMapDAO.create(map);
-            newCr.getCertificationBodies().add(map.getCertificationBody());
-        });
-        return newCr;
+        return ChangeRequestConverter.convert(getEntityById(entity.getId()));
     }
 
-    public ChangeRequestEntity getEntityById(final Long id) throws EntityRetrievalException {
+    private ChangeRequestEntity getEntityById(final Long id) throws EntityRetrievalException {
         String hql = "SELECT DISTINCT cr "
                 + "FROM ChangeRequestEntity cr "
                 + "JOIN FETCH cr.changeRequestType "
