@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,8 +30,12 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Component
 public class ChangeRequestManagerImpl extends SecurityManager implements ChangeRequestManager {
-    private final static Long INITIAL_STATUS = 1L;
-    private final static Long CHANGE_REQUEST_TYPE_WEBSITE = 1L;
+
+    @Value("${changerequest.status.pendingacbaction}")
+    private Long pendingAcbActionStatus;
+
+    @Value("${changerequest.website}")
+    private Long websiteChangeRequestType;
 
     private ChangeRequestDAO changeRequestDAO;
     private ChangeRequestStatusDAO crStatusDAO;
@@ -62,7 +67,7 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
         ChangeRequest cr = new ChangeRequest();
         cr.setDeveloper(developer);
         ChangeRequestType crType = new ChangeRequestType();
-        crType.setId(CHANGE_REQUEST_TYPE_WEBSITE);
+        crType.setId(this.websiteChangeRequestType);
         cr.setChangeRequestType(crType);
         cr = saveBaseChangeRequest(cr);
 
@@ -97,7 +102,7 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
 
     private ChangeRequestStatus saveInitialStatus(ChangeRequest cr) throws EntityRetrievalException {
         ChangeRequestStatusType crStatusType = new ChangeRequestStatusType();
-        crStatusType.setId(INITIAL_STATUS);
+        crStatusType.setId(this.pendingAcbActionStatus);
 
         ChangeRequestStatus crStatus = new ChangeRequestStatus();
         crStatus.setStatusChangeDate(new Date());
@@ -155,7 +160,7 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
 
     private Object getChangeRequestDetails(ChangeRequest cr) throws EntityRetrievalException {
 
-        if (cr.getChangeRequestType().getId() == CHANGE_REQUEST_TYPE_WEBSITE) {
+        if (cr.getChangeRequestType().getId() == this.websiteChangeRequestType) {
             return crWebsiteDAO.getByChangeRequestId(cr.getId());
         } else {
             return null;
