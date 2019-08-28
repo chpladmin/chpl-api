@@ -7,7 +7,6 @@ public class ChangeRequestWebsite implements Serializable {
 
     private Long id;
     private String website;
-    private ChangeRequest changeRequest;
 
     public Long getId() {
         return id;
@@ -24,13 +23,4 @@ public class ChangeRequestWebsite implements Serializable {
     public void setWebsite(String website) {
         this.website = website;
     }
-
-    public ChangeRequest getChangeRequest() {
-        return changeRequest;
-    }
-
-    public void setChangeRequest(final ChangeRequest changeRequest) {
-        this.changeRequest = changeRequest;
-    }
-
 }

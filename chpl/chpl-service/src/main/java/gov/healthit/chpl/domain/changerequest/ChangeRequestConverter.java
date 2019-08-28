@@ -61,7 +61,6 @@ public class ChangeRequestConverter {
     public static ChangeRequestWebsite convert(ChangeRequestWebsiteEntity entity) {
         ChangeRequestWebsite crWebsite = new ChangeRequestWebsite();
         crWebsite.setId(entity.getId());
-        crWebsite.setChangeRequest(convert(entity.getChangeRequest()));
         crWebsite.setWebsite(entity.getWebsite());
         return crWebsite;
     }

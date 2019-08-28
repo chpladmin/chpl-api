@@ -8,6 +8,7 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.changerequest.ChangeRequest;
 import gov.healthit.chpl.domain.changerequest.ChangeRequestConverter;
 import gov.healthit.chpl.domain.changerequest.ChangeRequestWebsite;
 import gov.healthit.chpl.entity.changerequest.ChangeRequestEntity;
@@ -19,8 +20,9 @@ import gov.healthit.chpl.util.AuthUtil;
 public class ChangeRequestWebsiteDAOImpl extends BaseDAOImpl implements ChangeRequestWebsiteDAO {
 
     @Override
-    public ChangeRequestWebsite create(ChangeRequestWebsite crWebsite) throws EntityRetrievalException {
-        ChangeRequestWebsiteEntity entity = getNewEntity(crWebsite);
+    public ChangeRequestWebsite create(final ChangeRequest cr, final ChangeRequestWebsite crWebsite)
+            throws EntityRetrievalException {
+        ChangeRequestWebsiteEntity entity = getNewEntity(cr, crWebsite);
         create(entity);
         return ChangeRequestConverter.convert(getEntity(entity.getId()));
     }
@@ -30,9 +32,9 @@ public class ChangeRequestWebsiteDAOImpl extends BaseDAOImpl implements ChangeRe
         return ChangeRequestConverter.convert(getEntityByChangeRequestId(changeRequestId));
     }
 
-    private ChangeRequestWebsiteEntity getNewEntity(final ChangeRequestWebsite crWebsite) {
+    private ChangeRequestWebsiteEntity getNewEntity(final ChangeRequest cr, final ChangeRequestWebsite crWebsite) {
         ChangeRequestWebsiteEntity entity = new ChangeRequestWebsiteEntity();
-        entity.setChangeRequest(getSession().load(ChangeRequestEntity.class, crWebsite.getChangeRequest().getId()));
+        entity.setChangeRequest(getSession().load(ChangeRequestEntity.class, cr.getId()));
         entity.setWebsite(crWebsite.getWebsite());
         entity.setDeleted(false);
         entity.setLastModifiedUser(AuthUtil.getAuditId());

@@ -70,7 +70,7 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
         ChangeRequestWebsite crWebsite = saveWebsite(cr, website);
         cr.setDetails(crWebsite);
 
-        return cr;
+        return getChangeRequest(cr.getId());
     }
 
     @Override
@@ -145,10 +145,9 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
 
     private ChangeRequestWebsite saveWebsite(ChangeRequest cr, String website) {
         ChangeRequestWebsite crWebsite = new ChangeRequestWebsite();
-        crWebsite.setChangeRequest(cr);
         crWebsite.setWebsite(website);
         try {
-            return crWebsiteDAO.create(crWebsite);
+            return crWebsiteDAO.create(cr, crWebsite);
         } catch (EntityRetrievalException e) {
             throw new RuntimeException(e);
         }
