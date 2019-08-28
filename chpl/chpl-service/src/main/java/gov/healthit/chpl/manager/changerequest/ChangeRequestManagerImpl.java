@@ -7,49 +7,87 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.changerequest.ChangeRequestCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.changerequest.ChangeRequestDAO;
 import gov.healthit.chpl.dao.changerequest.ChangeRequestStatusDAO;
+import gov.healthit.chpl.dao.changerequest.ChangeRequestWebsiteDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.changerequest.ChangeRequest;
 import gov.healthit.chpl.domain.changerequest.ChangeRequestCertificationBodyMap;
 import gov.healthit.chpl.domain.changerequest.ChangeRequestStatus;
 import gov.healthit.chpl.domain.changerequest.ChangeRequestStatusType;
+import gov.healthit.chpl.domain.changerequest.ChangeRequestType;
+import gov.healthit.chpl.domain.changerequest.ChangeRequestWebsite;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Component
-public class ChangeRequestBaseManagerImpl extends SecurityManager implements ChangeRequestBaseManager {
+public class ChangeRequestManagerImpl extends SecurityManager implements ChangeRequestManager {
     private final static Long INITIAL_STATUS = 1L;
+    private final static Long CHANGE_REQUEST_TYPE_WEBSITE = 1L;
 
     private ChangeRequestDAO changeRequestDAO;
-    private ChangeRequestStatusDAO changeRequestStatusDAO;
+    private ChangeRequestStatusDAO crStatusDAO;
     private CertifiedProductDAO certifiedProductDAO;
     private CertificationBodyDAO certificationBodyDAO;
-    private ChangeRequestCertificationBodyMapDAO changeRequestCertificationBodyMapDAO;
+    private ChangeRequestCertificationBodyMapDAO crCertificationBodyMapDAO;
+    private ChangeRequestWebsiteDAO crWebsiteDAO;
 
     @Autowired
-    public ChangeRequestBaseManagerImpl(final ChangeRequestDAO changeRequestDAO,
+    public ChangeRequestManagerImpl(final ChangeRequestDAO changeRequestDAO,
             final ChangeRequestStatusDAO changeRequestStatusDAO, final CertifiedProductDAO certifiedProductDAO,
             final CertificationBodyDAO certificationBodyDAO,
-            final ChangeRequestCertificationBodyMapDAO changeRequestCertificationBodyMapDAO) {
+            final ChangeRequestCertificationBodyMapDAO changeRequestCertificationBodyMapDAO,
+            final ChangeRequestWebsiteDAO crWebsiteDAO) {
         this.changeRequestDAO = changeRequestDAO;
-        this.changeRequestStatusDAO = changeRequestStatusDAO;
+        this.crStatusDAO = changeRequestStatusDAO;
         this.certifiedProductDAO = certifiedProductDAO;
         this.certificationBodyDAO = certificationBodyDAO;
-        this.changeRequestCertificationBodyMapDAO = changeRequestCertificationBodyMapDAO;
+        this.crCertificationBodyMapDAO = changeRequestCertificationBodyMapDAO;
+        this.crWebsiteDAO = crWebsiteDAO;
     }
 
     @Override
     @Transactional
-    public ChangeRequest create(final ChangeRequest cr) throws EntityRetrievalException {
+    public ChangeRequest createWebsiteChangeRequest(final Developer developer, final String website)
+            throws EntityRetrievalException {
+
+        // Save the base change request
+        ChangeRequest cr = new ChangeRequest();
+        cr.setDeveloper(developer);
+        ChangeRequestType crType = new ChangeRequestType();
+        crType.setId(CHANGE_REQUEST_TYPE_WEBSITE);
+        cr.setChangeRequestType(crType);
+        cr = saveBaseChangeRequest(cr);
+
+        // Save the website change request details
+        ChangeRequestWebsite crWebsite = saveWebsite(cr, website);
+        cr.setDetails(crWebsite);
+
+        return cr;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ChangeRequest getChangeRequest(final Long changeRequestId) throws EntityRetrievalException {
+        ChangeRequest cr = new ChangeRequest();
+        cr = changeRequestDAO.get(changeRequestId);
+        cr.setDetails(getChangeRequestDetails(cr));
+        cr.setStatuses(crStatusDAO.getByChangeRequestId(changeRequestId));
+        cr.setCertificationBodies(
+                crCertificationBodyMapDAO.getByChangeRequestId(changeRequestId).stream()
+                        .map(result -> result.getCertificationBody())
+                        .collect(Collectors.<CertificationBody> toList()));
+        return cr;
+    }
+
+    private ChangeRequest saveBaseChangeRequest(final ChangeRequest cr) throws EntityRetrievalException {
         ChangeRequest newCr = changeRequestDAO.create(cr);
         newCr.getStatuses().add(saveInitialStatus(newCr));
         saveCertificationBodies(newCr).stream()
@@ -65,7 +103,7 @@ public class ChangeRequestBaseManagerImpl extends SecurityManager implements Cha
         crStatus.setStatusChangeDate(new Date());
         crStatus.setChangeRequestStatusType(crStatusType);
 
-        return changeRequestStatusDAO.create(cr, crStatus);
+        return crStatusDAO.create(cr, crStatus);
     }
 
     private List<ChangeRequestCertificationBodyMap> saveCertificationBodies(ChangeRequest cr)
@@ -80,7 +118,7 @@ public class ChangeRequestBaseManagerImpl extends SecurityManager implements Cha
         map.setCertificationBody(acb);
         map.setChangeRequest(cr);
         try {
-            return changeRequestCertificationBodyMapDAO.create(map);
+            return crCertificationBodyMapDAO.create(map);
         } catch (EntityRetrievalException e) {
             throw new RuntimeException(e);
         }
@@ -102,6 +140,26 @@ public class ChangeRequestBaseManagerImpl extends SecurityManager implements Cha
             return new CertificationBody(certificationBodyDAO.getById(certificationBodyId));
         } catch (EntityRetrievalException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private ChangeRequestWebsite saveWebsite(ChangeRequest cr, String website) {
+        ChangeRequestWebsite crWebsite = new ChangeRequestWebsite();
+        crWebsite.setChangeRequest(cr);
+        crWebsite.setWebsite(website);
+        try {
+            return crWebsiteDAO.create(crWebsite);
+        } catch (EntityRetrievalException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Object getChangeRequestDetails(ChangeRequest cr) throws EntityRetrievalException {
+
+        if (cr.getChangeRequestType().getId() == CHANGE_REQUEST_TYPE_WEBSITE) {
+            return crWebsiteDAO.getByChangeRequestId(cr.getId());
+        } else {
+            return null;
         }
     }
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -11,26 +12,26 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.dao.changerequest.ChangeRequestStatusTypeDAO;
+import gov.healthit.chpl.domain.changerequest.ChangeRequest;
 import gov.healthit.chpl.domain.changerequest.ChangeRequestStatusType;
-import gov.healthit.chpl.domain.changerequest.ChangeRequestWebsite;
 import gov.healthit.chpl.entity.changerequest.DeveloperWebsiteChangeRequest;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.changerequest.ChangeRequestWebsiteManager;
+import gov.healthit.chpl.manager.changerequest.ChangeRequestManager;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @Api(value = "change-requests")
 @RestController
 @RequestMapping("/change-requests")
-public class WebChangeRequestController {
+public class ChangeRequestController {
     
     private ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO;
-    private ChangeRequestWebsiteManager changeRequestWebsiteManager;
+    private ChangeRequestManager changeRequestManager;
     
     @Autowired
-    public WebChangeRequestController(final ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO, final ChangeRequestWebsiteManager changeRequestWebsiteManager) {
+    public ChangeRequestController(final ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO, final ChangeRequestManager changeRequestManager) {
         this.changeRequestStatusTypeDAO = changeRequestStatusTypeDAO;
-        this.changeRequestWebsiteManager = changeRequestWebsiteManager;
+        this.changeRequestManager = changeRequestManager;
     }
     
     @ApiOperation(value = "List all change request types", 
@@ -40,12 +41,19 @@ public class WebChangeRequestController {
         return changeRequestStatusTypeDAO.getChangeRequestStatusTypes();
     }
     
+    @ApiOperation(value = "Get details about a specific change request.", 
+            notes="")
+    @RequestMapping(value = "/{changeRequestId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody ChangeRequest getChangeRequest(@PathVariable final Long changeRequestId) throws EntityRetrievalException {
+        return changeRequestManager.getChangeRequest(changeRequestId);
+    }
+    
     @ApiOperation(value = "Create a new testing lab.",
             notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC to create a new testing lab.")
     @RequestMapping(value = "/websites", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public ChangeRequestWebsite createChangeRequest(@RequestBody final DeveloperWebsiteChangeRequest developerWebsiteChangeRequest) throws EntityRetrievalException {
-        return changeRequestWebsiteManager.create(developerWebsiteChangeRequest.getDeveloper(), developerWebsiteChangeRequest.getWebsite());
+    public ChangeRequest createChangeRequest(@RequestBody final DeveloperWebsiteChangeRequest developerWebsiteChangeRequest) throws EntityRetrievalException {
+        return changeRequestManager.createWebsiteChangeRequest(developerWebsiteChangeRequest.getDeveloper(), developerWebsiteChangeRequest.getWebsite());
     }
     
 }

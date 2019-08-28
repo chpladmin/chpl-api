@@ -25,6 +25,11 @@ public class ChangeRequestWebsiteDAOImpl extends BaseDAOImpl implements ChangeRe
         return ChangeRequestConverter.convert(getEntity(entity.getId()));
     }
 
+    @Override
+    public ChangeRequestWebsite getByChangeRequestId(final Long changeRequestId) throws EntityRetrievalException {
+        return ChangeRequestConverter.convert(getEntityByChangeRequestId(changeRequestId));
+    }
+
     private ChangeRequestWebsiteEntity getNewEntity(final ChangeRequestWebsite crWebsite) {
         ChangeRequestWebsiteEntity entity = new ChangeRequestWebsiteEntity();
         entity.setChangeRequest(getSession().load(ChangeRequestEntity.class, crWebsite.getChangeRequest().getId()));
@@ -45,6 +50,31 @@ public class ChangeRequestWebsiteDAOImpl extends BaseDAOImpl implements ChangeRe
                         + "AND (crWebsite.id = :changeRequestWebsiteId) ",
                 ChangeRequestWebsiteEntity.class);
         query.setParameter("changeRequestWebsiteId", changeRequestWebsiteId);
+        List<ChangeRequestWebsiteEntity> result = query.getResultList();
+
+        if (result == null || result.size() == 0) {
+            throw new EntityRetrievalException(
+                    "Data error. Change request website not found in database.");
+        } else if (result.size() > 1) {
+            throw new EntityRetrievalException(
+                    "Data error. Duplicate change request website in database.");
+        }
+
+        if (result.size() == 0) {
+            return null;
+        }
+        return result.get(0);
+    }
+
+    private ChangeRequestWebsiteEntity getEntityByChangeRequestId(final Long changeRequestId)
+            throws EntityRetrievalException {
+        Query query = entityManager.createQuery(
+                "FROM ChangeRequestWebsiteEntity crWebsite "
+                        + "JOIN FETCH crWebsite.changeRequest "
+                        + "WHERE (NOT crWebsite.deleted = true) "
+                        + "AND (crWebsite.changeRequest.id = :changeRequestId) ",
+                ChangeRequestWebsiteEntity.class);
+        query.setParameter("changeRequestId", changeRequestId);
         List<ChangeRequestWebsiteEntity> result = query.getResultList();
 
         if (result == null || result.size() == 0) {

@@ -2,6 +2,7 @@ package gov.healthit.chpl.dao.changerequest;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
@@ -26,6 +27,20 @@ public class ChangeRequestCertificationBodyMapDAOImpl extends BaseDAOImpl
         ChangeRequestCertificationBodyMapEntity entity = getNewEntity(map);
         create(entity);
         return ChangeRequestConverter.convert(getEntity(entity.getId()));
+    }
+
+    @Override
+    public List<ChangeRequestCertificationBodyMap> getByChangeRequestId(final Long changeRequestId) {
+        String hql = "FROM ChangeRequestCertificationBodyMapEntity crAcbMap "
+                + "WHERE (NOT crAcbMap.deleted = true) "
+                + "AND (crAcbMap.changeRequest.id = :changeRequestId) ";
+
+        return entityManager
+                .createQuery(hql, ChangeRequestCertificationBodyMapEntity.class)
+                .setParameter("changeRequestId", changeRequestId)
+                .getResultList().stream()
+                .map(ChangeRequestConverter::convert)
+                .collect(Collectors.<ChangeRequestCertificationBodyMap> toList());
     }
 
     private ChangeRequestCertificationBodyMapEntity getNewEntity(final ChangeRequestCertificationBodyMap map) {

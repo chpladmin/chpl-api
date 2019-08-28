@@ -31,6 +31,11 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
         return ChangeRequestConverter.convert(getEntityById(entity.getId()));
     }
 
+    @Override
+    public ChangeRequest get(final Long changeRequestId) throws EntityRetrievalException {
+        return ChangeRequestConverter.convert(getEntityById(changeRequestId));
+    }
+
     private ChangeRequestEntity getEntityById(final Long id) throws EntityRetrievalException {
         String hql = "SELECT DISTINCT cr "
                 + "FROM ChangeRequestEntity cr "

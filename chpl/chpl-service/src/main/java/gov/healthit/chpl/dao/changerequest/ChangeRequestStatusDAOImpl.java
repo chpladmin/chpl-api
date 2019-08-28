@@ -2,6 +2,7 @@ package gov.healthit.chpl.dao.changerequest;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
@@ -25,6 +26,21 @@ public class ChangeRequestStatusDAOImpl extends BaseDAOImpl implements ChangeReq
         ChangeRequestStatusEntity entity = getNewEntity(cr, crStatus);
         create(entity);
         return ChangeRequestConverter.convert(getEntityById(entity.getId()));
+    }
+
+    @Override
+    public List<ChangeRequestStatus> getByChangeRequestId(final Long changeRequestId) {
+        String hql = "SELECT crStatus "
+                + "FROM ChangeRequestStatusEntity crStatus "
+                + "WHERE crStatus.deleted = false "
+                + "AND crStatus.changeRequest.id = :changeRequestId";
+
+        return entityManager
+                .createQuery(hql, ChangeRequestStatusEntity.class)
+                .setParameter("changeRequestId", changeRequestId)
+                .getResultList().stream()
+                .map(ChangeRequestConverter::convert)
+                .collect(Collectors.<ChangeRequestStatus> toList());
     }
 
     private ChangeRequestStatusEntity getEntityById(final Long id) throws EntityRetrievalException {

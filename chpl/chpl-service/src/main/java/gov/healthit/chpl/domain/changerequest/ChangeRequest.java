@@ -15,6 +15,7 @@ public class ChangeRequest implements Serializable {
     private Developer developer;
     private List<CertificationBody> certificationBodies = new ArrayList<CertificationBody>();
     private List<ChangeRequestStatus> statuses = new ArrayList<ChangeRequestStatus>();
+    private Object details;
 
     public Long getId() {
         return id;
@@ -54,5 +55,13 @@ public class ChangeRequest implements Serializable {
 
     public void setStatuses(final List<ChangeRequestStatus> statuses) {
         this.statuses = statuses;
+    }
+
+    public Object getDetails() {
+        return details;
+    }
+
+    public void setDetails(final Object details) {
+        this.details = details;
     }
 }

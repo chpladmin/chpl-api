@@ -5,4 +5,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface ChangeRequestDAO {
     ChangeRequest create(final ChangeRequest cr) throws EntityRetrievalException;
+
+    ChangeRequest get(final Long changeRequestId) throws EntityRetrievalException;
 }
