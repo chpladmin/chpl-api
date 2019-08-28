@@ -3,8 +3,6 @@ package gov.healthit.chpl.dao.changerequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.Query;
-
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -30,20 +28,24 @@ public class ChangeRequestStatusTypeDAOImpl extends BaseDAOImpl implements Chang
     }
 
     private List<ChangeRequestStatusTypeEntity> getChangeRequestStatusTypeEntities() {
-        Query query = entityManager.createQuery("from ChangeRequestStatusTypeEntity where (NOT deleted = true) ",
-                ChangeRequestStatusTypeEntity.class);
-        List<ChangeRequestStatusTypeEntity> result = query.getResultList();
+        String hql = "FROM ChangeRequestStatusTypeEntity "
+                + "WHERE (NOT deleted = true) ";
+        List<ChangeRequestStatusTypeEntity> result = entityManager
+                .createQuery(hql, ChangeRequestStatusTypeEntity.class)
+                .getResultList();
         return result;
     }
 
     private ChangeRequestStatusTypeEntity getChangeRequestStatusTypeEntity(final Long changeRequestStatusTypeId)
             throws EntityRetrievalException {
-        Query query = entityManager.createQuery(
-                "from ChangeRequestStatusTypeEntity where (NOT deleted = true) "
-                        + "AND (id = :changeRequestStatusTypeId) ",
-                ChangeRequestStatusTypeEntity.class);
-        query.setParameter("changeRequestStatusTypeId", changeRequestStatusTypeId);
-        List<ChangeRequestStatusTypeEntity> result = query.getResultList();
+        String hql = "FROM ChangeRequestStatusTypeEntity "
+                + "WHERE (NOT deleted = true) "
+                + "AND (id = :changeRequestStatusTypeId) ";
+
+        List<ChangeRequestStatusTypeEntity> result = entityManager
+                .createQuery(hql, ChangeRequestStatusTypeEntity.class)
+                .setParameter("changeRequestStatusTypeId", changeRequestStatusTypeId)
+                .getResultList();
 
         if (result == null || result.size() == 0) {
             throw new EntityRetrievalException("Data error. Change request status type not found in database.");

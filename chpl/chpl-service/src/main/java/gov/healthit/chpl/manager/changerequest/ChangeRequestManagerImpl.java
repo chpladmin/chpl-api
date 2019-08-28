@@ -96,7 +96,7 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
         ChangeRequest newCr = changeRequestDAO.create(cr);
         newCr.getStatuses().add(saveInitialStatus(newCr));
         saveCertificationBodies(newCr).stream()
-                .forEach(crAcbMap -> newCr.getCertificationBodies().add(crAcbMap.getCertificationBody()));
+                .map(crAcbMap -> newCr.getCertificationBodies().add(crAcbMap.getCertificationBody()));
         return newCr;
     }
 
@@ -159,7 +159,6 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
     }
 
     private Object getChangeRequestDetails(ChangeRequest cr) throws EntityRetrievalException {
-
         if (cr.getChangeRequestType().getId() == this.websiteChangeRequestType) {
             return crWebsiteDAO.getByChangeRequestId(cr.getId());
         } else {

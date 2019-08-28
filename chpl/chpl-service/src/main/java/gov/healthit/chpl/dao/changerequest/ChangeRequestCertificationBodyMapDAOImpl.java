@@ -4,8 +4,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.Query;
-
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -57,12 +55,14 @@ public class ChangeRequestCertificationBodyMapDAOImpl extends BaseDAOImpl
 
     private ChangeRequestCertificationBodyMapEntity getEntity(final Long changeRequestCertificationBodyMapId)
             throws EntityRetrievalException {
-        Query query = entityManager.createQuery(
-                "from ChangeRequestCertificationBodyMapEntity where (NOT deleted = true) "
-                        + "AND (id = :changeRequestCertificationBodyMapId) ",
-                ChangeRequestCertificationBodyMapEntity.class);
-        query.setParameter("changeRequestCertificationBodyMapId", changeRequestCertificationBodyMapId);
-        List<ChangeRequestCertificationBodyMapEntity> result = query.getResultList();
+        String hql = "FROM ChangeRequestCertificationBodyMapEntity "
+                + "WHERE (NOT deleted = true) "
+                + "AND (id = :changeRequestCertificationBodyMapId) ";
+
+        List<ChangeRequestCertificationBodyMapEntity> result = entityManager
+                .createQuery(hql, ChangeRequestCertificationBodyMapEntity.class)
+                .setParameter("changeRequestCertificationBodyMapId", changeRequestCertificationBodyMapId)
+                .getResultList();
 
         if (result == null || result.size() == 0) {
             throw new EntityRetrievalException(

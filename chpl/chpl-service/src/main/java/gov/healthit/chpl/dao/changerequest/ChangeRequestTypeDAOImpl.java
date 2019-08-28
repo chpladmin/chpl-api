@@ -3,8 +3,6 @@ package gov.healthit.chpl.dao.changerequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.Query;
-
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -33,20 +31,21 @@ public class ChangeRequestTypeDAOImpl extends BaseDAOImpl implements ChangeReque
     }
 
     private List<ChangeRequestTypeEntity> getChangeRequestTypeEntities() {
-        Query query = entityManager.createQuery("from ChangeRequestTypeEntity where (NOT deleted = true) ",
-                ChangeRequestTypeEntity.class);
-        List<ChangeRequestTypeEntity> result = query.getResultList();
-        return result;
+        String hql = "FROM ChangeRequestTypeEntity "
+                + "WHERE (NOT deleted = true) ";
+        return entityManager.createQuery(hql, ChangeRequestTypeEntity.class)
+                .getResultList();
     }
 
     private ChangeRequestTypeEntity getChangeRequestTypeEntity(final Long changeRequestTypeId)
             throws EntityRetrievalException {
-        Query query = entityManager.createQuery(
-                "from ChangeRequestTypeEntity where (NOT deleted = true) "
-                        + "AND (id = :changeRequestStatusTypeId) ",
-                ChangeRequestTypeEntity.class);
-        query.setParameter("changeRequestTypeId", changeRequestTypeId);
-        List<ChangeRequestTypeEntity> result = query.getResultList();
+        String hql = "FROM ChangeRequestTypeEntity "
+                + "WHERE (NOT deleted = true) "
+                + "AND (id = :changeRequestStatusTypeId) ";
+        List<ChangeRequestTypeEntity> result = entityManager
+                .createQuery(hql, ChangeRequestTypeEntity.class)
+                .setParameter("changeRequestTypeId", changeRequestTypeId)
+                .getResultList();
 
         if (result == null || result.size() == 0) {
             throw new EntityRetrievalException("Data error. Change request type not found in database.");

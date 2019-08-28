@@ -31,7 +31,6 @@ public class ChangeRequestConverter {
         ChangeRequest cr = new ChangeRequest();
         cr.setId(entity.getId());
         cr.setChangeRequestType(convert(entity.getChangeRequestType()));
-        // Ugh...
         cr.setDeveloper(new Developer(new DeveloperDTO(entity.getDeveloper())));
         return cr;
     }
@@ -40,7 +39,6 @@ public class ChangeRequestConverter {
         ChangeRequestCertificationBodyMap map = new ChangeRequestCertificationBodyMap();
         map.setId(map.getId());
         map.setChangeRequest(convert(entity.getChangeRequest()));
-        // Ugh...
         map.setCertificationBody(new CertificationBody(new CertificationBodyDTO(entity.getCertificationBody())));
         return map;
     }
@@ -51,7 +49,6 @@ public class ChangeRequestConverter {
         status.setChangeRequestStatusType(convert(entity.getChangeRequestStatusType()));
         status.setCommment(entity.getComment());
         status.setStatusChangeDate(entity.getStatusChangeDate());
-        // Ugh...
         if (entity.getCertificationBody() != null) {
             status.setCertificationBody(new CertificationBody(new CertificationBodyDTO(entity.getCertificationBody())));
         }

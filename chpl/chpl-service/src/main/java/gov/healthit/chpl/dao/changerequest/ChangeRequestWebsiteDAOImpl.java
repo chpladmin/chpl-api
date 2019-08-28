@@ -3,8 +3,6 @@ package gov.healthit.chpl.dao.changerequest;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Query;
-
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -45,14 +43,15 @@ public class ChangeRequestWebsiteDAOImpl extends BaseDAOImpl implements ChangeRe
 
     private ChangeRequestWebsiteEntity getEntity(final Long changeRequestWebsiteId)
             throws EntityRetrievalException {
-        Query query = entityManager.createQuery(
-                "FROM ChangeRequestWebsiteEntity crWebsite "
-                        + "JOIN FETCH crWebsite.changeRequest "
-                        + "WHERE (NOT crWebsite.deleted = true) "
-                        + "AND (crWebsite.id = :changeRequestWebsiteId) ",
-                ChangeRequestWebsiteEntity.class);
-        query.setParameter("changeRequestWebsiteId", changeRequestWebsiteId);
-        List<ChangeRequestWebsiteEntity> result = query.getResultList();
+        String hql = "FROM ChangeRequestWebsiteEntity crWebsite "
+                + "JOIN FETCH crWebsite.changeRequest "
+                + "WHERE (NOT crWebsite.deleted = true) "
+                + "AND (crWebsite.id = :changeRequestWebsiteId) ";
+
+        List<ChangeRequestWebsiteEntity> result = entityManager
+                .createQuery(hql, ChangeRequestWebsiteEntity.class)
+                .setParameter("changeRequestWebsiteId", changeRequestWebsiteId)
+                .getResultList();
 
         if (result == null || result.size() == 0) {
             throw new EntityRetrievalException(
@@ -70,14 +69,15 @@ public class ChangeRequestWebsiteDAOImpl extends BaseDAOImpl implements ChangeRe
 
     private ChangeRequestWebsiteEntity getEntityByChangeRequestId(final Long changeRequestId)
             throws EntityRetrievalException {
-        Query query = entityManager.createQuery(
-                "FROM ChangeRequestWebsiteEntity crWebsite "
-                        + "JOIN FETCH crWebsite.changeRequest "
-                        + "WHERE (NOT crWebsite.deleted = true) "
-                        + "AND (crWebsite.changeRequest.id = :changeRequestId) ",
-                ChangeRequestWebsiteEntity.class);
-        query.setParameter("changeRequestId", changeRequestId);
-        List<ChangeRequestWebsiteEntity> result = query.getResultList();
+        String hql = "FROM ChangeRequestWebsiteEntity crWebsite "
+                + "JOIN FETCH crWebsite.changeRequest "
+                + "WHERE (NOT crWebsite.deleted = true) "
+                + "AND (crWebsite.changeRequest.id = :changeRequestId) ";
+
+        List<ChangeRequestWebsiteEntity> result = entityManager
+                .createQuery(hql, ChangeRequestWebsiteEntity.class)
+                .setParameter("changeRequestId", changeRequestId)
+                .getResultList();
 
         if (result == null || result.size() == 0) {
             throw new EntityRetrievalException(

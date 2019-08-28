@@ -3,7 +3,6 @@ package gov.healthit.chpl.dao.changerequest;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -17,12 +16,6 @@ import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("changeRequestDAO")
 public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDAO {
-    private ChangeRequestCertificationBodyMapDAO crAcbMapDAO;
-
-    @Autowired
-    public ChangeRequestDAOImpl(final ChangeRequestCertificationBodyMapDAO crAcbMapDAO) {
-        this.crAcbMapDAO = crAcbMapDAO;
-    }
 
     @Override
     public ChangeRequest create(final ChangeRequest cr) throws EntityRetrievalException {
