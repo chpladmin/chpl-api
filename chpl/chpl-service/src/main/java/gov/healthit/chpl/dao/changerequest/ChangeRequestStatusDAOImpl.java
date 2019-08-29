@@ -74,7 +74,7 @@ public class ChangeRequestStatusDAOImpl extends BaseDAOImpl implements ChangeReq
             entity.setCertificationBody(
                     getSession().load(CertificationBodyEntity.class, crStatus.getCertificationBody().getId()));
         }
-        entity.setComment(crStatus.getCommment());
+        entity.setComment(crStatus.getComment());
         entity.setStatusChangeDate(crStatus.getStatusChangeDate());
         entity.setDeleted(false);
         entity.setLastModifiedUser(AuthUtil.getAuditId());

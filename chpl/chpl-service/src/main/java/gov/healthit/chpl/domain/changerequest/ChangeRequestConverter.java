@@ -47,7 +47,7 @@ public class ChangeRequestConverter {
         ChangeRequestStatus status = new ChangeRequestStatus();
         status.setId(entity.getId());
         status.setChangeRequestStatusType(convert(entity.getChangeRequestStatusType()));
-        status.setCommment(entity.getComment());
+        status.setComment(entity.getComment());
         status.setStatusChangeDate(entity.getStatusChangeDate());
         if (entity.getCertificationBody() != null) {
             status.setCertificationBody(new CertificationBody(new CertificationBodyDTO(entity.getCertificationBody())));

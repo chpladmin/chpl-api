@@ -2,13 +2,16 @@ package gov.healthit.chpl.dao.changerequest;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.changerequest.ChangeRequest;
 import gov.healthit.chpl.domain.changerequest.ChangeRequestConverter;
+import gov.healthit.chpl.domain.changerequest.ChangeRequestStatus;
 import gov.healthit.chpl.entity.changerequest.ChangeRequestEntity;
+import gov.healthit.chpl.entity.changerequest.ChangeRequestStatusEntity;
 import gov.healthit.chpl.entity.changerequest.ChangeRequestTypeEntity;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -26,7 +29,9 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
 
     @Override
     public ChangeRequest get(final Long changeRequestId) throws EntityRetrievalException {
-        return ChangeRequestConverter.convert(getEntityById(changeRequestId));
+        ChangeRequest cr = ChangeRequestConverter.convert(getEntityById(changeRequestId));
+        cr.setCurrentStatus(getCurrentStatus(cr.getId()));
+        return cr;
     }
 
     private ChangeRequestEntity getEntityById(final Long id) throws EntityRetrievalException {
@@ -49,7 +54,27 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
             entity = result.get(0);
         }
         return entity;
+    }
 
+    private ChangeRequestStatus getCurrentStatus(final Long changeRequestId) {
+        String hql = "SELECT crStatus "
+                + "FROM ChangeRequestStatusEntity crStatus "
+                + "WHERE crStatus.deleted = false "
+                + "AND crStatus.changeRequest.id = :changeRequestId "
+                + "ORDER BY crStatus.statusChangeDate DESC";
+
+        List<ChangeRequestStatus> statuses = entityManager
+                .createQuery(hql, ChangeRequestStatusEntity.class)
+                .setParameter("changeRequestId", changeRequestId)
+                .getResultList().stream()
+                .map(ChangeRequestConverter::convert)
+                .collect(Collectors.<ChangeRequestStatus> toList());
+
+        if (statuses.size() > 0) {
+            return statuses.get(0);
+        } else {
+            return null;
+        }
     }
 
     private ChangeRequestEntity getNewEntity(ChangeRequest cr) {

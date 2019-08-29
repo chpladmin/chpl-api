@@ -11,7 +11,7 @@ public class ChangeRequestStatus implements Serializable {
     private Long id;
     private ChangeRequestStatusType changeRequestStatusType;
     private Date statusChangeDate;
-    private String commment;
+    private String comment;
     private CertificationBody certificationBody;
 
     public Long getId() {
@@ -38,12 +38,12 @@ public class ChangeRequestStatus implements Serializable {
         this.statusChangeDate = statusChangeDate;
     }
 
-    public String getCommment() {
-        return commment;
+    public String getComment() {
+        return comment;
     }
 
-    public void setCommment(final String commment) {
-        this.commment = commment;
+    public void setComment(final String commment) {
+        this.comment = commment;
     }
 
     public CertificationBody getCertificationBody() {

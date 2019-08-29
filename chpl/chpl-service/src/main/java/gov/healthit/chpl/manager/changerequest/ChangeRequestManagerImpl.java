@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.changerequest.ChangeRequestCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.changerequest.ChangeRequestDAO;
 import gov.healthit.chpl.dao.changerequest.ChangeRequestStatusDAO;
+import gov.healthit.chpl.dao.changerequest.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.dao.changerequest.ChangeRequestWebsiteDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
@@ -26,13 +28,18 @@ import gov.healthit.chpl.domain.changerequest.ChangeRequestStatus;
 import gov.healthit.chpl.domain.changerequest.ChangeRequestStatusType;
 import gov.healthit.chpl.domain.changerequest.ChangeRequestType;
 import gov.healthit.chpl.domain.changerequest.ChangeRequestWebsite;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 
 @Component
 public class ChangeRequestManagerImpl extends SecurityManager implements ChangeRequestManager {
 
     @Value("${changerequest.status.pendingacbaction}")
     private Long pendingAcbActionStatus;
+
+    @Value("${changerequest.status.cancelledbyrequester}")
+    private Long cancelledByRequesterStatus;
 
     @Value("${changerequest.website}")
     private Long websiteChangeRequestType;
@@ -43,19 +50,24 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
     private CertificationBodyDAO certificationBodyDAO;
     private ChangeRequestCertificationBodyMapDAO crCertificationBodyMapDAO;
     private ChangeRequestWebsiteDAO crWebsiteDAO;
+    private ChangeRequestStatusTypeDAO crStatusTypeDAO;
+    private ResourcePermissions resourcePermissions;
 
     @Autowired
     public ChangeRequestManagerImpl(final ChangeRequestDAO changeRequestDAO,
             final ChangeRequestStatusDAO changeRequestStatusDAO, final CertifiedProductDAO certifiedProductDAO,
             final CertificationBodyDAO certificationBodyDAO,
             final ChangeRequestCertificationBodyMapDAO changeRequestCertificationBodyMapDAO,
-            final ChangeRequestWebsiteDAO crWebsiteDAO) {
+            final ChangeRequestWebsiteDAO crWebsiteDAO, final ChangeRequestStatusTypeDAO crStatusTypeDAO,
+            ResourcePermissions resourcePermissions) {
         this.changeRequestDAO = changeRequestDAO;
         this.crStatusDAO = changeRequestStatusDAO;
         this.certifiedProductDAO = certifiedProductDAO;
         this.certificationBodyDAO = certificationBodyDAO;
         this.crCertificationBodyMapDAO = changeRequestCertificationBodyMapDAO;
         this.crWebsiteDAO = crWebsiteDAO;
+        this.crStatusTypeDAO = crStatusTypeDAO;
+        this.resourcePermissions = resourcePermissions;
     }
 
     @Override
@@ -90,6 +102,14 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
                         .map(result -> result.getCertificationBody())
                         .collect(Collectors.<CertificationBody> toList()));
         return cr;
+    }
+
+    @Override
+    @Transactional
+    public ChangeRequest updateChangeRequest(final ChangeRequest cr) throws EntityRetrievalException {
+        ChangeRequest crFromDb = getChangeRequest(cr.getId());
+        updateChangeRequestStatus(crFromDb, cr);
+        return getChangeRequest(cr.getId());
     }
 
     private ChangeRequest saveBaseChangeRequest(final ChangeRequest cr) throws EntityRetrievalException {
@@ -163,6 +183,65 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
             return crWebsiteDAO.getByChangeRequestId(cr.getId());
         } else {
             return null;
+        }
+    }
+
+    private void updateChangeRequestStatus(ChangeRequest crFromDb, ChangeRequest crFromCaller)
+            throws EntityRetrievalException {
+        // Check for nulls - a Java 8 way to check a chain of objects for null
+        Long statusTypeIdFromDB = Optional.ofNullable(crFromDb)
+                .map(ChangeRequest::getCurrentStatus)
+                .map(ChangeRequestStatus::getChangeRequestStatusType)
+                .map(ChangeRequestStatusType::getId)
+                .orElse(null);
+        Long statusTypeIdFromCaller = Optional.ofNullable(crFromCaller)
+                .map(ChangeRequest::getCurrentStatus)
+                .map(ChangeRequestStatus::getChangeRequestStatusType)
+                .map(ChangeRequestStatusType::getId)
+                .orElse(null);
+
+        if (statusTypeIdFromDB != null && statusTypeIdFromCaller != null
+                && statusTypeIdFromDB != statusTypeIdFromCaller
+                && isStatusChangeValid(statusTypeIdFromDB, statusTypeIdFromCaller)) {
+            saveNewStatusForChangeRequest(crFromDb, statusTypeIdFromCaller,
+                    crFromCaller.getCurrentStatus().getComment());
+        }
+    }
+
+    private boolean isStatusChangeValid(final Long previousStatusTypeId, final Long newStatusTypeId) {
+        // Does this status type id exist?
+        try {
+            crStatusTypeDAO.getChangeRequestStatusTypeById(newStatusTypeId);
+        } catch (EntityRetrievalException e) {
+            return false;
+        }
+
+        // Cannot change status is Cancelled
+        if (previousStatusTypeId == this.cancelledByRequesterStatus) {
+            return false;
+        }
+        return true;
+    }
+
+    private ChangeRequestStatus saveNewStatusForChangeRequest(final ChangeRequest cr, final Long crStatusTypeId,
+            final String comment) throws EntityRetrievalException {
+        ChangeRequestStatus crStatus = new ChangeRequestStatus();
+        ChangeRequestStatusType crStatusType = new ChangeRequestStatusType();
+        crStatusType.setId(crStatusTypeId);
+        crStatus.setChangeRequestStatusType(crStatusType);
+        crStatus.setComment(comment);
+        crStatus.setStatusChangeDate(new Date());
+        crStatus.setCertificationBody(getCurrentUserCertificationBody());
+
+        return crStatusDAO.create(cr, crStatus);
+    }
+
+    private CertificationBody getCurrentUserCertificationBody() {
+        List<CertificationBodyDTO> acbs = resourcePermissions.getAllAcbsForCurrentUser();
+        if (acbs.size() == 0) {
+            return null;
+        } else {
+            return new CertificationBody(acbs.get(0));
         }
     }
 }

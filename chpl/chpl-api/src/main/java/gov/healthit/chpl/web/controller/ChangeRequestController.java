@@ -48,12 +48,20 @@ public class ChangeRequestController {
         return changeRequestManager.getChangeRequest(changeRequestId);
     }
     
-    @ApiOperation(value = "Create a new testing lab.",
+    @ApiOperation(value = "Create a new chnage request.",
             notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC to create a new testing lab.")
     @RequestMapping(value = "/websites", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public ChangeRequest createChangeRequest(@RequestBody final DeveloperWebsiteChangeRequest developerWebsiteChangeRequest) throws EntityRetrievalException {
         return changeRequestManager.createWebsiteChangeRequest(developerWebsiteChangeRequest.getDeveloper(), developerWebsiteChangeRequest.getWebsite());
+    }
+    
+    @ApiOperation(value = "Update an existing request status or request details.",
+            notes = "")
+    @RequestMapping(value = "/{changeRequestId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
+    produces = "application/json; charset=utf-8")
+    public ChangeRequest createChangeRequest(@RequestBody final ChangeRequest cr) throws EntityRetrievalException {
+        return changeRequestManager.updateChangeRequest(cr);
     }
     
 }

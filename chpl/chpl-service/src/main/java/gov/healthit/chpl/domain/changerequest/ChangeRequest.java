@@ -14,6 +14,7 @@ public class ChangeRequest implements Serializable {
     private ChangeRequestType changeRequestType;
     private Developer developer;
     private List<CertificationBody> certificationBodies = new ArrayList<CertificationBody>();
+    private ChangeRequestStatus currentStatus;
     private List<ChangeRequestStatus> statuses = new ArrayList<ChangeRequestStatus>();
     private Object details;
 
@@ -47,6 +48,14 @@ public class ChangeRequest implements Serializable {
 
     public void setCertificationBodies(final List<CertificationBody> certificationBodies) {
         this.certificationBodies = certificationBodies;
+    }
+
+    public ChangeRequestStatus getCurrentStatus() {
+        return currentStatus;
+    }
+
+    public void setCurrentStatus(final ChangeRequestStatus currentStatus) {
+        this.currentStatus = currentStatus;
     }
 
     public List<ChangeRequestStatus> getStatuses() {
