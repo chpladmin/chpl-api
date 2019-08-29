@@ -41,8 +41,8 @@ public class UrlResultEntity {
     private UrlTypeEntity urlType;
 
     @Basic(optional = false)
-    @Column(name = "http_status")
-    private Integer httpStatus;;
+    @Column(name = "response_code")
+    private Integer responseCode;
 
     @Basic(optional = false)
     @Column(name = "response_time")
@@ -50,7 +50,7 @@ public class UrlResultEntity {
 
     @Basic(optional = false)
     @Column(name = "checked_date")
-    private Date urlCheckedDate;
+    private Date lastChecked;
 
     @Column(name = "deleted", insertable = false)
     private Boolean deleted;
@@ -96,12 +96,12 @@ public class UrlResultEntity {
         this.urlType = urlType;
     }
 
-    public Integer getHttpStatus() {
-        return httpStatus;
+    public Integer getResponseCode() {
+        return responseCode;
     }
 
-    public void setHttpStatus(final Integer httpStatus) {
-        this.httpStatus = httpStatus;
+    public void setResponseCode(final Integer responseCode) {
+        this.responseCode = responseCode;
     }
 
     public Long getResponseTimeMillis() {
@@ -112,12 +112,12 @@ public class UrlResultEntity {
         this.responseTimeMillis = responseTimeMillis;
     }
 
-    public Date getUrlCheckedDate() {
-        return urlCheckedDate;
+    public Date getLastChecked() {
+        return lastChecked;
     }
 
-    public void setUrlCheckedDate(final Date urlCheckedDate) {
-        this.urlCheckedDate = urlCheckedDate;
+    public void setLastChecked(final Date lastChecked) {
+        this.lastChecked = lastChecked;
     }
 
     public Date getCreationDate() {
