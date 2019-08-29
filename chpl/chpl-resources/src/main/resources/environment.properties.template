@@ -133,6 +133,8 @@ job.apiKeyDeleteJob.config.subject=[LOCAL] ONC-CHPL: Your API key has been delet
 #Bad URL Checker Job
 job.badUrlChecker.successCheckIntervalDays=7
 job.badUrlChecker.failureCheckIntervalDays=1
+job.badUrlChecker.connectTimeoutSeconds=10
+job.badUrlChecker.requestTimeoutSeconds=30
 
 chplUrlBegin=http://localhost:8000/app
 

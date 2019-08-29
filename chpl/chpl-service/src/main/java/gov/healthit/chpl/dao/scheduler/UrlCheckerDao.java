@@ -35,6 +35,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
      * Also gets the last time each of those URLs was checked.
      * @return
      */
+    @Transactional
     public List<UrlResultDTO> getAllSystemUrls() {
         List<UrlResultDTO> results = new ArrayList<UrlResultDTO>();
         for (UrlType urlType : UrlType.values()) {
@@ -77,8 +78,6 @@ public class UrlCheckerDao extends BaseDAOImpl {
                     break;
                 case FULL_USABILITY_REPORT:
                     //this query also will get the other two types of urls since they come from the same table
-                    //case MANDATORY_DISCLOSURE_URL:
-                    //case TEST_RESULTS_SUMMARY:
                     List<Object[]> listingWebsites =
                         entityManager.createQuery(
                                 "SELECT transparencyAttestationUrl, reportFileLocation, sedReportFileLocation "
@@ -105,6 +104,10 @@ public class UrlCheckerDao extends BaseDAOImpl {
                         }
                     }
                     break;
+                case MANDATORY_DISCLOSURE_URL:
+                case TEST_RESULTS_SUMMARY:
+                    //handled in the above case since all those urls come from the same table
+                    break;
             }
         }
 
@@ -127,11 +130,12 @@ public class UrlCheckerDao extends BaseDAOImpl {
      * Get a list of all of the existing checked URLs and their results.
      * @return
      */
+    @Transactional
     public List<UrlResultDTO> getAllUrlResults() {
         List<UrlResultEntity> entities = entityManager.createQuery("SELECT url "
                         + "FROM UrlResultEntity url "
                         + "JOIN FETCH url.urlType "
-                        + "WHERE deleted = false")
+                        + "WHERE url.deleted = false")
                 .getResultList();
         List<UrlResultDTO> results = new ArrayList<UrlResultDTO>();
         if (entities != null && entities.size() > 0) {
@@ -148,6 +152,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
      * @param toCreate
      * @throws EntityCreationException
      */
+    @Transactional
     public UrlResultDTO createUrlResult(final UrlResultDTO toCreate) throws EntityCreationException {
         if (StringUtils.isEmpty(toCreate.getUrl()) || toCreate.getUrlType() == null) {
             throw new EntityCreationException("A URL and URL Type are required to save a URL result.");
@@ -174,11 +179,12 @@ public class UrlCheckerDao extends BaseDAOImpl {
      * @param toUpdate
      * @throws EntityRetrievalException
      */
+    @Transactional
     public UrlResultDTO updateUrlResult(final UrlResultDTO toUpdate) throws EntityRetrievalException {
-        UrlResultEntity entity = getUrlResultFromUrlAndType(toUpdate.getUrl(), toUpdate.getUrlType());
-        if (entity != null) {
+        UrlResultEntity entity = getUrlResultById(toUpdate.getId());
+        if (entity == null) {
             throw new EntityRetrievalException(
-                    "No URL matching '" + toUpdate.getUrl() + "' of type " + toUpdate.getUrlType().getName() + " exists.");
+                    "No URL with id " + toUpdate.getId() + " was found.");
         }
         entity.setResponseCode(toUpdate.getResponseCode());
         entity.setResponseTimeMillis(toUpdate.getResponseTimeMillis());
@@ -192,6 +198,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
      * @param resultId
      * @throws EntityRetrievalException if no result with the given ID exists.
      */
+    @Transactional
     public void deleteUrlResult(final Long resultId) throws EntityRetrievalException {
         UrlResultEntity toDelete = getUrlResultById(resultId);
         if (toDelete == null) {
@@ -206,7 +213,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                 "SELECT url "
                 + "FROM UrlResultEntity url "
                 + "JOIN FETCH url.urlType "
-                + "WHERE id = :id and deleted = false");
+                + "WHERE url.id = :id and url.deleted = false");
         query.setParameter("id", id);
         List<UrlResultEntity> results = query.getResultList();
         if (results == null || results.size() == 0) {
@@ -222,7 +229,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                         + "JOIN FETCH url.urlType "
                         + "WHERE url.url = :url "
                         + "AND url.urlType.name = :urlTypeName "
-                        + "AND deleted = false");
+                        + "AND url.deleted = false");
         query.setParameter("url", url);
         query.setParameter("urlTypeName", type.getName());
         List<UrlResultEntity> results = query.getResultList();
@@ -236,10 +243,10 @@ public class UrlCheckerDao extends BaseDAOImpl {
         Query query =
                 entityManager.createQuery("SELECT id FROM UrlTypeEntity WHERE name = :name AND deleted = false");
         query.setParameter("name", name);
-        List<UrlTypeEntity> results = query.getResultList();
+        List<Long> results = query.getResultList();
         if (results == null || results.size() == 0) {
             return null;
         }
-        return results.get(0).getId();
+        return results.get(0);
     }
 }
