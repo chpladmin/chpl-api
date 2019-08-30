@@ -237,7 +237,14 @@ public class PrivilegedSurveillanceDAOImpl extends BaseDAOImpl implements Privil
         entity.setLastModifiedDate(new Date());
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         update(entity);
-        return new PrivilegedSurveillanceDTO(entity);
+
+        PrivilegedSurveillanceDTO result = null;
+        try {
+            result = getById(entity.getId());
+        } catch (EntityRetrievalException ex) {
+            LOGGER.error("Cannot find newly created entity with id " + entity.getId(), ex);
+        }
+        return result;
     }
 
     @Override
