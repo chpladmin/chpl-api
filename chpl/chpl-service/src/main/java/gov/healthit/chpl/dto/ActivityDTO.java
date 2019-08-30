@@ -42,9 +42,6 @@ public class ActivityDTO implements Serializable {
         if (entity.getConcept() != null) {
             this.concept = ActivityConcept.valueOf(entity.getConcept().getConcept());
         }
-        if (entity.getUser() != null) {
-            this.user = new UserDTO(entity.getUser());
-        }
     }
 
     public Long getId() {

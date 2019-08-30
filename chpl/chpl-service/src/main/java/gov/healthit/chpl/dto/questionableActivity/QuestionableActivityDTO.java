@@ -18,20 +18,19 @@ public abstract class QuestionableActivityDTO {
 
     public abstract Class<?> getActivityObjectClass();
 
-    public QuestionableActivityDTO() {}
+    public QuestionableActivityDTO() {
+    }
+
     public QuestionableActivityDTO(QuestionableActivityEntity entity) {
         this.id = entity.getId();
         this.triggerId = entity.getTriggerId();
-        if(entity.getTrigger() != null) {
+        if (entity.getTrigger() != null) {
             this.trigger = new QuestionableActivityTriggerDTO(entity.getTrigger());
         }
         this.before = entity.getBefore();
         this.after = entity.getAfter();
         this.activityDate = entity.getActivityDate();
         this.userId = entity.getUserId();
-        if(entity.getUser() != null) {
-            this.user = new UserDTO(entity.getUser());
-        }
     }
 
     public Long getId() {

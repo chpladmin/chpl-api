@@ -28,6 +28,7 @@ import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.auth.SecuredUserManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 
 @Service
 public class SecuredUserManagerImpl extends SecuredManager implements SecuredUserManager {
@@ -35,13 +36,15 @@ public class SecuredUserManagerImpl extends SecuredManager implements SecuredUse
     private UserDAO userDAO;
     private UserContactDAO userContactDAO;
     private MutableAclService mutableAclService;
+    private ResourcePermissions resourcePermissions;
 
     @Autowired
-    public SecuredUserManagerImpl(UserDAO userDAO, UserContactDAO userContactDAO,
-            MutableAclService mutableAclService) {
+    public SecuredUserManagerImpl(final UserDAO userDAO, final UserContactDAO userContactDAO,
+            final MutableAclService mutableAclService, final ResourcePermissions resourcePermissions) {
         this.userDAO = userDAO;
         this.userContactDAO = userContactDAO;
         this.mutableAclService = mutableAclService;
+        this.resourcePermissions = resourcePermissions;
     }
 
     @Override
@@ -78,7 +81,7 @@ public class SecuredUserManagerImpl extends SecuredManager implements SecuredUse
             throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
 
         // remove all ACLs for this user
-        //should only be one - for themselves
+        // should only be one - for themselves
         ObjectIdentity oid = new ObjectIdentityImpl(UserDTO.class, user.getId());
         mutableAclService.deleteAcl(oid, false);
 

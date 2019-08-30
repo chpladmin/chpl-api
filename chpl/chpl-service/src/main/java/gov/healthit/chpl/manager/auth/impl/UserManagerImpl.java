@@ -55,7 +55,8 @@ public class UserManagerImpl implements UserManager {
 
     @Override
     @Transactional
-    public UserDTO create(final UserDTO userDto, final String password) throws UserCreationException, UserRetrievalException {
+    public UserDTO create(final UserDTO userDto, final String password)
+            throws UserCreationException, UserRetrievalException {
 
         Strength strength = getPasswordStrength(userDto, password);
         if (strength.getScore() < UserManager.MIN_PASSWORD_STRENGTH) {
@@ -233,5 +234,12 @@ public class UserManagerImpl implements UserManager {
         Zxcvbn zxcvbn = new Zxcvbn();
         Strength strength = zxcvbn.measure(password, badWords);
         return strength;
+    }
+
+    @Override
+    @Transactional
+    public void updateLastLoggedInDate(UserDTO user) throws UserRetrievalException {
+        user.setLastLoggedInDate(new Date());
+        userDAO.update(user);
     }
 }

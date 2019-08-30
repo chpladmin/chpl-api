@@ -63,6 +63,7 @@ public class UserAuthenticator implements Authenticator {
 
                 try {
                     userDetailsChecker.check(user);
+                    userManager.updateLastLoggedInDate(user);
 
                     // if login was successful reset failed logins to 0
                     if (user.getFailedLoginCount() > 0) {
@@ -271,8 +272,8 @@ public class UserAuthenticator implements Authenticator {
     @Override
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).USER_PERMISSIONS, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).IMPERSONATE_USER, #username)")
-    public String impersonateUser(final String username) throws UserRetrievalException,
-    JWTCreationException, UserManagementException {
+    public String impersonateUser(final String username)
+            throws UserRetrievalException, JWTCreationException, UserManagementException {
         JWTAuthenticatedUser user = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
         if (user.getImpersonatingUser() != null) {
             throw new UserManagementException("Unable to impersonate user while already impersonating");

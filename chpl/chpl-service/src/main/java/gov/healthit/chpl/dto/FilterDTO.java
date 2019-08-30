@@ -21,7 +21,6 @@ public class FilterDTO {
 
     public FilterDTO(FilterEntity entity) {
         this.id = entity.getId();
-        this.user = new UserDTO(entity.getUser());
         this.setFilterType(new FilterTypeDTO(entity.getFilterType()));
         this.name = entity.getName();
         this.filter = entity.getFilter();
