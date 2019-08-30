@@ -242,7 +242,7 @@ public class PrivilegedSurveillanceDAOImpl extends BaseDAOImpl implements Privil
         try {
             result = getById(entity.getId());
         } catch (EntityRetrievalException ex) {
-            LOGGER.error("Cannot find newly created entity with id " + entity.getId(), ex);
+            LOGGER.error("Cannot find newly updated entity with id " + entity.getId(), ex);
         }
         return result;
     }
