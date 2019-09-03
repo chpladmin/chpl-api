@@ -106,10 +106,10 @@ public class ApiKeyController {
     @ApiOperation(value = "List all API keys that have been created.",
             notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ApiKey> listKeys() {
+    public List<ApiKey> listKeys(@RequestParam(required = false, defaultValue = "false") final boolean includeDeleted) {
 
         List<ApiKey> keys = new ArrayList<ApiKey>();
-        List<ApiKeyDTO> dtos = apiKeyManager.findAll();
+        List<ApiKeyDTO> dtos = apiKeyManager.findAll(includeDeleted);
 
         for (ApiKeyDTO dto : dtos) {
             ApiKey apiKey = new ApiKey();

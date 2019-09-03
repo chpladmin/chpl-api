@@ -16,7 +16,6 @@ public class UserCertificationBodyMapDTO implements Serializable {
     public UserCertificationBodyMapDTO(final UserCertificationBodyMapEntity entity) {
         this.id = entity.getId();
         this.certificationBody = new CertificationBodyDTO(entity.getCertificationBody());
-        this.user = new UserDTO(entity.getUser());
         this.retired = entity.getRetired();
     }
 

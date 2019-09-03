@@ -8,6 +8,8 @@ import javax.persistence.Query;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,10 +29,18 @@ import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityProduct
 import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityTriggerEntity;
 import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityVersionEntity;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.UserMapper;
 
 @Repository("questionableActivityDao")
 public class QuestionableActivityDAOImpl extends BaseDAOImpl implements QuestionableActivityDAO {
     private static final Logger LOGGER = LogManager.getLogger(QuestionableActivityDAOImpl.class);
+
+    private UserMapper userMapper;
+
+    @Autowired
+    public QuestionableActivityDAOImpl(@Lazy final UserMapper userMapper) {
+        this.userMapper = userMapper;
+    }
 
     @Override
     @Transactional
@@ -59,8 +69,7 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
             listingActivity.setReason(((QuestionableActivityListingDTO) dto).getReason());
         } else if (dto instanceof QuestionableActivityCertificationResultDTO) {
             toCreate = new QuestionableActivityCertificationResultEntity();
-            QuestionableActivityCertificationResultEntity certResultActivity =
-                    (QuestionableActivityCertificationResultEntity) toCreate;
+            QuestionableActivityCertificationResultEntity certResultActivity = (QuestionableActivityCertificationResultEntity) toCreate;
             certResultActivity.setCertResultId(((QuestionableActivityCertificationResultDTO) dto).getCertResultId());
             certResultActivity.setReason(((QuestionableActivityCertificationResultDTO) dto).getReason());
         } else {
@@ -80,15 +89,15 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
         entityManager.clear();
 
         if (toCreate instanceof QuestionableActivityVersionEntity) {
-            created = new QuestionableActivityVersionDTO((QuestionableActivityVersionEntity) toCreate);
+            created = mapEntityToDto((QuestionableActivityVersionEntity) toCreate);
         } else if (toCreate instanceof QuestionableActivityProductEntity) {
-            created = new QuestionableActivityProductDTO((QuestionableActivityProductEntity) toCreate);
+            created = mapEntityToDto((QuestionableActivityProductEntity) toCreate);
         } else if (toCreate instanceof QuestionableActivityDeveloperEntity) {
-            created = new QuestionableActivityDeveloperDTO((QuestionableActivityDeveloperEntity) toCreate);
+            created = mapEntityToDto((QuestionableActivityDeveloperEntity) toCreate);
         } else if (toCreate instanceof QuestionableActivityListingEntity) {
-            created = new QuestionableActivityListingDTO((QuestionableActivityListingEntity) toCreate);
+            created = mapEntityToDto((QuestionableActivityListingEntity) toCreate);
         } else if (toCreate instanceof QuestionableActivityCertificationResultEntity) {
-            created = new QuestionableActivityCertificationResultDTO((QuestionableActivityCertificationResultEntity) toCreate);
+            created = mapEntityToDto((QuestionableActivityCertificationResultEntity) toCreate);
         }
         return created;
     }
@@ -101,7 +110,8 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
                 + "WHERE trigger.deleted <> true",
                 QuestionableActivityTriggerEntity.class);
         List<QuestionableActivityTriggerEntity> queryResults = query.getResultList();
-        List<QuestionableActivityTriggerDTO> results = new ArrayList<QuestionableActivityTriggerDTO>(queryResults.size());
+        List<QuestionableActivityTriggerDTO> results = new ArrayList<QuestionableActivityTriggerDTO>(
+                queryResults.size());
         for (QuestionableActivityTriggerEntity queryResult : queryResults) {
             results.add(new QuestionableActivityTriggerDTO(queryResult));
         }
@@ -124,9 +134,10 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
         query.setParameter("startDate", start);
         query.setParameter("endDate", end);
         List<QuestionableActivityVersionEntity> queryResults = query.getResultList();
-        List<QuestionableActivityVersionDTO> results = new ArrayList<QuestionableActivityVersionDTO>(queryResults.size());
-        for(QuestionableActivityVersionEntity queryResult : queryResults) {
-            results.add(new QuestionableActivityVersionDTO(queryResult));
+        List<QuestionableActivityVersionDTO> results = new ArrayList<QuestionableActivityVersionDTO>(
+                queryResults.size());
+        for (QuestionableActivityVersionEntity queryResult : queryResults) {
+            results.add(mapEntityToDto(queryResult));
         }
         return results;
     }
@@ -147,9 +158,10 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
         query.setParameter("startDate", start);
         query.setParameter("endDate", end);
         List<QuestionableActivityProductEntity> queryResults = query.getResultList();
-        List<QuestionableActivityProductDTO> results = new ArrayList<QuestionableActivityProductDTO>(queryResults.size());
+        List<QuestionableActivityProductDTO> results = new ArrayList<QuestionableActivityProductDTO>(
+                queryResults.size());
         for (QuestionableActivityProductEntity queryResult : queryResults) {
-            results.add(new QuestionableActivityProductDTO(queryResult));
+            results.add(mapEntityToDto(queryResult));
         }
         return results;
     }
@@ -170,9 +182,10 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
         query.setParameter("startDate", start);
         query.setParameter("endDate", end);
         List<QuestionableActivityDeveloperEntity> queryResults = query.getResultList();
-        List<QuestionableActivityDeveloperDTO> results = new ArrayList<QuestionableActivityDeveloperDTO>(queryResults.size());
+        List<QuestionableActivityDeveloperDTO> results = new ArrayList<QuestionableActivityDeveloperDTO>(
+                queryResults.size());
         for (QuestionableActivityDeveloperEntity queryResult : queryResults) {
-            results.add(new QuestionableActivityDeveloperDTO(queryResult));
+            results.add(mapEntityToDto(queryResult));
         }
         return results;
     }
@@ -193,9 +206,10 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
         query.setParameter("startDate", start);
         query.setParameter("endDate", end);
         List<QuestionableActivityListingEntity> queryResults = query.getResultList();
-        List<QuestionableActivityListingDTO> results = new ArrayList<QuestionableActivityListingDTO>(queryResults.size());
+        List<QuestionableActivityListingDTO> results = new ArrayList<QuestionableActivityListingDTO>(
+                queryResults.size());
         for (QuestionableActivityListingEntity queryResult : queryResults) {
-            results.add(new QuestionableActivityListingDTO(queryResult));
+            results.add(mapEntityToDto(queryResult));
         }
         return results;
     }
@@ -218,11 +232,43 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
         query.setParameter("startDate", start);
         query.setParameter("endDate", end);
         List<QuestionableActivityCertificationResultEntity> queryResults = query.getResultList();
-        List<QuestionableActivityCertificationResultDTO> results
-            = new ArrayList<QuestionableActivityCertificationResultDTO>(queryResults.size());
+        List<QuestionableActivityCertificationResultDTO> results = new ArrayList<QuestionableActivityCertificationResultDTO>(
+                queryResults.size());
         for (QuestionableActivityCertificationResultEntity queryResult : queryResults) {
-            results.add(new QuestionableActivityCertificationResultDTO(queryResult));
+            results.add(mapEntityToDto(queryResult));
         }
         return results;
     }
+
+    private QuestionableActivityVersionDTO mapEntityToDto(QuestionableActivityVersionEntity entity) {
+        QuestionableActivityVersionDTO dto = new QuestionableActivityVersionDTO();
+        dto.setUser(userMapper.from(entity.getUser()));
+        return dto;
+    }
+
+    private QuestionableActivityProductDTO mapEntityToDto(QuestionableActivityProductEntity entity) {
+        QuestionableActivityProductDTO dto = new QuestionableActivityProductDTO();
+        dto.setUser(userMapper.from(entity.getUser()));
+        return dto;
+    }
+
+    private QuestionableActivityDeveloperDTO mapEntityToDto(QuestionableActivityDeveloperEntity entity) {
+        QuestionableActivityDeveloperDTO dto = new QuestionableActivityDeveloperDTO();
+        dto.setUser(userMapper.from(entity.getUser()));
+        return dto;
+    }
+
+    private QuestionableActivityListingDTO mapEntityToDto(QuestionableActivityListingEntity entity) {
+        QuestionableActivityListingDTO dto = new QuestionableActivityListingDTO();
+        dto.setUser(userMapper.from(entity.getUser()));
+        return dto;
+    }
+
+    private QuestionableActivityCertificationResultDTO mapEntityToDto(
+            QuestionableActivityCertificationResultEntity entity) {
+        QuestionableActivityCertificationResultDTO dto = new QuestionableActivityCertificationResultDTO();
+        dto.setUser(userMapper.from(entity.getUser()));
+        return dto;
+    }
+
 }
