@@ -39,9 +39,7 @@ public class JobDTO implements Serializable {
             this.jobType.setId(entity.getJobTypeId());
         }
 
-        if (entity.getUser() != null) {
-            this.user = new UserDTO(entity.getUser());
-        } else {
+        if (entity.getUser() == null) {
             this.user = new UserDTO();
             this.user.setId(entity.getUserId());
         }

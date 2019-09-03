@@ -7,6 +7,7 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.FilterDAO;
@@ -17,15 +18,18 @@ import gov.healthit.chpl.entity.FilterTypeEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.UserMapper;
 
 @Repository("filterDAO")
 public class FilterDAOImpl extends BaseDAOImpl implements FilterDAO {
 
     private ErrorMessageUtil errorMessageUtil;
+    private UserMapper userMapper;
 
     @Autowired
-    public FilterDAOImpl(final ErrorMessageUtil errorMessageUtil) {
+    public FilterDAOImpl(final ErrorMessageUtil errorMessageUtil, @Lazy final UserMapper userMapper) {
         this.errorMessageUtil = errorMessageUtil;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -44,7 +48,7 @@ public class FilterDAOImpl extends BaseDAOImpl implements FilterDAO {
         entityManager.merge(entity);
         entityManager.flush();
 
-        return new FilterDTO(entity);
+        return mapEntityToDto(entity);
     }
 
     @Override
@@ -63,7 +67,8 @@ public class FilterDAOImpl extends BaseDAOImpl implements FilterDAO {
 
         entityManager.persist(entity);
         entityManager.flush();
-        return new FilterDTO(entity);
+
+        return mapEntityToDto(entity);
     }
 
     @Override
@@ -78,7 +83,7 @@ public class FilterDAOImpl extends BaseDAOImpl implements FilterDAO {
 
         List<FilterDTO> filterDTOs = new ArrayList<FilterDTO>();
         for (FilterEntity entity : result) {
-            filterDTOs.add(new FilterDTO(entity));
+            filterDTOs.add(mapEntityToDto(entity));
         }
         return filterDTOs;
     }
@@ -97,7 +102,7 @@ public class FilterDAOImpl extends BaseDAOImpl implements FilterDAO {
 
     @Override
     public FilterDTO getById(Long id) throws EntityRetrievalException {
-        return new FilterDTO(getEntityById(id));
+        return mapEntityToDto(getEntityById(id));
     }
 
     @Override
@@ -157,6 +162,12 @@ public class FilterDAOImpl extends BaseDAOImpl implements FilterDAO {
                 FilterTypeEntity.class);
         List<FilterTypeEntity> result = query.getResultList();
         return result;
+    }
+
+    private FilterDTO mapEntityToDto(final FilterEntity entity) {
+        FilterDTO filter = new FilterDTO(entity);
+        filter.setUser(userMapper.from(entity.getUser()));
+        return filter;
     }
 
 }

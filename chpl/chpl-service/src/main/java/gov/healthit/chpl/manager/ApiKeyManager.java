@@ -23,7 +23,7 @@ public interface ApiKeyManager {
 
     ApiKeyDTO findKey(String keyString) throws EntityRetrievalException;
 
-    List<ApiKeyDTO> findAll();
+    List<ApiKeyDTO> findAll(Boolean includeDeleted);
 
     void logApiKeyActivity(String keyString, String activityPath)
             throws EntityRetrievalException, EntityCreationException;

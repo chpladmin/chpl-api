@@ -1,14 +1,16 @@
 package gov.healthit.chpl.dto.auth;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.healthit.chpl.entity.auth.UserEntity;
+import gov.healthit.chpl.dto.OrganizationDTO;
 
 /**
  * User data transfer object.
@@ -26,6 +28,8 @@ public class UserDTO implements UserDetails {
     private String phoneNumber;
     private String title;
     private Date signatureDate;
+    private Date lastLoggedInDate;
+    private List<OrganizationDTO> organizations = new ArrayList<OrganizationDTO>();
     private UserDTO impersonatedBy;
 
     private int failedLoginCount;
@@ -38,35 +42,39 @@ public class UserDTO implements UserDetails {
     /**
      * Default constructor.
      */
-    public UserDTO(){}
+    public UserDTO() {
+    }
 
     /**
      * Constructed from an entity.
-     * @param entity the entity
+     * 
+     * @param entity
+     *            the entity
      */
-    public UserDTO(final UserEntity entity) {
-        if (entity != null) {
-            this.id = entity.getId();
-            this.subjectName = entity.getSubjectName();
-            this.failedLoginCount = entity.getFailedLoginCount();
-            this.accountExpired = entity.isAccountExpired();
-            this.accountLocked = entity.isAccountLocked();
-            this.accountEnabled = entity.isAccountEnabled();
-            this.credentialsExpired = entity.isCredentialsExpired();
-            this.passwordResetRequired = entity.isPasswordResetRequired();
-            if (entity.getContact() != null) {
-                this.fullName = entity.getContact().getFullName();
-                this.friendlyName = entity.getContact().getFriendlyName();
-                this.email = entity.getContact().getEmail();
-                this.phoneNumber = entity.getContact().getPhoneNumber();
-                this.title = entity.getContact().getTitle();
-                this.signatureDate = entity.getContact().getSignatureDate();
-            }
-            if (entity.getPermission() != null) {
-                this.permission = new UserPermissionDTO(entity.getPermission());
-            }
-        }
-    }
+    // public UserDTO(final UserEntity entity) {
+    // if (entity != null) {
+    // this.id = entity.getId();
+    // this.subjectName = entity.getSubjectName();
+    // this.failedLoginCount = entity.getFailedLoginCount();
+    // this.accountExpired = entity.isAccountExpired();
+    // this.accountLocked = entity.isAccountLocked();
+    // this.accountEnabled = entity.isAccountEnabled();
+    // this.credentialsExpired = entity.isCredentialsExpired();
+    // this.passwordResetRequired = entity.isPasswordResetRequired();
+    // this.lastLoggedInDate = entity.getLastLoggedInDate();
+    // if (entity.getContact() != null) {
+    // this.fullName = entity.getContact().getFullName();
+    // this.friendlyName = entity.getContact().getFriendlyName();
+    // this.email = entity.getContact().getEmail();
+    // this.phoneNumber = entity.getContact().getPhoneNumber();
+    // this.title = entity.getContact().getTitle();
+    // this.signatureDate = entity.getContact().getSignatureDate();
+    // }
+    // if (entity.getPermission() != null) {
+    // this.permission = new UserPermissionDTO(entity.getPermission());
+    // }
+    // }
+    // }
 
     public Long getId() {
         return id;
@@ -125,9 +133,10 @@ public class UserDTO implements UserDetails {
     }
 
     /**
-     * We return null rather than returning authorities here because we
-     * don't actually want the DTO to have granted permissions (those
-     * come from the JWT token).
+     * We return null rather than returning authorities here because we don't
+     * actually want the DTO to have granted permissions (those come from the
+     * JWT token).
+     * 
      * @return a null collection
      */
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -208,7 +217,7 @@ public class UserDTO implements UserDetails {
         this.impersonatedBy = impersonatedBy;
     }
 
-  public int getFailedLoginCount() {
+    public int getFailedLoginCount() {
         return failedLoginCount;
     }
 
@@ -254,5 +263,21 @@ public class UserDTO implements UserDetails {
 
     public void setPermission(UserPermissionDTO permission) {
         this.permission = permission;
+    }
+
+    public Date getLastLoggedInDate() {
+        return lastLoggedInDate;
+    }
+
+    public void setLastLoggedInDate(Date lastLoggedInDate) {
+        this.lastLoggedInDate = lastLoggedInDate;
+    }
+
+    public List<OrganizationDTO> getOrganizations() {
+        return organizations;
+    }
+
+    public void setOrganizations(List<OrganizationDTO> organizations) {
+        this.organizations = organizations;
     }
 }

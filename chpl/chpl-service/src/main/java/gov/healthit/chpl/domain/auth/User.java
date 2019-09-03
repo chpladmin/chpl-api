@@ -1,7 +1,12 @@
 package gov.healthit.chpl.domain.auth;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
+import gov.healthit.chpl.domain.Organization;
+import gov.healthit.chpl.dto.OrganizationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 
 public class User implements Serializable {
@@ -19,14 +24,19 @@ public class User implements Serializable {
     private Boolean accountEnabled;
     private Boolean credentialsExpired;
     private Boolean passwordResetRequired;
+    private Date lastLoggedInDate;
+    private List<Organization> organizations = new ArrayList<Organization>();
     private String hash;
 
     /** Default constructor. */
-    public User() {}
+    public User() {
+    }
 
     /**
      * Constructed from DTO.
-     * @param dto the dto
+     * 
+     * @param dto
+     *            the dto
      */
     public User(final UserDTO dto) {
         this.setUserId(dto.getId());
@@ -41,6 +51,11 @@ public class User implements Serializable {
         this.setAccountEnabled(dto.isAccountEnabled());
         this.setCredentialsExpired(dto.isCredentialsExpired());
         this.setPasswordResetRequired(dto.getPasswordResetRequired());
+        this.setLastLoggedInDate(dto.getLastLoggedInDate());
+
+        for (OrganizationDTO orgDTO : dto.getOrganizations()) {
+            this.getOrganizations().add(new Organization(orgDTO.getId(), orgDTO.getName()));
+        }
     }
 
     public Long getUserId() {
@@ -145,5 +160,21 @@ public class User implements Serializable {
 
     public void setRole(final String role) {
         this.role = role;
+    }
+
+    public Date getLastLoggedInDate() {
+        return lastLoggedInDate;
+    }
+
+    public void setLastLoggedInDate(Date lastLoggedInDate) {
+        this.lastLoggedInDate = lastLoggedInDate;
+    }
+
+    public List<Organization> getOrganizations() {
+        return organizations;
+    }
+
+    public void setOrganizations(List<Organization> organizations) {
+        this.organizations = organizations;
     }
 }
