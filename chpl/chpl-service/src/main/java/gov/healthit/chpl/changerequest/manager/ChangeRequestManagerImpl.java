@@ -157,7 +157,9 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
 
     private List<String> runCreateValidations(ChangeRequest cr) {
         List<ValidationRule<ChangeRequestValidationContext>> rules = new ArrayList<ValidationRule<ChangeRequestValidationContext>>();
-        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST));
+        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_TYPE));
+        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.DEVELOPER));
+        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_DETAILS_CREATE));
         return runValidations(rules, cr);
     }
 
