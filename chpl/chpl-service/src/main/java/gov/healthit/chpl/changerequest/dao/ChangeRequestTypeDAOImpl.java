@@ -41,7 +41,7 @@ public class ChangeRequestTypeDAOImpl extends BaseDAOImpl implements ChangeReque
             throws EntityRetrievalException {
         String hql = "FROM ChangeRequestTypeEntity "
                 + "WHERE (NOT deleted = true) "
-                + "AND (id = :changeRequestStatusTypeId) ";
+                + "AND (id = :changeRequestTypeId) ";
         List<ChangeRequestTypeEntity> result = entityManager
                 .createQuery(hql, ChangeRequestTypeEntity.class)
                 .setParameter("changeRequestTypeId", changeRequestTypeId)

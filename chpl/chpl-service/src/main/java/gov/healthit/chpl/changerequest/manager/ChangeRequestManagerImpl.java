@@ -13,14 +13,20 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
+import gov.healthit.chpl.changerequest.dao.ChangeRequestTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestCertificationBodyMap;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestWebsite;
+import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationContext;
+import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationFactory;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.rules.ValidationRule;
 
 @Component
 public class ChangeRequestManagerImpl extends SecurityManager implements ChangeRequestManager {
@@ -32,33 +38,46 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
     private Long websiteChangeRequestType;
 
     private ChangeRequestDAO changeRequestDAO;
+    private ChangeRequestTypeDAO changeRequestTypeDAO;
+    private DeveloperDAO developerDAO;
     private CertifiedProductDAO certifiedProductDAO;
     private CertificationBodyDAO certificationBodyDAO;
     private ChangeRequestCertificationBodyMapHelper crCertificationBodyMapHelper;
     private ChangeRequestStatusHelper crStatusHelper;
     private ChangeRequestWebsiteHelper crWebsiteHelper;
+    private ChangeRequestValidationFactory crValidationFactory;
 
     @Autowired
     public ChangeRequestManagerImpl(final ChangeRequestDAO changeRequestDAO,
+            final ChangeRequestTypeDAO changeRequestTypeDAO, final DeveloperDAO developerDAO,
             final CertifiedProductDAO certifiedProductDAO, final CertificationBodyDAO certificationBodyDAO,
             final ChangeRequestCertificationBodyMapHelper changeRequestCertificationBodyMapHelper,
             final ChangeRequestWebsiteHelper crWebsiteHelper, final ChangeRequestStatusTypeDAO crStatusTypeDAO,
-            final ChangeRequestStatusHelper crStatusHelper) {
+            final ChangeRequestStatusHelper crStatusHelper, final ChangeRequestValidationFactory crValidationFactory) {
         this.changeRequestDAO = changeRequestDAO;
+        this.changeRequestTypeDAO = changeRequestTypeDAO;
+        this.developerDAO = developerDAO;
         this.certifiedProductDAO = certifiedProductDAO;
         this.certificationBodyDAO = certificationBodyDAO;
         this.crCertificationBodyMapHelper = changeRequestCertificationBodyMapHelper;
         this.crWebsiteHelper = crWebsiteHelper;
         this.crStatusHelper = crStatusHelper;
+        this.crValidationFactory = crValidationFactory;
     }
 
     @Override
     @Transactional
-    public ChangeRequest createChangeRequest(final ChangeRequest cr) throws EntityRetrievalException {
+    public ChangeRequest createChangeRequest(final ChangeRequest cr)
+            throws EntityRetrievalException, ValidationException {
+        ValidationException validationException = new ValidationException();
+        validationException.getErrorMessages().addAll(runCreateValidations(cr));
+        if (validationException.getErrorMessages().size() > 0) {
+            throw validationException;
+        }
+
         // Save the base change request
         ChangeRequest newCr = saveBaseChangeRequest(cr);
-
-        // Save the website change request details
+        // Save the change request details
         newCr = saveChangeRequestDetails(newCr, cr.getDetails());
 
         return getChangeRequest(newCr.getId());
@@ -135,4 +154,24 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
         }
         return cr;
     }
+
+    private List<String> runCreateValidations(ChangeRequest cr) {
+        List<ValidationRule<ChangeRequestValidationContext>> rules = new ArrayList<ValidationRule<ChangeRequestValidationContext>>();
+        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST));
+        return runValidations(rules, cr);
+    }
+
+    private List<String> runValidations(List<ValidationRule<ChangeRequestValidationContext>> rules, ChangeRequest cr) {
+        List<String> errorMessages = new ArrayList<String>();
+        ChangeRequestValidationContext context = new ChangeRequestValidationContext(cr, changeRequestTypeDAO,
+                developerDAO);
+
+        for (ValidationRule<ChangeRequestValidationContext> rule : rules) {
+            if (!rule.isValid(context)) {
+                errorMessages.addAll(rule.getMessages());
+            }
+        }
+        return errorMessages;
+    }
+
 }
