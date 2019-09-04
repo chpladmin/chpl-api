@@ -1,18 +1,25 @@
 package gov.healthit.chpl.changerequest.validation;
 
+import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
+import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.dao.DeveloperDAO;
 
 public class ChangeRequestValidationContext {
     private ChangeRequest changeRequest;
+    private ChangeRequestDAO changeRequestDAO;
     private ChangeRequestTypeDAO changeRequestTypeDAO;
+    private ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO;
     private DeveloperDAO developerDAO;
 
-    public ChangeRequestValidationContext(final ChangeRequest changeRequest,
-            final ChangeRequestTypeDAO changeRequestTypeDAO, final DeveloperDAO developerDAO) {
+    public ChangeRequestValidationContext(final ChangeRequest changeRequest, final ChangeRequestDAO changeRequestDAO,
+            final ChangeRequestTypeDAO changeRequestTypeDAO, ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO,
+            final DeveloperDAO developerDAO) {
         this.changeRequest = changeRequest;
+        this.changeRequestDAO = changeRequestDAO;
         this.changeRequestTypeDAO = changeRequestTypeDAO;
+        this.changeRequestStatusTypeDAO = changeRequestStatusTypeDAO;
         this.developerDAO = developerDAO;
     }
 
@@ -38,6 +45,22 @@ public class ChangeRequestValidationContext {
 
     public void setDeveloperDAO(DeveloperDAO developerDAO) {
         this.developerDAO = developerDAO;
+    }
+
+    public ChangeRequestDAO getChangeRequestDAO() {
+        return changeRequestDAO;
+    }
+
+    public void setChangeRequestDAO(ChangeRequestDAO changeRequestDAO) {
+        this.changeRequestDAO = changeRequestDAO;
+    }
+
+    public ChangeRequestStatusTypeDAO getChangeRequestStatusTypeDAO() {
+        return changeRequestStatusTypeDAO;
+    }
+
+    public void setChangeRequestStatusTypeDAO(ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO) {
+        this.changeRequestStatusTypeDAO = changeRequestStatusTypeDAO;
     }
 
 }

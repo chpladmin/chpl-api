@@ -39,6 +39,7 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
 
     private ChangeRequestDAO changeRequestDAO;
     private ChangeRequestTypeDAO changeRequestTypeDAO;
+    private ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO;
     private DeveloperDAO developerDAO;
     private CertifiedProductDAO certifiedProductDAO;
     private CertificationBodyDAO certificationBodyDAO;
@@ -49,13 +50,15 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
 
     @Autowired
     public ChangeRequestManagerImpl(final ChangeRequestDAO changeRequestDAO,
-            final ChangeRequestTypeDAO changeRequestTypeDAO, final DeveloperDAO developerDAO,
+            final ChangeRequestTypeDAO changeRequestTypeDAO,
+            final ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO, final DeveloperDAO developerDAO,
             final CertifiedProductDAO certifiedProductDAO, final CertificationBodyDAO certificationBodyDAO,
             final ChangeRequestCertificationBodyMapHelper changeRequestCertificationBodyMapHelper,
             final ChangeRequestWebsiteHelper crWebsiteHelper, final ChangeRequestStatusTypeDAO crStatusTypeDAO,
             final ChangeRequestStatusHelper crStatusHelper, final ChangeRequestValidationFactory crValidationFactory) {
         this.changeRequestDAO = changeRequestDAO;
         this.changeRequestTypeDAO = changeRequestTypeDAO;
+        this.changeRequestStatusTypeDAO = changeRequestStatusTypeDAO;
         this.developerDAO = developerDAO;
         this.certifiedProductDAO = certifiedProductDAO;
         this.certificationBodyDAO = certificationBodyDAO;
@@ -97,7 +100,14 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
 
     @Override
     @Transactional
-    public ChangeRequest updateChangeRequest(final ChangeRequest cr) throws EntityRetrievalException {
+    public ChangeRequest updateChangeRequest(final ChangeRequest cr)
+            throws EntityRetrievalException, ValidationException {
+        ValidationException validationException = new ValidationException();
+        validationException.getErrorMessages().addAll(runUpdateValidations(cr));
+        if (validationException.getErrorMessages().size() > 0) {
+            throw validationException;
+        }
+
         ChangeRequest crFromDb = getChangeRequest(cr.getId());
         crStatusHelper.updateChangeRequestStatus(crFromDb, cr);
         return getChangeRequest(cr.getId());
@@ -163,10 +173,18 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
         return runValidations(rules, cr);
     }
 
+    private List<String> runUpdateValidations(ChangeRequest cr) {
+        List<ValidationRule<ChangeRequestValidationContext>> rules = new ArrayList<ValidationRule<ChangeRequestValidationContext>>();
+        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_EXISTANCE));
+        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_DETAILS_UPDATE));
+        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.STATUS_TYPE));
+        return runValidations(rules, cr);
+    }
+
     private List<String> runValidations(List<ValidationRule<ChangeRequestValidationContext>> rules, ChangeRequest cr) {
         List<String> errorMessages = new ArrayList<String>();
-        ChangeRequestValidationContext context = new ChangeRequestValidationContext(cr, changeRequestTypeDAO,
-                developerDAO);
+        ChangeRequestValidationContext context = new ChangeRequestValidationContext(cr, changeRequestDAO,
+                changeRequestTypeDAO, changeRequestStatusTypeDAO, developerDAO);
 
         for (ValidationRule<ChangeRequestValidationContext> rule : rules) {
             if (!rule.isValid(context)) {

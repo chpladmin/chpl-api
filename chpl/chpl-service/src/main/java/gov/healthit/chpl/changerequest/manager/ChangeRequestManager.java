@@ -10,5 +10,5 @@ public interface ChangeRequestManager {
 
     ChangeRequest getChangeRequest(final Long changeRequestId) throws EntityRetrievalException;
 
-    ChangeRequest updateChangeRequest(final ChangeRequest cr) throws EntityRetrievalException;
+    ChangeRequest updateChangeRequest(final ChangeRequest cr) throws EntityRetrievalException, ValidationException;
 }

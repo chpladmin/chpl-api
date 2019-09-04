@@ -48,9 +48,9 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
                 .setParameter("changeRequestId", id)
                 .getResultList();
 
-        if (result.size() > 1) {
+        if (result.size() == 0) {
             throw new EntityRetrievalException("Data error. Duplicate change request id in database.");
-        } else if (result.size() == 1) {
+        } else {
             entity = result.get(0);
         }
         return entity;
