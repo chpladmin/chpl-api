@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -26,7 +27,6 @@ import gov.healthit.chpl.domain.changerequest.ChangeRequest;
 import gov.healthit.chpl.domain.changerequest.ChangeRequestCertificationBodyMap;
 import gov.healthit.chpl.domain.changerequest.ChangeRequestStatus;
 import gov.healthit.chpl.domain.changerequest.ChangeRequestStatusType;
-import gov.healthit.chpl.domain.changerequest.ChangeRequestType;
 import gov.healthit.chpl.domain.changerequest.ChangeRequestWebsite;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -72,22 +72,14 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
 
     @Override
     @Transactional
-    public ChangeRequest createWebsiteChangeRequest(final Developer developer, final String website)
-            throws EntityRetrievalException {
-
+    public ChangeRequest createWebsiteChangeRequest(final ChangeRequest cr) throws EntityRetrievalException {
         // Save the base change request
-        ChangeRequest cr = new ChangeRequest();
-        cr.setDeveloper(developer);
-        ChangeRequestType crType = new ChangeRequestType();
-        crType.setId(this.websiteChangeRequestType);
-        cr.setChangeRequestType(crType);
-        cr = saveBaseChangeRequest(cr);
+        ChangeRequest newCr = saveBaseChangeRequest(cr);
 
         // Save the website change request details
-        ChangeRequestWebsite crWebsite = saveWebsite(cr, website);
-        cr.setDetails(crWebsite);
+        newCr = saveChangeRequestDetails(newCr, cr.getDetails());
 
-        return getChangeRequest(cr.getId());
+        return getChangeRequest(newCr.getId());
     }
 
     @Override
@@ -168,16 +160,6 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
         }
     }
 
-    private ChangeRequestWebsite saveWebsite(ChangeRequest cr, String website) {
-        ChangeRequestWebsite crWebsite = new ChangeRequestWebsite();
-        crWebsite.setWebsite(website);
-        try {
-            return crWebsiteDAO.create(cr, crWebsite);
-        } catch (EntityRetrievalException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private Object getChangeRequestDetails(ChangeRequest cr) throws EntityRetrievalException {
         if (cr.getChangeRequestType().getId() == this.websiteChangeRequestType) {
             return crWebsiteDAO.getByChangeRequestId(cr.getId());
@@ -243,5 +225,35 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
         } else {
             return new CertificationBody(acbs.get(0));
         }
+    }
+
+    private ChangeRequest saveChangeRequestDetails(final ChangeRequest cr, final Object details) {
+        // Data in the "details" object is unfortunately a hashmap
+        if (cr.getChangeRequestType().getId().equals(websiteChangeRequestType)) {
+            ChangeRequestWebsite crWebsite = getChangeRequestWebsiteFromHashMap(
+                    (HashMap<String, String>) details);
+            cr.setDetails(saveChangeRequestWebsite(cr, crWebsite));
+        }
+        return cr;
+    }
+
+    private ChangeRequestWebsite saveChangeRequestWebsite(final ChangeRequest cr,
+            final ChangeRequestWebsite crWebsite) {
+        try {
+            return crWebsiteDAO.create(cr, crWebsite);
+        } catch (EntityRetrievalException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private ChangeRequestWebsite getChangeRequestWebsiteFromHashMap(final HashMap<String, String> map) {
+        ChangeRequestWebsite crWebsite = new ChangeRequestWebsite();
+        if (map.containsKey("id") && StringUtils.isNumeric(map.get("id"))) {
+            crWebsite.setId(new Long(map.get("id")));
+        }
+        if (map.containsKey("website")) {
+            crWebsite.setWebsite(map.get("website"));
+        }
+        return crWebsite;
     }
 }

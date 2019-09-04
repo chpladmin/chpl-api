@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.healthit.chpl.dao.changerequest.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.domain.changerequest.ChangeRequest;
 import gov.healthit.chpl.domain.changerequest.ChangeRequestStatusType;
-import gov.healthit.chpl.entity.changerequest.DeveloperWebsiteChangeRequest;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.changerequest.ChangeRequestManager;
 import io.swagger.annotations.Api;
@@ -52,15 +51,15 @@ public class ChangeRequestController {
             notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC to create a new testing lab.")
     @RequestMapping(value = "/websites", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public ChangeRequest createChangeRequest(@RequestBody final DeveloperWebsiteChangeRequest developerWebsiteChangeRequest) throws EntityRetrievalException {
-        return changeRequestManager.createWebsiteChangeRequest(developerWebsiteChangeRequest.getDeveloper(), developerWebsiteChangeRequest.getWebsite());
+    public ChangeRequest createChangeRequest(@RequestBody final ChangeRequest cr ) throws EntityRetrievalException {
+        return changeRequestManager.createWebsiteChangeRequest(cr);
     }
     
     @ApiOperation(value = "Update an existing request status or request details.",
             notes = "")
     @RequestMapping(value = "/{changeRequestId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public ChangeRequest createChangeRequest(@RequestBody final ChangeRequest cr) throws EntityRetrievalException {
+    public ChangeRequest updateChangeRequest(@RequestBody final ChangeRequest cr) throws EntityRetrievalException {
         return changeRequestManager.updateChangeRequest(cr);
     }
     
