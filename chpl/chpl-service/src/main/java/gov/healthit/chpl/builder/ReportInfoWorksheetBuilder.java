@@ -19,8 +19,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.PropertyTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
@@ -32,8 +30,7 @@ import gov.healthit.chpl.manager.SurveillanceReportManager;
  * @author kekey
  *
  */
-@Component
-public class ReportInfoWorksheetBuilder {
+public abstract class ReportInfoWorksheetBuilder {
     private static final int LAST_DATA_COLUMN = 6;
     private static final int MIN_TEXT_AREA_LINES = 4;
     private static final int MIN_EXCLUSION_LINES = 1;
@@ -41,7 +38,6 @@ public class ReportInfoWorksheetBuilder {
     private PropertyTemplate pt;
     private int lastDataRow;
 
-    @Autowired
     public ReportInfoWorksheetBuilder(final SurveillanceReportManager reportManager) {
         this.reportManager = reportManager;
     }
@@ -59,7 +55,8 @@ public class ReportInfoWorksheetBuilder {
      * @param report
      * @return
      */
-    public Sheet buildWorksheet(final SurveillanceReportWorkbookWrapper workbook, final List<QuarterlyReportDTO> reports) throws IOException {
+    public Sheet buildWorksheet(final SurveillanceReportWorkbookWrapper workbook,
+            final List<QuarterlyReportDTO> reports) throws IOException {
         lastDataRow = 0;
         pt = new PropertyTemplate();
         //create sheet or get the sheet if it already exists
@@ -75,7 +72,7 @@ public class ReportInfoWorksheetBuilder {
         sheet.setColumnWidth(3, workbook.getColumnWidth(42));
 
         int nextRow = 1;
-        nextRow = createHeader(workbook, sheet, nextRow) + 1;
+        nextRow = createHeader(workbook, sheet, reports, nextRow) + 1;
         nextRow = createAcbSection(workbook, sheet, reports, nextRow) + 1;
         nextRow = createReportingPeriodSection(workbook, sheet, reports, nextRow) + 1;
         nextRow = createActivitiesAndOutcomesSection(workbook, sheet, reports, nextRow) + 1;
@@ -94,33 +91,8 @@ public class ReportInfoWorksheetBuilder {
      * @param sheet
      * @return
      */
-    private int createHeader(final SurveillanceReportWorkbookWrapper workbook, final Sheet sheet, final int beginRow) {
-        int currRow = beginRow;
-        Row row = workbook.getRow(sheet, currRow++);
-        Cell cell = workbook.createCell(row, 1, workbook.getBoldStyle());
-        cell.setCellValue("ONC-Authorized Certification Body (ONC-ACB) 2019 "
-                + "Report Template for Surveillance Results");
-        row = workbook.getRow(sheet, currRow++);
-        cell = workbook.createCell(row, 1, workbook.getBoldItalicSmallStyle());
-        cell.setCellValue("Template Version: SR19-1.0");
-        //skip a row on purpose
-        currRow++;
-        row = workbook.getRow(sheet, currRow++);
-        cell = workbook.createCell(row, 1, workbook.getItalicSmallStyle());
-        cell.setCellValue("Instructions");
-        row = workbook.getRow(sheet, currRow++);
-        cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
-        //increase row height to accommodate four lines of text
-        row.setHeightInPoints((4*sheet.getDefaultRowHeightInPoints()));
-        //merged cells in rows B,C, and D
-        cell.setCellValue("This workbook provides a template for preparing your organization's quarterly "
-                + "and annual Surveillance Reports. It is provided for the convenience of ONC-ACBs and is designed "
-                + "to be used alongside Program Policy Resources #18-01, #18-02, and #18-03 (October 5, 2018), "
-                + "and each ONC-ACB's surveillance plan.\n\n"
-                + "Please fill out the boxes below each question and data requested in the included worksheets.");
-        sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
-        return row.getRowNum()+1;
-    }
+    protected abstract int createHeader(final SurveillanceReportWorkbookWrapper workbook,
+            final Sheet sheet, final List<QuarterlyReportDTO> reports, final int beginRow);
 
     private int createAcbSection(final SurveillanceReportWorkbookWrapper workbook, final Sheet sheet, final List<QuarterlyReportDTO> reports,
             final int beginRow) {
@@ -381,7 +353,7 @@ public class ReportInfoWorksheetBuilder {
         cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
         cell.setCellValue("The ONC-ACB undertook the following activities and implemented the "
                 + "following measures to evaluate and address the prioritized elements of "
-                + "surveillance referred to in Program Policy Guidance #15-01A (November 2015).");
+                + "surveillance referred to in Program Policy Resource #18-03 (October 5, 2018).");
         row.setHeightInPoints((2*sheet.getDefaultRowHeightInPoints()));
         sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
         //skip row
@@ -460,6 +432,10 @@ public class ReportInfoWorksheetBuilder {
         cell = workbook.createCell(row, 1);
         cell.setCellValue("Please log the complaints and any actions to the \"Complaints\" sheet of this workbook.");
         return row.getRowNum()+1;
+    }
+
+    protected int determineYear(final List<QuarterlyReportDTO> quarterlyReports) {
+        return quarterlyReports.get(0).getYear();
     }
 
     private class QuarterlyExclusionReason {
