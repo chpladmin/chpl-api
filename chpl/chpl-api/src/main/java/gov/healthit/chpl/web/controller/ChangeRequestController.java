@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.healthit.chpl.dao.changerequest.ChangeRequestStatusTypeDAO;
-import gov.healthit.chpl.domain.changerequest.ChangeRequest;
-import gov.healthit.chpl.domain.changerequest.ChangeRequestStatusType;
+import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
+import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
+import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.changerequest.ChangeRequestManager;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
