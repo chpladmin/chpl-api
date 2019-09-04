@@ -52,7 +52,7 @@ public class ChangeRequestController {
     @RequestMapping(value = "/websites", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public ChangeRequest createChangeRequest(@RequestBody final ChangeRequest cr ) throws EntityRetrievalException {
-        return changeRequestManager.createWebsiteChangeRequest(cr);
+        return changeRequestManager.createChangeRequest(cr);
     }
     
     @ApiOperation(value = "Update an existing request status or request details.",
