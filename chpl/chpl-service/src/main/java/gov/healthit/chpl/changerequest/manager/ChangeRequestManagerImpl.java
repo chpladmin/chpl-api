@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -88,6 +89,8 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
 
     @Override
     @Transactional(readOnly = true)
+    @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
+            + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).GET_BY_ID, returnObject)")
     public ChangeRequest getChangeRequest(final Long changeRequestId) throws EntityRetrievalException {
         ChangeRequest cr = new ChangeRequest();
         cr = changeRequestDAO.get(changeRequestId);
