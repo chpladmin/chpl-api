@@ -83,9 +83,9 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
         }
 
         // Save the base change request
-        ChangeRequest newCr = saveBaseChangeRequest(cr);
+        ChangeRequest newCr = createBaseChangeRequest(cr);
         // Save the change request details
-        newCr = saveChangeRequestDetails(newCr, cr.getDetails());
+        newCr = createChangeRequestDetails(newCr, cr.getDetails());
 
         return getChangeRequest(newCr.getId());
     }
@@ -118,18 +118,19 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
 
         ChangeRequest crFromDb = getChangeRequest(cr.getId());
         crStatusHelper.updateChangeRequestStatus(crFromDb, cr);
+        updateChangeRequestDetails(crFromDb, cr.getDetails());
         return getChangeRequest(cr.getId());
     }
 
-    private ChangeRequest saveBaseChangeRequest(final ChangeRequest cr) throws EntityRetrievalException {
+    private ChangeRequest createBaseChangeRequest(final ChangeRequest cr) throws EntityRetrievalException {
         ChangeRequest newCr = changeRequestDAO.create(cr);
         newCr.getStatuses().add(crStatusHelper.saveInitialStatus(newCr));
-        saveCertificationBodies(newCr).stream()
+        createCertificationBodies(newCr).stream()
                 .map(crAcbMap -> newCr.getCertificationBodies().add(crAcbMap.getCertificationBody()));
         return newCr;
     }
 
-    private List<ChangeRequestCertificationBodyMap> saveCertificationBodies(ChangeRequest cr)
+    private List<ChangeRequestCertificationBodyMap> createCertificationBodies(ChangeRequest cr)
             throws EntityRetrievalException {
         return getCertificationBodiesByDeveloper(cr.getDeveloper()).stream()
                 .map(result -> crCertificationBodyMapHelper.saveCertificationBody(cr, result))
@@ -163,12 +164,22 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
         }
     }
 
-    private ChangeRequest saveChangeRequestDetails(final ChangeRequest cr, final Object details) {
+    private ChangeRequest createChangeRequestDetails(final ChangeRequest cr, final Object details) {
         // Data in the "details" object is unfortunately a hashmap
         if (cr.getChangeRequestType().getId().equals(websiteChangeRequestType)) {
             ChangeRequestWebsite crWebsite = crWebsiteHelper.getChangeRequestWebsiteFromHashMap(
-                    (HashMap<String, String>) details);
-            cr.setDetails(crWebsiteHelper.saveChangeRequestWebsite(cr, crWebsite));
+                    (HashMap<String, Object>) details);
+            cr.setDetails(crWebsiteHelper.createChangeRequestWebsite(cr, crWebsite));
+        }
+        return cr;
+    }
+
+    private ChangeRequest updateChangeRequestDetails(final ChangeRequest cr, final Object details) {
+        // Data in the "details" object is unfortunately a hashmap
+        if (cr.getChangeRequestType().getId().equals(websiteChangeRequestType)) {
+            ChangeRequestWebsite crWebsite = crWebsiteHelper.getChangeRequestWebsiteFromHashMap(
+                    (HashMap<String, Object>) details);
+            cr.setDetails(crWebsiteHelper.updateChangeRequestWebsite(cr, crWebsite));
         }
         return cr;
     }

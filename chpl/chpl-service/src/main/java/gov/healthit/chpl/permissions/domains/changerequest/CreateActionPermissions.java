@@ -20,11 +20,6 @@ public class CreateActionPermissions extends ActionPermissions {
                 return false;
             } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
                 return true;
-            } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
-                ChangeRequest cr = (ChangeRequest) obj;
-                return cr.getCertificationBodies().stream()
-                        .anyMatch(certBody -> getResourcePermissions().getAllAcbsForCurrentUser().stream()
-                                .anyMatch(userAcb -> userAcb.getId().equals(certBody.getId())));
             } else if (getResourcePermissions().isUserRoleDeveloperAdmin()) {
                 ChangeRequest cr = (ChangeRequest) obj;
                 return isDeveloperValidForCurrentUser(cr.getDeveloper().getDeveloperId());

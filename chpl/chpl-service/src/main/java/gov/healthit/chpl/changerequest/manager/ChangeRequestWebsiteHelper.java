@@ -25,21 +25,30 @@ public class ChangeRequestWebsiteHelper {
         return crWebsiteDAO.getByChangeRequestId(changeRequestId);
     }
 
-    public ChangeRequestWebsite getChangeRequestWebsiteFromHashMap(final HashMap<String, String> map) {
+    public ChangeRequestWebsite getChangeRequestWebsiteFromHashMap(final HashMap<String, Object> map) {
         ChangeRequestWebsite crWebsite = new ChangeRequestWebsite();
-        if (map.containsKey("id") && StringUtils.isNumeric(map.get("id"))) {
-            crWebsite.setId(new Long(map.get("id")));
+        if (map.containsKey("id") && StringUtils.isNumeric(map.get("id").toString())) {
+            crWebsite.setId(new Long(map.get("id").toString()));
         }
         if (map.containsKey("website")) {
-            crWebsite.setWebsite(map.get("website"));
+            crWebsite.setWebsite(map.get("website").toString());
         }
         return crWebsite;
     }
 
-    public ChangeRequestWebsite saveChangeRequestWebsite(final ChangeRequest cr,
+    public ChangeRequestWebsite createChangeRequestWebsite(final ChangeRequest cr,
             final ChangeRequestWebsite crWebsite) {
         try {
             return crWebsiteDAO.create(cr, crWebsite);
+        } catch (EntityRetrievalException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ChangeRequestWebsite updateChangeRequestWebsite(final ChangeRequest cr,
+            final ChangeRequestWebsite crWebsite) {
+        try {
+            return crWebsiteDAO.update(crWebsite);
         } catch (EntityRetrievalException e) {
             throw new RuntimeException(e);
         }

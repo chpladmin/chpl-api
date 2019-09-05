@@ -9,4 +9,6 @@ public interface ChangeRequestWebsiteDAO {
             throws EntityRetrievalException;
 
     ChangeRequestWebsite getByChangeRequestId(final Long changeRequestId) throws EntityRetrievalException;
+
+    ChangeRequestWebsite update(final ChangeRequestWebsite crWebsite) throws EntityRetrievalException;
 }

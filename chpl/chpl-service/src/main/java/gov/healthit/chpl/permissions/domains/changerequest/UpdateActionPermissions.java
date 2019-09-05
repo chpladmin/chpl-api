@@ -1,6 +1,8 @@
 package gov.healthit.chpl.permissions.domains.changerequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
@@ -10,6 +12,7 @@ import gov.healthit.chpl.permissions.domains.ActionPermissions;
 public class UpdateActionPermissions extends ActionPermissions {
     private ChangeRequestDAO changeRequestDAO;
 
+    @Autowired
     public UpdateActionPermissions(final ChangeRequestDAO changeRequestDAO) {
         this.changeRequestDAO = changeRequestDAO;
     }
@@ -20,6 +23,7 @@ public class UpdateActionPermissions extends ActionPermissions {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean hasAccess(Object obj) {
         try {
             if (!(obj instanceof ChangeRequest)) {

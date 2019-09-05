@@ -30,6 +30,15 @@ public class ChangeRequestWebsiteDAOImpl extends BaseDAOImpl implements ChangeRe
         return ChangeRequestConverter.convert(getEntityByChangeRequestId(changeRequestId));
     }
 
+    @Override
+    public ChangeRequestWebsite update(final ChangeRequestWebsite crWebsite) throws EntityRetrievalException {
+        ChangeRequestWebsiteEntity entity = getEntity(crWebsite.getId());
+        entity.setWebsite(crWebsite.getWebsite());
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
+        update(entity);
+        return ChangeRequestConverter.convert(getEntity(entity.getId()));
+    }
+
     private ChangeRequestWebsiteEntity getNewEntity(final ChangeRequest cr, final ChangeRequestWebsite crWebsite) {
         ChangeRequestWebsiteEntity entity = new ChangeRequestWebsiteEntity();
         entity.setChangeRequest(getSession().load(ChangeRequestEntity.class, cr.getId()));
