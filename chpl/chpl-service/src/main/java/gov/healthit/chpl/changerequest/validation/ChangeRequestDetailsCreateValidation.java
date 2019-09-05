@@ -3,10 +3,15 @@ package gov.healthit.chpl.changerequest.validation;
 import java.util.HashMap;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
+@Component
 public class ChangeRequestDetailsCreateValidation extends ValidationRule<ChangeRequestValidationContext> {
+    @Value("${changerequest.website}")
+    private Long websiteChangeRequestType;
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
@@ -17,8 +22,7 @@ public class ChangeRequestDetailsCreateValidation extends ValidationRule<ChangeR
             return false;
         }
 
-        // TODO How do I get these values in here???
-        if (context.getChangeRequest().getChangeRequestType().getId().equals(1l)
+        if (context.getChangeRequest().getChangeRequestType().getId().equals(websiteChangeRequestType)
                 && (context.getChangeRequest().getDetails() == null
                         || !isChangeRequestWebsiteValid((HashMap) context.getChangeRequest().getDetails()))) {
             getMessages().add(getErrorMessage("changeRequest.details.website.invalid"));

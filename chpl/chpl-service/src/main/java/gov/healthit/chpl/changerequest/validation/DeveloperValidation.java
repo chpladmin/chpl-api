@@ -1,8 +1,11 @@
 package gov.healthit.chpl.changerequest.validation;
 
+import org.springframework.stereotype.Component;
+
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
+@Component
 public class DeveloperValidation extends ValidationRule<ChangeRequestValidationContext> {
 
     @Override

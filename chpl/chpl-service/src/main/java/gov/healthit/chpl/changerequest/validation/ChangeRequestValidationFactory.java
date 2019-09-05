@@ -1,5 +1,6 @@
 package gov.healthit.chpl.changerequest.validation;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.manager.rules.ValidationRule;
@@ -14,20 +15,43 @@ public class ChangeRequestValidationFactory {
     public final static String CHANGE_REQUEST_EXISTANCE = "CHANGE_REQUEST_EXISTANCE";
     public final static String STATUS_TYPE = "STATUS_TYPE";
 
+    private ChangeRequestDetailsCreateValidation changeRequestDetailsCreateValidation;
+    private ChangeRequestDetailsUpdateValidation changeRequestDetailsUpdateValidation;
+    private ChangeRequestExistanceValidation changeRequestExistanceValidation;
+    private ChangeRequestTypeValidation changeRequestTypeValidation;
+    private CurrentStatusValidation currentStatusValidation;
+    private DeveloperValidation developerValidation;
+
+    @Autowired
+    public ChangeRequestValidationFactory(
+            final ChangeRequestDetailsCreateValidation changeRequestDetailsCreateValidation,
+            final ChangeRequestDetailsUpdateValidation changeRequestDetailsUpdateValidation,
+            final ChangeRequestExistanceValidation changeRequestExistanceValidation,
+            final ChangeRequestTypeValidation changeRequestTypeValidation,
+            final CurrentStatusValidation currentStatusValidation,
+            final DeveloperValidation developerValidation) {
+        this.changeRequestDetailsCreateValidation = changeRequestDetailsCreateValidation;
+        this.changeRequestDetailsUpdateValidation = changeRequestDetailsUpdateValidation;
+        this.changeRequestExistanceValidation = changeRequestExistanceValidation;
+        this.changeRequestTypeValidation = changeRequestTypeValidation;
+        this.currentStatusValidation = currentStatusValidation;
+        this.developerValidation = developerValidation;
+    }
+
     public ValidationRule<ChangeRequestValidationContext> getRule(String name) {
         switch (name) {
         case CHANGE_REQUEST_TYPE:
-            return new ChangeRequestTypeValidation();
+            return changeRequestTypeValidation;
         case DEVELOPER:
-            return new DeveloperValidation();
+            return developerValidation;
         case CHANGE_REQUEST_DETAILS_CREATE:
-            return new ChangeRequestDetailsCreateValidation();
+            return changeRequestDetailsCreateValidation;
         case CHANGE_REQUEST_DETAILS_UPDATE:
-            return new ChangeRequestDetailsUpdateValidation();
+            return changeRequestDetailsUpdateValidation;
         case CHANGE_REQUEST_EXISTANCE:
-            return new ChangeRequestExistanceValidation();
+            return changeRequestExistanceValidation;
         case STATUS_TYPE:
-            return new CurrentStatusValidation();
+            return currentStatusValidation;
         default:
             return null;
         }
