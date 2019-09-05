@@ -39,9 +39,6 @@ import gov.healthit.chpl.domain.auth.AuthorizeCredentials;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UserInvitation;
 import gov.healthit.chpl.domain.auth.UsersResponse;
-import gov.healthit.chpl.domain.complaint.Complaint;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.auth.InvitationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserInvitationDTO;
@@ -62,7 +59,6 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.web.controller.results.ComplaintResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -370,6 +366,8 @@ public class UserManagementController {
         toUpdate.setSignatureDate(before.getSignatureDate());
         toUpdate.setSubjectName(before.getSubjectName());
         toUpdate.setTitle(userInfo.getTitle());
+        //Client should be able to change this value, so we'll always use the on from the DB
+        toUpdate.setLastLoggedInDate(before.getLastLoggedInDate());
         UserDTO updated = userManager.update(toUpdate);
 
         String activityDescription = "User " + userInfo.getSubjectName() + " was updated.";
