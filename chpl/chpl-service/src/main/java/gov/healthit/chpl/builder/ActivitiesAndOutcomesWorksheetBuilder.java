@@ -192,7 +192,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         //If referenced as a list of strings, the total sum of characters of a dropdown must be less than 256
         //(meaning if you put all the choices together it has to be less than 256 characters)
         //but if you read those same strings from another set of cells using a formula, it is allowed
-        //to be as long as you want. The outcome choices are the only ones that are long enough 
+        //to be as long as you want. The outcome choices are the only ones that are long enough
         //to run into this problem.
         //names for the list constraints
         Name surveillanceOutcomeNamedCell = workbook.getWorkbook().createName();
@@ -291,7 +291,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         addHeadingCell(workbook, row, COL_DEVELOPER_NAME, "Developer Name");
         addHeadingCell(workbook, row, COL_PRODUCT_NAME, "Product Name");
         addHeadingCell(workbook, row, COL_PRODUCT_VERSION, "Product Version");
-        addHeadingCell(workbook, row, COL_K1_REVIEWED, "§170.523(k)(1) Reviewed?");
+        addHeadingCell(workbook, row, COL_K1_REVIEWED, "§170.523(k)(1) Reviewed");
         addHeadingCell(workbook, row, COL_SURV_TYPE, "Type of Surveillance");
         addHeadingCell(workbook, row, COL_SURV_LOCATION_COUNT, "Number of Locations Surveilled");
         addHeadingCell(workbook, row, COL_SURV_BEGIN, "Surveillance Began");
@@ -372,7 +372,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
     }
 
     /**
-     * Adds all of the surveillance data to this worksheet. 
+     * Adds all of the surveillance data to this worksheet.
      * Returns the number of rows added.
      * @param sheet
      * @param reportListingMap
@@ -579,7 +579,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
      * @param allSurveillances
      * @return
      */
-    private List<Surveillance> determineRelevantSurveillances(final List<QuarterlyReportDTO> quarterlyReports, 
+    private List<Surveillance> determineRelevantSurveillances(final List<QuarterlyReportDTO> quarterlyReports,
             final List<Surveillance> allSurveillances) {
         List<Surveillance> relevantSurveillances = new ArrayList<Surveillance>();
         for (Surveillance currSurv : allSurveillances) {
