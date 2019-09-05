@@ -25,7 +25,7 @@ public class AnnualReportBuilderXlsx {
     @Autowired
     public AnnualReportBuilderXlsx(final SurveillanceReportManager reportManager,
             final ListWorksheetBuilder listWorksheetBuilder,
-            final ReportInfoWorksheetBuilder reportInfoWorksheetBuilder,
+            final AnnualReportInfoWorksheetBuilder reportInfoWorksheetBuilder,
             final ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesWorksheetBuilder,
             final ComplaintsWorksheetBuilder complaintsWorksheetBuilder,
             final SurveillanceSummaryWorksheetBuilder survSummaryWorksheetBuilder,
