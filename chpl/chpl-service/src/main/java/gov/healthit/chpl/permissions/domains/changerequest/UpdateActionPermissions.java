@@ -2,11 +2,17 @@ package gov.healthit.chpl.permissions.domains.changerequest;
 
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
-@Component("changeRequestGetByIdActionPermissions")
-public class GetByIdActionPermissions extends ActionPermissions {
+@Component("changeRequestUpdateActionPermissions")
+public class UpdateActionPermissions extends ActionPermissions {
+    private ChangeRequestDAO changeRequestDAO;
+
+    public UpdateActionPermissions(final ChangeRequestDAO changeRequestDAO) {
+        this.changeRequestDAO = changeRequestDAO;
+    }
 
     @Override
     public boolean hasAccess() {
@@ -21,13 +27,12 @@ public class GetByIdActionPermissions extends ActionPermissions {
             } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
                 return true;
             } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
-                ChangeRequest cr = (ChangeRequest) obj;
+                ChangeRequest cr = changeRequestDAO.get(((ChangeRequest) obj).getId());
                 return cr.getCertificationBodies().stream()
                         .anyMatch(certBody -> getResourcePermissions().getAllAcbsForCurrentUser().stream()
                                 .anyMatch(userAcb -> userAcb.getId().equals(certBody.getId())));
-                // return acbs.size() > 0;
             } else if (getResourcePermissions().isUserRoleDeveloperAdmin()) {
-                ChangeRequest cr = (ChangeRequest) obj;
+                ChangeRequest cr = changeRequestDAO.get(((ChangeRequest) obj).getId());
                 return isDeveloperValidForCurrentUser(cr.getDeveloper().getDeveloperId());
             }
             return false;

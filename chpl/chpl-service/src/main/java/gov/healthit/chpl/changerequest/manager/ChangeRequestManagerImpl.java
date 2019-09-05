@@ -103,6 +103,8 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
 
     @Override
     @Transactional
+    @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
+            + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).UPDATE, #cr)")
     public ChangeRequest updateChangeRequest(final ChangeRequest cr)
             throws EntityRetrievalException, ValidationException {
         ValidationException validationException = new ValidationException();
