@@ -1,15 +1,15 @@
 package gov.healthit.chpl.scheduler.job;
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Future;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.asynchttpclient.AsyncCompletionHandler;
 import org.asynchttpclient.AsyncHttpClient;
-import org.asynchttpclient.BoundRequestBuilder;
 import org.asynchttpclient.DefaultAsyncHttpClientConfig;
 import org.asynchttpclient.Dsl;
 import org.asynchttpclient.Response;
@@ -19,12 +19,12 @@ import org.quartz.JobExecutionException;
 import org.quartz.UnableToInterruptJobException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.scheduler.UrlCheckerDao;
 import gov.healthit.chpl.dto.scheduler.UrlResultDTO;
+import gov.healthit.chpl.scheduler.UrlCallerAsync;
 
 /**
  * Quartz job to check every URl in the system and log its response code to the database.
@@ -41,17 +41,22 @@ public class BrokenUrlReportCreator extends QuartzJob implements InterruptableJo
     @Autowired
     private UrlCheckerDao urlCheckerDao;
 
+    @Autowired
+    private UrlCallerAsync urlCallerAsync;
+
     private int successCheckIntervalDays = 1;
     private int failureCheckIntervalDays = 1;
     private int connectTimeoutSeconds = 10;
     private int requestTimeoutSeconds = 10;
     private Date checkedDate;
     private AsyncHttpClient httpClient;
+    private Map<UrlResultDTO, Future<Response>> urlRequestFuturesMap;
     private boolean interrupted;
 
     public BrokenUrlReportCreator() {
         interrupted = false;
         this.checkedDate = new Date();
+        urlRequestFuturesMap = new LinkedHashMap<UrlResultDTO, Future<Response>>();
     }
 
     @Override
@@ -91,14 +96,19 @@ public class BrokenUrlReportCreator extends QuartzJob implements InterruptableJo
                 for (UrlResultDTO existingUrlResult : existingUrlResults) {
                     if (existingUrlResult.equals(systemUrl)) {
                         alreadyExists = true;
+                        systemUrl.setId(existingUrlResult.getId());
                     }
                 }
                 if (!alreadyExists) {
                     LOGGER.info("The URL " + systemUrl.getUrl()
                         + " for the type " + systemUrl.getUrlType().getName()
-                        + " exists in the system and will be checked.");
+                        + " will be added to the system.");
                     UrlResultDTO created = urlCheckerDao.createUrlResult(systemUrl);
                     systemUrl.setId(created.getId());
+                } else {
+                    LOGGER.info("The URL " + systemUrl.getUrl()
+                    + " for the type " + systemUrl.getUrlType().getName()
+                    + " exists in the system.");
                 }
             }
 
@@ -107,9 +117,43 @@ public class BrokenUrlReportCreator extends QuartzJob implements InterruptableJo
             //TODO: are there likely to be duplicates that we are wasting our time checking?
             for (UrlResultDTO systemUrl : allSystemUrls) {
                 if (shouldUrlBeChecked(systemUrl)) {
-                    checkUrl(systemUrl);
+                    LOGGER.info("The URL " + systemUrl.getUrl()
+                        + " for the type " + systemUrl.getUrlType().getName()
+                        + " will be checked for validity.");
+                    try {
+                       Future<Response> urlFuture =
+                               urlCallerAsync.getUrlResponse(systemUrl, httpClient, LOGGER);
+                       urlRequestFuturesMap.put(systemUrl, urlFuture);
+                    } catch (final Exception ex) {
+                        LOGGER.error("Could not check URL " + systemUrl.getUrl() + " due to exception " + ex.getMessage(), ex);
+                    }
+                } else {
+                    LOGGER.info("The URL " + systemUrl.getUrl()
+                    + " for the type " + systemUrl.getUrlType().getName()
+                    + " is up-to-date and will not be checked.");
                 }
             }
+
+            for (UrlResultDTO activeRequest : urlRequestFuturesMap.keySet()) {
+                if (interrupted) {
+                    break;
+                }
+                Future<Response> futureResponse = urlRequestFuturesMap.get(activeRequest);
+                try {
+                    Response response = futureResponse.get();
+                    LOGGER.info("Completed check of URL " + activeRequest.getUrl() + " with status " + response.getStatusCode());
+                    activeRequest.setLastChecked(checkedDate);
+                    activeRequest.setResponseCode(response.getStatusCode());
+                    urlCheckerDao.updateUrlResult(activeRequest);
+                } catch (Exception ex) {
+                    LOGGER.error("Error checking URL " +  activeRequest.getUrl() + ex.getMessage(), ex);
+                }
+            }
+
+            if (interrupted) {
+                LOGGER.info("Job was interrupted.");
+            }
+
         } catch (Exception ex) {
             LOGGER.error("Unable to complete job: " + ex.getMessage(), ex);
         }
@@ -173,31 +217,9 @@ public class BrokenUrlReportCreator extends QuartzJob implements InterruptableJo
         }
 
         DefaultAsyncHttpClientConfig.Builder clientBuilder = Dsl.config()
-                .setConnectTimeout(connectTimeoutSeconds)
-                .setRequestTimeout(requestTimeoutSeconds);
+                .setConnectTimeout(connectTimeoutSeconds*1000)
+                .setRequestTimeout(requestTimeoutSeconds*1000);
         httpClient = Dsl.asyncHttpClient(clientBuilder);
-    }
-
-    @Transactional
-    @Async("jobAsyncDataExecutor")
-    public void checkUrl(final UrlResultDTO urlResult) {
-        //kick off the async operations to query all the urls
-        LOGGER.info("Looking at URL " + urlResult.getUrl());
-        BoundRequestBuilder httpRequest = httpClient.prepareGet(urlResult.getUrl());
-        httpRequest.execute(new AsyncCompletionHandler<Object>() {
-            private Date requestStartDate = new Date();
-            @Override
-            public Object onCompleted(final Response response) throws Exception {
-                LOGGER.info("Completed request to " + urlResult.getUrl() + " with status " + response.getStatusCode());
-                Date requestEndDate = new Date();
-                //TODO: what happens in the case of timeout?
-                urlResult.setLastChecked(checkedDate);
-                urlResult.setResponseTimeMillis(requestEndDate.getTime() - this.requestStartDate.getTime());
-                urlResult.setResponseCode(response.getStatusCode());
-                urlCheckerDao.updateUrlResult(urlResult);
-                return urlResult;
-            }
-        });
     }
 
     /**

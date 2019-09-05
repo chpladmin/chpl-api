@@ -5,22 +5,17 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.scheduler.UrlResultDTO;
-import gov.healthit.chpl.dto.scheduler.InheritanceErrorsReportDTO;
 import gov.healthit.chpl.dto.scheduler.UrlType;
-import gov.healthit.chpl.entity.scheduler.InheritanceErrorsReportEntity;
 import gov.healthit.chpl.entity.scheduler.UrlResultEntity;
-import gov.healthit.chpl.entity.scheduler.UrlTypeEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
-import gov.healthit.chpl.util.Util;
 
 /**
  * Methods supporting the gathering of all URLs and recording results.
@@ -43,7 +38,8 @@ public class UrlCheckerDao extends BaseDAOImpl {
                 case ACB:
                     //query from acb table
                     List<String> acbWebsites =
-                        entityManager.createQuery("SELECT website FROM CertificationBodyEntity WHERE deleted = false")
+                        entityManager.createQuery("SELECT website FROM CertificationBodyEntity "
+                                + "WHERE website IS NOT NULL AND deleted = false")
                         .getResultList();
                     for (String website : acbWebsites) {
                         UrlResultDTO checkableUrl = new UrlResultDTO();
@@ -55,7 +51,8 @@ public class UrlCheckerDao extends BaseDAOImpl {
                 case ATL:
                     //query from atl table
                     List<String> atlWebsites =
-                        entityManager.createQuery("SELECT website FROM TestingLabEntity WHERE deleted = false")
+                        entityManager.createQuery("SELECT website FROM TestingLabEntity "
+                                + "WHERE website IS NOT NULL AND deleted = false")
                         .getResultList();
                     for (String website : atlWebsites) {
                         UrlResultDTO checkableUrl = new UrlResultDTO();
@@ -67,7 +64,8 @@ public class UrlCheckerDao extends BaseDAOImpl {
                 case DEVELOPER:
                     //query from developer table
                     List<String> developerWebsites =
-                        entityManager.createQuery("SELECT website FROM DeveloperEntity WHERE deleted = false")
+                        entityManager.createQuery("SELECT website FROM DeveloperEntity "
+                                + "WHERE website IS NOT NULL AND deleted = false")
                         .getResultList();
                     for (String website : developerWebsites) {
                         UrlResultDTO checkableUrl = new UrlResultDTO();
@@ -84,19 +82,19 @@ public class UrlCheckerDao extends BaseDAOImpl {
                                 + "FROM CertifiedProductEntity WHERE deleted = false")
                         .getResultList();
                     for (Object[] websites : listingWebsites) {
-                        if (websites[0] != null) {
+                        if (!StringUtils.isEmpty(websites[0])) {
                             UrlResultDTO checkableUrl = new UrlResultDTO();
                             checkableUrl.setUrl(websites[0].toString());
                             checkableUrl.setUrlType(UrlType.MANDATORY_DISCLOSURE_URL);
                             results.add(checkableUrl);
                         }
-                        if (websites[1] != null) {
+                        if (!StringUtils.isEmpty(websites[1])) {
                             UrlResultDTO checkableUrl = new UrlResultDTO();
                             checkableUrl.setUrl(websites[1].toString());
                             checkableUrl.setUrlType(UrlType.TEST_RESULTS_SUMMARY);
                             results.add(checkableUrl);
                         }
-                        if (websites[2] != null) {
+                        if (!StringUtils.isEmpty(websites[2])) {
                             UrlResultDTO checkableUrl = new UrlResultDTO();
                             checkableUrl.setUrl(websites[2].toString());
                             checkableUrl.setUrlType(UrlType.FULL_USABILITY_REPORT);

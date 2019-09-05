@@ -7,7 +7,7 @@ public enum UrlType {
     //transparency_attestation_url
     MANDATORY_DISCLOSURE_URL("Mandatory Disclosure URL"),
     //report_file_location
-    TEST_RESULTS_SUMMARY("Test Result Summary"),
+    TEST_RESULTS_SUMMARY("Test Results Summary"),
     //sed_report_file_location
     FULL_USABILITY_REPORT("Full Usability Report");
 
