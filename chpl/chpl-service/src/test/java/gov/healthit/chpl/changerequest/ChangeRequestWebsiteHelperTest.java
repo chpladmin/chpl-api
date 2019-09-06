@@ -42,7 +42,7 @@ public class ChangeRequestWebsiteHelperTest {
     }
 
     @Test
-    public void getByChnageRequestId_Success() throws EntityRetrievalException {
+    public void getByChangeRequestId_Success() throws EntityRetrievalException {
         // Setup
         Mockito.when(crWebsiteDAO.getByChangeRequestId(ArgumentMatchers.anyLong()))
                 .thenReturn(new ChangeRequestWebsiteBuilder()
@@ -59,7 +59,7 @@ public class ChangeRequestWebsiteHelperTest {
     }
 
     @Test(expected = EntityRetrievalException.class)
-    public void getByChnageRequestId_Exception() throws EntityRetrievalException {
+    public void getByChangeRequestId_Exception() throws EntityRetrievalException {
         // Setup
         Mockito.when(crWebsiteDAO.getByChangeRequestId(ArgumentMatchers.anyLong()))
                 .thenThrow(EntityRetrievalException.class);
@@ -109,6 +109,17 @@ public class ChangeRequestWebsiteHelperTest {
         assertEquals("http://www.abc.com", crWebsite.getWebsite());
     }
 
+    @Test(expected = EntityRetrievalException.class)
+    public void createChangeRequestWebsite_Exception() throws EntityRetrievalException {
+        Mockito.when(crWebsiteDAO.create(ArgumentMatchers.any(ChangeRequest.class),
+                ArgumentMatchers.any(ChangeRequestWebsite.class)))
+                .thenThrow(EntityRetrievalException.class);
+
+        crWebsiteDAO.create(
+                new ChangeRequestBuilder().withId(23l).build(),
+                new ChangeRequestWebsiteBuilder().withWebsite("http://www.abc.com").build());
+    }
+
     @Test
     public void updateChangeRequestWebsite_Success() throws EntityRetrievalException {
         Mockito.when(crWebsiteDAO.update(ArgumentMatchers.any(ChangeRequestWebsite.class)))
@@ -122,6 +133,15 @@ public class ChangeRequestWebsiteHelperTest {
 
         assertEquals(Long.valueOf(3l), crWebsite.getId());
         assertEquals("http://www.abc.com", crWebsite.getWebsite());
+    }
+
+    @Test(expected = EntityRetrievalException.class)
+    public void updateChangeRequestWebsite_Exception() throws EntityRetrievalException {
+        Mockito.when(crWebsiteDAO.update(ArgumentMatchers.any(ChangeRequestWebsite.class)))
+                .thenThrow(EntityRetrievalException.class);
+
+        crWebsiteDAO.update(
+                new ChangeRequestWebsiteBuilder().withWebsite("http://www.abc.com").build());
     }
 
     private HashMap<String, Object> getChangeRequestWebsiteMap(final Long id, final String website) {
