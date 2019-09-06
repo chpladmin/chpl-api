@@ -366,7 +366,7 @@ public class UserManagementController {
         toUpdate.setSignatureDate(before.getSignatureDate());
         toUpdate.setSubjectName(before.getSubjectName());
         toUpdate.setTitle(userInfo.getTitle());
-        //Client should be able to change this value, so we'll always use the on from the DB
+        //Client not should be able to change this value, so we'll always use the on from the DB
         toUpdate.setLastLoggedInDate(before.getLastLoggedInDate());
         UserDTO updated = userManager.update(toUpdate);
 
