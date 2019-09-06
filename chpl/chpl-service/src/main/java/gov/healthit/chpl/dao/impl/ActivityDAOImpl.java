@@ -440,7 +440,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 
     private ActivityDTO mapEntityToDto(ActivityEntity entity) {
         ActivityDTO activity = new ActivityDTO(entity);
-        if (activity.getUser() != null) {
+        if (entity.getUser() != null) {
             activity.setUser(userMapper.from(entity.getUser()));
         }
         return activity;
