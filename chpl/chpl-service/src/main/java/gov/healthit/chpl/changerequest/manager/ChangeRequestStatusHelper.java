@@ -45,7 +45,7 @@ public class ChangeRequestStatusHelper {
         return crStatusDAO.create(cr, crStatus);
     }
 
-    public void updateChangeRequestStatus(ChangeRequest crFromDb, ChangeRequest crFromCaller)
+    public ChangeRequestStatus updateChangeRequestStatus(ChangeRequest crFromDb, ChangeRequest crFromCaller)
             throws EntityRetrievalException {
         // Check for nulls - a Java 8 way to check a chain of objects for null
         Long statusTypeIdFromDB = Optional.ofNullable(crFromDb)
@@ -62,8 +62,10 @@ public class ChangeRequestStatusHelper {
         if (statusTypeIdFromDB != null && statusTypeIdFromCaller != null
                 && statusTypeIdFromDB != statusTypeIdFromCaller
                 && isStatusChangeValid(statusTypeIdFromDB, statusTypeIdFromCaller)) {
-            saveNewStatusForChangeRequest(crFromDb, statusTypeIdFromCaller,
+            return saveNewStatusForChangeRequest(crFromDb, statusTypeIdFromCaller,
                     crFromCaller.getCurrentStatus().getComment());
+        } else {
+            return null;
         }
     }
 
