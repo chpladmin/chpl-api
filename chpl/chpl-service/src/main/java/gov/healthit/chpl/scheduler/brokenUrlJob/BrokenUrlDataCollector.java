@@ -36,8 +36,8 @@ import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
  * @author kekey
  *
  */
-public class BrokenUrlReportCreator extends QuartzJob implements InterruptableJob {
-    private static final Logger LOGGER = LogManager.getLogger("brokenUrlReportCreatorJobLogger");
+public class BrokenUrlDataCollector extends QuartzJob implements InterruptableJob {
+    private static final Logger LOGGER = LogManager.getLogger("brokenUrlDataCollectorJobLogger");
     private static final long DAYS_TO_MILLIS = 24 * 60 * 60 * 1000;
     private static final int BATCH_SIZE = 100;
 
@@ -58,7 +58,7 @@ public class BrokenUrlReportCreator extends QuartzJob implements InterruptableJo
     private Map<UrlResultDTO, Future<Integer>> urlResponseCodeFuturesMap;
     private boolean interrupted;
 
-    public BrokenUrlReportCreator() {
+    public BrokenUrlDataCollector() {
         interrupted = false;
         urlResponseCodeFuturesMap = new LinkedHashMap<UrlResultDTO, Future<Integer>>();
     }
@@ -67,7 +67,7 @@ public class BrokenUrlReportCreator extends QuartzJob implements InterruptableJo
     @Transactional
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        LOGGER.info("********* Starting the Broken URL Report Creator job. *********");
+        LOGGER.info("********* Starting the Broken URL Data Collector job. *********");
 
         completeSetup();
 
@@ -101,7 +101,7 @@ public class BrokenUrlReportCreator extends QuartzJob implements InterruptableJo
                 LOGGER.error("Error closing the httpClient: " + ex.getMessage(), ex);
             }
         }
-        LOGGER.info("********* Completed the Broken URL Report Creator job. *********");
+        LOGGER.info("********* Completed the Broken URL Data Collector job. *********");
     }
 
     /**

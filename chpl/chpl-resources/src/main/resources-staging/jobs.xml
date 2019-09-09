@@ -597,6 +597,26 @@
             </cron>
         </trigger>
 
+        <!-- Broken URL Data Collector -->
+        <job>
+            <name>brokenUrlDataCollector</name>
+            <group>systemJobs</group>
+            <description>Generates the data for the broken url report</description>
+            <job-class>gov.healthit.chpl.scheduler.brokenUrlJob.BrokenUrlDataCollector</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+        <trigger>
+            <cron>
+                <name>generateBrokenUrlData</name>
+                <group>brokenUrlDataCollectorTrigger</group>
+                <job-name>brokenUrlDataCollector</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 30 4 * * ?</cron-expression> <!-- At 0400 UTC every day -->
+            </cron>
+        </trigger>
+
         <!-- Job used to trigger interruptions of other jobs -->
         <job>
             <name>interruptJob</name>

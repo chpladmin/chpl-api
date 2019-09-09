@@ -6,21 +6,21 @@
         <Property name="logDir">${sys:catalina.home}/logs</Property>
     </Properties>
     <Appenders>
-        <RollingFile name="insertMissingSplitActivityJob"
-            fileName="${logDir}/scheduler/insertMissingSplitActivityJob.log"
-            filePattern="${logDir}/scheduler/history/insertMissingSplitActivityJob-%d{yyyy-MM-dd}.log">
+        <RollingFile name="FILE" fileName="${logDir}/chplservice.log"
+            filePattern="${logDir}/chplservice-%d{yyyyMMdd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+                <Pattern>%d %p %C %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
-        <RollingFile name="FILE" fileName="${logDir}/chplservice.log"
-            filePattern="${logDir}/chplservice-%d{yyyyMMdd}.log">
+        <RollingFile name="brokenUrlDataCollectorJob"
+            fileName="${logDir}/scheduler/brokenUrlDataCollectorJob.log"
+            filePattern="${logDir}/scheduler/history/brokenUrlDataCollectorJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d %p %C %m%n</Pattern>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
@@ -240,10 +240,6 @@
         <Logger name="gov.healthit.chpl" level="INFO" additivity="false">
             <AppenderRef ref="FILE" />
         </Logger>
-        <Logger name="insertMissingSplitActivityJobLogger" level="INFO"
-            additivity="false">
-            <AppenderRef ref="insertMissingSplitActivityJob" />
-        </Logger>
         <Logger name="summaryStatisticsEmailJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="summaryStatisticsEmailJob" />
@@ -252,9 +248,9 @@
             additivity="false">
             <AppenderRef ref="summaryStatisticsCreatorJob" />
         </Logger>
-        <Logger name="brokenUrlReportCreatorJobLogger" level="INFO"
+        <Logger name="brokenUrlDataCollectorJobLogger" level="INFO"
             additivity="false">
-            <AppenderRef ref="brokenUrlReportCreatorJob" />
+            <AppenderRef ref="brokenUrlDataCollectorJob" />
         </Logger>
         <Logger name="chartDataCreatorJobLogger" level="INFO"
             additivity="false">

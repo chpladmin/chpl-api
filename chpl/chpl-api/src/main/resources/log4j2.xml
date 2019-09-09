@@ -32,9 +32,9 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
-        <RollingFile name="brokenUrlReportCreatorJob"
-            fileName="${logDir}/scheduler/brokenUrlReportCreatorJob.log"
-            filePattern="${logDir}/scheduler/history/brokenUrlReportCreatorJob-%d{yyyy-MM-dd}.log">
+        <RollingFile name="brokenUrlDataCollectorJob"
+            fileName="${logDir}/scheduler/brokenUrlDataCollectorJob.log"
+            filePattern="${logDir}/scheduler/history/brokenUrlDataCollectorJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
                 <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
             </PatternLayout>
@@ -241,9 +241,9 @@
             additivity="false">
             <AppenderRef ref="summaryStatisticsCreatorJob" />
         </Logger>
-        <Logger name="brokenUrlReportCreatorJobLogger" level="INFO"
+        <Logger name="brokenUrlDataCollectorJobLogger" level="INFO"
             additivity="false">
-            <AppenderRef ref="brokenUrlReportCreatorJob" />
+            <AppenderRef ref="brokenUrlDataCollectorJob" />
         </Logger>
         <Logger name="chartDataCreatorJobLogger" level="INFO"
             additivity="false">
