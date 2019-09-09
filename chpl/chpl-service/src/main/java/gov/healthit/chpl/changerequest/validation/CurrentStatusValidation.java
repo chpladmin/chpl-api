@@ -12,7 +12,6 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
     public boolean isValid(ChangeRequestValidationContext context) {
         // It's fine if it's not set... We are going to do anything with it.
         if (context.getChangeRequest().getCurrentStatus() == null
-                || context.getChangeRequest().getCurrentStatus() == null
                 || context.getChangeRequest().getCurrentStatus().getChangeRequestStatusType() == null
                 || context.getChangeRequest().getCurrentStatus().getChangeRequestStatusType().getId() == null) {
             return true;
