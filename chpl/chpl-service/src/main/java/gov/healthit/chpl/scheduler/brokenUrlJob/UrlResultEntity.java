@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity.scheduler;
+package gov.healthit.chpl.scheduler.brokenUrlJob;
 
 import java.util.Date;
 
@@ -45,8 +45,8 @@ public class UrlResultEntity {
     private Integer responseCode;
 
     @Basic(optional = false)
-    @Column(name = "response_time")
-    private Long responseTimeMillis;
+    @Column(name = "response_message")
+    private String responseMessage;
 
     @Basic(optional = false)
     @Column(name = "checked_date")
@@ -104,12 +104,12 @@ public class UrlResultEntity {
         this.responseCode = responseCode;
     }
 
-    public Long getResponseTimeMillis() {
-        return responseTimeMillis;
+    public String getResponseMessage() {
+        return responseMessage;
     }
 
-    public void setResponseTimeMillis(final Long responseTimeMillis) {
-        this.responseTimeMillis = responseTimeMillis;
+    public void setResponseMessage(final String responseMessage) {
+        this.responseMessage = responseMessage;
     }
 
     public Date getLastChecked() {

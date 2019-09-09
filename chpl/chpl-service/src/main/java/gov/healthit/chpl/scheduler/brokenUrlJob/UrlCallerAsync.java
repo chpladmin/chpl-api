@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler;
+package gov.healthit.chpl.scheduler.brokenUrlJob;
 
 import java.util.concurrent.Future;
 
@@ -10,8 +10,6 @@ import org.asynchttpclient.Response;
 import org.asynchttpclient.util.HttpConstants;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
-import gov.healthit.chpl.dto.scheduler.UrlResultDTO;
 
 /**
  * Provides asynchronous support to scheduler classes for getting the response from a URL.

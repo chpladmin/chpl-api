@@ -19,13 +19,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
-import gov.healthit.chpl.dao.scheduler.UrlCheckerDao;
-import gov.healthit.chpl.dto.scheduler.UrlResultDTO;
-import gov.healthit.chpl.dto.scheduler.UrlType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.scheduler.brokenUrlJob.UrlCheckerDao;
+import gov.healthit.chpl.scheduler.brokenUrlJob.UrlResultDTO;
+import gov.healthit.chpl.scheduler.brokenUrlJob.UrlType;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -69,7 +68,6 @@ public class UrlCheckerDaoTest extends TestCase {
         UrlResultDTO toCreate = new UrlResultDTO();
         toCreate.setLastChecked(new Date());
         toCreate.setResponseCode(200);
-        toCreate.setResponseTimeMillis(1000L);
         toCreate.setUrl("http://test.com");
         toCreate.setUrlType(UrlType.DEVELOPER);
         UrlResultDTO created = urlCheckerDao.createUrlResult(toCreate);
@@ -83,7 +81,6 @@ public class UrlCheckerDaoTest extends TestCase {
         assertNotNull(result.getId());
         assertEquals(created.getId().longValue(), result.getId().longValue());
         assertEquals(200, result.getResponseCode().intValue());
-        assertEquals(1000L, result.getResponseTimeMillis().longValue());
         assertEquals("http://test.com", result.getUrl());
         assertEquals(UrlType.DEVELOPER, result.getUrlType());
     }
@@ -95,7 +92,6 @@ public class UrlCheckerDaoTest extends TestCase {
         UrlResultDTO toCreate = new UrlResultDTO();
         toCreate.setLastChecked(new Date());
         toCreate.setResponseCode(200);
-        toCreate.setResponseTimeMillis(1000L);
         toCreate.setUrl("http://test.com");
         toCreate.setUrlType(UrlType.DEVELOPER);
         UrlResultDTO created = urlCheckerDao.createUrlResult(toCreate);
@@ -125,7 +121,6 @@ public class UrlCheckerDaoTest extends TestCase {
         UrlResultDTO toCreate = new UrlResultDTO();
         toCreate.setLastChecked(new Date());
         toCreate.setResponseCode(200);
-        toCreate.setResponseTimeMillis(1000L);
         toCreate.setUrl("http://test.com");
         toCreate.setUrlType(UrlType.DEVELOPER);
         UrlResultDTO created = urlCheckerDao.createUrlResult(toCreate);

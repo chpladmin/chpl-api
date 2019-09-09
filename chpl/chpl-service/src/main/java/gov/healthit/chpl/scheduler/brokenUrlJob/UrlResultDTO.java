@@ -1,11 +1,9 @@
-package gov.healthit.chpl.dto.scheduler;
+package gov.healthit.chpl.scheduler.brokenUrlJob;
 
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
-
-import gov.healthit.chpl.entity.scheduler.UrlResultEntity;
 
 public class UrlResultDTO {
     private Long id;
@@ -13,7 +11,7 @@ public class UrlResultDTO {
     private UrlType urlType;
     private Date lastChecked;
     private Integer responseCode;
-    private Long responseTimeMillis;
+    private String responseMessage;
 
     public UrlResultDTO() {
     }
@@ -77,11 +75,10 @@ public class UrlResultDTO {
     public void setResponseCode(final Integer responseCode) {
         this.responseCode = responseCode;
     }
-    public Long getResponseTimeMillis() {
-        return responseTimeMillis;
+    public String getResponseMessage() {
+        return responseMessage;
     }
-    public void setResponseTimeMillis(final Long responseTimeMillis) {
-        this.responseTimeMillis = responseTimeMillis;
+    public void setResponseMessage(final String responseMessage) {
+        this.responseMessage = responseMessage;
     }
-
 }

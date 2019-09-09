@@ -1,4 +1,4 @@
-package gov.healthit.chpl.dao.scheduler;
+package gov.healthit.chpl.scheduler.brokenUrlJob;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,9 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.scheduler.UrlResultDTO;
-import gov.healthit.chpl.dto.scheduler.UrlType;
-import gov.healthit.chpl.entity.scheduler.UrlResultEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
@@ -116,7 +113,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                 if (existingUrlResult.getUrl().equalsIgnoreCase(systemUrl.getUrl())
                         && existingUrlResult.getUrlType().getName().equals(systemUrl.getUrlType().getName())) {
                     systemUrl.setLastChecked(existingUrlResult.getLastChecked());
-                    systemUrl.setResponseTimeMillis(existingUrlResult.getResponseTimeMillis());
+                    systemUrl.setResponseMessage(existingUrlResult.getResponseMessage());
                     systemUrl.setResponseCode(existingUrlResult.getResponseCode());
                 }
             }
@@ -159,7 +156,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
         UrlResultEntity entity = new UrlResultEntity();
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         entity.setResponseCode(toCreate.getResponseCode());
-        entity.setResponseTimeMillis(toCreate.getResponseTimeMillis());
+        entity.setResponseMessage(toCreate.getResponseMessage());
         entity.setUrl(toCreate.getUrl());
         entity.setLastChecked(toCreate.getLastChecked());
         Long urlTypeId = getUrlTypeIdFromName(toCreate.getUrlType().getName());
@@ -185,7 +182,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                     "No URL with id " + toUpdate.getId() + " was found.");
         }
         entity.setResponseCode(toUpdate.getResponseCode());
-        entity.setResponseTimeMillis(toUpdate.getResponseTimeMillis());
+        entity.setResponseMessage(toUpdate.getResponseMessage());
         entity.setLastChecked(toUpdate.getLastChecked());
         update(entity);
         return new UrlResultDTO(entity);

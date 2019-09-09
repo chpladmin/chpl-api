@@ -1,4 +1,4 @@
-package gov.healthit.chpl.dto.scheduler;
+package gov.healthit.chpl.scheduler.brokenUrlJob;
 
 public enum UrlType {
     ATL("ONC-ATL"),

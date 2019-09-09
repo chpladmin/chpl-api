@@ -1,10 +1,12 @@
-package gov.healthit.chpl.scheduler.job;
+package gov.healthit.chpl.scheduler.brokenUrlJob;
 
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
+
+import javax.net.ssl.SSLException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -17,14 +19,16 @@ import org.quartz.InterruptableJob;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.UnableToInterruptJobException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.dao.scheduler.UrlCheckerDao;
-import gov.healthit.chpl.dto.scheduler.UrlResultDTO;
-import gov.healthit.chpl.scheduler.UrlCallerAsync;
+import gov.healthit.chpl.scheduler.job.QuartzJob;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 
 /**
  * Quartz job to check every URl in the system and log its response code to the database.
@@ -34,6 +38,7 @@ import gov.healthit.chpl.scheduler.UrlCallerAsync;
 public class BrokenUrlReportCreator extends QuartzJob implements InterruptableJob {
     private static final Logger LOGGER = LogManager.getLogger("brokenUrlReportCreatorJobLogger");
     private static final long DAYS_TO_MILLIS = 24 * 60 * 60 * 1000;
+    private static final int BATCH_SIZE = 100;
 
     @Autowired
     private Environment env;
@@ -48,14 +53,12 @@ public class BrokenUrlReportCreator extends QuartzJob implements InterruptableJo
     private int failureCheckIntervalDays = 1;
     private int connectTimeoutSeconds = 10;
     private int requestTimeoutSeconds = 10;
-    private Date checkedDate;
     private AsyncHttpClient httpClient;
     private Map<UrlResultDTO, Future<Response>> urlRequestFuturesMap;
     private boolean interrupted;
 
     public BrokenUrlReportCreator() {
         interrupted = false;
-        this.checkedDate = new Date();
         urlRequestFuturesMap = new LinkedHashMap<UrlResultDTO, Future<Response>>();
     }
 
@@ -96,7 +99,7 @@ public class BrokenUrlReportCreator extends QuartzJob implements InterruptableJo
                 for (UrlResultDTO existingUrlResult : existingUrlResults) {
                     if (existingUrlResult.equals(systemUrl)) {
                         alreadyExists = true;
-                        systemUrl.setId(existingUrlResult.getId());
+                        BeanUtils.copyProperties(existingUrlResult, systemUrl);
                     }
                 }
                 if (!alreadyExists) {
@@ -114,48 +117,76 @@ public class BrokenUrlReportCreator extends QuartzJob implements InterruptableJo
 
             //determine which of the system urls should be checked now
             //and check them - updates each result with checked date, response time, response code
-            //TODO: are there likely to be duplicates that we are wasting our time checking?
-            for (UrlResultDTO systemUrl : allSystemUrls) {
-                if (shouldUrlBeChecked(systemUrl)) {
-                    LOGGER.info("The URL " + systemUrl.getUrl()
+            int batchCount = allSystemUrls.size() / BATCH_SIZE;
+            LOGGER.info("Querying all system URLs in " + batchCount + " batches.");
+            for (int currBatch = 0; currBatch < batchCount; currBatch++) {
+                LOGGER.info("*** Batch " + currBatch + " ***");
+                int batchBegin = currBatch * BATCH_SIZE;
+                int batchEnd = Math.min(batchBegin + BATCH_SIZE, allSystemUrls.size());
+                for (int batchIndex = batchBegin; batchIndex < batchEnd; batchIndex++) {
+                    LOGGER.info("Looking at URL at index " + batchIndex);
+                    UrlResultDTO systemUrl = allSystemUrls.get(batchIndex);
+                    if (shouldUrlBeChecked(systemUrl)) {
+                        LOGGER.info("systemUrls[" + batchIndex + "] " + systemUrl.getUrl()
+                            + " for the type " + systemUrl.getUrlType().getName()
+                            + " will be checked for validity.");
+                        try {
+                           Future<Response> urlFuture =
+                                   urlCallerAsync.getUrlResponse(systemUrl, httpClient, LOGGER);
+                           urlRequestFuturesMap.put(systemUrl, urlFuture);
+                        } catch (final Exception ex) {
+                            LOGGER.error("Could not check URL " + systemUrl.getUrl()
+                                + " due to exception " + ex.getMessage(), ex);
+                        }
+                    } else {
+                        LOGGER.info("systemUrls[" + batchIndex + "] " + systemUrl.getUrl()
                         + " for the type " + systemUrl.getUrlType().getName()
-                        + " will be checked for validity.");
-                    try {
-                       Future<Response> urlFuture =
-                               urlCallerAsync.getUrlResponse(systemUrl, httpClient, LOGGER);
-                       urlRequestFuturesMap.put(systemUrl, urlFuture);
-                    } catch (final Exception ex) {
-                        LOGGER.error("Could not check URL " + systemUrl.getUrl() + " due to exception " + ex.getMessage(), ex);
+                        + " is up-to-date and will not be checked.");
                     }
-                } else {
-                    LOGGER.info("The URL " + systemUrl.getUrl()
-                    + " for the type " + systemUrl.getUrlType().getName()
-                    + " is up-to-date and will not be checked.");
-                }
-            }
 
-            for (UrlResultDTO activeRequest : urlRequestFuturesMap.keySet()) {
+                    //get the results from this batch of urls
+                    for (UrlResultDTO activeRequest : urlRequestFuturesMap.keySet()) {
+                        if (interrupted) {
+                            break;
+                        }
+                        Future<Response> futureResponse = urlRequestFuturesMap.get(activeRequest);
+                        try {
+                            Response response = futureResponse.get();
+                            LOGGER.info("Completed check of URL " + activeRequest.getUrl()
+                                + " with status " + response.getStatusCode());
+                            activeRequest.setLastChecked(new Date());
+                            activeRequest.setResponseCode(response.getStatusCode());
+                            urlCheckerDao.updateUrlResult(activeRequest);
+                        } catch (Exception ex) {
+                            LOGGER.error("Error checking URL " +  activeRequest.getUrl() + " " + ex.getMessage());
+                            //we could not complete the request for some reason... timeout, no host, some other error
+                            //save the exception message as the response_message field
+                            //so at least we have SOMETHING
+                            activeRequest.setLastChecked(new Date());
+                            activeRequest.setResponseMessage(ex.getMessage());
+                            urlCheckerDao.updateUrlResult(activeRequest);
+                        } finally {
+                            urlRequestFuturesMap.remove(activeRequest);
+                        }
+                    }
+
+                    urlRequestFuturesMap.clear();
+                    if (interrupted) {
+                        break;
+                    }
+                }
                 if (interrupted) {
                     break;
                 }
-                Future<Response> futureResponse = urlRequestFuturesMap.get(activeRequest);
-                try {
-                    Response response = futureResponse.get();
-                    LOGGER.info("Completed check of URL " + activeRequest.getUrl() + " with status " + response.getStatusCode());
-                    activeRequest.setLastChecked(checkedDate);
-                    activeRequest.setResponseCode(response.getStatusCode());
-                    urlCheckerDao.updateUrlResult(activeRequest);
-                } catch (Exception ex) {
-                    LOGGER.error("Error checking URL " +  activeRequest.getUrl() + ex.getMessage(), ex);
-                }
             }
-
-            if (interrupted) {
-                LOGGER.info("Job was interrupted.");
-            }
-
         } catch (Exception ex) {
             LOGGER.error("Unable to complete job: " + ex.getMessage(), ex);
+        } finally {
+            try {
+                httpClient.close();
+            } catch (final Exception ex) {
+                LOGGER.error("Error closing the httpClient: " + ex.getMessage(), ex);
+            }
         }
         LOGGER.info("********* Completed the Broken URL Report Creator job. *********");
     }
@@ -216,9 +247,18 @@ public class BrokenUrlReportCreator extends QuartzJob implements InterruptableJo
             LOGGER.error("The spring environment was null.");
         }
 
+        //create ssl context to accept ALL https connections
+        SslContext sslContext = null;
+        try {
+            sslContext = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
+        } catch (final SSLException ex) {
+            LOGGER.error("Could not create ssl context; https requests may fail.", ex);
+        }
+
         DefaultAsyncHttpClientConfig.Builder clientBuilder = Dsl.config()
                 .setConnectTimeout(connectTimeoutSeconds*1000)
-                .setRequestTimeout(requestTimeoutSeconds*1000);
+                .setRequestTimeout(requestTimeoutSeconds*1000)
+                .setSslContext(sslContext);
         httpClient = Dsl.asyncHttpClient(clientBuilder);
     }
 
@@ -234,13 +274,13 @@ public class BrokenUrlReportCreator extends QuartzJob implements InterruptableJo
         if (systemUrl.getLastChecked() == null) {
             return true;
         }
-        long successCheckIntervalMillis = systemUrl.getLastChecked().getTime() + (successCheckIntervalDays*DAYS_TO_MILLIS);
-        long failureCheckIntervalMillis = systemUrl.getLastChecked().getTime() + (failureCheckIntervalDays*DAYS_TO_MILLIS);
+        long successNextCheckMillis = systemUrl.getLastChecked().getTime() + (successCheckIntervalDays*DAYS_TO_MILLIS);
+        long failureNextCheckMillis = systemUrl.getLastChecked().getTime() + (failureCheckIntervalDays*DAYS_TO_MILLIS);
         if (isSuccess(systemUrl.getResponseCode())
-                && System.currentTimeMillis() >= successCheckIntervalMillis) {
+                && System.currentTimeMillis() >= successNextCheckMillis) {
             return true;
         } else if (!isSuccess(systemUrl.getResponseCode())
-                && System.currentTimeMillis() >= failureCheckIntervalMillis) {
+                && System.currentTimeMillis() >= failureNextCheckMillis) {
             return true;
         }
         return false;

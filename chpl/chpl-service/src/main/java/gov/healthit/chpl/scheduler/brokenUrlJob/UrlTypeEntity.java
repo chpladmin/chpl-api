@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity.scheduler;
+package gov.healthit.chpl.scheduler.brokenUrlJob;
 
 import java.util.Date;
 
