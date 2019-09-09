@@ -32,7 +32,7 @@ public class ChangeRequestDetailsCreateValidation extends ValidationRule<ChangeR
         return true;
     }
 
-    public boolean isChangeRequestWebsiteValid(HashMap<String, String> map) {
+    private boolean isChangeRequestWebsiteValid(HashMap<String, String> map) {
         // The only value that should be present...
         return map.containsKey("website") && !StringUtils.isEmpty(map.get("website"));
     }
