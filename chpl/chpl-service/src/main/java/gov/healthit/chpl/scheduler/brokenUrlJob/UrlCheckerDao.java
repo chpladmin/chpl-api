@@ -35,73 +35,96 @@ public class UrlCheckerDao extends BaseDAOImpl {
                 case ACB:
                     //query from acb table
                     List<String> acbWebsites =
-                        entityManager.createQuery("SELECT website FROM CertificationBodyEntity "
+                        entityManager.createQuery("SELECT DISTINCT website FROM CertificationBodyEntity "
                                 + "WHERE website IS NOT NULL AND deleted = false")
                         .getResultList();
                     for (String website : acbWebsites) {
-                        UrlResultDTO checkableUrl = new UrlResultDTO();
-                        checkableUrl.setUrl(website);
-                        checkableUrl.setUrlType(urlType);
-                        results.add(checkableUrl);
+                        if (!StringUtils.isEmpty(website)) {
+                            UrlResultDTO checkableUrl = new UrlResultDTO();
+                            checkableUrl.setUrl(website);
+                            checkableUrl.setUrlType(urlType);
+                            results.add(checkableUrl);
+                        }
                     }
                     break;
                 case ATL:
                     //query from atl table
                     List<String> atlWebsites =
-                        entityManager.createQuery("SELECT website FROM TestingLabEntity "
+                        entityManager.createQuery("SELECT DISTINCT website FROM TestingLabEntity "
                                 + "WHERE website IS NOT NULL AND deleted = false")
                         .getResultList();
                     for (String website : atlWebsites) {
-                        UrlResultDTO checkableUrl = new UrlResultDTO();
-                        checkableUrl.setUrl(website);
-                        checkableUrl.setUrlType(urlType);
-                        results.add(checkableUrl);
+                        if (!StringUtils.isEmpty(website)) {
+                            UrlResultDTO checkableUrl = new UrlResultDTO();
+                            checkableUrl.setUrl(website);
+                            checkableUrl.setUrlType(urlType);
+                            results.add(checkableUrl);
+                        }
                     }
                     break;
                 case DEVELOPER:
                     //query from developer table
                     List<String> developerWebsites =
-                        entityManager.createQuery("SELECT website FROM DeveloperEntity "
+                        entityManager.createQuery("SELECT DISTINCT website FROM DeveloperEntity "
                                 + "WHERE website IS NOT NULL AND deleted = false")
                         .getResultList();
                     for (String website : developerWebsites) {
-                        UrlResultDTO checkableUrl = new UrlResultDTO();
-                        checkableUrl.setUrl(website);
-                        checkableUrl.setUrlType(urlType);
-                        results.add(checkableUrl);
-                    }
-                    break;
-                case FULL_USABILITY_REPORT:
-                    //this query also will get the other two types of urls since they come from the same table
-                    List<Object[]> listingWebsites =
-                        entityManager.createQuery(
-                                "SELECT transparencyAttestationUrl, reportFileLocation, sedReportFileLocation "
-                                + "FROM CertifiedProductEntity WHERE deleted = false")
-                        .getResultList();
-                    for (Object[] websites : listingWebsites) {
-                        if (!StringUtils.isEmpty(websites[0])) {
+                        if (!StringUtils.isEmpty(website)) {
                             UrlResultDTO checkableUrl = new UrlResultDTO();
-                            checkableUrl.setUrl(websites[0].toString());
-                            checkableUrl.setUrlType(UrlType.MANDATORY_DISCLOSURE_URL);
-                            results.add(checkableUrl);
-                        }
-                        if (!StringUtils.isEmpty(websites[1])) {
-                            UrlResultDTO checkableUrl = new UrlResultDTO();
-                            checkableUrl.setUrl(websites[1].toString());
-                            checkableUrl.setUrlType(UrlType.TEST_RESULTS_SUMMARY);
-                            results.add(checkableUrl);
-                        }
-                        if (!StringUtils.isEmpty(websites[2])) {
-                            UrlResultDTO checkableUrl = new UrlResultDTO();
-                            checkableUrl.setUrl(websites[2].toString());
-                            checkableUrl.setUrlType(UrlType.FULL_USABILITY_REPORT);
+                            checkableUrl.setUrl(website);
+                            checkableUrl.setUrlType(urlType);
                             results.add(checkableUrl);
                         }
                     }
                     break;
                 case MANDATORY_DISCLOSURE_URL:
+                    List<String> mandatoryDisclosureWebsites =
+                        entityManager.createQuery(
+                                "SELECT DISTINCT transparencyAttestationUrl "
+                                + "FROM CertifiedProductEntity "
+                                + "WHERE transparencyAttestationUrl IS NOT NULL "
+                                + "AND deleted = false")
+                        .getResultList();
+                    for (String website : mandatoryDisclosureWebsites) {
+                        if (!StringUtils.isEmpty(website)) {
+                            UrlResultDTO checkableUrl = new UrlResultDTO();
+                            checkableUrl.setUrl(website);
+                            checkableUrl.setUrlType(urlType);
+                            results.add(checkableUrl);
+                        }
+                    }
+                    break;
                 case TEST_RESULTS_SUMMARY:
-                    //handled in the above case since all those urls come from the same table
+                    List<String> testResultsWebsites =
+                    entityManager.createQuery(
+                            "SELECT DISTINCT reportFileLocation "
+                            + "FROM CertifiedProductEntity "
+                            + "WHERE reportFileLocation IS NOT NULL AND deleted = false")
+                    .getResultList();
+                    for (String website : testResultsWebsites) {
+                        if (!StringUtils.isEmpty(website)) {
+                            UrlResultDTO checkableUrl = new UrlResultDTO();
+                            checkableUrl.setUrl(website);
+                            checkableUrl.setUrlType(urlType);
+                            results.add(checkableUrl);
+                        }
+                    }
+                    break;
+                case FULL_USABILITY_REPORT:
+                    List<String> fullUsabilityReportWebsites =
+                    entityManager.createQuery(
+                            "SELECT DISTINCT sedReportFileLocation "
+                            + "FROM CertifiedProductEntity "
+                            + "WHERE sedReportFileLocation IS NOT NULL AND deleted = false")
+                    .getResultList();
+                    for (String website : fullUsabilityReportWebsites) {
+                        if (!StringUtils.isEmpty(website)) {
+                            UrlResultDTO checkableUrl = new UrlResultDTO();
+                            checkableUrl.setUrl(website);
+                            checkableUrl.setUrlType(urlType);
+                            results.add(checkableUrl);
+                        }
+                    }
                     break;
             }
         }

@@ -462,7 +462,7 @@
             <name>brokenUrlReportCreator</name>
             <group>systemJobs</group>
             <description>Generates the data for the broken url report</description>
-            <job-class>gov.healthit.chpl.scheduler.job.BrokenUrlReportCreator</job-class>
+            <job-class>gov.healthit.chpl.scheduler.brokenUrlJob.BrokenUrlReportCreator</job-class>
             <durability>true</durability>
             <recover>false</recover>
         </job>
