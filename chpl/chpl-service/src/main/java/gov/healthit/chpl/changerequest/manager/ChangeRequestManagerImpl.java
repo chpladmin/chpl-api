@@ -102,11 +102,24 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
     public ChangeRequest getChangeRequest(final Long changeRequestId) throws EntityRetrievalException {
         ChangeRequest cr = new ChangeRequest();
         cr = changeRequestDAO.get(changeRequestId);
-        cr.setDetails(getChangeRequestDetails(cr));
-        cr.setStatuses(crStatusHelper.getStatuses(cr.getId()));
-        cr.setCertificationBodies(
-                crCertificationBodyMapHelper.getCertificationBodiesByChangeRequestId(changeRequestId));
-        return cr;
+        return populateChangeRequestData(cr);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
+            + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).GET_ALL)")
+    public List<ChangeRequest> getAllChangeRequestsForUser() throws EntityRetrievalException {
+        List<ChangeRequest> requests = changeRequestDAO.getAllForCurrentUser().stream()
+                .map(cr -> {
+                    try {
+                        return populateChangeRequestData(cr);
+                    } catch (EntityRetrievalException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .collect(Collectors.<ChangeRequest> toList());
+        return requests;
     }
 
     @Override
@@ -126,6 +139,14 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
         updateChangeRequestDetails(crFromDb, cr.getDetails());
         executeChangeRequest(crFromDb);
         return getChangeRequest(cr.getId());
+    }
+
+    private ChangeRequest populateChangeRequestData(final ChangeRequest cr) throws EntityRetrievalException {
+        cr.setDetails(getChangeRequestDetails(cr));
+        cr.setStatuses(crStatusHelper.getStatuses(cr.getId()));
+        cr.setCertificationBodies(
+                crCertificationBodyMapHelper.getCertificationBodiesByChangeRequestId(cr.getId()));
+        return cr;
     }
 
     private ChangeRequest createBaseChangeRequest(final ChangeRequest cr) throws EntityRetrievalException {

@@ -21,11 +21,13 @@ public class GetByIdActionPermissions extends ActionPermissions {
             } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
                 return true;
             } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
-                ChangeRequest cr = (ChangeRequest) obj;
-                return cr.getCertificationBodies().stream()
-                        .anyMatch(certBody -> getResourcePermissions().getAllAcbsForCurrentUser().stream()
-                                .anyMatch(userAcb -> userAcb.getId().equals(certBody.getId())));
-                // return acbs.size() > 0;
+                // ChangeRequest cr = (ChangeRequest) obj;
+                // return cr.getCertificationBodies().stream()
+                // .anyMatch(certBody ->
+                // getResourcePermissions().getAllAcbsForCurrentUser().stream()
+                // .anyMatch(userAcb ->
+                // userAcb.getId().equals(certBody.getId())));
+                return false;
             } else if (getResourcePermissions().isUserRoleDeveloperAdmin()) {
                 ChangeRequest cr = (ChangeRequest) obj;
                 return isDeveloperValidForCurrentUser(cr.getDeveloper().getDeveloperId());
