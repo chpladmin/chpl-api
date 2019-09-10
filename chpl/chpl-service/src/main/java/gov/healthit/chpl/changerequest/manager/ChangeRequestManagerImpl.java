@@ -209,6 +209,8 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_EXISTENCE));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_DETAILS_UPDATE));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.STATUS_TYPE));
+        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.STATUS_APPROVED));
+        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.STATUS_REJECTED));
         return runValidations(rules, cr);
     }
 

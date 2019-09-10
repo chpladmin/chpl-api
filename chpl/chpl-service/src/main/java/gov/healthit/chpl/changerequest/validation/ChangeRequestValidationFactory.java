@@ -14,6 +14,8 @@ public class ChangeRequestValidationFactory {
     public final static String CHANGE_REQUEST_DETAILS_UPDATE = "CHANGE_REQUEST_DETAILS_UPDATE";
     public final static String CHANGE_REQUEST_EXISTENCE = "CHANGE_REQUEST_EXISTENCE";
     public final static String STATUS_TYPE = "STATUS_TYPE";
+    public final static String STATUS_APPROVED = "STATUS_APPROVED";
+    public final static String STATUS_REJECTED = "STATUS_REJECTED";
 
     private ChangeRequestDetailsCreateValidation changeRequestDetailsCreateValidation;
     private ChangeRequestDetailsUpdateValidation changeRequestDetailsUpdateValidation;
@@ -21,6 +23,8 @@ public class ChangeRequestValidationFactory {
     private ChangeRequestTypeValidation changeRequestTypeValidation;
     private CurrentStatusValidation currentStatusValidation;
     private DeveloperValidation developerValidation;
+    private ChangeRequestApprovedValidation changeRequestApprovedValidation;
+    private ChangeRequestRejectedValidation changeRequestRejectedValidation;
 
     @Autowired
     public ChangeRequestValidationFactory(
@@ -29,13 +33,17 @@ public class ChangeRequestValidationFactory {
             final ChangeRequestExistenceValidation changeRequestExistanceValidation,
             final ChangeRequestTypeValidation changeRequestTypeValidation,
             final CurrentStatusValidation currentStatusValidation,
-            final DeveloperValidation developerValidation) {
+            final DeveloperValidation developerValidation,
+            final ChangeRequestApprovedValidation changeRequestApprovedValidation,
+            final ChangeRequestRejectedValidation changeRequestRejectedValidation) {
         this.changeRequestDetailsCreateValidation = changeRequestDetailsCreateValidation;
         this.changeRequestDetailsUpdateValidation = changeRequestDetailsUpdateValidation;
         this.changeRequestExistanceValidation = changeRequestExistanceValidation;
         this.changeRequestTypeValidation = changeRequestTypeValidation;
         this.currentStatusValidation = currentStatusValidation;
         this.developerValidation = developerValidation;
+        this.changeRequestApprovedValidation = changeRequestApprovedValidation;
+        this.changeRequestRejectedValidation = changeRequestRejectedValidation;
     }
 
     public ValidationRule<ChangeRequestValidationContext> getRule(String name) {
@@ -52,6 +60,10 @@ public class ChangeRequestValidationFactory {
             return changeRequestExistanceValidation;
         case STATUS_TYPE:
             return currentStatusValidation;
+        case STATUS_APPROVED:
+            return changeRequestApprovedValidation;
+        case STATUS_REJECTED:
+            return changeRequestRejectedValidation;
         default:
             return null;
         }
