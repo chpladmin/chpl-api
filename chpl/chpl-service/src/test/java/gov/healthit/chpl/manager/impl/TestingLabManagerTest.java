@@ -79,8 +79,6 @@ public class TestingLabManagerTest extends TestingUsers {
         atlManager.create(dto);
 
         Mockito.verify(atlDao).create(ArgumentMatchers.any(TestingLabDTO.class));
-        Mockito.verify(userPermissionsManager).addAtlPermission(ArgumentMatchers.any(TestingLabDTO.class),
-                ArgumentMatchers.anyLong());
         Mockito.verify(activityManager).addActivity(ArgumentMatchers.any(ActivityConcept.class),
                 ArgumentMatchers.anyLong(), ArgumentMatchers.anyString(), ArgumentMatchers.isNull(),
                 ArgumentMatchers.any(TestingLabDTO.class));

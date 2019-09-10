@@ -9,8 +9,10 @@ import java.util.Set;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
@@ -36,8 +39,6 @@ import gov.healthit.chpl.domain.auth.AuthorizeCredentials;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UserInvitation;
 import gov.healthit.chpl.domain.auth.UsersResponse;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.auth.InvitationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserInvitationDTO;
@@ -77,6 +78,9 @@ public class UserManagementController {
 
     @Autowired
     private ActivityManager activityManager;
+
+    @Autowired
+    private FF4j ff4j;
 
     @Autowired
     private Environment env;
@@ -283,6 +287,11 @@ public class UserManagementController {
     public UserInvitation inviteUser(@RequestBody final UserInvitation invitation)
             throws InvalidArgumentsException, UserCreationException, UserRetrievalException,
             UserPermissionRetrievalException, AddressException, MessagingException {
+
+        if (!ff4j.check(FeatureList.ROLE_DEVELOPER) && invitation.getRole().equals(Authority.ROLE_DEVELOPER)) {
+            throw new NotImplementedException();
+        }
+
         InvitationDTO createdInvite = null;
         if (invitation.getRole().equals(Authority.ROLE_ADMIN)) {
             createdInvite = invitationManager.inviteAdmin(invitation.getEmailAddress());
@@ -298,7 +307,11 @@ public class UserManagementController {
                     && invitation.getPermissionObjectId() != null) {
                 createdInvite = invitationManager.inviteWithAtlAccess(invitation.getEmailAddress(),
                         invitation.getPermissionObjectId());
-        }
+        } else if (invitation.getRole().equals(Authority.ROLE_DEVELOPER)
+                && invitation.getPermissionObjectId() != null) {
+            createdInvite = invitationManager.inviteWithDeveloperAccess(invitation.getEmailAddress(),
+                    invitation.getPermissionObjectId());
+    }
 
         // send email
         String htmlMessage = "<p>Hi,</p>" + "<p>You have been granted a new role on ONC's CHPL "
@@ -353,6 +366,8 @@ public class UserManagementController {
         toUpdate.setSignatureDate(before.getSignatureDate());
         toUpdate.setSubjectName(before.getSubjectName());
         toUpdate.setTitle(userInfo.getTitle());
+        //Client not should be able to change this value, so we'll always use the on from the DB
+        toUpdate.setLastLoggedInDate(before.getLastLoggedInDate());
         UserDTO updated = userManager.update(toUpdate);
 
         String activityDescription = "User " + userInfo.getSubjectName() + " was updated.";

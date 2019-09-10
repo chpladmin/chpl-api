@@ -6,8 +6,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.domain.Surveillance;
-import gov.healthit.chpl.domain.SurveillanceUploadResult;
+import gov.healthit.chpl.domain.surveillance.Surveillance;
+import gov.healthit.chpl.domain.surveillance.SurveillanceUploadResult;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;

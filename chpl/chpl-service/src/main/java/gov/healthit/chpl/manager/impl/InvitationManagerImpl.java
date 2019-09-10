@@ -21,6 +21,7 @@ import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.domain.auth.CreateUserRequest;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.auth.InvitationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
@@ -138,6 +139,24 @@ public class InvitationManagerImpl extends SecuredManager implements InvitationM
         dto.setEmail(emailAddress);
         dto.setPermissionObjectId(atlId);
         dto.setPermission(userPermissionDao.getPermissionFromAuthority(Authority.ROLE_ATL));
+        // could be multiple invitations for the same email so add the time to
+        // make it unique
+        Date currTime = new Date();
+        dto.setInviteToken(Util.md5(emailAddress + currTime.getTime()));
+
+        return createInvitation(dto);
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
+            + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_DEVELOPER, #developerId)")
+    public InvitationDTO inviteWithDeveloperAccess(final String emailAddress, final Long developerId)
+            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
+        InvitationDTO dto = new InvitationDTO();
+        dto.setEmail(emailAddress);
+        dto.setPermissionObjectId(developerId);
+        dto.setPermission(userPermissionDao.getPermissionFromAuthority(Authority.ROLE_DEVELOPER));
         // could be multiple invitations for the same email so add the time to
         // make it unique
         Date currTime = new Date();
@@ -277,9 +296,9 @@ public class InvitationManagerImpl extends SecuredManager implements InvitationM
     }
 
     /**
-     * Adds the invited user (who has now created an account) to any ACBs or ATLs
+     * Adds the invited user (who has now created an account) to any ACBs, ATLs, or Developers
      * that the invitation specifies they should have access to.
-     * Also could be an existing user getting ACBs or ATLs added to their account.
+     * Also could be an existing user getting ACBs, ATLs, or Developers added to their account.
      * The securitycontext must have a valid authentication specified when this is called
      *
      * @param invitation
@@ -292,6 +311,7 @@ public class InvitationManagerImpl extends SecuredManager implements InvitationM
             throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException {
         CertificationBodyDTO userAcb = null;
         TestingLabDTO userAtl = null;
+        DeveloperDTO userDeveloper = null;
 
         if (invitation.getPermission() != null && invitation.getPermission().getAuthority().equals(Authority.ROLE_ACB)
                 && invitation.getPermissionObjectId() != null) {
@@ -307,13 +327,23 @@ public class InvitationManagerImpl extends SecuredManager implements InvitationM
                 throw new InvalidArgumentsException(
                         "Could not find the testing lab with id " + invitation.getPermissionObjectId());
             }
+        } else if (invitation.getPermission() != null
+                && invitation.getPermission().getAuthority().equals(Authority.ROLE_DEVELOPER)
+                && invitation.getPermissionObjectId() != null) {
+            userDeveloper = resourcePermissions.getDeveloperIfPermissionById(invitation.getPermissionObjectId());
+            if (userDeveloper == null) {
+                throw new InvalidArgumentsException(
+                        "Could not find the developer with id " + invitation.getPermissionObjectId());
+            }
         }
 
-        // give them access to the invited acb or atl
+        // give them access to the invited acb, atl, or developer
         if (userAcb != null) {
             userPermissionsManager.addAcbPermission(userAcb, user.getId());
         } else if (userAtl != null) {
             userPermissionsManager.addAtlPermission(userAtl, user.getId());
+        } else if (userDeveloper != null) {
+            userPermissionsManager.addDeveloperPermission(userDeveloper, user.getId());
         }
     }
 

@@ -11,9 +11,9 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.Surveillance;
-import gov.healthit.chpl.domain.SurveillanceNonconformity;
-import gov.healthit.chpl.domain.SurveillanceOversightRule;
+import gov.healthit.chpl.domain.surveillance.Surveillance;
+import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
+import gov.healthit.chpl.domain.surveillance.SurveillanceOversightRule;
 import gov.healthit.chpl.entity.CertificationStatusType;
 
 @Component(value = "longSuspensionComplianceChecker")

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbookFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,17 +16,20 @@ public class QuarterlyReportBuilderXlsx {
     private ListWorksheetBuilder listWorksheetBuilder;
     private ReportInfoWorksheetBuilder reportInfoWorksheetBuilder;
     private ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesWorksheetBuilder;
-    private SurveillanceSummaryWorksheetBuilder survSummaryWorksheetBuilder;
+    private ComplaintsWorksheetBuilder complaintsWorksheetBuilder;
+    private SurveillanceSummaryWorksheetBuilder summaryWorksheetBuilder;
 
     @Autowired
     public QuarterlyReportBuilderXlsx(final ListWorksheetBuilder listWorksheetBuilder,
-            final ReportInfoWorksheetBuilder reportInfoWorksheetBuilder,
+            final QuarterlyReportInfoWorksheetBuilder reportInfoWorksheetBuilder,
             final ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesWorksheetBuilder,
-            final SurveillanceSummaryWorksheetBuilder survSummaryWorksheetBuilder) {
+            final ComplaintsWorksheetBuilder complaintsWorksheetBuilder,
+            final SurveillanceSummaryWorksheetBuilder summaryWorksheetBuilder) {
         this.listWorksheetBuilder = listWorksheetBuilder;
         this.reportInfoWorksheetBuilder = reportInfoWorksheetBuilder;
         this.activitiesAndOutcomesWorksheetBuilder = activitiesAndOutcomesWorksheetBuilder;
-        this.survSummaryWorksheetBuilder = survSummaryWorksheetBuilder;
+        this.complaintsWorksheetBuilder = complaintsWorksheetBuilder;
+        this.summaryWorksheetBuilder = summaryWorksheetBuilder;
     }
 
     /**
@@ -36,27 +38,20 @@ public class QuarterlyReportBuilderXlsx {
      * @return
      */
     public Workbook buildXlsx(final QuarterlyReportDTO report) throws IOException {
+        SurveillanceReportWorkbookWrapper workbook = new SurveillanceReportWorkbookWrapper();
+
         List<QuarterlyReportDTO> reports = new ArrayList<QuarterlyReportDTO>();
         reports.add(report);
 
-        Workbook workbook = XSSFWorkbookFactory.create(true);
-        listWorksheetBuilder.setWorkbook(workbook);
-        listWorksheetBuilder.buildWorksheet();
-        reportInfoWorksheetBuilder.setWorkbook(workbook);
-        reportInfoWorksheetBuilder.buildWorksheet(reports);
-        activitiesAndOutcomesWorksheetBuilder.setWorkbook(workbook);
-        activitiesAndOutcomesWorksheetBuilder.buildWorksheet(reports);
-        createComplaintsWorksheet(workbook);
-        survSummaryWorksheetBuilder.setWorkbook(workbook);
-        survSummaryWorksheetBuilder.buildWorksheet();
+        listWorksheetBuilder.buildWorksheet(workbook);
+        reportInfoWorksheetBuilder.buildWorksheet(workbook, reports);
+        activitiesAndOutcomesWorksheetBuilder.buildWorksheet(workbook, reports);
+        complaintsWorksheetBuilder.buildWorksheet(workbook, reports);
+        summaryWorksheetBuilder.buildWorksheet(workbook, reports);
 
         //hide the ListSheet
-        workbook.setSheetHidden(0, true);
-        workbook.setActiveSheet(1);
-        return workbook;
-    }
-
-    private void createComplaintsWorksheet(final Workbook workbook) {
-        workbook.createSheet("Complaints");
+        workbook.getWorkbook().setSheetHidden(0, true);
+        workbook.getWorkbook().setActiveSheet(1);
+        return workbook.getWorkbook();
     }
 }

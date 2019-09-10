@@ -1,12 +1,20 @@
 package gov.healthit.chpl.builder;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.dao.ComplaintDAO;
+import gov.healthit.chpl.dao.surveillance.report.PrivilegedSurveillanceDAO;
+import gov.healthit.chpl.dto.ComplainantTypeDTO;
+import gov.healthit.chpl.dto.ComplaintStatusTypeDTO;
+import gov.healthit.chpl.dto.surveillance.report.SurveillanceOutcomeDTO;
+import gov.healthit.chpl.dto.surveillance.report.SurveillanceProcessTypeDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 
 /**
@@ -16,38 +24,28 @@ import gov.healthit.chpl.entity.CertificationStatusType;
  *
  */
 @Component
-public class ListWorksheetBuilder extends XlsxWorksheetBuilder {
+public class ListWorksheetBuilder {
     private static final int LAST_DATA_COLUMN = 1;
     private static final int LAST_DATA_ROW = 60;
-
-    private static final String OUTCOME_NO_NC = "No non-conformity";
-    private static final String OUTCOME_NC_RESOLVED = "Non-conformity substantiated - Resolved through corrective action";
-    private static final String OUTCOME_NC_UNRESOLVED_CAP = "Non-conformity substantiated - Unresolved - Corrective action ongoing";
-    private static final String OUTCOME_NC_UNRESOLVED_SUSPENDED = "Non-conformity substantiated - Unresolved - Certification suspended";
-    private static final String OUTCOME_NC_UNRESOLVED_WITHDRAWN = "Non-conformity substantiated - Unresolved - Certification withdrawn";
-    private static final String OUTCOME_NC_UNRESOLVED_SURV = "Non-conformity substantiated - Unresolved - Surveillance in process";
-    private static final String OUTCOME_NC_UNRESOLVED_REVIEW = "Non-conformity substantiated - Unresolved - Under investigation/review";
-    private static final String OUTCOME_NC_UNRESOLVED_OTHER = "Non-conformity substantiated - Unresolved - Other - [Please describe]";
-
-    private static final String PROCESS_TYPE_FIELD = "In-the-Field";
-    private static final String PROCESS_TYPE_CONTROLLED = "Controlled/Test Environment";
-    private static final String PROCESS_TYPE_CORRESPONDENCE = "Correspondence with Complainant/Developer";
-    private static final String PROCESS_TYPE_REVIEW = "Review of Websites/Written Documentation";
-    private static final String PROCESS_TYPE_OTHER = "Other - [Please describe]";
 
     private static final String BOOLEAN_YES = "Yes";
     private static final String BOOLEAN_NO = "No";
 
-    public ListWorksheetBuilder() {
+    private ComplaintDAO complaintDao;
+    private PrivilegedSurveillanceDAO reportMapDao;
+
+    @Autowired
+    public ListWorksheetBuilder(final ComplaintDAO complaintDao,
+            final PrivilegedSurveillanceDAO reportMapDao) {
         super();
+        this.complaintDao = complaintDao;
+        this.reportMapDao = reportMapDao;
     }
 
-    @Override
     public int getLastDataColumn() {
         return LAST_DATA_COLUMN;
     }
 
-    @Override
     public int getLastDataRow() {
         return LAST_DATA_ROW;
     }
@@ -62,79 +60,71 @@ public class ListWorksheetBuilder extends XlsxWorksheetBuilder {
  * @return
  * @throws IOException
  */
-    public Sheet buildWorksheet() throws IOException {
-
+    public Sheet buildWorksheet(final SurveillanceReportWorkbookWrapper workbook) throws IOException {
         //create sheet
-        Sheet sheet = getSheet("Lists");
+        Sheet sheet = workbook.getSheet("Lists", getLastDataColumn());
+        Row choicesRow = null;
+        Cell choicesCell = null;
 
         int outcomeCol = 0;
         int outcomeRow = 0;
-        Row choicesRow = getRow(sheet, outcomeRow++);
-        Cell choicesCell = choicesRow.createCell(outcomeCol);
-        choicesCell.setCellValue(OUTCOME_NO_NC);
-        choicesRow = getRow(sheet, outcomeRow++);
-        choicesCell = choicesRow.createCell(outcomeCol);
-        choicesCell.setCellValue(OUTCOME_NC_RESOLVED);
-        choicesRow = getRow(sheet, outcomeRow++);
-        choicesCell = choicesRow.createCell(outcomeCol);
-        choicesCell.setCellValue(OUTCOME_NC_UNRESOLVED_CAP);
-        choicesRow = getRow(sheet, outcomeRow++);
-        choicesCell = choicesRow.createCell(outcomeCol);
-        choicesCell.setCellValue(OUTCOME_NC_UNRESOLVED_SUSPENDED);
-        choicesRow = getRow(sheet, outcomeRow++);
-        choicesCell = choicesRow.createCell(outcomeCol);
-        choicesCell.setCellValue(OUTCOME_NC_UNRESOLVED_WITHDRAWN);
-        choicesRow = getRow(sheet, outcomeRow++);
-        choicesCell = choicesRow.createCell(outcomeCol);
-        choicesCell.setCellValue(OUTCOME_NC_UNRESOLVED_SURV);
-        choicesRow = getRow(sheet, outcomeRow++);
-        choicesCell = choicesRow.createCell(outcomeCol);
-        choicesCell.setCellValue(OUTCOME_NC_UNRESOLVED_REVIEW);
-        choicesRow = getRow(sheet, outcomeRow++);
-        choicesCell = choicesRow.createCell(outcomeCol);
-        choicesCell.setCellValue(OUTCOME_NC_UNRESOLVED_OTHER);
+        List<SurveillanceOutcomeDTO> outcomes = reportMapDao.getSurveillanceOutcomes();
+        for (SurveillanceOutcomeDTO outcome : outcomes) {
+            choicesRow = workbook.getRow(sheet, outcomeRow++);
+            choicesCell = choicesRow.createCell(outcomeCol);
+            choicesCell.setCellValue(outcome.getName());
+        }
 
         int processTypeCol = 1;
         int processTypeRow = 0;
-        choicesRow = getRow(sheet, processTypeRow++);
-        choicesCell = choicesRow.createCell(processTypeCol);
-        choicesCell.setCellValue(PROCESS_TYPE_FIELD);
-        choicesRow = getRow(sheet, processTypeRow++);
-        choicesCell = choicesRow.createCell(processTypeCol);
-        choicesCell.setCellValue(PROCESS_TYPE_CORRESPONDENCE);
-        choicesRow = getRow(sheet, processTypeRow++);
-        choicesCell = choicesRow.createCell(processTypeCol);
-        choicesCell.setCellValue(PROCESS_TYPE_CONTROLLED);
-        choicesRow = getRow(sheet, processTypeRow++);
-        choicesCell = choicesRow.createCell(processTypeCol);
-        choicesCell.setCellValue(PROCESS_TYPE_REVIEW);
-        choicesRow = getRow(sheet, processTypeRow++);
-        choicesCell = choicesRow.createCell(processTypeCol);
-        choicesCell.setCellValue(PROCESS_TYPE_OTHER);
+        List<SurveillanceProcessTypeDTO> processTypes = reportMapDao.getSurveillanceProcessTypes();
+        for (SurveillanceProcessTypeDTO procType : processTypes) {
+            choicesRow = workbook.getRow(sheet, processTypeRow++);
+            choicesCell = choicesRow.createCell(processTypeCol);
+            choicesCell.setCellValue(procType.getName());
+        }
 
         int statusCol = 2;
         int statusRow = 0;
-        choicesRow = getRow(sheet, statusRow++);
+        choicesRow = workbook.getRow(sheet, statusRow++);
         choicesCell = choicesRow.createCell(statusCol);
         choicesCell.setCellValue(CertificationStatusType.Active.getName());
-        choicesRow = getRow(sheet, statusRow++);
+        choicesRow = workbook.getRow(sheet, statusRow++);
         choicesCell = choicesRow.createCell(statusCol);
         choicesCell.setCellValue(CertificationStatusType.WithdrawnByAcb.getName());
-        choicesRow = getRow(sheet, statusRow++);
+        choicesRow = workbook.getRow(sheet, statusRow++);
         choicesCell = choicesRow.createCell(statusCol);
         choicesCell.setCellValue(CertificationStatusType.WithdrawnByDeveloper.getName());
-        choicesRow = getRow(sheet, statusRow++);
+        choicesRow = workbook.getRow(sheet, statusRow++);
         choicesCell = choicesRow.createCell(statusCol);
         choicesCell.setCellValue(CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
 
         int booleanCol = 3;
         int booleanRow = 0;
-        choicesRow = getRow(sheet, booleanRow++);
+        choicesRow = workbook.getRow(sheet, booleanRow++);
         choicesCell = choicesRow.createCell(booleanCol);
         choicesCell.setCellValue(BOOLEAN_YES);
-        choicesRow = getRow(sheet, booleanRow++);
+        choicesRow = workbook.getRow(sheet, booleanRow++);
         choicesCell = choicesRow.createCell(booleanCol);
         choicesCell.setCellValue(BOOLEAN_NO);
+
+        int complainantTypeCol = 4;
+        int complainantTypeRow = 0;
+        List<ComplainantTypeDTO> complainantTypes = complaintDao.getComplainantTypes();
+        for (ComplainantTypeDTO complainantType : complainantTypes) {
+            choicesRow = workbook.getRow(sheet, complainantTypeRow++);
+            choicesCell = choicesRow.createCell(complainantTypeCol);
+            choicesCell.setCellValue(complainantType.getName());
+        }
+
+        int complaintStatusTypeCol = 5;
+        int complaintStatusTypeRow = 0;
+        List<ComplaintStatusTypeDTO> complaintStatusTypes = complaintDao.getComplaintStatusTypes();
+        for (ComplaintStatusTypeDTO complaintStatusType : complaintStatusTypes) {
+            choicesRow = workbook.getRow(sheet, complaintStatusTypeRow++);
+            choicesCell = choicesRow.createCell(complaintStatusTypeCol);
+            choicesCell.setCellValue(complaintStatusType.getName());
+        }
 
         // unselect that sheet because we will hide it later
         sheet.setSelected(false);

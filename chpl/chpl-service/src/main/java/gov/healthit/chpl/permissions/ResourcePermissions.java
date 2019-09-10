@@ -19,6 +19,7 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
+import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dao.UserTestingLabMapDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.auth.Authority;
@@ -26,6 +27,7 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
+import gov.healthit.chpl.dto.UserDeveloperMapDTO;
 import gov.healthit.chpl.dto.UserTestingLabMapDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserPermissionDTO;
@@ -39,9 +41,10 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class ResourcePermissions {
     private PermissionEvaluator permissionEvaluator;
     private UserCertificationBodyMapDAO userCertificationBodyMapDAO;
+    private UserTestingLabMapDAO userTestingLabMapDAO;
+    private UserDeveloperMapDAO userDeveloperMapDAO;
     private ErrorMessageUtil errorMessageUtil;
     private CertificationBodyDAO acbDAO;
-    private UserTestingLabMapDAO userTestingLabMapDAO;
     private TestingLabDAO atlDAO;
     private UserDAO userDAO;
     private DeveloperDAO developerDAO;
@@ -49,10 +52,9 @@ public class ResourcePermissions {
     @Autowired
     public ResourcePermissions(final PermissionEvaluator permissionEvaluator,
             final UserCertificationBodyMapDAO userCertificationBodyMapDAO,
-            final CertificationBodyDAO acbDAO,
+            final UserDeveloperMapDAO userDeveloperMapDAO, final CertificationBodyDAO acbDAO,
             final UserTestingLabMapDAO userTestingLabMapDAO, final TestingLabDAO atlDAO,
-            final ErrorMessageUtil errorMessageUtil, final UserDAO userDAO,
-            final DeveloperDAO developerDAO) {
+            final ErrorMessageUtil errorMessageUtil, final UserDAO userDAO, final DeveloperDAO developerDAO) {
         this.permissionEvaluator = permissionEvaluator;
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
         this.acbDAO = acbDAO;
@@ -61,6 +63,7 @@ public class ResourcePermissions {
         this.errorMessageUtil = errorMessageUtil;
         this.userDAO = userDAO;
         this.developerDAO = developerDAO;
+        this.userDeveloperMapDAO = userDeveloperMapDAO;
     }
 
     @Transactional(readOnly = true)
@@ -101,6 +104,18 @@ public class ResourcePermissions {
         List<UserTestingLabMapDTO> dtos = userTestingLabMapDAO.getByAtlId(atl.getId());
 
         for (UserTestingLabMapDTO dto : dtos) {
+            userDtos.add(dto.getUser());
+        }
+
+        return userDtos;
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserDTO> getAllUsersOnDeveloper(final DeveloperDTO dev) {
+        List<UserDTO> userDtos = new ArrayList<UserDTO>();
+        List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByDeveloperId(dev.getId());
+
+        for (UserDeveloperMapDTO dto : dtos) {
             userDtos.add(dto.getUser());
         }
 
@@ -164,6 +179,34 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
+    public List<DeveloperDTO> getAllDevelopersForCurrentUser() {
+        User user = AuthUtil.getCurrentUser();
+        List<DeveloperDTO> developers = new ArrayList<DeveloperDTO>();
+
+        if (user != null) {
+            if (isUserRoleAdmin() || isUserRoleOnc() || isUserRoleAcbAdmin()) {
+                developers = developerDAO.findAll();
+            } else {
+                List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByUserId(user.getId());
+                for (UserDeveloperMapDTO dto : dtos) {
+                    developers.add(dto.getDeveloper());
+                }
+            }
+        }
+        return developers;
+    }
+
+    @Transactional(readOnly = true)
+    public List<DeveloperDTO> getAllDevelopersForUser(final Long userId) {
+        List<DeveloperDTO> devs = new ArrayList<DeveloperDTO>();
+        List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByUserId(userId);
+        for (UserDeveloperMapDTO dto : dtos) {
+            devs.add(dto.getDeveloper());
+        }
+        return devs;
+    }
+
+    @Transactional(readOnly = true)
     public CertificationBodyDTO getAcbIfPermissionById(final Long id) throws EntityRetrievalException {
         try {
             acbDAO.getById(id);
@@ -210,11 +253,35 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
+    public DeveloperDTO getDeveloperIfPermissionById(final Long id) throws EntityRetrievalException {
+        try {
+            developerDAO.getById(id);
+        } catch (final EntityRetrievalException ex) {
+            throw new EntityRetrievalException(errorMessageUtil.getMessage("developer.notFound"));
+        }
+
+        List<DeveloperDTO> dtos = getAllDevelopersForCurrentUser();
+        CollectionUtils.filter(dtos, new Predicate<DeveloperDTO>() {
+            @Override
+            public boolean evaluate(final DeveloperDTO object) {
+                return object.getId().equals(id);
+            }
+
+        });
+
+        if (dtos.size() == 0) {
+            throw new AccessDeniedException(errorMessageUtil.getMessage("access.denied"));
+        }
+        return dtos.get(0);
+    }
+
+    @Transactional(readOnly = true)
     public UserPermissionDTO getRoleByUserId(final Long userId) {
         try {
             UserDTO user = userDAO.getById(userId);
-        return user.getPermission();
-        } catch (UserRetrievalException ex) { }
+            return user.getPermission();
+        } catch (UserRetrievalException ex) {
+        }
         return null;
     }
 
@@ -230,23 +297,25 @@ public class ResourcePermissions {
     }
 
     /**
-     * Determines if the current user has permissions to access
-     * the account of the passed-in user.
-     * Rules are: Admin and Onc can access all users.
-     * Acb can access any other ROLE_ACB user who is also on their ACB.
-     * Atl can access any other ROLE_ATL user who is also on their ATL.
+     * Determines if the current user has permissions to access the account of
+     * the passed-in user. Rules are: Admin and Onc can access all users. Acb
+     * can access any other ROLE_ACB user who is also on their ACB. Atl can
+     * access any other ROLE_ATL user who is also on their ATL. Developer Admin
+     * can access any other ROLE_DEVELOPER user who is also on their developer.
      * All users can access themselves.
+     * 
      * @param user
+     *            user to check permissions on
      * @return
      */
     @Transactional(readOnly = true)
     public boolean hasPermissionOnUser(final UserDTO user) {
         if (isUserRoleAdmin() || isUserRoleOnc()
-                || permissionEvaluator.hasPermission(AuthUtil.getCurrentUser(), user,
-                        BasePermission.ADMINISTRATION)) {
+                || permissionEvaluator.hasPermission(AuthUtil.getCurrentUser(), user, BasePermission.ADMINISTRATION)) {
             return true;
         } else if (isUserRoleAcbAdmin()) {
-            //is the user being checked on any of the same ACB(s) that the current user is on?
+            // is the user being checked on any of the same ACB(s) that the
+            // current user is on?
             List<CertificationBodyDTO> currUserAcbs = getAllAcbsForCurrentUser();
             List<CertificationBodyDTO> otherUserAcbs = getAllAcbsForUser(user.getId());
             for (CertificationBodyDTO currUserAcb : currUserAcbs) {
@@ -257,12 +326,25 @@ public class ResourcePermissions {
                 }
             }
         } else if (isUserRoleAtlAdmin()) {
-            //is the user being checked on any of the same ATL(s) that the current user is on?
+            // is the user being checked on any of the same ATL(s) that the
+            // current user is on?
             List<TestingLabDTO> currUserAtls = getAllAtlsForCurrentUser();
             List<TestingLabDTO> otherUserAtls = getAllAtlsForUser(user.getId());
             for (TestingLabDTO currUserAtl : currUserAtls) {
                 for (TestingLabDTO otherUserAtl : otherUserAtls) {
                     if (currUserAtl.getId().equals(otherUserAtl.getId())) {
+                        return true;
+                    }
+                }
+            }
+        } else if (isUserRoleDeveloperAdmin()) {
+            // is the user being checked on any of the same Developer(s) that
+            // the current user is on?
+            List<DeveloperDTO> currUserDevs = getAllDevelopersForCurrentUser();
+            List<DeveloperDTO> otherUserDevs = getAllDevelopersForUser(user.getId());
+            for (DeveloperDTO currUserDev : currUserDevs) {
+                for (DeveloperDTO otherUserDev : otherUserDevs) {
+                    if (currUserDev.getId().equals(otherUserDev.getId())) {
                         return true;
                     }
                 }
@@ -289,6 +371,10 @@ public class ResourcePermissions {
 
     public boolean isUserRoleAtlAdmin() {
         return doesUserHaveRole(Authority.ROLE_ATL);
+    }
+
+    public boolean isUserRoleDeveloperAdmin() {
+        return doesUserHaveRole(Authority.ROLE_DEVELOPER);
     }
 
     public boolean isUserRoleUserCreator() {

@@ -5,7 +5,7 @@ import java.util.Date;
 
 import org.springframework.beans.BeanUtils;
 
-import gov.healthit.chpl.domain.SurveillanceType;
+import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.entity.surveillance.SurveillanceTypeEntity;
 import gov.healthit.chpl.util.Util;
 
@@ -23,11 +23,11 @@ public class SurveillanceTypeDTO implements Serializable {
 
     }
 
-    public SurveillanceTypeDTO(SurveillanceTypeEntity entity) {
+    public SurveillanceTypeDTO(final SurveillanceTypeEntity entity) {
         BeanUtils.copyProperties(entity, this);
     }
 
-    public SurveillanceTypeDTO(SurveillanceType domain) {
+    public SurveillanceTypeDTO(final SurveillanceType domain) {
         BeanUtils.copyProperties(domain, this);
     }
 

@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
+import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.util.Util;
 
 /**

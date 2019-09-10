@@ -43,7 +43,6 @@ import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.SearchOption;
 import gov.healthit.chpl.domain.SearchableDimensionalData;
-import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.UploadTemplateVersion;
@@ -52,6 +51,7 @@ import gov.healthit.chpl.domain.search.NonconformitySearchOptions;
 import gov.healthit.chpl.domain.search.SearchRequest;
 import gov.healthit.chpl.domain.search.SearchResponse;
 import gov.healthit.chpl.domain.search.SearchSetOperator;
+import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptions;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -63,6 +63,7 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.manager.FilterManager;
 import gov.healthit.chpl.manager.FuzzyChoicesManager;
+import gov.healthit.chpl.manager.SurveillanceReportManager;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
@@ -104,12 +105,15 @@ public class SearchViewController {
     @Lazy
     @Autowired
     private DeveloperManager developerManager;
-    
+
     @Autowired
     private FilterManager filterManager;
-    
+
     @Autowired
     private ComplaintManager complaintManager;
+
+    @Autowired
+    private SurveillanceReportManager survReportManager;
 
     @Autowired private FileUtils fileUtils;
 
@@ -869,6 +873,24 @@ public class SearchViewController {
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModel> getQuarters() {
         return dimensionalDataManager.getQuarters();
+    }
+
+    @ApiOperation(value = "Get a list of surveillance process types.",
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB.")
+    @RequestMapping(value = "/data/surveillance-process-types", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody Set<KeyValueModel> getSurveillanceProcessTypes() {
+        return survReportManager.getSurveillanceProcessTypes();
+    }
+
+    @ApiOperation(value = "Get a list of surveillance outcomes.",
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB.")
+    @RequestMapping(value = "/data/surveillance-outcomes", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody Set<KeyValueModel> getSurveillanceOutcomes() {
+        return survReportManager.getSurveillanceOutcomes();
     }
 
     @ApiOperation(value = "Get all possible classifications in the CHPL",

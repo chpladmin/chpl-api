@@ -25,7 +25,8 @@ public interface UserManager {
 
     void delete(UserDTO user) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException;
 
-    void delete(String userName) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException ;
+    void delete(String userName)
+            throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException;
 
     List<UserDTO> getAll();
 
@@ -47,8 +48,11 @@ public interface UserManager {
 
     /**
      * Retrieve password strength object.
-     * @param user user's information
-     * @param password the password to check
+     * 
+     * @param user
+     *            user's information
+     * @param password
+     *            the password to check
      * @return a Strength object with password strength information
      */
     public Strength getPasswordStrength(UserDTO user, String password);
@@ -62,4 +66,6 @@ public interface UserManager {
     public UserDTO getByNameUnsecured(String userName) throws UserRetrievalException;
 
     public void updateUserPasswordUnsecured(String userName, String password) throws UserRetrievalException;
+
+    public void updateLastLoggedInDate(UserDTO user) throws UserRetrievalException;
 }

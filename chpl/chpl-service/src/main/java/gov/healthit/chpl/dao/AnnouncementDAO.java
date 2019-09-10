@@ -13,7 +13,7 @@ public interface AnnouncementDAO {
 
     void delete(Long acbId);
 
-    List<AnnouncementDTO> findAll(boolean isLoggedIn);
+    List<AnnouncementDTO> findAll();
 
     AnnouncementDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException;
 

@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
+import gov.healthit.chpl.domain.surveillance.SurveillanceOversightRule;
 import gov.healthit.chpl.util.Util;
 
 public class OversightRuleResult {

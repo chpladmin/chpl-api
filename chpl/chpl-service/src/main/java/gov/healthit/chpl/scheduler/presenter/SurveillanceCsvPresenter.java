@@ -18,9 +18,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.Surveillance;
-import gov.healthit.chpl.domain.SurveillanceNonconformity;
-import gov.healthit.chpl.domain.SurveillanceRequirement;
+import gov.healthit.chpl.domain.surveillance.Surveillance;
+import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
+import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 
 /**
  * Writes out all surveillance for all products in the system.

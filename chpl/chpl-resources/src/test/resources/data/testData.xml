@@ -326,7 +326,7 @@
         creation_date="2015-08-27 15:36:44.217"
         last_modified_date="2015-08-27 15:36:44.217"
         last_modified_user="-2" deleted="false" />
-
+<!--
     <acb_vendor_map acb_vendor_map_id="-1" vendor_id="-1"
         certification_body_id="-1"
         transparency_attestation="Affirmative"
@@ -387,7 +387,7 @@
         transparency_attestation="Affirmative"
         creation_date="2015-08-20 13:14:00" last_modified_user="-2"
         last_modified_date="2015-08-20 13:15:00" deleted="false" />
-
+-->
     <targeted_user targeted_user_id="-1" name="Pediatrics"
         creation_date="2015-08-20 13:14:00" last_modified_user="-2"
         last_modified_date="2015-08-20 13:15:00" deleted="false" />
@@ -1420,8 +1420,6 @@
         vendor_zip_code="90232" vendor_website="http://nanthealth.com/"
         vendor_email="jhodson@nantworks.com"
         vendor_contact_name="Jen Hodson" vendor_phone="(562) 397-3639"
-        vendor_transparency_attestation="Affirmative"
-        vendor_transparency_attestation_url="''"
         accessibility_certified="true"
         test_report_url="https://icsalabs.s3.amazonaws.com/TRS/2014-EHRA243047-2016-0328-00.pdf"
         sed_report_file_location="''" sed_intended_user_description=" "
@@ -1450,8 +1448,6 @@
         vendor_zip_code="90232" vendor_website="http://nanthealth.com/"
         vendor_email="jhodson@nantworks.com"
         vendor_contact_name="Jen Hodson" vendor_phone="(562) 397-3639"
-        vendor_transparency_attestation="Affirmative"
-        vendor_transparency_attestation_url="''"
         accessibility_certified="true"
         test_report_url="https://icsalabs.s3.amazonaws.com/TRS/2014-EHRA243047-2016-0328-00.pdf"
         sed_report_file_location="''" sed_intended_user_description=" "
