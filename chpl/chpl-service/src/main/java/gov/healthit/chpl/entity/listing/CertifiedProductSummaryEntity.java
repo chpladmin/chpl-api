@@ -132,6 +132,9 @@ public class CertifiedProductSummaryEntity implements Serializable {
     @Column(name = "certification_body_website")
     private String certificationBodyWebsite;
 
+    @Column(name = "version")
+    private String version;
+
     public Long getId() {
         return id;
     }
@@ -434,6 +437,14 @@ public class CertifiedProductSummaryEntity implements Serializable {
 
     public void setCertificationBodyWebsite(final String certificationBodyWebsite) {
         this.certificationBodyWebsite = certificationBodyWebsite;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(final String version) {
+        this.version = version;
     }
 
 }

@@ -35,7 +35,7 @@ public class UrlCallerAsync {
             final UrlResultDTO urlToCheck, final AsyncHttpClient httpClient, final Logger logger) throws Exception {
         logger.info("Checking URL " + urlToCheck.getUrl());
         Request getRequest = new RequestBuilder(HttpConstants.Methods.GET)
-                .setFollowRedirect(true)
+                .setFollowRedirect(false)
                 .setUrl(urlToCheck.getUrl())
                 .build();
         return httpClient.executeRequest(getRequest, new AsyncHandler<Integer>() {

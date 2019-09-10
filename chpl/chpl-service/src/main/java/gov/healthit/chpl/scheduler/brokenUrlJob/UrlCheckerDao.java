@@ -166,6 +166,29 @@ public class UrlCheckerDao extends BaseDAOImpl {
     }
 
     /**
+     * Get a list of checked URLs that have something other than a 2XX response code
+     * or any non-null response message.
+     * @return
+     */
+    @Transactional
+    public List<UrlResultDTO> getUrlResultsWithError() {
+        List<UrlResultEntity> entities = entityManager.createQuery("SELECT url "
+                        + "FROM UrlResultEntity url "
+                        + "JOIN FETCH url.urlType "
+                        + "WHERE url.deleted = false "
+                        + "AND ((url.responseCode < 200 OR url.responseCode > 299) OR url.responseMessage IS NOT NULL)")
+                .getResultList();
+        List<UrlResultDTO> results = new ArrayList<UrlResultDTO>();
+        if (entities != null && entities.size() > 0) {
+            for (UrlResultEntity entity : entities) {
+                UrlResultDTO result = new UrlResultDTO(entity);
+                results.add(result);
+            }
+        }
+        return results;
+    }
+
+    /**
      * Creates an entry for a url that has been checked.
      * @param toCreate
      * @throws EntityCreationException

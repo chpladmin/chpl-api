@@ -477,6 +477,26 @@
             </cron>
         </trigger>
 
+        <!--  Broken URL data emailer -->
+        <job>
+            <name>Broken URL Report</name>
+            <group>chplJobs</group>
+            <description>Sends a report of all URLs entered into the system are broken.</description>
+            <job-class>gov.healthit.chpl.scheduler.brokenUrlJob.BrokenUrlReportGenerator</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>WEEKLY</value>
+                </entry>
+            </job-data-map>
+        </job>
+
         <!-- Job used to trigger interruptions of other jobs -->
         <job>
             <name>interruptJob</name>

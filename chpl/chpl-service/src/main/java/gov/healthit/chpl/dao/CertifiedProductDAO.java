@@ -7,6 +7,7 @@ import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.scheduler.brokenUrlJob.UrlType;
 
 /**
  * Interface for database access to CHPL listings.
@@ -52,6 +53,8 @@ public interface CertifiedProductDAO {
     List<CertifiedProductDetailsDTO> getDetailsByAcbIds(List<Long> acbIds);
 
     List<CertifiedProductDetailsDTO> getDetailsByVersionAndAcbIds(Long versionId, List<Long> acbIds);
+
+    List<CertifiedProductDetailsDTO> getDetailsByUrl(String url, UrlType urlType);
 
     List<CertifiedProductDTO> getByVersionIds(List<Long> versionIds);
 

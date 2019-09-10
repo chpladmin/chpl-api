@@ -22,11 +22,12 @@ import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.scheduler.brokenUrlJob.UrlType;
 import gov.healthit.chpl.util.AuthUtil;
 
 /**
  * Certified Product DAO.
- * 
+ *
  * @author alarned
  *
  */
@@ -491,6 +492,37 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
             dtoResults.add(new CertifiedProductDetailsDTO(result));
         }
         return dtoResults;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CertifiedProductDetailsDTO> getDetailsByUrl(final String url, final UrlType urlType) {
+        String queryStr = "SELECT cpd "
+                + "FROM CertifiedProductDetailsEntity cpd "
+                + "LEFT OUTER JOIN FETCH cpd.product "
+                + "WHERE cpd.deleted = false ";
+        switch (urlType) {
+        case MANDATORY_DISCLOSURE_URL:
+            queryStr += " AND cpd.transparencyAttestationUrl = :url ";
+            break;
+        case FULL_USABILITY_REPORT:
+            queryStr += " AND cpd.sedReportFileLocation = :url ";
+            break;
+        case TEST_RESULTS_SUMMARY:
+            queryStr += " AND cpd.reportFileLocation = :url ";
+            break;
+        default:
+                break;
+        }
+
+        Query query = entityManager.createQuery(queryStr, CertifiedProductDetailsEntity.class);
+        query.setParameter("url", url);
+        List<CertifiedProductDetailsEntity> results = query.getResultList();
+        List<CertifiedProductDetailsDTO> resultDtos = new ArrayList<CertifiedProductDetailsDTO>();
+        for (CertifiedProductDetailsEntity entity : results) {
+            resultDtos.add(new CertifiedProductDetailsDTO(entity));
+        }
+        return resultDtos;
     }
 
     @Transactional(readOnly = false)
