@@ -72,7 +72,7 @@ public class ChangeRequestWebsiteHelperTest {
     public void getChangeRequestWebsiteFromHashMap_Success1() {
         // Run
         ChangeRequestWebsite crWebsite = crWebsiteHelper
-                .getChangeRequestWebsiteFromHashMap(
+                .getDetailsFromHashMap(
                         getChangeRequestWebsiteMap(1l, "http://www.abc.com"));
 
         // Check
@@ -84,7 +84,7 @@ public class ChangeRequestWebsiteHelperTest {
     public void getChangeRequestWebsiteFromHashMap_Success2() {
         // Run
         ChangeRequestWebsite crWebsite = crWebsiteHelper
-                .getChangeRequestWebsiteFromHashMap(
+                .getDetailsFromHashMap(
                         getChangeRequestWebsiteMap(null, "http://www.abc.com"));
 
         // Check

@@ -12,12 +12,12 @@ public class ChangeRequestValidationFactory {
     public final static String DEVELOPER = "DEVELOPER";
     public final static String CHANGE_REQUEST_DETAILS_CREATE = "CHANGE_REQUEST_DETAILS_CREATE";
     public final static String CHANGE_REQUEST_DETAILS_UPDATE = "CHANGE_REQUEST_DETAILS_UPDATE";
-    public final static String CHANGE_REQUEST_EXISTANCE = "CHANGE_REQUEST_EXISTANCE";
+    public final static String CHANGE_REQUEST_EXISTENCE = "CHANGE_REQUEST_EXISTENCE";
     public final static String STATUS_TYPE = "STATUS_TYPE";
 
     private ChangeRequestDetailsCreateValidation changeRequestDetailsCreateValidation;
     private ChangeRequestDetailsUpdateValidation changeRequestDetailsUpdateValidation;
-    private ChangeRequestExistanceValidation changeRequestExistanceValidation;
+    private ChangeRequestExistenceValidation changeRequestExistanceValidation;
     private ChangeRequestTypeValidation changeRequestTypeValidation;
     private CurrentStatusValidation currentStatusValidation;
     private DeveloperValidation developerValidation;
@@ -26,7 +26,7 @@ public class ChangeRequestValidationFactory {
     public ChangeRequestValidationFactory(
             final ChangeRequestDetailsCreateValidation changeRequestDetailsCreateValidation,
             final ChangeRequestDetailsUpdateValidation changeRequestDetailsUpdateValidation,
-            final ChangeRequestExistanceValidation changeRequestExistanceValidation,
+            final ChangeRequestExistenceValidation changeRequestExistanceValidation,
             final ChangeRequestTypeValidation changeRequestTypeValidation,
             final CurrentStatusValidation currentStatusValidation,
             final DeveloperValidation developerValidation) {
@@ -48,7 +48,7 @@ public class ChangeRequestValidationFactory {
             return changeRequestDetailsCreateValidation;
         case CHANGE_REQUEST_DETAILS_UPDATE:
             return changeRequestDetailsUpdateValidation;
-        case CHANGE_REQUEST_EXISTANCE:
+        case CHANGE_REQUEST_EXISTENCE:
             return changeRequestExistanceValidation;
         case STATUS_TYPE:
             return currentStatusValidation;

@@ -9,23 +9,30 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestWebsiteDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestWebsite;
+import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Component
-public class ChangeRequestWebsiteHelper {
+public class ChangeRequestWebsiteHelper implements ChangeRequestDetailsHelper<ChangeRequestWebsite> {
 
     private ChangeRequestWebsiteDAO crWebsiteDAO;
+    private DeveloperDAO developerDAO;
 
     @Autowired
-    public ChangeRequestWebsiteHelper(final ChangeRequestWebsiteDAO crWebsiteDAO) {
+    public ChangeRequestWebsiteHelper(final ChangeRequestWebsiteDAO crWebsiteDAO, final DeveloperDAO developerDAO) {
         this.crWebsiteDAO = crWebsiteDAO;
+        this.developerDAO = developerDAO;
     }
 
+    @Override
     public ChangeRequestWebsite getByChangeRequestId(final Long changeRequestId) throws EntityRetrievalException {
         return crWebsiteDAO.getByChangeRequestId(changeRequestId);
     }
 
-    public ChangeRequestWebsite getChangeRequestWebsiteFromHashMap(final HashMap<String, Object> map) {
+    @Override
+    public ChangeRequestWebsite getDetailsFromHashMap(final HashMap<String, Object> map) {
         ChangeRequestWebsite crWebsite = new ChangeRequestWebsite();
         if (map.containsKey("id") && StringUtils.isNumeric(map.get("id").toString())) {
             crWebsite.setId(new Long(map.get("id").toString()));
@@ -36,8 +43,8 @@ public class ChangeRequestWebsiteHelper {
         return crWebsite;
     }
 
-    public ChangeRequestWebsite createChangeRequestWebsite(final ChangeRequest cr,
-            final ChangeRequestWebsite crWebsite) {
+    @Override
+    public ChangeRequestWebsite create(final ChangeRequest cr, final ChangeRequestWebsite crWebsite) {
         try {
             return crWebsiteDAO.create(cr, crWebsite);
         } catch (EntityRetrievalException e) {
@@ -45,12 +52,22 @@ public class ChangeRequestWebsiteHelper {
         }
     }
 
-    public ChangeRequestWebsite updateChangeRequestWebsite(final ChangeRequest cr,
-            final ChangeRequestWebsite crWebsite) {
+    @Override
+    public ChangeRequestWebsite update(final ChangeRequest cr, final ChangeRequestWebsite crWebsite) {
         try {
             return crWebsiteDAO.update(crWebsite);
         } catch (EntityRetrievalException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void execute(final ChangeRequest cr) throws EntityRetrievalException, EntityCreationException {
+        ChangeRequestWebsite crWebsite = (ChangeRequestWebsite) cr.getDetails();
+
+        DeveloperDTO dev = developerDAO.getById(cr.getDeveloper().getDeveloperId());
+        dev.setWebsite(crWebsite.getWebsite());
+
+        developerDAO.update(dev);
     }
 }

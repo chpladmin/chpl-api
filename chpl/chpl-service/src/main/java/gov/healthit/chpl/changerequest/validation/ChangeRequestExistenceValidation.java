@@ -6,7 +6,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
 @Component
-public class ChangeRequestExistanceValidation extends ValidationRule<ChangeRequestValidationContext> {
+public class ChangeRequestExistenceValidation extends ValidationRule<ChangeRequestValidationContext> {
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {

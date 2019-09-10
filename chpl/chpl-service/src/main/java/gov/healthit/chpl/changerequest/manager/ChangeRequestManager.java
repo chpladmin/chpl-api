@@ -1,6 +1,7 @@
 package gov.healthit.chpl.changerequest.manager;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 
@@ -10,5 +11,6 @@ public interface ChangeRequestManager {
 
     ChangeRequest getChangeRequest(final Long changeRequestId) throws EntityRetrievalException;
 
-    ChangeRequest updateChangeRequest(final ChangeRequest cr) throws EntityRetrievalException, ValidationException;
+    ChangeRequest updateChangeRequest(final ChangeRequest cr)
+            throws EntityRetrievalException, EntityCreationException, ValidationException;
 }
