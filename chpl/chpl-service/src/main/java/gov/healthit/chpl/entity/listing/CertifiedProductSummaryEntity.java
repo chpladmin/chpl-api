@@ -135,6 +135,15 @@ public class CertifiedProductSummaryEntity implements Serializable {
     @Column(name = "version")
     private String version;
 
+    @Column(name = "full_name")
+    private String developerContactName;
+
+    @Column(name = "email")
+    private String developerContactEmail;
+
+    @Column(name = "phone_number")
+    private String developerContactPhone;
+
     public Long getId() {
         return id;
     }
@@ -445,6 +454,30 @@ public class CertifiedProductSummaryEntity implements Serializable {
 
     public void setVersion(final String version) {
         this.version = version;
+    }
+
+    public String getDeveloperContactName() {
+        return developerContactName;
+    }
+
+    public void setDeveloperContactName(final String developerContactName) {
+        this.developerContactName = developerContactName;
+    }
+
+    public String getDeveloperContactEmail() {
+        return developerContactEmail;
+    }
+
+    public void setDeveloperContactEmail(final String developerContactEmail) {
+        this.developerContactEmail = developerContactEmail;
+    }
+
+    public String getDeveloperContactPhone() {
+        return developerContactPhone;
+    }
+
+    public void setDeveloperContactPhone(final String developerContactPhone) {
+        this.developerContactPhone = developerContactPhone;
     }
 
 }
