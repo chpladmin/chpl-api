@@ -28,8 +28,8 @@ public class UrlCheckerDao extends BaseDAOImpl {
      * @return
      */
     @Transactional
-    public List<UrlResultDTO> getAllSystemUrls() {
-        List<UrlResultDTO> results = new ArrayList<UrlResultDTO>();
+    public List<UrlResult> getAllSystemUrls() {
+        List<UrlResult> results = new ArrayList<UrlResult>();
         for (UrlType urlType : UrlType.values()) {
             switch (urlType) {
                 case ACB:
@@ -40,7 +40,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                         .getResultList();
                     for (String website : acbWebsites) {
                         if (!StringUtils.isEmpty(website)) {
-                            UrlResultDTO checkableUrl = new UrlResultDTO();
+                            UrlResult checkableUrl = new UrlResult();
                             checkableUrl.setUrl(website);
                             checkableUrl.setUrlType(urlType);
                             results.add(checkableUrl);
@@ -55,7 +55,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                         .getResultList();
                     for (String website : atlWebsites) {
                         if (!StringUtils.isEmpty(website)) {
-                            UrlResultDTO checkableUrl = new UrlResultDTO();
+                            UrlResult checkableUrl = new UrlResult();
                             checkableUrl.setUrl(website);
                             checkableUrl.setUrlType(urlType);
                             results.add(checkableUrl);
@@ -70,7 +70,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                         .getResultList();
                     for (String website : developerWebsites) {
                         if (!StringUtils.isEmpty(website)) {
-                            UrlResultDTO checkableUrl = new UrlResultDTO();
+                            UrlResult checkableUrl = new UrlResult();
                             checkableUrl.setUrl(website);
                             checkableUrl.setUrlType(urlType);
                             results.add(checkableUrl);
@@ -87,7 +87,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                         .getResultList();
                     for (String website : mandatoryDisclosureWebsites) {
                         if (!StringUtils.isEmpty(website)) {
-                            UrlResultDTO checkableUrl = new UrlResultDTO();
+                            UrlResult checkableUrl = new UrlResult();
                             checkableUrl.setUrl(website);
                             checkableUrl.setUrlType(urlType);
                             results.add(checkableUrl);
@@ -103,7 +103,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                     .getResultList();
                     for (String website : testResultsWebsites) {
                         if (!StringUtils.isEmpty(website)) {
-                            UrlResultDTO checkableUrl = new UrlResultDTO();
+                            UrlResult checkableUrl = new UrlResult();
                             checkableUrl.setUrl(website);
                             checkableUrl.setUrlType(urlType);
                             results.add(checkableUrl);
@@ -119,7 +119,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                     .getResultList();
                     for (String website : fullUsabilityReportWebsites) {
                         if (!StringUtils.isEmpty(website)) {
-                            UrlResultDTO checkableUrl = new UrlResultDTO();
+                            UrlResult checkableUrl = new UrlResult();
                             checkableUrl.setUrl(website);
                             checkableUrl.setUrlType(urlType);
                             results.add(checkableUrl);
@@ -130,9 +130,9 @@ public class UrlCheckerDao extends BaseDAOImpl {
         }
 
         //get all the existing URL check results to set the last checked time on the returned objects
-        List<UrlResultDTO> existingUrlResults = getAllUrlResults();
-        for (UrlResultDTO existingUrlResult : existingUrlResults) {
-            for (UrlResultDTO systemUrl : results) {
+        List<UrlResult> existingUrlResults = getAllUrlResults();
+        for (UrlResult existingUrlResult : existingUrlResults) {
+            for (UrlResult systemUrl : results) {
                 if (existingUrlResult.getUrl().equalsIgnoreCase(systemUrl.getUrl())
                         && existingUrlResult.getUrlType().getName().equals(systemUrl.getUrlType().getName())) {
                     systemUrl.setLastChecked(existingUrlResult.getLastChecked());
@@ -149,16 +149,16 @@ public class UrlCheckerDao extends BaseDAOImpl {
      * @return
      */
     @Transactional
-    public List<UrlResultDTO> getAllUrlResults() {
+    public List<UrlResult> getAllUrlResults() {
         List<UrlResultEntity> entities = entityManager.createQuery("SELECT url "
                         + "FROM UrlResultEntity url "
                         + "JOIN FETCH url.urlType "
                         + "WHERE url.deleted = false")
                 .getResultList();
-        List<UrlResultDTO> results = new ArrayList<UrlResultDTO>();
+        List<UrlResult> results = new ArrayList<UrlResult>();
         if (entities != null && entities.size() > 0) {
             for (UrlResultEntity entity : entities) {
-                UrlResultDTO result = new UrlResultDTO(entity);
+                UrlResult result = new UrlResult(entity);
                 results.add(result);
             }
         }
@@ -171,17 +171,17 @@ public class UrlCheckerDao extends BaseDAOImpl {
      * @return
      */
     @Transactional
-    public List<UrlResultDTO> getUrlResultsWithError() {
+    public List<UrlResult> getUrlResultsWithError() {
         List<UrlResultEntity> entities = entityManager.createQuery("SELECT url "
                         + "FROM UrlResultEntity url "
                         + "JOIN FETCH url.urlType "
                         + "WHERE url.deleted = false "
                         + "AND ((url.responseCode < 200 OR url.responseCode > 299) OR url.responseMessage IS NOT NULL)")
                 .getResultList();
-        List<UrlResultDTO> results = new ArrayList<UrlResultDTO>();
+        List<UrlResult> results = new ArrayList<UrlResult>();
         if (entities != null && entities.size() > 0) {
             for (UrlResultEntity entity : entities) {
-                UrlResultDTO result = new UrlResultDTO(entity);
+                UrlResult result = new UrlResult(entity);
                 results.add(result);
             }
         }
@@ -194,7 +194,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
      * @throws EntityCreationException
      */
     @Transactional
-    public UrlResultDTO createUrlResult(final UrlResultDTO toCreate) throws EntityCreationException {
+    public UrlResult createUrlResult(final UrlResult toCreate) throws EntityCreationException {
         if (StringUtils.isEmpty(toCreate.getUrl()) || toCreate.getUrlType() == null) {
             throw new EntityCreationException("A URL and URL Type are required to save a URL result.");
         }
@@ -212,7 +212,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
         }
         entity.setUrlTypeId(urlTypeId);
         create(entity);
-        return new UrlResultDTO(entity);
+        return new UrlResult(entity);
     }
 
     /**
@@ -221,7 +221,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
      * @throws EntityRetrievalException
      */
     @Transactional
-    public UrlResultDTO updateUrlResult(final UrlResultDTO toUpdate) throws EntityRetrievalException {
+    public UrlResult updateUrlResult(final UrlResult toUpdate) throws EntityRetrievalException {
         UrlResultEntity entity = getUrlResultById(toUpdate.getId());
         if (entity == null) {
             throw new EntityRetrievalException(
@@ -231,7 +231,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
         entity.setResponseMessage(toUpdate.getResponseMessage());
         entity.setLastChecked(toUpdate.getLastChecked());
         update(entity);
-        return new UrlResultDTO(entity);
+        return new UrlResult(entity);
     }
 
     /**

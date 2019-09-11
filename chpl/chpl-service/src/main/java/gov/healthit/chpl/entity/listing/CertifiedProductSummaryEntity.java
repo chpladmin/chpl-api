@@ -9,9 +9,12 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Immutable;
+
 import gov.healthit.chpl.util.Util;
 
 @Entity
+@Immutable
 @Table(name = "certified_product_summary")
 public class CertifiedProductSummaryEntity implements Serializable {
     private static final long serialVersionUID = -7006206379019745873L;
@@ -46,7 +49,7 @@ public class CertifiedProductSummaryEntity implements Serializable {
     private Date sedTestingEnd;
 
     @Column(name = "acb_certification_id")
-    private Long acbCertificationId;
+    private String acbCertificationId;
 
     @Column(name = "practice_type_id")
     private Long practiceTypeId;
@@ -216,11 +219,11 @@ public class CertifiedProductSummaryEntity implements Serializable {
         this.sedTestingEnd = Util.getNewDate(sedTestingEnd);
     }
 
-    public Long getAcbCertificationId() {
+    public String getAcbCertificationId() {
         return acbCertificationId;
     }
 
-    public void setAcbCertificationId(final Long acbCertificationId) {
+    public void setAcbCertificationId(final String acbCertificationId) {
         this.acbCertificationId = acbCertificationId;
     }
 

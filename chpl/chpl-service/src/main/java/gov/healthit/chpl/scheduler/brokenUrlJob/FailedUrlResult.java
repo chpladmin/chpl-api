@@ -4,9 +4,6 @@ import java.util.Date;
 
 import org.springframework.beans.BeanUtils;
 
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
-
 /**
  * Class to hold the url result along with extra information
  * about the object (atl, acb, developer, or listing) that had
@@ -14,21 +11,29 @@ import gov.healthit.chpl.dto.DeveloperDTO;
  * @author kekey
  *
  */
-public class UrlResultWithErrorDTO {
+public class FailedUrlResult {
     private String url;
     private UrlType urlType;
     private Date lastChecked;
     private Integer responseCode;
     private String responseMessage;
+
+    //not all of the below fields are relevant to every failure
+    //it depends on the type of url (developer website, listing report, etc)
     private String atlName;
     private String acbName;
-    private DeveloperDTO developer;
-    private CertifiedProductDetailsDTO listing;
+    private String developerName;
+    private String productName;
+    private String version;
+    private String contactName;
+    private String contactEmail;
+    private String contactPhone;
+    private String chplProductNumber;
 
-    public UrlResultWithErrorDTO() {
+    public FailedUrlResult() {
     }
 
-    public UrlResultWithErrorDTO(final UrlResultDTO urlResult) {
+    public FailedUrlResult(final UrlResult urlResult) {
         BeanUtils.copyProperties(urlResult, this);
     }
     public String getUrl() {
@@ -78,19 +83,59 @@ public class UrlResultWithErrorDTO {
         this.acbName = acbName;
     }
 
-    public DeveloperDTO getDeveloper() {
-        return developer;
+    public String getDeveloperName() {
+        return developerName;
     }
 
-    public void setDeveloper(final DeveloperDTO developer) {
-        this.developer = developer;
+    public void setDeveloperName(final String developerName) {
+        this.developerName = developerName;
     }
 
-    public CertifiedProductDetailsDTO getListing() {
-        return listing;
+    public String getProductName() {
+        return productName;
     }
 
-    public void setListing(final CertifiedProductDetailsDTO listing) {
-        this.listing = listing;
+    public void setProductName(final String productName) {
+        this.productName = productName;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(final String version) {
+        this.version = version;
+    }
+
+    public String getContactName() {
+        return contactName;
+    }
+
+    public void setContactName(String contactName) {
+        this.contactName = contactName;
+    }
+
+    public String getContactEmail() {
+        return contactEmail;
+    }
+
+    public void setContactEmail(final String contactEmail) {
+        this.contactEmail = contactEmail;
+    }
+
+    public String getContactPhone() {
+        return contactPhone;
+    }
+
+    public void setContactPhone(final String contactPhone) {
+        this.contactPhone = contactPhone;
+    }
+
+    public String getChplProductNumber() {
+        return chplProductNumber;
+    }
+
+    public void setChplProductNumber(final String chplProductNumber) {
+        this.chplProductNumber = chplProductNumber;
     }
 }

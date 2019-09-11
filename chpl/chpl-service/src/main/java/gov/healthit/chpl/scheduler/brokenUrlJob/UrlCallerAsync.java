@@ -32,7 +32,7 @@ public class UrlCallerAsync {
      */
     @Async("jobAsyncDataExecutor")
     public Future<Integer> getUrlResponseCode(
-            final UrlResultDTO urlToCheck, final AsyncHttpClient httpClient, final Logger logger) throws Exception {
+            final UrlResult urlToCheck, final AsyncHttpClient httpClient, final Logger logger) throws Exception {
         logger.info("Checking URL " + urlToCheck.getUrl());
         Request getRequest = new RequestBuilder(HttpConstants.Methods.GET)
                 .setFollowRedirect(false)

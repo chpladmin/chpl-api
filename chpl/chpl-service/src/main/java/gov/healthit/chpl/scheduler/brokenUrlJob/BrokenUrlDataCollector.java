@@ -55,12 +55,12 @@ public class BrokenUrlDataCollector extends QuartzJob implements InterruptableJo
     private int connectTimeoutSeconds = 10;
     private int requestTimeoutSeconds = 10;
     private AsyncHttpClient httpClient;
-    private Map<UrlResultDTO, Future<Integer>> urlResponseCodeFuturesMap;
+    private Map<UrlResult, Future<Integer>> urlResponseCodeFuturesMap;
     private boolean interrupted;
 
     public BrokenUrlDataCollector() {
         interrupted = false;
-        urlResponseCodeFuturesMap = new LinkedHashMap<UrlResultDTO, Future<Integer>>();
+        urlResponseCodeFuturesMap = new LinkedHashMap<UrlResult, Future<Integer>>();
     }
 
     @Override
@@ -73,9 +73,9 @@ public class BrokenUrlDataCollector extends QuartzJob implements InterruptableJo
 
         try {
             //get all urls in the system
-            List<UrlResultDTO> allSystemUrls = urlCheckerDao.getAllSystemUrls();
+            List<UrlResult> allSystemUrls = urlCheckerDao.getAllSystemUrls();
             LOGGER.info("Found " + allSystemUrls.size() + " urls in the system.");
-            List<UrlResultDTO> existingUrlResults = urlCheckerDao.getAllUrlResults();
+            List<UrlResult> existingUrlResults = urlCheckerDao.getAllUrlResults();
 
             removeObsoleteUrlResults(existingUrlResults, allSystemUrls);
             addNewUrlResults(existingUrlResults, allSystemUrls);
@@ -111,12 +111,12 @@ public class BrokenUrlDataCollector extends QuartzJob implements InterruptableJo
      * @param allSystemUrls all the urls that are in the system
      * @throws EntityRetrievalException if the url result to delete cannot be found in the database
      */
-    private void removeObsoleteUrlResults(final List<UrlResultDTO> existingUrlResults,
-            final List<UrlResultDTO> allSystemUrls) throws EntityRetrievalException {
+    private void removeObsoleteUrlResults(final List<UrlResult> existingUrlResults,
+            final List<UrlResult> allSystemUrls) throws EntityRetrievalException {
         //determine if any url results are no longer needed because it no longer exists in the system
-        for (UrlResultDTO existingUrlResult : existingUrlResults) {
+        for (UrlResult existingUrlResult : existingUrlResults) {
             boolean stillExists = false;
-            for (UrlResultDTO systemUrl : allSystemUrls) {
+            for (UrlResult systemUrl : allSystemUrls) {
                 if (existingUrlResult.equals(systemUrl)) {
                     stillExists = true;
                 }
@@ -137,13 +137,13 @@ public class BrokenUrlDataCollector extends QuartzJob implements InterruptableJo
      * @param allSystemUrls all the urls that are in the system
      * @throws EntityCreationException if the new url result cannot be created in the database
      */
-    private void addNewUrlResults(final List<UrlResultDTO> existingUrlResults,
-            final List<UrlResultDTO> allSystemUrls) throws EntityCreationException {
+    private void addNewUrlResults(final List<UrlResult> existingUrlResults,
+            final List<UrlResult> allSystemUrls) throws EntityCreationException {
         //add any urls to the result table that aren't already there and add them
         //will have null last checked date, response code, and response message initially
-        for (UrlResultDTO systemUrl : allSystemUrls) {
+        for (UrlResult systemUrl : allSystemUrls) {
             boolean alreadyExists = false;
-            for (UrlResultDTO existingUrlResult : existingUrlResults) {
+            for (UrlResult existingUrlResult : existingUrlResults) {
                 if (existingUrlResult.equals(systemUrl)) {
                     alreadyExists = true;
                     BeanUtils.copyProperties(existingUrlResult, systemUrl);
@@ -153,7 +153,7 @@ public class BrokenUrlDataCollector extends QuartzJob implements InterruptableJo
                 LOGGER.info("The URL " + systemUrl.getUrl()
                     + " for the type " + systemUrl.getUrlType().getName()
                     + " will be added to the system.");
-                UrlResultDTO created = urlCheckerDao.createUrlResult(systemUrl);
+                UrlResult created = urlCheckerDao.createUrlResult(systemUrl);
                 systemUrl.setId(created.getId());
             } else {
                 LOGGER.info("The URL " + systemUrl.getUrl()
@@ -169,10 +169,10 @@ public class BrokenUrlDataCollector extends QuartzJob implements InterruptableJo
      * @param urlList the list of URLs to query and record response codes for
      * @throws EntityRetrievalException
      */
-    private void processUrls(final int batchNum, final List<UrlResultDTO> urlList) throws EntityRetrievalException {
+    private void processUrls(final int batchNum, final List<UrlResult> urlList) throws EntityRetrievalException {
         //make async requests for each url in the batch
         for (int batchIndex = 0; batchIndex < urlList.size(); batchIndex++) {
-            UrlResultDTO systemUrl = urlList.get(batchIndex);
+            UrlResult systemUrl = urlList.get(batchIndex);
             if (shouldUrlBeChecked(systemUrl)) {
                 LOGGER.info(systemUrl.getUrl() + " for the type " + systemUrl.getUrlType().getName()
                     + " will be checked for validity.");
@@ -191,7 +191,7 @@ public class BrokenUrlDataCollector extends QuartzJob implements InterruptableJo
 
         //get all the results from this batch of URLs
         int completedUrls = 0;
-        for (UrlResultDTO activeRequest : urlResponseCodeFuturesMap.keySet()) {
+        for (UrlResult activeRequest : urlResponseCodeFuturesMap.keySet()) {
             if (interrupted) {
                 break;
             }
@@ -303,7 +303,7 @@ public class BrokenUrlDataCollector extends QuartzJob implements InterruptableJo
      * @param systemUrl
      * @return
      */
-    private boolean shouldUrlBeChecked(final UrlResultDTO systemUrl) {
+    private boolean shouldUrlBeChecked(final UrlResult systemUrl) {
         if (systemUrl.getLastChecked() == null) {
             return true;
         } else {

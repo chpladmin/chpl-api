@@ -5,6 +5,7 @@ import java.util.List;
 
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.CertifiedProductSummaryDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.brokenUrlJob.UrlType;
@@ -54,7 +55,7 @@ public interface CertifiedProductDAO {
 
     List<CertifiedProductDetailsDTO> getDetailsByVersionAndAcbIds(Long versionId, List<Long> acbIds);
 
-    List<CertifiedProductDetailsDTO> getDetailsByUrl(String url, UrlType urlType);
+    List<CertifiedProductSummaryDTO> getSummaryByUrl(String url, UrlType urlType);
 
     List<CertifiedProductDTO> getByVersionIds(List<Long> versionIds);
 

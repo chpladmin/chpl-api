@@ -5,7 +5,7 @@ import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 
-public class UrlResultDTO {
+public class UrlResult {
     private Long id;
     private String url;
     private UrlType urlType;
@@ -13,10 +13,10 @@ public class UrlResultDTO {
     private Integer responseCode;
     private String responseMessage;
 
-    public UrlResultDTO() {
+    public UrlResult() {
     }
 
-    public UrlResultDTO(final UrlResultEntity entity) {
+    public UrlResult(final UrlResultEntity entity) {
         BeanUtils.copyProperties(entity, this);
         if (this.urlType == null) {
             if (entity.getUrlType() != null) {
@@ -27,10 +27,10 @@ public class UrlResultDTO {
 
     @Override
     public boolean equals(final Object obj) {
-        if (!(obj instanceof UrlResultDTO)) {
+        if (!(obj instanceof UrlResult)) {
             return false;
         }
-        UrlResultDTO otherDto = (UrlResultDTO) obj;
+        UrlResult otherDto = (UrlResult) obj;
         //equal if ids are the same
         if (otherDto.getId() != null && this.getId() != null
                 && otherDto.getId().equals(this.getId())) {

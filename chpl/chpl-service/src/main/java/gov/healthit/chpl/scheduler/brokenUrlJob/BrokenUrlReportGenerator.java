@@ -8,6 +8,8 @@ import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -30,8 +32,7 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.ContactDTO;
+import gov.healthit.chpl.dto.CertifiedProductSummaryDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
@@ -75,17 +76,17 @@ public class BrokenUrlReportGenerator extends QuartzJob {
         LOGGER.info("********* Starting the Broken URL Report Generator job. *********");
 
         try {
-            List<UrlResultWithErrorDTO> badUrlsToWrite = new ArrayList<UrlResultWithErrorDTO>();
-            List<UrlResultDTO> badUrls = urlCheckerDao.getUrlResultsWithError();
+            List<FailedUrlResult> badUrlsToWrite = new ArrayList<FailedUrlResult>();
+            List<UrlResult> badUrls = urlCheckerDao.getUrlResultsWithError();
             LOGGER.info("Found " + badUrls.size() + " urls with errors.");
             int i = 0;
-            for (UrlResultDTO urlResult : badUrls) {
+            for (UrlResult urlResult : badUrls) {
                 switch (urlResult.getUrlType()) {
                 case ACB:
                     LOGGER.info("[" + i + "]: Getting ACBs with bad website " + urlResult.getUrl());
                     List<CertificationBodyDTO> acbsWithBadUrl = acbDao.getByWebsite(urlResult.getUrl());
                     for (CertificationBodyDTO acb : acbsWithBadUrl) {
-                        UrlResultWithErrorDTO urlResultWithError = new UrlResultWithErrorDTO(urlResult);
+                        FailedUrlResult urlResultWithError = new FailedUrlResult(urlResult);
                         urlResultWithError.setAcbName(acb.getName());
                         badUrlsToWrite.add(urlResultWithError);
                     }
@@ -94,7 +95,7 @@ public class BrokenUrlReportGenerator extends QuartzJob {
                     LOGGER.info("[" + i + "] Getting ATLs with bad website " + urlResult.getUrl());
                     List<TestingLabDTO> atlsWithBadUrl = atlDao.getByWebsite(urlResult.getUrl());
                     for (TestingLabDTO atl : atlsWithBadUrl) {
-                        UrlResultWithErrorDTO urlResultWithError = new UrlResultWithErrorDTO(urlResult);
+                        FailedUrlResult urlResultWithError = new FailedUrlResult(urlResult);
                         urlResultWithError.setAtlName(atl.getName());
                         badUrlsToWrite.add(urlResultWithError);
                     }
@@ -103,8 +104,13 @@ public class BrokenUrlReportGenerator extends QuartzJob {
                     LOGGER.info("[ " + i + "] Getting Developers with bad website " + urlResult.getUrl());
                     List<DeveloperDTO> devsWithBadUrl = devDao.getByWebsite(urlResult.getUrl());
                     for (DeveloperDTO dev : devsWithBadUrl) {
-                        UrlResultWithErrorDTO urlResultWithError = new UrlResultWithErrorDTO(urlResult);
-                        urlResultWithError.setDeveloper(dev);
+                        FailedUrlResult urlResultWithError = new FailedUrlResult(urlResult);
+                        urlResultWithError.setDeveloperName(dev.getName());
+                        if (dev.getContact() != null) {
+                            urlResultWithError.setContactEmail(dev.getContact().getEmail());
+                            urlResultWithError.setContactName(dev.getContact().getFullName());
+                            urlResultWithError.setContactPhone(dev.getContact().getPhoneNumber());
+                        }
                         badUrlsToWrite.add(urlResultWithError);
                     }
                     break;
@@ -112,11 +118,29 @@ public class BrokenUrlReportGenerator extends QuartzJob {
                 case MANDATORY_DISCLOSURE_URL:
                 case TEST_RESULTS_SUMMARY:
                     LOGGER.info("[" + i + "] Getting Listings with bad " + urlResult.getUrlType().getName() + " website " + urlResult.getUrl());
-                    List<CertifiedProductDetailsDTO> listingsWithBadUrl =
-                        cpDao.getDetailsByUrl(urlResult.getUrl(), urlResult.getUrlType());
-                    for (CertifiedProductDetailsDTO listing : listingsWithBadUrl) {
-                        UrlResultWithErrorDTO urlResultWithError = new UrlResultWithErrorDTO(urlResult);
-                        urlResultWithError.setListing(listing);
+                    List<CertifiedProductSummaryDTO> listingsWithBadUrl =
+                        cpDao.getSummaryByUrl(urlResult.getUrl(), urlResult.getUrlType());
+                    for (CertifiedProductSummaryDTO listing : listingsWithBadUrl) {
+                        FailedUrlResult urlResultWithError = new FailedUrlResult(urlResult);
+                        if (listing.getAcb() != null) {
+                            urlResultWithError.setAcbName(listing.getAcb().getName());
+                        }
+                        if (listing.getDeveloper() != null) {
+                            DeveloperDTO dev = listing.getDeveloper();
+                            urlResultWithError.setDeveloperName(dev.getName());
+                            if (dev.getContact() != null) {
+                                urlResultWithError.setContactEmail(dev.getContact().getEmail());
+                                urlResultWithError.setContactName(dev.getContact().getFullName());
+                                urlResultWithError.setContactPhone(dev.getContact().getPhoneNumber());
+                            }
+                        }
+                        if (listing.getProduct() != null) {
+                            urlResultWithError.setProductName(listing.getProduct().getName());
+                        }
+                        if (listing.getVersion() != null) {
+                            urlResultWithError.setVersion(listing.getVersion().getVersion());
+                        }
+                        urlResultWithError.setChplProductNumber(listing.getChplProductNumber());
                         badUrlsToWrite.add(urlResultWithError);
                     }
                     break;
@@ -125,6 +149,18 @@ public class BrokenUrlReportGenerator extends QuartzJob {
                 }
                 i++;
             }
+
+            //sort the bad urls by type so they come out that way in the file
+            //also within each type sort by url
+            Collections.sort(badUrlsToWrite, new Comparator<FailedUrlResult>() {
+                @Override
+                public int compare(final FailedUrlResult o1, final FailedUrlResult o2) {
+                    if (o1.getUrlType().equals(o2.getUrlType())) {
+                        return o1.getUrl().compareTo(o2.getUrl());
+                    }
+                    return o1.getUrlType().ordinal() - o2.getUrlType().ordinal();
+                }
+            });
 
             LOGGER.info("Creating email subject and body.");
             String to = jobContext.getMergedJobDataMap().getString("email");
@@ -165,7 +201,7 @@ public class BrokenUrlReportGenerator extends QuartzJob {
      * @param reportFilename
      * @return
      */
-    private File getOutputFile(final List<UrlResultWithErrorDTO> urlResultsToWrite, final String reportFilename) {
+    private File getOutputFile(final List<FailedUrlResult> urlResultsToWrite, final String reportFilename) {
         File temp = null;
         try {
             temp = File.createTempFile(reportFilename, ".csv");
@@ -179,7 +215,7 @@ public class BrokenUrlReportGenerator extends QuartzJob {
                     new FileOutputStream(temp), Charset.forName("UTF-8").newEncoder());
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
                 csvPrinter.printRecord(getHeaderRow());
-                for (UrlResultWithErrorDTO urlResult : urlResultsToWrite) {
+                for (FailedUrlResult urlResult : urlResultsToWrite) {
                     List<String> rowValue = generateRowValue(urlResult);
                     csvPrinter.printRecord(rowValue);
                 }
@@ -203,7 +239,7 @@ public class BrokenUrlReportGenerator extends QuartzJob {
      * @param urlResult
      * @return
      */
-    private List<String> generateRowValue(final UrlResultWithErrorDTO urlResult) {
+    private List<String> generateRowValue(final FailedUrlResult urlResult) {
         List<String> result = new ArrayList<String>();
         if (urlResult.getAtlName() != null) {
             result.add(urlResult.getAtlName());
@@ -217,58 +253,47 @@ public class BrokenUrlReportGenerator extends QuartzJob {
             result.add("");
         }
 
-        if (urlResult.getDeveloper() != null) {
-            result.add(urlResult.getDeveloper().getName());
+        if (urlResult.getDeveloperName() != null) {
+            result.add(urlResult.getDeveloperName());
         } else {
             result.add("");
         }
 
-        if (urlResult.getDeveloper() != null && urlResult.getDeveloper().getContact() != null) {
-            ContactDTO contact = urlResult.getDeveloper().getContact();
-            if (contact.getFullName() != null) {
-                result.add(contact.getFullName());
-            } else {
-                result.add("");
-            }
-            if (contact.getEmail() != null) {
-                result.add(contact.getEmail());
-            } else {
-                result.add("");
-            }
-            if (contact.getPhoneNumber() != null) {
-                result.add(contact.getPhoneNumber());
-            } else {
-                result.add("");
-            }
+        if (urlResult.getContactName() != null) {
+            result.add(urlResult.getContactName());
         } else {
-            result.add("");
-            result.add("");
             result.add("");
         }
 
-        if (urlResult.getListing() != null) {
-            CertifiedProductDetailsDTO listing = urlResult.getListing();
-            if (listing.getProduct() != null) {
-                result.add(listing.getProduct().getName());
-            } else {
-                result.add("");
-            }
-            if (listing.getVersion() != null) {
-                result.add(listing.getVersion().getVersion());
-            } else {
-                result.add("");
-            }
-            if (listing.getChplProductNumber() != null) {
-                result.add(listing.getChplProductNumber());
-            } else {
-                result.add("");
-            }
+        if (urlResult.getContactEmail() != null) {
+            result.add(urlResult.getContactEmail());
         } else {
-            result.add("");
-            result.add("");
             result.add("");
         }
 
+        if (urlResult.getContactPhone() != null) {
+            result.add(urlResult.getContactPhone());
+        } else {
+            result.add("");
+        }
+
+        if (urlResult.getProductName() != null) {
+            result.add(urlResult.getProductName());
+        } else {
+            result.add("");
+        }
+
+        if (urlResult.getVersion() != null) {
+            result.add(urlResult.getVersion());
+        } else {
+            result.add("");
+        }
+
+        if (urlResult.getChplProductNumber() != null) {
+            result.add(urlResult.getChplProductNumber());
+        } else {
+            result.add("");
+        }
         result.add(urlResult.getUrlType().getName());
         result.add(urlResult.getUrl());
 
@@ -310,7 +335,7 @@ public class BrokenUrlReportGenerator extends QuartzJob {
      * @param noContentMsg
      * @return
      */
-    private String createHtmlEmailBody(final List<UrlResultWithErrorDTO> urlResults, final String noContentMsg) {
+    private String createHtmlEmailBody(final List<FailedUrlResult> urlResults, final String noContentMsg) {
         String htmlMessage = "";
         if (urlResults.size() == 0) {
             htmlMessage = noContentMsg;
@@ -323,8 +348,8 @@ public class BrokenUrlReportGenerator extends QuartzJob {
             int brokenTestResultsSummaryUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.TEST_RESULTS_SUMMARY);
 
             htmlMessage += "<ul>";
-            htmlMessage += "<li>" + UrlType.ACB.getName() + ": " + brokenAcbUrls + "</li>";
             htmlMessage += "<li>" + UrlType.ATL.getName() + ": " + brokenAtlUrls + "</li>";
+            htmlMessage += "<li>" + UrlType.ACB.getName() + ": " + brokenAcbUrls + "</li>";
             htmlMessage += "<li>" + UrlType.DEVELOPER.getName() + ": " + brokenDeveloperUrls + "</li>";
             htmlMessage += "<li>" + UrlType.FULL_USABILITY_REPORT.getName() + ": " + brokenFullUsabilityReportUrls + "</li>";
             htmlMessage += "<li>" + UrlType.MANDATORY_DISCLOSURE_URL.getName() + ": " + brokenMandatoryDisclosureUrls + "</li>";
@@ -335,9 +360,9 @@ public class BrokenUrlReportGenerator extends QuartzJob {
         return htmlMessage;
     }
 
-    private int getCountOfBrokenUrlsOfType(final List<UrlResultWithErrorDTO> urlResults, final UrlType urlType) {
+    private int getCountOfBrokenUrlsOfType(final List<FailedUrlResult> urlResults, final UrlType urlType) {
         int count = 0;
-        for (UrlResultWithErrorDTO urlResult : urlResults) {
+        for (FailedUrlResult urlResult : urlResults) {
             if (urlResult.getUrlType().equals(urlType)) {
                 count++;
             }

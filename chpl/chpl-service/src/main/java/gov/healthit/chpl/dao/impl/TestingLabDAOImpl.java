@@ -181,6 +181,7 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
     public List<TestingLabDTO> getByWebsite(final String website) {
         Query query = entityManager.createQuery("SELECT atl "
                 + "FROM TestingLabEntity atl "
+                + "LEFT OUTER JOIN FETCH atl.address "
                 + "WHERE atl.deleted = false "
                 + "AND atl.website = :website");
         query.setParameter("website", website);

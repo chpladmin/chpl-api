@@ -23,7 +23,7 @@ import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.brokenUrlJob.UrlCheckerDao;
-import gov.healthit.chpl.scheduler.brokenUrlJob.UrlResultDTO;
+import gov.healthit.chpl.scheduler.brokenUrlJob.UrlResult;
 import gov.healthit.chpl.scheduler.brokenUrlJob.UrlType;
 import junit.framework.TestCase;
 
@@ -47,7 +47,7 @@ public class UrlCheckerDaoTest extends TestCase {
     @Test
     @Transactional
     public void getAllSystemUrls() {
-        List<UrlResultDTO> allSystemUrls = urlCheckerDao.getAllSystemUrls();
+        List<UrlResult> allSystemUrls = urlCheckerDao.getAllSystemUrls();
         assertNotNull(allSystemUrls);
         assertTrue(allSystemUrls.size() > 0);
         assertEquals(40, allSystemUrls.size());
@@ -56,7 +56,7 @@ public class UrlCheckerDaoTest extends TestCase {
     @Test
     @Transactional
     public void getAllUrlResults_Empty() throws EntityRetrievalException {
-        List<UrlResultDTO> allUrlResults = urlCheckerDao.getAllUrlResults();
+        List<UrlResult> allUrlResults = urlCheckerDao.getAllUrlResults();
         assertNotNull(allUrlResults);
         assertEquals(0, allUrlResults.size());
     }
@@ -65,19 +65,19 @@ public class UrlCheckerDaoTest extends TestCase {
     @Transactional()
     @Rollback(true)
     public void createUrlResult() throws EntityCreationException {
-        UrlResultDTO toCreate = new UrlResultDTO();
+        UrlResult toCreate = new UrlResult();
         toCreate.setLastChecked(new Date());
         toCreate.setResponseCode(200);
         toCreate.setUrl("http://test.com");
         toCreate.setUrlType(UrlType.DEVELOPER);
-        UrlResultDTO created = urlCheckerDao.createUrlResult(toCreate);
+        UrlResult created = urlCheckerDao.createUrlResult(toCreate);
         assertNotNull(created);
         assertNotNull(created.getId());
 
-        List<UrlResultDTO> allUrlResults = urlCheckerDao.getAllUrlResults();
+        List<UrlResult> allUrlResults = urlCheckerDao.getAllUrlResults();
         assertNotNull(allUrlResults);
         assertEquals(1, allUrlResults.size());
-        UrlResultDTO result = allUrlResults.get(0);
+        UrlResult result = allUrlResults.get(0);
         assertNotNull(result.getId());
         assertEquals(created.getId().longValue(), result.getId().longValue());
         assertEquals(200, result.getResponseCode().intValue());
@@ -89,12 +89,12 @@ public class UrlCheckerDaoTest extends TestCase {
     @Transactional()
     @Rollback(true)
     public void updateUrlResult() throws EntityRetrievalException, EntityCreationException {
-        UrlResultDTO toCreate = new UrlResultDTO();
+        UrlResult toCreate = new UrlResult();
         toCreate.setLastChecked(new Date());
         toCreate.setResponseCode(200);
         toCreate.setUrl("http://test.com");
         toCreate.setUrlType(UrlType.DEVELOPER);
-        UrlResultDTO created = urlCheckerDao.createUrlResult(toCreate);
+        UrlResult created = urlCheckerDao.createUrlResult(toCreate);
         assertNotNull(created);
         assertNotNull(created.getId());
 
@@ -104,10 +104,10 @@ public class UrlCheckerDaoTest extends TestCase {
         created.setLastChecked(updatedLastCheckedDate);
         urlCheckerDao.updateUrlResult(created);
 
-        List<UrlResultDTO> allUrlResults = urlCheckerDao.getAllUrlResults();
+        List<UrlResult> allUrlResults = urlCheckerDao.getAllUrlResults();
         assertNotNull(allUrlResults);
         assertEquals(1, allUrlResults.size());
-        UrlResultDTO result = allUrlResults.get(0);
+        UrlResult result = allUrlResults.get(0);
         assertNotNull(result.getId());
         assertEquals(created.getId().longValue(), result.getId().longValue());
         assertEquals(updatedLastCheckedDate.getTime(), result.getLastChecked().getTime());
@@ -118,17 +118,17 @@ public class UrlCheckerDaoTest extends TestCase {
     @Transactional()
     @Rollback(true)
     public void deleteUrlResult() throws EntityCreationException, EntityRetrievalException {
-        UrlResultDTO toCreate = new UrlResultDTO();
+        UrlResult toCreate = new UrlResult();
         toCreate.setLastChecked(new Date());
         toCreate.setResponseCode(200);
         toCreate.setUrl("http://test.com");
         toCreate.setUrlType(UrlType.DEVELOPER);
-        UrlResultDTO created = urlCheckerDao.createUrlResult(toCreate);
+        UrlResult created = urlCheckerDao.createUrlResult(toCreate);
         assertNotNull(created);
         assertNotNull(created.getId());
 
         urlCheckerDao.deleteUrlResult(created.getId());
-        List<UrlResultDTO> allUrlResults = urlCheckerDao.getAllUrlResults();
+        List<UrlResult> allUrlResults = urlCheckerDao.getAllUrlResults();
         assertNotNull(allUrlResults);
         assertEquals(0, allUrlResults.size());
     }

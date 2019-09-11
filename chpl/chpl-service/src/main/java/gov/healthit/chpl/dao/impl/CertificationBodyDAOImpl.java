@@ -177,6 +177,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
     public List<CertificationBodyDTO> getByWebsite(final String website) {
         Query query = entityManager.createQuery("SELECT acb "
                 + "FROM CertificationBodyEntity acb "
+                + "LEFT OUTER JOIN FETCH acb.address "
                 + "WHERE acb.deleted = false "
                 + "AND acb.website = :website");
         query.setParameter("website", website);
