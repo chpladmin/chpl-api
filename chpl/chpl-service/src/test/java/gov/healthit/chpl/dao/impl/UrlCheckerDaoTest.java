@@ -50,7 +50,7 @@ public class UrlCheckerDaoTest extends TestCase {
         List<UrlResult> allSystemUrls = urlCheckerDao.getAllSystemUrls();
         assertNotNull(allSystemUrls);
         assertTrue(allSystemUrls.size() > 0);
-        assertEquals(40, allSystemUrls.size());
+        assertEquals(7, allSystemUrls.size());
     }
 
     @Test
