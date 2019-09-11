@@ -135,6 +135,10 @@ job.badUrlChecker.successCheckIntervalDays=7
 job.badUrlChecker.failureCheckIntervalDays=1
 job.badUrlChecker.connectTimeoutSeconds=10
 job.badUrlChecker.requestTimeoutSeconds=30
+job.badUrlChecker.emailAttachmentName=broken-url-report.csv
+job.badUrlChecker.emailSubject=Broken URL Report
+job.badUrlChecker.emailBodyBegin=<h3>Broken URL Report</h3>
+job.badUrlChecker.emailBodyNoContent=<p>No broken URLs were found in the system.</p>
 
 chplUrlBegin=http://localhost:8000/app
 
