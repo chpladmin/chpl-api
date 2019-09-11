@@ -18,13 +18,12 @@ public class CreateActionPermissions extends ActionPermissions {
         try {
             if (!(obj instanceof ChangeRequest)) {
                 return false;
-            } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
-                return true;
             } else if (getResourcePermissions().isUserRoleDeveloperAdmin()) {
                 ChangeRequest cr = (ChangeRequest) obj;
                 return isDeveloperValidForCurrentUser(cr.getDeveloper().getDeveloperId());
+            } else {
+                return false;
             }
-            return false;
         } catch (Exception e) {
             return false;
         }

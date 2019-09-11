@@ -11,4 +11,6 @@ public interface ChangeRequestDAO {
     ChangeRequest get(final Long changeRequestId) throws EntityRetrievalException;
 
     List<ChangeRequest> getAllForCurrentUser() throws EntityRetrievalException;
+
+    List<ChangeRequest> getByDeveloper(final Long developerId) throws EntityRetrievalException;
 }

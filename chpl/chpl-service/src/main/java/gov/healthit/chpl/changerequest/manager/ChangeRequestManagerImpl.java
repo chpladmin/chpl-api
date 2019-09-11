@@ -220,7 +220,9 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
     private List<String> runCreateValidations(ChangeRequest cr) {
         List<ValidationRule<ChangeRequestValidationContext>> rules = new ArrayList<ValidationRule<ChangeRequestValidationContext>>();
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_TYPE));
-        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.DEVELOPER));
+        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_IN_PROCESS));
+        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.DEVELOPER_EXISTENCE));
+        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.DEVELOPER_ACTIVE));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_DETAILS_CREATE));
         return runValidations(rules, cr);
     }
@@ -229,6 +231,7 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
         List<ValidationRule<ChangeRequestValidationContext>> rules = new ArrayList<ValidationRule<ChangeRequestValidationContext>>();
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_EXISTENCE));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_DETAILS_UPDATE));
+        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.DEVELOPER_ACTIVE));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.STATUS_TYPE));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.STATUS_NOT_UPDATABLE));
         return runValidations(rules, cr);

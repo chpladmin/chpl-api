@@ -1,5 +1,7 @@
 package gov.healthit.chpl.changerequest.dao;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,10 +45,23 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
         return cr;
     }
 
+    @Override
     public List<ChangeRequest> getAllForCurrentUser() throws EntityRetrievalException {
         List<Long> developers = resourcePermissions.getAllDevelopersForCurrentUser().stream()
                 .map(dev -> dev.getId())
                 .collect(Collectors.<Long> toList());
+
+        return getEntitiesByDevelopers(developers).stream()
+                .map(entity -> ChangeRequestConverter.convert(entity))
+                .map(cr -> {
+                    cr.setCurrentStatus(getCurrentStatus(cr.getId()));
+                    return cr;
+                })
+                .collect(Collectors.<ChangeRequest> toList());
+    }
+
+    public List<ChangeRequest> getByDeveloper(final Long developerId) throws EntityRetrievalException {
+        List<Long> developers = new ArrayList<Long>(Arrays.asList(developerId));
 
         return getEntitiesByDevelopers(developers).stream()
                 .map(entity -> ChangeRequestConverter.convert(entity))

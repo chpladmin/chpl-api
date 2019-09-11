@@ -2,6 +2,7 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.List;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +18,7 @@ import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -27,17 +29,23 @@ public class ChangeRequestController {
     
     private ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO;
     private ChangeRequestManager changeRequestManager;
+    private ResourcePermissions resourcePermissions;
     
     @Autowired
-    public ChangeRequestController(final ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO, final ChangeRequestManager changeRequestManager) {
+    public ChangeRequestController(final ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO, 
+            final ChangeRequestManager changeRequestManager, final ResourcePermissions resourcePermissions) {
         this.changeRequestStatusTypeDAO = changeRequestStatusTypeDAO;
         this.changeRequestManager = changeRequestManager;
+        this.resourcePermissions = resourcePermissions;
     }
     
     @ApiOperation(value = "Get details about a specific change request.", 
             notes="")
     @RequestMapping(value = "/{changeRequestId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ChangeRequest getChangeRequest(@PathVariable final Long changeRequestId) throws EntityRetrievalException {
+        if (!resourcePermissions.isUserRoleDeveloperAdmin()) {
+            throw new NotImplementedException();
+        }
         return changeRequestManager.getChangeRequest(changeRequestId);
     }
     
@@ -45,10 +53,13 @@ public class ChangeRequestController {
             notes="")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ChangeRequest> getAllChangeRequests() throws EntityRetrievalException {
+        if (!resourcePermissions.isUserRoleDeveloperAdmin()) {
+            throw new NotImplementedException();
+        }
         return changeRequestManager.getAllChangeRequestsForUser();
     }
     
-    @ApiOperation(value = "Create a new chnage request.",
+    @ApiOperation(value = "Create a new change request.",
             notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC to create a new testing lab.")
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
@@ -61,6 +72,9 @@ public class ChangeRequestController {
     @RequestMapping(value = "/{changeRequestId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public ChangeRequest updateChangeRequest(@RequestBody final ChangeRequest cr) throws EntityRetrievalException, ValidationException, EntityCreationException {
+        if (!resourcePermissions.isUserRoleDeveloperAdmin()) {
+            throw new NotImplementedException();
+        }
         return changeRequestManager.updateChangeRequest(cr);
     }
     
