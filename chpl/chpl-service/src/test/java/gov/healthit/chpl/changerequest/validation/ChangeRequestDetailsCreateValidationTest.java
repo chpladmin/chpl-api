@@ -1,4 +1,4 @@
-package gov.healthit.chpl.changerequest;
+package gov.healthit.chpl.changerequest.validation;
 
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.changerequest;
+package gov.healthit.chpl.changerequest.validation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
