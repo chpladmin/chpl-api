@@ -16,13 +16,6 @@ public class ChangeRequestDetailsUpdateValidation extends ValidationRule<ChangeR
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
-        // Do we know the cr type?
-        ChangeRequestTypeValidation crTypeValidation = new ChangeRequestTypeValidation();
-        if (!crTypeValidation.isValid(context)) {
-            getMessages().add(getErrorMessage("changeRequest.details.cannotDetermineType"));
-            return false;
-        }
-
         if (context.getChangeRequest().getChangeRequestType().getId().equals(websiteChangeRequestType)
                 && (context.getChangeRequest().getDetails() == null
                         || !isChangeRequestWebsiteValid((HashMap) context.getChangeRequest().getDetails()))) {

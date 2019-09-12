@@ -14,13 +14,13 @@ import gov.healthit.chpl.changerequest.builders.ChangeRequestBuilder;
 import gov.healthit.chpl.changerequest.builders.ChangeRequestTypeBuilder;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 
-public class ChangeRequestDetailsCreateValidationTest {
+public class ChangeRequestDetailsUpdateValidationTest {
 
-    private ChangeRequestDetailsCreateValidation validator;
+    private ChangeRequestDetailsUpdateValidation validator;
 
     @Before
     public void setup() {
-        validator = new ChangeRequestDetailsCreateValidation();
+        validator = new ChangeRequestDetailsUpdateValidation();
         ReflectionTestUtils.setField(validator, "websiteChangeRequestType", 1l);
     }
 
@@ -52,6 +52,7 @@ public class ChangeRequestDetailsCreateValidationTest {
 
         Map<String, Object> details = new HashMap<String, Object>();
         details.put("website", "http://www.abc.com");
+        details.put("id", 1l);
         cr.setDetails(details);
         return cr;
     }
@@ -66,7 +67,8 @@ public class ChangeRequestDetailsCreateValidationTest {
                 .build();
 
         Map<String, Object> details = new HashMap<String, Object>();
-        details.put("webste", "http://www.abc.com"); // misspelled
+        details.put("website", "http://www.abc.com");
+        // details.put("id", 1l); //Missing ID
         cr.setDetails(details);
         return cr;
     }

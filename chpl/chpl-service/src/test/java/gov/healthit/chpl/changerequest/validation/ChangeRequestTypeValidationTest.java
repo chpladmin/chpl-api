@@ -13,8 +13,6 @@ import org.mockito.MockitoAnnotations;
 import gov.healthit.chpl.changerequest.builders.ChangeRequestBuilder;
 import gov.healthit.chpl.changerequest.builders.ChangeRequestTypeBuilder;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestTypeDAO;
-import gov.healthit.chpl.changerequest.validation.ChangeRequestTypeValidation;
-import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationContext;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public class ChangeRequestTypeValidationTest {
