@@ -5,24 +5,35 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
+import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.UserDeveloperMapDTO;
-import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.entity.UserDeveloperMapEntity;
 import gov.healthit.chpl.entity.auth.UserEntity;
+import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.UserMapper;
 
 @Repository(value = "userDeveloperMapDAO")
 public class UserDeveloperMapDAOImpl extends BaseDAOImpl implements UserDeveloperMapDAO {
+
+    private UserMapper userMapper;
+
+    @Autowired
+    public UserDeveloperMapDAOImpl(@Lazy final UserMapper userMapper) {
+        this.userMapper = userMapper;
+    }
 
     @Override
     public UserDeveloperMapDTO create(final UserDeveloperMapDTO dto) throws EntityRetrievalException {
         UserDeveloperMapEntity entity = new UserDeveloperMapEntity();
         entity = create(getUserDeveloperMapEntity(dto));
-        return new UserDeveloperMapDTO(entity);
+        return mapEntityToDto(entity);
     }
 
     @Override
@@ -49,7 +60,29 @@ public class UserDeveloperMapDAOImpl extends BaseDAOImpl implements UserDevelope
         List<UserDeveloperMapDTO> dtos = new ArrayList<UserDeveloperMapDTO>();
         if (result != null) {
             for (UserDeveloperMapEntity entity : result) {
-                dtos.add(new UserDeveloperMapDTO(entity));
+                dtos.add(mapEntityToDto(entity));
+            }
+        }
+        return dtos;
+    }
+
+    @Override
+    public List<DeveloperDTO> getDevelopersByUserId(final Long userId) {
+        Query query = entityManager.createQuery(
+                "from UserDeveloperMapEntity udm "
+                        + "join fetch udm.developer developer "
+                        + "join fetch udm.user u "
+                        + "join fetch u.permission perm "
+                        + "join fetch u.contact contact "
+                        + "where (udm.deleted != true) AND (u.id = :userId) ",
+                UserDeveloperMapEntity.class);
+        query.setParameter("userId", userId);
+        List<UserDeveloperMapEntity> result = query.getResultList();
+
+        List<DeveloperDTO> dtos = new ArrayList<DeveloperDTO>();
+        if (result != null) {
+            for (UserDeveloperMapEntity entity : result) {
+                dtos.add(new DeveloperDTO(entity.getDeveloper()));
             }
         }
         return dtos;
@@ -71,7 +104,7 @@ public class UserDeveloperMapDAOImpl extends BaseDAOImpl implements UserDevelope
 
         List<UserDeveloperMapDTO> dtos = new ArrayList<UserDeveloperMapDTO>();
         for (UserDeveloperMapEntity entity : result) {
-            dtos.add(new UserDeveloperMapDTO(entity));
+            dtos.add(mapEntityToDto(entity));
         }
         return dtos;
     }
@@ -92,7 +125,7 @@ public class UserDeveloperMapDAOImpl extends BaseDAOImpl implements UserDevelope
         if (result.size() == 0) {
             return null;
         }
-        return new UserDeveloperMapDTO(result.get(0));
+        return mapEntityToDto(result.get(0));
     }
 
     private UserDeveloperMapEntity getEntityById(final Long id) {
@@ -131,7 +164,8 @@ public class UserDeveloperMapDAOImpl extends BaseDAOImpl implements UserDevelope
     private DeveloperEntity getDeveloperEntityById(final Long entityId) throws EntityRetrievalException {
         DeveloperEntity entity = null;
 
-        String queryStr = "SELECT developer from DeveloperEntity developer " + "LEFT OUTER JOIN FETCH developer.address "
+        String queryStr = "SELECT developer from DeveloperEntity developer "
+                + "LEFT OUTER JOIN FETCH developer.address "
                 + "WHERE (developer.id = :entityid)" + " AND (developer.deleted = false)";
 
         Query query = entityManager.createQuery(queryStr, DeveloperEntity.class);
@@ -178,6 +212,12 @@ public class UserDeveloperMapDAOImpl extends BaseDAOImpl implements UserDevelope
         entity.setDeveloper(getDeveloperEntityById(dto.getDeveloper().getId()));
         entity.setUser(getUserEntityById(dto.getUser().getId()));
         return entity;
+    }
+
+    private UserDeveloperMapDTO mapEntityToDto(UserDeveloperMapEntity entity) {
+        UserDeveloperMapDTO dto = new UserDeveloperMapDTO(entity);
+        dto.setUser(userMapper.from(entity.getUser()));
+        return dto;
     }
 
 }

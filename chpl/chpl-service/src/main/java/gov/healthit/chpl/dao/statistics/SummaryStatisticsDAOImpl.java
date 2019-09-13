@@ -3,6 +3,8 @@ package gov.healthit.chpl.dao.statistics;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Query;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
@@ -33,10 +35,12 @@ public class SummaryStatisticsDAOImpl extends BaseDAOImpl implements SummaryStat
 
     @Override
     public SummaryStatisticsEntity getCurrentSummaryStatistics() throws EntityRetrievalException {
-        List<SummaryStatisticsEntity> entities = entityManager
-                .createQuery("SELECT stats " + "FROM SummaryStatisticsEntity stats " + "WHERE (stats.deleted <> true) "
-                        + "ORDER BY stats.id DESC " + "LIMIT 1", SummaryStatisticsEntity.class)
-                .getResultList();
+        Query currStatQuery = entityManager.createQuery("SELECT stats "
+                + "FROM SummaryStatisticsEntity stats "
+                + "WHERE (stats.deleted <> true) "
+                + "ORDER BY stats.id DESC", SummaryStatisticsEntity.class);
+        currStatQuery.setMaxResults(1);
+        List<SummaryStatisticsEntity> entities = currStatQuery.getResultList();
 
         if (entities.size() > 0) {
             return entities.get(0);
