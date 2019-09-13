@@ -590,9 +590,9 @@ public class ActivityController {
         validateActivityDatesAndDateRange(start, end);
         return activityMetadataManager.getPendingSurveillanceActivityMetadata(startDate, endDate);
     }
-    @ApiOperation(value = "Get metadata about auditable records in the system for chnage requests.",
+    @ApiOperation(value = "Get metadata about auditable records in the system for change requests.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
-                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all chnage requests.  "
+                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all change requests.  "
                     + "ROLE_ACB and ROLE_DEVELOPER can see activity for change requests they are associated with.")
     @RequestMapping(value = "/metadata/change-requests", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
