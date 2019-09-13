@@ -96,7 +96,6 @@ public class ChangeRequestStatusHelper {
         crStatus.setChangeRequestStatusType(crStatusType);
         crStatus.setComment(comment);
         crStatus.setStatusChangeDate(new Date());
-        // crStatus.setCertificationBody(getCurrentUserCertificationBody());
 
         return crStatusDAO.create(cr, crStatus);
     }
