@@ -592,8 +592,8 @@ public class ActivityController {
     }
     @ApiOperation(value = "Get metadata about auditable records in the system for change requests.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
-                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all change requests.  "
-                    + "ROLE_ACB and ROLE_DEVELOPER can see activity for change requests they are associated with.")
+                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all chan ge requests.  "
+                    + "ROLE_ACB can see activity for change requests they are associated with.")
     @RequestMapping(value = "/metadata/change-requests", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForChangeRequests(@RequestParam final Long start,
