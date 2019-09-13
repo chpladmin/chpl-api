@@ -27,7 +27,6 @@ public class ChangeRequestDetailsUpdateValidation extends ValidationRule<ChangeR
     }
 
     private boolean isChangeRequestWebsiteValid(HashMap<String, String> map) {
-        // The only value that should be present...
         if (!doesKeyExistWithStringData(map, "website")) {
             return false;
         }
