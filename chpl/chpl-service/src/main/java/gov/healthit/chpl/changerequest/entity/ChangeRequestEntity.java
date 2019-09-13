@@ -73,14 +73,6 @@ public class ChangeRequestEntity {
         this.developer = developer;
     }
 
-    /*
-     * public List<CertificationBodyEntity> getCertificationBodies() { return
-     * certificationBodies; }
-     * 
-     * public void setCertificationBodies(final List<CertificationBodyEntity>
-     * certificationBodies) { this.certificationBodies = certificationBodies; }
-     */
-
     public Date getCreationDate() {
         return creationDate;
     }
