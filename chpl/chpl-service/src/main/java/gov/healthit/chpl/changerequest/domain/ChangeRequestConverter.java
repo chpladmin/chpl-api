@@ -1,6 +1,5 @@
 package gov.healthit.chpl.changerequest.domain;
 
-import gov.healthit.chpl.changerequest.entity.ChangeRequestCertificationBodyMapEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusTypeEntity;
@@ -33,14 +32,6 @@ public class ChangeRequestConverter {
         cr.setChangeRequestType(convert(entity.getChangeRequestType()));
         cr.setDeveloper(new Developer(new DeveloperDTO(entity.getDeveloper())));
         return cr;
-    }
-
-    public static ChangeRequestCertificationBodyMap convert(final ChangeRequestCertificationBodyMapEntity entity) {
-        ChangeRequestCertificationBodyMap map = new ChangeRequestCertificationBodyMap();
-        map.setId(map.getId());
-        map.setChangeRequest(convert(entity.getChangeRequest()));
-        map.setCertificationBody(new CertificationBody(new CertificationBodyDTO(entity.getCertificationBody())));
-        return map;
     }
 
     public static ChangeRequestStatus convert(ChangeRequestStatusEntity entity) {

@@ -1,8 +1,8 @@
 package gov.healthit.chpl.changerequest;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,13 +17,13 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import gov.healthit.chpl.changerequest.builders.CertificationBodyBuilder;
-import gov.healthit.chpl.changerequest.builders.ChangeRequestBuilder;
-import gov.healthit.chpl.changerequest.builders.ChangeRequestCertificationBodyMapBuilder;
-import gov.healthit.chpl.changerequest.dao.ChangeRequestCertificationBodyMapDAO;
-import gov.healthit.chpl.changerequest.domain.ChangeRequestCertificationBodyMap;
-import gov.healthit.chpl.changerequest.manager.ChangeRequestCertificationBodyMapHelper;
+import gov.healthit.chpl.changerequest.builders.DeveloperBuilder;
+import gov.healthit.chpl.changerequest.manager.ChangeRequestCertificationBodyHelper;
+import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -33,10 +33,13 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 public class ChangeRequestCertificationBodyMapHelperTest {
 
     @Mock
-    private ChangeRequestCertificationBodyMapDAO crCertificationBodyMapDAO;
+    private CertifiedProductDAO certifiedProductDAO;
+
+    @Mock
+    private CertificationBodyDAO certificationBodyDAO;
 
     @InjectMocks
-    private ChangeRequestCertificationBodyMapHelper crAcbMapHelper;
+    private ChangeRequestCertificationBodyHelper crAcbHelper;
 
     @Before
     public void setup() {
@@ -44,80 +47,36 @@ public class ChangeRequestCertificationBodyMapHelperTest {
     }
 
     @Test
-    public void getCertificationBodiesByChangeRequestId_Single() {
-        Mockito.when(crCertificationBodyMapDAO.getByChangeRequestId(ArgumentMatchers.anyLong()))
-                .thenReturn(Arrays.asList(new ChangeRequestCertificationBodyMapBuilder()
-                        .withId(23l)
-                        .withCertificationBody(new CertificationBodyBuilder()
-                                .withId(1l)
-                                .withCode("0001")
-                                .withName("ACB 1")
-                                .build())
-                        .withChangeRequest(new ChangeRequestBuilder()
-                                .withId(1l)
-                                .build())
-                        .build()));
+    public void getCertificationBodiesByDeveloper_Success() throws EntityRetrievalException {
+        Mockito.when(certifiedProductDAO.findByDeveloperId(ArgumentMatchers.anyLong()))
+                .thenReturn(getCertifiedProducts());
 
-        List<CertificationBody> acbs = crAcbMapHelper.getCertificationBodiesByChangeRequestId(1l);
+        Mockito.when(certificationBodyDAO.getById(13l))
+                .thenReturn(getAcb(13l, "13", "ACB13"));
 
-        assertNotNull(acbs);
-        assertEquals(Integer.valueOf(1), Integer.valueOf(acbs.size()));
+        List<CertificationBody> acbs = crAcbHelper.getCertificationBodiesByDeveloper(
+                new DeveloperBuilder().withId(1l).build());
+
+        assertEquals(1, acbs.size());
     }
 
-    public void getCertificationBodiesByChangeRequestId_Multiple() {
-        Mockito.when(crCertificationBodyMapDAO.getByChangeRequestId(ArgumentMatchers.anyLong()))
-                .thenReturn(Arrays.asList(new ChangeRequestCertificationBodyMapBuilder()
-                        .withId(23l)
-                        .withCertificationBody(new CertificationBodyBuilder()
-                                .withId(1l)
-                                .withCode("0001")
-                                .withName("ACB 1")
-                                .build())
-                        .withChangeRequest(new ChangeRequestBuilder()
-                                .withId(1l)
-                                .build())
-                        .build(),
-                        new ChangeRequestCertificationBodyMapBuilder()
-                                .withId(23l)
-                                .withCertificationBody(new CertificationBodyBuilder()
-                                        .withId(2l)
-                                        .withCode("0002")
-                                        .withName("ACB 2")
-                                        .build())
-                                .withChangeRequest(new ChangeRequestBuilder()
-                                        .withId(1l)
-                                        .build())
-                                .build()));
+    private List<CertifiedProductDetailsDTO> getCertifiedProducts() {
+        CertifiedProductDetailsDTO cp1 = new CertifiedProductDetailsDTO();
+        cp1.setId(1l);
+        cp1.setCertificationBodyId(13l);
 
-        List<CertificationBody> acbs = crAcbMapHelper.getCertificationBodiesByChangeRequestId(1l);
+        CertifiedProductDetailsDTO cp2 = new CertifiedProductDetailsDTO();
+        cp2.setId(2l);
+        cp2.setCertificationBodyId(13l);
 
-        assertNotNull(acbs);
-        assertEquals(Integer.valueOf(2), Integer.valueOf(acbs.size()));
+        return new ArrayList<CertifiedProductDetailsDTO>(Arrays.asList(cp1, cp2));
     }
 
-    public void saveCertificationBody() throws EntityRetrievalException {
-        Mockito.when(crCertificationBodyMapDAO.create(ArgumentMatchers.any(ChangeRequestCertificationBodyMap.class)))
-                .thenReturn(new ChangeRequestCertificationBodyMapBuilder()
-                        .withId(23l)
-                        .withCertificationBody(new CertificationBodyBuilder()
-                                .withId(1l)
-                                .withCode("0001")
-                                .withName("ACB 1")
-                                .build())
-                        .withChangeRequest(new ChangeRequestBuilder()
-                                .withId(1l)
-                                .build())
-                        .build());
-
-        ChangeRequestCertificationBodyMap map = crAcbMapHelper.saveCertificationBody(
-                new ChangeRequestBuilder().withId(1l).build(),
-                new CertificationBodyBuilder()
-                        .withId(1l)
-                        .withCode("0001")
-                        .withName("ACB 1")
-                        .build());
-
-        assertNotNull(map);
+    private CertificationBodyDTO getAcb(final Long id, final String code, final String name) {
+        CertificationBodyDTO acb = new CertificationBodyDTO();
+        acb.setId(id);
+        acb.setAcbCode(code);
+        acb.setName(name);
+        return acb;
     }
-
 }

@@ -30,7 +30,7 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
-import gov.healthit.chpl.changerequest.manager.ChangeRequestCertificationBodyMapHelper;
+import gov.healthit.chpl.changerequest.manager.ChangeRequestCertificationBodyHelper;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManagerImpl;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestStatusHelper;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestWebsiteHelper;
@@ -39,6 +39,7 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -65,7 +66,7 @@ public class ChangeRequestManagerImplTest {
     private CertificationBodyDAO certificationBodyDAO;
 
     @Mock
-    private ChangeRequestCertificationBodyMapHelper crCertificationBodyMapHelper;
+    private ChangeRequestCertificationBodyHelper crCertificationBodyMapHelper;
 
     @Mock
     private ChangeRequestStatusHelper crStatusHelper;
@@ -122,7 +123,8 @@ public class ChangeRequestManagerImplTest {
                                         .build())
                                 .build())));
 
-        Mockito.when(crCertificationBodyMapHelper.getCertificationBodiesByChangeRequestId(ArgumentMatchers.anyLong()))
+        Mockito.when(
+                crCertificationBodyMapHelper.getCertificationBodiesByDeveloper(ArgumentMatchers.any(Developer.class)))
                 .thenReturn(new ArrayList<CertificationBody>(Arrays.asList(
                         new CertificationBodyBuilder().withId(67l).withCode("5678").withName("ACB1").build())));
 
