@@ -3,6 +3,7 @@ package gov.healthit.chpl.changerequest.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationFactory
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -72,6 +74,22 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
         this.crValidationFactory = crValidationFactory;
         this.crWebsiteHelper = crWebsiteHelper;
         this.activityManager = activityManager;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Set<KeyValueModel> getChangeRequestTypes() {
+        return changeRequestTypeDAO.getChangeRequestTypes().stream()
+                .map(crType -> new KeyValueModel(crType.getId(), crType.getName()))
+                .collect(Collectors.<KeyValueModel> toSet());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Set<KeyValueModel> getChangeRequestStatusTypes() {
+        return changeRequestStatusTypeDAO.getChangeRequestStatusTypes().stream()
+                .map(crStatusType -> new KeyValueModel(crStatusType.getId(), crStatusType.getName()))
+                .collect(Collectors.<KeyValueModel> toSet());
     }
 
     @Override
