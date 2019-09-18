@@ -35,6 +35,8 @@ public interface CertifiedProductDAO {
 
     CertifiedProductDTO getById(Long productId) throws EntityRetrievalException;
 
+    CertifiedProductSummaryDTO getSummaryById(Long listingId) throws EntityRetrievalException;
+
     CertifiedProductDetailsDTO getDetailsById(Long productId) throws EntityRetrievalException;
 
     List<CertifiedProductDetailsDTO> getDetailsByIds(List<Long> productIds) throws EntityRetrievalException;

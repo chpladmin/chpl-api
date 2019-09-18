@@ -126,6 +126,26 @@ public class UrlCheckerDao extends BaseDAOImpl {
                         }
                     }
                     break;
+                case API_DOCUMENTATION:
+                    List<String> apiDocumentationWebsites =
+                    entityManager.createQuery(
+                            "SELECT DISTINCT apiDocumentation "
+                            + "FROM CertificationResultEntity "
+                            + "WHERE apiDocumentation IS NOT NULL "
+                            + "AND apiDocumentation != '' "
+                            + "AND deleted = false")
+                    .getResultList();
+                    for (String website : apiDocumentationWebsites) {
+                        if (!StringUtils.isEmpty(website)) {
+                            UrlResult checkableUrl = new UrlResult();
+                            checkableUrl.setUrl(website);
+                            checkableUrl.setUrlType(urlType);
+                            results.add(checkableUrl);
+                        }
+                    }
+                    break;
+                default:
+                    break;
             }
         }
 

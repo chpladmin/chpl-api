@@ -282,6 +282,25 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 
     @Override
     @Transactional(readOnly = true)
+    public CertifiedProductSummaryDTO getSummaryById(final Long listingId) throws EntityRetrievalException {
+        Query query = entityManager.createQuery("SELECT cp "
+                + "FROM CertifiedProductSummaryEntity cp "
+                + "WHERE id = :id "
+                + "AND deleted = false",
+                CertifiedProductSummaryEntity.class);
+        query.setParameter("id", listingId);
+        List<CertifiedProductSummaryEntity> result = query.getResultList();
+
+        if (result == null || result.size() == 0) {
+            String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.notFound"),
+                    LocaleContextHolder.getLocale()));
+            throw new EntityRetrievalException(msg);
+        }
+        return new CertifiedProductSummaryDTO(result.get(0));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public CertifiedProductDTO getByChplNumber(final String chplProductNumber) {
         CertifiedProductDTO dto = null;
         CertifiedProductEntity entity = getEntityByChplNumber(chplProductNumber);

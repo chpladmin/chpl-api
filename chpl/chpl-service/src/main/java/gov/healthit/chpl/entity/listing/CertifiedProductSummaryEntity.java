@@ -2,14 +2,19 @@ package gov.healthit.chpl.entity.listing;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.util.Util;
 
@@ -146,6 +151,13 @@ public class CertifiedProductSummaryEntity implements Serializable {
 
     @Column(name = "phone_number")
     private String developerContactPhone;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "certifiedProductId")
+    @Basic(optional = false)
+    @Column(name = "certified_product_id", nullable = false)
+    @Where(clause = "deleted <> 'true'")
+    private Set<CertificationResultDetailsEntity> certificationResults = new HashSet<CertificationResultDetailsEntity>();
+
 
     public Long getId() {
         return id;
@@ -481,6 +493,14 @@ public class CertifiedProductSummaryEntity implements Serializable {
 
     public void setDeveloperContactPhone(final String developerContactPhone) {
         this.developerContactPhone = developerContactPhone;
+    }
+
+    public Set<CertificationResultDetailsEntity> getCertificationResults() {
+        return certificationResults;
+    }
+
+    public void setCertificationResults(final Set<CertificationResultDetailsEntity> certificationResults) {
+        this.certificationResults = certificationResults;
     }
 
 }

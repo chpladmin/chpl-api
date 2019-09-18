@@ -28,13 +28,16 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductSummaryDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.util.EmailBuilder;
 
@@ -46,10 +49,10 @@ import gov.healthit.chpl.util.EmailBuilder;
 public class BrokenUrlReportGenerator extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("brokenUrlReportGeneratorJobLogger");
     private static final String[] CSV_HEADER = {
-            "ONC-ATL", "ONC-ACB", "Developer", "Developer Contact Name", "Developer Contact Email",
-            "Developer Contact Phone Number", "Product", "Version",
-            "CHPL Product Number", "URL Type", "URL", "Status Code", "Status Name", "Error Message",
-            "Date Last Checked"};
+            "URL", "Status Code", "Status Name", "Error Message",
+            "URL Type", "ONC-ATL", "ONC-ACB", "Developer", "Developer Contact Name",
+            "Developer Contact Email", "Developer Contact Phone Number", "Product", "Version",
+            "CHPL Product Number", "Criteria", "Date Last Checked"};
 
     @Autowired
     private Environment env;
@@ -68,6 +71,9 @@ public class BrokenUrlReportGenerator extends QuartzJob {
 
     @Autowired
     private CertifiedProductDAO cpDao;
+
+    @Autowired
+    private CertificationResultDetailsDAO certResultDao;
 
     @Override
     @Transactional
@@ -144,21 +150,59 @@ public class BrokenUrlReportGenerator extends QuartzJob {
                         badUrlsToWrite.add(urlResultWithError);
                     }
                     break;
+                case API_DOCUMENTATION:
+                    LOGGER.info("[" + i + "] Getting criteria with bad " + urlResult.getUrlType().getName() + " website " + urlResult.getUrl());
+                    List<CertificationResultDetailsDTO> certResultsWithBadUrl =
+                        certResultDao.getByUrl(urlResult.getUrl());
+                    for (CertificationResultDetailsDTO certResult : certResultsWithBadUrl) {
+                        //get the associated listing
+                        CertifiedProductSummaryDTO associatedListing = null;
+                        try {
+                            associatedListing = cpDao.getSummaryById(certResult.getCertifiedProductId());
+                        } catch (EntityRetrievalException ex) {
+                            LOGGER.info("Could not find associated listing with id " + certResult.getCertifiedProductId());
+                        }
+                        if (associatedListing != null) {
+                            FailedUrlResult urlResultWithError = new FailedUrlResult(urlResult);
+                            if (associatedListing.getAcb() != null) {
+                                urlResultWithError.setAcbName(associatedListing.getAcb().getName());
+                            }
+                            if (associatedListing.getDeveloper() != null) {
+                                DeveloperDTO dev = associatedListing.getDeveloper();
+                                urlResultWithError.setDeveloperName(dev.getName());
+                                if (dev.getContact() != null) {
+                                    urlResultWithError.setContactEmail(dev.getContact().getEmail());
+                                    urlResultWithError.setContactName(dev.getContact().getFullName());
+                                    urlResultWithError.setContactPhone(dev.getContact().getPhoneNumber());
+                                }
+                            }
+                            if (associatedListing.getProduct() != null) {
+                                urlResultWithError.setProductName(associatedListing.getProduct().getName());
+                            }
+                            if (associatedListing.getVersion() != null) {
+                                urlResultWithError.setVersion(associatedListing.getVersion().getVersion());
+                            }
+                            urlResultWithError.setChplProductNumber(associatedListing.getChplProductNumber());
+                            urlResultWithError.setCriteria(certResult.getNumber());
+                            badUrlsToWrite.add(urlResultWithError);
+                        }
+                    }
+                    break;
                 default:
                     break;
                 }
                 i++;
             }
 
-            //sort the bad urls by type so they come out that way in the file
-            //also within each type sort by url
+            //sort the bad urls first by url
+            //and then by type
             Collections.sort(badUrlsToWrite, new Comparator<FailedUrlResult>() {
                 @Override
                 public int compare(final FailedUrlResult o1, final FailedUrlResult o2) {
-                    if (o1.getUrlType().equals(o2.getUrlType())) {
-                        return o1.getUrl().compareTo(o2.getUrl());
+                    if (o1.getUrl().equals(o2.getUrl())) {
+                        return o1.getUrlType().ordinal() - o2.getUrlType().ordinal();
                     }
-                    return o1.getUrlType().ordinal() - o2.getUrlType().ordinal();
+                    return o1.getUrl().compareTo(o2.getUrl());
                 }
             });
 
@@ -197,7 +241,7 @@ public class BrokenUrlReportGenerator extends QuartzJob {
 
     /**
      * Generates a CSV output file with all bad url data.
-     * @param urlResultsToWrite
+     * @param urlResultsToWrite list of failed url data, sorted by url
      * @param reportFilename
      * @return
      */
@@ -215,9 +259,25 @@ public class BrokenUrlReportGenerator extends QuartzJob {
                     new FileOutputStream(temp), Charset.forName("UTF-8").newEncoder());
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
                 csvPrinter.printRecord(getHeaderRow());
-                for (FailedUrlResult urlResult : urlResultsToWrite) {
-                    List<String> rowValue = generateRowValue(urlResult);
-                    csvPrinter.printRecord(rowValue);
+                //urlResultsToWrite must be sorted by url
+                for (int i = 0; i < urlResultsToWrite.size(); i++) {
+                    FailedUrlResult currUrlResult = urlResultsToWrite.get(i);
+                    FailedUrlResult prevUrlResult = null;
+                    if (i > 0) {
+                        prevUrlResult = urlResultsToWrite.get(i-1);
+                    }
+                    List<String> rowValue = null;
+                    if (prevUrlResult == null || !currUrlResult.getUrl().equals(prevUrlResult.getUrl())) {
+                        //write a row with the url data since this url is different than the one before it
+                        rowValue = generateRowValue(currUrlResult, true);
+                    } else {
+                        //write a row with just the acb/atl/developer/listing data since this is for the same url
+                        //as the one before it
+                        rowValue = generateRowValue(currUrlResult, false);
+                    }
+                    if (rowValue != null) {
+                        csvPrinter.printRecord(rowValue);
+                    }
                 }
             } catch (IOException e) {
                 LOGGER.error(e);
@@ -239,8 +299,42 @@ public class BrokenUrlReportGenerator extends QuartzJob {
      * @param urlResult
      * @return
      */
-    private List<String> generateRowValue(final FailedUrlResult urlResult) {
+    private List<String> generateRowValue(final FailedUrlResult urlResult, final boolean firstUrlInGroup) {
         List<String> result = new ArrayList<String>();
+        if (firstUrlInGroup) {
+            result.add(urlResult.getUrl());
+            if (urlResult.getResponseCode() != null) {
+                result.add(urlResult.getResponseCode().toString());
+                try {
+                    HttpStatus httpStatus = HttpStatus.valueOf(urlResult.getResponseCode());
+                    if (httpStatus != null) {
+                        result.add(httpStatus.getReasonPhrase());
+                    } else {
+                        result.add("");
+                    }
+                } catch (IllegalArgumentException ex) {
+                    LOGGER.warn("No HttpStatus object could be found for response code " + urlResult.getResponseCode());
+                    result.add("");
+                }
+            } else {
+                result.add("");
+                result.add("");
+            }
+
+            if (urlResult.getResponseMessage() != null) {
+                result.add(urlResult.getResponseMessage());
+            } else {
+                result.add("");
+            }
+        } else {
+            result.add("");
+            result.add("");
+            result.add("");
+            result.add("");
+        }
+
+        result.add(urlResult.getUrlType().getName());
+
         if (urlResult.getAtlName() != null) {
             result.add(urlResult.getAtlName());
         } else {
@@ -294,29 +388,9 @@ public class BrokenUrlReportGenerator extends QuartzJob {
         } else {
             result.add("");
         }
-        result.add(urlResult.getUrlType().getName());
-        result.add(urlResult.getUrl());
 
-        if (urlResult.getResponseCode() != null) {
-            result.add(urlResult.getResponseCode().toString());
-            try {
-                HttpStatus httpStatus = HttpStatus.valueOf(urlResult.getResponseCode());
-                if (httpStatus != null) {
-                    result.add(httpStatus.getReasonPhrase());
-                } else {
-                    result.add("");
-                }
-            } catch (IllegalArgumentException ex) {
-                LOGGER.warn("No HttpStatus object could be found for response code " + urlResult.getResponseCode());
-                result.add("");
-            }
-        } else {
-            result.add("");
-            result.add("");
-        }
-
-        if (urlResult.getResponseMessage() != null) {
-            result.add(urlResult.getResponseMessage());
+        if (urlResult.getCriteria() != null) {
+            result.add(urlResult.getCriteria());
         } else {
             result.add("");
         }
@@ -346,6 +420,7 @@ public class BrokenUrlReportGenerator extends QuartzJob {
             int brokenMandatoryDisclosureUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.MANDATORY_DISCLOSURE_URL);
             int brokenTestResultsSummaryUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.TEST_RESULTS_SUMMARY);
             int brokenFullUsabilityReportUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.FULL_USABILITY_REPORT);
+            int brokenApiDocumentationUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.API_DOCUMENTATION);
 
             htmlMessage += "<ul>";
             htmlMessage += "<li>" + UrlType.ATL.getName() + ": " + brokenAtlUrls + "</li>";
@@ -354,6 +429,7 @@ public class BrokenUrlReportGenerator extends QuartzJob {
             htmlMessage += "<li>" + UrlType.FULL_USABILITY_REPORT.getName() + ": " + brokenFullUsabilityReportUrls + "</li>";
             htmlMessage += "<li>" + UrlType.MANDATORY_DISCLOSURE_URL.getName() + ": " + brokenMandatoryDisclosureUrls + "</li>";
             htmlMessage += "<li>" + UrlType.TEST_RESULTS_SUMMARY.getName() + ": " + brokenTestResultsSummaryUrls + "</li>";
+            htmlMessage += "<li>" + UrlType.API_DOCUMENTATION.getName() + ": " + brokenApiDocumentationUrls + "</li>";
             htmlMessage += "</ul>";
         }
 

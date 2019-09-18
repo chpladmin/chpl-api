@@ -9,6 +9,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Immutable;
+
+@Immutable
 @Entity
 @Table(name = "certification_result_details")
 public class CertificationResultDetailsEntity {
@@ -57,6 +60,9 @@ public class CertificationResultDetailsEntity {
 
     @Column(name = "privacy_security_framework")
     private String privacySecurityFramework;
+
+    @Column(name = "deleted")
+    private Boolean deleted;
 
     public Long getId() {
         return id;
@@ -158,7 +164,15 @@ public class CertificationResultDetailsEntity {
         return listing;
     }
 
-    public void setListing(CertifiedProductDetailsEntity listing) {
+    public void setListing(final CertifiedProductDetailsEntity listing) {
         this.listing = listing;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
     }
 }

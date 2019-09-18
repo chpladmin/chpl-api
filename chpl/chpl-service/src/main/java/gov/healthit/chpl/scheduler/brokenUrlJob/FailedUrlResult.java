@@ -29,6 +29,7 @@ public class FailedUrlResult {
     private String contactEmail;
     private String contactPhone;
     private String chplProductNumber;
+    private String criteria;
 
     public FailedUrlResult() {
     }
@@ -111,7 +112,7 @@ public class FailedUrlResult {
         return contactName;
     }
 
-    public void setContactName(String contactName) {
+    public void setContactName(final String contactName) {
         this.contactName = contactName;
     }
 
@@ -137,5 +138,13 @@ public class FailedUrlResult {
 
     public void setChplProductNumber(final String chplProductNumber) {
         this.chplProductNumber = chplProductNumber;
+    }
+
+    public String getCriteria() {
+        return criteria;
+    }
+
+    public void setCriteria(final String criteria) {
+        this.criteria = criteria;
     }
 }

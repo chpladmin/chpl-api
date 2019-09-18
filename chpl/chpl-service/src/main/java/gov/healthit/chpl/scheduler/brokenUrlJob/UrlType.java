@@ -9,7 +9,9 @@ public enum UrlType {
     //report_file_location
     TEST_RESULTS_SUMMARY("Test Results Summary"),
     //sed_report_file_location
-    FULL_USABILITY_REPORT("Full Usability Report");
+    FULL_USABILITY_REPORT("Full Usability Report"),
+    //api_documentation
+    API_DOCUMENTATION("API Documentation");
 
     private String name;
 
