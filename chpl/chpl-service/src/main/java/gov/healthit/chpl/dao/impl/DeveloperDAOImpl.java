@@ -3,6 +3,7 @@ package gov.healthit.chpl.dao.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
@@ -603,6 +604,13 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
         return decertifiedDevelopers;
     }
 
+    @Override
+    public List<DeveloperDTO> getByCertificationBodyId(final List<Long> certificationBodyIds) {
+        return getEntitiesByCertificationBodyId(certificationBodyIds).stream()
+                .map(dev -> new DeveloperDTO(dev))
+                .collect(Collectors.<DeveloperDTO> toList());
+    }
+
     private void create(final DeveloperEntity entity) {
         entityManager.persist(entity);
         entityManager.flush();
@@ -729,4 +737,18 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
         }
         return statuses.get(0);
     }
+
+    private List<DeveloperEntity> getEntitiesByCertificationBodyId(final List<Long> certificationBodyIds) {
+        String hql = "SELECT DISTINCT dev "
+                + "FROM CertifiedProductEntity cp "
+                + "JOIN FETCH cp.productVersion pv "
+                + "JOIN FETCH pv.product prod "
+                + "JOIN FETCH prod.developer dev "
+                + "WHERE cp.certificationBody.id IN :certificationBodyIds";
+
+        return entityManager.createQuery(hql, DeveloperEntity.class)
+                .setParameter("certificationBodyIds", certificationBodyIds)
+                .getResultList();
+    }
+
 }

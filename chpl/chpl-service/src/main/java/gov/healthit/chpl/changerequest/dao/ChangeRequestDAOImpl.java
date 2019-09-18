@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
@@ -18,18 +17,10 @@ import gov.healthit.chpl.changerequest.entity.ChangeRequestTypeEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("changeRequestDAO")
 public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDAO {
-
-    private ResourcePermissions resourcePermissions;
-
-    @Autowired
-    public ChangeRequestDAOImpl(final ResourcePermissions resourcePermissions) {
-        this.resourcePermissions = resourcePermissions;
-    }
 
     @Override
     public ChangeRequest create(final ChangeRequest cr) throws EntityRetrievalException {
@@ -46,12 +37,8 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
     }
 
     @Override
-    public List<ChangeRequest> getAllForCurrentUser() throws EntityRetrievalException {
-        List<Long> developers = resourcePermissions.getAllDevelopersForCurrentUser().stream()
-                .map(dev -> dev.getId())
-                .collect(Collectors.<Long> toList());
-
-        return getEntitiesByDevelopers(developers).stream()
+    public List<ChangeRequest> getAll() throws EntityRetrievalException {
+        return getEntities().stream()
                 .map(entity -> ChangeRequestConverter.convert(entity))
                 .map(cr -> {
                     cr.setCurrentStatus(getCurrentStatus(cr.getId()));
@@ -60,6 +47,7 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
                 .collect(Collectors.<ChangeRequest> toList());
     }
 
+    @Override
     public List<ChangeRequest> getByDeveloper(final Long developerId) throws EntityRetrievalException {
         List<Long> developers = new ArrayList<Long>(Arrays.asList(developerId));
 
@@ -106,6 +94,20 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
         List<ChangeRequestEntity> results = entityManager
                 .createQuery(hql, ChangeRequestEntity.class)
                 .setParameter("developerIds", developerIds)
+                .getResultList();
+
+        return results;
+    }
+
+    private List<ChangeRequestEntity> getEntities() throws EntityRetrievalException {
+        String hql = "SELECT DISTINCT cr "
+                + "FROM ChangeRequestEntity cr "
+                + "JOIN FETCH cr.changeRequestType "
+                + "JOIN FETCH cr.developer "
+                + "WHERE cr.deleted = false ";
+
+        List<ChangeRequestEntity> results = entityManager
+                .createQuery(hql, ChangeRequestEntity.class)
                 .getResultList();
 
         return results;
