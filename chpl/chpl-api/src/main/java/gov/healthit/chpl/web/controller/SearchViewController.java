@@ -33,6 +33,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
@@ -114,6 +115,9 @@ public class SearchViewController {
 
     @Autowired
     private SurveillanceReportManager survReportManager;
+    
+    @Autowired
+    private ChangeRequestManager changeRequestManager;
 
     @Autowired private FileUtils fileUtils;
 
@@ -1284,6 +1288,30 @@ public class SearchViewController {
         for (CertificationCriterion criterion : criteria) {
             result.getCriteria().add(criterion);
         }
+        return result;
+    }
+    
+    @ApiOperation(value = "Get all possible change request types in the CHPL")
+    @RequestMapping(value = "/data/change-request-types", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody SearchOption getChangeRequestTypes() {
+        Set<KeyValueModel> data = changeRequestManager.getChangeRequestTypes();
+        SearchOption result = new SearchOption();
+        result.setExpandable(false);
+        result.setData(data);
+        return result;
+    }
+    
+    @ApiOperation(value = "Get all possible change request status types in the CHPL")
+    @RequestMapping(value = "/data/change-request-status-types", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody SearchOption getChangeRequestStatusTypes() {
+        Set<KeyValueModel> data = changeRequestManager.getChangeRequestStatusTypes();
+        SearchOption result = new SearchOption();
+        result.setExpandable(false);
+        result.setData(data);
         return result;
     }
 }

@@ -13,6 +13,7 @@ import gov.healthit.chpl.permissions.domains.activity.GetAnnouncementMetadataAct
 import gov.healthit.chpl.permissions.domains.activity.GetAnnualReportActivityMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetAtlActivityMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetByAcbActionPermissions;
+import gov.healthit.chpl.permissions.domains.activity.GetChangeRequestActivityMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetComplaintActivityMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetPendingListingActivityActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetPendingListingActivityByAcbActionPermissions;
@@ -41,6 +42,7 @@ public class ActivityDomainPermissions extends DomainPermissions {
     public static final String GET_COMPLAINT_METADATA = "GET_COMPLAINT_METADATA";
     public static final String GET_QUARTERLY_REPORT_METADATA = "GET_QUARTERLY_REPORT_METADATA";
     public static final String GET_ANNUAL_REPORT_METADATA = "GET_ANNUAL_REPORT_METADATA";
+    public static final String GET_CHANGE_REQUEST_METADATA = "GET_CHANGE_REQUEST_METADATA";
 
     @Autowired
     public ActivityDomainPermissions(
@@ -60,7 +62,8 @@ public class ActivityDomainPermissions extends DomainPermissions {
             @Qualifier("activityGetAnnouncementMetadataActionPermissions") GetAnnouncementMetadataActionPermissions getAnnouncementMetadataActionPermissions,
             @Qualifier("activityGetComplaintActivityMetadataActionPermissions") GetComplaintActivityMetadataActionPermissions getComplaintActivityMetadataActionPermissions,
             @Qualifier("activityGetQuarterlyReportActivityMetadataActionPermissions") GetQuarterlyReportActivityMetadataActionPermissions getQuarterlyReportActivityMetadataActionPermissions,
-            @Qualifier("activityGetAnnualReportActivityMetadataActionPermissions") GetAnnualReportActivityMetadataActionPermissions getAnnualReportActivityMetadataActionPermissions) {
+            @Qualifier("activityGetAnnualReportActivityMetadataActionPermissions") GetAnnualReportActivityMetadataActionPermissions getAnnualReportActivityMetadataActionPermissions,
+            @Qualifier("activityGetChangeRequestActivityMetadataActionPermissions") GetChangeRequestActivityMetadataActionPermissions getChangeRequestActivityMetadataActionPermissions) {
 
         getActionPermissions().put(GET_BY_ACB, getByAcbActionPermissions);
         getActionPermissions().put(GET_ACB_METADATA, getAcbActivityMetadataActionPermissions);
@@ -79,5 +82,6 @@ public class ActivityDomainPermissions extends DomainPermissions {
         getActionPermissions().put(GET_COMPLAINT_METADATA, getComplaintActivityMetadataActionPermissions);
         getActionPermissions().put(GET_QUARTERLY_REPORT_METADATA, getQuarterlyReportActivityMetadataActionPermissions);
         getActionPermissions().put(GET_ANNUAL_REPORT_METADATA, getAnnualReportActivityMetadataActionPermissions);
+        getActionPermissions().put(GET_CHANGE_REQUEST_METADATA, getChangeRequestActivityMetadataActionPermissions);
     }
 }

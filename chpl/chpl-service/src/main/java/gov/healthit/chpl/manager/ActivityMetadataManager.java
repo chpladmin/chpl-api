@@ -41,7 +41,12 @@ public interface ActivityMetadataManager {
     List<ActivityMetadata> getAnnouncementActivityMetadata(Date startDate, Date endDate) throws IOException;
 
     List<ActivityMetadata> getComplaintActivityMetadata(Date startDate, Date endDate) throws IOException;
+
     List<ActivityMetadata> getQuarterlyReportActivityMetadata(Date startDate, Date endDate) throws IOException;
+
     List<ActivityMetadata> getQuarterlyReportListingActivityMetadata(Date startDate, Date endDate) throws IOException;
+
     List<ActivityMetadata> getAnnualReportActivityMetadata(Date startDate, Date endDate) throws IOException;
+
+    List<ActivityMetadata> getChangeRequestActivityMetadata(Date startDate, Date endDate) throws IOException;
 }

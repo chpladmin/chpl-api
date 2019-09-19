@@ -1,17 +1,20 @@
 package gov.healthit.chpl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.dbunit.ext.postgresql.PostgresqlDataTypeFactory;
 import org.ff4j.FF4j;
 import org.mockito.Mockito;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.ehcache.EhCacheFactoryBean;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
@@ -23,9 +26,11 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -62,10 +67,14 @@ import gov.healthit.chpl.caching.CacheInitializor;
 import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 
 @Configuration
-@Import({ChplTestCacheConfig.class})
+@Import({
+        ChplTestCacheConfig.class
+})
 @EnableCaching
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@PropertySource("classpath:/environment.test.properties")
+@PropertySources({
+        @PropertySource("classpath:/environment.test.properties"),
+})
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableTransactionManagement
 @ComponentScan(basePackages = {
@@ -334,5 +343,14 @@ public class CHPLTestConfig implements EnvironmentAware {
     @Bean
     public FF4j getFF4j() {
         return Mockito.spy(new FF4j());
+    }
+
+    @Bean
+    public PropertyPlaceholderConfigurer propertyPlaceholderConfigurer() throws IOException {
+        final PropertyPlaceholderConfigurer ppc = new PropertyPlaceholderConfigurer();
+        ppc.setLocations(ArrayUtils.addAll(
+                new PathMatchingResourcePatternResolver().getResources("classpath*:lookup.test.properties")));
+
+        return ppc;
     }
 }
