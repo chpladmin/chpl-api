@@ -1,17 +1,20 @@
 package gov.healthit.chpl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.dbunit.ext.postgresql.PostgresqlDataTypeFactory;
 import org.ff4j.FF4j;
 import org.mockito.Mockito;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.ehcache.EhCacheFactoryBean;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
@@ -27,6 +30,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -118,6 +122,7 @@ public class CHPLTestConfig implements EnvironmentAware {
         // dbunit has limited support for postgres enum types so we have to tell
         // it about any enum type names here
         PostgresqlDataTypeFactory factory = new PostgresqlDataTypeFactory() {
+            @Override
             public boolean isEnumType(String sqlTypeName) {
                 if (sqlTypeName.equalsIgnoreCase("attestation")) {
                     return true;
@@ -261,7 +266,7 @@ public class CHPLTestConfig implements EnvironmentAware {
     @Bean
     public BasicLookupStrategy lookupStrategy() throws Exception {
 
-        DataSource datasource = (DataSource) dataSource();// .getObject();
+        DataSource datasource = dataSource();// .getObject();
 
         BasicLookupStrategy bean = new BasicLookupStrategy(datasource, aclCache(), aclAuthorizationStrategyImplAdmin(),
                 consoleAuditLogger());
@@ -271,7 +276,7 @@ public class CHPLTestConfig implements EnvironmentAware {
     @Bean
     public JdbcMutableAclService mutableAclService() throws Exception {
 
-        DataSource datasource = (DataSource) dataSource();
+        DataSource datasource = dataSource();
 
         JdbcMutableAclService bean = new JdbcMutableAclService(datasource, lookupStrategy(), aclCache());
 
@@ -343,4 +348,13 @@ public class CHPLTestConfig implements EnvironmentAware {
     public FF4j ff4j() {
         return Mockito.spy(new FF4j());
     }
+    
+    @Bean
+    public PropertyPlaceholderConfigurer propertyPlaceholderConfigurer() throws IOException {
+        final PropertyPlaceholderConfigurer ppc = new PropertyPlaceholderConfigurer();
+        ppc.setLocations(ArrayUtils.addAll(
+                new PathMatchingResourcePatternResolver().getResources("classpath*:lookup.test.properties")));
+        return ppc;
+    }
+
 }

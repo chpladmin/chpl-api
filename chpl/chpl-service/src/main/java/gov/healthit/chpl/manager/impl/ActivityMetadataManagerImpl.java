@@ -181,7 +181,8 @@ public class ActivityMetadataManagerImpl extends SecuredManager implements Activ
     @Transactional
     public List<ActivityMetadata> getQuarterlyReportListingActivityMetadata(final Date startDate, final Date endDate)
             throws IOException {
-        return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.QUARTERLY_REPORT_LISTING, startDate, endDate);
+        return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.QUARTERLY_REPORT_LISTING, startDate,
+                endDate);
     }
 
     @Override
@@ -193,6 +194,17 @@ public class ActivityMetadataManagerImpl extends SecuredManager implements Activ
     public List<ActivityMetadata> getAnnualReportActivityMetadata(final Date startDate, final Date endDate)
             throws IOException {
         return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.ANNUAL_REPORT, startDate, endDate);
+    }
+
+    @Override
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_CHANGE_REQUEST_METADATA)")
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_CHANGE_REQUEST_METADATA, filterObject)")
+    @Transactional
+    public List<ActivityMetadata> getChangeRequestActivityMetadata(final Date startDate, final Date endDate)
+            throws IOException {
+        return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.CHANGE_REQUEST, startDate, endDate);
     }
 
     private List<ActivityMetadata> getActivityMetadataByConceptWithoutSecurity(final ActivityConcept concept,
