@@ -1,9 +1,14 @@
 package gov.healthit.chpl.changerequest.manager;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.mail.MessagingException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -12,12 +17,15 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestWebsiteDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestWebsite;
 import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.DeveloperManager;
+import gov.healthit.chpl.util.EmailBuilder;
 
 @Component
 public class ChangeRequestWebsiteHelper implements ChangeRequestDetailsHelper<ChangeRequestWebsite> {
@@ -25,13 +33,18 @@ public class ChangeRequestWebsiteHelper implements ChangeRequestDetailsHelper<Ch
     private ChangeRequestWebsiteDAO crWebsiteDAO;
     private DeveloperDAO developerDAO;
     private DeveloperManager developerManager;
+    private UserDeveloperMapDAO userDeveloperMapDAO;
+    private Environment env;
 
     @Autowired
     public ChangeRequestWebsiteHelper(final ChangeRequestWebsiteDAO crWebsiteDAO, final DeveloperDAO developerDAO,
-            final DeveloperManager developerManager) {
+            final DeveloperManager developerManager, final UserDeveloperMapDAO userDeveloperMapDAO,
+            final Environment env) {
         this.crWebsiteDAO = crWebsiteDAO;
         this.developerDAO = developerDAO;
         this.developerManager = developerManager;
+        this.userDeveloperMapDAO = userDeveloperMapDAO;
+        this.env = env;
     }
 
     @Override
@@ -76,9 +89,27 @@ public class ChangeRequestWebsiteHelper implements ChangeRequestDetailsHelper<Ch
         dev.setWebsite(crWebsite.getWebsite());
 
         try {
-            developerManager.update(dev, false);
-        } catch (JsonProcessingException | MissingReasonException | ValidationException e) {
+            DeveloperDTO updatedDeveloper = developerManager.update(dev, false);
+            sendApprovalEmail(updatedDeveloper);
+        } catch (JsonProcessingException | MissingReasonException | ValidationException | MessagingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void sendApprovalEmail(final DeveloperDTO updatedDeveloper) throws MessagingException {
+        new EmailBuilder(env)
+                .recipients(getUsersForDeveloper(updatedDeveloper.getId()).stream()
+                        .map(user -> user.getEmail())
+                        .collect(Collectors.<String> toList()))
+                .subject(env.getProperty("changeRequest.website.approval.subject"))
+                .htmlMessage("changeRequest.website.approval.body")
+                .sendEmail();
+
+    }
+
+    private List<UserDTO> getUsersForDeveloper(final Long developerId) {
+        return userDeveloperMapDAO.getByDeveloperId(developerId).stream()
+                .map(userDeveloperMap -> userDeveloperMap.getUser())
+                .collect(Collectors.<UserDTO> toList());
     }
 }
