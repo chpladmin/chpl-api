@@ -11,6 +11,7 @@ import gov.healthit.chpl.permissions.domains.AnnouncementDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertificationResultsDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions;
+import gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions;
 import gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CorrectiveActionPlanDomainPermissions;
 import gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions;
@@ -55,6 +56,7 @@ public class Permissions {
     public static final String ACTIVITY_METADATA = "ACTIVTY_METADATA";
     public static final String FUZZY_MATCH = "FUZZY_MATCH";
     public static final String ANNOUNCEMENT = "ANNOUNCEMENT";
+    public static final String CHANGE_REQUEST = "CHANGE_REQUEST";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
@@ -79,7 +81,8 @@ public class Permissions {
             final FilterDomainPermissions filterDomainPermissions,
             final ComplaintDomainPermissions complaintDomainPermissions,
             final FuzzyMatchPermissions fuzzyMatchPermissions,
-            final AnnouncementDomainPermissions announcementDomainPermissions) {
+            final AnnouncementDomainPermissions announcementDomainPermissions,
+            final ChangeRequestDomainPermissions changeRequestDomainPermissions) {
 
         domainPermissions.put(PENDING_SURVEILLANCE, pendingSurveillanceDomainPermissions);
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
@@ -103,6 +106,7 @@ public class Permissions {
         domainPermissions.put(COMPLAINT, complaintDomainPermissions);
         domainPermissions.put(FUZZY_MATCH, fuzzyMatchPermissions);
         domainPermissions.put(ANNOUNCEMENT, announcementDomainPermissions);
+        domainPermissions.put(CHANGE_REQUEST, changeRequestDomainPermissions);
     }
 
     public boolean hasAccess(final String domain, final String action) {

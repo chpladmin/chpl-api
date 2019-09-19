@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.task.TaskExecutor;
@@ -50,7 +51,10 @@ import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 @EnableAspectJAutoProxy
 @EnableScheduling
 @EnableCaching
-@PropertySource("classpath:/environment.properties")
+@PropertySources({
+        @PropertySource("classpath:/environment.properties"),
+        @PropertySource("classpath:/lookup.properties"),
+})
 @ComponentScan(basePackages = {
         "gov.healthit.chpl.**"
 })
@@ -180,6 +184,7 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
 
     /**
      * Get a task executor.
+     * 
      * @return TaskExecutor object
      */
     @Bean(name = "jobAsyncDataExecutor")
