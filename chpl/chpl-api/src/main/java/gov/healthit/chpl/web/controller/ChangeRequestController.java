@@ -64,9 +64,6 @@ public class ChangeRequestController {
             throw new NotImplementedException();
         }
 
-        if (!resourcePermissions.isUserRoleDeveloperAdmin()) {
-            throw new NotImplementedException();
-        }
         return changeRequestManager.getAllChangeRequestsForUser();
     }
     
@@ -92,9 +89,6 @@ public class ChangeRequestController {
             throw new NotImplementedException();
         }
 
-        if (!resourcePermissions.isUserRoleDeveloperAdmin()) {
-            throw new NotImplementedException();
-        }
         return changeRequestManager.updateChangeRequest(cr);
     }
     

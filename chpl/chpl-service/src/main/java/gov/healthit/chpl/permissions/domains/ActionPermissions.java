@@ -1,11 +1,14 @@
 package gov.healthit.chpl.permissions.domains;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
@@ -18,6 +21,9 @@ public abstract class ActionPermissions {
 
     @Autowired
     private CertifiedProductDAO certifiedProductDAO;
+
+    @Autowired
+    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
 
     public abstract boolean hasAccess();
 
@@ -73,6 +79,19 @@ public abstract class ActionPermissions {
             }
         }
         return true;
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isCurrentAcbUserAssociatedWithDeveloper(final Long developerId) {
+        List<CertificationBody> developerAcbs = developerCertificationBodyMapDAO
+                .getCertificationBodiesForDeveloper(developerId);
+        List<CertificationBody> userAcbs = resourcePermissions.getAllAcbsForCurrentUser().stream()
+                .map(acb -> new CertificationBody(acb))
+                .collect(Collectors.<CertificationBody> toList());
+
+        return developerAcbs.stream()
+                .anyMatch(developerAcb -> userAcbs.stream()
+                        .anyMatch(userAcb -> userAcb.getId().equals(developerAcb.getId())));
     }
 
     public ResourcePermissions getResourcePermissions() {
