@@ -116,10 +116,15 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
 
     private List<ChangeRequestEntity> getAllEntities()
             throws EntityRetrievalException {
+
         String hql = "SELECT DISTINCT cr "
-                + "FROM ChangeRequestEntity cr "
+                + "FROM ChangeRequestEntity cr  "
                 + "JOIN FETCH cr.changeRequestType "
-                + "JOIN FETCH cr.developer "
+                + "JOIN FETCH cr.developer dev "
+                + "JOIN FETCH dev.address "
+                + "JOIN FETCH dev.contact "
+                + "JOIN FETCH dev.statusEvents statuses "
+                + "JOIN FETCH statuses.developerStatus "
                 + "WHERE cr.deleted = false ";
 
         List<ChangeRequestEntity> results = entityManager
@@ -149,6 +154,7 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
     private ChangeRequestStatus getCurrentStatus(final Long changeRequestId) {
         String hql = "SELECT crStatus "
                 + "FROM ChangeRequestStatusEntity crStatus "
+                + "JOIN FETCH crStatus.changeRequestStatusType "
                 + "WHERE crStatus.deleted = false "
                 + "AND crStatus.changeRequest.id = :changeRequestId "
                 + "ORDER BY crStatus.statusChangeDate DESC";

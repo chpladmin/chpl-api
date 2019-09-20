@@ -1,10 +1,8 @@
 package gov.healthit.chpl.scheduler.job;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -40,7 +38,6 @@ import gov.healthit.chpl.util.Util;
  */
 public class PendingChangeRequestEmailJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("pendingChangeRequestEmailJobLogger");
-    private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
     private Properties props;
 
     @Autowired
@@ -52,16 +49,16 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
     @Autowired
     private Environment env;
 
-    private static final int DEVELOPER_NAME = 1;
-    private static final int DEVELOPER_CONTACT_NAME = 2;
-    private static final int DEVELOPER_CONTACT_EMAIL = 3;
-    private static final int DEVELOPER_CONTACT_PHONE_NUMBER = 4;
-    private static final int CHANGE_REQUEST_TYPE = 5;
-    private static final int CHANGE_REQUEST_STATUS = 6;
-    private static final int CHANGE_REQUEST_COMMENT = 7;
-    private static final int CHANGE_REQUEST_DATE = 8;
-    private static final int CHANGE_REQUEST_DAYS_OPEN = 9;
-    private static final int ONC_ACB_START = 10;
+    private static final int DEVELOPER_NAME = 0;
+    private static final int DEVELOPER_CONTACT_NAME = 1;
+    private static final int DEVELOPER_CONTACT_EMAIL = 2;
+    private static final int DEVELOPER_CONTACT_PHONE_NUMBER = 3;
+    private static final int CHANGE_REQUEST_TYPE = 4;
+    private static final int CHANGE_REQUEST_STATUS = 5;
+    private static final int CHANGE_REQUEST_COMMENT = 6;
+    private static final int CHANGE_REQUEST_DATE = 7;
+    private static final int CHANGE_REQUEST_DAYS_OPEN = 8;
+    private static final int ONC_ACB_START = 9;
     private static final int NUM_REPORT_COLS = 9;
 
     private static final long MILLIS_PER_DAY = 1000 * 60 * 60 * 24;
@@ -72,7 +69,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
      */
     public PendingChangeRequestEmailJob() throws Exception {
         super();
-        getProperties();
+        props = getProperties();
     }
 
     @Override
@@ -202,7 +199,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
 
         // Calculated time open
         Date changeRequestDate = activity.getCurrentStatus().getStatusChangeDate();
-        double daysOpen = Math.floor((currentDate.getTime() - changeRequestDate.getTime() / MILLIS_PER_DAY));
+        double daysOpen = Math.floor(((currentDate.getTime() - changeRequestDate.getTime()) / MILLIS_PER_DAY));
         currRow.set(CHANGE_REQUEST_DAYS_OPEN, Double.toString(daysOpen));
 
         // Relevancy for ONC-ACBs
@@ -219,22 +216,4 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         }
         return row;
     }
-
-//    private Properties loadProperties() throws IOException {
-//        InputStream in =
-//                PendingChangeRequestEmailJob.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
-//        if (in == null) {
-//            props = null;
-//            throw new FileNotFoundException("Environment Properties File not found in class path.");
-//        } else {
-//            props = new Properties();
-//            props.load(in);
-//            in.close();
-//        }
-//        return props;
-//    }
-
-//    private void setChangeRequestDAO(final ChangeRequestDAO changeRequestDAO) {
-//        this.changeRequestDAO = changeRequestDAO;
-//    }
 }
