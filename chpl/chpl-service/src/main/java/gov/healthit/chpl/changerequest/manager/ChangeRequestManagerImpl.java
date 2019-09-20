@@ -150,8 +150,8 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
         ChangeRequest crFromDb = getChangeRequest(cr.getId());
         crStatusHelper.updateChangeRequestStatus(crFromDb, cr);
         updateChangeRequestDetails(crFromDb, cr.getDetails());
-        executeChangeRequest(crFromDb);
         ChangeRequest newCr = getChangeRequest(cr.getId());
+        executeChangeRequest(newCr);
 
         if (!newCr.getCurrentStatus().getChangeRequestStatusType().getId()
                 .equals(crFromDb.getCurrentStatus().getChangeRequestStatusType().getId())) {

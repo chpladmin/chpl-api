@@ -102,7 +102,8 @@ public class ChangeRequestWebsiteHelper implements ChangeRequestDetailsHelper<Ch
                         .map(user -> user.getEmail())
                         .collect(Collectors.<String> toList()))
                 .subject(env.getProperty("changeRequest.website.approval.subject"))
-                .htmlMessage("changeRequest.website.approval.body")
+                .htmlMessage(String.format(env.getProperty("changeRequest.website.approval.body"),
+                        updatedDeveloper.getWebsite()))
                 .sendEmail();
 
     }
