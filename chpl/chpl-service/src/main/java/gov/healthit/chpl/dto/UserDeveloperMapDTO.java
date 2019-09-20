@@ -15,7 +15,6 @@ public class UserDeveloperMapDTO implements Serializable {
     public UserDeveloperMapDTO(final UserDeveloperMapEntity entity) {
         this.id = entity.getId();
         this.developer = new DeveloperDTO(entity.getDeveloper());
-        this.user = new UserDTO(entity.getUser());
     }
 
     public UserDeveloperMapDTO() {

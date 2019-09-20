@@ -52,11 +52,9 @@ public class ResourcePermissions {
     @Autowired
     public ResourcePermissions(final PermissionEvaluator permissionEvaluator,
             final UserCertificationBodyMapDAO userCertificationBodyMapDAO,
-            final UserDeveloperMapDAO userDeveloperMapDAO,
-            final CertificationBodyDAO acbDAO,
+            final UserDeveloperMapDAO userDeveloperMapDAO, final CertificationBodyDAO acbDAO,
             final UserTestingLabMapDAO userTestingLabMapDAO, final TestingLabDAO atlDAO,
-            final ErrorMessageUtil errorMessageUtil, final UserDAO userDAO,
-            final DeveloperDAO developerDAO) {
+            final ErrorMessageUtil errorMessageUtil, final UserDAO userDAO, final DeveloperDAO developerDAO) {
         this.permissionEvaluator = permissionEvaluator;
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
         this.acbDAO = acbDAO;
@@ -313,8 +311,7 @@ public class ResourcePermissions {
     @Transactional(readOnly = true)
     public boolean hasPermissionOnUser(final UserDTO user) {
         if (isUserRoleAdmin() || isUserRoleOnc()
-                || permissionEvaluator.hasPermission(AuthUtil.getCurrentUser(), user,
-                        BasePermission.ADMINISTRATION)) {
+                || permissionEvaluator.hasPermission(AuthUtil.getCurrentUser(), user, BasePermission.ADMINISTRATION)) {
             return true;
         } else if (isUserRoleAcbAdmin()) {
             // is the user being checked on any of the same ACB(s) that the

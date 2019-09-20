@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
@@ -27,12 +28,20 @@ import gov.healthit.chpl.entity.job.JobTypeEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.UserMapper;
 
 @Repository("jobDAO")
 public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
     private static final Logger LOGGER = LogManager.getLogger(JobDAOImpl.class);
+
+    private MessageSource messageSource;
+    private UserMapper userMapper;
+
     @Autowired
-    MessageSource messageSource;
+    public JobDAOImpl(@Lazy final UserMapper userMapper, final MessageSource messageSource) {
+        this.userMapper = userMapper;
+        this.messageSource = messageSource;
+    }
 
     @Override
     @Transactional
@@ -79,7 +88,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
                 LOGGER.error(msg, ex);
                 throw new EntityCreationException(msg);
             }
-            return new JobDTO(entity);
+            return mapEntityToDto(entity);
         }
     }
 
@@ -179,7 +188,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
         entity.setLastModifiedDate(new Date());
         entityManager.merge(entity);
         entityManager.flush();
-        return new JobDTO(entity);
+        return mapEntityToDto(entity);
     }
 
     @Override
@@ -224,7 +233,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
         JobDTO dto = null;
         JobEntity entity = getEntityById(id);
         if (entity != null) {
-            dto = new JobDTO(entity);
+            dto = mapEntityToDto(entity);
         }
         return dto;
     }
@@ -244,7 +253,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 
         List<JobDTO> dtos = new ArrayList<JobDTO>();
         for (JobEntity entity : entities) {
-            JobDTO dto = new JobDTO(entity);
+            JobDTO dto = mapEntityToDto(entity);
             dtos.add(dto);
         }
         return dtos;
@@ -257,7 +266,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
         List<JobDTO> dtos = new ArrayList<JobDTO>();
 
         for (JobEntity entity : entities) {
-            JobDTO dto = new JobDTO(entity);
+            JobDTO dto = mapEntityToDto(entity);
             dtos.add(dto);
         }
         return dtos;
@@ -288,7 +297,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
         List<JobEntity> entities = query.getResultList();
         List<JobDTO> dtos = new ArrayList<JobDTO>();
         for (JobEntity entity : entities) {
-            JobDTO dto = new JobDTO(entity);
+            JobDTO dto = mapEntityToDto(entity);
             dtos.add(dto);
         }
         return dtos;
@@ -307,7 +316,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
                 + JobStatusType.Complete.toString() + "')", JobEntity.class).getResultList();
         List<JobDTO> dtos = new ArrayList<JobDTO>();
         for (JobEntity entity : entities) {
-            JobDTO dto = new JobDTO(entity);
+            JobDTO dto = mapEntityToDto(entity);
             dtos.add(dto);
         }
         return dtos;
@@ -357,5 +366,11 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
         }
 
         return entity;
+    }
+
+    private JobDTO mapEntityToDto(JobEntity entity) {
+        JobDTO dto = new JobDTO(entity);
+        dto.setUser(userMapper.from(entity.getUser()));
+        return dto;
     }
 }

@@ -14,10 +14,13 @@ import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dao.UserTestingLabMapDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
@@ -25,8 +28,10 @@ import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.dto.UserDeveloperMapDTO;
 import gov.healthit.chpl.dto.UserTestingLabMapDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 
 @Component
@@ -38,17 +43,19 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
     private UserDeveloperMapDAO userDeveloperMapDAO;
     private UserDAO userDAO;
     private MutableAclService mutableAclService;
+    private ActivityManager activityManager;
 
     @Autowired
     public UserPermissionsManagerImpl(final UserCertificationBodyMapDAO userCertificationBodyMapDAO,
             final UserTestingLabMapDAO userTestingLabMapDAO, final UserDeveloperMapDAO userDeveloperMapDAO,
-            final UserDAO userDAO, final MutableAclService mutableAclService) {
+            final UserDAO userDAO, final MutableAclService mutableAclService, final ActivityManager activityManager) {
 
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
         this.userTestingLabMapDAO = userTestingLabMapDAO;
         this.userDeveloperMapDAO = userDeveloperMapDAO;
         this.userDAO = userDAO;
         this.mutableAclService = mutableAclService;
+        this.activityManager = activityManager;
     }
 
     @Override
@@ -74,9 +81,11 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).USER_PERMISSIONS, "
             + "T(gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions).DELETE_ACB, #acb)")
-    public void deleteAcbPermission(final CertificationBodyDTO acb, final Long userId) throws EntityRetrievalException {
+    public void deleteAcbPermission(final CertificationBodyDTO acb, final Long userId)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         // Get the UserCertBodyMapDTO
         List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByUserId(userId);
+        UserDTO originalUser = getUser(userId);
 
         if (dtos == null || dtos.size() == 0) {
             LOGGER.error("Could not locate the UserCertificationBodyMap object for Userid: " + userId + ", ACB: "
@@ -92,6 +101,10 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
 
         for (UserCertificationBodyMapDTO dto : dtos) {
             userCertificationBodyMapDAO.delete(dto);
+            UserDTO updatedUser = getUser(userId);
+            String message = "Removed " + dto.getCertificationBody().getName() + " from "
+                    + dto.getUser().getSubjectName();
+            activityManager.addActivity(ActivityConcept.USER, userId, message, originalUser, updatedUser);
         }
 
         LOGGER.info("Deleted ACB: " + acb.getId() + " for user: " + userId);
@@ -121,9 +134,11 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).USER_PERMISSIONS, "
             + "T(gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions).DELETE_ATL, #atl)")
-    public void deleteAtlPermission(final TestingLabDTO atl, final Long userId) throws EntityRetrievalException {
+    public void deleteAtlPermission(final TestingLabDTO atl, final Long userId)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         // Get the UserTestingLabMapDTO
         List<UserTestingLabMapDTO> dtos = userTestingLabMapDAO.getByUserId(userId);
+        UserDTO originalUser = getUser(userId);
 
         if (dtos == null || dtos.size() == 0) {
             LOGGER.error(
@@ -139,6 +154,10 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
 
         for (UserTestingLabMapDTO dto : dtos) {
             userTestingLabMapDAO.delete(dto);
+            UserDTO updatedUser = getUser(userId);
+            String message = "Removed " + dto.getTestingLab().getName() + " from "
+                    + dto.getUser().getSubjectName();
+            activityManager.addActivity(ActivityConcept.USER, userId, message, originalUser, updatedUser);
         }
 
         LOGGER.info("Deleted ATL: " + atl.getId() + " for user: " + userId);
@@ -169,8 +188,9 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).USER_PERMISSIONS, "
             + "T(gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions).DELETE_DEVELOPER, #developerId)")
     public void deleteDeveloperPermission(final Long developerId, final Long userId)
-            throws EntityRetrievalException {
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByUserId(userId);
+        UserDTO originalUser = getUser(userId);
 
         if (dtos == null || dtos.size() == 0) {
             LOGGER.error("Could not locate the UserDeveloperMapDTO object for Userid: " + userId + ", Developer: "
@@ -186,6 +206,10 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
 
         for (UserDeveloperMapDTO dto : dtos) {
             userDeveloperMapDAO.delete(dto);
+            UserDTO updatedUser = getUser(userId);
+            String message = "Removed " + dto.getDeveloper().getName() + " from "
+                    + dto.getUser().getSubjectName();
+            activityManager.addActivity(ActivityConcept.USER, userId, message, originalUser, updatedUser);
         }
 
         LOGGER.info("Deleted Developer: " + developerId + " for user: " + userId);
@@ -233,7 +257,8 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
         List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByUserId(userId);
 
         if (dtos == null || dtos.size() == 0) {
-            LOGGER.error("Could not locate the UserDeveloperMap object for Userid: " + userId + ", Developer: " + developerId);
+            LOGGER.error("Could not locate the UserDeveloperMap object for Userid: " + userId + ", Developer: "
+                    + developerId);
         }
 
         CollectionUtils.filter(dtos, new Predicate() {
@@ -247,10 +272,10 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
         return dtos.size() > 0;
     }
 
-    private void removeUserIfPermissionless(final Long userId) {
+    private void removeUserIfPermissionless(final Long userId)
+            throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
         if (!doesUserHaveAnyPermissions(userId)) {
-            UserDTO toDelete = new UserDTO();
-            toDelete.setId(userId);
+            UserDTO toDelete = getUser(userId);
             try {
                 // We can't call the user manager delete method here because
                 // that only lets role onc and role admin remove the user.
@@ -260,12 +285,15 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
                 // Just delete the user here.
 
                 // remove all ACLs for this user
-                //should only be one - for themselves
+                // should only be one - for themselves
                 ObjectIdentity oid = new ObjectIdentityImpl(UserDTO.class, userId);
                 mutableAclService.deleteAcl(oid, false);
 
                 userDAO.delete(userId);
                 LOGGER.info("User " + userId + " had no additional permissions. The user was deleted.");
+
+                String message = "Deleted user " + toDelete.getSubjectName();
+                activityManager.addActivity(ActivityConcept.USER, userId, message, toDelete, null);
             } catch (UserRetrievalException ex) {
                 LOGGER.error("Could not delete the user " + userId, ex);
             }
@@ -280,5 +308,13 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
         return (acbPermissions != null && acbPermissions.size() > 0)
                 || (atlPermissions != null && atlPermissions.size() > 0)
                 || (devPermissions != null && devPermissions.size() > 0);
+    }
+
+    private UserDTO getUser(final Long userId) throws EntityRetrievalException {
+        try {
+            return userDAO.getById(userId);
+        } catch (UserRetrievalException e) {
+            throw new EntityRetrievalException(e);
+        }
     }
 }

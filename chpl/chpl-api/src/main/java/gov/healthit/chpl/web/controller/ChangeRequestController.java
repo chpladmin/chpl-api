@@ -63,7 +63,6 @@ public class ChangeRequestController {
         if (!ff4j.check(FeatureList.CHANGE_REQUEST)) {
             throw new NotImplementedException();
         }
-
         return changeRequestManager.getAllChangeRequestsForUser();
     }
     

@@ -8,6 +8,7 @@ import javax.persistence.Query;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -20,10 +21,17 @@ import gov.healthit.chpl.entity.surveillance.report.SurveillanceProcessTypeEntit
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
 
 @Repository("quarterlyReportSurveillanceMapDao")
 public class PrivilegedSurveillanceDAOImpl extends BaseDAOImpl implements PrivilegedSurveillanceDAO {
     private static final Logger LOGGER = LogManager.getLogger(PrivilegedSurveillanceDAOImpl.class);
+    private ChplProductNumberUtil chplProductNumberUtil;
+
+    @Autowired
+    public PrivilegedSurveillanceDAOImpl(final ChplProductNumberUtil chplProductNumberUtil) {
+        this.chplProductNumberUtil = chplProductNumberUtil;
+    }
 
     private static final String MAP_HQL = "SELECT map "
             + " FROM QuarterlyReportSurveillanceMapEntity map "
@@ -125,6 +133,9 @@ public class PrivilegedSurveillanceDAOImpl extends BaseDAOImpl implements Privil
         if (entity == null) {
             return null;
         }
+        String chplProductNumber = chplProductNumberUtil
+                .generate(entity.getSurveillance().getCertifiedProductId());
+        entity.getSurveillance().setChplProductNumber(chplProductNumber);
         return new PrivilegedSurveillanceDTO(entity);
     }
 
@@ -226,7 +237,14 @@ public class PrivilegedSurveillanceDAOImpl extends BaseDAOImpl implements Privil
         entity.setLastModifiedDate(new Date());
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         update(entity);
-        return new PrivilegedSurveillanceDTO(entity);
+
+        PrivilegedSurveillanceDTO result = null;
+        try {
+            result = getById(entity.getId());
+        } catch (EntityRetrievalException ex) {
+            LOGGER.error("Cannot find updated entity with id " + entity.getId(), ex);
+        }
+        return result;
     }
 
     @Override
