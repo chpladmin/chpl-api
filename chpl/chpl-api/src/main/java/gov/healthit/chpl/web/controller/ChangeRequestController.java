@@ -63,10 +63,6 @@ public class ChangeRequestController {
         if (!ff4j.check(FeatureList.CHANGE_REQUEST)) {
             throw new NotImplementedException();
         }
-
-        if (!resourcePermissions.isUserRoleDeveloperAdmin()) {
-            throw new NotImplementedException();
-        }
         return changeRequestManager.getAllChangeRequestsForUser();
     }
     
@@ -92,9 +88,6 @@ public class ChangeRequestController {
             throw new NotImplementedException();
         }
 
-        if (!resourcePermissions.isUserRoleDeveloperAdmin()) {
-            throw new NotImplementedException();
-        }
         return changeRequestManager.updateChangeRequest(cr);
     }
     

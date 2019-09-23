@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -128,19 +129,10 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
 
     @Override
     @Transactional(readOnly = true)
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
-            + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).GET_ALL)")
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
+            + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).GET_ALL, filterObject)")
     public List<ChangeRequest> getAllChangeRequestsForUser() throws EntityRetrievalException {
-        List<ChangeRequest> requests = changeRequestDAO.getAllForCurrentUser().stream()
-                .map(cr -> {
-                    try {
-                        return populateChangeRequestData(cr);
-                    } catch (EntityRetrievalException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-                .collect(Collectors.<ChangeRequest> toList());
-        return requests;
+        return changeRequestDAO.getAll();
     }
 
     @Override
@@ -175,9 +167,6 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
 
     private ChangeRequest populateChangeRequestData(final ChangeRequest cr) throws EntityRetrievalException {
         cr.setDetails(getChangeRequestDetails(cr));
-        cr.setStatuses(crStatusHelper.getStatuses(cr.getId()));
-        cr.setCertificationBodies(
-                crCertificationBodyHelper.getCertificationBodiesByDeveloper(cr.getDeveloper()));
         return cr;
     }
 

@@ -19,13 +19,13 @@ import gov.healthit.chpl.changerequest.entity.ChangeRequestTypeEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("changeRequestDAO")
 public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDAO {
 
-    private ResourcePermissions resourcePermissions;
+    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
+    private ChangeRequestStatusDAO changeRequestStatusDAO;
 
     @Value("${changerequest.status.pendingacbaction}")
     private Long pendingAcbAction;
@@ -35,8 +35,10 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
 
 
     @Autowired
-    public ChangeRequestDAOImpl(final ResourcePermissions resourcePermissions) {
-        this.resourcePermissions = resourcePermissions;
+    public ChangeRequestDAOImpl(final DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO,
+            final ChangeRequestStatusDAO changeRequestStatusDAO) {
+        this.developerCertificationBodyMapDAO = developerCertificationBodyMapDAO;
+        this.changeRequestStatusDAO = changeRequestStatusDAO;
     }
 
     @Override
@@ -50,19 +52,21 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
     public ChangeRequest get(final Long changeRequestId) throws EntityRetrievalException {
         ChangeRequest cr = ChangeRequestConverter.convert(getEntityById(changeRequestId));
         cr.setCurrentStatus(getCurrentStatus(cr.getId()));
+        cr.setStatuses(changeRequestStatusDAO.getByChangeRequestId(cr.getId()));
+        cr.setCertificationBodies(developerCertificationBodyMapDAO
+                .getCertificationBodiesForDeveloper(cr.getDeveloper().getDeveloperId()));
         return cr;
     }
 
     @Override
-    public List<ChangeRequest> getAllForCurrentUser() throws EntityRetrievalException {
-        List<Long> developers = resourcePermissions.getAllDevelopersForCurrentUser().stream()
-                .map(dev -> dev.getId())
-                .collect(Collectors.<Long>toList());
-
-        return getEntitiesByDevelopers(developers).stream()
+    public List<ChangeRequest> getAll() throws EntityRetrievalException {
+        return getEntities().stream()
                 .map(entity -> ChangeRequestConverter.convert(entity))
                 .map(cr -> {
                     cr.setCurrentStatus(getCurrentStatus(cr.getId()));
+                    cr.setStatuses(changeRequestStatusDAO.getByChangeRequestId(cr.getId()));
+                    cr.setCertificationBodies(developerCertificationBodyMapDAO
+                            .getCertificationBodiesForDeveloper(cr.getDeveloper().getDeveloperId()));
                     return cr;
                 })
                 .collect(Collectors.<ChangeRequest>toList());
@@ -74,12 +78,16 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
                 .map(entity -> ChangeRequestConverter.convert(entity))
                 .map(cr -> {
                     cr.setCurrentStatus(getCurrentStatus(cr.getId()));
+                    cr.setStatuses(changeRequestStatusDAO.getByChangeRequestId(cr.getId()));
+                    cr.setCertificationBodies(developerCertificationBodyMapDAO
+                            .getCertificationBodiesForDeveloper(cr.getDeveloper().getDeveloperId()));
                     return cr;
                 })
                 .filter(cr -> getUpdatableStatuses().contains(cr.getCurrentStatus().getChangeRequestStatusType().getId()))
                 .collect(Collectors.<ChangeRequest>toList());
     }
 
+    @Override
     public List<ChangeRequest> getByDeveloper(final Long developerId) throws EntityRetrievalException {
         List<Long> developers = new ArrayList<Long>(Arrays.asList(developerId));
 
@@ -87,6 +95,9 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
                 .map(entity -> ChangeRequestConverter.convert(entity))
                 .map(cr -> {
                     cr.setCurrentStatus(getCurrentStatus(cr.getId()));
+                    cr.setStatuses(changeRequestStatusDAO.getByChangeRequestId(cr.getId()));
+                    cr.setCertificationBodies(developerCertificationBodyMapDAO
+                            .getCertificationBodiesForDeveloper(cr.getDeveloper().getDeveloperId()));
                     return cr;
                 })
                 .collect(Collectors.<ChangeRequest>toList());
@@ -146,6 +157,20 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
         List<ChangeRequestEntity> results = entityManager
                 .createQuery(hql, ChangeRequestEntity.class)
                 .setParameter("developerIds", developerIds)
+                .getResultList();
+
+        return results;
+    }
+
+    private List<ChangeRequestEntity> getEntities() throws EntityRetrievalException {
+        String hql = "SELECT DISTINCT cr "
+                + "FROM ChangeRequestEntity cr "
+                + "JOIN FETCH cr.changeRequestType "
+                + "JOIN FETCH cr.developer "
+                + "WHERE cr.deleted = false ";
+
+        List<ChangeRequestEntity> results = entityManager
+                .createQuery(hql, ChangeRequestEntity.class)
                 .getResultList();
 
         return results;
