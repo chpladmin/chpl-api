@@ -17,4 +17,5 @@ public interface ChangeRequestDetailsHelper<T> {
 
     void execute(final ChangeRequest cr) throws EntityRetrievalException, EntityCreationException;
 
+    void sendEmailForUpdatedStatus(final ChangeRequest cr);
 }

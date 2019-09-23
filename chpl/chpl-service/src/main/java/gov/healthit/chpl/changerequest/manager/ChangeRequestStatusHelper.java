@@ -61,11 +61,17 @@ public class ChangeRequestStatusHelper {
         if (statusTypeIdFromDB != null && statusTypeIdFromCaller != null
                 && statusTypeIdFromDB != statusTypeIdFromCaller
                 && isStatusChangeValid(statusTypeIdFromDB, statusTypeIdFromCaller)) {
-            return saveNewStatusForChangeRequest(crFromDb, statusTypeIdFromCaller,
+            ChangeRequestStatus crStatus = saveNewStatusForChangeRequest(crFromDb, statusTypeIdFromCaller,
                     crFromCaller.getCurrentStatus().getComment());
+            postStatusChange(crStatus);
+            return crStatus;
         } else {
             return null;
         }
+    }
+
+    private void postStatusChange(ChangeRequestStatus status) {
+
     }
 
     private boolean isStatusChangeValid(final Long previousStatusTypeId, final Long newStatusTypeId) {
