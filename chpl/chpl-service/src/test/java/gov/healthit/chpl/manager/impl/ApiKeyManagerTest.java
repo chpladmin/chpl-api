@@ -35,11 +35,15 @@ import gov.healthit.chpl.manager.ApiKeyManager;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class,
+        DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class,
+        DbUnitTestExecutionListener.class
+})
 @DatabaseSetup("classpath:data/testData.xml")
 public class ApiKeyManagerTest extends TestCase {
 
@@ -235,11 +239,11 @@ public class ApiKeyManagerTest extends TestCase {
                 toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime());
         toCreate.setApiKey(apiKey);
 
-        Integer countAll = apiKeyManager.findAll().size();
+        Integer countAll = apiKeyManager.findAll(true).size();
 
         ApiKeyDTO created = apiKeyManager.createKey(toCreate);
 
-        Integer newCount = apiKeyManager.findAll().size();
+        Integer newCount = apiKeyManager.findAll(true).size();
 
         assertEquals((int) newCount, (countAll + 1));
         apiKeyManager.deleteKey(created.getId());
@@ -352,15 +356,15 @@ public class ApiKeyManagerTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
-    /** Description: Tests that the
-     * getApiKeyActivity(String apiKeyFilter, Integer pageNumber, Integer pageSize,
-     *  boolean dateAscending, Long startDateMilli, Long endDateMilli)
-     * returns a list of activities for the page equivalent to the pageSize.
-     * Expected Result: number of activities in apiKeyActivityList matches the pageSize
-     * Assumptions:
-     * Pre-existing data in openchpl_test DB is there per the
-     *  \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
-     * */
+    /**
+     * Description: Tests that the getApiKeyActivity(String apiKeyFilter,
+     * Integer pageNumber, Integer pageSize, boolean dateAscending, Long
+     * startDateMilli, Long endDateMilli) returns a list of activities for the
+     * page equivalent to the pageSize. Expected Result: number of activities in
+     * apiKeyActivityList matches the pageSize Assumptions: Pre-existing data in
+     * openchpl_test DB is there per the
+     * \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
+     */
     @Transactional
     @Rollback(true)
     @Test
@@ -409,14 +413,14 @@ public class ApiKeyManagerTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
-    /** Description: Tests the apiKeyFilter parameter in the
-     * getApiKeyActivity(String apiKeyFilter, Integer pageNumber, Integer pageSize,
-     *  boolean dateAscending, Long startDateMilli, Long endDateMilli)
-     * method when passing in 'validAPIKey'.
-     * Expected Result: Should return only API key activities with an API Key that matches the apiKeyFilter
-     * Assumptions:
-     * Pre-existing data in openchpl_test DB is there per the
-     *  \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
+    /**
+     * Description: Tests the apiKeyFilter parameter in the
+     * getApiKeyActivity(String apiKeyFilter, Integer pageNumber, Integer
+     * pageSize, boolean dateAscending, Long startDateMilli, Long endDateMilli)
+     * method when passing in 'validAPIKey'. Expected Result: Should return only
+     * API key activities with an API Key that matches the apiKeyFilter
+     * Assumptions: Pre-existing data in openchpl_test DB is there per the
+     * \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
      */
     @Transactional
     @Rollback(true)
@@ -426,7 +430,10 @@ public class ApiKeyManagerTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         // Simulate API inputs
-        String apiKeyFilter = "88f231cbf2ae45810b1177f5f4ddf297"; // Valid API Key in openchpl_test DB
+        String apiKeyFilter = "88f231cbf2ae45810b1177f5f4ddf297"; // Valid API
+                                                                  // Key in
+                                                                  // openchpl_test
+                                                                  // DB
         Integer pageNumber = 0;
         Integer pageSize = 100;
         boolean dateAscending = true;
@@ -443,14 +450,15 @@ public class ApiKeyManagerTest extends TestCase {
         }
     }
 
-    /** Description: Tests the apiKeyFilter parameter in the
-     * getApiKeyActivity(String apiKeyFilter, Integer pageNumber, Integer pageSize, boolean dateAscending,
-     *  Long startDateMilli, Long endDateMilli)
-     * method when passing in '!validAPIKey'.
-     * Expected Result: Should return only API key activities with an API Key that does NOT match the apiKeyFilter
-     * Assumptions:
-     * Pre-existing data in openchpl_test DB is there per the
-     *  \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
+    /**
+     * Description: Tests the apiKeyFilter parameter in the
+     * getApiKeyActivity(String apiKeyFilter, Integer pageNumber, Integer
+     * pageSize, boolean dateAscending, Long startDateMilli, Long endDateMilli)
+     * method when passing in '!validAPIKey'. Expected Result: Should return
+     * only API key activities with an API Key that does NOT match the
+     * apiKeyFilter Assumptions: Pre-existing data in openchpl_test DB is there
+     * per the
+     * \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
      */
     @Transactional
     @Rollback(true)
@@ -460,7 +468,10 @@ public class ApiKeyManagerTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         // Simulate API inputs
-        String apiKeyFilter = "!12909a978483dfb8ecd0596c98ae9094"; // Valid API Key in openchpl_test DB
+        String apiKeyFilter = "!12909a978483dfb8ecd0596c98ae9094"; // Valid API
+                                                                   // Key in
+                                                                   // openchpl_test
+                                                                   // DB
         Integer pageNumber = 0;
         Integer pageSize = 100;
         boolean dateAscending = true;
@@ -478,14 +489,14 @@ public class ApiKeyManagerTest extends TestCase {
         }
     }
 
-    /** Description: Tests the apiKeyFilter parameter in the
-     * getApiKeyActivity(String apiKeyFilter, Integer pageNumber, Integer pageSize,
-     *  boolean dateAscending, Long startDateMilli, Long endDateMilli)
-     * method when passing in '' (blank).
-     * Expected Result: Should return all API key activities
-     * Assumptions:
-     * Pre-existing data in openchpl_test DB is there per the
-     *  \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
+    /**
+     * Description: Tests the apiKeyFilter parameter in the
+     * getApiKeyActivity(String apiKeyFilter, Integer pageNumber, Integer
+     * pageSize, boolean dateAscending, Long startDateMilli, Long endDateMilli)
+     * method when passing in '' (blank). Expected Result: Should return all API
+     * key activities Assumptions: Pre-existing data in openchpl_test DB is
+     * there per the
+     * \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
      */
     @Transactional
     @Rollback(true)
@@ -506,13 +517,13 @@ public class ApiKeyManagerTest extends TestCase {
                 startDateMilli, endDateMilli).size() == apiKeyActivityDAOImpl.getAllEntities().size());
     }
 
-    /** Description: Tests the apiKeyFilter parameter in the
-     * getApiKeyActivity(String apiKeyFilter, Integer pageNumber, Integer pageSize,
-     *  boolean dateAscending, Long startDateMilli, Long endDateMilli)
-     * method when passing in null.
-     * Expected Result: Should return all API key activities
-     * Assumptions:
-     * Pre-existing data in openchpl_test DB is there per the
+    /**
+     * Description: Tests the apiKeyFilter parameter in the
+     * getApiKeyActivity(String apiKeyFilter, Integer pageNumber, Integer
+     * pageSize, boolean dateAscending, Long startDateMilli, Long endDateMilli)
+     * method when passing in null. Expected Result: Should return all API key
+     * activities Assumptions: Pre-existing data in openchpl_test DB is there
+     * per the
      * \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
      */
     @Transactional
@@ -534,16 +545,15 @@ public class ApiKeyManagerTest extends TestCase {
                 startDateMilli, endDateMilli).size() == apiKeyActivityDAOImpl.getAllEntities().size());
     }
 
-    /** Description: Tests the apiKeyFilter parameter in the
-     * getApiKeyActivity(String apiKeyFilter, Integer pageNumber, Integer pageSize,
-     *  boolean dateAscending, Long startDateMilli, Long endDateMilli)
-     * method when passing in '!' without an API key.
-     * Expected Result: All API key activity results
-     * Assumptions:
-     * Assumes there are less than 100 API key activity entities.
-     *  If there were more, then pageSize would need to be increased
-     * Pre-existing data in openchpl_test DB is there per the
-     *  \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
+    /**
+     * Description: Tests the apiKeyFilter parameter in the
+     * getApiKeyActivity(String apiKeyFilter, Integer pageNumber, Integer
+     * pageSize, boolean dateAscending, Long startDateMilli, Long endDateMilli)
+     * method when passing in '!' without an API key. Expected Result: All API
+     * key activity results Assumptions: Assumes there are less than 100 API key
+     * activity entities. If there were more, then pageSize would need to be
+     * increased Pre-existing data in openchpl_test DB is there per the
+     * \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
      */
     @Transactional
     @Rollback(true)
@@ -571,15 +581,15 @@ public class ApiKeyManagerTest extends TestCase {
                 numActivitiesReturnedFromGetApiKeyActivity == totalNumberOfApiKeyActivityEntities);
     }
 
-    /** Description: Tests the dateAscending parameter in the
-     * getApiKeyActivity(String apiKeyFilter, Integer pageNumber, Integer pageSize, boolean dateAscending,
-     *  Long startDateMilli, Long endDateMilli)
-     * method when passing in &dateAscending=true.
-     * Expected Result: All API key activities are returned in ascending order based on creation_date
-     *  (oldest date to newest date)
-     * Assumptions:
-     * Pre-existing data in openchpl_test DB is there per the
-     *  \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
+    /**
+     * Description: Tests the dateAscending parameter in the
+     * getApiKeyActivity(String apiKeyFilter, Integer pageNumber, Integer
+     * pageSize, boolean dateAscending, Long startDateMilli, Long endDateMilli)
+     * method when passing in &dateAscending=true. Expected Result: All API key
+     * activities are returned in ascending order based on creation_date (oldest
+     * date to newest date) Assumptions: Pre-existing data in openchpl_test DB
+     * is there per the
+     * \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
      */
     @Transactional
     @Rollback(true)
@@ -614,15 +624,15 @@ public class ApiKeyManagerTest extends TestCase {
         }
     }
 
-    /** Description: Tests the dateAscending parameter in the
-     * getApiKeyActivity(String apiKeyFilter, Integer pageNumber, Integer pageSize, boolean dateAscending,
-     *  Long startDateMilli, Long endDateMilli)
-     * method when passing in &dateAscending=false.
-     * Expected Result: All API key activities are returned in descending order based on creation_date
-     *  (newest date to oldest date)
-     * Assumptions:
-     * Pre-existing data in openchpl_test DB is there per the
-     *  \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
+    /**
+     * Description: Tests the dateAscending parameter in the
+     * getApiKeyActivity(String apiKeyFilter, Integer pageNumber, Integer
+     * pageSize, boolean dateAscending, Long startDateMilli, Long endDateMilli)
+     * method when passing in &dateAscending=false. Expected Result: All API key
+     * activities are returned in descending order based on creation_date
+     * (newest date to oldest date) Assumptions: Pre-existing data in
+     * openchpl_test DB is there per the
+     * \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
      */
     @Transactional
     @Rollback(true)
@@ -655,15 +665,16 @@ public class ApiKeyManagerTest extends TestCase {
         }
     }
 
-    /** Description: Tests the startDate parameter in the
-     * getApiKeyActivity(String apiKeyFilter, Integer pageNumber, Integer pageSize, boolean dateAscending,
-     *  Long startDateMilli, Long endDateMilli)
-     * method when passing in &startDate=(value in milli of an API key activity creation_date where
-     *  an activity with an older creation_date exists).
-     * Expected Result: Only API key activities are returned that have a creation_date >= startDate
-     * Assumptions:
-     * Pre-existing data in openchpl_test DB is there per the
-     *  \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
+    /**
+     * Description: Tests the startDate parameter in the
+     * getApiKeyActivity(String apiKeyFilter, Integer pageNumber, Integer
+     * pageSize, boolean dateAscending, Long startDateMilli, Long endDateMilli)
+     * method when passing in &startDate=(value in milli of an API key activity
+     * creation_date where an activity with an older creation_date exists).
+     * Expected Result: Only API key activities are returned that have a
+     * creation_date >= startDate Assumptions: Pre-existing data in
+     * openchpl_test DB is there per the
+     * \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
      */
     @Transactional
     @Rollback(true)
@@ -695,15 +706,15 @@ public class ApiKeyManagerTest extends TestCase {
         }
     }
 
-    /** Description: Tests the startDate parameter in the
-     * getApiKeyActivity(String apiKeyFilter, Integer pageNumber, Integer pageSize, boolean dateAscending,
-     *  Long startDateMilli, Long endDateMilli)
-     * method when passing in &startDate=(value in milli of an API key activity creation_date)
-     *  and &endDate = same value as startDate.
-     * Expected Result: Only API key activities are returned that have a creation_date >= startDate
-     * Assumptions:
-     * Pre-existing data in openchpl_test DB is there per the
-     *  \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
+    /**
+     * Description: Tests the startDate parameter in the
+     * getApiKeyActivity(String apiKeyFilter, Integer pageNumber, Integer
+     * pageSize, boolean dateAscending, Long startDateMilli, Long endDateMilli)
+     * method when passing in &startDate=(value in milli of an API key activity
+     * creation_date) and &endDate = same value as startDate. Expected Result:
+     * Only API key activities are returned that have a creation_date >=
+     * startDate Assumptions: Pre-existing data in openchpl_test DB is there per
+     * the \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
      */
     @Transactional
     @Rollback(true)
@@ -736,16 +747,16 @@ public class ApiKeyManagerTest extends TestCase {
         }
     }
 
-    /** Description: Tests the endDate parameter in the
-     * getApiKeyActivity(String apiKeyFilter, Integer pageNumber, Integer pageSize, boolean dateAscending,
-     *  Long startDateMilli, Long endDateMilli)
-     * method when passing in &endDate=(value in milli of an API key activity creation_date where
-     *  there are other API keys with an earlier creation_date).
-     * Expected Result: Only API key activities are returned that have a creation_date <= endDate
-     * Assumptions:
-     * An API key activity exists with creation_date <= the value of endDateMilli
-     * Pre-existing data in openchpl_test DB is there per the
-     *  \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
+    /**
+     * Description: Tests the endDate parameter in the getApiKeyActivity(String
+     * apiKeyFilter, Integer pageNumber, Integer pageSize, boolean
+     * dateAscending, Long startDateMilli, Long endDateMilli) method when
+     * passing in &endDate=(value in milli of an API key activity creation_date
+     * where there are other API keys with an earlier creation_date). Expected
+     * Result: Only API key activities are returned that have a creation_date <=
+     * endDate Assumptions: An API key activity exists with creation_date <= the
+     * value of endDateMilli Pre-existing data in openchpl_test DB is there per
+     * the \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
      */
     @Transactional
     @Rollback(true)
@@ -775,15 +786,15 @@ public class ApiKeyManagerTest extends TestCase {
         }
     }
 
-    /** Description: Tests the pageNumber parameter in the
-     * getApiKeyActivity(String apiKeyFilter, Integer pageNumber, Integer pageSize, boolean dateAscending,
-     *  Long startDateMilli, Long endDateMilli)
-     * method when passing in &pageNumber=2 and &pageSize = 1.
-     * Expected Result: Returns a new api key activity for each page
-     * Assumptions:
-     * An API key activity exists with creation_date <= the value of endDateMilli
+    /**
+     * Description: Tests the pageNumber parameter in the
+     * getApiKeyActivity(String apiKeyFilter, Integer pageNumber, Integer
+     * pageSize, boolean dateAscending, Long startDateMilli, Long endDateMilli)
+     * method when passing in &pageNumber=2 and &pageSize = 1. Expected Result:
+     * Returns a new api key activity for each page Assumptions: An API key
+     * activity exists with creation_date <= the value of endDateMilli
      * Pre-existing data in openchpl_test DB is there per the
-     *  \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
+     * \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
      */
     @Transactional
     @Rollback(true)
@@ -863,39 +874,48 @@ public class ApiKeyManagerTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
     //
-    ///* Gets the oldest or newest API key activity based on creation_date
-    //     * If isOldest = true, returns the oldest API key activity; if false, returns the newest API key activity
-    //     * Returns the ApiKeyActivityEntity
-    //     */
-    //    private ApiKeyActivityEntity getNewestOrOldestApiKeyActivityByCreationDate(boolean isOldest) {
-    //        String sql = "FROM ApiKeyActivityEntity WHERE (NOT deleted = true) ORDER BY creationDate ";
-    //        if(isOldest){
-    //            sql += "ASC";
-    //        }
-    //        else{
-    //            sql += "DESC";
-    //        }
-    //        Query query = entityManager.createQuery
-    //                (sql, ApiKeyActivityEntity.class);
-    //        query.setMaxResults(1);
-    //        ApiKeyActivityEntity apiKeyActivityEntity = (gov.healthit.chpl.entity.ApiKeyActivityEntity)
+    /// * Gets the oldest or newest API key activity based on creation_date
+    // * If isOldest = true, returns the oldest API key activity; if false,
+    // returns the newest API key activity
+    // * Returns the ApiKeyActivityEntity
+    // */
+    // private ApiKeyActivityEntity
+    // getNewestOrOldestApiKeyActivityByCreationDate(boolean isOldest) {
+    // String sql = "FROM ApiKeyActivityEntity WHERE (NOT deleted = true) ORDER
+    // BY creationDate ";
+    // if(isOldest){
+    // sql += "ASC";
+    // }
+    // else{
+    // sql += "DESC";
+    // }
+    // Query query = entityManager.createQuery
+    // (sql, ApiKeyActivityEntity.class);
+    // query.setMaxResults(1);
+    // ApiKeyActivityEntity apiKeyActivityEntity =
+    // (gov.healthit.chpl.entity.ApiKeyActivityEntity)
     // query.getSingleResult();
-    //        return apiKeyActivityEntity;
-    //    }
+    // return apiKeyActivityEntity;
+    // }
     //
-    //    /* Gets an API key activity entity from the database with a creation_date that is not the oldest or newest
-    //     * Returns the API key activity entity
-    //     * Assumes there must be at least 3 api key activities in testData.xml
-    //     */
-    //    private ApiKeyActivityEntity getAnApiKeyActivityByCreationDateThatIsNotNewestOrOldest(){
-    //        String sql = "FROM ApiKeyActivityEntity WHERE (NOT deleted = true) ORDER BY creationDate ASC";
-    //        Query query = entityManager.createQuery
-    //                (sql, ApiKeyActivityEntity.class);
-    //        List<ApiKeyActivityEntity> ApiKeyActivityEntityList = query.getResultList();
-    //        Assert.assertTrue("There should be a list of API key activity entitites returned from the database,
-    //but there are only " + ApiKeyActivityEntityList.size(),
-    //                ApiKeyActivityEntityList.size() > 3);
-    //        return ApiKeyActivityEntityList.get(3);
-    //    }
+    // /* Gets an API key activity entity from the database with a creation_date
+    // that is not the oldest or newest
+    // * Returns the API key activity entity
+    // * Assumes there must be at least 3 api key activities in testData.xml
+    // */
+    // private ApiKeyActivityEntity
+    // getAnApiKeyActivityByCreationDateThatIsNotNewestOrOldest(){
+    // String sql = "FROM ApiKeyActivityEntity WHERE (NOT deleted = true) ORDER
+    // BY creationDate ASC";
+    // Query query = entityManager.createQuery
+    // (sql, ApiKeyActivityEntity.class);
+    // List<ApiKeyActivityEntity> ApiKeyActivityEntityList =
+    // query.getResultList();
+    // Assert.assertTrue("There should be a list of API key activity entitites
+    // returned from the database,
+    // but there are only " + ApiKeyActivityEntityList.size(),
+    // ApiKeyActivityEntityList.size() > 3);
+    // return ApiKeyActivityEntityList.get(3);
+    // }
     //
 }

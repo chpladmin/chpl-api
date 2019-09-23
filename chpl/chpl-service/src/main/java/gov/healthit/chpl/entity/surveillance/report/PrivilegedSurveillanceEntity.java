@@ -24,7 +24,7 @@ import gov.healthit.chpl.entity.surveillance.SurveillanceTypeEntity;
 
 @Entity
 @Immutable
-@Table(name = "surveillance")
+@Table(name = "surveillance_basic")
 public class PrivilegedSurveillanceEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,6 +52,12 @@ public class PrivilegedSurveillanceEntity {
 
     @Column(name = "randomized_sites_used")
     private Integer numRandomizedSites;
+
+    @Column(name = "open_nonconformity_count")
+    private Integer numOpenNonconformities;
+
+    @Column(name = "closed_nonconformity_count")
+    private Integer numClosedNonconformities;
 
     @Column(name = "user_permission_id")
     private Long userPermissionId;
@@ -151,5 +157,21 @@ public class PrivilegedSurveillanceEntity {
 
     public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public Integer getNumOpenNonconformities() {
+        return numOpenNonconformities;
+    }
+
+    public void setNumOpenNonconformities(final Integer numOpenNonconformities) {
+        this.numOpenNonconformities = numOpenNonconformities;
+    }
+
+    public Integer getNumClosedNonconformities() {
+        return numClosedNonconformities;
+    }
+
+    public void setNumClosedNonconformities(final Integer numClosedNonconformities) {
+        this.numClosedNonconformities = numClosedNonconformities;
     }
 }

@@ -4,6 +4,7 @@ import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.AnnouncementActivityMetadata;
 import gov.healthit.chpl.domain.activity.AnnualReportActivityMetadata;
 import gov.healthit.chpl.domain.activity.CertificationBodyActivityMetadata;
+import gov.healthit.chpl.domain.activity.ChangeRequestActivityMetadata;
 import gov.healthit.chpl.domain.activity.ComplaintActivityMetadata;
 import gov.healthit.chpl.domain.activity.CorrectiveActionPlanActivityMetadata;
 import gov.healthit.chpl.domain.activity.DeveloperActivityMetadata;
@@ -101,6 +102,8 @@ public abstract class ActivityMetadataBuilder {
             break;
         case ANNUAL_REPORT:
             metadata = new AnnualReportActivityMetadata();
+        case CHANGE_REQUEST:
+            metadata = new ChangeRequestActivityMetadata();
         default:
             break;
         }

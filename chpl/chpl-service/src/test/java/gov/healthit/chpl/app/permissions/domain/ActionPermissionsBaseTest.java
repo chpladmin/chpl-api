@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import gov.healthit.chpl.TestingUsers;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
@@ -29,6 +30,10 @@ public abstract class ActionPermissionsBaseTest extends TestingUsers {
 
     public abstract void hasAccess_Anon() throws Exception;
 
+    public void hasAccess_Developer() throws Exception {
+        // Do nothing - just Override if necessary
+    }
+
     public List<CertificationBodyDTO> getAllAcbForUser(Long... acbIds) {
         List<CertificationBodyDTO> dtos = new ArrayList<CertificationBodyDTO>();
 
@@ -38,6 +43,17 @@ public abstract class ActionPermissionsBaseTest extends TestingUsers {
             dtos.add(dto);
         }
 
+        return dtos;
+    }
+
+    public List<DeveloperDTO> getAllDeveloperForUser(Long... developerIds) {
+        List<DeveloperDTO> dtos = new ArrayList<DeveloperDTO>();
+
+        for (Long acbId : developerIds) {
+            DeveloperDTO dto = new DeveloperDTO();
+            dto.setId(acbId);
+            dtos.add(dto);
+        }
         return dtos;
     }
 

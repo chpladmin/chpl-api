@@ -8,6 +8,7 @@ import java.sql.Types;
 import java.util.Properties;
 
 import org.hibernate.HibernateException;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.ParameterizedType;
 import org.hibernate.usertype.UserType;
 
@@ -20,6 +21,27 @@ public abstract class PostgresEnumType implements UserType, ParameterizedType {
 
     public abstract Object nullSafeGet(ResultSet rs, String[] names, Object owner)
             throws HibernateException, SQLException;
+
+    @Override
+    public Object nullSafeGet(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner)
+            throws HibernateException, SQLException {
+        return nullSafeGet(rs, names, owner);
+    }
+
+    @Override
+    public void nullSafeSet(PreparedStatement st, Object value, int index, SharedSessionContractImplementor session)
+            throws HibernateException, SQLException {
+        if (value == null) {
+            st.setNull(index, Types.OTHER);
+        } else {
+            // previously used setString, but this causes postgresql to bark
+            // about incompatible types.
+            // now using setObject passing in the java type for the postgres
+            // enum object
+            // st.setString(index,((Enum) value).name());
+            st.setObject(index, ((Enum) value), Types.OTHER);
+        }
+    }
 
     public void setParameterValues(final Properties parameters) {
         String enumClassName = parameters.getProperty("enumClassName");
@@ -47,19 +69,6 @@ public abstract class PostgresEnumType implements UserType, ParameterizedType {
 
     public int hashCode(Object x) throws HibernateException {
         return x.hashCode();
-    }
-
-    public void nullSafeSet(PreparedStatement st, Object value, int index) throws HibernateException, SQLException {
-        if (value == null) {
-            st.setNull(index, Types.OTHER);
-        } else {
-            // previously used setString, but this causes postgresql to bark
-            // about incompatible types.
-            // now using setObject passing in the java type for the postgres
-            // enum object
-            // st.setString(index,((Enum) value).name());
-            st.setObject(index, ((Enum) value), Types.OTHER);
-        }
     }
 
     public Object deepCopy(Object value) throws HibernateException {

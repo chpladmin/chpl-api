@@ -25,7 +25,7 @@ public class AnnualReportBuilderXlsx {
     @Autowired
     public AnnualReportBuilderXlsx(final SurveillanceReportManager reportManager,
             final ListWorksheetBuilder listWorksheetBuilder,
-            final ReportInfoWorksheetBuilder reportInfoWorksheetBuilder,
+            final AnnualReportInfoWorksheetBuilder reportInfoWorksheetBuilder,
             final ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesWorksheetBuilder,
             final ComplaintsWorksheetBuilder complaintsWorksheetBuilder,
             final SurveillanceSummaryWorksheetBuilder survSummaryWorksheetBuilder,
@@ -71,8 +71,8 @@ public class AnnualReportBuilderXlsx {
             reportInfoWorksheetBuilder.buildWorksheet(workbook, quarterlyReports);
             activitiesAndOutcomesWorksheetBuilder.buildWorksheet(workbook, quarterlyReports);
             complaintsWorksheetBuilder.buildWorksheet(workbook, quarterlyReports);
+            survSummaryWorksheetBuilder.buildWorksheet(workbook, quarterlyReports);
         }
-        survSummaryWorksheetBuilder.buildWorksheet(workbook, quarterlyReports);
         survExprienceWorksheetBuilder.buildWorksheet(workbook, annualReport);
 
         //hide the ListSheet

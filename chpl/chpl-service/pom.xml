@@ -43,39 +43,28 @@
             <artifactId>spring-context-support</artifactId>
             <version>${org.springframework.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
             <version>4.0.0.RELEASE</version>
         </dependency>
-
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>3.6.3.Final</version>
+            <version>5.4.4.Final</version>
             <scope>compile</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-entitymanager</artifactId>
-            <version>3.6.3.Final</version>
-            <scope>compile</scope>
-        </dependency>
-
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20090211</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.hibernate.javax.persistence</groupId>
-            <artifactId>hibernate-jpa-2.0-api</artifactId>
-            <version>1.0.1.Final</version>
-        </dependency>
+            <artifactId>hibernate-jpa-2.1-api</artifactId>
+            <version>1.0.2.Final</version>
+         </dependency>
 
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -181,9 +170,9 @@
         </dependency>
 
         <dependency>
-            <groupId>postgresql</groupId>
+            <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>9.1-901-1.jdbc4</version>
+            <version>42.2.6</version>
         </dependency>
 
         <dependency>
@@ -514,45 +503,6 @@
         </plugins>
         <!-- </pluginManagement> -->
     </build>
-
-    <profiles>
-        <profile>
-            <id>environment-specific</id>
-            <activation>
-                <property>
-                    <name>env</name>
-                </property>
-            </activation>
-
-            <build>
-                <plugins>
-                    <!-- this plugin copies the correct resource into the jar for the environment -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <version>2.7</version>
-                        <executions>
-                            <execution>
-                                <id>copy-resources</id>
-                                <phase>validate</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-                                    <resources>
-                                        <resource>
-                                            <directory>../chpl-resources/src/main/resources-${env}</directory>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 
     <reporting>
         <plugins>

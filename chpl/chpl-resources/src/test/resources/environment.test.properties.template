@@ -16,7 +16,8 @@ cacheInitializeTimeoutSecs=300
 
 testDbUser=openchpl
 testDbPassword=
-testDbServer=localhost/openchpl_test
+testDbServer=localhost
+testDbDatabase=openchpl_test
 persistenceUnitName=openchpl-test
 questionableActivityEmail=test@email.com
 questionableActivityThresholdDays=30

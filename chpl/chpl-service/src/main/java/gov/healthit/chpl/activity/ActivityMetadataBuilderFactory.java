@@ -28,6 +28,7 @@ public class ActivityMetadataBuilderFactory {
     private ComplaintActivityMetadataBuilder complaintActivityMetadataBuilder;
     private QuarterlyReportActivityMetadataBuilder quarterlyReportActivityMetadataBuilder;
     private AnnualReportActivityMetadataBuilder annualReportActivityMetadataBuilder;
+    private ChangeRequestActivityMetadataBuilder changeRequestActivityMetadataBuilder;
 
     @Autowired
     public ActivityMetadataBuilderFactory(
@@ -44,7 +45,8 @@ public class ActivityMetadataBuilderFactory {
             @Qualifier("pendingSurveillanceActivityMetadataBuilder") final PendingSurveillanceActivityMetadataBuilder pendingSurveillanceActivityMetadataBuilder,
             @Qualifier("complaintActivityMetadataBuilder") final ComplaintActivityMetadataBuilder complaintActivityMetadataBuilder,
             @Qualifier("quarterlyReportActivityMetadataBuilder") final QuarterlyReportActivityMetadataBuilder quarterlyReportActivityMetadataBuilder,
-            @Qualifier("annualReportActivityMetadataBuilder") final  AnnualReportActivityMetadataBuilder annualReportActivityMetadataBuilder) {
+            @Qualifier("annualReportActivityMetadataBuilder") final AnnualReportActivityMetadataBuilder annualReportActivityMetadataBuilder,
+            @Qualifier("changeRequestActivityMetadataBuilder") final ChangeRequestActivityMetadataBuilder changeRequestActivityMetadataBuilder) {
         this.listingBuilder = listingBuilder;
         this.developerBuilder = developerBuilder;
         this.productBuilder = productBuilder;
@@ -59,6 +61,7 @@ public class ActivityMetadataBuilderFactory {
         this.complaintActivityMetadataBuilder = complaintActivityMetadataBuilder;
         this.quarterlyReportActivityMetadataBuilder = quarterlyReportActivityMetadataBuilder;
         this.annualReportActivityMetadataBuilder = annualReportActivityMetadataBuilder;
+        this.changeRequestActivityMetadataBuilder = changeRequestActivityMetadataBuilder;
     }
 
     /**
@@ -114,6 +117,9 @@ public class ActivityMetadataBuilderFactory {
             break;
         case ANNUAL_REPORT:
             builder = annualReportActivityMetadataBuilder;
+            break;
+        case CHANGE_REQUEST:
+            builder = changeRequestActivityMetadataBuilder;
             break;
         default:
             break;

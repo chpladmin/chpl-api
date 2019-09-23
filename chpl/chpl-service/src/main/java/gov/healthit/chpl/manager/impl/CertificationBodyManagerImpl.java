@@ -81,9 +81,6 @@ public class CertificationBodyManagerImpl extends SecuredManager implements Cert
         // Create the ACB itself
         CertificationBodyDTO result = certificationBodyDao.create(acb);
 
-        // Grant the current principal administrative permission to the ACB
-        userPermissionsManager.addAcbPermission(result, AuthUtil.getCurrentUser().getId());
-
         LOGGER.debug("Created acb " + result + " and granted admin permission to recipient "
                 + gov.healthit.chpl.util.AuthUtil.getUsername());
 

@@ -14,10 +14,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.util.Util;
 
 /**
  * Certification body mapping to database.
+ * 
  * @author kekey
  *
  */
@@ -155,6 +157,17 @@ public class CertificationBodyEntity implements Serializable {
 
     public final void setRetirementDate(final Date retirementDate) {
         this.retirementDate = retirementDate;
+    }
+
+    public static CertificationBodyEntity getNewAcbEntity(CertificationBody acb) {
+        CertificationBodyEntity entity = new CertificationBodyEntity();
+        entity.setId(acb.getId());
+        entity.setAcbCode(acb.getAcbCode());
+        entity.setName(acb.getName());
+        entity.setWebsite(acb.getWebsite());
+        entity.setRetired(acb.isRetired());
+        entity.setRetirementDate(acb.getRetirementDate());
+        return entity;
     }
 
     @Override

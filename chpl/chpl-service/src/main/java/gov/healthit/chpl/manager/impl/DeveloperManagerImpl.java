@@ -43,6 +43,7 @@ import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventPair;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -177,6 +178,15 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
     @Transactional(readOnly = true)
     public DeveloperDTO getById(final Long id) throws EntityRetrievalException {
         return getById(id, false);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
+            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).GET_ALL_USERS, #devId)")
+    public List<UserDTO> getAllUsersOnDeveloper(final Long devId) throws EntityRetrievalException {
+        DeveloperDTO dev = getById(devId);
+        return resourcePermissions.getAllUsersOnDeveloper(dev);
     }
 
     @Override

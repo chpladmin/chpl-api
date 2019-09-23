@@ -1,13 +1,13 @@
 package gov.healthit.chpl.dao.impl;
 
-import gov.healthit.chpl.util.AuthUtil;
-import gov.healthit.chpl.util.ErrorMessageUtil;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
+
+import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class BaseDAOImpl {
     public static final String SCHEMA_NAME = "openchpl";
@@ -23,6 +23,10 @@ public class BaseDAOImpl {
 
     public void setEntityManager(final EntityManager entityManager) {
         this.entityManager = entityManager;
+    }
+
+    public Session getSession() {
+        return getEntityManager().unwrap(Session.class);
     }
 
     public Long getUserId(final Long defaultUserID) {

@@ -8,8 +8,9 @@ import java.util.Map;
 
 import javax.persistence.Query;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
@@ -20,20 +21,29 @@ import gov.healthit.chpl.entity.ActivityConceptEntity;
 import gov.healthit.chpl.entity.ActivityEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.UserMapper;
 
 /**
- * Data access for Activity. Generally activity should only
- * be created and retrieved and not changed in any way once inserted.
+ * Data access for Activity. Generally activity should only be created and
+ * retrieved and not changed in any way once inserted.
+ * 
  * @author kekey
  *
  */
 @Repository("activityDAO")
 public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 
+    private UserMapper userMapper;
+
+    @Autowired
+    public ActivityDAOImpl(@Lazy final UserMapper userMapper) {
+        this.userMapper = userMapper;
+    }
+
     @Override
     public ActivityDTO create(final ActivityDTO dto) throws EntityCreationException, EntityRetrievalException {
 
-        //find the activity concept id for this concept
+        // find the activity concept id for this concept
         Query conceptIdQuery = entityManager.createQuery("SELECT ac "
                 + "FROM ActivityConceptEntity ac "
                 + "WHERE ac.concept = :conceptName");
@@ -44,7 +54,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
         }
         Long conceptId = conceptResults.get(0).getId();
 
-        //insert the activity
+        // insert the activity
         ActivityEntity entity = new ActivityEntity();
         entity.setId(dto.getId());
         entity.setDescription(dto.getDescription());
@@ -65,7 +75,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 
         ActivityDTO result = null;
         if (entity != null) {
-            result = new ActivityDTO(entity);
+            result = mapEntityToDto(entity);
         }
         return result;
     }
@@ -76,7 +86,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
         ActivityEntity entity = getEntityById(id);
         ActivityDTO dto = null;
         if (entity != null) {
-            dto = new ActivityDTO(entity);
+            dto = mapEntityToDto(entity);
         }
         return dto;
     }
@@ -89,7 +99,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
         List<ActivityDTO> activities = new ArrayList<>();
 
         for (ActivityEntity entity : entities) {
-            ActivityDTO result = new ActivityDTO(entity);
+            ActivityDTO result = mapEntityToDto(entity);
             activities.add(result);
         }
         return activities;
@@ -102,7 +112,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
         List<ActivityDTO> activities = new ArrayList<>();
 
         for (ActivityEntity entity : entities) {
-            ActivityDTO result = new ActivityDTO(entity);
+            ActivityDTO result = mapEntityToDto(entity);
             activities.add(result);
         }
         return activities;
@@ -119,7 +129,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
         List<ActivityDTO> results = new ArrayList<ActivityDTO>();
         List<ActivityEntity> entities = query.getResultList();
         for (ActivityEntity entity : entities) {
-            ActivityDTO result = new ActivityDTO(entity);
+            ActivityDTO result = mapEntityToDto(entity);
             results.add(result);
         }
         return results;
@@ -138,7 +148,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
         List<ActivityDTO> results = new ArrayList<ActivityDTO>();
         List<ActivityEntity> entities = query.getResultList();
         for (ActivityEntity entity : entities) {
-            ActivityDTO result = new ActivityDTO(entity);
+            ActivityDTO result = mapEntityToDto(entity);
             results.add(result);
         }
         return results;
@@ -157,7 +167,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 
         List<ActivityDTO> results = new ArrayList<ActivityDTO>();
         for (ActivityEntity entity : entities) {
-            ActivityDTO result = new ActivityDTO(entity);
+            ActivityDTO result = mapEntityToDto(entity);
             results.add(result);
         }
         return results;
@@ -176,7 +186,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 
         List<ActivityDTO> results = new ArrayList<ActivityDTO>();
         for (ActivityEntity entity : entities) {
-            ActivityDTO result = new ActivityDTO(entity);
+            ActivityDTO result = mapEntityToDto(entity);
             results.add(result);
         }
         return results;
@@ -188,7 +198,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
         Query query = entityManager.createNamedQuery("getPendingListingActivityByAcbIdsAndDate",
                 ActivityEntity.class);
         query.setParameter("conceptName", ActivityConcept.PENDING_CERTIFIED_PRODUCT.name());
-        //parameters need to be strings
+        // parameters need to be strings
         List<String> acbIdParams = new ArrayList<String>();
         for (CertificationBodyDTO acb : pendingListingAcbs) {
             acbIdParams.add(acb.getId().toString());
@@ -200,7 +210,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
         List<ActivityDTO> results = new ArrayList<ActivityDTO>();
         List<ActivityEntity> entities = query.getResultList();
         for (ActivityEntity entity : entities) {
-            ActivityDTO result = new ActivityDTO(entity);
+            ActivityDTO result = mapEntityToDto(entity);
             results.add(result);
         }
         return results;
@@ -214,7 +224,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 
         List<ActivityDTO> results = new ArrayList<ActivityDTO>();
         for (ActivityEntity entity : entities) {
-            ActivityDTO result = new ActivityDTO(entity);
+            ActivityDTO result = mapEntityToDto(entity);
             results.add(result);
         }
         return results;
@@ -227,7 +237,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 
         List<ActivityDTO> results = new ArrayList<ActivityDTO>();
         for (ActivityEntity entity : entities) {
-            ActivityDTO result = new ActivityDTO(entity);
+            ActivityDTO result = mapEntityToDto(entity);
             results.add(result);
         }
         return results;
@@ -240,7 +250,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
         List<ActivityDTO> activities = new ArrayList<>();
 
         for (ActivityEntity entity : entities) {
-            ActivityDTO result = new ActivityDTO(entity);
+            ActivityDTO result = mapEntityToDto(entity);
             activities.add(result);
         }
         return activities;
@@ -255,7 +265,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 
         for (ActivityEntity entity : entities) {
 
-            ActivityDTO result = new ActivityDTO(entity);
+            ActivityDTO result = mapEntityToDto(entity);
             Long userId = result.getLastModifiedUser();
             if (userId != null) {
                 if (activityByUser.containsKey(userId)) {
@@ -295,11 +305,11 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
     private List<ActivityEntity> getEntitiesByObjectIds(final List<Long> objectIds,
             final ActivityConcept concept, final Date startDate, final Date endDate) {
         String queryStr = "SELECT ae "
-            + "FROM ActivityEntity ae "
-            + "JOIN FETCH ae.concept ac "
-            + "LEFT OUTER JOIN FETCH ae.user "
-            + "WHERE ae.activityObjectId IN (:objectIds) "
-            + "AND ac.concept = :conceptName ";
+                + "FROM ActivityEntity ae "
+                + "JOIN FETCH ae.concept ac "
+                + "LEFT OUTER JOIN FETCH ae.user "
+                + "WHERE ae.activityObjectId IN (:objectIds) "
+                + "AND ac.concept = :conceptName ";
         if (startDate != null) {
             queryStr += "AND (ae.activityDate >= :startDate) ";
         }
@@ -428,4 +438,11 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
         return result;
     }
 
+    private ActivityDTO mapEntityToDto(ActivityEntity entity) {
+        ActivityDTO activity = new ActivityDTO(entity);
+        if (entity.getUser() != null) {
+            activity.setUser(userMapper.from(entity.getUser()));
+        }
+        return activity;
+    }
 }

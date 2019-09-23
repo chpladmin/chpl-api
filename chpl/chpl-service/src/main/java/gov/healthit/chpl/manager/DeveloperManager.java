@@ -10,6 +10,7 @@ import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.DeveloperTransparency;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.MissingReasonException;
@@ -23,6 +24,8 @@ public interface DeveloperManager {
     DeveloperDTO getById(Long id) throws EntityRetrievalException;
     DeveloperDTO getById(Long id, boolean allowDeleted)
             throws EntityRetrievalException;
+
+    List<UserDTO> getAllUsersOnDeveloper(Long devId) throws EntityRetrievalException;
 
     List<DeveloperTransparency> getDeveloperCollection();
 

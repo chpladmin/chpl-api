@@ -21,7 +21,7 @@ public class QuarterlyReportBuilderXlsx {
 
     @Autowired
     public QuarterlyReportBuilderXlsx(final ListWorksheetBuilder listWorksheetBuilder,
-            final ReportInfoWorksheetBuilder reportInfoWorksheetBuilder,
+            final QuarterlyReportInfoWorksheetBuilder reportInfoWorksheetBuilder,
             final ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesWorksheetBuilder,
             final ComplaintsWorksheetBuilder complaintsWorksheetBuilder,
             final SurveillanceSummaryWorksheetBuilder summaryWorksheetBuilder) {

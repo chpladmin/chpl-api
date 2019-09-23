@@ -6,31 +6,37 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.UserTestingLabMapDAO;
+import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UserTestingLabMapDTO;
 import gov.healthit.chpl.entity.TestingLabEntity;
 import gov.healthit.chpl.entity.UserTestingLabMapEntity;
 import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.UserMapper;
 
 @Repository(value = "userTestingLabMapDAO")
 public class UserTestingLabMapDAOImpl extends BaseDAOImpl implements UserTestingLabMapDAO {
     private ErrorMessageUtil errorMessageUtil;
 
+    private UserMapper userMapper;
+
     @Autowired
-    public UserTestingLabMapDAOImpl(final ErrorMessageUtil errorMessageUtil) {
+    public UserTestingLabMapDAOImpl(final ErrorMessageUtil errorMessageUtil, @Lazy final UserMapper userMapper) {
         this.errorMessageUtil = errorMessageUtil;
+        this.userMapper = userMapper;
     }
 
     @Override
     public UserTestingLabMapDTO create(UserTestingLabMapDTO dto) throws EntityRetrievalException {
         UserTestingLabMapEntity entity = new UserTestingLabMapEntity();
         entity = create(getUserTestingLabMapEntity(dto));
-        return new UserTestingLabMapDTO(entity);
+        return mapEntityToDto(entity);
     }
 
     @Override
@@ -57,7 +63,30 @@ public class UserTestingLabMapDAOImpl extends BaseDAOImpl implements UserTesting
         List<UserTestingLabMapDTO> dtos = new ArrayList<UserTestingLabMapDTO>();
         if (result != null) {
             for (UserTestingLabMapEntity entity : result) {
-                dtos.add(new UserTestingLabMapDTO(entity));
+                dtos.add(mapEntityToDto(entity));
+            }
+        }
+        return dtos;
+    }
+
+    @Override
+    public List<TestingLabDTO> getTestingLabsByUserId(Long userId) {
+        Query query = entityManager
+                .createQuery(
+                        "from UserTestingLabMapEntity utlm "
+                                + "join fetch utlm.testingLab tl "
+                                + "join fetch utlm.user u "
+                                + "join fetch u.permission perm "
+                                + "join fetch u.contact contact "
+                                + "where (utlm.deleted != true) AND (u.id = :userId) ",
+                        UserTestingLabMapEntity.class);
+        query.setParameter("userId", userId);
+        List<UserTestingLabMapEntity> result = query.getResultList();
+
+        List<TestingLabDTO> dtos = new ArrayList<TestingLabDTO>();
+        if (result != null) {
+            for (UserTestingLabMapEntity entity : result) {
+                dtos.add(new TestingLabDTO(entity.getTestingLab()));
             }
         }
         return dtos;
@@ -78,7 +107,7 @@ public class UserTestingLabMapDAOImpl extends BaseDAOImpl implements UserTesting
 
         List<UserTestingLabMapDTO> dtos = new ArrayList<UserTestingLabMapDTO>();
         for (UserTestingLabMapEntity entity : result) {
-            dtos.add(new UserTestingLabMapDTO(entity));
+            dtos.add(mapEntityToDto(entity));
         }
         return dtos;
     }
@@ -90,7 +119,7 @@ public class UserTestingLabMapDAOImpl extends BaseDAOImpl implements UserTesting
         if (result == null) {
             return null;
         }
-        return new UserTestingLabMapDTO(result);
+        return mapEntityToDto(result);
     }
 
     private UserTestingLabMapEntity getEntityById(Long id) {
@@ -181,6 +210,12 @@ public class UserTestingLabMapDAOImpl extends BaseDAOImpl implements UserTesting
         entity.setUser(getUserEntityById(dto.getUser().getId()));
         entity.setRetired(dto.getRetired());
         return entity;
+    }
+
+    private UserTestingLabMapDTO mapEntityToDto(UserTestingLabMapEntity entity) {
+        UserTestingLabMapDTO dto = new UserTestingLabMapDTO(entity);
+        dto.setUser(userMapper.from(entity.getUser()));
+        return dto;
     }
 
 }

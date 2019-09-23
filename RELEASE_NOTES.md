@@ -1,30 +1,60 @@
 # Release Notes
 
+
+## Version 21.8.0
+_23 September 2019_
+
+### Flagged Feature
+* Allow users to enter and retrieve surveillance reporting data
+
+---
+
+## Version 21.7.0
+_10 September 2019_
+
+### Features
+* Update the user to
+  * Track the last logged in date
+  * Return the list of organizations the user is associated with
+* Allow retrieval of deleted API keys when retrieving all keys
+* Move announcements security into CHPL custom framework
+
+### Bug Fixes
+* Allow upload of supporting surveillance documentation
+* Reschedule nightly quartz jobs to run serially
+
+---
+
+## Version 21.6.0
+_26 August 2019_
+
+### Features
+* Remove address re-use between organizations
+
+### Bug Fixes
+* Summary Statistics error when listing w/o status exists (listing was deleted)
+
+---
+
 ## Version 21.5.0
-_TBD_
+_12 August 2019_
 
 ### Flagged Features
-* Support entry and edit of complaints 
+* Support entry and edit of complaints
 
 ---
 
 ## Version 21.4.0
-_TBD_
+_29 July 2019_
 
 ### New Features
-* add activity tracking for complaints
-* add endpoint for relevant complaints to a quarterly report
-* add complaints associated with surv to the excel report
-* put complaints in excel report
-* add support for associating a surveillance with a complaint
-* remove insert missing split activity job
-* add fields for open/closed surv counts and surv dates
+* Remove "insert missing split activity" job
+* Add fields for open/closed surveillance counts and surveillance dates
 
 ### Bug Fixes
-* update permissions for announcements metadata activity endpoint
+* Update permissions for announcements metadata activity endpoint
 
 ---
-
 
 ## Version 21.3.0
 _22 July 2019_
@@ -37,7 +67,6 @@ _22 July 2019_
   * /activity/metadata/announcements
 
 ---
-
 
 ## Version 21.2.0
 _17 June 2019_

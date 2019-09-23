@@ -15,13 +15,13 @@ public class AddDocumentActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess(Object obj) {
-        if (!(obj instanceof CertificationBodyDTO)) {
+        if (!(obj instanceof Long)) {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
-            CertificationBodyDTO acb = (CertificationBodyDTO) obj;
-            return isAcbValidForCurrentUser(acb.getId());
+            Long acb = (Long) obj;
+            return isAcbValidForCurrentUser(acb);
         } else {
             return false;
         }
