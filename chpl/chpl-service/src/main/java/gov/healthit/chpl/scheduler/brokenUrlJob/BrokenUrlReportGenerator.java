@@ -52,7 +52,7 @@ public class BrokenUrlReportGenerator extends QuartzJob {
             "URL", "Status Code", "Status Name", "Error Message",
             "URL Type", "ONC-ATL", "ONC-ACB", "Developer", "Developer Contact Name",
             "Developer Contact Email", "Developer Contact Phone Number", "Product", "Version",
-            "CHPL Product Number", "Criteria", "Date Last Checked"};
+            "CHPL Product Number", "Edition", "Certification Status", "Criteria", "Date Last Checked"};
 
     @Autowired
     private Environment env;
@@ -147,6 +147,8 @@ public class BrokenUrlReportGenerator extends QuartzJob {
                             urlResultWithError.setVersion(listing.getVersion().getVersion());
                         }
                         urlResultWithError.setChplProductNumber(listing.getChplProductNumber());
+                        urlResultWithError.setEdition(listing.getYear());
+                        urlResultWithError.setCertificationStatus(listing.getCertificationStatus());
                         badUrlsToWrite.add(urlResultWithError);
                     }
                     break;
@@ -183,6 +185,8 @@ public class BrokenUrlReportGenerator extends QuartzJob {
                                 urlResultWithError.setVersion(associatedListing.getVersion().getVersion());
                             }
                             urlResultWithError.setChplProductNumber(associatedListing.getChplProductNumber());
+                            urlResultWithError.setEdition(associatedListing.getYear());
+                            urlResultWithError.setCertificationStatus(associatedListing.getCertificationStatus());
                             urlResultWithError.setCriteria(certResult.getNumber());
                             badUrlsToWrite.add(urlResultWithError);
                         }
@@ -385,6 +389,18 @@ public class BrokenUrlReportGenerator extends QuartzJob {
 
         if (urlResult.getChplProductNumber() != null) {
             result.add(urlResult.getChplProductNumber());
+        } else {
+            result.add("");
+        }
+
+        if (urlResult.getEdition() != null) {
+            result.add(urlResult.getEdition());
+        } else {
+            result.add("");
+        }
+
+        if (urlResult.getCertificationStatus() != null) {
+            result.add(urlResult.getCertificationStatus());
         } else {
             result.add("");
         }

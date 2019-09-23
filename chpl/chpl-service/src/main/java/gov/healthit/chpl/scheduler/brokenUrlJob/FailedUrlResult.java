@@ -29,6 +29,8 @@ public class FailedUrlResult {
     private String contactEmail;
     private String contactPhone;
     private String chplProductNumber;
+    private String edition;
+    private String certificationStatus;
     private String criteria;
 
     public FailedUrlResult() {
@@ -138,6 +140,22 @@ public class FailedUrlResult {
 
     public void setChplProductNumber(final String chplProductNumber) {
         this.chplProductNumber = chplProductNumber;
+    }
+
+    public String getEdition() {
+        return edition;
+    }
+
+    public void setEdition(final String edition) {
+        this.edition = edition;
+    }
+
+    public String getCertificationStatus() {
+        return certificationStatus;
+    }
+
+    public void setCertificationStatus(final String certificationStatus) {
+        this.certificationStatus = certificationStatus;
     }
 
     public String getCriteria() {
