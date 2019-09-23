@@ -1,7 +1,6 @@
 package gov.healthit.chpl.changerequest.manager;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,10 +66,6 @@ public class ChangeRequestStatusHelper {
         } else {
             return null;
         }
-    }
-
-    public List<ChangeRequestStatus> getStatuses(final Long changeRequestId) {
-        return crStatusDAO.getByChangeRequestId(changeRequestId);
     }
 
     private boolean isStatusChangeValid(final Long previousStatusTypeId, final Long newStatusTypeId) {

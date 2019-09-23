@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
@@ -22,6 +23,16 @@ import gov.healthit.chpl.util.AuthUtil;
 @Repository("changeRequestDAO")
 public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDAO {
 
+    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
+    private ChangeRequestStatusDAO changeRequestStatusDAO;
+
+    @Autowired
+    public ChangeRequestDAOImpl(final DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO,
+            final ChangeRequestStatusDAO changeRequestStatusDAO) {
+        this.developerCertificationBodyMapDAO = developerCertificationBodyMapDAO;
+        this.changeRequestStatusDAO = changeRequestStatusDAO;
+    }
+
     @Override
     public ChangeRequest create(final ChangeRequest cr) throws EntityRetrievalException {
         ChangeRequestEntity entity = getNewEntity(cr);
@@ -33,6 +44,9 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
     public ChangeRequest get(final Long changeRequestId) throws EntityRetrievalException {
         ChangeRequest cr = ChangeRequestConverter.convert(getEntityById(changeRequestId));
         cr.setCurrentStatus(getCurrentStatus(cr.getId()));
+        cr.setStatuses(changeRequestStatusDAO.getByChangeRequestId(cr.getId()));
+        cr.setCertificationBodies(developerCertificationBodyMapDAO
+                .getCertificationBodiesForDeveloper(cr.getDeveloper().getDeveloperId()));
         return cr;
     }
 
@@ -42,6 +56,9 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
                 .map(entity -> ChangeRequestConverter.convert(entity))
                 .map(cr -> {
                     cr.setCurrentStatus(getCurrentStatus(cr.getId()));
+                    cr.setStatuses(changeRequestStatusDAO.getByChangeRequestId(cr.getId()));
+                    cr.setCertificationBodies(developerCertificationBodyMapDAO
+                            .getCertificationBodiesForDeveloper(cr.getDeveloper().getDeveloperId()));
                     return cr;
                 })
                 .collect(Collectors.<ChangeRequest> toList());
@@ -55,6 +72,9 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
                 .map(entity -> ChangeRequestConverter.convert(entity))
                 .map(cr -> {
                     cr.setCurrentStatus(getCurrentStatus(cr.getId()));
+                    cr.setStatuses(changeRequestStatusDAO.getByChangeRequestId(cr.getId()));
+                    cr.setCertificationBodies(developerCertificationBodyMapDAO
+                            .getCertificationBodiesForDeveloper(cr.getDeveloper().getDeveloperId()));
                     return cr;
                 })
                 .collect(Collectors.<ChangeRequest> toList());

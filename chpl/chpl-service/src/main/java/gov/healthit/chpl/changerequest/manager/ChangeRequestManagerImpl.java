@@ -167,9 +167,6 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
 
     private ChangeRequest populateChangeRequestData(final ChangeRequest cr) throws EntityRetrievalException {
         cr.setDetails(getChangeRequestDetails(cr));
-        cr.setStatuses(crStatusHelper.getStatuses(cr.getId()));
-        cr.setCertificationBodies(
-                crCertificationBodyHelper.getCertificationBodiesByDeveloper(cr.getDeveloper()));
         return cr;
     }
 
