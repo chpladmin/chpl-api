@@ -74,7 +74,7 @@ import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @PropertySources({
         @PropertySource("classpath:/environment.test.properties"),
-        @PropertySource("classpath:/lookup.properties"),
+        @PropertySource("classpath:/lookup.test.properties"),
 })
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableTransactionManagement
