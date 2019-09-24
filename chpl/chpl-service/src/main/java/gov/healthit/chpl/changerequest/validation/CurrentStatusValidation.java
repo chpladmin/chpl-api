@@ -2,11 +2,18 @@ package gov.healthit.chpl.changerequest.validation;
 
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
 @Component
 public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidationContext> {
+
+    private ChangeRequestStatusTypeDAO crStatusTypeDAO;
+
+    public CurrentStatusValidation(final ChangeRequestStatusTypeDAO crStatusTypeDAO) {
+        this.crStatusTypeDAO = crStatusTypeDAO;
+    }
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
@@ -20,7 +27,7 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
         // Make sure the current status type is is valid
         // Does it exist in the DB?
         try {
-            context.getChangeRequestStatusTypeDAO().getChangeRequestStatusTypeById(
+            crStatusTypeDAO.getChangeRequestStatusTypeById(
                     context.getChangeRequest().getCurrentStatus().getChangeRequestStatusType().getId());
         } catch (EntityRetrievalException e) {
             getMessages().add(getErrorMessage("changeRequest.statusType.invalid"));

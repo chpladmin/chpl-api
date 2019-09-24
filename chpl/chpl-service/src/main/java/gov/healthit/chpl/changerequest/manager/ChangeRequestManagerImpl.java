@@ -26,7 +26,6 @@ import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationContext
 import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationFactory;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -50,7 +49,6 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
     private ChangeRequestDAO changeRequestDAO;
     private ChangeRequestTypeDAO changeRequestTypeDAO;
     private ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO;
-    private DeveloperDAO developerDAO;
     private ChangeRequestStatusService crStatusService;
     private ChangeRequestValidationFactory crValidationFactory;
     private ChangeRequestDetailsFactory crDetailsFactory;
@@ -59,7 +57,7 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
     @Autowired
     public ChangeRequestManagerImpl(final ChangeRequestDAO changeRequestDAO,
             final ChangeRequestTypeDAO changeRequestTypeDAO,
-            final ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO, final DeveloperDAO developerDAO,
+            final ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO,
             final CertifiedProductDAO certifiedProductDAO, final CertificationBodyDAO certificationBodyDAO,
             final ChangeRequestStatusTypeDAO crStatusTypeDAO, final ChangeRequestStatusService crStatusHelper,
             final ChangeRequestValidationFactory crValidationFactory, final ChangeRequestWebsiteService crWebsiteHelper,
@@ -67,7 +65,6 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
         this.changeRequestDAO = changeRequestDAO;
         this.changeRequestTypeDAO = changeRequestTypeDAO;
         this.changeRequestStatusTypeDAO = changeRequestStatusTypeDAO;
-        this.developerDAO = developerDAO;
         this.crStatusService = crStatusHelper;
         this.crValidationFactory = crValidationFactory;
         this.crDetailsFactory = crDetailsFactory;
@@ -122,7 +119,6 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
     @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
             + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).GET_BY_ID, returnObject)")
     public ChangeRequest getChangeRequest(final Long changeRequestId) throws EntityRetrievalException {
-        ChangeRequest cr = new ChangeRequest();
         return changeRequestDAO.get(changeRequestId);
     }
 
@@ -189,8 +185,7 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
             if (cr.getId() != null) {
                 crFromDb = getChangeRequest(cr.getId());
             }
-            ChangeRequestValidationContext context = new ChangeRequestValidationContext(cr, crFromDb, changeRequestDAO,
-                    changeRequestTypeDAO, changeRequestStatusTypeDAO, developerDAO);
+            ChangeRequestValidationContext context = new ChangeRequestValidationContext(cr, crFromDb);
 
             for (ValidationRule<ChangeRequestValidationContext> rule : rules) {
                 if (!rule.isValid(context)) {
