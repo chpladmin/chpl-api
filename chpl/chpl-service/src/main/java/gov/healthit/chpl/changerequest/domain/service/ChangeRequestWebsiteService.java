@@ -146,7 +146,11 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
                         .collect(Collectors.<String> toList()))
                 .subject(env.getProperty("changeRequest.website.approval.subject"))
                 .htmlMessage(String.format(env.getProperty("changeRequest.website.approval.body"),
-                        cr.getDeveloper().getWebsite()))
+                        "09/22/2019",
+                        "Developer User",
+                        "Old Website",
+                        cr.getDeveloper().getWebsite(),
+                        getApprovalBody(cr)))
                 .sendEmail();
     }
 
@@ -172,4 +176,11 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
         return crWebsite;
     }
 
+    private String getApprovalBody(final ChangeRequest cr) {
+        if (cr.getCurrentStatus().getCertificationBody() != null) {
+            return cr.getCurrentStatus().getCertificationBody().getName();
+        } else {
+            return "ONC or the CHPL Admin";
+        }
+    }
 }

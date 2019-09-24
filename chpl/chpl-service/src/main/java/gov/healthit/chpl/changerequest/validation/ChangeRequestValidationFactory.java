@@ -17,6 +17,7 @@ public class ChangeRequestValidationFactory {
     public final static String CHANGE_REQUEST_EXISTENCE = "CHANGE_REQUEST_EXISTENCE";
     public final static String STATUS_TYPE = "STATUS_TYPE";
     public final static String STATUS_NOT_UPDATABLE = "STATUS_NOT_UPDATABLE";
+    public final static String COMMENT_REQUIRED = "COMMENT_REQUIRED";
 
     private ChangeRequestDetailsCreateValidation changeRequestDetailsCreateValidation;
     private ChangeRequestDetailsUpdateValidation changeRequestDetailsUpdateValidation;
@@ -27,6 +28,7 @@ public class ChangeRequestValidationFactory {
     private DeveloperActiveValidation developerActiveValidation;
     private ChangeRequestNotUpdatableDueToStatusValidation changeRequestNotUpdatableDueToStatusValidation;
     private ChangeRequestTypeInProcessValidation changeRequestTypeInProcessValidation;
+    private CommentRequiredValidation commentRequiredValidation;
 
     @Autowired
     public ChangeRequestValidationFactory(
@@ -38,7 +40,8 @@ public class ChangeRequestValidationFactory {
             final DeveloperExistenceValidation developerExistenceValidation,
             final DeveloperActiveValidation developerActiveValidation,
             final ChangeRequestNotUpdatableDueToStatusValidation changeRequestNotUpdatableDueToStatusValidation,
-            final ChangeRequestTypeInProcessValidation changeRequestTypeInProcessValidation) {
+            final ChangeRequestTypeInProcessValidation changeRequestTypeInProcessValidation,
+            final CommentRequiredValidation commentRequiredValidation) {
         this.changeRequestDetailsCreateValidation = changeRequestDetailsCreateValidation;
         this.changeRequestDetailsUpdateValidation = changeRequestDetailsUpdateValidation;
         this.changeRequestExistanceValidation = changeRequestExistanceValidation;
@@ -48,6 +51,7 @@ public class ChangeRequestValidationFactory {
         this.developerActiveValidation = developerActiveValidation;
         this.changeRequestNotUpdatableDueToStatusValidation = changeRequestNotUpdatableDueToStatusValidation;
         this.changeRequestTypeInProcessValidation = changeRequestTypeInProcessValidation;
+        this.commentRequiredValidation = commentRequiredValidation;
     }
 
     public ValidationRule<ChangeRequestValidationContext> getRule(String name) {
@@ -70,6 +74,8 @@ public class ChangeRequestValidationFactory {
             return currentStatusValidation;
         case STATUS_NOT_UPDATABLE:
             return changeRequestNotUpdatableDueToStatusValidation;
+        case COMMENT_REQUIRED:
+            return commentRequiredValidation;
         default:
             return null;
         }

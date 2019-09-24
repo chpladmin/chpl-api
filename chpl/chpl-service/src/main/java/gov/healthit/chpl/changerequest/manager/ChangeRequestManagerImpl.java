@@ -51,7 +51,7 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
     private ChangeRequestTypeDAO changeRequestTypeDAO;
     private ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO;
     private DeveloperDAO developerDAO;
-    private ChangeRequestStatusService crStatusHelper;
+    private ChangeRequestStatusService crStatusService;
     private ChangeRequestValidationFactory crValidationFactory;
     private ChangeRequestDetailsFactory crDetailsFactory;
     private ActivityManager activityManager;
@@ -68,7 +68,7 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
         this.changeRequestTypeDAO = changeRequestTypeDAO;
         this.changeRequestStatusTypeDAO = changeRequestStatusTypeDAO;
         this.developerDAO = developerDAO;
-        this.crStatusHelper = crStatusHelper;
+        this.crStatusService = crStatusHelper;
         this.crValidationFactory = crValidationFactory;
         this.crDetailsFactory = crDetailsFactory;
         this.activityManager = activityManager;
@@ -149,7 +149,7 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
         // Update the details
         crDetailsFactory.get(cr.getChangeRequestType().getId()).update(cr);
         // Update the status
-        crStatusHelper.updateChangeRequestStatus(cr);
+        crStatusService.updateChangeRequestStatus(cr);
 
         ChangeRequest newCr = getChangeRequest(cr.getId());
         return newCr;
@@ -157,7 +157,7 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
 
     private ChangeRequest createBaseChangeRequest(final ChangeRequest cr) throws EntityRetrievalException {
         ChangeRequest newCr = changeRequestDAO.create(cr);
-        newCr.getStatuses().add(crStatusHelper.saveInitialStatus(newCr));
+        newCr.getStatuses().add(crStatusService.saveInitialStatus(newCr));
         return newCr;
     }
 
@@ -178,19 +178,28 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.DEVELOPER_ACTIVE));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.STATUS_TYPE));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.STATUS_NOT_UPDATABLE));
+        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.COMMENT_REQUIRED));
         return runValidations(rules, cr);
     }
 
     private List<String> runValidations(List<ValidationRule<ChangeRequestValidationContext>> rules, ChangeRequest cr) {
-        List<String> errorMessages = new ArrayList<String>();
-        ChangeRequestValidationContext context = new ChangeRequestValidationContext(cr, changeRequestDAO,
-                changeRequestTypeDAO, changeRequestStatusTypeDAO, developerDAO);
-
-        for (ValidationRule<ChangeRequestValidationContext> rule : rules) {
-            if (!rule.isValid(context)) {
-                errorMessages.addAll(rule.getMessages());
+        try {
+            List<String> errorMessages = new ArrayList<String>();
+            ChangeRequest crFromDb = null;
+            if (cr.getId() != null) {
+                crFromDb = getChangeRequest(cr.getId());
             }
+            ChangeRequestValidationContext context = new ChangeRequestValidationContext(cr, crFromDb, changeRequestDAO,
+                    changeRequestTypeDAO, changeRequestStatusTypeDAO, developerDAO);
+
+            for (ValidationRule<ChangeRequestValidationContext> rule : rules) {
+                if (!rule.isValid(context)) {
+                    errorMessages.addAll(rule.getMessages());
+                }
+            }
+            return errorMessages;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        return errorMessages;
     }
 }

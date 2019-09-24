@@ -8,15 +8,18 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 
 public class ChangeRequestValidationContext {
     private ChangeRequest changeRequest;
+    private ChangeRequest crFromDb;
     private ChangeRequestDAO changeRequestDAO;
     private ChangeRequestTypeDAO changeRequestTypeDAO;
     private ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO;
     private DeveloperDAO developerDAO;
 
-    public ChangeRequestValidationContext(final ChangeRequest changeRequest, final ChangeRequestDAO changeRequestDAO,
+    public ChangeRequestValidationContext(final ChangeRequest changeRequest, final ChangeRequest crFromDb,
+            final ChangeRequestDAO changeRequestDAO,
             final ChangeRequestTypeDAO changeRequestTypeDAO, ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO,
             final DeveloperDAO developerDAO) {
         this.changeRequest = changeRequest;
+        this.crFromDb = crFromDb;
         this.changeRequestDAO = changeRequestDAO;
         this.changeRequestTypeDAO = changeRequestTypeDAO;
         this.changeRequestStatusTypeDAO = changeRequestStatusTypeDAO;
@@ -29,6 +32,14 @@ public class ChangeRequestValidationContext {
 
     public void setChangeRequest(ChangeRequest changeRequest) {
         this.changeRequest = changeRequest;
+    }
+
+    public ChangeRequest getCrFromDb() {
+        return crFromDb;
+    }
+
+    public void setCrFromDb(ChangeRequest changeRequest) {
+        this.crFromDb = changeRequest;
     }
 
     public ChangeRequestTypeDAO getChangeRequestTypeDAO() {
