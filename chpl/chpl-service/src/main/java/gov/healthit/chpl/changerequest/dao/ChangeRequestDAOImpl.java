@@ -74,7 +74,7 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
 
     @Override
     public List<ChangeRequest> getAllPending() throws EntityRetrievalException {
-         return getAllEntities().stream()
+        return getAllEntities().stream()
                 .map(entity -> ChangeRequestConverter.convert(entity))
                 .map(cr -> {
                     cr.setCurrentStatus(getCurrentStatus(cr.getId()));
@@ -130,7 +130,7 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
 
         String hql = "SELECT DISTINCT cr "
                 + "FROM ChangeRequestEntity cr  "
-                + "JOIN FETCH cr.changeRequestType "
+                + "JOIN FETCH cr.changeRequestType crt "
                 + "JOIN FETCH cr.developer dev "
                 + "JOIN FETCH dev.address "
                 + "JOIN FETCH dev.contact "

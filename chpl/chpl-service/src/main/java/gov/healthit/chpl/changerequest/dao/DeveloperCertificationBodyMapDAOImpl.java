@@ -19,6 +19,9 @@ public class DeveloperCertificationBodyMapDAOImpl extends BaseDAOImpl implements
         String hql = "FROM DeveloperCertificationBodyMapEntity main "
                 + "JOIN FETCH main.developer dev "
                 + "JOIN FETCH main.certificationBody cb "
+                + "JOIN FETCH dev.address "
+                + "JOIN FETCH dev.contact "
+                + "JOIN FETCH cb.address "
                 + "WHERE dev.id = :developerId";
 
         return entityManager
@@ -26,7 +29,7 @@ public class DeveloperCertificationBodyMapDAOImpl extends BaseDAOImpl implements
                 .setParameter("developerId", developerId)
                 .getResultList().stream()
                 .map(item -> new CertificationBody(item.getCertificationBody()))
-                .collect(Collectors.<CertificationBody> toList());
+                .collect(Collectors.<CertificationBody>toList());
     }
 
     @Override
@@ -41,7 +44,7 @@ public class DeveloperCertificationBodyMapDAOImpl extends BaseDAOImpl implements
                 .setParameter("certificationBodyId", certificationBodyId)
                 .getResultList().stream()
                 .map(item -> new Developer(new DeveloperDTO(item.getDeveloper())))
-                .collect(Collectors.<Developer> toList());
+                .collect(Collectors.<Developer>toList());
     }
 
 }

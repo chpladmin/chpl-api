@@ -32,6 +32,9 @@ public class ChangeRequestStatusDAOImpl extends BaseDAOImpl implements ChangeReq
     public List<ChangeRequestStatus> getByChangeRequestId(final Long changeRequestId) {
         String hql = "SELECT crStatus "
                 + "FROM ChangeRequestStatusEntity crStatus "
+                + "JOIN FETCH crStatus.changeRequestStatusType "
+                + "JOIN FETCH crStatus.certificationBody acb "
+                + "JOIN FETCH acb.address "
                 + "WHERE crStatus.deleted = false "
                 + "AND crStatus.changeRequest.id = :changeRequestId";
 
@@ -40,7 +43,7 @@ public class ChangeRequestStatusDAOImpl extends BaseDAOImpl implements ChangeReq
                 .setParameter("changeRequestId", changeRequestId)
                 .getResultList().stream()
                 .map(ChangeRequestConverter::convert)
-                .collect(Collectors.<ChangeRequestStatus> toList());
+                .collect(Collectors.<ChangeRequestStatus>toList());
     }
 
     private ChangeRequestStatusEntity getEntityById(final Long id) throws EntityRetrievalException {
@@ -64,7 +67,7 @@ public class ChangeRequestStatusDAOImpl extends BaseDAOImpl implements ChangeReq
 
     }
 
-    private ChangeRequestStatusEntity getNewEntity(ChangeRequest cr, ChangeRequestStatus crStatus) {
+    private ChangeRequestStatusEntity getNewEntity(final ChangeRequest cr, final ChangeRequestStatus crStatus) {
         ChangeRequestStatusEntity entity = new ChangeRequestStatusEntity();
 
         entity.setChangeRequest(getSession().load(ChangeRequestEntity.class, cr.getId()));
