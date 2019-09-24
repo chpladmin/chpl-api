@@ -52,6 +52,7 @@ public class UrlStatusDataCollector extends QuartzJob implements InterruptableJo
 
     private int successCheckIntervalDays = 1;
     private int failureCheckIntervalDays = 1;
+    private int redirectCheckIntervalDays = 1;
     private int connectTimeoutSeconds = 10;
     private int requestTimeoutSeconds = 10;
     private AsyncHttpClient httpClient;
@@ -224,17 +225,18 @@ public class UrlStatusDataCollector extends QuartzJob implements InterruptableJo
      */
     private void completeSetup() {
         if (this.env != null) {
-            String successCheckIntervalDaysStr = env.getProperty("job.badUrlChecker.successCheckIntervalDays");
-            String failureCheckIntervalDaysStr = env.getProperty("job.badUrlChecker.failureCheckIntervalDays");
+            String successCheckIntervalDaysStr = env.getProperty("job.urlStatusChecker.successCheckIntervalDays");
+            String failureCheckIntervalDaysStr = env.getProperty("job.urlStatusChecker.failureCheckIntervalDays");
+            String redirectCheckIntervalDaysStr = env.getProperty("job.urlStatusChecker.redirectCheckIntervalDays");
             if (!StringUtils.isEmpty(successCheckIntervalDaysStr)) {
                 try {
                     successCheckIntervalDays = Integer.parseInt(successCheckIntervalDaysStr);
                 } catch (NumberFormatException ex) {
-                    LOGGER.warn("Cannot parse job.badUrlChecker.successCheckIntervalDays property value "
+                    LOGGER.warn("Cannot parse job.urlStatusChecker.successCheckIntervalDays property value "
                             + successCheckIntervalDaysStr + " as number.");
                 }
             } else {
-                LOGGER.warn("No value found for property job.badUrlChecker.successCheckIntervalDays. "
+                LOGGER.warn("No value found for property job.urlStatusChecker.successCheckIntervalDays. "
                         + "Using the default value of " + successCheckIntervalDays);
             }
 
@@ -242,36 +244,48 @@ public class UrlStatusDataCollector extends QuartzJob implements InterruptableJo
                 try {
                     failureCheckIntervalDays = Integer.parseInt(failureCheckIntervalDaysStr);
                 } catch (NumberFormatException ex) {
-                    LOGGER.warn("Cannot parse job.badUrlChecker.failureCheckIntervalDays property value "
+                    LOGGER.warn("Cannot parse job.urlStatusChecker.failureCheckIntervalDays property value "
                             + failureCheckIntervalDaysStr + " as number.");
                 }
             } else {
-                LOGGER.warn("No value found for property job.badUrlChecker.failureCheckIntervalDays. "
+                LOGGER.warn("No value found for property job.urlStatusChecker.failureCheckIntervalDays. "
                         + "Using the default value of " + failureCheckIntervalDays);
             }
 
-            String connectTimeoutSecondsStr = env.getProperty("job.badUrlChecker.connectTimeoutSeconds");
-            String requestTimeoutSecondsStr = env.getProperty("job.badUrlChecker.requestTimeoutSeconds");
+            if (!StringUtils.isEmpty(redirectCheckIntervalDaysStr)) {
+                try {
+                    redirectCheckIntervalDays = Integer.parseInt(redirectCheckIntervalDaysStr);
+                } catch (NumberFormatException ex) {
+                    LOGGER.warn("Cannot parse job.urlStatusChecker.redirectCheckIntervalDays property value "
+                            + failureCheckIntervalDaysStr + " as number.");
+                }
+            } else {
+                LOGGER.warn("No value found for property job.urlStatusChecker.redirectCheckIntervalDays. "
+                        + "Using the default value of " + redirectCheckIntervalDays);
+            }
+
+            String connectTimeoutSecondsStr = env.getProperty("job.urlStatusChecker.connectTimeoutSeconds");
+            String requestTimeoutSecondsStr = env.getProperty("job.urlStatusChecker.requestTimeoutSeconds");
             if (!StringUtils.isEmpty(connectTimeoutSecondsStr)) {
                 try {
                     connectTimeoutSeconds = Integer.parseInt(connectTimeoutSecondsStr);
                 } catch (NumberFormatException ex) {
-                    LOGGER.warn("Cannot parse job.badUrlChecker.connectTimeoutSeconds property value "
+                    LOGGER.warn("Cannot parse job.urlStatusChecker.connectTimeoutSeconds property value "
                             + connectTimeoutSecondsStr + " as number.");
                 }
             } else {
-                LOGGER.warn("No value found for property job.badUrlChecker.connectTimeoutSeconds. "
+                LOGGER.warn("No value found for property job.urlStatusChecker.connectTimeoutSeconds. "
                         + "Using the default value of " + connectTimeoutSeconds);
             }
             if (!StringUtils.isEmpty(requestTimeoutSecondsStr)) {
                 try {
                     requestTimeoutSeconds = Integer.parseInt(requestTimeoutSecondsStr);
                 } catch (NumberFormatException ex) {
-                    LOGGER.warn("Cannot parse job.badUrlChecker.requestTimeoutSeconds property value "
+                    LOGGER.warn("Cannot parse job.urlStatusChecker.requestTimeoutSeconds property value "
                             + requestTimeoutSecondsStr + " as number.");
                 }
             } else {
-                LOGGER.warn("No value found for property job.badUrlChecker.requestTimeoutSeconds. "
+                LOGGER.warn("No value found for property job.urlStatusChecker.requestTimeoutSeconds. "
                         + "Using the default value of " + requestTimeoutSeconds);
             }
         } else {
@@ -308,11 +322,16 @@ public class UrlStatusDataCollector extends QuartzJob implements InterruptableJo
             return true;
         } else {
             long successNextCheckMillis = systemUrl.getLastChecked().getTime() + (successCheckIntervalDays*DAYS_TO_MILLIS);
+            long redirectNextCheckMillis = systemUrl.getLastChecked().getTime() + (redirectCheckIntervalDays*DAYS_TO_MILLIS);
             long failureNextCheckMillis = systemUrl.getLastChecked().getTime() + (failureCheckIntervalDays*DAYS_TO_MILLIS);
             if (isSuccess(systemUrl.getResponseCode())
                     && System.currentTimeMillis() >= successNextCheckMillis) {
                 return true;
+            } else if (isRedirect(systemUrl.getResponseCode())
+                    && System.currentTimeMillis() >= redirectNextCheckMillis) {
+                return true;
             } else if (!isSuccess(systemUrl.getResponseCode())
+                    && !isRedirect(systemUrl.getResponseCode())
                     && System.currentTimeMillis() >= failureNextCheckMillis) {
                 return true;
             }
@@ -330,6 +349,21 @@ public class UrlStatusDataCollector extends QuartzJob implements InterruptableJo
             return false;
         }
         if (responseCode.toString().startsWith("2")) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Determines if a given HTTP response code means "redirect"
+     * @param responseCode
+     * @return
+     */
+    private boolean isRedirect(final Integer responseCode) {
+        if (responseCode == null) {
+            return false;
+        }
+        if (responseCode.toString().startsWith("3")) {
             return true;
         }
         return false;

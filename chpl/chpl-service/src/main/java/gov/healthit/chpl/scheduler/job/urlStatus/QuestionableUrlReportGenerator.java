@@ -212,17 +212,17 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
 
             LOGGER.info("Creating email subject and body.");
             String to = jobContext.getMergedJobDataMap().getString("email");
-            String subject = env.getProperty("job.badUrlChecker.emailSubject");
-            String htmlMessage = env.getProperty("job.badUrlChecker.emailBodyBegin");
-            htmlMessage += createHtmlEmailBody(badUrlsToWrite, env.getProperty("job.badUrlChecker.emailBodyNoContent"));
+            String subject = env.getProperty("job.questionableUrlReport.emailSubject");
+            String htmlMessage = env.getProperty("job.questionableUrlReport.emailBodyBegin");
+            htmlMessage += createHtmlEmailBody(badUrlsToWrite, env.getProperty("job.questionableUrlReport.emailBodyNoContent"));
             File output = null;
             List<File> files = new ArrayList<File>();
             if (badUrlsToWrite.size() > 0) {
-                output = getOutputFile(badUrlsToWrite, env.getProperty("job.badUrlChecker.emailAttachmentName"));
+                output = getOutputFile(badUrlsToWrite, env.getProperty("job.questionableUrlReport.emailAttachmentName"));
                 files.add(output);
             }
 
-            LOGGER.info("Sending email to {} with contents {} and a total of {} broken URLs.",
+            LOGGER.info("Sending email to {} with contents {} and a total of {} questionable URLs.",
                     to, htmlMessage, badUrlsToWrite.size());
             try {
                 List<String> addresses = new ArrayList<String>();
