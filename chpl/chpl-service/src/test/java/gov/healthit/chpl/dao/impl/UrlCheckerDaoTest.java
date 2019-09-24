@@ -22,9 +22,9 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.scheduler.brokenUrlJob.UrlCheckerDao;
-import gov.healthit.chpl.scheduler.brokenUrlJob.UrlResult;
-import gov.healthit.chpl.scheduler.brokenUrlJob.UrlType;
+import gov.healthit.chpl.scheduler.job.urlStatus.UrlCheckerDao;
+import gov.healthit.chpl.scheduler.job.urlStatus.UrlResult;
+import gov.healthit.chpl.scheduler.job.urlStatus.UrlType;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)

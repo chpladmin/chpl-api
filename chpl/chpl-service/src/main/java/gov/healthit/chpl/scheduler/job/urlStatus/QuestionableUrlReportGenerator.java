@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.brokenUrlJob;
+package gov.healthit.chpl.scheduler.job.urlStatus;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -46,8 +46,8 @@ import gov.healthit.chpl.util.EmailBuilder;
  * @author kekey
  *
  */
-public class BrokenUrlReportGenerator extends QuartzJob {
-    private static final Logger LOGGER = LogManager.getLogger("brokenUrlReportGeneratorJobLogger");
+public class QuestionableUrlReportGenerator extends QuartzJob {
+    private static final Logger LOGGER = LogManager.getLogger("questionableUrlReportGeneratorJobLogger");
     private static final String[] CSV_HEADER = {
             "URL", "Status Code", "Status Name", "Error Message",
             "URL Type", "ONC-ATL", "ONC-ACB", "Developer", "Developer Contact Name",
@@ -79,7 +79,7 @@ public class BrokenUrlReportGenerator extends QuartzJob {
     @Transactional
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        LOGGER.info("********* Starting the Broken URL Report Generator job. *********");
+        LOGGER.info("********* Starting the Questionable URL Report Generator job. *********");
 
         try {
             List<FailedUrlResult> badUrlsToWrite = new ArrayList<FailedUrlResult>();
@@ -240,7 +240,7 @@ public class BrokenUrlReportGenerator extends QuartzJob {
         } catch (Exception ex) {
             LOGGER.error("Unable to complete job: " + ex.getMessage(), ex);
         }
-        LOGGER.info("********* Completed the Broken URL Report Generator job. *********");
+        LOGGER.info("********* Completed the Questionable URL Report Generator job. *********");
     }
 
     /**

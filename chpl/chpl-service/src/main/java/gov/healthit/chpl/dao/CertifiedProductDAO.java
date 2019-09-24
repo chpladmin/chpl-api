@@ -8,7 +8,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductSummaryDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.scheduler.brokenUrlJob.UrlType;
+import gov.healthit.chpl.scheduler.job.urlStatus.UrlType;
 
 /**
  * Interface for database access to CHPL listings.

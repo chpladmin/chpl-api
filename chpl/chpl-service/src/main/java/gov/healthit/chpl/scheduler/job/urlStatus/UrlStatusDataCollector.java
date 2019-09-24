@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.brokenUrlJob;
+package gov.healthit.chpl.scheduler.job.urlStatus;
 
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -36,8 +36,8 @@ import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
  * @author kekey
  *
  */
-public class BrokenUrlDataCollector extends QuartzJob implements InterruptableJob {
-    private static final Logger LOGGER = LogManager.getLogger("brokenUrlDataCollectorJobLogger");
+public class UrlStatusDataCollector extends QuartzJob implements InterruptableJob {
+    private static final Logger LOGGER = LogManager.getLogger("urlStatusDataCollectorJobLogger");
     private static final long DAYS_TO_MILLIS = 24 * 60 * 60 * 1000;
     private static final int BATCH_SIZE = 100;
 
@@ -58,7 +58,7 @@ public class BrokenUrlDataCollector extends QuartzJob implements InterruptableJo
     private Map<UrlResult, Future<Integer>> urlResponseCodeFuturesMap;
     private boolean interrupted;
 
-    public BrokenUrlDataCollector() {
+    public UrlStatusDataCollector() {
         interrupted = false;
         urlResponseCodeFuturesMap = new LinkedHashMap<UrlResult, Future<Integer>>();
     }
@@ -67,7 +67,7 @@ public class BrokenUrlDataCollector extends QuartzJob implements InterruptableJo
     @Transactional
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        LOGGER.info("********* Starting the Broken URL Data Collector job. *********");
+        LOGGER.info("********* Starting the URL Status Data Collector job. *********");
 
         completeSetup();
 
@@ -101,7 +101,7 @@ public class BrokenUrlDataCollector extends QuartzJob implements InterruptableJo
                 LOGGER.error("Error closing the httpClient: " + ex.getMessage(), ex);
             }
         }
-        LOGGER.info("********* Completed the Broken URL Data Collector job. *********");
+        LOGGER.info("********* Completed the URL Status Data Collector job. *********");
     }
 
     /**
