@@ -21,7 +21,7 @@ import gov.healthit.chpl.changerequest.builders.ChangeRequestWebsiteBuilder;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestWebsiteDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestWebsite;
-import gov.healthit.chpl.changerequest.manager.ChangeRequestWebsiteHelper;
+import gov.healthit.chpl.changerequest.domain.service.ChangeRequestWebsiteService;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -34,7 +34,7 @@ public class ChangeRequestWebsiteHelperTest {
     private ChangeRequestWebsiteDAO crWebsiteDAO;;
 
     @InjectMocks
-    private ChangeRequestWebsiteHelper crWebsiteHelper;
+    private ChangeRequestWebsiteService crWebsiteHelper;
 
     @Before
     public void setup() {

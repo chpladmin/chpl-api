@@ -1,4 +1,4 @@
-package gov.healthit.chpl.changerequest.manager;
+package gov.healthit.chpl.changerequest.domain.service;
 
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +33,7 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.util.EmailBuilder;
 
 @Component
-public class ChangeRequestWebsiteHelper implements ChangeRequestDetailsHelper<ChangeRequestWebsite> {
+public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<ChangeRequestWebsite> {
 
     private ChangeRequestDAO crDAO;
     private ChangeRequestWebsiteDAO crWebsiteDAO;
@@ -50,7 +50,7 @@ public class ChangeRequestWebsiteHelper implements ChangeRequestDetailsHelper<Ch
     private Long acceptedStatus;
 
     @Autowired
-    public ChangeRequestWebsiteHelper(final ChangeRequestDAO crDAO, final ChangeRequestWebsiteDAO crWebsiteDAO,
+    public ChangeRequestWebsiteService(final ChangeRequestDAO crDAO, final ChangeRequestWebsiteDAO crWebsiteDAO,
             final DeveloperDAO developerDAO, final DeveloperManager developerManager,
             final UserDeveloperMapDAO userDeveloperMapDAO, final ActivityManager activityManager,
             final Environment env) {
@@ -66,17 +66,6 @@ public class ChangeRequestWebsiteHelper implements ChangeRequestDetailsHelper<Ch
     @Override
     public ChangeRequestWebsite getByChangeRequestId(final Long changeRequestId) throws EntityRetrievalException {
         return crWebsiteDAO.getByChangeRequestId(changeRequestId);
-    }
-
-    private ChangeRequestWebsite getDetailsFromHashMap(final HashMap<String, Object> map) {
-        ChangeRequestWebsite crWebsite = new ChangeRequestWebsite();
-        if (map.containsKey("id") && StringUtils.isNumeric(map.get("id").toString())) {
-            crWebsite.setId(new Long(map.get("id").toString()));
-        }
-        if (map.containsKey("website")) {
-            crWebsite.setWebsite(map.get("website").toString());
-        }
-        return crWebsite;
     }
 
     @Override
@@ -96,7 +85,12 @@ public class ChangeRequestWebsiteHelper implements ChangeRequestDetailsHelper<Ch
             ChangeRequest crFromDb = crDAO.get(cr.getId());
             // Convert the map of key/value pairs to a ChangeRequestWebsite
             // object
-            cr.setDetails(getDetailsFromHashMap((HashMap<String, Object>) cr.getDetails()));
+            ChangeRequestWebsite crWebsite = getDetailsFromHashMap((HashMap<String, Object>) cr.getDetails());
+            // Use the id from the DB, not the object. Client could have changed
+            // the id.
+            crWebsite.setId(((ChangeRequestWebsite) crFromDb.getDetails()).getId());
+            cr.setDetails(crWebsite);
+
             if (!((ChangeRequestWebsite) cr.getDetails()).getWebsite()
                     .equals(((ChangeRequestWebsite) crFromDb.getDetails()).getWebsite())) {
                 cr.setDetails(crWebsiteDAO.update((ChangeRequestWebsite) cr.getDetails()));
@@ -165,6 +159,17 @@ public class ChangeRequestWebsiteHelper implements ChangeRequestDetailsHelper<Ch
                 .htmlMessage(String.format(env.getProperty("changeRequest.website.pendingDeveloperAction.body"),
                         cr.getDeveloper().getWebsite()))
                 .sendEmail();
+    }
+
+    private ChangeRequestWebsite getDetailsFromHashMap(final HashMap<String, Object> map) {
+        ChangeRequestWebsite crWebsite = new ChangeRequestWebsite();
+        if (map.containsKey("id") && StringUtils.isNumeric(map.get("id").toString())) {
+            crWebsite.setId(new Long(map.get("id").toString()));
+        }
+        if (map.containsKey("website")) {
+            crWebsite.setWebsite(map.get("website").toString());
+        }
+        return crWebsite;
     }
 
 }

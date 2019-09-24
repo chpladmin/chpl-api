@@ -26,10 +26,10 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.changerequest.domain.service.ChangeRequestStatusService;
+import gov.healthit.chpl.changerequest.domain.service.ChangeRequestWebsiteService;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestCertificationBodyHelper;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManagerImpl;
-import gov.healthit.chpl.changerequest.manager.ChangeRequestStatusHelper;
-import gov.healthit.chpl.changerequest.manager.ChangeRequestWebsiteHelper;
 import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationFactory;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -63,10 +63,10 @@ public class ChangeRequestManagerImplTest {
     private ChangeRequestCertificationBodyHelper crCertificationBodyMapHelper;
 
     @Mock
-    private ChangeRequestStatusHelper crStatusHelper;
+    private ChangeRequestStatusService crStatusHelper;
 
     @Mock
-    private ChangeRequestWebsiteHelper crWebsiteHelper;
+    private ChangeRequestWebsiteService crWebsiteHelper;
 
     @Mock
     private ChangeRequestValidationFactory crValidationFactory;

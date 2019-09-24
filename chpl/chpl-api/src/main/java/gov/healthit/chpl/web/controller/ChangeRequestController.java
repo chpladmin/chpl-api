@@ -21,7 +21,6 @@ import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -31,14 +30,11 @@ import io.swagger.annotations.ApiOperation;
 public class ChangeRequestController {
     
     private ChangeRequestManager changeRequestManager;
-    private ResourcePermissions resourcePermissions;
     private FF4j ff4j;
     
     @Autowired
-    public ChangeRequestController(final ChangeRequestManager changeRequestManager, final ResourcePermissions resourcePermissions,
-            final FF4j ff4j) {
+    public ChangeRequestController(final ChangeRequestManager changeRequestManager, final FF4j ff4j) {
         this.changeRequestManager = changeRequestManager;
-        this.resourcePermissions = resourcePermissions;
         this.ff4j = ff4j;
     }
     
@@ -50,9 +46,6 @@ public class ChangeRequestController {
             throw new NotImplementedException();
         }
 
-        if (!resourcePermissions.isUserRoleDeveloperAdmin()) {
-            throw new NotImplementedException();
-        }
         return changeRequestManager.getChangeRequest(changeRequestId);
     }
     

@@ -27,7 +27,7 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
-import gov.healthit.chpl.changerequest.manager.ChangeRequestStatusHelper;
+import gov.healthit.chpl.changerequest.domain.service.ChangeRequestStatusService;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -42,7 +42,7 @@ public class ChangeRequestStatusHelperTest {
     private ChangeRequestStatusTypeDAO crStatusTypeDAO;
 
     @InjectMocks
-    private ChangeRequestStatusHelper changeRequestStatusHelper;
+    private ChangeRequestStatusService changeRequestStatusHelper;
 
     @Value("${changerequest.status.pendingacbaction}")
     private Long pendingAcbActionStatus;

@@ -1,12 +1,10 @@
-package gov.healthit.chpl.changerequest.manager;
+package gov.healthit.chpl.changerequest.domain.service;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
-public interface ChangeRequestDetailsHelper<T> {
+public interface ChangeRequestDetailsService<T> {
     T getByChangeRequestId(final Long changeRequestId) throws EntityRetrievalException;
-
-    // T getDetailsFromHashMap(final HashMap<String, Object> map);
 
     ChangeRequest create(final ChangeRequest cr);
 

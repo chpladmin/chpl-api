@@ -1,4 +1,4 @@
-package gov.healthit.chpl.changerequest.manager;
+package gov.healthit.chpl.changerequest.domain.service;
 
 import java.util.Date;
 import java.util.Optional;
@@ -18,7 +18,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 
 @Component
-public class ChangeRequestStatusHelper {
+public class ChangeRequestStatusService {
 
     @Value("${changerequest.status.cancelledbyrequester}")
     private Long cancelledByRequesterStatus;
@@ -36,7 +36,7 @@ public class ChangeRequestStatusHelper {
     private ActivityManager activityManager;
 
     @Autowired
-    public ChangeRequestStatusHelper(final ChangeRequestStatusDAO crStatusDAO,
+    public ChangeRequestStatusService(final ChangeRequestStatusDAO crStatusDAO,
             final ChangeRequestStatusTypeDAO crStatusTypeDAO, final ChangeRequestDAO crDAO,
             final ChangeRequestDetailsFactory crDetailsFactory, final ActivityManager activityManager) {
         this.crStatusDAO = crStatusDAO;

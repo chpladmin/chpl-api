@@ -19,6 +19,9 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsFactory;
+import gov.healthit.chpl.changerequest.domain.service.ChangeRequestStatusService;
+import gov.healthit.chpl.changerequest.domain.service.ChangeRequestWebsiteService;
 import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationContext;
 import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationFactory;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
@@ -48,7 +51,7 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
     private ChangeRequestTypeDAO changeRequestTypeDAO;
     private ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO;
     private DeveloperDAO developerDAO;
-    private ChangeRequestStatusHelper crStatusHelper;
+    private ChangeRequestStatusService crStatusHelper;
     private ChangeRequestValidationFactory crValidationFactory;
     private ChangeRequestDetailsFactory crDetailsFactory;
     private ActivityManager activityManager;
@@ -58,9 +61,8 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
             final ChangeRequestTypeDAO changeRequestTypeDAO,
             final ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO, final DeveloperDAO developerDAO,
             final CertifiedProductDAO certifiedProductDAO, final CertificationBodyDAO certificationBodyDAO,
-            final ChangeRequestCertificationBodyHelper changeRequestCertificationBodyHelper,
-            final ChangeRequestStatusTypeDAO crStatusTypeDAO, final ChangeRequestStatusHelper crStatusHelper,
-            final ChangeRequestValidationFactory crValidationFactory, final ChangeRequestWebsiteHelper crWebsiteHelper,
+            final ChangeRequestStatusTypeDAO crStatusTypeDAO, final ChangeRequestStatusService crStatusHelper,
+            final ChangeRequestValidationFactory crValidationFactory, final ChangeRequestWebsiteService crWebsiteHelper,
             final ChangeRequestDetailsFactory crDetailsFactory, final ActivityManager activityManager) {
         this.changeRequestDAO = changeRequestDAO;
         this.changeRequestTypeDAO = changeRequestTypeDAO;
@@ -157,10 +159,6 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
         ChangeRequest newCr = changeRequestDAO.create(cr);
         newCr.getStatuses().add(crStatusHelper.saveInitialStatus(newCr));
         return newCr;
-    }
-
-    private Object getChangeRequestDetails(ChangeRequest cr) throws EntityRetrievalException {
-        return crDetailsFactory.get(cr.getChangeRequestType().getId()).getByChangeRequestId(cr.getId());
     }
 
     private List<String> runCreateValidations(ChangeRequest cr) {
