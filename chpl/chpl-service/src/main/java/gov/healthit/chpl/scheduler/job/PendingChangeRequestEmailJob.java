@@ -88,7 +88,8 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
             String htmlMessage = null;
             List<File> files = null;
             if (csvRows != null && csvRows.size() > 0) {
-                htmlMessage = String.format(props.getProperty("pendingChangeRequestHasDataEmailBody"));
+                htmlMessage = String.format(props.getProperty("pendingChangeRequestHasDataEmailBody"),
+                        csvRows.size());
                 String filename = props.getProperty("pendingChangeRequestReportFilename");
                 File output = null;
                 files = new ArrayList<File>();
@@ -204,8 +205,13 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
 
         // Relevancy for ONC-ACBs
         for (int i = 0; i < activeAcbs.size(); i++) {
-            CertificationBody acb = new CertificationBody(activeAcbs.get(i));
-            currRow.set(ONC_ACB_START + i, activity.getCertificationBodies().contains(acb) ? "Relevant" : "Not relevant");
+            boolean isRelevant = false;
+            for (CertificationBody acb : activity.getCertificationBodies()) {
+                if (activeAcbs.get(i).getId() == acb.getId()) {
+                    isRelevant = true;
+                }
+            }
+            currRow.set(ONC_ACB_START + i, isRelevant ? "Relevant" : "Not relevant");
         }
     }
 
