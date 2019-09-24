@@ -6,17 +6,6 @@
         <Property name="logDir">${sys:catalina.home}/logs</Property>
     </Properties>
     <Appenders>
-        <RollingFile name="insertMissingSplitActivityJob"
-            fileName="${logDir}/scheduler/insertMissingSplitActivityJob.log"
-            filePattern="${logDir}/scheduler/history/insertMissingSplitActivityJob-%d{yyyy-MM-dd}.log">
-            <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
-            </PatternLayout>
-            <Policies>
-                <TimeBasedTriggeringPolicy
-                    interval="1" modulate="true" />
-            </Policies>
-        </RollingFile>
         <RollingFile name="FILE" fileName="${logDir}/chplservice.log"
             filePattern="${logDir}/chplservice-%d{yyyyMMdd}.log">
             <PatternLayout>
@@ -192,6 +181,17 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <RollingFile name="pendingChangeRequestEmailJob"
+            fileName="${logDir}/scheduler/pendingChangeRequestEmailJob.log"
+            filePattern="${logDir}/scheduler/history/pendingChangeRequestEmailJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
         <RollingFile name="interruptJob"
             fileName="${logDir}/scheduler/interruptJob.log"
             filePattern="${logDir}/scheduler/history/interruptJob-%d{yyyy-MM-dd}.log">
@@ -228,10 +228,6 @@
         </Logger>
         <Logger name="gov.healthit.chpl" level="INFO" additivity="false">
             <AppenderRef ref="FILE" />
-        </Logger>
-        <Logger name="insertMissingSplitActivityJobLogger" level="INFO"
-            additivity="false">
-            <AppenderRef ref="insertMissingSplitActivityJob" />
         </Logger>
         <Logger name="summaryStatisticsEmailJobLogger" level="INFO"
             additivity="false">
@@ -293,6 +289,10 @@
         <Logger name="questionableActivityEmailJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="questionableActivityEmailJob" />
+        </Logger>
+        <Logger name="pendingChangeRequestEmailJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="pendingChangeRequestEmailJob" />
         </Logger>
         <Logger name="interruptJobLogger" level="INFO"
             additivity="false">
