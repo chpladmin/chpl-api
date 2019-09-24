@@ -31,6 +31,7 @@ public class FailedUrlResult {
     private String chplProductNumber;
     private String edition;
     private String certificationStatus;
+    private Date certificationDate;
     private String criteria;
 
     public FailedUrlResult() {
@@ -164,5 +165,13 @@ public class FailedUrlResult {
 
     public void setCriteria(final String criteria) {
         this.criteria = criteria;
+    }
+
+    public Date getCertificationDate() {
+        return certificationDate;
+    }
+
+    public void setCertificationDate(final Date certificationDate) {
+        this.certificationDate = certificationDate;
     }
 }

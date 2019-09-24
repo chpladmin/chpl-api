@@ -131,6 +131,9 @@ public class CertifiedProductSummaryEntity implements Serializable {
     @Column(name = "certification_status")
     private String certificationStatus;
 
+    @Column(name = "certification_date")
+    private Date certificationDate;
+
     @Column(name = "acb_code")
     private String acbCode;
 
@@ -501,6 +504,14 @@ public class CertifiedProductSummaryEntity implements Serializable {
 
     public void setCertificationResults(final Set<CertificationResultDetailsEntity> certificationResults) {
         this.certificationResults = certificationResults;
+    }
+
+    public Date getCertificationDate() {
+        return certificationDate;
+    }
+
+    public void setCertificationDate(final Date certificationDate) {
+        this.certificationDate = certificationDate;
     }
 
 }

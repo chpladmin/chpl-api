@@ -52,7 +52,8 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             "URL", "Status Code", "Status Name", "Error Message",
             "URL Type", "ONC-ATL", "ONC-ACB", "Developer", "Developer Contact Name",
             "Developer Contact Email", "Developer Contact Phone Number", "Product", "Version",
-            "CHPL Product Number", "Edition", "Certification Status", "Criteria", "Date Last Checked"};
+            "CHPL Product Number", "Edition", "Certification Date",
+            "Certification Status", "Criteria", "Date Last Checked"};
 
     @Autowired
     private Environment env;
@@ -149,6 +150,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                         urlResultWithError.setChplProductNumber(listing.getChplProductNumber());
                         urlResultWithError.setEdition(listing.getYear());
                         urlResultWithError.setCertificationStatus(listing.getCertificationStatus());
+                        urlResultWithError.setCertificationDate(listing.getCertificationDate());
                         badUrlsToWrite.add(urlResultWithError);
                     }
                     break;
@@ -187,6 +189,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                             urlResultWithError.setChplProductNumber(associatedListing.getChplProductNumber());
                             urlResultWithError.setEdition(associatedListing.getYear());
                             urlResultWithError.setCertificationStatus(associatedListing.getCertificationStatus());
+                            urlResultWithError.setCertificationDate(associatedListing.getCertificationDate());
                             urlResultWithError.setCriteria(certResult.getNumber());
                             badUrlsToWrite.add(urlResultWithError);
                         }
@@ -399,6 +402,12 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             result.add("");
         }
 
+        if (urlResult.getCertificationDate() != null) {
+            result.add(getDateFormatter().format(urlResult.getCertificationDate()));
+        } else {
+            result.add("");
+        }
+
         if (urlResult.getCertificationStatus() != null) {
             result.add(urlResult.getCertificationStatus());
         } else {
@@ -412,7 +421,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
         }
 
         if (urlResult.getLastChecked() != null) {
-            result.add(getDateFormatter().format(urlResult.getLastChecked()));
+            result.add(getTimestampFormatter().format(urlResult.getLastChecked()));
         } else {
             result.add("");
         }
@@ -463,6 +472,10 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
     }
 
     private DateFormat getDateFormatter() {
+        return DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
+    }
+
+    private DateFormat getTimestampFormatter() {
         return DateFormat.getDateTimeInstance(
                 DateFormat.LONG,
                 DateFormat.LONG,
