@@ -74,6 +74,7 @@ import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @PropertySources({
         @PropertySource("classpath:/environment.test.properties"),
+        @PropertySource("classpath:/lookup.properties"),
 })
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableTransactionManagement
@@ -343,14 +344,5 @@ public class CHPLTestConfig implements EnvironmentAware {
     @Bean
     public FF4j getFF4j() {
         return Mockito.spy(new FF4j());
-    }
-
-    @Bean
-    public PropertyPlaceholderConfigurer propertyPlaceholderConfigurer() throws IOException {
-        final PropertyPlaceholderConfigurer ppc = new PropertyPlaceholderConfigurer();
-        ppc.setLocations(ArrayUtils.addAll(
-                new PathMatchingResourcePatternResolver().getResources("classpath*:lookup.test.properties")));
-
-        return ppc;
     }
 }
