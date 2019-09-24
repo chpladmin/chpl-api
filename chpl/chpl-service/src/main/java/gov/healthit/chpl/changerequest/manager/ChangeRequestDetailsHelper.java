@@ -1,21 +1,16 @@
 package gov.healthit.chpl.changerequest.manager;
 
-import java.util.HashMap;
-
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
-import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface ChangeRequestDetailsHelper<T> {
     T getByChangeRequestId(final Long changeRequestId) throws EntityRetrievalException;
 
-    T getDetailsFromHashMap(final HashMap<String, Object> map);
+    // T getDetailsFromHashMap(final HashMap<String, Object> map);
 
-    T create(final ChangeRequest cr, final T details);
+    ChangeRequest create(final ChangeRequest cr);
 
-    T update(final ChangeRequest cr, final T details);
+    ChangeRequest update(final ChangeRequest cr);
 
-    void execute(final ChangeRequest cr) throws EntityRetrievalException, EntityCreationException;
-
-    void sendEmailForUpdatedStatus(final ChangeRequest cr);
+    ChangeRequest postStatusChangeProcessing(final ChangeRequest cr);
 }
