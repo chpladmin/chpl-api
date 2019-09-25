@@ -19,8 +19,6 @@ import gov.healthit.chpl.exception.ValidationException;
 
 public interface DeveloperManager {
     String NEW_DEVELOPER_CODE = "XXXX";
-    String SYSTEM_DEV_VALIDATION_ERROR = "Unable to validate system developer as the pending ACB Name is null or its String representation "
-            + "is null or empty";
 
     List<DeveloperDTO> getAll();
 

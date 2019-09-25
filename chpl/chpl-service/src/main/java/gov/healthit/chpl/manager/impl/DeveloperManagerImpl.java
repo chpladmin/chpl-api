@@ -798,10 +798,12 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
                         throw new ValidationException(sysDevErrorMessages);
                     }
                 } else {
-                    throw new ValidationException(SYSTEM_DEV_VALIDATION_ERROR);
+                    LOGGER.error("Unable to validate system developer as the pending ACB Name is null "
+                            + "or its String representation is null or empty");
+                    throw new ValidationException(msgUtil.getMessage("system.developer.pendingACBNameNullOrEmpty"));
                 }
             } else {
-                LOGGER.info("Skipping system validation due to null pending developer or a null system developer");
+                LOGGER.warn("Skipping system validation due to null pending developer or a null system developer");
             }
         } else {
             LOGGER.info("Skipping system validation due to new developer code '" + NEW_DEVELOPER_CODE + "'");
