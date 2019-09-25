@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.mail.MessagingException;
@@ -55,7 +54,6 @@ import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMetadataDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
@@ -81,7 +79,6 @@ import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.FileUtils;
-import gov.healthit.chpl.validation.developer.DeveloperInSystemIsSavedValidator;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.PendingValidator;
 import gov.healthit.chpl.validation.listing.Validator;
@@ -145,9 +142,6 @@ public class CertifiedProductController {
 
     @Autowired
     private DeveloperManager developerManager;
-
-    @Autowired
-    private DeveloperInSystemIsSavedValidator sysDevVal;
 
     /**
      * List all certified products.
@@ -871,31 +865,7 @@ public class CertifiedProductController {
                 throw new ValidationException(pcpDto.getErrorMessages(), pcpDto.getWarningMessages());
             }
 
-            if (pendingCp.getDeveloper() != null && pendingCp.getCertifyingBody() != null
-                    && pendingCp.getDeveloper().getDeveloperId() != null) {
-                Long curDevId = pendingCp.getDeveloper().getDeveloperId();
-                DeveloperDTO systemDeveloperDTO = developerManager.getById(curDevId);
-                if (systemDeveloperDTO != null) {
-                    final Object pendingAcbNameObj = pendingCp.getCertifyingBody()
-                            .get(CertifiedProductSearchDetails.ACB_NAME_KEY);
-                    if (pendingAcbNameObj != null && !StringUtils.isEmpty(pendingAcbNameObj.toString())) {
-                        Set<String> sysDevErrorMessages = sysDevVal.validate(systemDeveloperDTO,
-                                pendingAcbNameObj.toString());
-                        if (!sysDevErrorMessages.isEmpty()) {
-                            throw new ValidationException(sysDevErrorMessages);
-                        }
-                    } else {
-                        throw new ValidationException(
-                                "Unable to validate system developer as the pending ACB Name is null or its String representation "
-                                        + "is null or empty");
-                    }
-                } else {
-                    throw new ValidationException("Unable to validate system developer as it is null");
-                }
-            } else {
-                throw new ValidationException(
-                        "Unable to validate system developer as the pending developer, certifying body, or developer ID is null");
-            }
+            developerManager.validateDeveloperInSystemIfExists(pendingCp);
 
             CertifiedProductDTO createdProduct = cpManager.createFromPending(acbId, pcpDto);
             pcpManager.confirm(acbId, pendingCp.getId());
