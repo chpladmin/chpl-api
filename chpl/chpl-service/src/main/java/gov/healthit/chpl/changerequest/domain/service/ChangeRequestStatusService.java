@@ -13,9 +13,13 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
+import gov.healthit.chpl.dao.auth.UserPermissionDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.auth.UserPermission;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Component
 public class ChangeRequestStatusService {
@@ -34,16 +38,21 @@ public class ChangeRequestStatusService {
     private ChangeRequestDAO crDAO;
     private ChangeRequestDetailsFactory crDetailsFactory;
     private ActivityManager activityManager;
+    private ResourcePermissions resourcePermissions;
+    private UserPermissionDAO userPermissionDAO;
 
     @Autowired
     public ChangeRequestStatusService(final ChangeRequestStatusDAO crStatusDAO,
             final ChangeRequestStatusTypeDAO crStatusTypeDAO, final ChangeRequestDAO crDAO,
-            final ChangeRequestDetailsFactory crDetailsFactory, final ActivityManager activityManager) {
+            final ChangeRequestDetailsFactory crDetailsFactory, final ActivityManager activityManager,
+            final ResourcePermissions resourcePermissions, final UserPermissionDAO userPermissionDAO) {
         this.crStatusDAO = crStatusDAO;
         this.crStatusTypeDAO = crStatusTypeDAO;
         this.crDAO = crDAO;
         this.crDetailsFactory = crDetailsFactory;
         this.activityManager = activityManager;
+        this.resourcePermissions = resourcePermissions;
+        this.userPermissionDAO = userPermissionDAO;
     }
 
     public ChangeRequestStatus saveInitialStatus(ChangeRequest cr) throws EntityRetrievalException {
@@ -53,6 +62,8 @@ public class ChangeRequestStatusService {
         ChangeRequestStatus crStatus = new ChangeRequestStatus();
         crStatus.setStatusChangeDate(new Date());
         crStatus.setChangeRequestStatusType(crStatusType);
+        crStatus.setUserPermission(
+                new UserPermission(resourcePermissions.getRoleByUserId(AuthUtil.getCurrentUser().getId())));
 
         return crStatusDAO.create(cr, crStatus);
     }
@@ -128,8 +139,10 @@ public class ChangeRequestStatusService {
         crStatus.setChangeRequestStatusType(crStatusType);
         crStatus.setComment(comment);
         crStatus.setStatusChangeDate(new Date());
-        crStatus = crStatusDAO.create(cr, crStatus);
+        crStatus.setUserPermission(
+                new UserPermission(resourcePermissions.getRoleByUserId(AuthUtil.getCurrentUser().getId())));
 
+        crStatus = crStatusDAO.create(cr, crStatus);
         cr.setCurrentStatus(crStatus);
         cr.getStatuses().add(crStatus);
 

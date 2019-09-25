@@ -14,6 +14,7 @@ import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusTypeEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
+import gov.healthit.chpl.entity.auth.UserPermissionEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
 
@@ -30,8 +31,9 @@ public class ChangeRequestStatusDAOImpl extends BaseDAOImpl implements ChangeReq
 
     @Override
     public List<ChangeRequestStatus> getByChangeRequestId(final Long changeRequestId) {
-        String hql = "SELECT crStatus "
-                + "FROM ChangeRequestStatusEntity crStatus "
+        String hql = "FROM ChangeRequestStatusEntity crStatus "
+                + "LEFT JOIN FETCH crStatus.certificationBody "
+                + "JOIN FETCH crStatus.userPermission "
                 + "WHERE crStatus.deleted = false "
                 + "AND crStatus.changeRequest.id = :changeRequestId";
 
@@ -44,8 +46,9 @@ public class ChangeRequestStatusDAOImpl extends BaseDAOImpl implements ChangeReq
     }
 
     private ChangeRequestStatusEntity getEntityById(final Long id) throws EntityRetrievalException {
-        String hql = "SELECT crStatus "
-                + "FROM ChangeRequestStatusEntity crStatus "
+        String hql = "FROM ChangeRequestStatusEntity crStatus "
+                + "LEFT JOIN FETCH crStatus.certificationBody "
+                + "JOIN FETCH crStatus.userPermission "
                 + "WHERE crStatus.deleted = false "
                 + "AND crStatus.id = :changeRequestStatusId";
 
@@ -61,7 +64,6 @@ public class ChangeRequestStatusDAOImpl extends BaseDAOImpl implements ChangeReq
             entity = result.get(0);
         }
         return entity;
-
     }
 
     private ChangeRequestStatusEntity getNewEntity(ChangeRequest cr, ChangeRequestStatus crStatus) {
@@ -74,6 +76,7 @@ public class ChangeRequestStatusDAOImpl extends BaseDAOImpl implements ChangeReq
             entity.setCertificationBody(
                     getSession().load(CertificationBodyEntity.class, crStatus.getCertificationBody().getId()));
         }
+        entity.setUserPermission(getSession().load(UserPermissionEntity.class, crStatus.getUserPermission().getId()));
         entity.setComment(crStatus.getComment());
         entity.setStatusChangeDate(crStatus.getStatusChangeDate());
         entity.setDeleted(false);

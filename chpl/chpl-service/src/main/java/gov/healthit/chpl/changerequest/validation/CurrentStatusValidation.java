@@ -1,5 +1,6 @@
 package gov.healthit.chpl.changerequest.validation;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
@@ -11,6 +12,7 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
 
     private ChangeRequestStatusTypeDAO crStatusTypeDAO;
 
+    @Autowired
     public CurrentStatusValidation(final ChangeRequestStatusTypeDAO crStatusTypeDAO) {
         this.crStatusTypeDAO = crStatusTypeDAO;
     }
