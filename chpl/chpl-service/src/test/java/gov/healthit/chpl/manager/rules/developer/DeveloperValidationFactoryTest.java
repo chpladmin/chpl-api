@@ -13,7 +13,6 @@ import java.util.Set;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -52,10 +51,7 @@ public class DeveloperValidationFactoryTest {
             STATUS_EVENTS_DUPLICATE_STATUS;
 
     static {
-        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasename("classpath:/errors");
-        messageSource.setDefaultEncoding("UTF-8");
-        ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
+        ErrorMessageUtil msgUtil = new ErrorMessageUtil(CHPLTestDeveloperValidationConfig.messageSource());
         NAME_REQUIRED = msgUtil.getMessage("developer.nameRequired");
 
         WEBSITE_REQUIRED = msgUtil.getMessage("developer.websiteRequired");
@@ -269,7 +265,8 @@ public class DeveloperValidationFactoryTest {
         // default constructor status events (technically error-free as
         // per current validation code) so testing as is
         // TODO: Determine if existing validation should be expanded to handle
-        // rejecting an empty object - if so, update impl and this tests expected result
+        // rejecting an empty object - if so, update impl and this tests
+        // expected result
         devDto.setStatusEvents(Arrays.asList(new DeveloperStatusEventDTO()));
         errorMessages = testAllDeveloperValidations(devDto, DEFAULT_PENDING_ACB_NAME);
         assertFalseIfContainsErrorMessage(STATUS_EVENTS_NO_CURRENT, errorMessages);

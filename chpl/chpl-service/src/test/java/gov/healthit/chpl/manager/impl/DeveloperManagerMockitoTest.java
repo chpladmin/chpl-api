@@ -13,7 +13,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -69,12 +68,16 @@ public class DeveloperManagerMockitoTest {
     private DeveloperDTO sysDev;
     private PendingCertifiedProductDetails pendingCp;
 
+    public static final String PENDING_ACB_NAME_NULL_OR_EMPTY;
+
+    static {
+        ErrorMessageUtil msgUtil = new ErrorMessageUtil(CHPLTestDeveloperValidationConfig.messageSource());
+        PENDING_ACB_NAME_NULL_OR_EMPTY = msgUtil.getMessage("system.developer.pendingACBNameNullOrEmpty");
+    }
+
     @Before
     public void setup() {
-        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasename("classpath:/errors");
-        messageSource.setDefaultEncoding("UTF-8");
-        msgUtil = Mockito.spy((new ErrorMessageUtil(messageSource)));
+        msgUtil = Mockito.spy((new ErrorMessageUtil(CHPLTestDeveloperValidationConfig.messageSource())));
         MockitoAnnotations.initMocks(this);
 
         sysDev = getPopulatedDeveloperDTO();
@@ -109,7 +112,7 @@ public class DeveloperManagerMockitoTest {
     public void testValidateDeveloperInSystemIfExists_nullPendingAcbNameObj() throws EntityRetrievalException {
         pendingCp.setCertifyingBody(new HashMap<String, Object>());
         Mockito.doReturn(sysDev).when(developerManager).getById(ArgumentMatchers.anyLong());
-        systemValidationPropertyTester(DeveloperManager.SYSTEM_DEV_VALIDATION_ERROR);
+        systemValidationPropertyTester(PENDING_ACB_NAME_NULL_OR_EMPTY);
     }
 
     @Test
