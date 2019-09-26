@@ -24,7 +24,6 @@ public class DeveloperActiveValidation extends ValidationRule<ChangeRequestValid
                 return true;
             }
         } else {
-            getMessages().add(getErrorMessage("changeRequest.developer.notActive"));
             crToTest = context.getChangeRequest();
         }
 
