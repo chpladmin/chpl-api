@@ -1,5 +1,6 @@
 package gov.healthit.chpl.changerequest.domain.service;
 
+import java.text.DateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,6 +49,12 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
 
     @Value("${changerequest.status.accepted}")
     private Long acceptedStatus;
+
+    @Value("${user.permission.onc}")
+    private Long oncPermission;
+
+    @Value("${user.permission.admin}")
+    private Long adminPermission;
 
     @Autowired
     public ChangeRequestWebsiteService(final ChangeRequestDAO crDAO, final ChangeRequestWebsiteDAO crWebsiteDAO,
@@ -117,8 +124,12 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
             if (cr.getCurrentStatus().getChangeRequestStatusType().getId().equals(pendingDeveloperActionStatus)) {
                 sendPendingDeveloperActionEmail(cr);
             } else if (cr.getCurrentStatus().getChangeRequestStatusType().getId().equals(acceptedStatus)) {
-                cr = execute(cr);
-                sendApprovalEmail(cr);
+                // Need the original website for the email...
+                DeveloperDTO developer = developerDAO.getById(cr.getDeveloper().getDeveloperId());
+                String originalWebsite = developer.getWebsite();
+
+                cr = execute(cr, developer);
+                sendApprovalEmail(cr, originalWebsite);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -126,12 +137,12 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
         return cr;
     }
 
-    private ChangeRequest execute(final ChangeRequest cr) throws EntityRetrievalException, EntityCreationException {
+    private ChangeRequest execute(final ChangeRequest cr, DeveloperDTO developer)
+            throws EntityRetrievalException, EntityCreationException {
         ChangeRequestWebsite crWebsite = (ChangeRequestWebsite) cr.getDetails();
-        DeveloperDTO dev = developerDAO.getById(cr.getDeveloper().getDeveloperId());
-        dev.setWebsite(crWebsite.getWebsite());
+        developer.setWebsite(crWebsite.getWebsite());
         try {
-            DeveloperDTO updatedDeveloper = developerManager.update(dev, false);
+            DeveloperDTO updatedDeveloper = developerManager.update(developer, false);
             cr.setDeveloper(new Developer(updatedDeveloper));
             return cr;
         } catch (JsonProcessingException | MissingReasonException | ValidationException e) {
@@ -139,16 +150,16 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
         }
     }
 
-    private void sendApprovalEmail(final ChangeRequest cr) throws MessagingException {
+    private void sendApprovalEmail(final ChangeRequest cr, String originalWebsite) throws MessagingException {
+        DateFormat df = DateFormat.getTimeInstance(DateFormat.SHORT);
         new EmailBuilder(env)
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.<String> toList()))
                 .subject(env.getProperty("changeRequest.website.approval.subject"))
                 .htmlMessage(String.format(env.getProperty("changeRequest.website.approval.body"),
-                        "09/22/2019",
-                        "Developer User",
-                        "Old Website",
+                        df.format(cr.getSubmittedDate()),
+                        originalWebsite,
                         cr.getDeveloper().getWebsite(),
                         getApprovalBody(cr)))
                 .sendEmail();
@@ -179,8 +190,12 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
     private String getApprovalBody(final ChangeRequest cr) {
         if (cr.getCurrentStatus().getCertificationBody() != null) {
             return cr.getCurrentStatus().getCertificationBody().getName();
+        } else if (cr.getCurrentStatus().getUserPermission().getId().equals(adminPermission)) {
+            return "the CHPL Admin";
+        } else if (cr.getCurrentStatus().getUserPermission().getId().equals(oncPermission)) {
+            return "ONC";
         } else {
-            return "ONC or the CHPL Admin";
+            return "";
         }
     }
 }

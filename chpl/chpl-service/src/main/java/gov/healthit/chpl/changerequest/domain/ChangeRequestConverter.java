@@ -33,6 +33,7 @@ public class ChangeRequestConverter {
         cr.setId(entity.getId());
         cr.setChangeRequestType(convert(entity.getChangeRequestType()));
         cr.setDeveloper(new Developer(new DeveloperDTO(entity.getDeveloper())));
+        cr.setSubmittedDate(entity.getCreationDate());
         return cr;
     }
 

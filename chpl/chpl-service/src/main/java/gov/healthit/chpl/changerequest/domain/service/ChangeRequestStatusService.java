@@ -3,6 +3,8 @@ package gov.healthit.chpl.changerequest.domain.service;
 import java.util.Date;
 import java.util.Optional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -13,7 +15,7 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
-import gov.healthit.chpl.dao.auth.UserPermissionDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.auth.UserPermission;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -23,6 +25,7 @@ import gov.healthit.chpl.util.AuthUtil;
 
 @Component
 public class ChangeRequestStatusService {
+    private static final Logger LOGGER = LogManager.getLogger(ChangeRequestStatusService.class);
 
     @Value("${changerequest.status.cancelledbyrequester}")
     private Long cancelledByRequesterStatus;
@@ -39,20 +42,18 @@ public class ChangeRequestStatusService {
     private ChangeRequestDetailsFactory crDetailsFactory;
     private ActivityManager activityManager;
     private ResourcePermissions resourcePermissions;
-    private UserPermissionDAO userPermissionDAO;
 
     @Autowired
     public ChangeRequestStatusService(final ChangeRequestStatusDAO crStatusDAO,
             final ChangeRequestStatusTypeDAO crStatusTypeDAO, final ChangeRequestDAO crDAO,
             final ChangeRequestDetailsFactory crDetailsFactory, final ActivityManager activityManager,
-            final ResourcePermissions resourcePermissions, final UserPermissionDAO userPermissionDAO) {
+            final ResourcePermissions resourcePermissions) {
         this.crStatusDAO = crStatusDAO;
         this.crStatusTypeDAO = crStatusTypeDAO;
         this.crDAO = crDAO;
         this.crDetailsFactory = crDetailsFactory;
         this.activityManager = activityManager;
         this.resourcePermissions = resourcePermissions;
-        this.userPermissionDAO = userPermissionDAO;
     }
 
     public ChangeRequestStatus saveInitialStatus(ChangeRequest cr) throws EntityRetrievalException {
@@ -141,6 +142,9 @@ public class ChangeRequestStatusService {
         crStatus.setStatusChangeDate(new Date());
         crStatus.setUserPermission(
                 new UserPermission(resourcePermissions.getRoleByUserId(AuthUtil.getCurrentUser().getId())));
+        if (resourcePermissions.isUserRoleAcbAdmin()) {
+            crStatus.setCertificationBody(getCertificationBodyForCurrentUser());
+        }
 
         crStatus = crStatusDAO.create(cr, crStatus);
         cr.setCurrentStatus(crStatus);
@@ -149,4 +153,18 @@ public class ChangeRequestStatusService {
         return cr;
     }
 
+    private CertificationBody getCertificationBodyForCurrentUser() {
+        if (resourcePermissions.isUserRoleAcbAdmin()) {
+            if (resourcePermissions.getAllAcbsForCurrentUser().size() == 1) {
+                return new CertificationBody(resourcePermissions.getAllAcbsForCurrentUser().get(0));
+            } else {
+                String msg = "Cannot determine ACB for current user.  There are multiple ACBs for this user: "
+                        + AuthUtil.getUsername();
+                LOGGER.error(msg);
+                throw new RuntimeException(msg);
+            }
+        } else {
+            return null;
+        }
+    }
 }
