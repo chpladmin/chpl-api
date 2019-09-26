@@ -171,6 +171,7 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
         List<ValidationRule<ChangeRequestValidationContext>> rules = new ArrayList<ValidationRule<ChangeRequestValidationContext>>();
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_EXISTENCE));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_DETAILS_UPDATE));
+        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.MULTIPLE_ACBS));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.DEVELOPER_ACTIVE));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.STATUS_TYPE));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.STATUS_NOT_UPDATABLE));

@@ -18,6 +18,7 @@ public class ChangeRequestValidationFactory {
     public final static String STATUS_TYPE = "STATUS_TYPE";
     public final static String STATUS_NOT_UPDATABLE = "STATUS_NOT_UPDATABLE";
     public final static String COMMENT_REQUIRED = "COMMENT_REQUIRED";
+    public final static String MULTIPLE_ACBS = "MULTIPLE_ACBS";
 
     private ChangeRequestDetailsCreateValidation changeRequestDetailsCreateValidation;
     private ChangeRequestDetailsUpdateValidation changeRequestDetailsUpdateValidation;
@@ -29,6 +30,7 @@ public class ChangeRequestValidationFactory {
     private ChangeRequestNotUpdatableDueToStatusValidation changeRequestNotUpdatableDueToStatusValidation;
     private ChangeRequestTypeInProcessValidation changeRequestTypeInProcessValidation;
     private CommentRequiredValidation commentRequiredValidation;
+    private RoleAcbHasMultipleCertificationBodiesValidation roleAcbHasMultipleCertificationBodiesValidation;
 
     @Autowired
     public ChangeRequestValidationFactory(
@@ -41,7 +43,8 @@ public class ChangeRequestValidationFactory {
             final DeveloperActiveValidation developerActiveValidation,
             final ChangeRequestNotUpdatableDueToStatusValidation changeRequestNotUpdatableDueToStatusValidation,
             final ChangeRequestTypeInProcessValidation changeRequestTypeInProcessValidation,
-            final CommentRequiredValidation commentRequiredValidation) {
+            final CommentRequiredValidation commentRequiredValidation,
+            final RoleAcbHasMultipleCertificationBodiesValidation roleAcbHasMultipleCertificationBodiesValidation) {
         this.changeRequestDetailsCreateValidation = changeRequestDetailsCreateValidation;
         this.changeRequestDetailsUpdateValidation = changeRequestDetailsUpdateValidation;
         this.changeRequestExistanceValidation = changeRequestExistanceValidation;
@@ -52,6 +55,7 @@ public class ChangeRequestValidationFactory {
         this.changeRequestNotUpdatableDueToStatusValidation = changeRequestNotUpdatableDueToStatusValidation;
         this.changeRequestTypeInProcessValidation = changeRequestTypeInProcessValidation;
         this.commentRequiredValidation = commentRequiredValidation;
+        this.roleAcbHasMultipleCertificationBodiesValidation = roleAcbHasMultipleCertificationBodiesValidation;
     }
 
     public ValidationRule<ChangeRequestValidationContext> getRule(String name) {
@@ -76,6 +80,8 @@ public class ChangeRequestValidationFactory {
             return changeRequestNotUpdatableDueToStatusValidation;
         case COMMENT_REQUIRED:
             return commentRequiredValidation;
+        case MULTIPLE_ACBS:
+            return roleAcbHasMultipleCertificationBodiesValidation;
         default:
             return null;
         }
