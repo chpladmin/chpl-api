@@ -33,6 +33,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.rules.ValidationRule;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 
 @Component
 public class ChangeRequestManagerImpl extends SecurityManager implements ChangeRequestManager {
@@ -53,6 +54,7 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
     private ChangeRequestValidationFactory crValidationFactory;
     private ChangeRequestDetailsFactory crDetailsFactory;
     private ActivityManager activityManager;
+    private ResourcePermissions resourcePermissions;
 
     @Autowired
     public ChangeRequestManagerImpl(final ChangeRequestDAO changeRequestDAO,
@@ -61,7 +63,8 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
             final CertifiedProductDAO certifiedProductDAO, final CertificationBodyDAO certificationBodyDAO,
             final ChangeRequestStatusTypeDAO crStatusTypeDAO, final ChangeRequestStatusService crStatusHelper,
             final ChangeRequestValidationFactory crValidationFactory, final ChangeRequestWebsiteService crWebsiteHelper,
-            final ChangeRequestDetailsFactory crDetailsFactory, final ActivityManager activityManager) {
+            final ChangeRequestDetailsFactory crDetailsFactory, final ActivityManager activityManager,
+            final ResourcePermissions resourcePermissions) {
         this.changeRequestDAO = changeRequestDAO;
         this.changeRequestTypeDAO = changeRequestTypeDAO;
         this.changeRequestStatusTypeDAO = changeRequestStatusTypeDAO;
@@ -69,6 +72,7 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
         this.crValidationFactory = crValidationFactory;
         this.crDetailsFactory = crDetailsFactory;
         this.activityManager = activityManager;
+        this.resourcePermissions = resourcePermissions;
     }
 
     @Override
@@ -142,8 +146,10 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
             throw validationException;
         }
 
-        // Update the details
-        crDetailsFactory.get(cr.getChangeRequestType().getId()).update(cr);
+        // Update the details, if the user is of role developer
+        if (resourcePermissions.isUserRoleDeveloperAdmin()) {
+            crDetailsFactory.get(cr.getChangeRequestType().getId()).update(cr);
+        }
         // Update the status
         crStatusService.updateChangeRequestStatus(cr);
 

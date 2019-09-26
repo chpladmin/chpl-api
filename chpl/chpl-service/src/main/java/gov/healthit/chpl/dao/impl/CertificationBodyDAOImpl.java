@@ -22,7 +22,7 @@ import gov.healthit.chpl.util.AuthUtil;
 
 /**
  * Data access methods for certification bodies (ACBs).
- * 
+ *
  * @author kekey
  *
  */
@@ -138,7 +138,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 
     /**
      * Finds an ACB by ID.
-     * 
+     *
      * @param acbId
      * @return the ACB
      */
@@ -154,7 +154,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 
     /**
      * Find an ACB by name.
-     * 
+     *
      * @param name
      * @return the ACB
      */
@@ -166,6 +166,28 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
             dto = new CertificationBodyDTO(entity);
         }
         return dto;
+    }
+
+    /**
+     * Find any ACBs with the given website.
+     *
+     * @param website
+     * @return the ACBs
+     */
+    @Override
+    public List<CertificationBodyDTO> getByWebsite(final String website) {
+        Query query = entityManager.createQuery("SELECT acb "
+                + "FROM CertificationBodyEntity acb "
+                + "LEFT OUTER JOIN FETCH acb.address "
+                + "WHERE acb.deleted = false "
+                + "AND acb.website = :website");
+        query.setParameter("website", website);
+        List<CertificationBodyEntity> results = query.getResultList();
+        List<CertificationBodyDTO> resultDtos = new ArrayList<CertificationBodyDTO>();
+        for (CertificationBodyEntity entity : results) {
+            resultDtos.add(new CertificationBodyDTO(entity));
+        }
+        return resultDtos;
     }
 
     /**
@@ -203,7 +225,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 
     /**
      * Get all ACBs.
-     * 
+     *
      * @return
      */
     private List<CertificationBodyEntity> getAllEntities() {
@@ -214,7 +236,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 
     /**
      * Find an ACB by ID.
-     * 
+     *
      * @param entityId
      * @return
      * @throws EntityRetrievalException
@@ -243,7 +265,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 
     /**
      * Find an ACB by name.
-     * 
+     *
      * @param name
      * @return
      */

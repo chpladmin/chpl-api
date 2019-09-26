@@ -295,6 +295,11 @@
             <artifactId>poi-ooxml</artifactId>
             <version>4.1.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.asynchttpclient</groupId>
+            <artifactId>async-http-client</artifactId>
+            <version>2.10.1</version>
+        </dependency>
         <!-- for unit/integration testing of the dao calls -->
         <dependency>
             <groupId>gov.healthit.chpl</groupId>

@@ -1,5 +1,14 @@
 # Release Notes
 
+
+## Version 21.8.0
+_23 September 2019_
+
+### Flagged Feature
+* Allow users to enter and retrieve surveillance reporting data
+
+---
+
 ## Version 21.7.0
 _10 September 2019_
 

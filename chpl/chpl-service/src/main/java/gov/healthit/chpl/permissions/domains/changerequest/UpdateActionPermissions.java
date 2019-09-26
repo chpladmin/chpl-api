@@ -28,6 +28,8 @@ public class UpdateActionPermissions extends ActionPermissions {
         try {
             if (!(obj instanceof ChangeRequest)) {
                 return false;
+            } else if (getResourcePermissions().isUserRoleOnc() || getResourcePermissions().isUserRoleAdmin()) {
+                return true;
             } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
                 ChangeRequest cr = changeRequestDAO.get(((ChangeRequest) obj).getId());
                 return isCurrentAcbUserAssociatedWithDeveloper(cr.getDeveloper().getDeveloperId());

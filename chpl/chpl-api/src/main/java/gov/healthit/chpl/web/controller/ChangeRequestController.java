@@ -39,7 +39,7 @@ public class ChangeRequestController {
     }
     
     @ApiOperation(value = "Get details about a specific change request.", 
-            notes="Security Restrictions: ROLE_DEVELOPER can get change requests where they have adminstrative authority based on the developer.")
+            notes="Security Restrictions: ROLE_DEVELOPER can get change requests where they have administrative authority based on the developer.")
     @RequestMapping(value = "/{changeRequestId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ChangeRequest getChangeRequest(@PathVariable final Long changeRequestId) throws EntityRetrievalException {
         if (!ff4j.check(FeatureList.CHANGE_REQUEST)) {
@@ -50,7 +50,7 @@ public class ChangeRequestController {
     }
     
     @ApiOperation(value = "Get details about all change requests.", 
-            notes="Security Restrictions: ROLE_DEVELOPER can get change requests where they have adminstrative authority based on the developer.")
+            notes="Security Restrictions: ROLE_DEVELOPER can get change requests where they have administrative authority based on the developer.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ChangeRequest> getAllChangeRequests() throws EntityRetrievalException {
         if (!ff4j.check(FeatureList.CHANGE_REQUEST)) {
@@ -60,7 +60,7 @@ public class ChangeRequestController {
     }
     
     @ApiOperation(value = "Create a new change request.",
-            notes = "Security Restrictions: ROLE_DEVELOPER can create change requests where they have adminstrative authority based on the developer.")
+            notes = "Security Restrictions: ROLE_DEVELOPER can create change requests where they have administrative authority based on the developer.")
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public ChangeRequest createChangeRequest(@RequestBody final ChangeRequest cr ) throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
@@ -73,7 +73,7 @@ public class ChangeRequestController {
     
     
     @ApiOperation(value = "Update an existing request status or request details.",
-            notes = "Security Restrictions: ROLE_DEVELOPER can update change requests where they have adminstrative authority based on the developer.")
+            notes = "Security Restrictions: ROLE_DEVELOPER can update change requests where they have administrative authority based on the developer.")
     @RequestMapping(value = "/{changeRequestId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public ChangeRequest updateChangeRequest(@RequestBody final ChangeRequest cr) throws EntityRetrievalException, ValidationException, EntityCreationException, JsonProcessingException {

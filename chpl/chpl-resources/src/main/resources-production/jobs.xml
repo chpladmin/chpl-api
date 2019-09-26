@@ -12,6 +12,46 @@
     </pre-processing-commands>
     <schedule>
         <!-- Delete from here to "DELETE END MARKER" after PROD push -->
+        <!-- Questionable URL Data Collector -->
+        <!-- URL Status Data Collector -->
+        <job>
+            <name>urlStatusDataCollector</name>
+            <group>systemJobs</group>
+            <description>Generates the data for the questionable url report</description>
+            <job-class>gov.healthit.chpl.scheduler.job.urlStatus.UrlStatusDataCollector</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+        <trigger>
+            <cron>
+                <name>generateUrlStatusData</name>
+                <group>urlStatusDataCollectorTrigger</group>
+                <job-name>urlStatusDataCollector</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 30 3 * * ?</cron-expression> <!-- At 0330 UTC every day -->
+            </cron>
+        </trigger>
+
+        <!--  Questionable URL data emailer -->
+        <job>
+            <name>Questionable URL Report</name>
+            <group>chplJobs</group>
+            <description>Sends a report of all URLs entered into the system that respond with a questionable status code.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.urlStatus.QuestionableUrlReportGenerator</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>WEEKLY</value>
+                </entry>
+            </job-data-map>
+        </job>
         <!-- DELETE END MARKER -->
     </schedule>
 </job-scheduling-data>

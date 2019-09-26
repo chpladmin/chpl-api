@@ -23,6 +23,6 @@ public interface TestingLabDAO {
     TestingLabDTO getById(Long id) throws EntityRetrievalException;
 
     TestingLabDTO getByName(String name);
-
+    List<TestingLabDTO> getByWebsite(String website);
     String getMaxCode();
 }
