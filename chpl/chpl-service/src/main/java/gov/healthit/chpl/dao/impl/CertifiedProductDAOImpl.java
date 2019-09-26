@@ -18,15 +18,18 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.CertifiedProductSummaryDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
+import gov.healthit.chpl.entity.listing.CertifiedProductSummaryEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.scheduler.job.urlStatus.UrlType;
 import gov.healthit.chpl.util.AuthUtil;
 
 /**
  * Certified Product DAO.
- * 
+ *
  * @author alarned
  *
  */
@@ -279,6 +282,25 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 
     @Override
     @Transactional(readOnly = true)
+    public CertifiedProductSummaryDTO getSummaryById(final Long listingId) throws EntityRetrievalException {
+        Query query = entityManager.createQuery("SELECT cp "
+                + "FROM CertifiedProductSummaryEntity cp "
+                + "WHERE id = :id "
+                + "AND deleted = false",
+                CertifiedProductSummaryEntity.class);
+        query.setParameter("id", listingId);
+        List<CertifiedProductSummaryEntity> result = query.getResultList();
+
+        if (result == null || result.size() == 0) {
+            String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.notFound"),
+                    LocaleContextHolder.getLocale()));
+            throw new EntityRetrievalException(msg);
+        }
+        return new CertifiedProductSummaryDTO(result.get(0));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public CertifiedProductDTO getByChplNumber(final String chplProductNumber) {
         CertifiedProductDTO dto = null;
         CertifiedProductEntity entity = getEntityByChplNumber(chplProductNumber);
@@ -491,6 +513,36 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
             dtoResults.add(new CertifiedProductDetailsDTO(result));
         }
         return dtoResults;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CertifiedProductSummaryDTO> getSummaryByUrl(final String url, final UrlType urlType) {
+        String queryStr = "SELECT cp "
+                + "FROM CertifiedProductSummaryEntity cp "
+                + "WHERE cp.deleted = false ";
+        switch (urlType) {
+        case MANDATORY_DISCLOSURE_URL:
+            queryStr += " AND cp.transparencyAttestationUrl = :url ";
+            break;
+        case FULL_USABILITY_REPORT:
+            queryStr += " AND cp.sedReportFileLocation = :url ";
+            break;
+        case TEST_RESULTS_SUMMARY:
+            queryStr += " AND cp.reportFileLocation = :url ";
+            break;
+        default:
+                break;
+        }
+
+        Query query = entityManager.createQuery(queryStr, CertifiedProductSummaryEntity.class);
+        query.setParameter("url", url);
+        List<CertifiedProductSummaryEntity> entities = query.getResultList();
+        List<CertifiedProductSummaryDTO> resultDtos = new ArrayList<CertifiedProductSummaryDTO>();
+        for (CertifiedProductSummaryEntity entity : entities) {
+            resultDtos.add(new CertifiedProductSummaryDTO(entity));
+        }
+        return resultDtos;
     }
 
     @Transactional(readOnly = false)

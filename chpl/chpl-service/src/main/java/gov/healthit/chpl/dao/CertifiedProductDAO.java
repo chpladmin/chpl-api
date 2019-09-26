@@ -5,8 +5,10 @@ import java.util.List;
 
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.CertifiedProductSummaryDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.scheduler.job.urlStatus.UrlType;
 
 /**
  * Interface for database access to CHPL listings.
@@ -33,6 +35,8 @@ public interface CertifiedProductDAO {
 
     CertifiedProductDTO getById(Long productId) throws EntityRetrievalException;
 
+    CertifiedProductSummaryDTO getSummaryById(Long listingId) throws EntityRetrievalException;
+
     CertifiedProductDetailsDTO getDetailsById(Long productId) throws EntityRetrievalException;
 
     List<CertifiedProductDetailsDTO> getDetailsByIds(List<Long> productIds) throws EntityRetrievalException;
@@ -52,6 +56,8 @@ public interface CertifiedProductDAO {
     List<CertifiedProductDetailsDTO> getDetailsByAcbIds(List<Long> acbIds);
 
     List<CertifiedProductDetailsDTO> getDetailsByVersionAndAcbIds(Long versionId, List<Long> acbIds);
+
+    List<CertifiedProductSummaryDTO> getSummaryByUrl(String url, UrlType urlType);
 
     List<CertifiedProductDTO> getByVersionIds(List<Long> versionIds);
 
