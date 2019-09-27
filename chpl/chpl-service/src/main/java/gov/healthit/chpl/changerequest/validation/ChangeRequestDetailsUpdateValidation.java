@@ -30,17 +30,10 @@ public class ChangeRequestDetailsUpdateValidation extends ValidationRule<ChangeR
         if (!doesKeyExistWithStringData(map, "website")) {
             return false;
         }
-        if (!doesKeyExistWithIntegerData(map, "id")) {
-            return false;
-        }
         return true;
     }
 
     private boolean doesKeyExistWithStringData(final HashMap<String, String> map, final String key) {
         return map.containsKey(key) && !StringUtils.isEmpty(map.get(key));
-    }
-
-    private boolean doesKeyExistWithIntegerData(final HashMap<String, String> map, final String key) {
-        return map.containsKey(key) && map.get(key) != null;
     }
 }

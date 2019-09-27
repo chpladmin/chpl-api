@@ -8,11 +8,13 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestConverter;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
+import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsFactory;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestTypeEntity;
@@ -26,6 +28,7 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
 
     private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
     private ChangeRequestStatusDAO changeRequestStatusDAO;
+    private ChangeRequestDetailsFactory changeRequestDetailsFactory;
 
     @Value("${changerequest.status.pendingacbaction}")
     private Long pendingAcbAction;
@@ -36,9 +39,11 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
 
     @Autowired
     public ChangeRequestDAOImpl(final DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO,
-            final ChangeRequestStatusDAO changeRequestStatusDAO) {
+            final ChangeRequestStatusDAO changeRequestStatusDAO,
+            final @Lazy ChangeRequestDetailsFactory changeRequestDetailsFactory) {
         this.developerCertificationBodyMapDAO = developerCertificationBodyMapDAO;
         this.changeRequestStatusDAO = changeRequestStatusDAO;
+        this.changeRequestDetailsFactory = changeRequestDetailsFactory;
     }
 
     @Override
@@ -51,11 +56,8 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
     @Override
     public ChangeRequest get(final Long changeRequestId) throws EntityRetrievalException {
         ChangeRequest cr = ChangeRequestConverter.convert(getEntityById(changeRequestId));
-        cr.setCurrentStatus(getCurrentStatus(cr.getId()));
-        cr.setStatuses(changeRequestStatusDAO.getByChangeRequestId(cr.getId()));
-        cr.setCertificationBodies(developerCertificationBodyMapDAO
-                .getCertificationBodiesForDeveloper(cr.getDeveloper().getDeveloperId()));
-        return cr;
+
+        return populateDependentObjects(cr);
     }
 
     @Override
@@ -69,6 +71,7 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
                             .getCertificationBodiesForDeveloper(cr.getDeveloper().getDeveloperId()));
                     return cr;
                 })
+                .map(cr -> populateDependentObjects(cr))
                 .collect(Collectors.<ChangeRequest>toList());
     }
 
@@ -84,6 +87,7 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
                     return cr;
                 })
                 .filter(cr -> getUpdatableStatuses().contains(cr.getCurrentStatus().getChangeRequestStatusType().getId()))
+                .map(cr -> populateDependentObjects(cr))
                 .collect(Collectors.<ChangeRequest>toList());
     }
 
@@ -100,7 +104,8 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
                             .getCertificationBodiesForDeveloper(cr.getDeveloper().getDeveloperId()));
                     return cr;
                 })
-                .collect(Collectors.<ChangeRequest>toList());
+                .map(cr -> populateDependentObjects(cr))
+                .collect(Collectors.<ChangeRequest> toList());
     }
 
     private ChangeRequestEntity getEntityById(final Long id) throws EntityRetrievalException {
@@ -180,6 +185,7 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
         String hql = "SELECT crStatus "
                 + "FROM ChangeRequestStatusEntity crStatus "
                 + "JOIN FETCH crStatus.changeRequestStatusType "
+                + "JOIN FETCH crStatus.userPermission "
                 + "WHERE crStatus.deleted = false "
                 + "AND crStatus.changeRequest.id = :changeRequestId "
                 + "ORDER BY crStatus.statusChangeDate DESC";
@@ -215,5 +221,20 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
         statuses.add(pendingAcbAction);
         statuses.add(pendingDeveloperAction);
         return statuses;
+    }
+
+    private ChangeRequest populateDependentObjects(ChangeRequest cr) {
+        try {
+            cr.setCurrentStatus(getCurrentStatus(cr.getId()));
+            cr.setStatuses(changeRequestStatusDAO.getByChangeRequestId(cr.getId()));
+            cr.setCertificationBodies(developerCertificationBodyMapDAO
+                    .getCertificationBodiesForDeveloper(cr.getDeveloper().getDeveloperId()));
+            cr.setDetails(
+                    changeRequestDetailsFactory.get(cr.getChangeRequestType().getId())
+                            .getByChangeRequestId(cr.getId()));
+            return cr;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

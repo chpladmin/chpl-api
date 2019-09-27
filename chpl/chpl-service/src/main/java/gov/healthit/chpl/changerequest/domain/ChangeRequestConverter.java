@@ -7,8 +7,10 @@ import gov.healthit.chpl.changerequest.entity.ChangeRequestTypeEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestWebsiteEntity;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.auth.UserPermission;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.auth.UserPermissionDTO;
 
 public class ChangeRequestConverter {
 
@@ -31,6 +33,7 @@ public class ChangeRequestConverter {
         cr.setId(entity.getId());
         cr.setChangeRequestType(convert(entity.getChangeRequestType()));
         cr.setDeveloper(new Developer(new DeveloperDTO(entity.getDeveloper())));
+        cr.setSubmittedDate(entity.getCreationDate());
         return cr;
     }
 
@@ -43,6 +46,7 @@ public class ChangeRequestConverter {
         if (entity.getCertificationBody() != null) {
             status.setCertificationBody(new CertificationBody(new CertificationBodyDTO(entity.getCertificationBody())));
         }
+        status.setUserPermission(new UserPermission(new UserPermissionDTO(entity.getUserPermission())));
         return status;
     }
 

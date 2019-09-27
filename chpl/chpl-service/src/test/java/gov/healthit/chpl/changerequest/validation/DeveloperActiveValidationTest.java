@@ -8,14 +8,14 @@ import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.changerequest.builders.ChangeRequestBuilder;
 import gov.healthit.chpl.changerequest.builders.DeveloperBuilder;
-import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationContext;
-import gov.healthit.chpl.changerequest.validation.DeveloperActiveValidation;
+import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
@@ -26,18 +26,28 @@ public class DeveloperActiveValidationTest {
     @Mock
     private DeveloperDAO developerDAO;
 
+    @Mock
+    private ChangeRequestDAO changeRequestDAO;
+
+    @InjectMocks
     private DeveloperActiveValidation validator;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        validator = new DeveloperActiveValidation();
     }
 
     @Test
     public void isValid_Success() throws EntityRetrievalException {
         Mockito.when(developerDAO.getById(ArgumentMatchers.anyLong()))
                 .thenReturn(getActiveDeveloper());
+        Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong()))
+                .thenReturn(new ChangeRequestBuilder()
+                        .withId(1l)
+                        .withDeveloper(new DeveloperBuilder()
+                                .withId(22l)
+                                .build())
+                        .build());
 
         ChangeRequestValidationContext context = new ChangeRequestValidationContext(
                 new ChangeRequestBuilder()
@@ -46,7 +56,7 @@ public class DeveloperActiveValidationTest {
                                 .withId(22l)
                                 .build())
                         .build(),
-                null, null, null, developerDAO);
+                null);
 
         boolean isValid = validator.isValid(context);
 
@@ -58,6 +68,14 @@ public class DeveloperActiveValidationTest {
         Mockito.when(developerDAO.getById(ArgumentMatchers.anyLong()))
                 .thenReturn(getInactiveDeveloper());
 
+        Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong()))
+                .thenReturn(new ChangeRequestBuilder()
+                        .withId(1l)
+                        .withDeveloper(new DeveloperBuilder()
+                                .withId(22l)
+                                .build())
+                        .build());
+
         ChangeRequestValidationContext context = new ChangeRequestValidationContext(
                 new ChangeRequestBuilder()
                         .withId(1l)
@@ -65,7 +83,7 @@ public class DeveloperActiveValidationTest {
                                 .withId(22l)
                                 .build())
                         .build(),
-                null, null, null, developerDAO);
+                null);
 
         boolean isValid = validator.isValid(context);
 

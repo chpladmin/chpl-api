@@ -6,14 +6,13 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.changerequest.builders.ChangeRequestBuilder;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
-import gov.healthit.chpl.changerequest.validation.ChangeRequestExistenceValidation;
-import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationContext;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public class ChangeRequestExistenceValidationTest {
@@ -21,12 +20,12 @@ public class ChangeRequestExistenceValidationTest {
     @Mock
     private ChangeRequestDAO crDAO;
 
+    @InjectMocks
     private ChangeRequestExistenceValidation validator;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        validator = new ChangeRequestExistenceValidation();
     }
 
     @Test
@@ -35,8 +34,7 @@ public class ChangeRequestExistenceValidationTest {
                 .thenReturn(new ChangeRequestBuilder().withId(1l).build());
 
         boolean isValid = validator.isValid(new ChangeRequestValidationContext(
-                new ChangeRequestBuilder().withId(1l).build(),
-                crDAO, null, null, null));
+                new ChangeRequestBuilder().withId(1l).build(), null));
 
         assertTrue(isValid);
     }
@@ -46,8 +44,7 @@ public class ChangeRequestExistenceValidationTest {
         Mockito.when(crDAO.get(ArgumentMatchers.anyLong()))
                 .thenReturn(new ChangeRequestBuilder().withId(1l).build());
 
-        boolean isValid = validator.isValid(new ChangeRequestValidationContext(
-                null, crDAO, null, null, null));
+        boolean isValid = validator.isValid(new ChangeRequestValidationContext(null, null));
 
         assertFalse(isValid);
     }
@@ -58,8 +55,7 @@ public class ChangeRequestExistenceValidationTest {
                 .thenReturn(new ChangeRequestBuilder().withId(1l).build());
 
         boolean isValid = validator.isValid(new ChangeRequestValidationContext(
-                new ChangeRequestBuilder().build(),
-                crDAO, null, null, null));
+                new ChangeRequestBuilder().build(), null));
 
         assertFalse(isValid);
     }
@@ -70,8 +66,7 @@ public class ChangeRequestExistenceValidationTest {
                 .thenThrow(EntityRetrievalException.class);
 
         boolean isValid = validator.isValid(new ChangeRequestValidationContext(
-                new ChangeRequestBuilder().withId(1l).build(),
-                crDAO, null, null, null));
+                new ChangeRequestBuilder().withId(1l).build(), null));
 
         assertFalse(isValid);
     }

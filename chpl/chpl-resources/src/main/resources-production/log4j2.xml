@@ -49,6 +49,28 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <RollingFile name="urlStatusDataCollectorJob"
+            fileName="${logDir}/scheduler/urlStatusDataCollectorJob.log"
+            filePattern="${logDir}/scheduler/history/urlStatusDataCollectorJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
+        <RollingFile name="questionableUrlReportGeneratorJob"
+            fileName="${logDir}/scheduler/questionableUrlReportGeneratorJob.log"
+            filePattern="${logDir}/scheduler/history/questionableUrlReportGeneratorJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
         <RollingFile name="certifiedProductDownloadableResourceCreatorJob"
             fileName="${logDir}/scheduler/certifiedProductDownloadableResourceCreatorJob.log"
             filePattern="${logDir}/scheduler/history/certifiedProductDownloadableResourceCreatorJob-%d{yyyy-MM-dd}.log">
@@ -236,6 +258,14 @@
         <Logger name="summaryStatisticsCreatorJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="summaryStatisticsCreatorJob" />
+        </Logger>
+        <Logger name="urlStatusDataCollectorJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="urlStatusDataCollectorJob" />
+        </Logger>
+        <Logger name="questionableUrlReportGeneratorJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="questionableUrlReportGeneratorJob" />
         </Logger>
         <Logger name="chartDataCreatorJobLogger" level="INFO"
             additivity="false">

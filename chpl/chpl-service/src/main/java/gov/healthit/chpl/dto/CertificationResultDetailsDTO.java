@@ -8,6 +8,7 @@ public class CertificationResultDetailsDTO implements Serializable {
     private static final long serialVersionUID = 4560202421131481086L;
     private Long id;
     private Long certificationCriterionId;
+    private Long certifiedProductId;
     private Boolean success;
     private String number;
     private String title;
@@ -21,10 +22,11 @@ public class CertificationResultDetailsDTO implements Serializable {
     public CertificationResultDetailsDTO() {
     }
 
-    public CertificationResultDetailsDTO(CertificationResultDetailsEntity entity) {
+    public CertificationResultDetailsDTO(final CertificationResultDetailsEntity entity) {
 
         this.id = entity.getId();
         this.certificationCriterionId = entity.getCertificationCriterionId();
+        this.certifiedProductId = entity.getCertifiedProductId();
         this.success = entity.getSuccess();
         this.number = entity.getNumber();
         this.title = entity.getTitle();
@@ -50,6 +52,14 @@ public class CertificationResultDetailsDTO implements Serializable {
 
     public void setCertificationCriterionId(final Long certificationCriterionId) {
         this.certificationCriterionId = certificationCriterionId;
+    }
+
+    public Long getCertifiedProductId() {
+        return certifiedProductId;
+    }
+
+    public void setCertifiedProductId(final Long certifiedProductId) {
+        this.certifiedProductId = certifiedProductId;
     }
 
     public Boolean getSuccess() {

@@ -25,6 +25,8 @@ public interface CertificationBodyDAO {
 
     CertificationBodyDTO getByName(String name);
 
+    List<CertificationBodyDTO> getByWebsite(final String website);
+
     String getMaxCode();
 
     CertificationBodyDTO update(CertificationBodyDTO contact) throws EntityRetrievalException;

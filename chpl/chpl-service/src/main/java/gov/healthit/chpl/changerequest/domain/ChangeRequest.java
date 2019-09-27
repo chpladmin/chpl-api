@@ -2,6 +2,7 @@ package gov.healthit.chpl.changerequest.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import gov.healthit.chpl.domain.CertificationBody;
@@ -17,6 +18,7 @@ public class ChangeRequest implements Serializable {
     private ChangeRequestStatus currentStatus;
     private List<ChangeRequestStatus> statuses = new ArrayList<ChangeRequestStatus>();
     private Object details;
+    private Date submittedDate;
 
     public Long getId() {
         return id;
@@ -72,5 +74,13 @@ public class ChangeRequest implements Serializable {
 
     public void setDetails(final Object details) {
         this.details = details;
+    }
+
+    public Date getSubmittedDate() {
+        return submittedDate;
+    }
+
+    public void setSubmittedDate(final Date submittedDate) {
+        this.submittedDate = submittedDate;
     }
 }

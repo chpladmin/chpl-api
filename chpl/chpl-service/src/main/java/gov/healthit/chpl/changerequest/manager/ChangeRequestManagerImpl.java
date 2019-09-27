@@ -1,7 +1,6 @@
 package gov.healthit.chpl.changerequest.manager;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -20,12 +19,13 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
-import gov.healthit.chpl.changerequest.domain.ChangeRequestWebsite;
+import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsFactory;
+import gov.healthit.chpl.changerequest.domain.service.ChangeRequestStatusService;
+import gov.healthit.chpl.changerequest.domain.service.ChangeRequestWebsiteService;
 import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationContext;
 import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationFactory;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -33,6 +33,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.rules.ValidationRule;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 
 @Component
 public class ChangeRequestManagerImpl extends SecurityManager implements ChangeRequestManager {
@@ -49,32 +50,29 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
     private ChangeRequestDAO changeRequestDAO;
     private ChangeRequestTypeDAO changeRequestTypeDAO;
     private ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO;
-    private DeveloperDAO developerDAO;
-    private ChangeRequestCertificationBodyHelper crCertificationBodyHelper;
-    private ChangeRequestStatusHelper crStatusHelper;
+    private ChangeRequestStatusService crStatusService;
     private ChangeRequestValidationFactory crValidationFactory;
-    private ChangeRequestWebsiteHelper crWebsiteHelper;
+    private ChangeRequestDetailsFactory crDetailsFactory;
     private ActivityManager activityManager;
+    private ResourcePermissions resourcePermissions;
 
     @Autowired
     public ChangeRequestManagerImpl(final ChangeRequestDAO changeRequestDAO,
             final ChangeRequestTypeDAO changeRequestTypeDAO,
-            final ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO, final DeveloperDAO developerDAO,
+            final ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO,
             final CertifiedProductDAO certifiedProductDAO, final CertificationBodyDAO certificationBodyDAO,
-            final ChangeRequestCertificationBodyHelper changeRequestCertificationBodyHelper,
-            final ChangeRequestStatusTypeDAO crStatusTypeDAO, final ChangeRequestStatusHelper crStatusHelper,
-            final ChangeRequestValidationFactory crValidationFactory,
-            final ChangeRequestWebsiteHelper crWebsiteHelper,
-            final ActivityManager activityManager) {
+            final ChangeRequestStatusTypeDAO crStatusTypeDAO, final ChangeRequestStatusService crStatusHelper,
+            final ChangeRequestValidationFactory crValidationFactory, final ChangeRequestWebsiteService crWebsiteHelper,
+            final ChangeRequestDetailsFactory crDetailsFactory, final ActivityManager activityManager,
+            final ResourcePermissions resourcePermissions) {
         this.changeRequestDAO = changeRequestDAO;
         this.changeRequestTypeDAO = changeRequestTypeDAO;
         this.changeRequestStatusTypeDAO = changeRequestStatusTypeDAO;
-        this.developerDAO = developerDAO;
-        this.crCertificationBodyHelper = changeRequestCertificationBodyHelper;
-        this.crStatusHelper = crStatusHelper;
+        this.crStatusService = crStatusHelper;
         this.crValidationFactory = crValidationFactory;
-        this.crWebsiteHelper = crWebsiteHelper;
+        this.crDetailsFactory = crDetailsFactory;
         this.activityManager = activityManager;
+        this.resourcePermissions = resourcePermissions;
     }
 
     @Override
@@ -107,9 +105,12 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
 
         // Save the base change request
         ChangeRequest newCr = createBaseChangeRequest(cr);
+        // Carry over the details to the new object, so we have ids necessary
+        // for saving any dependent objects
+        newCr.setDetails(cr.getDetails());
         // Save the change request details
-        newCr = createChangeRequestDetails(newCr, cr.getDetails());
-        // Get the new chnage request as it exists in DB
+        newCr = crDetailsFactory.get(newCr.getChangeRequestType().getId()).create(newCr);
+        // Get the new change request as it exists in DB
         newCr = getChangeRequest(newCr.getId());
 
         activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, newCr.getId(), "Change request created", null,
@@ -122,9 +123,7 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
     @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
             + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).GET_BY_ID, returnObject)")
     public ChangeRequest getChangeRequest(final Long changeRequestId) throws EntityRetrievalException {
-        ChangeRequest cr = new ChangeRequest();
-        cr = changeRequestDAO.get(changeRequestId);
-        return populateChangeRequestData(cr);
+        return changeRequestDAO.get(changeRequestId);
     }
 
     @Override
@@ -147,75 +146,21 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
             throw validationException;
         }
 
-        ChangeRequest crFromDb = getChangeRequest(cr.getId());
-        crStatusHelper.updateChangeRequestStatus(crFromDb, cr);
-        updateChangeRequestDetails(crFromDb, cr.getDetails());
-        executeChangeRequest(crFromDb);
+        // Update the details, if the user is of role developer
+        if (resourcePermissions.isUserRoleDeveloperAdmin()) {
+            crDetailsFactory.get(cr.getChangeRequestType().getId()).update(cr);
+        }
+        // Update the status
+        crStatusService.updateChangeRequestStatus(cr);
+
         ChangeRequest newCr = getChangeRequest(cr.getId());
-
-        if (!newCr.getCurrentStatus().getChangeRequestStatusType().getId()
-                .equals(crFromDb.getCurrentStatus().getChangeRequestStatusType().getId())) {
-            activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, newCr.getId(), "Change request status updated",
-                    crFromDb, newCr);
-        }
-        if (didDetailsChange(crFromDb, newCr)) {
-            activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, newCr.getId(), "Change request details updated",
-                    crFromDb, newCr);
-        }
         return newCr;
-    }
-
-    private ChangeRequest populateChangeRequestData(final ChangeRequest cr) throws EntityRetrievalException {
-        cr.setDetails(getChangeRequestDetails(cr));
-        return cr;
     }
 
     private ChangeRequest createBaseChangeRequest(final ChangeRequest cr) throws EntityRetrievalException {
         ChangeRequest newCr = changeRequestDAO.create(cr);
-        newCr.getStatuses().add(crStatusHelper.saveInitialStatus(newCr));
+        newCr.getStatuses().add(crStatusService.saveInitialStatus(newCr));
         return newCr;
-    }
-
-    private Object getChangeRequestDetails(ChangeRequest cr) throws EntityRetrievalException {
-        if (isWebsiteChangeRequest(cr)) {
-            return crWebsiteHelper.getByChangeRequestId(cr.getId());
-        } else {
-            return null;
-        }
-    }
-
-    private ChangeRequest createChangeRequestDetails(final ChangeRequest cr, final Object details) {
-        // Data in the "details" object is unfortunately a hashmap
-        if (isWebsiteChangeRequest(cr)) {
-            ChangeRequestWebsite crWebsite = crWebsiteHelper.getDetailsFromHashMap((HashMap<String, Object>) details);
-            cr.setDetails(crWebsiteHelper.create(cr, crWebsite));
-        }
-        return cr;
-    }
-
-    private void updateChangeRequestDetails(final ChangeRequest cr, final Object details) {
-        // Data in the "details" object is unfortunately a hashmap
-        if (isWebsiteChangeRequest(cr)) {
-            ChangeRequestWebsite crWebsite = crWebsiteHelper.getDetailsFromHashMap((HashMap<String, Object>) details);
-            crWebsiteHelper.update(cr, crWebsite);
-        }
-    }
-
-    private void executeChangeRequest(final ChangeRequest cr) throws EntityRetrievalException, EntityCreationException {
-        if (isChangeRequestAccepted(cr)) {
-            if (isWebsiteChangeRequest(cr)) {
-                crWebsiteHelper.execute(cr);
-            }
-        }
-    }
-
-    private boolean didDetailsChange(ChangeRequest origChangeRequest, ChangeRequest updatedChangeRequest) {
-        if (isWebsiteChangeRequest(origChangeRequest)) {
-            return !((ChangeRequestWebsite) origChangeRequest.getDetails())
-                    .equals((ChangeRequestWebsite) updatedChangeRequest.getDetails());
-        } else {
-            return false;
-        }
     }
 
     private List<String> runCreateValidations(ChangeRequest cr) {
@@ -232,31 +177,31 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
         List<ValidationRule<ChangeRequestValidationContext>> rules = new ArrayList<ValidationRule<ChangeRequestValidationContext>>();
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_EXISTENCE));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_DETAILS_UPDATE));
+        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.MULTIPLE_ACBS));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.DEVELOPER_ACTIVE));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.STATUS_TYPE));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.STATUS_NOT_UPDATABLE));
+        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.COMMENT_REQUIRED));
         return runValidations(rules, cr);
     }
 
     private List<String> runValidations(List<ValidationRule<ChangeRequestValidationContext>> rules, ChangeRequest cr) {
-        List<String> errorMessages = new ArrayList<String>();
-        ChangeRequestValidationContext context = new ChangeRequestValidationContext(cr, changeRequestDAO,
-                changeRequestTypeDAO, changeRequestStatusTypeDAO, developerDAO);
-
-        for (ValidationRule<ChangeRequestValidationContext> rule : rules) {
-            if (!rule.isValid(context)) {
-                errorMessages.addAll(rule.getMessages());
+        try {
+            List<String> errorMessages = new ArrayList<String>();
+            ChangeRequest crFromDb = null;
+            if (cr.getId() != null) {
+                crFromDb = getChangeRequest(cr.getId());
             }
+            ChangeRequestValidationContext context = new ChangeRequestValidationContext(cr, crFromDb);
+
+            for (ValidationRule<ChangeRequestValidationContext> rule : rules) {
+                if (!rule.isValid(context)) {
+                    errorMessages.addAll(rule.getMessages());
+                }
+            }
+            return errorMessages;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        return errorMessages;
-    }
-
-    private boolean isWebsiteChangeRequest(final ChangeRequest cr) {
-        return cr.getChangeRequestType().getId().equals(websiteChangeRequestType);
-    }
-
-    private boolean isChangeRequestAccepted(final ChangeRequest cr) {
-        // Assume current status is correct
-        return cr.getCurrentStatus().getChangeRequestStatusType().getId().equals(acceptedStatus);
     }
 }

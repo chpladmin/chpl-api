@@ -26,10 +26,9 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
-import gov.healthit.chpl.changerequest.manager.ChangeRequestCertificationBodyHelper;
+import gov.healthit.chpl.changerequest.domain.service.ChangeRequestStatusService;
+import gov.healthit.chpl.changerequest.domain.service.ChangeRequestWebsiteService;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManagerImpl;
-import gov.healthit.chpl.changerequest.manager.ChangeRequestStatusHelper;
-import gov.healthit.chpl.changerequest.manager.ChangeRequestWebsiteHelper;
 import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationFactory;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -60,13 +59,10 @@ public class ChangeRequestManagerImplTest {
     private CertificationBodyDAO certificationBodyDAO;
 
     @Mock
-    private ChangeRequestCertificationBodyHelper crCertificationBodyMapHelper;
+    private ChangeRequestStatusService crStatusHelper;
 
     @Mock
-    private ChangeRequestStatusHelper crStatusHelper;
-
-    @Mock
-    private ChangeRequestWebsiteHelper crWebsiteHelper;
+    private ChangeRequestWebsiteService crWebsiteHelper;
 
     @Mock
     private ChangeRequestValidationFactory crValidationFactory;
@@ -113,6 +109,10 @@ public class ChangeRequestManagerImplTest {
                                 .withId(1l)
                                 .withCode("1234")
                                 .withName("ACB 1234")
+                                .build())
+                        .withDetails(new ChangeRequestWebsiteBuilder()
+                                .withId(2l)
+                                .withWebsite("http://www.abc.com")
                                 .build())
                         .build());
 

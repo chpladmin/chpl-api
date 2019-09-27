@@ -44,6 +44,8 @@ public interface DeveloperDAO {
 
     DeveloperDTO getByVersion(Long productVersionId) throws EntityRetrievalException;
 
+    List<DeveloperDTO> getByWebsite(String website);
+
     DeveloperACBMapDTO updateTransparencyMapping(DeveloperACBMapDTO dto);
 
     void deleteTransparencyMapping(Long vendorId, Long acbId);

@@ -8,6 +8,8 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import gov.healthit.chpl.changerequest.builders.ChangeRequestBuilder;
@@ -16,18 +18,19 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 
 public class ChangeRequestDetailsUpdateValidationTest {
 
+    @InjectMocks
     private ChangeRequestDetailsUpdateValidation validator;
 
     @Before
     public void setup() {
-        validator = new ChangeRequestDetailsUpdateValidation();
+        MockitoAnnotations.initMocks(this);
         ReflectionTestUtils.setField(validator, "websiteChangeRequestType", 1l);
     }
 
     @Test
     public void isValid_Success_Website() {
         ChangeRequestValidationContext context = new ChangeRequestValidationContext(
-                getValidWebsiteChangeRequest(), null, null, null, null);
+                getValidWebsiteChangeRequest(), null);
 
         assertTrue(validator.isValid(context));
 
@@ -36,7 +39,7 @@ public class ChangeRequestDetailsUpdateValidationTest {
     @Test
     public void isValid_Fail_Website() {
         ChangeRequestValidationContext context = new ChangeRequestValidationContext(
-                getInvalidWebsiteChangeRequest(), null, null, null, null);
+                getInvalidWebsiteChangeRequest(), null);
 
         assertFalse(validator.isValid(context));
     }
@@ -67,8 +70,7 @@ public class ChangeRequestDetailsUpdateValidationTest {
                 .build();
 
         Map<String, Object> details = new HashMap<String, Object>();
-        details.put("website", "http://www.abc.com");
-        // details.put("id", 1l); //Missing ID
+        details.put("websiteX", "http://www.abc.com");
         cr.setDetails(details);
         return cr;
     }
