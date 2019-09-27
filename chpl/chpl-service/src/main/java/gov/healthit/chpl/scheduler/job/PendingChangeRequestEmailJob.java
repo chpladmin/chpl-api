@@ -87,7 +87,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
             String subject = props.getProperty("pendingChangeRequestEmailSubject");
             String htmlMessage = null;
             List<File> files = null;
-            if (csvRows != null && csvRows.size() > 0) {
+            if (csvRows.size() > 0) {
                 htmlMessage = String.format(props.getProperty("pendingChangeRequestHasDataEmailBody"),
                         csvRows.size());
                 String filename = props.getProperty("pendingChangeRequestReportFilename");
@@ -200,14 +200,14 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
 
         // Calculated time open
         Date changeRequestDate = activity.getCurrentStatus().getStatusChangeDate();
-        double daysOpen = Math.floor(((currentDate.getTime() - changeRequestDate.getTime()) / MILLIS_PER_DAY));
+        long daysOpen = ((currentDate.getTime() - changeRequestDate.getTime()) / MILLIS_PER_DAY);
         currRow.set(CHANGE_REQUEST_DAYS_OPEN, Double.toString(daysOpen));
 
         // Relevancy for ONC-ACBs
         for (int i = 0; i < activeAcbs.size(); i++) {
             boolean isRelevant = false;
             for (CertificationBody acb : activity.getCertificationBodies()) {
-                if (activeAcbs.get(i).getId() == acb.getId()) {
+                if (activeAcbs.get(i).getId().equals(acb.getId())) {
                     isRelevant = true;
                 }
             }
