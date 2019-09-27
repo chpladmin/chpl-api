@@ -1,7 +1,6 @@
 package gov.healthit.chpl.changerequest;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import java.util.HashMap;
 
@@ -28,7 +27,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 @ContextConfiguration(classes = {
         gov.healthit.chpl.CHPLTestConfig.class
 })
-public class ChangeRequestWebsiteHelperTest {
+public class ChangeRequestWebsiteServiceTest {
 
     @Mock
     private ChangeRequestWebsiteDAO crWebsiteDAO;;
@@ -66,30 +65,6 @@ public class ChangeRequestWebsiteHelperTest {
 
         // Run
         crWebsiteHelper.getByChangeRequestId(1l);
-    }
-
-    @Test
-    public void getChangeRequestWebsiteFromHashMap_Success1() {
-        // Run
-        ChangeRequestWebsite crWebsite = crWebsiteHelper
-                .getDetailsFromHashMap(
-                        getChangeRequestWebsiteMap(1l, "http://www.abc.com"));
-
-        // Check
-        assertEquals(Long.valueOf(1l), crWebsite.getId());
-        assertEquals("http://www.abc.com", crWebsite.getWebsite());
-    }
-
-    @Test
-    public void getChangeRequestWebsiteFromHashMap_Success2() {
-        // Run
-        ChangeRequestWebsite crWebsite = crWebsiteHelper
-                .getDetailsFromHashMap(
-                        getChangeRequestWebsiteMap(null, "http://www.abc.com"));
-
-        // Check
-        assertNull(crWebsite.getId());
-        assertEquals("http://www.abc.com", crWebsite.getWebsite());
     }
 
     @Test

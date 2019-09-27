@@ -28,7 +28,6 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestStatusService;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestWebsiteService;
-import gov.healthit.chpl.changerequest.manager.ChangeRequestCertificationBodyHelper;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManagerImpl;
 import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationFactory;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
@@ -58,9 +57,6 @@ public class ChangeRequestManagerImplTest {
 
     @Mock
     private CertificationBodyDAO certificationBodyDAO;
-
-    @Mock
-    private ChangeRequestCertificationBodyHelper crCertificationBodyMapHelper;
 
     @Mock
     private ChangeRequestStatusService crStatusHelper;
@@ -113,6 +109,10 @@ public class ChangeRequestManagerImplTest {
                                 .withId(1l)
                                 .withCode("1234")
                                 .withName("ACB 1234")
+                                .build())
+                        .withDetails(new ChangeRequestWebsiteBuilder()
+                                .withId(2l)
+                                .withWebsite("http://www.abc.com")
                                 .build())
                         .build());
 

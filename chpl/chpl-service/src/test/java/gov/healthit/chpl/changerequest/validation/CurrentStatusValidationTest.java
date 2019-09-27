@@ -7,35 +7,47 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import gov.healthit.chpl.changerequest.builders.ChangeRequestBuilder;
 import gov.healthit.chpl.changerequest.builders.ChangeRequestStatusBuilder;
 import gov.healthit.chpl.changerequest.builders.ChangeRequestStatusTypeBuilder;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
-import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationContext;
-import gov.healthit.chpl.changerequest.validation.CurrentStatusValidation;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 
 public class CurrentStatusValidationTest {
 
     @Mock
     private ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO;
 
+    @Mock
+    private ResourcePermissions resourcePermissions;
+
+    @InjectMocks
     private CurrentStatusValidation validator;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        validator = new CurrentStatusValidation();
+        ReflectionTestUtils.setField(validator, "pendingAcbActionStatus", 1l);
+        ReflectionTestUtils.setField(validator, "pendingDeveloperActionStatus", 2l);
+        ReflectionTestUtils.setField(validator, "cancelledStatus", 5l);
+        ReflectionTestUtils.setField(validator, "acceptedStatus", 3l);
+        ReflectionTestUtils.setField(validator, "rejectedStatus", 4l);
     }
 
     @Test
     public void isValid_Success() throws EntityRetrievalException {
         Mockito.when(changeRequestStatusTypeDAO.getChangeRequestStatusTypeById(ArgumentMatchers.anyLong()))
                 .thenReturn(new ChangeRequestStatusTypeBuilder().withId(1l).withName("Name").build());
+
+        Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin())
+                .thenReturn(true);
 
         ChangeRequestValidationContext context = new ChangeRequestValidationContext(
                 new ChangeRequestBuilder()
@@ -48,7 +60,7 @@ public class CurrentStatusValidationTest {
                                         .build())
                                 .build())
                         .build(),
-                null, null, changeRequestStatusTypeDAO, null);
+                null);
 
         boolean isValid = validator.isValid(context);
 
@@ -61,7 +73,7 @@ public class CurrentStatusValidationTest {
                 new ChangeRequestBuilder()
                         .withId(1l)
                         .build(),
-                null, null, changeRequestStatusTypeDAO, null);
+                null);
 
         boolean isValid = validator.isValid(context);
 
@@ -80,7 +92,7 @@ public class CurrentStatusValidationTest {
                                 .withId(4l)
                                 .build())
                         .build(),
-                null, null, changeRequestStatusTypeDAO, null);
+                null);
 
         boolean isValid = validator.isValid(context);
 
@@ -103,7 +115,7 @@ public class CurrentStatusValidationTest {
                                         .build())
                                 .build())
                         .build(),
-                null, null, changeRequestStatusTypeDAO, null);
+                null);
 
         boolean isValid = validator.isValid(context);
 
