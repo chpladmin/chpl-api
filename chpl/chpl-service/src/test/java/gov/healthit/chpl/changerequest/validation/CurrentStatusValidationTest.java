@@ -54,7 +54,7 @@ public class CurrentStatusValidationTest {
                         .withId(1l)
                         .withCurrentStatus(new ChangeRequestStatusBuilder()
                                 .withId(4l)
-                                .withChangeReequestStatusType(new ChangeRequestStatusTypeBuilder()
+                                .withChangeRequestStatusType(new ChangeRequestStatusTypeBuilder()
                                         .withId(1l)
                                         .withName("Status 1")
                                         .build())
@@ -69,6 +69,9 @@ public class CurrentStatusValidationTest {
 
     @Test
     public void isValid_Success_CurrentStatusNull() throws EntityRetrievalException {
+        Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin())
+                .thenReturn(true);
+
         ChangeRequestValidationContext context = new ChangeRequestValidationContext(
                 new ChangeRequestBuilder()
                         .withId(1l)
@@ -82,6 +85,9 @@ public class CurrentStatusValidationTest {
 
     @Test
     public void isValid_Success_StatusTypeNull() throws EntityRetrievalException {
+        Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin())
+                .thenReturn(true);
+
         Mockito.when(changeRequestStatusTypeDAO.getChangeRequestStatusTypeById(ArgumentMatchers.anyLong()))
                 .thenReturn(new ChangeRequestStatusTypeBuilder().withId(1l).withName("Name").build());
 
@@ -101,6 +107,9 @@ public class CurrentStatusValidationTest {
 
     @Test
     public void isValid_Failure_StatusTypeNotValid() throws EntityRetrievalException {
+        Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin())
+                .thenReturn(true);
+
         Mockito.when(changeRequestStatusTypeDAO.getChangeRequestStatusTypeById(ArgumentMatchers.anyLong()))
                 .thenThrow(EntityRetrievalException.class);
 
@@ -109,9 +118,67 @@ public class CurrentStatusValidationTest {
                         .withId(1l)
                         .withCurrentStatus(new ChangeRequestStatusBuilder()
                                 .withId(4l)
-                                .withChangeReequestStatusType(new ChangeRequestStatusTypeBuilder()
+                                .withChangeRequestStatusType(new ChangeRequestStatusTypeBuilder()
                                         .withId(1l)
                                         .withName("Status 1")
+                                        .build())
+                                .build())
+                        .build(),
+                null);
+
+        boolean isValid = validator.isValid(context);
+
+        assertFalse(isValid);
+        assertEquals(1, validator.getMessages().size());
+    }
+
+    @Test
+    public void isValid_Failure_StatusTypeNotValidForRoleDeveloper() throws EntityRetrievalException {
+        Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin())
+                .thenReturn(true);
+
+        Mockito.when(changeRequestStatusTypeDAO.getChangeRequestStatusTypeById(ArgumentMatchers.anyLong()))
+                .thenReturn(new ChangeRequestStatusTypeBuilder().withId(2l).withName("Name").build());
+
+        ChangeRequestValidationContext context = new ChangeRequestValidationContext(
+                new ChangeRequestBuilder()
+                        .withId(1l)
+                        .withCurrentStatus(new ChangeRequestStatusBuilder()
+                                .withId(1l)
+                                .withChangeRequestStatusType(new ChangeRequestStatusTypeBuilder()
+                                        .withId(2l)
+                                        .build())
+                                .build())
+                        .build(),
+                null);
+
+        boolean isValid = validator.isValid(context);
+
+        assertFalse(isValid);
+        assertEquals(1, validator.getMessages().size());
+    }
+
+    @Test
+    public void isValid_Failure_StatusTypeNotValidForRoleAdmin() throws EntityRetrievalException {
+        Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin())
+                .thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleAcbAdmin())
+                .thenReturn(true);
+        Mockito.when(resourcePermissions.isUserRoleOnc())
+                .thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleAdmin())
+                .thenReturn(false);
+
+        Mockito.when(changeRequestStatusTypeDAO.getChangeRequestStatusTypeById(ArgumentMatchers.anyLong()))
+                .thenReturn(new ChangeRequestStatusTypeBuilder().withId(5l).withName("Name").build());
+
+        ChangeRequestValidationContext context = new ChangeRequestValidationContext(
+                new ChangeRequestBuilder()
+                        .withId(1l)
+                        .withCurrentStatus(new ChangeRequestStatusBuilder()
+                                .withId(1l)
+                                .withChangeRequestStatusType(new ChangeRequestStatusTypeBuilder()
+                                        .withId(5l)
                                         .build())
                                 .build())
                         .build(),

@@ -18,7 +18,7 @@ public class ChangeRequestStatusBuilder {
         return this;
     }
 
-    public ChangeRequestStatusBuilder withChangeReequestStatusType(ChangeRequestStatusType changeRequestStatusType) {
+    public ChangeRequestStatusBuilder withChangeRequestStatusType(ChangeRequestStatusType changeRequestStatusType) {
         this.changeRequestStatusType = changeRequestStatusType;
         return this;
     }
