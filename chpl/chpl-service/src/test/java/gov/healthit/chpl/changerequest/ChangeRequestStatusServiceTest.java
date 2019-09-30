@@ -107,7 +107,7 @@ public class ChangeRequestStatusServiceTest {
                 new ChangeRequestBuilder().withId(1l).build());
     }
 
-    public void setupForAcbUser(ResourcePermissions resourcePermissions) {
+    private void setupForAcbUser(ResourcePermissions resourcePermissions) {
         SecurityContextHolder.getContext().setAuthentication(getAcbUser());
     }
 

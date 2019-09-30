@@ -6,22 +6,22 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ChangeRequestDetailsFactory {
-    private ChangeRequestWebsiteService crWebsiteHelper;
+    private ChangeRequestWebsiteService crWebsiteService;
 
     @Value("${changerequest.website}")
     private Long websiteChangeRequestType;
 
     @Autowired
-    public ChangeRequestDetailsFactory(final ChangeRequestWebsiteService crWebsiteHelper) {
-        this.crWebsiteHelper = crWebsiteHelper;
+    public ChangeRequestDetailsFactory(final ChangeRequestWebsiteService crWebsiteService) {
+        this.crWebsiteService = crWebsiteService;
     }
 
     public ChangeRequestDetailsService<?> get(Long changeRequestType) {
-        ChangeRequestDetailsService<?> crDetailsHelper = null;
+        ChangeRequestDetailsService<?> crDetailsService = null;
 
         if (changeRequestType.equals(changeRequestType)) {
-            crDetailsHelper = crWebsiteHelper;
+            crDetailsService = crWebsiteService;
         }
-        return crDetailsHelper;
+        return crDetailsService;
     }
 }

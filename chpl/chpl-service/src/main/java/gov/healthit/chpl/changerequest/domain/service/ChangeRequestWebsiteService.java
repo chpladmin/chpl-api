@@ -112,12 +112,6 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
         }
     }
 
-    private List<UserDTO> getUsersForDeveloper(final Long developerId) {
-        return userDeveloperMapDAO.getByDeveloperId(developerId).stream()
-                .map(userDeveloperMap -> userDeveloperMap.getUser())
-                .collect(Collectors.<UserDTO> toList());
-    }
-
     @Override
     public ChangeRequest postStatusChangeProcessing(ChangeRequest cr) {
         try {
@@ -198,4 +192,11 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
             return "";
         }
     }
+
+    private List<UserDTO> getUsersForDeveloper(final Long developerId) {
+        return userDeveloperMapDAO.getByDeveloperId(developerId).stream()
+                .map(userDeveloperMap -> userDeveloperMap.getUser())
+                .collect(Collectors.<UserDTO> toList());
+    }
+
 }

@@ -84,7 +84,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
                         .withId(1l)
                         .withDeveloper(new DeveloperBuilder().withId(3l).build())
                         .build());
-        assertTrue(permissions.hasAccess(new ChangeRequestBuilder()
+        assertFalse(permissions.hasAccess(new ChangeRequestBuilder()
                 .withId(1l)
                 .withDeveloper(new DeveloperBuilder().withId(3l).build())
                 .build()));
