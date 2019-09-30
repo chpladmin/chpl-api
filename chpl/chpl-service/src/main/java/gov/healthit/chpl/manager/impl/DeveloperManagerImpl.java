@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -812,7 +812,7 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
 
     private boolean isNewDeveloperCode(final String chplProductNumber) {
         String devCode = chplProductNumberUtil.getDeveloperCode(chplProductNumber);
-        return !StringUtils.isEmpty(devCode) && devCode.contentEquals(NEW_DEVELOPER_CODE);
+        return StringUtils.equals(devCode, NEW_DEVELOPER_CODE);
     }
 
     private Set<String> runUpdateValidations(final DeveloperDTO dto) {

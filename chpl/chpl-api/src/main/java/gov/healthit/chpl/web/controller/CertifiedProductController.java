@@ -42,7 +42,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.IcsFamilyTreeNode;
@@ -70,7 +69,6 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
-import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandler;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFactory;
@@ -98,50 +96,57 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/certified_products")
 public class CertifiedProductController {
-
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductController.class);
 
-    @Autowired
     private CertifiedProductUploadHandlerFactory uploadHandlerFactory;
-
-    @Autowired
     private CertifiedProductDetailsManager cpdManager;
-
-    @Autowired
     private CertifiedProductManager cpManager;
-
-    @Autowired
-    private UserPermissionsManager userPermissionsManager;
-
-    @Autowired
     private ResourcePermissions resourcePermissions;
-
-    @Autowired
     private PendingCertifiedProductManager pcpManager;
-
-    @Autowired
-    private PendingCertifiedProductDAO pcpDao;
-
-    @Autowired
     private ActivityManager activityManager;
-
-    @Autowired
     private ListingValidatorFactory validatorFactory;
-
-    @Autowired
     private Environment env;
-
-    @Autowired
     private ErrorMessageUtil msgUtil;
-
-    @Autowired
     private FileUtils fileUtils;
-
-    @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
-
-    @Autowired
     private DeveloperManager developerManager;
+
+    /**
+     * Autowired constructor for dependency injection.
+     *
+     * @param uploadHandlerFactory
+     * @param cpdManager
+     * @param cpManager
+     * @param resourcePermissions
+     * @param pcpManager
+     * @param activityManager
+     * @param validatorFactory
+     * @param env
+     * @param msgUtil
+     * @param fileUtils
+     * @param chplProductNumberUtil
+     * @param developerManager
+     */
+    @Autowired
+    public CertifiedProductController(final CertifiedProductUploadHandlerFactory uploadHandlerFactory,
+            final CertifiedProductDetailsManager cpdManager, final CertifiedProductManager cpManager,
+            final ResourcePermissions resourcePermissions, final PendingCertifiedProductManager pcpManager,
+            final ActivityManager activityManager, final ListingValidatorFactory validatorFactory,
+            final Environment env, final ErrorMessageUtil msgUtil, final FileUtils fileUtils,
+            final ChplProductNumberUtil chplProductNumberUtil, final DeveloperManager developerManager) {
+        this.uploadHandlerFactory = uploadHandlerFactory;
+        this.cpdManager = cpdManager;
+        this.cpManager = cpManager;
+        this.resourcePermissions = resourcePermissions;
+        this.pcpManager = pcpManager;
+        this.activityManager = activityManager;
+        this.validatorFactory = validatorFactory;
+        this.env = env;
+        this.msgUtil = msgUtil;
+        this.fileUtils = fileUtils;
+        this.chplProductNumberUtil = chplProductNumberUtil;
+        this.developerManager = developerManager;
+    }
 
     /**
      * List all certified products.
