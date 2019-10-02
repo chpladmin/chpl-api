@@ -35,6 +35,12 @@ public class ValidationException extends Exception {
         warningMessages = new HashSet<String>();
     }
 
+    public ValidationException(Set<String> errorMessages) {
+        super();
+        this.errorMessages = errorMessages;
+        this.warningMessages = new HashSet<String>();
+    }
+
     public ValidationException(Set<String> errorMessages, Set<String> warningMessages) {
         super();
         this.errorMessages = errorMessages;

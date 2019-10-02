@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -32,6 +32,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.DeveloperTransparency;
+import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -56,17 +57,18 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
+import gov.healthit.chpl.manager.rules.ValidationRule;
+import gov.healthit.chpl.manager.rules.developer.DeveloperValidationContext;
+import gov.healthit.chpl.manager.rules.developer.DeveloperValidationFactory;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
-import gov.healthit.chpl.validation.developer.DeveloperCreationValidator;
-import gov.healthit.chpl.validation.developer.DeveloperUpdateValidator;
 
 /**
  * Implementation of DeveloperManager class.
- * 
+ *
  * @author TYoung
  *
  */
@@ -84,10 +86,9 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
     private CertifiedProductDAO certifiedProductDAO;
     private ChplProductNumberUtil chplProductNumberUtil;
     private ActivityManager activityManager;
-    private DeveloperCreationValidator creationValidator;
-    private DeveloperUpdateValidator updateValidator;
     private ErrorMessageUtil msgUtil;
     private ResourcePermissions resourcePermissions;
+    private DeveloperValidationFactory developerValidationFactory;
 
     /**
      * Autowired constructor for dependency injection.
@@ -95,20 +96,24 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
      * @param developerDao
      * @param productManager
      * @param acbManager
+     * @param cpManager
+     * @param cpdManager
      * @param certificationBodyDao
      * @param certifiedProductDAO
      * @param chplProductNumberUtil
      * @param activityManager
      * @param msgUtil
+     * @param resourcePermissions
+     * @param developerValidationFactory
      */
     @Autowired
     public DeveloperManagerImpl(final DeveloperDAO developerDao, final ProductManager productManager,
             final CertificationBodyManager acbManager, final CertifiedProductManager cpManager,
             final CertifiedProductDetailsManager cpdManager, final CertificationBodyDAO certificationBodyDao,
             final CertifiedProductDAO certifiedProductDAO, final ChplProductNumberUtil chplProductNumberUtil,
-            final ActivityManager activityManager, final DeveloperCreationValidator creationValidator,
-            final DeveloperUpdateValidator updateValidator, final ErrorMessageUtil msgUtil,
-            final ResourcePermissions resourcePermissions) {
+            final ActivityManager activityManager, final ErrorMessageUtil msgUtil,
+            final ResourcePermissions resourcePermissions,
+            final DeveloperValidationFactory developerValidationFactory) {
         this.developerDao = developerDao;
         this.productManager = productManager;
         this.acbManager = acbManager;
@@ -118,10 +123,9 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
         this.certifiedProductDAO = certifiedProductDAO;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.activityManager = activityManager;
-        this.creationValidator = creationValidator;
-        this.updateValidator = updateValidator;
         this.msgUtil = msgUtil;
         this.resourcePermissions = resourcePermissions;
+        this.developerValidationFactory = developerValidationFactory;
     }
 
     @Override
@@ -210,9 +214,9 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
         if (doValidation) {
             // validation is not done during listing update -> developer ban
             // but should be done at other times
-            Set<String> errors = updateValidator.validate(updatedDev);
+            Set<String> errors = runUpdateValidations(updatedDev);
             if (errors != null && errors.size() > 0) {
-                throw new ValidationException(errors, null);
+                throw new ValidationException(errors);
             }
         }
 
@@ -414,11 +418,11 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
     public DeveloperDTO merge(final List<Long> developerIdsToMerge, final DeveloperDTO developerToCreate)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
 
-        // merging doesn't require developer address which is why the update validator
-        // is getting used here.
-        Set<String> errors = updateValidator.validate(developerToCreate);
+        // merging doesn't require developer address so runUpdateValidations is
+        // used here
+        Set<String> errors = runUpdateValidations(developerToCreate);
         if (errors != null && errors.size() > 0) {
-            throw new ValidationException(errors, null);
+            throw new ValidationException(errors);
         }
 
         List<DeveloperDTO> beforeDevelopers = new ArrayList<DeveloperDTO>();
@@ -518,10 +522,10 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
     public DeveloperDTO split(final DeveloperDTO oldDeveloper, final DeveloperDTO developerToCreate,
             final List<Long> productIdsToMove) throws ValidationException, AccessDeniedException,
             EntityRetrievalException, EntityCreationException, JsonProcessingException {
-        // check developer fields for all valid values
-        Set<String> devErrors = creationValidator.validate(developerToCreate);
+        // check developer fields for all valid values (except transparency attestation)
+        Set<String> devErrors = runCreateValidations(developerToCreate);
         if (devErrors != null && devErrors.size() > 0) {
-            throw new ValidationException(devErrors, null);
+            throw new ValidationException(devErrors);
         }
 
         // create the new developer and log activity
@@ -774,5 +778,86 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
             return msgUtil.getMessage("developer.merge.dupChplProdNbrs.duplicate", origChplProductNumberA,
                     origChplProductNumberB);
         }
+    }
+
+    @Override
+    public void validateDeveloperInSystemIfExists(final PendingCertifiedProductDetails pendingCp)
+            throws EntityRetrievalException, ValidationException {
+        if (!isNewDeveloperCode(pendingCp.getChplProductNumber())) {
+            DeveloperDTO systemDeveloperDTO = null;
+            if (pendingCp.getDeveloper() != null && pendingCp.getDeveloper().getDeveloperId() != null) {
+                systemDeveloperDTO = getById(pendingCp.getDeveloper().getDeveloperId());
+            }
+            if (systemDeveloperDTO != null) {
+                final Object pendingAcbNameObj = pendingCp.getCertifyingBody()
+                        .get(CertifiedProductSearchDetails.ACB_NAME_KEY);
+                if (pendingAcbNameObj != null && !StringUtils.isEmpty(pendingAcbNameObj.toString())) {
+                    Set<String> sysDevErrorMessages = runSystemValidations(systemDeveloperDTO,
+                            pendingAcbNameObj.toString());
+                    if (!sysDevErrorMessages.isEmpty()) {
+                        throw new ValidationException(sysDevErrorMessages);
+                    }
+                } else {
+                    LOGGER.error("Unable to validate system developer as the pending ACB Name is null "
+                            + "or its String representation is null or empty");
+                    throw new ValidationException(msgUtil.getMessage("system.developer.pendingACBNameNullOrEmpty"));
+                }
+            } else {
+                LOGGER.warn("Skipping system validation due to null pending developer or a null system developer");
+            }
+        } else {
+            LOGGER.info("Skipping system validation due to new developer code '" + NEW_DEVELOPER_CODE + "'");
+        }
+    }
+
+    private boolean isNewDeveloperCode(final String chplProductNumber) {
+        String devCode = chplProductNumberUtil.getDeveloperCode(chplProductNumber);
+        return StringUtils.equals(devCode, NEW_DEVELOPER_CODE);
+    }
+
+    private Set<String> runUpdateValidations(final DeveloperDTO dto) {
+        List<ValidationRule<DeveloperValidationContext>> rules = new ArrayList<ValidationRule<DeveloperValidationContext>>();
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.NAME));
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.WEBSITE_WELL_FORMED));
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.CONTACT));
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.STATUS_EVENTS));
+        return runValidations(rules, dto);
+    }
+
+    private Set<String> runCreateValidations(final DeveloperDTO dto) {
+        List<ValidationRule<DeveloperValidationContext>> rules = new ArrayList<ValidationRule<DeveloperValidationContext>>();
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.NAME));
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.WEBSITE_WELL_FORMED));
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.CONTACT));
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.ADDRESS));
+        return runValidations(rules, dto);
+    }
+
+    private Set<String> runSystemValidations(final DeveloperDTO dto, final String pendingAcbName) {
+        List<ValidationRule<DeveloperValidationContext>> rules = new ArrayList<ValidationRule<DeveloperValidationContext>>();
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.NAME));
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.WEBSITE_REQUIRED));
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.CONTACT));
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.ADDRESS));
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.TRANSPARENCY_ATTESTATION));
+        return runValidations(rules, dto, pendingAcbName);
+    }
+
+    private Set<String> runValidations(final List<ValidationRule<DeveloperValidationContext>> rules,
+            final DeveloperDTO dto) {
+        return runValidations(rules, dto, null);
+    }
+
+    private Set<String> runValidations(final List<ValidationRule<DeveloperValidationContext>> rules,
+            final DeveloperDTO dto, final String pendingAcbName) {
+        Set<String> errorMessages = new HashSet<String>();
+        DeveloperValidationContext context = new DeveloperValidationContext(dto, msgUtil, pendingAcbName);
+
+        for (ValidationRule<DeveloperValidationContext> rule : rules) {
+            if (!rule.isValid(context)) {
+                errorMessages.addAll(rule.getMessages());
+            }
+        }
+        return errorMessages;
     }
 }
