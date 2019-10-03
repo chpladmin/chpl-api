@@ -43,11 +43,10 @@ import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.ProductManager;
+import gov.healthit.chpl.manager.rules.developer.DeveloperValidationFactory;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.validation.developer.DeveloperCreationValidator;
-import gov.healthit.chpl.validation.developer.DeveloperUpdateValidator;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
@@ -74,6 +73,9 @@ public class DeveloperStatusTest {
     @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
 
+    @Autowired
+    private DeveloperValidationFactory developerValidationFactory;
+
     @Spy
     private DeveloperDAO devDao;
     @Spy
@@ -84,10 +86,6 @@ public class DeveloperStatusTest {
     private CertifiedProductDetailsManager cpdManager;
     @Spy
     private ActivityManager activityManager;
-    @Spy
-    private DeveloperCreationValidator creationValidator;
-    @Spy
-    private DeveloperUpdateValidator updateValidator;
     @Spy
     private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
 
@@ -107,9 +105,9 @@ public class DeveloperStatusTest {
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 
         MockitoAnnotations.initMocks(this);
-        developerManager = new DeveloperManagerImpl(devDao, productManager, acbManager, cpManager,
-                cpdManager, certificationBodyDao, certifiedProductDao, chplProductNumberUtil, activityManager,
-                creationValidator, updateValidator, msgUtil, permissionChecker);
+        developerManager = new DeveloperManagerImpl(devDao, productManager, acbManager, cpManager, cpdManager,
+                certificationBodyDao, certifiedProductDao, chplProductNumberUtil, activityManager, msgUtil,
+                permissionChecker, developerValidationFactory);
 
         Mockito.when(permissionChecker.getAllAcbsForCurrentUser()).thenReturn(new ArrayList<CertificationBodyDTO>());
         Mockito.when(acbManager.getAll()).thenReturn(new ArrayList<CertificationBodyDTO>());
@@ -121,7 +119,7 @@ public class DeveloperStatusTest {
     }
 
     @Test
-    public void testDeveloperStatusChange_ActiveToSuspended_NoReasonRequired() 
+    public void testDeveloperStatusChange_ActiveToSuspended_NoReasonRequired()
             throws EntityCreationException, EntityRetrievalException,
         JsonProcessingException, MissingReasonException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -147,7 +145,7 @@ public class DeveloperStatusTest {
     }
 
     @Test(expected = MissingReasonException.class)
-    public void testDeveloperStatusChange_ActiveToBannedNullReason_ThrowsException() 
+    public void testDeveloperStatusChange_ActiveToBannedNullReason_ThrowsException()
             throws EntityCreationException, EntityRetrievalException,
             JsonProcessingException, MissingReasonException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -264,7 +262,7 @@ public class DeveloperStatusTest {
         return dev;
     }
 
-    private DeveloperStatusEventDTO createStatusEvent(Long eventId, Long developerId, DeveloperStatusType type,
+    public static DeveloperStatusEventDTO createStatusEvent(Long eventId, Long developerId, DeveloperStatusType type,
             Date statusDate, String reason) {
         DeveloperStatusEventDTO event = new DeveloperStatusEventDTO();
         event.setId(eventId);
