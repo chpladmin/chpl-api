@@ -117,6 +117,12 @@ public class ChangeRequestStatusService {
         }
     }
 
+    public static boolean doesCurrentStatusExist(ChangeRequest cr) {
+        return cr.getCurrentStatus() != null
+                && cr.getCurrentStatus().getChangeRequestStatusType() != null
+                && cr.getCurrentStatus().getChangeRequestStatusType().getId() != null;
+    }
+
     private boolean isStatusChangeValid(final Long previousStatusTypeId, final Long newStatusTypeId) {
         // Does this status type id exist?
         try {

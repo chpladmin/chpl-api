@@ -140,6 +140,8 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
             + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).UPDATE, #cr)")
     public ChangeRequest updateChangeRequest(final ChangeRequest cr)
             throws EntityRetrievalException, ValidationException, EntityCreationException, JsonProcessingException {
+        ChangeRequest crFromDb = getChangeRequest(cr.getId());
+
         ValidationException validationException = new ValidationException();
         validationException.getErrorMessages().addAll(runUpdateValidations(cr));
         if (validationException.getErrorMessages().size() > 0) {
@@ -147,11 +149,13 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
         }
 
         // Update the details, if the user is of role developer
-        if (resourcePermissions.isUserRoleDeveloperAdmin()) {
-            crDetailsFactory.get(cr.getChangeRequestType().getId()).update(cr);
+        if (resourcePermissions.isUserRoleDeveloperAdmin() && cr.getDetails() != null) {
+            crDetailsFactory.get(crFromDb.getChangeRequestType().getId()).update(cr);
         }
         // Update the status
-        crStatusService.updateChangeRequestStatus(cr);
+        if (ChangeRequestStatusService.doesCurrentStatusExist(cr)) {
+            crStatusService.updateChangeRequestStatus(cr);
+        }
 
         ChangeRequest newCr = getChangeRequest(cr.getId());
         return newCr;
@@ -175,7 +179,6 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
 
     private List<String> runUpdateValidations(ChangeRequest cr) {
         List<ValidationRule<ChangeRequestValidationContext>> rules = new ArrayList<ValidationRule<ChangeRequestValidationContext>>();
-        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_EXISTENCE));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_DETAILS_UPDATE));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.MULTIPLE_ACBS));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.DEVELOPER_ACTIVE));
