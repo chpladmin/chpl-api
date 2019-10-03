@@ -109,12 +109,12 @@ public class CertifiedProductController {
     @Autowired
     private CertifiedProductManager cpManager;
 
-    @Autowired 
+    @Autowired
     private UserPermissionsManager userPermissionsManager;
-    
-    @Autowired 
+
+    @Autowired
     private ResourcePermissions resourcePermissions;
-    
+
     @Autowired
     private PendingCertifiedProductManager pcpManager;
 
@@ -337,6 +337,8 @@ public class CertifiedProductController {
 
         certifiedProduct = validateCertifiedProduct(certifiedProduct);
 
+        removeNonBasicCertifiedProductSearchDetails(certifiedProduct);
+
         return certifiedProduct;
     }
 
@@ -361,7 +363,16 @@ public class CertifiedProductController {
 
         certifiedProduct = validateCertifiedProduct(certifiedProduct);
 
+        removeNonBasicCertifiedProductSearchDetails(certifiedProduct);
+
         return certifiedProduct;
+    }
+
+    private void removeNonBasicCertifiedProductSearchDetails(CertifiedProductSearchDetails certifiedProduct) {
+        certifiedProduct.setErrorMessages(null);
+        certifiedProduct.setWarningMessages(null);
+        certifiedProduct.setCqmResults(null);
+        certifiedProduct.setCertificationResults(null);
     }
 
     @ApiOperation(value = "Get all of the CQM results for a specified certified product.",

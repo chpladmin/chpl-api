@@ -1,5 +1,7 @@
 package gov.healthit.chpl.domain;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -30,6 +32,7 @@ import gov.healthit.chpl.util.Util;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(Include.NON_NULL)
 public class CertifiedProductSearchDetails implements Serializable {
     private static final long serialVersionUID = 2903219171127034775L;
     public static final String ACB_ID_KEY = "id";
