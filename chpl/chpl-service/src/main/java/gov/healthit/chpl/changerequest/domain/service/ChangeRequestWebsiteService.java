@@ -118,12 +118,8 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
             if (cr.getCurrentStatus().getChangeRequestStatusType().getId().equals(pendingDeveloperActionStatus)) {
                 sendPendingDeveloperActionEmail(cr);
             } else if (cr.getCurrentStatus().getChangeRequestStatusType().getId().equals(acceptedStatus)) {
-                // Need the original website for the email...
-                DeveloperDTO developer = developerDAO.getById(cr.getDeveloper().getDeveloperId());
-                String originalWebsite = developer.getWebsite();
-
-                cr = execute(cr, developer);
-                sendApprovalEmail(cr, originalWebsite);
+                cr = execute(cr);
+                sendApprovalEmail(cr);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -131,9 +127,10 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
         return cr;
     }
 
-    private ChangeRequest execute(final ChangeRequest cr, DeveloperDTO developer)
+    private ChangeRequest execute(final ChangeRequest cr)
             throws EntityRetrievalException, EntityCreationException {
         ChangeRequestWebsite crWebsite = (ChangeRequestWebsite) cr.getDetails();
+        DeveloperDTO developer = developerDAO.getById(cr.getDeveloper().getDeveloperId());
         developer.setWebsite(crWebsite.getWebsite());
         try {
             DeveloperDTO updatedDeveloper = developerManager.update(developer, false);
@@ -144,7 +141,7 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
         }
     }
 
-    private void sendApprovalEmail(final ChangeRequest cr, String originalWebsite) throws MessagingException {
+    private void sendApprovalEmail(final ChangeRequest cr) throws MessagingException {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         new EmailBuilder(env)
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
@@ -153,7 +150,6 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
                 .subject(env.getProperty("changeRequest.website.approval.subject"))
                 .htmlMessage(String.format(env.getProperty("changeRequest.website.approval.body"),
                         df.format(cr.getSubmittedDate()),
-                        originalWebsite,
                         cr.getDeveloper().getWebsite(),
                         getApprovalBody(cr)))
                 .sendEmail();
@@ -168,7 +164,6 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
                 .subject(env.getProperty("changeRequest.website.pendingDeveloperAction.subject"))
                 .htmlMessage(String.format(env.getProperty("changeRequest.website.pendingDeveloperAction.body"),
                         df.format(cr.getSubmittedDate()),
-                        cr.getDeveloper().getWebsite(),
                         ((ChangeRequestWebsite) cr.getDetails()).getWebsite(),
                         getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))
