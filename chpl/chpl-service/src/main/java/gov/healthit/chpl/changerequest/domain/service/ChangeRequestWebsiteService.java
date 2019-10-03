@@ -56,6 +56,18 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
     @Value("${user.permission.admin}")
     private Long adminPermission;
 
+    @Value("${changeRequest.website.approval.subject}")
+    private String approvalEmailSubject;
+
+    @Value("${changeRequest.website.approval.body}")
+    private String approvalEmailBody;
+
+    @Value("${changeRequest.website.pendingDeveloperAction.subject}")
+    private String pendingDeveloperActionEmailSubject;
+
+    @Value("${changeRequest.website.pendingDeveloperAction.body}")
+    private String pendingDeveloperActionEmailBody;
+
     @Autowired
     public ChangeRequestWebsiteService(final ChangeRequestDAO crDAO, final ChangeRequestWebsiteDAO crWebsiteDAO,
             final DeveloperDAO developerDAO, final DeveloperManager developerManager,
@@ -118,12 +130,8 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
             if (cr.getCurrentStatus().getChangeRequestStatusType().getId().equals(pendingDeveloperActionStatus)) {
                 sendPendingDeveloperActionEmail(cr);
             } else if (cr.getCurrentStatus().getChangeRequestStatusType().getId().equals(acceptedStatus)) {
-                // Need the original website for the email...
-                DeveloperDTO developer = developerDAO.getById(cr.getDeveloper().getDeveloperId());
-                String originalWebsite = developer.getWebsite();
-
-                cr = execute(cr, developer);
-                sendApprovalEmail(cr, originalWebsite);
+                cr = execute(cr);
+                sendApprovalEmail(cr);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -131,9 +139,10 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
         return cr;
     }
 
-    private ChangeRequest execute(final ChangeRequest cr, DeveloperDTO developer)
+    private ChangeRequest execute(final ChangeRequest cr)
             throws EntityRetrievalException, EntityCreationException {
         ChangeRequestWebsite crWebsite = (ChangeRequestWebsite) cr.getDetails();
+        DeveloperDTO developer = developerDAO.getById(cr.getDeveloper().getDeveloperId());
         developer.setWebsite(crWebsite.getWebsite());
         try {
             DeveloperDTO updatedDeveloper = developerManager.update(developer, false);
@@ -144,16 +153,15 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
         }
     }
 
-    private void sendApprovalEmail(final ChangeRequest cr, String originalWebsite) throws MessagingException {
+    private void sendApprovalEmail(final ChangeRequest cr) throws MessagingException {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         new EmailBuilder(env)
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.<String> toList()))
-                .subject(env.getProperty("changeRequest.website.approval.subject"))
-                .htmlMessage(String.format(env.getProperty("changeRequest.website.approval.body"),
+                .subject(approvalEmailSubject)
+                .htmlMessage(String.format(approvalEmailBody,
                         df.format(cr.getSubmittedDate()),
-                        originalWebsite,
                         cr.getDeveloper().getWebsite(),
                         getApprovalBody(cr)))
                 .sendEmail();
@@ -165,10 +173,9 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.<String> toList()))
-                .subject(env.getProperty("changeRequest.website.pendingDeveloperAction.subject"))
-                .htmlMessage(String.format(env.getProperty("changeRequest.website.pendingDeveloperAction.body"),
+                .subject(pendingDeveloperActionEmailSubject)
+                .htmlMessage(String.format(pendingDeveloperActionEmailBody,
                         df.format(cr.getSubmittedDate()),
-                        cr.getDeveloper().getWebsite(),
                         ((ChangeRequestWebsite) cr.getDetails()).getWebsite(),
                         getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))
