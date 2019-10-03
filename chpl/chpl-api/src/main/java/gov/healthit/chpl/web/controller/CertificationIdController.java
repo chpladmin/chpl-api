@@ -214,9 +214,6 @@ public class CertificationIdController {
                 // Add product data to results
                 List<CertificationIdLookupResults.Product> productList = results.getProducts();
                 for (CertifiedProductDetailsDTO dto : productDtos) {
-                    if (!ff4j.check(FeatureList.EFFECTIVE_RULE_DATE) && dto.getYear().equalsIgnoreCase("2014")) {
-                        throw new InvalidArgumentsException();
-                    }
                     productList.add(new CertificationIdLookupResults.Product(dto));
                     yearSet.add(Integer.valueOf(dto.getYear()));
                     certProductIds.add(dto.getId());
@@ -309,6 +306,9 @@ public class CertificationIdController {
         SortedSet<Integer> yearSet = new TreeSet<Integer>();
         List<CertificationIdResults.Product> resultProducts = new ArrayList<CertificationIdResults.Product>();
         for (CertifiedProductDetailsDTO dto : productDtos) {
+            if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE) && create && !dto.getYear().equalsIgnoreCase("2015")) {
+                throw new CertificationIdException("New Certification IDs can only be created using 2015 Edition Listings");
+            }
             CertificationIdResults.Product p = new CertificationIdResults.Product(dto);
             resultProducts.add(p);
             yearSet.add(Integer.valueOf(dto.getYear()));
