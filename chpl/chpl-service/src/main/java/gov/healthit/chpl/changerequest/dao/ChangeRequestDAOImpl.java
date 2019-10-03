@@ -77,17 +77,8 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
 
     @Override
     public List<ChangeRequest> getAllPending() throws EntityRetrievalException {
-        return getAllEntities().stream()
-                .map(entity -> ChangeRequestConverter.convert(entity))
-                .map(cr -> {
-                    cr.setCurrentStatus(getCurrentStatus(cr.getId()));
-                    cr.setStatuses(changeRequestStatusDAO.getByChangeRequestId(cr.getId()));
-                    cr.setCertificationBodies(developerCertificationBodyMapDAO
-                            .getCertificationBodiesForDeveloper(cr.getDeveloper().getDeveloperId()));
-                    return cr;
-                })
+        return getAll().stream()
                 .filter(cr -> getUpdatableStatuses().contains(cr.getCurrentStatus().getChangeRequestStatusType().getId()))
-                .map(cr -> populateDependentObjects(cr))
                 .collect(Collectors.<ChangeRequest>toList());
     }
 
@@ -105,7 +96,7 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
                     return cr;
                 })
                 .map(cr -> populateDependentObjects(cr))
-                .collect(Collectors.<ChangeRequest> toList());
+                .collect(Collectors.<ChangeRequest>toList());
     }
 
     private ChangeRequestEntity getEntityById(final Long id) throws EntityRetrievalException {
@@ -130,26 +121,6 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
         return entity;
     }
 
-    private List<ChangeRequestEntity> getAllEntities()
-            throws EntityRetrievalException {
-
-        String hql = "SELECT DISTINCT cr "
-                + "FROM ChangeRequestEntity cr  "
-                + "JOIN FETCH cr.changeRequestType crt "
-                + "JOIN FETCH cr.developer dev "
-                + "JOIN FETCH dev.address "
-                + "JOIN FETCH dev.contact "
-                + "JOIN FETCH dev.statusEvents statuses "
-                + "JOIN FETCH statuses.developerStatus "
-                + "WHERE cr.deleted = false ";
-
-        List<ChangeRequestEntity> results = entityManager
-                .createQuery(hql, ChangeRequestEntity.class)
-                .getResultList();
-
-        return results;
-    }
-
     private List<ChangeRequestEntity> getEntitiesByDevelopers(final List<Long> developerIds)
             throws EntityRetrievalException {
         String hql = "SELECT DISTINCT cr "
@@ -167,11 +138,17 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
         return results;
     }
 
-    private List<ChangeRequestEntity> getEntities() throws EntityRetrievalException {
+    private List<ChangeRequestEntity> getEntities()
+            throws EntityRetrievalException {
+
         String hql = "SELECT DISTINCT cr "
-                + "FROM ChangeRequestEntity cr "
-                + "JOIN FETCH cr.changeRequestType "
-                + "JOIN FETCH cr.developer "
+                + "FROM ChangeRequestEntity cr  "
+                + "JOIN FETCH cr.changeRequestType crt "
+                + "JOIN FETCH cr.developer dev "
+                + "JOIN FETCH dev.address "
+                + "JOIN FETCH dev.contact "
+                + "JOIN FETCH dev.statusEvents statuses "
+                + "JOIN FETCH statuses.developerStatus "
                 + "WHERE cr.deleted = false ";
 
         List<ChangeRequestEntity> results = entityManager
@@ -223,7 +200,7 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
         return statuses;
     }
 
-    private ChangeRequest populateDependentObjects(ChangeRequest cr) {
+    private ChangeRequest populateDependentObjects(final ChangeRequest cr) {
         try {
             cr.setCurrentStatus(getCurrentStatus(cr.getId()));
             cr.setStatuses(changeRequestStatusDAO.getByChangeRequestId(cr.getId()));
