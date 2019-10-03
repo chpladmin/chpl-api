@@ -56,6 +56,18 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
     @Value("${user.permission.admin}")
     private Long adminPermission;
 
+    @Value("${changeRequest.website.approval.subject}")
+    private String approvalEmailSubject;
+
+    @Value("${changeRequest.website.approval.body}")
+    private String approvalEmailBody;
+
+    @Value("${changeRequest.website.pendingDeveloperAction.subject}")
+    private String pendingDeveloperActionEmailSubject;
+
+    @Value("${changeRequest.website.pendingDeveloperAction.body}")
+    private String pendingDeveloperActionEmailBody;
+
     @Autowired
     public ChangeRequestWebsiteService(final ChangeRequestDAO crDAO, final ChangeRequestWebsiteDAO crWebsiteDAO,
             final DeveloperDAO developerDAO, final DeveloperManager developerManager,
@@ -147,8 +159,8 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.<String> toList()))
-                .subject(env.getProperty("changeRequest.website.approval.subject"))
-                .htmlMessage(String.format(env.getProperty("changeRequest.website.approval.body"),
+                .subject(approvalEmailSubject)
+                .htmlMessage(String.format(approvalEmailBody,
                         df.format(cr.getSubmittedDate()),
                         cr.getDeveloper().getWebsite(),
                         getApprovalBody(cr)))
@@ -161,8 +173,8 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.<String> toList()))
-                .subject(env.getProperty("changeRequest.website.pendingDeveloperAction.subject"))
-                .htmlMessage(String.format(env.getProperty("changeRequest.website.pendingDeveloperAction.body"),
+                .subject(pendingDeveloperActionEmailSubject)
+                .htmlMessage(String.format(pendingDeveloperActionEmailBody,
                         df.format(cr.getSubmittedDate()),
                         ((ChangeRequestWebsite) cr.getDetails()).getWebsite(),
                         getApprovalBody(cr),
