@@ -16,9 +16,6 @@ public class ChangeRequestValidationFactoryTest {
     private ChangeRequestDetailsUpdateValidation changeRequestDetailsUpdateValidation;
 
     @Mock
-    private ChangeRequestExistenceValidation changeRequestExistenceValidation;
-
-    @Mock
     private ChangeRequestTypeValidation changeRequestTypeValidation;
 
     @Mock
@@ -74,9 +71,6 @@ public class ChangeRequestValidationFactoryTest {
 
         assertTrue(factory.getRule(
                 ChangeRequestValidationFactory.CHANGE_REQUEST_DETAILS_UPDATE) instanceof ChangeRequestDetailsUpdateValidation);
-
-        assertTrue(factory.getRule(
-                ChangeRequestValidationFactory.CHANGE_REQUEST_EXISTENCE) instanceof ChangeRequestExistenceValidation);
 
         assertTrue(factory.getRule(
                 ChangeRequestValidationFactory.STATUS_TYPE) instanceof CurrentStatusValidation);
