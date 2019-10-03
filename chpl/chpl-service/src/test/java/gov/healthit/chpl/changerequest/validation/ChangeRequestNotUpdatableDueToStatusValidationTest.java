@@ -38,7 +38,7 @@ public class ChangeRequestNotUpdatableDueToStatusValidationTest {
                         .withCurrentStatus(new ChangeRequestStatusBuilder()
                                 .withId(1l)
                                 .withStatusChangeDate(new Date())
-                                .withChangeReequestStatusType(new ChangeRequestStatusTypeBuilder()
+                                .withChangeRequestStatusType(new ChangeRequestStatusTypeBuilder()
                                         .withId(1l)
                                         .build())
                                 .build())
@@ -58,7 +58,7 @@ public class ChangeRequestNotUpdatableDueToStatusValidationTest {
                         .withCurrentStatus(new ChangeRequestStatusBuilder()
                                 .withId(1l)
                                 .withStatusChangeDate(new Date())
-                                .withChangeReequestStatusType(new ChangeRequestStatusTypeBuilder()
+                                .withChangeRequestStatusType(new ChangeRequestStatusTypeBuilder()
                                         .withId(4l) // Rejected
                                         .build())
                                 .build())

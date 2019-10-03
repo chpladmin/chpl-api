@@ -73,7 +73,7 @@ public class ChangeRequestTypeValidationTest {
     }
 
     @Test
-    public void isValid_Fail_ChangeRequetTypeNotInDb() throws EntityRetrievalException {
+    public void isValid_Fail_ChangeRequestTypeNotInDb() throws EntityRetrievalException {
         Mockito.when(changeRequestTypeDAO.getChangeRequestTypeById(ArgumentMatchers.anyLong()))
                 .thenThrow(EntityRetrievalException.class);
 

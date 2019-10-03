@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.changerequest.domain.service.ChangeRequestStatusService;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
 @Component
@@ -20,10 +21,12 @@ public class CommentRequiredValidation extends ValidationRule<ChangeRequestValid
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
-        if (isStatusChange(context) && doesNewStatusRequireComment(context)) {
-            if (StringUtils.isEmpty(context.getChangeRequest().getCurrentStatus().getComment())) {
-                getMessages().add(getErrorMessage("changeRequest.status.changeRequiresComment"));
-                return false;
+        if (ChangeRequestStatusService.doesCurrentStatusExist(context.getChangeRequest())) {
+            if (isStatusChange(context) && doesNewStatusRequireComment(context)) {
+                if (StringUtils.isEmpty(context.getChangeRequest().getCurrentStatus().getComment())) {
+                    getMessages().add(getErrorMessage("changeRequest.status.changeRequiresComment"));
+                    return false;
+                }
             }
         }
         return true;

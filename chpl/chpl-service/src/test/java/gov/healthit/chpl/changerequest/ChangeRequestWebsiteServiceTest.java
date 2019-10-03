@@ -1,39 +1,66 @@
 package gov.healthit.chpl.changerequest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mockito.AdditionalAnswers;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.core.env.Environment;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.changerequest.builders.ChangeRequestBuilder;
 import gov.healthit.chpl.changerequest.builders.ChangeRequestWebsiteBuilder;
+import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestWebsiteDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestWebsite;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestWebsiteService;
+import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.dao.UserDeveloperMapDAO;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.manager.DeveloperManager;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {
-        gov.healthit.chpl.CHPLTestConfig.class
-})
+//@RunWith(SpringJUnit4ClassRunner.class)
+//@ContextConfiguration(classes = {
+//        gov.healthit.chpl.CHPLTestConfig.class
+//})
 public class ChangeRequestWebsiteServiceTest {
+    @Mock
+    private ChangeRequestDAO crDAO;
 
     @Mock
-    private ChangeRequestWebsiteDAO crWebsiteDAO;;
+    private ChangeRequestWebsiteDAO crWebsiteDAO;
+
+    @Mock
+    private DeveloperDAO developerDAO;
+
+    @Mock
+    private DeveloperManager developerManager;
+
+    @Mock
+    private UserDeveloperMapDAO userDeveloperMapDAO;
+
+    @Mock
+    private ActivityManager activityManager;
+
+    @Mock
+    private Environment env;
 
     @InjectMocks
-    private ChangeRequestWebsiteService crWebsiteHelper;
+    private ChangeRequestWebsiteService service;
 
     @Before
     public void setup() {
@@ -50,7 +77,7 @@ public class ChangeRequestWebsiteServiceTest {
                         .build());
 
         // Run
-        ChangeRequestWebsite crWebsite = crWebsiteHelper.getByChangeRequestId(1l);
+        ChangeRequestWebsite crWebsite = service.getByChangeRequestId(1l);
 
         // Check
         assertEquals(Long.valueOf(1l), crWebsite.getId());
@@ -64,11 +91,11 @@ public class ChangeRequestWebsiteServiceTest {
                 .thenThrow(EntityRetrievalException.class);
 
         // Run
-        crWebsiteHelper.getByChangeRequestId(1l);
+        service.getByChangeRequestId(1l);
     }
 
     @Test
-    public void createChangeRequestWebsite_Success() throws EntityRetrievalException {
+    public void create_Success() throws EntityRetrievalException {
         Mockito.when(crWebsiteDAO.create(ArgumentMatchers.any(ChangeRequest.class),
                 ArgumentMatchers.any(ChangeRequestWebsite.class)))
                 .thenReturn(new ChangeRequestWebsiteBuilder()
@@ -85,7 +112,7 @@ public class ChangeRequestWebsiteServiceTest {
     }
 
     @Test(expected = EntityRetrievalException.class)
-    public void createChangeRequestWebsite_Exception() throws EntityRetrievalException {
+    public void create_Exception() throws EntityRetrievalException {
         Mockito.when(crWebsiteDAO.create(ArgumentMatchers.any(ChangeRequest.class),
                 ArgumentMatchers.any(ChangeRequestWebsite.class)))
                 .thenThrow(EntityRetrievalException.class);
@@ -96,27 +123,110 @@ public class ChangeRequestWebsiteServiceTest {
     }
 
     @Test
-    public void updateChangeRequestWebsite_Success() throws EntityRetrievalException {
-        Mockito.when(crWebsiteDAO.update(ArgumentMatchers.any(ChangeRequestWebsite.class)))
-                .thenReturn(new ChangeRequestWebsiteBuilder()
-                        .withId(3l)
-                        .withWebsite("http://www.abc.com")
+    public void update_Success() throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+        // Setup
+        Mockito.when(crDAO.get(ArgumentMatchers.anyLong()))
+                .thenReturn(new ChangeRequestBuilder()
+                        .withId(1l)
+                        .withDetails(new ChangeRequestWebsiteBuilder()
+                                .withId(22l)
+                                .withWebsite("http://www.orig.com")
+                                .build())
                         .build());
 
-        ChangeRequestWebsite crWebsite = crWebsiteDAO.update(
-                new ChangeRequestWebsiteBuilder().withWebsite("http://www.abc.com").build());
+        Mockito.when(crWebsiteDAO.update(Mockito.isA(ChangeRequestWebsite.class)))
+                .then(AdditionalAnswers.returnsFirstArg());
 
-        assertEquals(Long.valueOf(3l), crWebsite.getId());
-        assertEquals("http://www.abc.com", crWebsite.getWebsite());
+        Mockito.doNothing().when(activityManager).addActivity(
+                Mockito.isA(ActivityConcept.class), Mockito.isA(Long.class), Mockito.isA(String.class),
+                Mockito.isA(Object.class), Mockito.isA(Object.class));
+
+        // Run
+        ChangeRequest fromClientCr = new ChangeRequestBuilder()
+                .withId(1l)
+                .withDetails(getChangeRequestWebsiteMap(null, "http://www.new.com"))
+                .build();
+
+        ChangeRequest updatedCr = service.update(fromClientCr);
+
+        // Test
+
+        // Make sure update is called
+        Mockito.verify(crWebsiteDAO, Mockito.times(1)).update(Mockito.isA(ChangeRequestWebsite.class));
+
+        // Make sure activity is not called
+        Mockito.verify(activityManager, Mockito.times(1)).addActivity(Mockito.isA(ActivityConcept.class),
+                Mockito.isA(Long.class), Mockito.isA(String.class), Mockito.isA(Object.class),
+                Mockito.isA(Object.class));
+
+        assertEquals("http://www.new.com", ((ChangeRequestWebsite) updatedCr.getDetails()).getWebsite());
     }
 
-    @Test(expected = EntityRetrievalException.class)
-    public void updateChangeRequestWebsite_Exception() throws EntityRetrievalException {
-        Mockito.when(crWebsiteDAO.update(ArgumentMatchers.any(ChangeRequestWebsite.class)))
+    @Test
+    public void update_WebsiteNotChanged()
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+        // Setup
+        Mockito.when(crDAO.get(ArgumentMatchers.anyLong()))
+                .thenReturn(new ChangeRequestBuilder()
+                        .withId(1l)
+                        .withDetails(new ChangeRequestWebsiteBuilder()
+                                .withId(22l)
+                                .withWebsite("http://www.orig.com")
+                                .build())
+                        .build());
+
+        Mockito.when(crWebsiteDAO.update(Mockito.isA(ChangeRequestWebsite.class)))
+                .then(AdditionalAnswers.returnsFirstArg());
+
+        Mockito.doNothing().when(activityManager).addActivity(
+                Mockito.isA(ActivityConcept.class), Mockito.isA(Long.class),
+                Mockito.isA(String.class), Mockito.isA(Object.class), Mockito.isA(Object.class));
+
+        // Run
+        ChangeRequest fromClientCr = new ChangeRequestBuilder()
+                .withId(1l)
+                .withDetails(getChangeRequestWebsiteMap(null, "http://www.orig.com"))
+                .build();
+
+        ChangeRequest updatedCr = service.update(fromClientCr);
+
+        // Test
+
+        // Make sure update is not called
+        Mockito.verify(crWebsiteDAO, Mockito.never()).update(Mockito.isA(ChangeRequestWebsite.class));
+
+        // Make sure activity is not called
+        Mockito.verify(activityManager, Mockito.never()).addActivity(Mockito.isA(ActivityConcept.class),
+                Mockito.isA(Long.class), Mockito.isA(String.class), Mockito.isA(Object.class),
+                Mockito.isA(Object.class));
+
+        assertEquals("http://www.orig.com", ((ChangeRequestWebsite) updatedCr.getDetails()).getWebsite());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void update_Exception_CouldNotFindCr() throws EntityRetrievalException {
+        // Setup
+        Mockito.when(crDAO.get(ArgumentMatchers.anyLong()))
                 .thenThrow(EntityRetrievalException.class);
 
-        crWebsiteDAO.update(
-                new ChangeRequestWebsiteBuilder().withWebsite("http://www.abc.com").build());
+        // Run
+        service.update(new ChangeRequestBuilder().withId(1l).build());
+
+        // Test - handled by the 'expected'
+    }
+
+    @Ignore
+    @Test
+    public void postStatusChangeProcessing_PendingDeveloperAction() {
+        // Need to determine how to mock/replicate email object
+        assertTrue(true);
+    }
+
+    @Ignore
+    @Test
+    public void postStatusChangeProcessing_Accepted() {
+        // Need to determine how to mock/replicate email object
+        assertTrue(true);
     }
 
     private HashMap<String, Object> getChangeRequestWebsiteMap(final Long id, final String website) {

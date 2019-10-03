@@ -112,12 +112,6 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
         }
     }
 
-    private List<UserDTO> getUsersForDeveloper(final Long developerId) {
-        return userDeveloperMapDAO.getByDeveloperId(developerId).stream()
-                .map(userDeveloperMap -> userDeveloperMap.getUser())
-                .collect(Collectors.<UserDTO> toList());
-    }
-
     @Override
     public ChangeRequest postStatusChangeProcessing(ChangeRequest cr) {
         try {
@@ -151,7 +145,7 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
     }
 
     private void sendApprovalEmail(final ChangeRequest cr, String originalWebsite) throws MessagingException {
-        DateFormat df = DateFormat.getTimeInstance(DateFormat.SHORT);
+        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         new EmailBuilder(env)
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())
@@ -166,13 +160,18 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
     }
 
     private void sendPendingDeveloperActionEmail(final ChangeRequest cr) throws MessagingException {
+        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         new EmailBuilder(env)
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.<String> toList()))
                 .subject(env.getProperty("changeRequest.website.pendingDeveloperAction.subject"))
                 .htmlMessage(String.format(env.getProperty("changeRequest.website.pendingDeveloperAction.body"),
-                        cr.getDeveloper().getWebsite()))
+                        df.format(cr.getSubmittedDate()),
+                        cr.getDeveloper().getWebsite(),
+                        ((ChangeRequestWebsite) cr.getDetails()).getWebsite(),
+                        getApprovalBody(cr),
+                        cr.getCurrentStatus().getComment()))
                 .sendEmail();
     }
 
@@ -198,4 +197,11 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
             return "";
         }
     }
+
+    private List<UserDTO> getUsersForDeveloper(final Long developerId) {
+        return userDeveloperMapDAO.getByDeveloperId(developerId).stream()
+                .map(userDeveloperMap -> userDeveloperMap.getUser())
+                .collect(Collectors.<UserDTO> toList());
+    }
+
 }

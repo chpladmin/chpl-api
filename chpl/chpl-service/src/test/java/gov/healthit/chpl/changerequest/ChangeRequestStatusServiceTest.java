@@ -71,7 +71,7 @@ public class ChangeRequestStatusServiceTest {
                         .withId(1l)
                         .withComment("")
                         .withStatusChangeDate(new Date())
-                        .withChangeReequestStatusType(new ChangeRequestStatusTypeBuilder()
+                        .withChangeRequestStatusType(new ChangeRequestStatusTypeBuilder()
                                 .withId(pendingAcbActionStatus)
                                 .withName("Pending ONC-ACB Action")
                                 .build())
@@ -107,7 +107,7 @@ public class ChangeRequestStatusServiceTest {
                 new ChangeRequestBuilder().withId(1l).build());
     }
 
-    public void setupForAcbUser(ResourcePermissions resourcePermissions) {
+    private void setupForAcbUser(ResourcePermissions resourcePermissions) {
         SecurityContextHolder.getContext().setAuthentication(getAcbUser());
     }
 

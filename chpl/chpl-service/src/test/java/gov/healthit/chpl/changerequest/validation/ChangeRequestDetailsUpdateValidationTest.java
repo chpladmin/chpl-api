@@ -9,14 +9,20 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import gov.healthit.chpl.changerequest.builders.ChangeRequestBuilder;
 import gov.healthit.chpl.changerequest.builders.ChangeRequestTypeBuilder;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 
 public class ChangeRequestDetailsUpdateValidationTest {
+
+    @Mock
+    private ResourcePermissions resourcePermissions;
 
     @InjectMocks
     private ChangeRequestDetailsUpdateValidation validator;
@@ -29,8 +35,11 @@ public class ChangeRequestDetailsUpdateValidationTest {
 
     @Test
     public void isValid_Success_Website() {
+        Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin())
+                .thenReturn(true);
+
         ChangeRequestValidationContext context = new ChangeRequestValidationContext(
-                getValidWebsiteChangeRequest(), null);
+                getValidWebsiteChangeRequest(), getValidWebsiteChangeRequest());
 
         assertTrue(validator.isValid(context));
 
@@ -38,8 +47,11 @@ public class ChangeRequestDetailsUpdateValidationTest {
 
     @Test
     public void isValid_Fail_Website() {
+        Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin())
+                .thenReturn(true);
+
         ChangeRequestValidationContext context = new ChangeRequestValidationContext(
-                getInvalidWebsiteChangeRequest(), null);
+                getInvalidWebsiteChangeRequest(), getInvalidWebsiteChangeRequest());
 
         assertFalse(validator.isValid(context));
     }
