@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationId.Validator;
 import gov.healthit.chpl.certificationId.ValidatorFactory;
 import gov.healthit.chpl.domain.SimpleCertificationId;
@@ -49,7 +51,10 @@ public class CertificationIdController {
 
     @Autowired
     private CertificationIdManager certificationIdManager;
-    
+
+    @Autowired
+    private FF4j ff4j;
+
     @Autowired ResourcePermissions resourcePermissions;
 
     // **********************************************************************************************************
@@ -209,6 +214,9 @@ public class CertificationIdController {
                 // Add product data to results
                 List<CertificationIdLookupResults.Product> productList = results.getProducts();
                 for (CertifiedProductDetailsDTO dto : productDtos) {
+                    if (!ff4j.check(FeatureList.EFFECTIVE_RULE_DATE) && dto.getYear().equalsIgnoreCase("2014")) {
+                        throw new InvalidArgumentsException();
+                    }
                     productList.add(new CertificationIdLookupResults.Product(dto));
                     yearSet.add(Integer.valueOf(dto.getYear()));
                     certProductIds.add(dto.getId());
