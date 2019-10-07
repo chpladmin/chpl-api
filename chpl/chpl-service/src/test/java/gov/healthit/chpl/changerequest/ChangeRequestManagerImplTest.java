@@ -3,9 +3,6 @@ package gov.healthit.chpl.changerequest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,17 +26,13 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
-import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
-import gov.healthit.chpl.changerequest.manager.ChangeRequestCertificationBodyHelper;
+import gov.healthit.chpl.changerequest.domain.service.ChangeRequestStatusService;
+import gov.healthit.chpl.changerequest.domain.service.ChangeRequestWebsiteService;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManagerImpl;
-import gov.healthit.chpl.changerequest.manager.ChangeRequestStatusHelper;
-import gov.healthit.chpl.changerequest.manager.ChangeRequestWebsiteHelper;
 import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationFactory;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
-import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -66,13 +59,10 @@ public class ChangeRequestManagerImplTest {
     private CertificationBodyDAO certificationBodyDAO;
 
     @Mock
-    private ChangeRequestCertificationBodyHelper crCertificationBodyMapHelper;
+    private ChangeRequestStatusService crStatusHelper;
 
     @Mock
-    private ChangeRequestStatusHelper crStatusHelper;
-
-    @Mock
-    private ChangeRequestWebsiteHelper crWebsiteHelper;
+    private ChangeRequestWebsiteService crWebsiteHelper;
 
     @Mock
     private ChangeRequestValidationFactory crValidationFactory;
@@ -102,31 +92,32 @@ public class ChangeRequestManagerImplTest {
                         .withCurrentStatus(new ChangeRequestStatusBuilder()
                                 .withId(8l)
                                 .withComment("Comment")
-                                .withChangeReequestStatusType(new ChangeRequestStatusTypeBuilder()
+                                .withChangeRequestStatusType(new ChangeRequestStatusTypeBuilder()
                                         .withId(1l)
                                         .withName("Pending ONC-ACB Action")
                                         .build())
+                                .build())
+                        .addChangeRequestStatus(new ChangeRequestStatusBuilder()
+                                .withId(8l)
+                                .withComment("Comment")
+                                .withChangeRequestStatusType(new ChangeRequestStatusTypeBuilder()
+                                        .withId(1l)
+                                        .withName("Pending ONC-ACB Action")
+                                        .build())
+                                .build())
+                        .addCertificationBody(new CertificationBodyBuilder()
+                                .withId(1l)
+                                .withCode("1234")
+                                .withName("ACB 1234")
+                                .build())
+                        .withDetails(new ChangeRequestWebsiteBuilder()
+                                .withId(2l)
+                                .withWebsite("http://www.abc.com")
                                 .build())
                         .build());
 
         Mockito.when(crWebsiteHelper.getByChangeRequestId(ArgumentMatchers.anyLong()))
                 .thenReturn(new ChangeRequestWebsiteBuilder().withId(5l).withWebsite("website.com").build());
-
-        Mockito.when(crStatusHelper.getStatuses(ArgumentMatchers.anyLong()))
-                .thenReturn(new ArrayList<ChangeRequestStatus>(Arrays.asList(
-                        new ChangeRequestStatusBuilder()
-                                .withId(8l)
-                                .withComment("Comment")
-                                .withChangeReequestStatusType(new ChangeRequestStatusTypeBuilder()
-                                        .withId(1l)
-                                        .withName("Pending ONC-ACB Action")
-                                        .build())
-                                .build())));
-
-        Mockito.when(
-                crCertificationBodyMapHelper.getCertificationBodiesByDeveloper(ArgumentMatchers.any(Developer.class)))
-                .thenReturn(new ArrayList<CertificationBody>(Arrays.asList(
-                        new CertificationBodyBuilder().withId(67l).withCode("5678").withName("ACB1").build())));
 
         // Run
         ChangeRequest cr = changeRequestManager.getChangeRequest(1l);

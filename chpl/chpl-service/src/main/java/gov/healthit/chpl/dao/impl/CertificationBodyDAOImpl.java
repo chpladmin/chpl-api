@@ -2,6 +2,7 @@ package gov.healthit.chpl.dao.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
@@ -205,6 +206,13 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
         return maxCode;
     }
 
+    @Override
+    public List<CertificationBodyDTO> getByDeveloperId(final Long developerId) {
+        return getEntitiesByDeveloperId(developerId).stream()
+                .map(acb -> new CertificationBodyDTO(acb))
+                .collect(Collectors.<CertificationBodyDTO> toList());
+    }
+
     private void create(final CertificationBodyEntity acb) {
         entityManager.persist(acb);
         entityManager.flush();
@@ -213,7 +221,6 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
     private void update(final CertificationBodyEntity acb) {
         entityManager.merge(acb);
         entityManager.flush();
-
     }
 
     /**
@@ -276,6 +283,19 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
             entity = result.get(0);
         }
         return entity;
+    }
+
+    private List<CertificationBodyEntity> getEntitiesByDeveloperId(final Long developerId) {
+        String hql = "SELECT DISTINCT cp.certificationBody "
+                + "FROM CertifiedProductEntity cp "
+                + "JOIN FETCH cp.productVersion pv "
+                + "JOIN FETCH pv.product prod "
+                + "JOIN FETCH prod.developer dev "
+                + "WHERE dev.id = :developerId";
+
+        return entityManager.createQuery(hql, CertificationBodyEntity.class)
+                .setParameter("developerId", developerId)
+                .getResultList();
     }
 
 }

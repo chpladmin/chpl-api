@@ -18,6 +18,11 @@ public class GetByIdActionPermissions extends ActionPermissions {
         try {
             if (!(obj instanceof ChangeRequest)) {
                 return false;
+            } else if (getResourcePermissions().isUserRoleOnc() || getResourcePermissions().isUserRoleAdmin()) {
+                return true;
+            } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
+                ChangeRequest cr = (ChangeRequest) obj;
+                return isCurrentAcbUserAssociatedWithDeveloper(cr.getDeveloper().getDeveloperId());
             } else if (getResourcePermissions().isUserRoleDeveloperAdmin()) {
                 ChangeRequest cr = (ChangeRequest) obj;
                 return isDeveloperValidForCurrentUser(cr.getDeveloper().getDeveloperId());
