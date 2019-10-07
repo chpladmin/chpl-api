@@ -41,10 +41,10 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
     private Properties props;
 
     @Autowired
-    private ChangeRequestDAO changeRequestDAO;
+    private CertificationBodyDAO certificationBodyDAO;
 
     @Autowired
-    private CertificationBodyDAO certificationBodyDAO;
+    private ChangeRequestDAO changeRequestDAO;
 
     @Autowired
     private Environment env;
@@ -58,15 +58,13 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
     private static final int CHANGE_REQUEST_COMMENT = 6;
     private static final int CHANGE_REQUEST_DATE = 7;
     private static final int CHANGE_REQUEST_DAYS_OPEN = 8;
-    private static final int ONC_ACB_START = 9;
-    private static final int NUM_REPORT_COLS = 9;
+    private static final int CHANGE_REQUEST_LATEST_DATE = 9;
+    private static final int CHANGE_REQUEST_LATEST_DAYS_OPEN = 10;
+    private static final int ONC_ACB_START = 11;
+    private static final int NUM_REPORT_COLS = 11;
 
     private static final long MILLIS_PER_DAY = 1000 * 60 * 60 * 24;
 
-    /**
-     * Constructor that initializes the PendingChangeRequestEmailJob object.
-     * @throws Exception if thrown
-     */
     public PendingChangeRequestEmailJob() throws Exception {
         super();
         props = getProperties();
@@ -82,7 +80,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         Date currentDate = new Date();
         List<List<String>> csvRows;
         try {
-            csvRows = getAppropriateActivities(jobContext, activeAcbs, currentDate);
+            csvRows = getAppropriateActivities(activeAcbs, currentDate);
             String to = jobContext.getMergedJobDataMap().getString("email");
             String subject = props.getProperty("pendingChangeRequestEmailSubject");
             String htmlMessage = null;
@@ -122,8 +120,8 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         LOGGER.info("********* Completed the Pending Change Request Email job. *********");
     }
 
-    private List<List<String>> getAppropriateActivities(final JobExecutionContext jobContext,
-            final List<CertificationBodyDTO> activeAcbs, final Date currentDate) throws EntityRetrievalException {
+    private List<List<String>> getAppropriateActivities(final List<CertificationBodyDTO> activeAcbs,
+            final Date currentDate) throws EntityRetrievalException {
         List<List<String>> activities = new ArrayList<List<String>>();
         activities.addAll(createChangeWebsiteRows(activeAcbs, currentDate));
         return activities;
@@ -163,6 +161,8 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         row.add("Change Request Comment");
         row.add("Change Request Date");
         row.add("Change Request Days Open");
+        row.add("Change Request Latest Change Date");
+        row.add("Change Request Days In Current State");
         for (CertificationBodyDTO acb : activeAcbs) {
             row.add(acb.getName());
         }
@@ -197,11 +197,16 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         currRow.set(CHANGE_REQUEST_STATUS, activity.getCurrentStatus().getChangeRequestStatusType().getName());
         currRow.set(CHANGE_REQUEST_COMMENT, activity.getCurrentStatus().getComment());
         currRow.set(CHANGE_REQUEST_DATE, Util.getTimestampFormatter().format(activity.getCurrentStatus().getStatusChangeDate()));
+        currRow.set(CHANGE_REQUEST_LATEST_DATE, Util.getTimestampFormatter().format(activity.getCurrentStatus().getStatusChangeDate()));
 
-        // Calculated time open
-        Date changeRequestDate = activity.getCurrentStatus().getStatusChangeDate();
+        // Calculated time open & time in current status
+        Date changeRequestDate = activity.getSubmittedDate();
         long daysOpen = ((currentDate.getTime() - changeRequestDate.getTime()) / MILLIS_PER_DAY);
         currRow.set(CHANGE_REQUEST_DAYS_OPEN, Double.toString(daysOpen));
+        Date changeRequestLatestDate = activity.getCurrentStatus().getStatusChangeDate();
+        long daysLatestOpen = ((currentDate.getTime() - changeRequestLatestDate.getTime()) / MILLIS_PER_DAY);
+        currRow.set(CHANGE_REQUEST_LATEST_DAYS_OPEN, Double.toString(daysLatestOpen));
+
 
         // Relevancy for ONC-ACBs
         for (int i = 0; i < activeAcbs.size(); i++) {
