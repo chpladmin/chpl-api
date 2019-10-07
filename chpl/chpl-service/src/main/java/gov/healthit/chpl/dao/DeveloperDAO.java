@@ -1,7 +1,6 @@
 package gov.healthit.chpl.dao;
 
 import java.util.List;
-import java.util.Set;
 
 import gov.healthit.chpl.domain.DeveloperTransparency;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
@@ -41,6 +40,8 @@ public interface DeveloperDAO {
     DeveloperDTO getByCode(String code);
 
     DeveloperDTO getByVersion(Long productVersionId) throws EntityRetrievalException;
+
+    List<DeveloperDTO> getByWebsite(String website);
 
     DeveloperACBMapDTO updateTransparencyMapping(DeveloperACBMapDTO dto);
 

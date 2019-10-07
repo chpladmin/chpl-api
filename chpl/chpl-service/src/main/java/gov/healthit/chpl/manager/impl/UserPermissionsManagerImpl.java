@@ -84,31 +84,40 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
     public void deleteAcbPermission(final CertificationBodyDTO acb, final Long userId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         // Get the UserCertBodyMapDTO
-        List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByUserId(userId);
+        List<UserCertificationBodyMapDTO> userPermissions = userCertificationBodyMapDAO.getByUserId(userId);
         UserDTO originalUser = getUser(userId);
 
-        if (dtos == null || dtos.size() == 0) {
+        if (userPermissions == null || userPermissions.size() == 0) {
             LOGGER.error("Could not locate the UserCertificationBodyMap object for Userid: " + userId + ", ACB: "
                     + acb.getId());
         }
 
-        CollectionUtils.filter(dtos, new Predicate() {
+        CollectionUtils.filter(userPermissions, new Predicate() {
             @Override
             public boolean evaluate(final Object object) {
                 return ((UserCertificationBodyMapDTO) object).getCertificationBody().getId().equals(acb.getId());
             }
         });
 
-        for (UserCertificationBodyMapDTO dto : dtos) {
-            userCertificationBodyMapDAO.delete(dto);
-            UserDTO updatedUser = getUser(userId);
-            String message = "Removed " + dto.getCertificationBody().getName() + " from "
-                    + dto.getUser().getSubjectName();
-            activityManager.addActivity(ActivityConcept.USER, userId, message, originalUser, updatedUser);
-        }
+        if (userPermissions.size() > 0) {
+            //remove the permission, only one can be getting removed per method call
+            UserCertificationBodyMapDTO permissionToRemove = userPermissions.get(0);
+            userCertificationBodyMapDAO.delete(permissionToRemove);
 
-        LOGGER.info("Deleted ACB: " + acb.getId() + " for user: " + userId);
-        removeUserIfPermissionless(userId);
+            if (!doesUserHaveAnyPermissions(userId)) {
+                //if there are no additional permissions for this user
+                //remove them and log a single activity
+                removeUser(originalUser);
+            } else {
+                //user has additional permissions so log
+                //the user update activity with one permission removal
+                UserDTO updatedUser = getUser(userId);
+                String message = "Removed " + permissionToRemove.getCertificationBody().getName() + " from "
+                            + permissionToRemove.getUser().getSubjectName();
+                activityManager.addActivity(ActivityConcept.USER, userId, message, originalUser, updatedUser);
+            }
+            LOGGER.info("Deleted ACB: " + acb.getId() + " for user: " + userId);
+        }
     }
 
     @Override
@@ -137,31 +146,40 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
     public void deleteAtlPermission(final TestingLabDTO atl, final Long userId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         // Get the UserTestingLabMapDTO
-        List<UserTestingLabMapDTO> dtos = userTestingLabMapDAO.getByUserId(userId);
+        List<UserTestingLabMapDTO> userPermissions = userTestingLabMapDAO.getByUserId(userId);
         UserDTO originalUser = getUser(userId);
 
-        if (dtos == null || dtos.size() == 0) {
+        if (userPermissions == null || userPermissions.size() == 0) {
             LOGGER.error(
                     "Could not locate the UserTestingLabMapDTO object for Userid: " + userId + ", ATL: " + atl.getId());
         }
 
-        CollectionUtils.filter(dtos, new Predicate() {
+        CollectionUtils.filter(userPermissions, new Predicate() {
             @Override
             public boolean evaluate(final Object object) {
                 return ((UserTestingLabMapDTO) object).getTestingLab().getId().equals(atl.getId());
             }
         });
 
-        for (UserTestingLabMapDTO dto : dtos) {
-            userTestingLabMapDAO.delete(dto);
-            UserDTO updatedUser = getUser(userId);
-            String message = "Removed " + dto.getTestingLab().getName() + " from "
-                    + dto.getUser().getSubjectName();
-            activityManager.addActivity(ActivityConcept.USER, userId, message, originalUser, updatedUser);
-        }
+        if (userPermissions.size() > 0) {
+            //remove the permission, only one can be getting removed per method call
+            UserTestingLabMapDTO permissionToRemove = userPermissions.get(0);
+            userTestingLabMapDAO.delete(permissionToRemove);
 
-        LOGGER.info("Deleted ATL: " + atl.getId() + " for user: " + userId);
-        removeUserIfPermissionless(userId);
+            if (!doesUserHaveAnyPermissions(userId)) {
+                //if there are no additional permissions for this user
+                //remove them and log a single activity
+                removeUser(originalUser);
+            } else {
+                //user has additional permissions so log
+                //the user update activity with one permission removal
+                UserDTO updatedUser = getUser(userId);
+                String message = "Removed " + permissionToRemove.getTestingLab().getName() + " from "
+                            + permissionToRemove.getUser().getSubjectName();
+                activityManager.addActivity(ActivityConcept.USER, userId, message, originalUser, updatedUser);
+            }
+            LOGGER.info("Deleted ATL: " + atl.getId() + " for user: " + userId);
+        }
     }
 
     @Override
@@ -189,31 +207,40 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
             + "T(gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions).DELETE_DEVELOPER, #developerId)")
     public void deleteDeveloperPermission(final Long developerId, final Long userId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-        List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByUserId(userId);
+        List<UserDeveloperMapDTO> userPermissions = userDeveloperMapDAO.getByUserId(userId);
         UserDTO originalUser = getUser(userId);
 
-        if (dtos == null || dtos.size() == 0) {
+        if (userPermissions == null || userPermissions.size() == 0) {
             LOGGER.error("Could not locate the UserDeveloperMapDTO object for Userid: " + userId + ", Developer: "
                     + developerId);
         }
 
-        CollectionUtils.filter(dtos, new Predicate() {
+        CollectionUtils.filter(userPermissions, new Predicate() {
             @Override
             public boolean evaluate(final Object object) {
                 return ((UserDeveloperMapDTO) object).getDeveloper().getId().equals(developerId);
             }
         });
 
-        for (UserDeveloperMapDTO dto : dtos) {
-            userDeveloperMapDAO.delete(dto);
-            UserDTO updatedUser = getUser(userId);
-            String message = "Removed " + dto.getDeveloper().getName() + " from "
-                    + dto.getUser().getSubjectName();
-            activityManager.addActivity(ActivityConcept.USER, userId, message, originalUser, updatedUser);
-        }
+        if (userPermissions.size() > 0) {
+            //remove the permission, only one can be getting removed per method call
+            UserDeveloperMapDTO permissionToRemove = userPermissions.get(0);
+            userDeveloperMapDAO.delete(permissionToRemove);
 
-        LOGGER.info("Deleted Developer: " + developerId + " for user: " + userId);
-        removeUserIfPermissionless(userId);
+            if (!doesUserHaveAnyPermissions(userId)) {
+                //if there are no additional permissions for this user
+                //remove them and log a single activity
+                removeUser(originalUser);
+            } else {
+                //user has additional permissions so log
+                //the user update activity with one permission removal
+                UserDTO updatedUser = getUser(userId);
+                String message = "Removed " + permissionToRemove.getDeveloper().getName() + " from "
+                            + permissionToRemove.getUser().getSubjectName();
+                activityManager.addActivity(ActivityConcept.USER, userId, message, originalUser, updatedUser);
+            }
+            LOGGER.info("Deleted Developer: " + permissionToRemove.getDeveloper().getName() + " for user: " + userId);
+        }
     }
 
     private Boolean doesUserCertificationBodyMapExist(final Long acbId, final Long userId) {
@@ -272,31 +299,27 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
         return dtos.size() > 0;
     }
 
-    private void removeUserIfPermissionless(final Long userId)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
-        if (!doesUserHaveAnyPermissions(userId)) {
-            UserDTO toDelete = getUser(userId);
-            try {
-                // We can't call the user manager delete method here because
-                // that only lets role onc and role admin remove the user.
-                // We can't modify the permissions checker to confirm that
-                // the user to be deleted has the same membership as the calling
-                // user because at this point that membership has been removed.
-                // Just delete the user here.
+    private void removeUser(final UserDTO user) throws JsonProcessingException,
+        EntityCreationException, EntityRetrievalException {
+        try {
+            // We can't call the user manager delete method here because
+            // that only lets role onc and role admin remove the user.
+            // We can't modify the permissions checker to confirm that
+            // the user to be deleted has the same membership as the calling
+            // user because at this point that membership has been removed.
+            // Just delete the user here.
 
-                // remove all ACLs for this user
-                // should only be one - for themselves
-                ObjectIdentity oid = new ObjectIdentityImpl(UserDTO.class, userId);
-                mutableAclService.deleteAcl(oid, false);
+            // remove all ACLs for this user
+            // should only be one - for themselves
+            ObjectIdentity oid = new ObjectIdentityImpl(UserDTO.class, user.getId());
+            mutableAclService.deleteAcl(oid, false);
 
-                userDAO.delete(userId);
-                LOGGER.info("User " + userId + " had no additional permissions. The user was deleted.");
+            userDAO.delete(user.getId());
 
-                String message = "Deleted user " + toDelete.getSubjectName();
-                activityManager.addActivity(ActivityConcept.USER, userId, message, toDelete, null);
-            } catch (UserRetrievalException ex) {
-                LOGGER.error("Could not delete the user " + userId, ex);
-            }
+            String message = "Deleted user " + user.getSubjectName();
+            activityManager.addActivity(ActivityConcept.USER, user.getId(), message, user, null);
+        } catch (UserRetrievalException ex) {
+            LOGGER.error("Could not delete the user " + user, ex);
         }
     }
 

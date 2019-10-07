@@ -172,6 +172,28 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
     }
 
     /**
+     * Find any ATLs with the given website.
+     *
+     * @param website
+     * @return the ATLs
+     */
+    @Override
+    public List<TestingLabDTO> getByWebsite(final String website) {
+        Query query = entityManager.createQuery("SELECT atl "
+                + "FROM TestingLabEntity atl "
+                + "LEFT OUTER JOIN FETCH atl.address "
+                + "WHERE atl.deleted = false "
+                + "AND atl.website = :website");
+        query.setParameter("website", website);
+        List<TestingLabEntity> results = query.getResultList();
+        List<TestingLabDTO> resultDtos = new ArrayList<TestingLabDTO>();
+        for (TestingLabEntity entity : results) {
+            resultDtos.add(new TestingLabDTO(entity));
+        }
+        return resultDtos;
+    }
+
+    /**
      * Get the current larget ATL code in the database.
      */
     public String getMaxCode() {

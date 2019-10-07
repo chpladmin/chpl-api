@@ -34,6 +34,10 @@ import junit.framework.TestCase;
 @DatabaseSetup("classpath:data/testData.xml")
 public class MacraMeasureDaoTest extends TestCase {
 
+    private static final int MEASURE_COUNT_ALL = 144;
+    private static final int MEASURE_COUNT_FOR_315_A1 = 6;
+    private static final int MEASURE_COUNT_FOR_315_B1 = 11;
+
     @Autowired
     private MacraMeasureDAO macraDao;
 
@@ -50,7 +54,7 @@ public class MacraMeasureDaoTest extends TestCase {
     public void getAllMeasures() {
         List<MacraMeasureDTO> results = macraDao.findAll();
         assertNotNull(results);
-        assertEquals(138, results.size());
+        assertEquals(MEASURE_COUNT_ALL, results.size());
     }
 
     @Test
@@ -58,7 +62,7 @@ public class MacraMeasureDaoTest extends TestCase {
     public void getMeasuresForCertificationCriteriaSingleResult() {
         List<MacraMeasureDTO> results = macraDao.getByCriteriaNumber("170.315 (a)(1)");
         assertNotNull(results);
-        assertEquals(6, results.size());
+        assertEquals(MEASURE_COUNT_FOR_315_A1, results.size());
     }
 
     @Test
@@ -66,7 +70,7 @@ public class MacraMeasureDaoTest extends TestCase {
     public void getMeasuresForCertificationCriteriaMultipleResults() {
         List<MacraMeasureDTO> results = macraDao.getByCriteriaNumber("170.315 (b)(1)");
         assertNotNull(results);
-        assertEquals(10, results.size());
+        assertEquals(MEASURE_COUNT_FOR_315_B1, results.size());
     }
 
     @Test

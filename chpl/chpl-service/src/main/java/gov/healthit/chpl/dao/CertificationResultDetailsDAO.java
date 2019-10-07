@@ -18,4 +18,6 @@ public interface CertificationResultDetailsDAO {
     List<CertificationResultDetailsDTO> getCertificationResultDetailsByCertifiedProductIdSED(
             Long certifiedProductId) throws EntityRetrievalException;
 
+    List<CertificationResultDetailsDTO> getByUrl(String url);
+
 }

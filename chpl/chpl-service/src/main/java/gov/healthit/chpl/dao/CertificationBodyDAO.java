@@ -19,6 +19,7 @@ public interface CertificationBodyDAO {
     List<CertificationBodyDTO> findAllActive();
     CertificationBodyDTO getById(Long id) throws EntityRetrievalException;
     CertificationBodyDTO getByName(String name);
+    List<CertificationBodyDTO> getByWebsite(final String website);
     String getMaxCode();
     CertificationBodyDTO update(CertificationBodyDTO contact) throws EntityRetrievalException;
 }

@@ -11,9 +11,11 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.dao.surveillance.report.AnnualReportDAO;
 import gov.healthit.chpl.dao.surveillance.report.QuarterlyReportDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
 import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.dto.AnnouncementDTO;
@@ -129,6 +131,13 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
                     return hasAccessToAnnualReport(details.getActivityObjectId(), details.getOriginalData());
                 }
                 break;
+            case CHANGE_REQUEST:
+                if (details.getNewData() != null) {
+                    return hasAccessToChangeRequest(details.getNewData());
+                } else if (details.getOriginalData() != null) {
+                    return hasAccessToChangeRequest(details.getOriginalData());
+                }
+                break;
             default:
                 // all other types of activity
                 // are accessible to any logged-in or anonymous user
@@ -159,15 +168,18 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
         if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
-            //data could be a QuarterlyReportDTO or a UserDTO if the action was to export the report
+            // data could be a QuarterlyReportDTO or a UserDTO if the action was
+            // to export the report
             try {
                 QuarterlyReportDTO report = jsonMapper.convertValue(quarterlyReportJson, QuarterlyReportDTO.class);
                 return isAcbValidForCurrentUser(report.getAcb().getId());
             } catch (Exception e) {
-                LOGGER.warn("Could not parse complaint activity as QuarterlyReportDTO. JSON was: " + quarterlyReportJson);
+                LOGGER.warn(
+                        "Could not parse complaint activity as QuarterlyReportDTO. JSON was: " + quarterlyReportJson);
             }
-            //if we haven't returned then it's not a quarterly report object
-            //so must be an export action - look up the quarterly report by id to see if the user has access
+            // if we haven't returned then it's not a quarterly report object
+            // so must be an export action - look up the quarterly report by id
+            // to see if the user has access
             try {
                 QuarterlyReportDTO report = quarterlyReportDao.getById(reportId);
                 return isAcbValidForCurrentUser(report.getAcb().getId());
@@ -202,15 +214,17 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
         if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
-            //json could be an annual report object or a user object if the action was an export
+            // json could be an annual report object or a user object if the
+            // action was an export
             try {
                 AnnualReportDTO report = jsonMapper.convertValue(annualReportJson, AnnualReportDTO.class);
                 return isAcbValidForCurrentUser(report.getAcb().getId());
             } catch (Exception e) {
                 LOGGER.warn("Could not parse complaint activity as AnnualReportDTO. JSON was: " + annualReportJson);
             }
-            //if we haven't returned then it's not an annual report object
-            //so must be an export action - look up the annual report by id to see if the user has access
+            // if we haven't returned then it's not an annual report object
+            // so must be an export action - look up the annual report by id to
+            // see if the user has access
             try {
                 AnnualReportDTO report = annualReportDao.getById(reportId);
                 return isAcbValidForCurrentUser(report.getAcb().getId());
@@ -376,5 +390,30 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
             }
         }
         return hasAccess;
+    }
+
+    private boolean hasAccessToChangeRequest(final JsonNode crJson) {
+        if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
+            return true;
+        } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
+            ChangeRequest cr = null;
+            try {
+                cr = jsonMapper.convertValue(crJson, ChangeRequest.class);
+            } catch (final Exception ex) {
+                LOGGER.error("Could not parse activity as ChangeReqest. " + "JSON was: " + crJson, ex);
+            }
+
+            if (cr != null && cr.getCertificationBodies() != null) {
+                for (CertificationBody acb : cr.getCertificationBodies()) {
+                    if (isAcbValidForCurrentUser(acb.getId())) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        } else {
+            return false;
+        }
+
     }
 }
