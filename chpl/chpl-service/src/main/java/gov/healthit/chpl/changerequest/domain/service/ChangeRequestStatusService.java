@@ -132,7 +132,7 @@ public class ChangeRequestStatusService {
         }
 
         // Cannot change status is Cancelled
-        if (previousStatusTypeId == this.cancelledByRequesterStatus) {
+        if (previousStatusTypeId.equals(this.cancelledByRequesterStatus)) {
             return false;
         }
         return true;

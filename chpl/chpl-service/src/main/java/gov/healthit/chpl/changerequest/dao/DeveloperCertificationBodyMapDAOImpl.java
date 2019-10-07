@@ -31,7 +31,7 @@ public class DeveloperCertificationBodyMapDAOImpl extends BaseDAOImpl implements
 
     @Override
     public List<Developer> getDevelopersForCertificationBody(final Long certificationBodyId) {
-        String hql = "FROM DeveloperCertificationBodyMapEntity "
+        String hql = "FROM DeveloperCertificationBodyMapEntity main"
                 + "JOIN FETCH main.developer dev "
                 + "JOIN FETCH main.certificationBody cb "
                 + "WHERE cb.id = :certificationBodyId";
