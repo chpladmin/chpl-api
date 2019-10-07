@@ -769,7 +769,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
                 + "JOIN FETCH cp.productVersion pv "
                 + "JOIN FETCH pv.product prod "
                 + "JOIN FETCH prod.developer dev "
-                + "WHERE cp.certificationBody.id IN :certificationBodyIds";
+                + "WHERE cp.certificationBody.id IN (:certificationBodyIds)";
 
         return entityManager.createQuery(hql, DeveloperEntity.class)
                 .setParameter("certificationBodyIds", certificationBodyIds)

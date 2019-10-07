@@ -69,7 +69,7 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     @Test
     public void hasAccess_Admin() throws Exception {
         setupForAdminUser(resourcePermissions);
-        assertFalse(permissions.hasAccess());
+        assertTrue(permissions.hasAccess());
         assertTrue(permissions.hasAccess(new ChangeRequest()));
     }
 
@@ -77,7 +77,7 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     @Test
     public void hasAccess_Onc() throws Exception {
         setupForOncUser(resourcePermissions);
-        assertFalse(permissions.hasAccess());
+        assertTrue(permissions.hasAccess());
         assertTrue(permissions.hasAccess(new ChangeRequest()));
     }
 
@@ -85,7 +85,7 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     @Test
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
-        assertFalse(permissions.hasAccess());
+        assertTrue(permissions.hasAccess());
 
         Mockito.when(developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(ArgumentMatchers.anyLong()))
                 .thenReturn(getDeveloperAcbs());

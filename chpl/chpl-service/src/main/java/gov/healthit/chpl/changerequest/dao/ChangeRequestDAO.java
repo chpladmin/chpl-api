@@ -10,7 +10,7 @@ public interface ChangeRequestDAO {
 
     ChangeRequest get(Long changeRequestId) throws EntityRetrievalException;
 
-    List<ChangeRequest> getByDeveloper(Long developerId) throws EntityRetrievalException;
+    List<ChangeRequest> getByDeveloper(final Long developerId) throws EntityRetrievalException;
 
     List<ChangeRequest> getAll() throws EntityRetrievalException;
 

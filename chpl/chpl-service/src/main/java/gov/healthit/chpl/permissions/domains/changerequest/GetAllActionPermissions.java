@@ -11,7 +11,8 @@ public class GetAllActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess() {
-        return false;
+        return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()
+                || getResourcePermissions().isUserRoleAcbAdmin() || getResourcePermissions().isUserRoleDeveloperAdmin();
     }
 
     @Override
