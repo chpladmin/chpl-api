@@ -5,6 +5,7 @@ import static org.quartz.TriggerBuilder.newTrigger;
 import static org.quartz.TriggerKey.triggerKey;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -1076,7 +1078,8 @@ public class CertifiedProductManagerImpl extends SecuredManager implements Certi
     @CacheEvict(value = {
             CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
-    // listings collection is not evicted here because it's pre-fetched and handled in a listener
+    // listings collection is not evicted here because it's pre-fetched and
+    // handled in a listener
     // no other caches have ACB data so we do not need to clear all
     public CertifiedProductDTO changeOwnership(final Long certifiedProductId, final Long acbId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
@@ -1213,6 +1216,20 @@ public class CertifiedProductManagerImpl extends SecuredManager implements Certi
         }
 
         CertifiedProductDTO dtoToUpdate = new CertifiedProductDTO(updatedListing);
+
+        // Process the status changes, since this could change certified date
+        // code
+        updateCertificationDate(listingId, new Date(existingListing.getCertificationDate()),
+                new Date(updatedListing.getCertificationDate()));
+        updateCertificationStatusEvents(listingId, existingListing.getCertificationEvents(),
+                updatedListing.getCertificationEvents());
+        // Based on the StatusEvent updates, should we update the
+        // certifiedDateCode?
+        String certifiedDateCode = calculateCertifiedDateCode(listingId);
+        if (!certifiedDateCode.equals(dtoToUpdate.getCertifiedDateCode())) {
+            dtoToUpdate.setCertifiedDateCode(certifiedDateCode);
+        }
+
         CertifiedProductDTO result = cpDao.update(dtoToUpdate);
 
         // Findbugs says this cannot be null since it used above - an NPE would
@@ -1237,6 +1254,20 @@ public class CertifiedProductManagerImpl extends SecuredManager implements Certi
         updateCqms(result, existingListing.getCqmResults(), updatedListing.getCqmResults());
         // }
         return result;
+    }
+
+    private String calculateCertifiedDateCode(final Long listingId) {
+        CertificationStatusEventDTO certificationEvent = statusEventDao
+                .findInitialCertificationEventForCertifiedProduct(listingId);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd");
+        TimeZone gmtTimeZone = TimeZone.getTimeZone("GMT");
+        sdf.setTimeZone(gmtTimeZone);
+
+        if (certificationEvent != null && certificationEvent.getEventDate() != null) {
+            return sdf.format(certificationEvent.getEventDate());
+        } else {
+            return "";
+        }
     }
 
     private int updateTestingLabs(final Long listingId, final List<CertifiedProductTestingLab> existingTestingLabs,
@@ -2246,7 +2277,8 @@ public class CertifiedProductManagerImpl extends SecuredManager implements Certi
                     .usingJobData("chplId", updatedListing.getChplProductNumber())
                     .usingJobData("developer", updatedListing.getDeveloper().getName())
                     .usingJobData("acb",
-                            updatedListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString())
+                            updatedListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)
+                                    .toString())
                     .usingJobData("changeDate", new Date().getTime())
                     .usingJobData("fullName", AuthUtil.getCurrentUser().getFullName())
                     .usingJobData("effectiveDate", updatedListing.getCurrentStatus().getEventDate())
