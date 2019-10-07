@@ -54,7 +54,7 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     @Test
     public void hasAccess_Developer() throws Exception {
         setupForDeveloperUser(resourcePermissions);
-        assertFalse(permissions.hasAccess());
+        assertTrue(permissions.hasAccess());
 
         assertTrue(permissions.hasAccess(new ChangeRequestBuilder()
                 .withDeveloper(new DeveloperBuilder().withId(2l).build())

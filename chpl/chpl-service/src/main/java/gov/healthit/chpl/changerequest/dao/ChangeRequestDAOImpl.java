@@ -63,13 +63,6 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
     public List<ChangeRequest> getAll() throws EntityRetrievalException {
         return getEntities().stream()
                 .map(entity -> ChangeRequestConverter.convert(entity))
-                .map(cr -> {
-                    cr.setCurrentStatus(getCurrentStatus(cr.getId()));
-                    cr.setStatuses(changeRequestStatusDAO.getByChangeRequestId(cr.getId()));
-                    cr.setCertificationBodies(developerCertificationBodyMapDAO
-                            .getCertificationBodiesForDeveloper(cr.getDeveloper().getDeveloperId()));
-                    return cr;
-                })
                 .map(cr -> populateDependentObjects(cr))
                 .collect(Collectors.<ChangeRequest>toList());
     }
@@ -88,13 +81,6 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
 
         return getEntitiesByDevelopers(developers).stream()
                 .map(entity -> ChangeRequestConverter.convert(entity))
-                .map(cr -> {
-                    cr.setCurrentStatus(getCurrentStatus(cr.getId()));
-                    cr.setStatuses(changeRequestStatusDAO.getByChangeRequestId(cr.getId()));
-                    cr.setCertificationBodies(developerCertificationBodyMapDAO
-                            .getCertificationBodiesForDeveloper(cr.getDeveloper().getDeveloperId()));
-                    return cr;
-                })
                 .map(cr -> populateDependentObjects(cr))
                 .collect(Collectors.<ChangeRequest>toList());
     }
