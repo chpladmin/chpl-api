@@ -50,7 +50,7 @@ public abstract class PendingValidator {
      * Updates error and warning counts
      * @param listing a pending listing
      */
-    public void updateCounts(PendingCertifiedProductDTO listing) {
+    private void updateCounts(PendingCertifiedProductDTO listing) {
         int errorCount = (listing.getErrorMessages() == null ? 0 : listing.getErrorMessages().size());
         int warningCount = (listing.getWarningMessages() == null ? 0 : listing.getWarningMessages().size());
         try {
