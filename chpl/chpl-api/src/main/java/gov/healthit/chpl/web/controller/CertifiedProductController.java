@@ -1,5 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
+import gov.healthit.chpl.domain.CertifiedProductSearchBasicDetails;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import java.util.function.Function;
 import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletResponse;
@@ -42,7 +44,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.IcsFamilyTreeNode;
@@ -68,8 +69,8 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
-import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandler;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFactory;
@@ -97,47 +98,57 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/certified_products")
 public class CertifiedProductController {
-
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductController.class);
 
-    @Autowired
     private CertifiedProductUploadHandlerFactory uploadHandlerFactory;
-
-    @Autowired
     private CertifiedProductDetailsManager cpdManager;
-
-    @Autowired
     private CertifiedProductManager cpManager;
-
-    @Autowired 
-    private UserPermissionsManager userPermissionsManager;
-    
-    @Autowired 
     private ResourcePermissions resourcePermissions;
-    
-    @Autowired
     private PendingCertifiedProductManager pcpManager;
-
-    @Autowired
-    private PendingCertifiedProductDAO pcpDao;
-
-    @Autowired
     private ActivityManager activityManager;
-
-    @Autowired
     private ListingValidatorFactory validatorFactory;
-
-    @Autowired
     private Environment env;
-
-    @Autowired
     private ErrorMessageUtil msgUtil;
-
-    @Autowired
     private FileUtils fileUtils;
-
-    @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
+    private DeveloperManager developerManager;
+
+    /**
+     * Autowired constructor for dependency injection.
+     *
+     * @param uploadHandlerFactory
+     * @param cpdManager
+     * @param cpManager
+     * @param resourcePermissions
+     * @param pcpManager
+     * @param activityManager
+     * @param validatorFactory
+     * @param env
+     * @param msgUtil
+     * @param fileUtils
+     * @param chplProductNumberUtil
+     * @param developerManager
+     */
+    @Autowired
+    public CertifiedProductController(final CertifiedProductUploadHandlerFactory uploadHandlerFactory,
+            final CertifiedProductDetailsManager cpdManager, final CertifiedProductManager cpManager,
+            final ResourcePermissions resourcePermissions, final PendingCertifiedProductManager pcpManager,
+            final ActivityManager activityManager, final ListingValidatorFactory validatorFactory,
+            final Environment env, final ErrorMessageUtil msgUtil, final FileUtils fileUtils,
+            final ChplProductNumberUtil chplProductNumberUtil, final DeveloperManager developerManager) {
+        this.uploadHandlerFactory = uploadHandlerFactory;
+        this.cpdManager = cpdManager;
+        this.cpManager = cpManager;
+        this.resourcePermissions = resourcePermissions;
+        this.pcpManager = pcpManager;
+        this.activityManager = activityManager;
+        this.validatorFactory = validatorFactory;
+        this.env = env;
+        this.msgUtil = msgUtil;
+        this.fileUtils = fileUtils;
+        this.chplProductNumberUtil = chplProductNumberUtil;
+        this.developerManager = developerManager;
+    }
 
     /**
      * List all certified products.
@@ -279,13 +290,12 @@ public class CertifiedProductController {
     method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByIdBasic(
+    public @ResponseBody CertifiedProductSearchBasicDetails getCertifiedProductByIdBasic(
             @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
 
         CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetailsBasic(certifiedProductId);
-        certifiedProduct = validateCertifiedProduct(certifiedProduct);
 
-        return certifiedProduct;
+        return mapCertifiedProductDetailsToBasic.apply(certifiedProduct);
     }
 
     /**
@@ -317,7 +327,8 @@ public class CertifiedProductController {
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumberBasic(
+    public @ResponseBody
+    CertifiedProductSearchBasicDetails getCertifiedProductByChplProductNumberBasic(
             @PathVariable("year") final String year,
             @PathVariable("testingLab") final String testingLab,
             @PathVariable("certBody") final String certBody,
@@ -335,9 +346,8 @@ public class CertifiedProductController {
         CertifiedProductSearchDetails certifiedProduct =
                 cpdManager.getCertifiedProductDetailsBasicByChplProductNumber(chplProductNumber);
 
-        certifiedProduct = validateCertifiedProduct(certifiedProduct);
 
-        return certifiedProduct;
+        return mapCertifiedProductDetailsToBasic.apply(certifiedProduct);
     }
 
     @ApiOperation(value = "Get all basic information for a specified certified product.  Does not include "
@@ -350,7 +360,7 @@ public class CertifiedProductController {
     method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumberBasic2(
+    public @ResponseBody CertifiedProductSearchBasicDetails getCertifiedProductByChplProductNumberBasic2(
             @PathVariable("chplPrefix") final String chplPrefix,
             @PathVariable("identifier") final String identifier) throws EntityRetrievalException {
 
@@ -359,9 +369,7 @@ public class CertifiedProductController {
         CertifiedProductSearchDetails certifiedProduct =
                 cpdManager.getCertifiedProductDetailsBasicByChplProductNumber(chplProductNumber);
 
-        certifiedProduct = validateCertifiedProduct(certifiedProduct);
-
-        return certifiedProduct;
+        return mapCertifiedProductDetailsToBasic.apply(certifiedProduct);
     }
 
     @ApiOperation(value = "Get all of the CQM results for a specified certified product.",
@@ -861,6 +869,8 @@ public class CertifiedProductController {
                 throw new ValidationException(pcpDto.getErrorMessages(), pcpDto.getWarningMessages());
             }
 
+            developerManager.validateDeveloperInSystemIfExists(pendingCp);
+
             CertifiedProductDTO createdProduct = cpManager.createFromPending(acbId, pcpDto);
             pcpManager.confirm(acbId, pendingCp.getId());
             CertifiedProductSearchDetails result = cpdManager.getCertifiedProductDetails(createdProduct.getId());
@@ -1087,4 +1097,48 @@ public class CertifiedProductController {
             LOGGER.error("Could not send team email about failed listing upload.", msgEx);
         }
     }
+
+    private static Function<CertifiedProductSearchDetails, CertifiedProductSearchBasicDetails> mapCertifiedProductDetailsToBasic = (CertifiedProductSearchDetails e)-> {
+        CertifiedProductSearchBasicDetails certifiedProductSearchBasicDetails = new CertifiedProductSearchBasicDetails();
+        certifiedProductSearchBasicDetails.setAcbCertificationId(e.getAcbCertificationId());
+        certifiedProductSearchBasicDetails.setAccessibilityCertified(e.getAccessibilityCertified());
+        certifiedProductSearchBasicDetails.setAccessibilityStandards(e.getAccessibilityStandards());
+        certifiedProductSearchBasicDetails.setCertificationDate(e.getCertificationDate());
+        certifiedProductSearchBasicDetails.setCertificationEdition(e.getCertificationEdition());
+        certifiedProductSearchBasicDetails.setCertificationEvents(e.getCertificationEvents());
+        certifiedProductSearchBasicDetails.setCertificationStatus(e.getCertificationStatus());
+        certifiedProductSearchBasicDetails.setCertifyingBody(e.getCertifyingBody());
+        certifiedProductSearchBasicDetails.setChplProductNumber(e.getChplProductNumber());
+        certifiedProductSearchBasicDetails.setClassificationType(e.getClassificationType());
+        certifiedProductSearchBasicDetails.setCountCerts(e.getCountCerts());
+        certifiedProductSearchBasicDetails.setCountClosedNonconformities(e.getCountClosedNonconformities());
+        certifiedProductSearchBasicDetails.setCountClosedSurveillance(e.getCountClosedSurveillance());
+        certifiedProductSearchBasicDetails.setCountCqms(e.getCountCqms());
+        certifiedProductSearchBasicDetails.setCountOpenNonconformities(e.getCountOpenNonconformities());
+        certifiedProductSearchBasicDetails.setCountOpenSurveillance(e.getCountOpenSurveillance());
+        certifiedProductSearchBasicDetails.setCountSurveillance(e.getCountSurveillance());
+        certifiedProductSearchBasicDetails.setDecertificationDate(e.getDecertificationDate());
+        certifiedProductSearchBasicDetails.setDeveloper(e.getDeveloper());
+        certifiedProductSearchBasicDetails.setIcs(e.getIcs());
+        certifiedProductSearchBasicDetails.setId(e.getId());
+        certifiedProductSearchBasicDetails.setLastModifiedDate(e.getLastModifiedDate());
+        certifiedProductSearchBasicDetails.setMeaningfulUseUserHistory(e.getMeaningfulUseUserHistory());
+        certifiedProductSearchBasicDetails.setOtherAcb(e.getOtherAcb());
+        certifiedProductSearchBasicDetails.setPracticeType(e.getPracticeType());
+        certifiedProductSearchBasicDetails.setProduct(e.getProduct());
+        certifiedProductSearchBasicDetails.setProductAdditionalSoftware(e.getProductAdditionalSoftware());
+        certifiedProductSearchBasicDetails.setQmsStandards(e.getQmsStandards());
+        certifiedProductSearchBasicDetails.setReportFileLocation(e.getReportFileLocation());
+        certifiedProductSearchBasicDetails.setSed(e.getSed());
+        certifiedProductSearchBasicDetails.setSedIntendedUserDescription(e.getSedIntendedUserDescription());
+        certifiedProductSearchBasicDetails.setSedReportFileLocation(e.getSedReportFileLocation());
+        certifiedProductSearchBasicDetails.setSedTestingEndDate(e.getSedTestingEndDate());
+        certifiedProductSearchBasicDetails.setSurveillance(e.getSurveillance());
+        certifiedProductSearchBasicDetails.setTargetedUsers(e.getTargetedUsers());
+        certifiedProductSearchBasicDetails.setTestingLabs(e.getTestingLabs());
+        certifiedProductSearchBasicDetails.setTransparencyAttestation(e.getTransparencyAttestation());
+        certifiedProductSearchBasicDetails.setTransparencyAttestationUrl(e.getTransparencyAttestationUrl());
+        certifiedProductSearchBasicDetails.setVersion(e.getVersion());
+        return certifiedProductSearchBasicDetails;
+    };
 }
