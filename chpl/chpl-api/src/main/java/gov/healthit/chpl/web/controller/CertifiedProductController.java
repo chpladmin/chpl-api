@@ -864,7 +864,7 @@ public class CertifiedProductController {
             PendingCertifiedProductDTO pcpDto = new PendingCertifiedProductDTO(pendingCp);
             PendingValidator validator = validatorFactory.getValidator(pcpDto);
             if (validator != null) {
-                validator.validate(pcpDto);
+                validator.validate(pcpDto, false);
             }
             if (pcpDto.getErrorMessages() != null && pcpDto.getErrorMessages().size() > 0) {
                 throw new ValidationException(pcpDto.getErrorMessages(), pcpDto.getWarningMessages());
