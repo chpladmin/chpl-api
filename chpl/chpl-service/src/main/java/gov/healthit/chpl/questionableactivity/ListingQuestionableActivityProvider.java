@@ -46,6 +46,25 @@ public class ListingQuestionableActivityProvider {
     }
 
     /**
+     * Create questionable activity if the listing was a 2014 listing.
+     * @param origListing original listing
+     * @param newListing new listing
+     * @return questionable activity, if it exists
+     */
+    public QuestionableActivityListingDTO check2014EditionUpdated(
+            final CertifiedProductSearchDetails origListing, final CertifiedProductSearchDetails newListing) {
+
+        QuestionableActivityListingDTO activity = null;
+        if (origListing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).equals("2014")) {
+            activity = new QuestionableActivityListingDTO();
+            activity.setBefore(null);
+            activity.setAfter(null);
+        }
+
+        return activity;
+    }
+
+    /**
      * Create questionable activity if the current certification status was updated.
      * @param origListing original listing
      * @param newListing new listing
