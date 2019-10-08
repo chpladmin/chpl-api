@@ -10,42 +10,26 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 
 /**
- * Certified Product Search Details entity.
+ * Certified Product Search Basic Details entity.
  */
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CertifiedProductSearchDetails implements Serializable {
+public class CertifiedProductSearchBasicDetails implements Serializable {
 
-  private static final long serialVersionUID = 2903219171127034775L;
-  public static final String ACB_ID_KEY = "id";
-  public static final String ACB_NAME_KEY = "name";
-  public static final String EDITION_ID_KEY = "id";
-  public static final String EDITION_NAME_KEY = "name";
+  private static final long serialVersionUID = 2903219171135034775L;
 
   /**
    * The internal ID of the certified product.
    */
-  @XmlElement(required = true)
   private Long id;
 
   /**
    * The unique CHPL ID of the certified product. This variable is applicable to 2014 and 2015
    * Edition. New uploads to CHPL will use the format: CertEdYr.ATL.ACB.Dev.Prod.Ver.ICS.AddS.Date
    */
-  @XmlElement(required = true)
   private String chplProductNumber;
 
   /**
@@ -53,7 +37,6 @@ public class CertifiedProductSearchDetails implements Serializable {
    * be accessed by the public. This variable is applicable to 2014 Edition. Fully qualified URL
    * which is reachable via web browser validation and verification.
    */
-  @XmlElement(required = false, nillable = true)
   private String reportFileLocation;
 
   /**
@@ -61,78 +44,66 @@ public class CertifiedProductSearchDetails implements Serializable {
    * applicable for 2014 and 2015 Edition. Fully qualified URL which is reachable via web browser
    * validation and verification.
    */
-  @XmlElement(required = false, nillable = true)
   private String sedReportFileLocation;
 
   /**
    * For SED testing, a description of the intended users of the Health IT
    */
-  @XmlElement(required = false, nillable = true)
   private String sedIntendedUserDescription;
 
   /**
    * Date all SED testing was concluded for the Health IT. The format for the date is YYYMMDD
    */
-  @XmlElement(required = false, nillable = true)
   private Date sedTestingEndDate;
 
   /**
    * The ID used by ONC-ACBs for internal tracking for 2014 and 2015 Certification Edition. It is a
    * string variable that does not have any restrictions on formatting or values.
    */
-  @XmlElement(required = true)
   private String acbCertificationId;
 
   /**
    * The classification of the certified product (either complete or modular). It is only applicable
    * to 2014 Edition, and takes values of either Complete EHR or Modular EHR.
    */
-  @XmlElement(required = false, nillable = true)
   private Map<String, Object> classificationType = new HashMap<String, Object>();
 
   /**
    * If there was previously a different certifying body managing this listing this is their name.
    */
-  @XmlElement(required = false, nillable = true)
   private String otherAcb;
 
   /**
    * The developer or vendor of the certified health IT product listing.
    */
-  @XmlElement(required = true)
   private Developer developer;
 
   /**
    * The product which this listing is under.
    */
-  @XmlElement(required = true)
   private Product product;
 
   /**
    * The version of the product being uploaded. This variable is applicable for 2014 and 2015
    * Edition.
    */
-  @XmlElement(required = true)
   private ProductVersion version;
 
   /**
    * The certification edition. It takes a value of 2011, 2014 or 2015.
    */
-  @XmlElement(required = true)
   private Map<String, Object> certificationEdition = new HashMap<String, Object>();
 
   /**
    * For 2014 products, the practice setting for which the certified product is designed. It takes
    * value of Ambulatory or Inpatient.
    */
-  @XmlElement(required = false, nillable = true)
   private Map<String, Object> practiceType = new HashMap<String, Object>();
 
   /**
    * The ONC-ACB responsible for certifying the Health IT Module. This variable is applicable to
    * 2014 and 2015 Edition, and allowable values are: Drummond Group, ICSA Labs, UL LLC.
    */
-  @XmlElement(required = true)
   private Map<String, Object> certifyingBody = new HashMap<String, Object>();
 
   /**
@@ -140,49 +111,40 @@ public class CertifiedProductSearchDetails implements Serializable {
    * Edition and takes values of: Drummond Group, ICSA Labs, UL LLC, National Technical Systems, SLI
    * Global, CCHIT
    */
-  @XmlElementWrapper(name = "testingLabs", nillable = true, required = false)
-  @XmlElement(name = "testingLab")
   private List<CertifiedProductTestingLab> testingLabs = new ArrayList<CertifiedProductTestingLab>();
 
   /**
    * Certification date represented in milliseconds since epoch
    */
-  @XmlElement(required = true)
   private Long certificationDate;
 
   /**
    * Decertification date represented in milliseconds since epoch
    */
-  @XmlElement(required = false, nillable = true)
   private Long decertificationDate;
 
   /**
    * Number of certification criteria this listing attests to.
    */
-  @XmlElement(required = false, nillable = true)
   private Integer countCerts;
   /**
    * Number of cqms this listing attests to.
    */
-  @XmlElement(required = false, nillable = true)
   private Integer countCqms;
 
   /**
    * Total count of open+closed surveillance for this listing.
    */
-  @XmlElement(required = false, nillable = true)
   private Integer countSurveillance;
 
   /**
    * Total count of open surveillance for this listing.
    */
-  @XmlElement(required = false, nillable = true)
   private Integer countOpenSurveillance;
 
   /**
    * Total count of closed surveillance for this listing.
    */
-  @XmlElement(required = false, nillable = true)
   private Integer countClosedSurveillance;
 
   /**
@@ -190,13 +152,11 @@ public class CertifiedProductSearchDetails implements Serializable {
    * additional information, please see 'Understanding Surveillance Information in the CHPL',
    * available in the CHPL Public User Guide
    */
-  @XmlElement(required = false, nillable = true)
   private Integer countOpenNonconformities;
 
   /**
    * Total count of closed nonconformities for this listing.
    */
-  @XmlElement(required = false, nillable = true)
   private Integer countClosedNonconformities;
 
   /**
@@ -204,7 +164,6 @@ public class CertifiedProductSearchDetails implements Serializable {
    * certified status request. This variable is applicable for 2014 and 2015 Edition and contains
    * the inherited status as well as first-level parents and children.
    */
-  @XmlElement(required = false, nillable = true)
   private InheritedCertificationStatus ics;
 
   /**
@@ -212,39 +171,32 @@ public class CertifiedProductSearchDetails implements Serializable {
    * certification criterion for 2015 Edition. It is a binary variable that takes value of true or
    * false.
    */
-  @XmlElement(required = false, nillable = true)
   private Boolean accessibilityCertified;
 
   /**
    * For legacy CHPL listings, any additional software needed.
    */
-  @XmlElement(required = false, nillable = true)
   private String productAdditionalSoftware;
 
   /**
    * The transparency attestation required by 170.523(k)(2). It is applicable for 2014 and 2015
    * Edition and takes value of Affirmative, Negative, or N/A.
    */
-  @XmlElement(required = false, nillable = true)
   private String transparencyAttestation;
 
   /**
    * A hyperlink to the mandatory disclosures required by 170.523(k)(1) for the Health IT Module
    */
-  @XmlElement(required = false, nillable = true)
   private String transparencyAttestationUrl;
 
   /**
    * The last time this listing was modified in any way given in milliseconds since epoch.
    */
-  @XmlElement(required = true)
   private Long lastModifiedDate;
 
   /**
    * Any surveillance that has occurred on this listing
    */
-  @XmlElementWrapper(name = "surveillanceList", nillable = true, required = false)
-  @XmlElement(name = "surveillance")
   private List<Surveillance> surveillance = new ArrayList<Surveillance>();
 
   /**
@@ -252,8 +204,6 @@ public class CertifiedProductSearchDetails implements Serializable {
    * accessibility-centered design certification criterion for 2015 Certification Edtion. It is a
    * string variable that does not have any restrictions on formatting or values.
    */
-  @XmlElementWrapper(name = "accessibilityStandards", nillable = true, required = false)
-  @XmlElement(name = "accessibilityStandard")
   private List<CertifiedProductAccessibilityStandard> accessibilityStandards =
       new ArrayList<CertifiedProductAccessibilityStandard>();
 
@@ -262,8 +212,6 @@ public class CertifiedProductSearchDetails implements Serializable {
    * criteria. This variable is applicable only for 2015 Edition, and a string variable that does
    * not take any restrictions on formatting or values.
    */
-  @XmlElementWrapper(name = "targetedUsers", nillable = true, required = false)
-  @XmlElement(name = "targetedUser")
   private List<CertifiedProductTargetedUser> targetedUsers = new ArrayList<CertifiedProductTargetedUser>();
 
   /**
@@ -271,23 +219,7 @@ public class CertifiedProductSearchDetails implements Serializable {
    * This variable is applicable for 2014 and 2015 Edition, and a string variable that does not take
    * any restrictions on formatting or values.
    */
-  @XmlElementWrapper(name = "qmsStandards", nillable = true, required = false)
-  @XmlElement(name = "qmsStandard")
   private List<CertifiedProductQmsStandard> qmsStandards = new ArrayList<CertifiedProductQmsStandard>();
-
-  /**
-   * The criteria to which this listing attests
-   */
-  @XmlElementWrapper(name = "certificationResults", nillable = true, required = false)
-  @XmlElement(name = "certificationResult")
-  private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
-
-  /**
-   * The clinical quality measures to which this listing has been certified.
-   */
-  @XmlElementWrapper(name = "cqmResults", nillable = true, required = false)
-  @XmlElement(name = "cqmResult")
-  private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
 
   /**
    * This property exists solely to be able to deserialize listing activity events from very old
@@ -297,7 +229,6 @@ public class CertifiedProductSearchDetails implements Serializable {
    * generated XSD or any response from an API call.
    */
   @JsonProperty(access = Access.WRITE_ONLY)
-  @XmlTransient
   private LegacyCertificationStatus certificationStatus;
 
   /**
@@ -307,34 +238,23 @@ public class CertifiedProductSearchDetails implements Serializable {
    * Retired. For a detailed description of each certification status, please see 'Understanding
    * Certification Status in the CHPL', available in the CHPL Public User Guide.
    */
-  @XmlElementWrapper(name = "certificationEvents", nillable = true, required = false)
-  @XmlElement(name = "certificationEvent")
   private List<CertificationStatusEvent> certificationEvents = new ArrayList<CertificationStatusEvent>();
 
   /**
    * All current and historical values of meaningful use users for this listing along with the dates
    * each meaningful use user count was valid. Dates are given in milliseconds since epoch.
    */
-  @XmlElementWrapper(name = "meaningfulUseUserHistory", nillable = true, required = false)
-  @XmlElement(name = "meaningfulUseEntry")
   private List<MeaningfulUseUser> meaningfulUseUserHistory = new ArrayList<MeaningfulUseUser>();
 
   /**
    * All data related to safety-enhanced design for this listing.
    */
-  @XmlElement(name = "sed", nillable = true, required = false)
   private CertifiedProductSed sed;
-
-  @XmlTransient
-  private Set<String> warningMessages = new HashSet<String>();
-
-  @XmlTransient
-  private Set<String> errorMessages = new HashSet<String>();
 
   /**
    * Default constructor.
    */
-  public CertifiedProductSearchDetails() {
+  public CertifiedProductSearchBasicDetails() {
     sed = new CertifiedProductSed();
   }
 
@@ -426,22 +346,6 @@ public class CertifiedProductSearchDetails implements Serializable {
     this.certificationDate = certificationDate;
   }
 
-  public List<CertificationResult> getCertificationResults() {
-    return certificationResults;
-  }
-
-  public void setCertificationResults(final List<CertificationResult> certificationResults) {
-    this.certificationResults = certificationResults;
-  }
-
-  public List<CQMResultDetails> getCqmResults() {
-    return cqmResults;
-  }
-
-  public void setCqmResults(final List<CQMResultDetails> cqmResults) {
-    this.cqmResults = cqmResults;
-  }
-
   public Integer getCountCerts() {
     return countCerts;
   }
@@ -472,22 +376,6 @@ public class CertifiedProductSearchDetails implements Serializable {
 
   public void setLastModifiedDate(final Long lastModifiedDate) {
     this.lastModifiedDate = lastModifiedDate;
-  }
-
-  public Set<String> getWarningMessages() {
-    return warningMessages;
-  }
-
-  public void setWarningMessages(final Set<String> warningMessages) {
-    this.warningMessages = warningMessages;
-  }
-
-  public Set<String> getErrorMessages() {
-    return errorMessages;
-  }
-
-  public void setErrorMessages(final Set<String> errorMessages) {
-    this.errorMessages = errorMessages;
   }
 
   public String getTransparencyAttestation() {
