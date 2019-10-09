@@ -29,8 +29,12 @@ import gov.healthit.chpl.entity.CertificationStatusType;
 @Component
 public class ListingQuestionableActivityProvider {
 
-    @Autowired
     private FF4j ff4j;
+
+    @Autowired
+    public ListingQuestionableActivityProvider(final FF4j ff4j) {
+        this.ff4j = ff4j;
+    }
 
     /**
      * Create questionable activity if the listing was a 2011 listing.

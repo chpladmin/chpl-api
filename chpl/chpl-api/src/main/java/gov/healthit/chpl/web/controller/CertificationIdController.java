@@ -46,16 +46,21 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/certification_ids")
 public class CertificationIdController {
 
-    @Autowired
     private CertifiedProductManager certifiedProductManager;
-
-    @Autowired
     private CertificationIdManager certificationIdManager;
-
-    @Autowired
+    private ResourcePermissions resourcePermissions;
     private FF4j ff4j;
 
-    @Autowired ResourcePermissions resourcePermissions;
+    @Autowired
+    public CertificationIdController(final CertifiedProductManager certifiedProductManager,
+            final CertificationIdManager certificationIdManager,
+            final FF4j ff4j,
+            final ResourcePermissions resourcePermissions) {
+        this.certifiedProductManager = certifiedProductManager;
+        this.certificationIdManager = certificationIdManager;
+        this.resourcePermissions = resourcePermissions;
+        this.ff4j = ff4j;
+    }
 
     // **********************************************************************************************************
     // getAll
