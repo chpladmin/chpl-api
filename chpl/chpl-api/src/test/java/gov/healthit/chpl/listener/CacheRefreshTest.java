@@ -5,11 +5,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.ff4j.FF4j;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +31,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
@@ -101,6 +106,9 @@ public class CacheRefreshTest extends TestCase {
     @Autowired
     public UnitTestRules cacheInvalidationRule;
 
+    @Autowired
+    private FF4j ff4j;
+
     /**
      * Set up class for tests.
      *
@@ -122,6 +130,12 @@ public class CacheRefreshTest extends TestCase {
         oncAdmin.setFriendlyName("User");
         oncAdmin.setSubjectName("oncAdminUser");
         oncAdmin.getPermissions().add(new GrantedPermission(Authority.ROLE_ADMIN));
+    }
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+        Mockito.doReturn(true).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE);
     }
 
     @Test
@@ -363,6 +377,7 @@ public class CacheRefreshTest extends TestCase {
 
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(listingToUpdate);
+        updateRequest.setReason("test reason");
         cpController.updateCertifiedProduct(updateRequest);
 
         //get the cached listings now, should have been updated in the aspect and have
