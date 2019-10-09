@@ -24,6 +24,7 @@ import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.dto.UserTestingLabMapDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -43,9 +44,14 @@ public class UserPermissionsManagerImplTest {
     @Mock
     private UserDAO userDAO;
 
-    @Mock private UserManager userManager;
+    @Mock
+    private UserManager userManager;
 
-    @Mock private MutableAclService mutableAclService;
+    @Mock
+    private MutableAclService mutableAclService;
+
+    @Mock
+    private ActivityManager activityManager;
 
     @InjectMocks
     private UserPermissionsManagerImpl manager;
@@ -109,12 +115,22 @@ public class UserPermissionsManagerImplTest {
         ucbms.add(ucbm);
         Mockito.when(userCertificationBodyMapDAO.getByUserId(ArgumentMatchers.anyLong())).thenReturn(ucbms);
 
+        Mockito.when(userDAO.getById(ArgumentMatchers.anyLong())).thenReturn(user);
+        Mockito.doNothing().when(activityManager).addActivity(
+                ArgumentMatchers.any(), ArgumentMatchers.anyLong(), ArgumentMatchers.anyString(),
+                ArgumentMatchers.any(), ArgumentMatchers.any());
+
         CertificationBodyDTO dto = new CertificationBodyDTO();
         dto.setId(1L);
         manager.deleteAcbPermission(dto, 2l);
 
         // Ensure the DAO 'delete' method was called...
         Mockito.verify(userCertificationBodyMapDAO).delete(ArgumentMatchers.any(UserCertificationBodyMapDTO.class));
+
+        // Ensure the activity was added
+        Mockito.verify(activityManager).addActivity(
+                ArgumentMatchers.any(), ArgumentMatchers.anyLong(), ArgumentMatchers.anyString(),
+                ArgumentMatchers.any(), ArgumentMatchers.any());
     }
 
     @Test
