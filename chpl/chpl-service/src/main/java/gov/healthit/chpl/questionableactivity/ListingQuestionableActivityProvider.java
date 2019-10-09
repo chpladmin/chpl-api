@@ -9,9 +9,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.ff4j.FF4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
@@ -25,6 +28,9 @@ import gov.healthit.chpl.entity.CertificationStatusType;
  */
 @Component
 public class ListingQuestionableActivityProvider {
+
+    @Autowired
+    private FF4j ff4j;
 
     /**
      * Create questionable activity if the listing was a 2011 listing.
@@ -53,6 +59,9 @@ public class ListingQuestionableActivityProvider {
      */
     public QuestionableActivityListingDTO check2014EditionUpdated(
             final CertifiedProductSearchDetails origListing, final CertifiedProductSearchDetails newListing) {
+        if (!ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
+            return null;
+        }
 
         QuestionableActivityListingDTO activity = null;
         if (origListing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).equals("2014")) {
