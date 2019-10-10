@@ -50,6 +50,9 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
     @Value("${changerequest.status.accepted}")
     private Long acceptedStatus;
 
+    @Value("${changerequest.status.rejected}")
+    private Long rejectedStatus;
+
     @Value("${user.permission.onc}")
     private Long oncPermission;
 
@@ -61,6 +64,12 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
 
     @Value("${changeRequest.website.approval.body}")
     private String approvalEmailBody;
+
+    @Value("${changeRequest.website.rejected.subject}")
+    private String rejectedEmailSubject;
+
+    @Value("${changeRequest.website.rejected.body}")
+    private String rejectedEmailBody;
 
     @Value("${changeRequest.website.pendingDeveloperAction.subject}")
     private String pendingDeveloperActionEmailSubject;
@@ -129,6 +138,8 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
         try {
             if (cr.getCurrentStatus().getChangeRequestStatusType().getId().equals(pendingDeveloperActionStatus)) {
                 sendPendingDeveloperActionEmail(cr);
+            } else if (cr.getCurrentStatus().getChangeRequestStatusType().getId().equals(rejectedStatus)) {
+                sendRejectedEmail(cr);
             } else if (cr.getCurrentStatus().getChangeRequestStatusType().getId().equals(acceptedStatus)) {
                 cr = execute(cr);
                 sendApprovalEmail(cr);
@@ -175,6 +186,21 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
                         .collect(Collectors.<String> toList()))
                 .subject(pendingDeveloperActionEmailSubject)
                 .htmlMessage(String.format(pendingDeveloperActionEmailBody,
+                        df.format(cr.getSubmittedDate()),
+                        ((ChangeRequestWebsite) cr.getDetails()).getWebsite(),
+                        getApprovalBody(cr),
+                        cr.getCurrentStatus().getComment()))
+                .sendEmail();
+    }
+
+    private void sendRejectedEmail(final ChangeRequest cr) throws MessagingException {
+        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
+        new EmailBuilder(env)
+                .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
+                        .map(user -> user.getEmail())
+                        .collect(Collectors.<String> toList()))
+                .subject(rejectedEmailSubject)
+                .htmlMessage(String.format(rejectedEmailBody,
                         df.format(cr.getSubmittedDate()),
                         ((ChangeRequestWebsite) cr.getDetails()).getWebsite(),
                         getApprovalBody(cr),
