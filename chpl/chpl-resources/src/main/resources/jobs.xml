@@ -522,6 +522,24 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
-
+		
+		<!-- Job used to change status of a set listings -->
+        <job>
+            <name>updateListingStatusJob</name>
+            <group>systemJobs</group>
+            <description>Updates the status for a set of listings</description>
+            <job-class>gov.healthit.chpl.scheduler.job.UpdateListingStatusJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <!-- 
+            <job-data-map>
+                <entry>
+                    <key>parameters</key>
+                    <value>[{"label": "Job Name", "key": "jobName"}, {"label": "Group Name", "key": "jobGroup"}]</value>
+                </entry>
+            </job-data-map>
+            -->
+        </job>
+		
     </schedule>
 </job-scheduling-data>
