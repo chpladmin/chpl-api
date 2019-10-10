@@ -18,7 +18,6 @@ public class ChangeRequestValidationFactory {
     public final static String STATUS_NOT_UPDATABLE = "STATUS_NOT_UPDATABLE";
     public final static String COMMENT_REQUIRED = "COMMENT_REQUIRED";
     public final static String MULTIPLE_ACBS = "MULTIPLE_ACBS";
-    public final static String ACB_REQUIRED = "ACB_REQUIRED";
     public final static String WEBSITE_VALID = "WEBSITE_VALID";
 
     private ChangeRequestDetailsCreateValidation changeRequestDetailsCreateValidation;
@@ -31,7 +30,6 @@ public class ChangeRequestValidationFactory {
     private ChangeRequestTypeInProcessValidation changeRequestTypeInProcessValidation;
     private CommentRequiredValidation commentRequiredValidation;
     private RoleAcbHasMultipleCertificationBodiesValidation roleAcbHasMultipleCertificationBodiesValidation;
-    private CertificationBodyRequiredValidation certificationBodyRequiredValidation;
     private WebsiteValidation websiteValidation;
 
     @Autowired
@@ -46,7 +44,6 @@ public class ChangeRequestValidationFactory {
             final ChangeRequestTypeInProcessValidation changeRequestTypeInProcessValidation,
             final CommentRequiredValidation commentRequiredValidation,
             final RoleAcbHasMultipleCertificationBodiesValidation roleAcbHasMultipleCertificationBodiesValidation,
-            final CertificationBodyRequiredValidation certificationBodyRequiredValidation,
             final WebsiteValidation websiteValidation) {
 
         this.changeRequestDetailsCreateValidation = changeRequestDetailsCreateValidation;
@@ -59,7 +56,6 @@ public class ChangeRequestValidationFactory {
         this.changeRequestTypeInProcessValidation = changeRequestTypeInProcessValidation;
         this.commentRequiredValidation = commentRequiredValidation;
         this.roleAcbHasMultipleCertificationBodiesValidation = roleAcbHasMultipleCertificationBodiesValidation;
-        this.certificationBodyRequiredValidation = certificationBodyRequiredValidation;
         this.websiteValidation = websiteValidation;
 
     }
@@ -86,8 +82,6 @@ public class ChangeRequestValidationFactory {
             return commentRequiredValidation;
         case MULTIPLE_ACBS:
             return roleAcbHasMultipleCertificationBodiesValidation;
-        case ACB_REQUIRED:
-            return certificationBodyRequiredValidation;
         case WEBSITE_VALID:
             return websiteValidation;
         default:
