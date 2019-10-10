@@ -80,7 +80,7 @@ public class ChangeRequestController {
             notes="Security Restrictions: ROLE_ADMIN & ROLE_ONC can update all chnage requests.  ROLE_ACB can update change requests "
                     + "for developers where they manage at least one certified product for the developer.  ROLE_DEVELOPER can update "
                     + "change requests where they have administrative authority based on the developer.")
-    @RequestMapping(value = "/{changeRequestId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
+    @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public ChangeRequest updateChangeRequest(@RequestBody final ChangeRequest cr) throws EntityRetrievalException, ValidationException, EntityCreationException, JsonProcessingException {
         if (!ff4j.check(FeatureList.CHANGE_REQUEST)) {
