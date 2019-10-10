@@ -68,12 +68,12 @@ import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 
 @Configuration
 @Import({
-        ChplTestCacheConfig.class
+    ChplTestCacheConfig.class
 })
 @EnableCaching
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @PropertySources({
-        @PropertySource("classpath:/environment.test.properties"),
+    @PropertySource("classpath:/environment.test.properties"),
 })
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableTransactionManagement
@@ -351,7 +351,6 @@ public class CHPLTestConfig implements EnvironmentAware {
         ppc.setLocations(ArrayUtils.addAll(
                 new PathMatchingResourcePatternResolver().getResources("classpath*:lookup.test.properties"),
                 new PathMatchingResourcePatternResolver().getResources("classpath*:environment.test.properties")));
-
         return ppc;
     }
 }

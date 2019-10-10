@@ -26,6 +26,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
@@ -69,7 +70,9 @@ import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 @Configuration
 @Import({ChplTestCacheConfig.class})
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@PropertySource("classpath:/environment.test.properties")
+@PropertySources({
+    @PropertySource("classpath:/environment.test.properties"),
+})
 @EnableCaching
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableTransactionManagement
@@ -348,7 +351,7 @@ public class CHPLTestConfig implements EnvironmentAware {
     public FF4j ff4j() {
         return Mockito.spy(new FF4j());
     }
-    
+
     @Bean
     public PropertyPlaceholderConfigurer propertyPlaceholderConfigurer() throws IOException {
         final PropertyPlaceholderConfigurer ppc = new PropertyPlaceholderConfigurer();
@@ -357,5 +360,4 @@ public class CHPLTestConfig implements EnvironmentAware {
                 new PathMatchingResourcePatternResolver().getResources("classpath*:environment.test.properties")));
         return ppc;
     }
-
 }

@@ -13,4 +13,6 @@ public interface ChangeRequestDAO {
     List<ChangeRequest> getByDeveloper(final Long developerId) throws EntityRetrievalException;
 
     List<ChangeRequest> getAll() throws EntityRetrievalException;
+
+    List<ChangeRequest> getAllPending() throws EntityRetrievalException;
 }
