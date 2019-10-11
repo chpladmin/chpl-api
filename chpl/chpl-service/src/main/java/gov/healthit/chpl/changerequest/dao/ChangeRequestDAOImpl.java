@@ -148,6 +148,8 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
         String hql = "SELECT crStatus "
                 + "FROM ChangeRequestStatusEntity crStatus "
                 + "JOIN FETCH crStatus.changeRequestStatusType "
+                + "LEFT JOIN FETCH crStatus.certificationBody acb "
+                + "LEFT JOIN FETCH acb.address "
                 + "JOIN FETCH crStatus.userPermission "
                 + "WHERE crStatus.deleted = false "
                 + "AND crStatus.changeRequest.id = :changeRequestId "
