@@ -1,5 +1,7 @@
 package gov.healthit.chpl.scheduler.job;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,24 +46,30 @@ public class UpdateListingStatusJob extends QuartzJob {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         setSecurityContext();
 
-        String listingsCommaSeparated = "9913";
+        String listingsCommaSeparated = jobContext.getMergedJobDataMap().getString("listings");
         // String listingsCommaSeparated =
         // jobContext.getMergedJobDataMap().getString("listings");
 
         List<Long> listingIds = Stream.of(listingsCommaSeparated.split(","))
+                .map(str -> str.trim())
                 .map(Long::parseLong)
                 .collect(Collectors.toList());
 
         // TODO - Need to add some validation
-        // Long certificationStatusId =
-        // Long.parseLong(jobContext.getMergedJobDataMap().getString("certificationStatusId"));
-        Long certificationStatusId = 3L;
+        Long certificationStatusId = Long
+                .parseLong(jobContext.getMergedJobDataMap().getString("certificationStatusId"));
 
         // TODO - Need to add some validation
-        // SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-        // Date statusDate =
-        // sdf.parse(jobContext.getMergedJobDataMap().getString("statusDate"))
-        Date statusDate = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+        Date statusDate;
+        try {
+            statusDate = sdf.parse(jobContext.getMergedJobDataMap().getString("effectiveDate"));
+        } catch (ParseException e) {
+            LOGGER.error(
+                    "Could not parse the effectiveDate" + jobContext.getMergedJobDataMap().getString("effectiveDate"),
+                    e);
+            return;
+        }
 
         for (Long listingId : listingIds) {
             try {
