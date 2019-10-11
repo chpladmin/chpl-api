@@ -23,4 +23,9 @@ public class ChangeRequestType implements Serializable {
     public void setName(final String name) {
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return "ChangeRequestType [id=" + id + ", name=" + name + "]";
+    }
 }

@@ -60,7 +60,14 @@ public class ChangeRequestStatus implements Serializable {
         return userPermission;
     }
 
-    public void setUserPermission(UserPermission userPermission) {
+    public void setUserPermission(final UserPermission userPermission) {
         this.userPermission = userPermission;
+    }
+
+    @Override
+    public String toString() {
+        return "ChangeRequestStatus [id=" + id + ", changeRequestStatusType=" + changeRequestStatusType
+                + ", statusChangeDate=" + statusChangeDate + ", comment=" + comment + ", certificationBody="
+                + certificationBody + ", userPermission=" + userPermission + "]";
     }
 }
