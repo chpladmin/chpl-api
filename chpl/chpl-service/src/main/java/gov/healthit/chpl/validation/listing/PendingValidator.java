@@ -7,7 +7,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
-import gov.healthit.chpl.dao.impl.PendingCertifiedProductDAOImpl;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
 
@@ -29,23 +28,35 @@ public abstract class PendingValidator {
      */
     public abstract List<Reviewer> getReviewers();
 
+    public void validate(final PendingCertifiedProductDTO listing) {
+        validate(listing, true);
+    }
+
     /**
      * Validation simply calls each reviewer. The reviewers add
      * errors and warnings as appropriate.
      * @param listing a pending listing
      */
-    public void validate(final PendingCertifiedProductDTO listing) {
+    public void validate(final PendingCertifiedProductDTO listing, boolean updateCounts) {
         for (Reviewer reviewer : getReviewers()) {
             reviewer.review(listing);
         }
-        //update error and warning counts
+        if (updateCounts) {
+            updateCounts(listing);
+        }
+    }
+
+    /**
+     * Updates error and warning counts
+     * @param listing a pending listing
+     */
+    private void updateCounts(PendingCertifiedProductDTO listing) {
         int errorCount = (listing.getErrorMessages() == null ? 0 : listing.getErrorMessages().size());
         int warningCount = (listing.getWarningMessages() == null ? 0 : listing.getWarningMessages().size());
         try {
             pendingListingDao.updateErrorAndWarningCounts(listing.getId(), errorCount, warningCount);
         } catch (Exception ex) {
-            LOGGER.error("Unable to update error and warning counts for pending listing "
-                    + listing.getId(), ex);
+            LOGGER.error("Unable to update error and warning counts for pending listing " + listing.getId(), ex);
         }
     }
 }
