@@ -40,9 +40,9 @@ public interface CertifiedProductManager {
     CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 
-    CertifiedProductDTO update(Long acbId, ListingUpdateRequest updateRequest,
-            CertifiedProductSearchDetails existingListing) throws EntityRetrievalException, JsonProcessingException,
-            EntityCreationException, InvalidArgumentsException, IOException, ValidationException;
+    CertifiedProductDTO update(Long acbId, ListingUpdateRequest updateRequest)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException, IOException, ValidationException;
 
     void sanitizeUpdatedListingData(Long acbId, CertifiedProductSearchDetails listing)
             throws EntityNotFoundException;

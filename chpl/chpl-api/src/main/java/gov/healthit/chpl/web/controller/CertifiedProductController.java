@@ -607,6 +607,7 @@ public class CertifiedProductController {
             JsonProcessingException, IOException, ValidationException, MissingReasonException {
 
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
+        
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(updatedListing.getId());
         Long acbId = Long.parseLong(existingListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
 
@@ -625,6 +626,8 @@ public class CertifiedProductController {
             existingListing = changedProduct;
         }
 
+        cpManager.update(newAcbId, updateRequest);
+        
         CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);

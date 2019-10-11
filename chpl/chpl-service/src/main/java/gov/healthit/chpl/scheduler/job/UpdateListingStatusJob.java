@@ -21,6 +21,7 @@ import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 
@@ -76,12 +77,11 @@ public class UpdateListingStatusJob extends QuartzJob {
                 LOGGER.info("Getting certified product: " + listingId);
                 CertifiedProductSearchDetails cpd = certifiedProductDetailsManager
                         .getCertifiedProductDetails(listingId);
-                CertifiedProductSearchDetails cpdExisting = certifiedProductDetailsManager
-                        .getCertifiedProductDetails(listingId);
                 LOGGER.info("Completed Getting certified product: " + listingId);
 
                 CertificationStatus cs = new CertificationStatus();
                 cs.setId(certificationStatusId);
+                cs.setName(CertificationStatusType.WithdrawnByDeveloper.toString());
 
                 CertificationStatusEvent cse = new CertificationStatusEvent();
                 cse.setStatus(cs);
@@ -93,7 +93,7 @@ public class UpdateListingStatusJob extends QuartzJob {
                 ListingUpdateRequest updateRequest = new ListingUpdateRequest();
                 updateRequest.setListing(cpd);
                 certifiedProductManager.update(
-                        Long.parseLong(cpd.getCertifyingBody().get("id").toString()), updateRequest, cpdExisting);
+                        Long.parseLong(cpd.getCertifyingBody().get("id").toString()), updateRequest);
                 LOGGER.info("Completed Updating certified product: " + listingId);
             } catch (Exception e) {
                 LOGGER.error(e);

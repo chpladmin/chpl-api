@@ -1156,73 +1156,70 @@ public class CertifiedProductManagerImpl extends SecuredManager implements Certi
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS
     }, allEntries = true)
-    public CertifiedProductDTO update(final Long acbId, final ListingUpdateRequest updateRequest,
-            final CertifiedProductSearchDetails existingListing)
+    public CertifiedProductDTO update(final Long acbId, final ListingUpdateRequest updateRequest)
             throws AccessDeniedException, EntityRetrievalException, JsonProcessingException, EntityCreationException,
             InvalidArgumentsException, IOException, ValidationException {
 
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
+        CertifiedProductSearchDetails existingListing = certifiedProductDetailsManager
+                .getCertifiedProductDetails(updatedListing.getId());
 
-        // clean up what was sent in - some necessary IDs or other fields may be
-        // missing
+        // clean up what was sent in - some necessary IDs or other fields may be missing
         Long newAcbId = Long
                 .valueOf(updatedListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
         sanitizeUpdatedListingData(newAcbId, updatedListing);
 
-        // validate
-        Validator validator = validatorFactory.getValidator(updatedListing);
-        if (validator != null) {
-            validator.validate(updatedListing);
-        }
+        // validate - throws ValidationException if the listing cannot be updated
+        validateListingForUpdate(existingListing, updatedListing);
 
-        // CertifiedProductSearchDetails existingListing =
-        // cpdManager.getCertifiedProductDetails(updatedListing.getId());
+        // if listing status has changed that may trigger other changes to developer status
+        performSecondaryActionsBasedOnStatusChanges(existingListing, updatedListing, updateRequest.getReason());
 
-        // make sure the old and new certification statuses aren't ONC bans
-        if (existingListing.getCurrentStatus() != null
-                && updatedListing.getCurrentStatus() != null
-                && !existingListing.getCurrentStatus().getStatus().getId()
-                        .equals(updatedListing.getCurrentStatus().getStatus().getId())) {
-            // if the status is to or from suspended by onc make sure the user
-            // has admin
-            if ((existingListing.getCurrentStatus().getStatus().getName()
-                    .equals(CertificationStatusType.SuspendedByOnc.toString())
-                    || updatedListing.getCurrentStatus().getStatus().getName()
-                            .equals(CertificationStatusType.SuspendedByOnc.toString())
-                    || existingListing.getCurrentStatus().getStatus().getName()
-                            .equals(CertificationStatusType.TerminatedByOnc.toString())
-                    || updatedListing.getCurrentStatus().getStatus().getName()
-                            .equals(CertificationStatusType.TerminatedByOnc.toString()))
-                    && !resourcePermissions.isUserRoleOnc()
-                    && !resourcePermissions.isUserRoleAdmin()) {
-                updatedListing.getErrorMessages()
-                        .add("User " + AuthUtil.getUsername()
-                                + " does not have permission to change certification status of "
-                                + existingListing.getChplProductNumber() + " from "
-                                + existingListing.getCurrentStatus().getStatus().getName() + " to "
-                                + updatedListing.getCurrentStatus().getStatus().getName());
-            }
-        }
+        // Update the listing
+        CertifiedProductDTO dtoToUpdate = new CertifiedProductDTO(updatedListing);
+        CertifiedProductDTO result = cpDao.update(dtoToUpdate);
+        updateListingsChildData(existingListing, updatedListing, result);
 
-        if (!existingListing.getChplProductNumber().equals(updatedListing.getChplProductNumber())) {
-            try {
-                boolean isDup = chplIdExists(updatedListing.getChplProductNumber());
-                if (isDup) {
-                    updatedListing.getErrorMessages()
-                            .add(msgUtil.getMessage("listing.chplProductNumber.changedNotUnique",
-                                    updatedListing.getChplProductNumber()));
-                }
-            } catch (final EntityRetrievalException ex) {
-            }
-        }
+        // Log the activity
+        logCertifiedProductUpdateActivity(existingListing, updateRequest.getReason());
 
-        if (updatedListing.getErrorMessages() != null && updatedListing.getErrorMessages().size() > 0) {
-            for (String err : updatedListing.getErrorMessages()) {
-                LOGGER.error("Error updating listing " + updatedListing.getChplProductNumber() + ": " + err);
-            }
-            throw new ValidationException(updatedListing.getErrorMessages(), updatedListing.getWarningMessages());
-        }
+        return result;
+    }
 
+    private void logCertifiedProductUpdateActivity(final CertifiedProductSearchDetails existingListing,
+            final String reason) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
+        CertifiedProductSearchDetails changedProduct = certifiedProductDetailsManager
+                .getCertifiedProductDetails(existingListing.getId());
+        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
+                "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingListing,
+                changedProduct, reason);
+    }
+
+    private void updateListingsChildData(final CertifiedProductSearchDetails existingListing,
+            final CertifiedProductSearchDetails updatedListing, final CertifiedProductDTO updatedListingDTO)
+            throws EntityCreationException, EntityRetrievalException, IOException {
+        updateTestingLabs(updatedListing.getId(), existingListing.getTestingLabs(), updatedListing.getTestingLabs());
+        updateIcsChildren(updatedListing.getId(), existingListing.getIcs(), updatedListing.getIcs());
+        updateIcsParents(updatedListing.getId(), existingListing.getIcs(), updatedListing.getIcs());
+        updateQmsStandards(updatedListing.getId(), existingListing.getQmsStandards(), updatedListing.getQmsStandards());
+        updateTargetedUsers(updatedListing.getId(), existingListing.getTargetedUsers(),
+                updatedListing.getTargetedUsers());
+        updateAccessibilityStandards(updatedListing.getId(), existingListing.getAccessibilityStandards(),
+                updatedListing.getAccessibilityStandards());
+        updateCertificationDate(updatedListing.getId(), new Date(existingListing.getCertificationDate()),
+                new Date(updatedListing.getCertificationDate()));
+        updateCertificationStatusEvents(updatedListing.getId(), existingListing.getCertificationEvents(),
+                updatedListing.getCertificationEvents());
+        updateMeaningfulUseUserHistory(updatedListing.getId(), existingListing.getMeaningfulUseUserHistory(),
+                updatedListing.getMeaningfulUseUserHistory());
+        updateCertifications(updatedListingDTO.getCertificationBodyId(), existingListing, updatedListing,
+                existingListing.getCertificationResults(), updatedListing.getCertificationResults());
+        updateCqms(updatedListingDTO, existingListing.getCqmResults(), updatedListing.getCqmResults());
+    }
+
+    private void performSecondaryActionsBasedOnStatusChanges(final CertifiedProductSearchDetails existingListing,
+            final CertifiedProductSearchDetails updatedListing, final String reason)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
         Long listingId = updatedListing.getId();
         Long productVersionId = updatedListing.getVersion().getVersionId();
         CertificationStatus updatedStatus = updatedListing.getCurrentStatus().getStatus();
@@ -1266,7 +1263,7 @@ public class CertifiedProductManagerImpl extends SecuredManager implements Certi
             case WithdrawnByDeveloperUnderReview:
                 // initiate TriggerDeveloperBan job, telling ONC that they might
                 // need to ban a Developer
-                triggerDeveloperBan(updatedListing, updateRequest.getReason());
+                triggerDeveloperBan(updatedListing, reason);
                 break;
             default:
                 LOGGER.info("New listing status is " + updatedStatusDto.getStatus()
@@ -1288,37 +1285,69 @@ public class CertifiedProductManagerImpl extends SecuredManager implements Certi
             }
         }
 
-        CertifiedProductDTO dtoToUpdate = new CertifiedProductDTO(updatedListing);
-        CertifiedProductDTO result = cpDao.update(dtoToUpdate);
+    }
 
-        // Findbugs says this cannot be null since it used above - an NPE would
-        // have been thrown
-        // if (updatedListing != null) {
-        updateTestingLabs(listingId, existingListing.getTestingLabs(), updatedListing.getTestingLabs());
-        updateIcsChildren(listingId, existingListing.getIcs(), updatedListing.getIcs());
-        updateIcsParents(listingId, existingListing.getIcs(), updatedListing.getIcs());
-        updateQmsStandards(listingId, existingListing.getQmsStandards(), updatedListing.getQmsStandards());
-        updateTargetedUsers(listingId, existingListing.getTargetedUsers(), updatedListing.getTargetedUsers());
-        updateAccessibilityStandards(listingId, existingListing.getAccessibilityStandards(),
-                updatedListing.getAccessibilityStandards());
-        updateCertificationDate(listingId, new Date(existingListing.getCertificationDate()),
-                new Date(updatedListing.getCertificationDate()));
-        updateCertificationStatusEvents(listingId, existingListing.getCertificationEvents(),
-                updatedListing.getCertificationEvents());
-        updateMeaningfulUseUserHistory(listingId, existingListing.getMeaningfulUseUserHistory(),
-                updatedListing.getMeaningfulUseUserHistory());
-        updateCertifications(result.getCertificationBodyId(), existingListing, updatedListing,
-                existingListing.getCertificationResults(), updatedListing.getCertificationResults());
-        updateCqms(result, existingListing.getCqmResults(), updatedListing.getCqmResults());
-        // }
+    private void validateListingForUpdate(final CertifiedProductSearchDetails existingListing,
+            final CertifiedProductSearchDetails updatedListing) throws ValidationException {
+        Validator validator = validatorFactory.getValidator(updatedListing);
+        if (validator != null) {
+            validator.validate(updatedListing);
+        }
 
-        CertifiedProductSearchDetails changedProduct = certifiedProductDetailsManager
-                .getCertifiedProductDetails(updatedListing.getId());
-        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
-                "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingListing,
-                changedProduct, updateRequest.getReason());
+        // The following checks will add errors/warning to the updated listing
+        checkForDeveloperBanStatusChange(existingListing, updatedListing);
+        checkForDuplicateChplProductNumber(existingListing, updatedListing);
 
-        return result;
+        if (updatedListing.getErrorMessages() != null && updatedListing.getErrorMessages().size() > 0) {
+            for (String err : updatedListing.getErrorMessages()) {
+                LOGGER.error("Error updating listing " + updatedListing.getChplProductNumber() + ": " + err);
+            }
+            throw new ValidationException(updatedListing.getErrorMessages(), updatedListing.getWarningMessages());
+        }
+
+    }
+
+    private void checkForDuplicateChplProductNumber(final CertifiedProductSearchDetails existingListing,
+            final CertifiedProductSearchDetails updatedListing) {
+        if (!existingListing.getChplProductNumber().equals(updatedListing.getChplProductNumber())) {
+            try {
+                boolean isDup = chplIdExists(updatedListing.getChplProductNumber());
+                if (isDup) {
+                    updatedListing.getErrorMessages()
+                            .add(msgUtil.getMessage("listing.chplProductNumber.changedNotUnique",
+                                    updatedListing.getChplProductNumber()));
+                }
+            } catch (final EntityRetrievalException ex) {
+            }
+        }
+    }
+
+    private void checkForDeveloperBanStatusChange(final CertifiedProductSearchDetails existingListing,
+            final CertifiedProductSearchDetails updatedListing) {
+        if (existingListing.getCurrentStatus() != null
+                && updatedListing.getCurrentStatus() != null
+                && !existingListing.getCurrentStatus().getStatus().getId()
+                        .equals(updatedListing.getCurrentStatus().getStatus().getId())) {
+            // if the status is to or from suspended by onc make sure the user
+            // has admin
+            if ((existingListing.getCurrentStatus().getStatus().getName()
+                    .equals(CertificationStatusType.SuspendedByOnc.toString())
+                    || updatedListing.getCurrentStatus().getStatus().getName()
+                            .equals(CertificationStatusType.SuspendedByOnc.toString())
+                    || existingListing.getCurrentStatus().getStatus().getName()
+                            .equals(CertificationStatusType.TerminatedByOnc.toString())
+                    || updatedListing.getCurrentStatus().getStatus().getName()
+                            .equals(CertificationStatusType.TerminatedByOnc.toString()))
+                    && !resourcePermissions.isUserRoleOnc()
+                    && !resourcePermissions.isUserRoleAdmin()) {
+                updatedListing.getErrorMessages()
+                        .add("User " + AuthUtil.getUsername()
+                                + " does not have permission to change certification status of "
+                                + existingListing.getChplProductNumber() + " from "
+                                + existingListing.getCurrentStatus().getStatus().getName() + " to "
+                                + updatedListing.getCurrentStatus().getStatus().getName());
+            }
+        }
     }
 
     private int updateTestingLabs(final Long listingId, final List<CertifiedProductTestingLab> existingTestingLabs,
