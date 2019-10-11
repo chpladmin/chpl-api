@@ -1200,7 +1200,7 @@ public class CertifiedProductManagerTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
-        final Long listingId = 5L;
+        final Long listingId = 1L;
         final Long certIdToUpdate = 7L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
