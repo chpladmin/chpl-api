@@ -81,6 +81,7 @@ import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
@@ -156,7 +157,9 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationResultManager;
+import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
@@ -164,6 +167,8 @@ import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
+import gov.healthit.chpl.validation.listing.Validator;
 
 @Service("certifiedProductManager")
 public class CertifiedProductManagerImpl extends SecuredManager implements CertifiedProductManager {
@@ -277,6 +282,15 @@ public class CertifiedProductManagerImpl extends SecuredManager implements Certi
 
     @Autowired
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
+
+    @Autowired
+    private CertifiedProductDetailsManager certifiedProductDetailsManager;
+
+    @Autowired
+    private ActivityManager activityManager;
+
+    @Autowired
+    private ListingValidatorFactory validatorFactory;
 
     private static final int PROD_CODE_LOC = 4;
     private static final int VER_CODE_LOC = 5;
@@ -1076,7 +1090,8 @@ public class CertifiedProductManagerImpl extends SecuredManager implements Certi
     @CacheEvict(value = {
             CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
-    // listings collection is not evicted here because it's pre-fetched and handled in a listener
+    // listings collection is not evicted here because it's pre-fetched and
+    // handled in a listener
     // no other caches have ACB data so we do not need to clear all
     public CertifiedProductDTO changeOwnership(final Long certifiedProductId, final Long acbId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
@@ -1147,6 +1162,67 @@ public class CertifiedProductManagerImpl extends SecuredManager implements Certi
             InvalidArgumentsException, IOException, ValidationException {
 
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
+
+        // clean up what was sent in - some necessary IDs or other fields may be
+        // missing
+        Long newAcbId = Long
+                .valueOf(updatedListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
+        sanitizeUpdatedListingData(newAcbId, updatedListing);
+
+        // validate
+        Validator validator = validatorFactory.getValidator(updatedListing);
+        if (validator != null) {
+            validator.validate(updatedListing);
+        }
+
+        // CertifiedProductSearchDetails existingListing =
+        // cpdManager.getCertifiedProductDetails(updatedListing.getId());
+
+        // make sure the old and new certification statuses aren't ONC bans
+        if (existingListing.getCurrentStatus() != null
+                && updatedListing.getCurrentStatus() != null
+                && !existingListing.getCurrentStatus().getStatus().getId()
+                        .equals(updatedListing.getCurrentStatus().getStatus().getId())) {
+            // if the status is to or from suspended by onc make sure the user
+            // has admin
+            if ((existingListing.getCurrentStatus().getStatus().getName()
+                    .equals(CertificationStatusType.SuspendedByOnc.toString())
+                    || updatedListing.getCurrentStatus().getStatus().getName()
+                            .equals(CertificationStatusType.SuspendedByOnc.toString())
+                    || existingListing.getCurrentStatus().getStatus().getName()
+                            .equals(CertificationStatusType.TerminatedByOnc.toString())
+                    || updatedListing.getCurrentStatus().getStatus().getName()
+                            .equals(CertificationStatusType.TerminatedByOnc.toString()))
+                    && !resourcePermissions.isUserRoleOnc()
+                    && !resourcePermissions.isUserRoleAdmin()) {
+                updatedListing.getErrorMessages()
+                        .add("User " + AuthUtil.getUsername()
+                                + " does not have permission to change certification status of "
+                                + existingListing.getChplProductNumber() + " from "
+                                + existingListing.getCurrentStatus().getStatus().getName() + " to "
+                                + updatedListing.getCurrentStatus().getStatus().getName());
+            }
+        }
+
+        if (!existingListing.getChplProductNumber().equals(updatedListing.getChplProductNumber())) {
+            try {
+                boolean isDup = chplIdExists(updatedListing.getChplProductNumber());
+                if (isDup) {
+                    updatedListing.getErrorMessages()
+                            .add(msgUtil.getMessage("listing.chplProductNumber.changedNotUnique",
+                                    updatedListing.getChplProductNumber()));
+                }
+            } catch (final EntityRetrievalException ex) {
+            }
+        }
+
+        if (updatedListing.getErrorMessages() != null && updatedListing.getErrorMessages().size() > 0) {
+            for (String err : updatedListing.getErrorMessages()) {
+                LOGGER.error("Error updating listing " + updatedListing.getChplProductNumber() + ": " + err);
+            }
+            throw new ValidationException(updatedListing.getErrorMessages(), updatedListing.getWarningMessages());
+        }
+
         Long listingId = updatedListing.getId();
         Long productVersionId = updatedListing.getVersion().getVersionId();
         CertificationStatus updatedStatus = updatedListing.getCurrentStatus().getStatus();
@@ -1227,7 +1303,6 @@ public class CertifiedProductManagerImpl extends SecuredManager implements Certi
                 updatedListing.getAccessibilityStandards());
         updateCertificationDate(listingId, new Date(existingListing.getCertificationDate()),
                 new Date(updatedListing.getCertificationDate()));
-
         updateCertificationStatusEvents(listingId, existingListing.getCertificationEvents(),
                 updatedListing.getCertificationEvents());
         updateMeaningfulUseUserHistory(listingId, existingListing.getMeaningfulUseUserHistory(),
@@ -1236,6 +1311,13 @@ public class CertifiedProductManagerImpl extends SecuredManager implements Certi
                 existingListing.getCertificationResults(), updatedListing.getCertificationResults());
         updateCqms(result, existingListing.getCqmResults(), updatedListing.getCqmResults());
         // }
+
+        CertifiedProductSearchDetails changedProduct = certifiedProductDetailsManager
+                .getCertifiedProductDetails(updatedListing.getId());
+        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
+                "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingListing,
+                changedProduct, updateRequest.getReason());
+
         return result;
     }
 
@@ -2246,7 +2328,8 @@ public class CertifiedProductManagerImpl extends SecuredManager implements Certi
                     .usingJobData("chplId", updatedListing.getChplProductNumber())
                     .usingJobData("developer", updatedListing.getDeveloper().getName())
                     .usingJobData("acb",
-                            updatedListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString())
+                            updatedListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)
+                                    .toString())
                     .usingJobData("changeDate", new Date().getTime())
                     .usingJobData("fullName", AuthUtil.getCurrentUser().getFullName())
                     .usingJobData("effectiveDate", updatedListing.getCurrentStatus().getEventDate())
