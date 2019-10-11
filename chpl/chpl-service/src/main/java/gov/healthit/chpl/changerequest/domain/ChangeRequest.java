@@ -83,4 +83,11 @@ public class ChangeRequest implements Serializable {
     public void setSubmittedDate(final Date submittedDate) {
         this.submittedDate = submittedDate;
     }
+
+    @Override
+    public String toString() {
+        return "ChangeRequest [id=" + id + ", changeRequestType=" + changeRequestType + ", developer=" + developer
+                + ", certificationBodies=" + certificationBodies + ", currentStatus=" + currentStatus + ", statuses="
+                + statuses + ", details=" + details + ", submittedDate=" + submittedDate + "]";
+    }
 }
