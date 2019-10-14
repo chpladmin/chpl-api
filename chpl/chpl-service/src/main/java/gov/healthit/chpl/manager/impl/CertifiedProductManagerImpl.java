@@ -174,122 +174,44 @@ import gov.healthit.chpl.validation.listing.Validator;
 public class CertifiedProductManagerImpl extends SecuredManager implements CertifiedProductManager {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductManagerImpl.class);
 
-    @Autowired
     private ErrorMessageUtil msgUtil;
-
-    @Autowired
     private CertifiedProductDAO cpDao;
-
-    @Autowired
     private CertifiedProductSearchDAO searchDao;
-
-    @Autowired
     private CertificationResultDAO certDao;
-
-    @Autowired
     private CertificationCriterionDAO certCriterionDao;
-
-    @Autowired
     private QmsStandardDAO qmsDao;
-
-    @Autowired
     private TargetedUserDAO targetedUserDao;
-
-    @Autowired
     private AccessibilityStandardDAO asDao;
-
-    @Autowired
     private CertifiedProductQmsStandardDAO cpQmsDao;
-
-    @Autowired
     private CertifiedProductTestingLabDAO cpTestingLabDao;
-
-    @Autowired
     private CertifiedProductTargetedUserDAO cpTargetedUserDao;
-
-    @Autowired
     private CertifiedProductAccessibilityStandardDAO cpAccStdDao;
-
-    @Autowired
     private CQMResultDAO cqmResultDAO;
-
-    @Autowired
     private CQMCriterionDAO cqmCriterionDao;
-
-    @Autowired
     private TestingLabDAO atlDao;
-
-    @Autowired
     private DeveloperDAO developerDao;
-
-    @Autowired
     private DeveloperStatusDAO devStatusDao;
-
-    @Lazy
-    @Autowired
     private DeveloperManager developerManager;
-
-    @Autowired
     private ProductManager productManager;
-
-    @Autowired
     private ProductVersionManager versionManager;
-
-    @Autowired
     private CertificationStatusEventDAO statusEventDao;
-
-    @Autowired
     private MeaningfulUseUserDAO muuDao;
-
-    @Autowired
     private CertificationResultManager certResultManager;
-
-    @Autowired
     private TestToolDAO testToolDao;
-
-    @Autowired
     private TestStandardDAO testStandardDao;
-
-    @Autowired
     private TestProcedureDAO testProcDao;
-
-    @Autowired
     private TestDataDAO testDataDao;
-
-    @Autowired
     private TestFunctionalityDAO testFuncDao;
-
-    @Autowired
     private UcdProcessDAO ucdDao;
-
-    @Autowired
     private TestParticipantDAO testParticipantDao;
-
-    @Autowired
     private TestTaskDAO testTaskDao;
-
-    @Autowired
     private CertificationStatusDAO certStatusDao;
-
-    @Autowired
     private ListingGraphDAO listingGraphDao;
-
-    @Autowired
     private FuzzyChoicesDAO fuzzyChoicesDao;
-
-    @Autowired
     private ResourcePermissions resourcePermissions;
-
-    @Autowired
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
-
-    @Autowired
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
-
-    @Autowired
     private ActivityManager activityManager;
-
-    @Autowired
     private ListingValidatorFactory validatorFactory;
 
     private static final int PROD_CODE_LOC = 4;
@@ -298,10 +220,69 @@ public class CertifiedProductManagerImpl extends SecuredManager implements Certi
     private static final int SW_CODE_LOC = 7;
     private static final int DATE_CODE_LOC = 8;
 
-    /**
-     * Default constructor.
-     */
-    public CertifiedProductManagerImpl() {
+    @Autowired
+    public CertifiedProductManagerImpl(final ErrorMessageUtil msgUtil, final CertifiedProductDAO cpDao,
+            final CertifiedProductSearchDAO searchDao,
+            final CertificationResultDAO certDao, final CertificationCriterionDAO certCriterionDao,
+            final QmsStandardDAO qmsDao, final TargetedUserDAO targetedUserDao,
+            final AccessibilityStandardDAO asDao, final CertifiedProductQmsStandardDAO cpQmsDao,
+            final CertifiedProductTestingLabDAO cpTestingLabDao,
+            final CertifiedProductTargetedUserDAO cpTargetedUserDao,
+            final CertifiedProductAccessibilityStandardDAO cpAccStdDao, final CQMResultDAO cqmResultDAO,
+            final CQMCriterionDAO cqmCriterionDao, final TestingLabDAO atlDao,
+            final DeveloperDAO developerDao, final DeveloperStatusDAO devStatusDao,
+            @Lazy DeveloperManager developerManager, final ProductManager productManager,
+            final ProductVersionManager versionManager, final CertificationStatusEventDAO statusEventDao,
+            final MeaningfulUseUserDAO muuDao, final CertificationResultManager certResultManager,
+            final TestToolDAO testToolDao, final TestStandardDAO testStandardDao,
+            final TestProcedureDAO testProcDao, final TestDataDAO testDataDao,
+            final TestFunctionalityDAO testFuncDao, final UcdProcessDAO ucdDao,
+            final TestParticipantDAO testParticipantDao, final TestTaskDAO testTaskDao,
+            final CertificationStatusDAO certStatusDao, final ListingGraphDAO listingGraphDao,
+            final FuzzyChoicesDAO fuzzyChoicesDao, final ResourcePermissions resourcePermissions,
+            final CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
+            final CertifiedProductDetailsManager certifiedProductDetailsManager,
+            final ActivityManager activityManager, @Lazy ListingValidatorFactory validatorFactory) {
+
+        this.msgUtil = msgUtil;
+        this.cpDao = cpDao;
+        this.searchDao = searchDao;
+        this.certDao = certDao;
+        this.certCriterionDao = certCriterionDao;
+        this.qmsDao = qmsDao;
+        this.targetedUserDao = targetedUserDao;
+        this.asDao = asDao;
+        this.cpQmsDao = cpQmsDao;
+        this.cpTestingLabDao = cpTestingLabDao;
+        this.cpTargetedUserDao = cpTargetedUserDao;
+        this.cpAccStdDao = cpAccStdDao;
+        this.cqmResultDAO = cqmResultDAO;
+        this.cqmCriterionDao = cqmCriterionDao;
+        this.atlDao = atlDao;
+        this.developerDao = developerDao;
+        this.devStatusDao = devStatusDao;
+        this.developerManager = developerManager;
+        this.productManager = productManager;
+        this.versionManager = versionManager;
+        this.statusEventDao = statusEventDao;
+        this.muuDao = muuDao;
+        this.certResultManager = certResultManager;
+        this.testToolDao = testToolDao;
+        this.testStandardDao = testStandardDao;
+        this.testProcDao = testProcDao;
+        this.testDataDao = testDataDao;
+        this.testFuncDao = testFuncDao;
+        this.ucdDao = ucdDao;
+        this.testParticipantDao = testParticipantDao;
+        this.testTaskDao = testTaskDao;
+        this.certStatusDao = certStatusDao;
+        this.listingGraphDao = listingGraphDao;
+        this.fuzzyChoicesDao = fuzzyChoicesDao;
+        this.resourcePermissions = resourcePermissions;
+        this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
+        this.certifiedProductDetailsManager = certifiedProductDetailsManager;
+        this.activityManager = activityManager;
+        this.validatorFactory = validatorFactory;
     }
 
     @Override
@@ -1100,11 +1081,7 @@ public class CertifiedProductManagerImpl extends SecuredManager implements Certi
         return cpDao.update(toUpdate);
     }
 
-    @Override
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).CLEAN_DATA, #acbId)")
-    @Transactional(readOnly = false)
-    public void sanitizeUpdatedListingData(final Long acbId, final CertifiedProductSearchDetails listing)
+    private void sanitizeUpdatedListingData(final Long acbId, final CertifiedProductSearchDetails listing)
             throws EntityNotFoundException {
         // make sure the ui didn't send any error or warning messages back
         listing.setErrorMessages(new HashSet<String>());

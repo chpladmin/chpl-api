@@ -449,7 +449,7 @@
         acb_certification_id="abcdef" />
     <certified_product certified_product_id="5"
         certification_edition_id="3" product_version_id="-5"
-        certification_body_id="-1" 
+        certification_body_id="-1" chpl_product_number="CHP-024054"
         report_file_location="http://industries.ul.com/healthcare/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
         sed_report_file_location="http://www.google.com"
         acb_certification_id="abcdef"

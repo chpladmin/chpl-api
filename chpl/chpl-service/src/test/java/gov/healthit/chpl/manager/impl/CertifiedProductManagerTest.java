@@ -4,14 +4,18 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -66,11 +70,14 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
+import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import junit.framework.TestCase;
 
+@ActiveProfiles("MockValidation-test")
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        gov.healthit.chpl.CHPLTestConfig.class
+        gov.healthit.chpl.CHPLTestConfig.class,
+        gov.healthit.chpl.ListingValidatorFactoryConfiguration.class,
 })
 @TestExecutionListeners({
         DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
@@ -81,12 +88,18 @@ public class CertifiedProductManagerTest extends TestCase {
 
     @Autowired
     private DeveloperManager devManager;
+
     @Autowired
     private CertificationStatusDAO certStatusDao;
+
     @Autowired
     private CertifiedProductManager cpManager;
+
     @Autowired
     private CertifiedProductDetailsManager cpdManager;
+
+    @Autowired
+    private ListingValidatorFactory validatorFactory;
 
     @Rule
     @Autowired
@@ -113,6 +126,13 @@ public class CertifiedProductManagerTest extends TestCase {
         testUser3.setFriendlyName("User3");
         testUser3.setSubjectName("testUser3");
         testUser3.getPermissions().add(new GrantedPermission("ROLE_ACB"));
+    }
+
+    @Before
+    public void setup() {
+        Mockito.when(validatorFactory.getValidator(ArgumentMatchers.any(CertifiedProductSearchDetails.class)))
+                .thenReturn(null);
+
     }
 
     @SuppressWarnings("unchecked")
@@ -346,7 +366,6 @@ public class CertifiedProductManagerTest extends TestCase {
         Long acbId = 1L;
         Long listingId = 1L;
 
-        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
         CertificationStatusEvent statusEvent = new CertificationStatusEvent();
         statusEvent.setEventDate(System.currentTimeMillis());
@@ -705,7 +724,6 @@ public class CertifiedProductManagerTest extends TestCase {
         cpManager.update(acbId, updateRequest);
 
         // remove the targeted user
-        CertifiedProductSearchDetails listingWithtu = cpdManager.getCertifiedProductDetails(listingId);
         assertNotNull(updatedListing.getTargetedUsers());
         assertEquals(origTuLength + 1, updatedListing.getTargetedUsers().size());
 
@@ -813,7 +831,6 @@ public class CertifiedProductManagerTest extends TestCase {
         cpManager.update(acbId, updateRequest);
 
         // remove the accessibility standard
-        CertifiedProductSearchDetails listingWithStd = cpdManager.getCertifiedProductDetails(listingId);
         assertNotNull(updatedListing.getAccessibilityStandards());
         assertEquals(origAccStdLength + 1, updatedListing.getAccessibilityStandards().size());
 
@@ -895,7 +912,6 @@ public class CertifiedProductManagerTest extends TestCase {
         cpManager.update(acbId, updateRequest);
 
         // remove the muu
-        CertifiedProductSearchDetails listingWithMuu = cpdManager.getCertifiedProductDetails(listingId);
         assertNotNull(updatedListing.getMeaningfulUseUserHistory());
         assertEquals(origMuuCount + 1, updatedListing.getMeaningfulUseUserHistory().size());
 
@@ -925,7 +941,6 @@ public class CertifiedProductManagerTest extends TestCase {
         final Long listingId = 1L;
         final Long certIdToUpdate = 4L;
 
-        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         // update one that is currently false to be true
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
@@ -965,7 +980,6 @@ public class CertifiedProductManagerTest extends TestCase {
         final Long listingId = 1L;
         final Long certIdToUpdate = 2L;
 
-        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -1010,7 +1024,6 @@ public class CertifiedProductManagerTest extends TestCase {
         final Long listingId = 1L;
         final Long certIdToUpdate = 2L;
 
-        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -1055,7 +1068,6 @@ public class CertifiedProductManagerTest extends TestCase {
         final Long certIdToUpdate = 2L;
         final int expectedSwCount = 3;
 
-        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -1105,7 +1117,6 @@ public class CertifiedProductManagerTest extends TestCase {
         final Long listingId = 1L;
         final Long certIdToUpdate = 2L;
 
-        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -1121,7 +1132,6 @@ public class CertifiedProductManagerTest extends TestCase {
         cpManager.update(acbId, updateRequest);
 
         // now update the justification
-        existingListing = cpdManager.getCertifiedProductDetails(listingId);
         toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -1163,7 +1173,6 @@ public class CertifiedProductManagerTest extends TestCase {
         final Long listingId = 1L;
         final Long certIdToUpdate = 1L;
 
-        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -1200,10 +1209,9 @@ public class CertifiedProductManagerTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long acbId = 1L;
-        final Long listingId = 1L;
+        final Long listingId = 15L;
         final Long certIdToUpdate = 7L;
 
-        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -1214,7 +1222,12 @@ public class CertifiedProductManagerTest extends TestCase {
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(toUpdateListing);
-        cpManager.update(acbId, updateRequest);
+
+        try {
+            cpManager.update(acbId, updateRequest);
+        } catch (ValidationException e) {
+            // do nothing for now
+        }
 
         CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
         assertNotNull(updatedListing);
@@ -1242,7 +1255,6 @@ public class CertifiedProductManagerTest extends TestCase {
         final Long listingId = 5L;
         final Long certIdToUpdate = 7L;
 
-        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -1256,7 +1268,6 @@ public class CertifiedProductManagerTest extends TestCase {
         cpManager.update(acbId, updateRequest);
 
         // remove the measure
-        existingListing = cpdManager.getCertifiedProductDetails(listingId);
         toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -1295,7 +1306,6 @@ public class CertifiedProductManagerTest extends TestCase {
         final Long listingId = 1L;
         final Long certIdToUpdate = 2L;
 
-        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         assertNotNull(toUpdateListing.getSed());
 
@@ -1336,7 +1346,6 @@ public class CertifiedProductManagerTest extends TestCase {
         final Long listingId = 1L;
         final Long certIdToUpdate = 2L;
 
-        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -1354,7 +1363,6 @@ public class CertifiedProductManagerTest extends TestCase {
         cpManager.update(acbId, updateRequest);
 
         // now update the details
-        existingListing = cpdManager.getCertifiedProductDetails(listingId);
         toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (UcdProcess ucd : toUpdateListing.getSed().getUcdProcesses()) {
             ucd.setDetails("NEW DETAILS");
@@ -1384,7 +1392,6 @@ public class CertifiedProductManagerTest extends TestCase {
         final Long listingId = 1L;
         final Long certIdToUpdate = 2L;
 
-        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -1402,7 +1409,6 @@ public class CertifiedProductManagerTest extends TestCase {
         cpManager.update(acbId, updateRequest);
 
         // remove the ucd
-        existingListing = cpdManager.getCertifiedProductDetails(listingId);
         toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         toUpdateListing.getSed().getUcdProcesses().clear();
         updateRequest = new ListingUpdateRequest();
@@ -1432,7 +1438,6 @@ public class CertifiedProductManagerTest extends TestCase {
         final Long listingId = 1L;
         final Long certIdToUpdate = 2L;
 
-        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -1471,7 +1476,6 @@ public class CertifiedProductManagerTest extends TestCase {
         final Long listingId = 1L;
         final Long certIdToUpdate = 2L;
 
-        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -1513,7 +1517,6 @@ public class CertifiedProductManagerTest extends TestCase {
         final Long listingId = 1L;
         final Long certIdToUpdate = 2L;
 
-        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -1527,7 +1530,6 @@ public class CertifiedProductManagerTest extends TestCase {
         cpManager.update(acbId, updateRequest);
 
         // remove the ucd
-        existingListing = cpdManager.getCertifiedProductDetails(listingId);
         toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -1566,7 +1568,6 @@ public class CertifiedProductManagerTest extends TestCase {
         final Long listingId = 5L;
         final Long certIdToUpdate = 11L;
 
-        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -1607,7 +1608,6 @@ public class CertifiedProductManagerTest extends TestCase {
         final Long listingId = 5L;
         final Long certIdToUpdate = 11L;
 
-        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -1622,7 +1622,6 @@ public class CertifiedProductManagerTest extends TestCase {
         cpManager.update(acbId, updateRequest);
 
         // update a tool
-        existingListing = cpdManager.getCertifiedProductDetails(listingId);
         toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -1664,7 +1663,6 @@ public class CertifiedProductManagerTest extends TestCase {
         final Long listingId = 5L;
         final Long certIdToUpdate = 11L;
 
-        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -1678,7 +1676,6 @@ public class CertifiedProductManagerTest extends TestCase {
         cpManager.update(acbId, updateRequest);
 
         // remove the ucd
-        existingListing = cpdManager.getCertifiedProductDetails(listingId);
         toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -1717,7 +1714,6 @@ public class CertifiedProductManagerTest extends TestCase {
         final Long listingId = 5L;
         final Long certIdToUpdate = 11L;
 
-        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -1764,7 +1760,6 @@ public class CertifiedProductManagerTest extends TestCase {
         final Long listingId = 5L;
         final Long certIdToUpdate = 11L;
 
-        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -1782,7 +1777,6 @@ public class CertifiedProductManagerTest extends TestCase {
         cpManager.update(acbId, updateRequest);
 
         // now update the details
-        existingListing = cpdManager.getCertifiedProductDetails(listingId);
         toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -1820,7 +1814,6 @@ public class CertifiedProductManagerTest extends TestCase {
         final Long listingId = 5L;
         final Long certIdToUpdate = 11L;
 
-        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -1838,7 +1831,6 @@ public class CertifiedProductManagerTest extends TestCase {
         cpManager.update(acbId, updateRequest);
 
         // remove the ucd
-        existingListing = cpdManager.getCertifiedProductDetails(listingId);
         toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -1877,7 +1869,6 @@ public class CertifiedProductManagerTest extends TestCase {
         final Long listingId = 5L;
         final Long certIdToUpdate = 11L;
 
-        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -1922,7 +1913,6 @@ public class CertifiedProductManagerTest extends TestCase {
         final Long listingId = 5L;
         final Long certIdToUpdate = 11L;
 
-        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -1939,7 +1929,6 @@ public class CertifiedProductManagerTest extends TestCase {
         cpManager.update(acbId, updateRequest);
 
         // remove the proc
-        existingListing = cpdManager.getCertifiedProductDetails(listingId);
         toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -1978,7 +1967,6 @@ public class CertifiedProductManagerTest extends TestCase {
         final Long listingId = 5L;
         final Long certIdToUpdate = 11L;
 
-        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -2017,7 +2005,6 @@ public class CertifiedProductManagerTest extends TestCase {
         final Long listingId = 5L;
         final Long certIdToUpdate = 11L;
 
-        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -2031,7 +2018,6 @@ public class CertifiedProductManagerTest extends TestCase {
         cpManager.update(acbId, updateRequest);
 
         // remove the proc
-        existingListing = cpdManager.getCertifiedProductDetails(listingId);
         toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
@@ -2069,7 +2055,6 @@ public class CertifiedProductManagerTest extends TestCase {
         final Long listingId = 5L;
         final String cqmToUpdate = "CMS163";
 
-        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         boolean updatedCqm = false;
         for (CQMResultDetails cqm : toUpdateListing.getCqmResults()) {
@@ -2113,7 +2098,6 @@ public class CertifiedProductManagerTest extends TestCase {
         final Long listingId = 5L;
         final String cqmToUpdate = "CMS163";
 
-        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         boolean updatedCqm = false;
         for (CQMResultDetails cqm : toUpdateListing.getCqmResults()) {
@@ -2130,7 +2114,6 @@ public class CertifiedProductManagerTest extends TestCase {
         updateRequest.setListing(toUpdateListing);
         cpManager.update(acbId, updateRequest);
 
-        CertifiedProductSearchDetails listingWithCqm = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails listingWithCqmAndCriteria = cpdManager.getCertifiedProductDetails(listingId);
         assertNotNull(listingWithCqmAndCriteria);
         for (CQMResultDetails cqm : listingWithCqmAndCriteria.getCqmResults()) {
@@ -2169,7 +2152,6 @@ public class CertifiedProductManagerTest extends TestCase {
         final Long acbId = -1L;
         final Long listingId = 2L;
 
-        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
         for (CQMResultDetails cqm : toUpdateListing.getCqmResults()) {
             if (cqm.isSuccess() == Boolean.TRUE) {
@@ -2206,7 +2188,6 @@ public class CertifiedProductManagerTest extends TestCase {
 
         final Long acbId = 1L;
         final Long listingId = 5L;
-        final Long certResultId = 7L;
 
         TestTask toAdd = new TestTask();
         toAdd.setId(-700L);
