@@ -17,6 +17,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 
 /**
  * The implementation for CertifiedProductSearchResultDAO.
+ * 
  * @author TYoung
  *
  */
@@ -33,7 +34,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements 
         if (entity != null) {
             dto = new CertifiedProductDetailsDTO(entity);
         } else {
-            String msg =  msgUtil.getMessage("listing.notFound");
+            String msg = msgUtil.getMessage("listing.notFound");
             LOGGER.error("Error retreiving listing with ID " + productId + ": " + msg);
             throw new EntityRetrievalException(msg);
         }
@@ -58,7 +59,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements 
 
     private List<CertifiedProductDetailsEntity> getEntityByChplProductNumber(final String chplProductNumber)
             throws EntityRetrievalException {
-        //List<CertifiedProductDetailsEntity> entity = new ArrayList<CertifiedProductDetailsEntity>();
+        // List<CertifiedProductDetailsEntity> entity = new ArrayList<CertifiedProductDetailsEntity>();
         Query query = entityManager.createQuery(
                 "SELECT deets " + "FROM CertifiedProductDetailsEntity deets " + "LEFT OUTER JOIN FETCH deets.product "
                         + "WHERE (deets.chplProductNumber = :chplProductNumber) " + "AND deets.deleted <> true",
@@ -74,8 +75,11 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements 
     private CertifiedProductDetailsEntity getEntityById(final Long entityId) throws EntityRetrievalException {
         CertifiedProductDetailsEntity entity = null;
         Query query = entityManager.createQuery(
-                "SELECT deets " + "FROM CertifiedProductDetailsEntity deets " + "LEFT OUTER JOIN FETCH deets.product "
-                        + "WHERE (deets.id = :entityid) " + "AND deets.deleted <> true",
+                "SELECT DISTINCT deets "
+                        + "FROM CertifiedProductDetailsEntity deets "
+                        + "LEFT OUTER JOIN FETCH deets.product "
+                        + "WHERE (deets.id = :entityid) "
+                        + "AND deets.deleted <> true",
                 CertifiedProductDetailsEntity.class);
         query.setParameter("entityid", entityId);
 
