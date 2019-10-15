@@ -11,11 +11,14 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
@@ -31,6 +34,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
@@ -39,6 +43,7 @@ import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
+import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityCertificationResultDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -70,6 +75,9 @@ public class QuestionableActivityThresholdTest extends TestCase {
     private static JWTAuthenticatedUser adminUser;
     private static final long ADMIN_ID = -2L;
 
+    @Autowired
+    private FF4j ff4j;
+
     @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
@@ -87,6 +95,9 @@ public class QuestionableActivityThresholdTest extends TestCase {
 
     @Before
     public void setup() throws EntityRetrievalException {
+        MockitoAnnotations.initMocks(this);
+        Mockito.doReturn(true).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE);
+
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         listing = cpdManager.getCertifiedProductDetails(1L);
@@ -121,11 +132,13 @@ public class QuestionableActivityThresholdTest extends TestCase {
 
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(listing);
+        updateRequest.setReason("test reason");
         cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
 
         List<QuestionableActivityCertificationResultDTO> activities = qaDao
                 .findCertificationResultActivityBetweenDates(beforeActivity, afterActivity);
+        assertNotNull(activities);
         assertTrue(activities == null || activities.size() == 0);
         SecurityContextHolder.getContext().setAuthentication(null);
     }
@@ -152,12 +165,16 @@ public class QuestionableActivityThresholdTest extends TestCase {
 
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(listing);
+        updateRequest.setReason("test reason");
         cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
 
         List<QuestionableActivityListingDTO> activities =
                 qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
-        assertTrue(activities == null || activities.size() == 0);
+        assertNotNull(activities);
+        assertEquals(1, activities.size());
+        QuestionableActivityListingDTO activity = activities.get(0);
+        assertEquals(QuestionableActivityTriggerConcept.EDITION_2014_EDITED.getName(), activity.getTrigger().getName());
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 }

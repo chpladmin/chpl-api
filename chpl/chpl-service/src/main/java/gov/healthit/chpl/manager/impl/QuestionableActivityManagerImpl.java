@@ -197,6 +197,12 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
                     QuestionableActivityTriggerConcept.EDITION_2011_EDITED, activityReason);
         } else {
             //it wasn't a 2011 update, check for any changes that are questionable at any time
+            activity = listingQuestionableActivityProvider.check2014EditionUpdated(
+                    origListing, newListing);
+            if (activity != null) {
+                createListingActivity(activity, origListing.getId(), activityDate, activityUser,
+                        QuestionableActivityTriggerConcept.EDITION_2014_EDITED, activityReason);
+            }
             activity = listingQuestionableActivityProvider.checkCertificationStatusUpdated(
                     CertificationStatusType.WithdrawnByDeveloperUnderReview, origListing, newListing);
             if (activity != null) {
