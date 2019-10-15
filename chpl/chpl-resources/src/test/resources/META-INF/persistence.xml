@@ -160,6 +160,8 @@
         <class>gov.healthit.chpl.entity.surveillance.report.QuarterlyReportSurveillanceMapEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.report.SurveillanceOutcomeEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.report.SurveillanceProcessTypeEntity</class>
+        <class>gov.healthit.chpl.scheduler.job.urlStatus.UrlResultEntity</class>
+        <class>gov.healthit.chpl.scheduler.job.urlStatus.UrlTypeEntity</class>
 
         <properties>
             <property name="hibernate.show_sql" value="false" />

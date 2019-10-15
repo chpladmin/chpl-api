@@ -2,16 +2,24 @@ package gov.healthit.chpl.entity.listing;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.util.Util;
 
 @Entity
+@Immutable
 @Table(name = "certified_product_summary")
 public class CertifiedProductSummaryEntity implements Serializable {
     private static final long serialVersionUID = -7006206379019745873L;
@@ -46,7 +54,7 @@ public class CertifiedProductSummaryEntity implements Serializable {
     private Date sedTestingEnd;
 
     @Column(name = "acb_certification_id")
-    private Long acbCertificationId;
+    private String acbCertificationId;
 
     @Column(name = "practice_type_id")
     private Long practiceTypeId;
@@ -123,6 +131,9 @@ public class CertifiedProductSummaryEntity implements Serializable {
     @Column(name = "certification_status")
     private String certificationStatus;
 
+    @Column(name = "certification_date")
+    private Date certificationDate;
+
     @Column(name = "acb_code")
     private String acbCode;
 
@@ -131,6 +142,25 @@ public class CertifiedProductSummaryEntity implements Serializable {
 
     @Column(name = "certification_body_website")
     private String certificationBodyWebsite;
+
+    @Column(name = "version")
+    private String version;
+
+    @Column(name = "full_name")
+    private String developerContactName;
+
+    @Column(name = "email")
+    private String developerContactEmail;
+
+    @Column(name = "phone_number")
+    private String developerContactPhone;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "certifiedProductId")
+    @Basic(optional = false)
+    @Column(name = "certified_product_id", nullable = false)
+    @Where(clause = "deleted <> 'true'")
+    private Set<CertificationResultDetailsEntity> certificationResults = new HashSet<CertificationResultDetailsEntity>();
+
 
     public Long getId() {
         return id;
@@ -204,11 +234,11 @@ public class CertifiedProductSummaryEntity implements Serializable {
         this.sedTestingEnd = Util.getNewDate(sedTestingEnd);
     }
 
-    public Long getAcbCertificationId() {
+    public String getAcbCertificationId() {
         return acbCertificationId;
     }
 
-    public void setAcbCertificationId(final Long acbCertificationId) {
+    public void setAcbCertificationId(final String acbCertificationId) {
         this.acbCertificationId = acbCertificationId;
     }
 
@@ -434,6 +464,54 @@ public class CertifiedProductSummaryEntity implements Serializable {
 
     public void setCertificationBodyWebsite(final String certificationBodyWebsite) {
         this.certificationBodyWebsite = certificationBodyWebsite;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(final String version) {
+        this.version = version;
+    }
+
+    public String getDeveloperContactName() {
+        return developerContactName;
+    }
+
+    public void setDeveloperContactName(final String developerContactName) {
+        this.developerContactName = developerContactName;
+    }
+
+    public String getDeveloperContactEmail() {
+        return developerContactEmail;
+    }
+
+    public void setDeveloperContactEmail(final String developerContactEmail) {
+        this.developerContactEmail = developerContactEmail;
+    }
+
+    public String getDeveloperContactPhone() {
+        return developerContactPhone;
+    }
+
+    public void setDeveloperContactPhone(final String developerContactPhone) {
+        this.developerContactPhone = developerContactPhone;
+    }
+
+    public Set<CertificationResultDetailsEntity> getCertificationResults() {
+        return certificationResults;
+    }
+
+    public void setCertificationResults(final Set<CertificationResultDetailsEntity> certificationResults) {
+        this.certificationResults = certificationResults;
+    }
+
+    public Date getCertificationDate() {
+        return certificationDate;
+    }
+
+    public void setCertificationDate(final Date certificationDate) {
+        this.certificationDate = certificationDate;
     }
 
 }

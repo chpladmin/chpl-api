@@ -2,8 +2,10 @@ package gov.healthit.chpl.changerequest.validation;
 
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
 @Component
@@ -11,12 +13,25 @@ public class DeveloperActiveValidation extends ValidationRule<ChangeRequestValid
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
-        // Does it exist in the DB?
+
+        // Is this a new or existing CR?
+        ChangeRequest crToTest = null;
+        if (context.getChangeRequest() != null && context.getChangeRequest().getId() != null) {
+            try {
+                crToTest = context.getChangeRequestDAO().get(context.getChangeRequest().getId());
+            } catch (EntityRetrievalException e) {
+                // This should be caught be ChangeRequestExistenceValidation
+                return true;
+            }
+        } else {
+            crToTest = context.getChangeRequest();
+        }
+
         DeveloperDTO devDTO;
         try {
-            devDTO = context.getDeveloperDAO().getById(context.getChangeRequest().getDeveloper().getDeveloperId());
+            devDTO = context.getDeveloperDAO().getById(crToTest.getDeveloper().getDeveloperId());
         } catch (Exception e) {
-            // This should be handled by another validator
+            // This should be caught be DeveloperExistenceValidation
             return true;
         }
 

@@ -12,6 +12,8 @@
     </pre-processing-commands>
     <schedule>
         <!-- Delete from here to "DELETE END MARKER" after PROD push -->
+        <!-- Questionable URL Data Collector -->
+        <!-- URL Status Data Collector -->
         <!-- DELETE END MARKER -->
     </schedule>
 </job-scheduling-data>
