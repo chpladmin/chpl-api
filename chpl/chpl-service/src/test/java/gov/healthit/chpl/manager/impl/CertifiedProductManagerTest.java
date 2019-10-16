@@ -2162,6 +2162,7 @@ public class CertifiedProductManagerTest extends TestCase {
 
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(toUpdateListing);
+        updateRequest.setReason("This is the reason");
         cpManager.update(acbId, updateRequest);
 
         CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -2466,6 +2467,7 @@ public class CertifiedProductManagerTest extends TestCase {
 
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(updatedListing);
+        updateRequest.setReason("This is the reason");
         cpManager.update(acbId, updateRequest);
 
         existingListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -2504,6 +2506,7 @@ public class CertifiedProductManagerTest extends TestCase {
 
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(updatedListing);
+        updateRequest.setReason("This is the reason");
         cpManager.update(acbId, updateRequest);
 
         existingListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -2542,6 +2545,7 @@ public class CertifiedProductManagerTest extends TestCase {
 
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(updatedListing);
+        updateRequest.setReason("This is the reason");
         cpManager.update(acbId, updateRequest);
 
         existingListing = cpdManager.getCertifiedProductDetails(listingId);
