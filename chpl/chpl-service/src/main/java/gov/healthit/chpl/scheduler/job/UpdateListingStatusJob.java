@@ -22,6 +22,7 @@ import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 
@@ -61,10 +62,10 @@ public class UpdateListingStatusJob extends QuartzJob {
                 .parseLong(jobContext.getMergedJobDataMap().getString("certificationStatusId"));
 
         // TODO - Need to add some validation
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date statusDate;
         try {
-            statusDate = sdf.parse(jobContext.getMergedJobDataMap().getString("effectiveDate"));
+            statusDate = sdf.parse(jobContext.getMergedJobDataMap().getString("effectiveDate").substring(0, 10));
         } catch (ParseException e) {
             LOGGER.error(
                     "Could not parse the effectiveDate" + jobContext.getMergedJobDataMap().getString("effectiveDate"),
@@ -76,7 +77,7 @@ public class UpdateListingStatusJob extends QuartzJob {
             try {
                 LOGGER.info("Getting certified product: " + listingId);
                 CertifiedProductSearchDetails cpd = certifiedProductDetailsManager
-                        .getCertifiedProductDetails(listingId);
+                        .getCertifiedProductDetails(listingId, true);
                 LOGGER.info("Completed Getting certified product: " + listingId);
 
                 CertificationStatus cs = new CertificationStatus();
@@ -95,8 +96,12 @@ public class UpdateListingStatusJob extends QuartzJob {
                 certifiedProductManager.update(
                         Long.parseLong(cpd.getCertifyingBody().get("id").toString()), updateRequest);
                 LOGGER.info("Completed Updating certified product: " + listingId);
-            } catch (Exception e) {
+            } catch (ValidationException e) {
                 LOGGER.error(e);
+                e.getErrorMessages().stream()
+                        .forEach(msg -> LOGGER.error(msg));
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage(), e);
             }
         }
 
