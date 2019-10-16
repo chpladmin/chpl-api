@@ -241,32 +241,32 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
     }
 
     private QuestionableActivityVersionDTO mapEntityToDto(QuestionableActivityVersionEntity entity) {
-        QuestionableActivityVersionDTO dto = new QuestionableActivityVersionDTO();
+        QuestionableActivityVersionDTO dto = new QuestionableActivityVersionDTO(entity);
         dto.setUser(userMapper.from(entity.getUser()));
         return dto;
     }
 
     private QuestionableActivityProductDTO mapEntityToDto(QuestionableActivityProductEntity entity) {
-        QuestionableActivityProductDTO dto = new QuestionableActivityProductDTO();
+        QuestionableActivityProductDTO dto = new QuestionableActivityProductDTO(entity);
         dto.setUser(userMapper.from(entity.getUser()));
         return dto;
     }
 
     private QuestionableActivityDeveloperDTO mapEntityToDto(QuestionableActivityDeveloperEntity entity) {
-        QuestionableActivityDeveloperDTO dto = new QuestionableActivityDeveloperDTO();
+        QuestionableActivityDeveloperDTO dto = new QuestionableActivityDeveloperDTO(entity);
         dto.setUser(userMapper.from(entity.getUser()));
         return dto;
     }
 
     private QuestionableActivityListingDTO mapEntityToDto(QuestionableActivityListingEntity entity) {
-        QuestionableActivityListingDTO dto = new QuestionableActivityListingDTO();
+        QuestionableActivityListingDTO dto = new QuestionableActivityListingDTO(entity);
         dto.setUser(userMapper.from(entity.getUser()));
         return dto;
     }
 
     private QuestionableActivityCertificationResultDTO mapEntityToDto(
             QuestionableActivityCertificationResultEntity entity) {
-        QuestionableActivityCertificationResultDTO dto = new QuestionableActivityCertificationResultDTO();
+        QuestionableActivityCertificationResultDTO dto = new QuestionableActivityCertificationResultDTO(entity);
         dto.setUser(userMapper.from(entity.getUser()));
         return dto;
     }
