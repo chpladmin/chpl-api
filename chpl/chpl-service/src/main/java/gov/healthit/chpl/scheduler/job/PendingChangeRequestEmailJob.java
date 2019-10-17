@@ -5,9 +5,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -50,18 +52,19 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
     private Environment env;
 
     private static final int DEVELOPER_NAME = 0;
-    private static final int DEVELOPER_CONTACT_NAME = 1;
-    private static final int DEVELOPER_CONTACT_EMAIL = 2;
-    private static final int DEVELOPER_CONTACT_PHONE_NUMBER = 3;
-    private static final int CHANGE_REQUEST_TYPE = 4;
-    private static final int CHANGE_REQUEST_STATUS = 5;
-    private static final int CHANGE_REQUEST_DATE = 6;
-    private static final int CHANGE_REQUEST_DAYS_OPEN = 7;
-    private static final int CHANGE_REQUEST_LATEST_DATE = 8;
-    private static final int CHANGE_REQUEST_LATEST_DAYS_OPEN = 9;
-    private static final int CHANGE_REQUEST_LATEST_COMMENT = 10;
-    private static final int ONC_ACB_START = 11;
-    private static final int NUM_REPORT_COLS = 11;
+    private static final int DEVELOPER_CODE = 1;
+    private static final int DEVELOPER_CONTACT_NAME = 2;
+    private static final int DEVELOPER_CONTACT_EMAIL = 3;
+    private static final int DEVELOPER_CONTACT_PHONE_NUMBER = 4;
+    private static final int CHANGE_REQUEST_TYPE = 5;
+    private static final int CHANGE_REQUEST_STATUS = 6;
+    private static final int CHANGE_REQUEST_DATE = 7;
+    private static final int CHANGE_REQUEST_DAYS_OPEN = 8;
+    private static final int CHANGE_REQUEST_LATEST_DATE = 9;
+    private static final int CHANGE_REQUEST_LATEST_DAYS_OPEN = 10;
+    private static final int CHANGE_REQUEST_LATEST_COMMENT = 11;
+    private static final int ONC_ACB_START = 12;
+    private static final int NUM_REPORT_COLS = 12;
 
     private static final long MILLIS_PER_DAY = 1000 * 60 * 60 * 24;
 
@@ -153,6 +156,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
     private List<String> getHeaderRow(final List<CertificationBodyDTO> activeAcbs) {
         List<String> row = createEmptyRow(activeAcbs);
         row.set(DEVELOPER_NAME, "Developer Name");
+        row.set(DEVELOPER_CODE, "Developer Code");
         row.set(DEVELOPER_CONTACT_NAME, "Developer Contact Name");
         row.set(DEVELOPER_CONTACT_EMAIL, "Developer Contact Email");
         row.set(DEVELOPER_CONTACT_PHONE_NUMBER, "Developer Contact Phone Number");
@@ -171,7 +175,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
 
     private List<List<String>> createChangeWebsiteRows(final List<CertificationBodyDTO> activeAcbs,
             final Date currentDate)
-            throws EntityRetrievalException {
+                    throws EntityRetrievalException {
         LOGGER.debug("Getting change website requests");
         List<ChangeRequest> requests = changeRequestDAO.getAllPending().stream()
                 .collect(Collectors.<ChangeRequest>toList());
@@ -190,13 +194,14 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
             final List<String> currRow, final List<CertificationBodyDTO> activeAcbs, final Date currentDate) {
         // Straightforward data
         currRow.set(DEVELOPER_NAME, activity.getDeveloper().getName());
+        currRow.set(DEVELOPER_CODE, activity.getDeveloper().getDeveloperCode());
         currRow.set(DEVELOPER_CONTACT_NAME, activity.getDeveloper().getContact().getFullName());
         currRow.set(DEVELOPER_CONTACT_EMAIL, activity.getDeveloper().getContact().getEmail());
         currRow.set(DEVELOPER_CONTACT_PHONE_NUMBER, activity.getDeveloper().getContact().getPhoneNumber());
         currRow.set(CHANGE_REQUEST_TYPE, activity.getChangeRequestType().getName());
         currRow.set(CHANGE_REQUEST_STATUS, activity.getCurrentStatus().getChangeRequestStatusType().getName());
-        currRow.set(CHANGE_REQUEST_DATE, Util.getTimestampFormatter().format(activity.getCurrentStatus().getStatusChangeDate()));
-        currRow.set(CHANGE_REQUEST_LATEST_DATE, Util.getTimestampFormatter().format(activity.getCurrentStatus().getStatusChangeDate()));
+        currRow.set(CHANGE_REQUEST_DATE, getTimestampFormatter().format(activity.getCurrentStatus().getStatusChangeDate()));
+        currRow.set(CHANGE_REQUEST_LATEST_DATE, getTimestampFormatter().format(activity.getCurrentStatus().getStatusChangeDate()));
         currRow.set(CHANGE_REQUEST_LATEST_COMMENT, activity.getCurrentStatus().getComment());
 
         // Calculated time open & time in current status
@@ -226,5 +231,12 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
             row.add("");
         }
         return row;
+    }
+
+    private DateFormat getTimestampFormatter() {
+        return DateFormat.getDateTimeInstance(
+                DateFormat.LONG,
+                DateFormat.LONG,
+                Locale.US);
     }
 }
