@@ -1,5 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
+import gov.healthit.chpl.domain.CertifiedProductSearchBasicDetails;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import java.util.function.Function;
 import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletResponse;
@@ -288,13 +290,12 @@ public class CertifiedProductController {
     method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByIdBasic(
+    public @ResponseBody CertifiedProductSearchBasicDetails getCertifiedProductByIdBasic(
             @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
 
         CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetailsBasic(certifiedProductId);
-        certifiedProduct = validateCertifiedProduct(certifiedProduct);
 
-        return certifiedProduct;
+        return mapCertifiedProductDetailsToBasic.apply(certifiedProduct);
     }
 
     /**
@@ -326,7 +327,8 @@ public class CertifiedProductController {
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumberBasic(
+    public @ResponseBody
+    CertifiedProductSearchBasicDetails getCertifiedProductByChplProductNumberBasic(
             @PathVariable("year") final String year,
             @PathVariable("testingLab") final String testingLab,
             @PathVariable("certBody") final String certBody,
@@ -344,9 +346,8 @@ public class CertifiedProductController {
         CertifiedProductSearchDetails certifiedProduct =
                 cpdManager.getCertifiedProductDetailsBasicByChplProductNumber(chplProductNumber);
 
-        certifiedProduct = validateCertifiedProduct(certifiedProduct);
 
-        return certifiedProduct;
+        return mapCertifiedProductDetailsToBasic.apply(certifiedProduct);
     }
 
     @ApiOperation(value = "Get all basic information for a specified certified product.  Does not include "
@@ -359,7 +360,7 @@ public class CertifiedProductController {
     method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumberBasic2(
+    public @ResponseBody CertifiedProductSearchBasicDetails getCertifiedProductByChplProductNumberBasic2(
             @PathVariable("chplPrefix") final String chplPrefix,
             @PathVariable("identifier") final String identifier) throws EntityRetrievalException {
 
@@ -368,9 +369,7 @@ public class CertifiedProductController {
         CertifiedProductSearchDetails certifiedProduct =
                 cpdManager.getCertifiedProductDetailsBasicByChplProductNumber(chplProductNumber);
 
-        certifiedProduct = validateCertifiedProduct(certifiedProduct);
-
-        return certifiedProduct;
+        return mapCertifiedProductDetailsToBasic.apply(certifiedProduct);
     }
 
     @ApiOperation(value = "Get all of the CQM results for a specified certified product.",
@@ -1098,4 +1097,48 @@ public class CertifiedProductController {
             LOGGER.error("Could not send team email about failed listing upload.", msgEx);
         }
     }
+
+    private static Function<CertifiedProductSearchDetails, CertifiedProductSearchBasicDetails> mapCertifiedProductDetailsToBasic = (CertifiedProductSearchDetails e)-> {
+        CertifiedProductSearchBasicDetails certifiedProductSearchBasicDetails = new CertifiedProductSearchBasicDetails();
+        certifiedProductSearchBasicDetails.setAcbCertificationId(e.getAcbCertificationId());
+        certifiedProductSearchBasicDetails.setAccessibilityCertified(e.getAccessibilityCertified());
+        certifiedProductSearchBasicDetails.setAccessibilityStandards(e.getAccessibilityStandards());
+        certifiedProductSearchBasicDetails.setCertificationDate(e.getCertificationDate());
+        certifiedProductSearchBasicDetails.setCertificationEdition(e.getCertificationEdition());
+        certifiedProductSearchBasicDetails.setCertificationEvents(e.getCertificationEvents());
+        certifiedProductSearchBasicDetails.setCertificationStatus(e.getCertificationStatus());
+        certifiedProductSearchBasicDetails.setCertifyingBody(e.getCertifyingBody());
+        certifiedProductSearchBasicDetails.setChplProductNumber(e.getChplProductNumber());
+        certifiedProductSearchBasicDetails.setClassificationType(e.getClassificationType());
+        certifiedProductSearchBasicDetails.setCountCerts(e.getCountCerts());
+        certifiedProductSearchBasicDetails.setCountClosedNonconformities(e.getCountClosedNonconformities());
+        certifiedProductSearchBasicDetails.setCountClosedSurveillance(e.getCountClosedSurveillance());
+        certifiedProductSearchBasicDetails.setCountCqms(e.getCountCqms());
+        certifiedProductSearchBasicDetails.setCountOpenNonconformities(e.getCountOpenNonconformities());
+        certifiedProductSearchBasicDetails.setCountOpenSurveillance(e.getCountOpenSurveillance());
+        certifiedProductSearchBasicDetails.setCountSurveillance(e.getCountSurveillance());
+        certifiedProductSearchBasicDetails.setDecertificationDate(e.getDecertificationDate());
+        certifiedProductSearchBasicDetails.setDeveloper(e.getDeveloper());
+        certifiedProductSearchBasicDetails.setIcs(e.getIcs());
+        certifiedProductSearchBasicDetails.setId(e.getId());
+        certifiedProductSearchBasicDetails.setLastModifiedDate(e.getLastModifiedDate());
+        certifiedProductSearchBasicDetails.setMeaningfulUseUserHistory(e.getMeaningfulUseUserHistory());
+        certifiedProductSearchBasicDetails.setOtherAcb(e.getOtherAcb());
+        certifiedProductSearchBasicDetails.setPracticeType(e.getPracticeType());
+        certifiedProductSearchBasicDetails.setProduct(e.getProduct());
+        certifiedProductSearchBasicDetails.setProductAdditionalSoftware(e.getProductAdditionalSoftware());
+        certifiedProductSearchBasicDetails.setQmsStandards(e.getQmsStandards());
+        certifiedProductSearchBasicDetails.setReportFileLocation(e.getReportFileLocation());
+        certifiedProductSearchBasicDetails.setSed(e.getSed());
+        certifiedProductSearchBasicDetails.setSedIntendedUserDescription(e.getSedIntendedUserDescription());
+        certifiedProductSearchBasicDetails.setSedReportFileLocation(e.getSedReportFileLocation());
+        certifiedProductSearchBasicDetails.setSedTestingEndDate(e.getSedTestingEndDate());
+        certifiedProductSearchBasicDetails.setSurveillance(e.getSurveillance());
+        certifiedProductSearchBasicDetails.setTargetedUsers(e.getTargetedUsers());
+        certifiedProductSearchBasicDetails.setTestingLabs(e.getTestingLabs());
+        certifiedProductSearchBasicDetails.setTransparencyAttestation(e.getTransparencyAttestation());
+        certifiedProductSearchBasicDetails.setTransparencyAttestationUrl(e.getTransparencyAttestationUrl());
+        certifiedProductSearchBasicDetails.setVersion(e.getVersion());
+        return certifiedProductSearchBasicDetails;
+    };
 }

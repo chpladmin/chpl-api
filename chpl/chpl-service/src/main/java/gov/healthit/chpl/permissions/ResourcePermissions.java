@@ -419,5 +419,4 @@ public class ResourcePermissions {
         }
         return false;
     }
-
 }

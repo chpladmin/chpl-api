@@ -27,10 +27,9 @@ public class ChangeRequestNotUpdatableDueToStatusValidation extends ValidationRu
         // We need to check the current status from the DB - not what the user
         // has passed in
         try {
-            ChangeRequest cr = context.getChangeRequestDAO().get(context.getChangeRequest().getId());
-
-            if (getNonUpdatableStatuses().contains(cr.getCurrentStatus().getChangeRequestStatusType().getId())) {
-                getMessages().add(getErrorMessage(cr.getCurrentStatus().getChangeRequestStatusType()));
+            ChangeRequest crFromDb = context.getCrFromDb();
+            if (getNonUpdatableStatuses().contains(crFromDb.getCurrentStatus().getChangeRequestStatusType().getId())) {
+                getMessages().add(getErrorMessage(crFromDb.getCurrentStatus().getChangeRequestStatusType()));
                 return false;
             } else {
                 return true;
@@ -53,7 +52,7 @@ public class ChangeRequestNotUpdatableDueToStatusValidation extends ValidationRu
         if (changeRequestStatusType.getId().equals(cancelledStatus)) {
             return getErrorMessage("changeRequest.status.cancelled");
         } else if (changeRequestStatusType.getId().equals(acceptedStatus)) {
-            return getErrorMessage("changeRequest.status.accepted");
+            return getErrorMessage("changeRequest.status.approved");
         } else if (changeRequestStatusType.getId().equals(rejectedStatus)) {
             return getErrorMessage("changeRequest.status.rejected");
         } else {

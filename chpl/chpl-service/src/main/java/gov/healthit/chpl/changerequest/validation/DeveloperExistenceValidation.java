@@ -1,12 +1,21 @@
 package gov.healthit.chpl.changerequest.validation;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
 @Component
 public class DeveloperExistenceValidation extends ValidationRule<ChangeRequestValidationContext> {
+
+    private DeveloperDAO developerDAO;
+
+    @Autowired
+    public DeveloperExistenceValidation(final DeveloperDAO developerDAO) {
+        this.developerDAO = developerDAO;
+    }
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
@@ -18,7 +27,7 @@ public class DeveloperExistenceValidation extends ValidationRule<ChangeRequestVa
         }
 
         try {
-            context.getDeveloperDAO().getById(context.getChangeRequest().getDeveloper().getDeveloperId());
+            developerDAO.getById(context.getChangeRequest().getDeveloper().getDeveloperId());
         } catch (EntityRetrievalException e) {
             getMessages().add(getErrorMessage("changeRequest.developer.invalid"));
             return false;
