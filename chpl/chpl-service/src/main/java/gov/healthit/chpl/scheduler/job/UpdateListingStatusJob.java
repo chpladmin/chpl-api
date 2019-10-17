@@ -2,8 +2,11 @@ package gov.healthit.chpl.scheduler.job;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -48,20 +51,84 @@ public class UpdateListingStatusJob extends QuartzJob {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         setSecurityContext();
 
-        String listingsCommaSeparated = jobContext.getMergedJobDataMap().getString("listings");
-        // String listingsCommaSeparated =
-        // jobContext.getMergedJobDataMap().getString("listings");
+        List<Long> listings = getListingIds(jobContext);
 
-        List<Long> listingIds = Stream.of(listingsCommaSeparated.split(","))
-                .map(str -> str.trim())
-                .map(Long::parseLong)
-                .collect(Collectors.toList());
-
-        // TODO - Need to add some validation
         Long certificationStatusId = Long
                 .parseLong(jobContext.getMergedJobDataMap().getString("certificationStatusId"));
 
-        // TODO - Need to add some validation
+        Date statusDate = getStatusEffectiveDate(jobContext);
+
+        // This holds all of the Futures, so we can tell when all async processes have ended
+        List<CompletableFuture<Void>> allUpdates = new ArrayList<CompletableFuture<Void>>();
+
+        for (Long cpId : listings) {
+            // This will get listing details, update the listing with the new status, and update listing
+            CompletableFuture<Void> cpFuture = CompletableFuture
+                    .supplyAsync(() -> getListing(cpId))
+                    .thenAccept(cp -> updateListing(cp, certificationStatusId, statusDate));
+
+            allUpdates.add(cpFuture);
+        }
+
+        blockUntilAllFuturesComplete(allUpdates);
+
+        LOGGER.info("********* Completed the Update Listing Status job. *********");
+    }
+
+    private void blockUntilAllFuturesComplete(List<CompletableFuture<Void>> allUpdates) {
+        CompletableFuture<Void> combinedFuture = CompletableFuture
+                .allOf(allUpdates.toArray(new CompletableFuture[allUpdates.size()]));
+
+        try {
+            combinedFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+    private CertificationStatusEvent getCertifiectionStatusEvent(Long certificationStatusId, Date effectiveDate) {
+        CertificationStatus cs = new CertificationStatus();
+        cs.setId(certificationStatusId);
+        // TODO - Need to figure out how to handle this
+        cs.setName(CertificationStatusType.WithdrawnByDeveloper.toString());
+
+        CertificationStatusEvent cse = new CertificationStatusEvent();
+        cse.setStatus(cs);
+        cse.setEventDate(effectiveDate.getTime());
+
+        return cse;
+    }
+
+    private CertifiedProductSearchDetails getListing(Long cpId) {
+        try {
+            CertifiedProductSearchDetails cpsd = certifiedProductDetailsManager.getCertifiedProductDetails(cpId);
+            return cpsd;
+        } catch (Exception e) {
+            LOGGER.error(e);
+            return null;
+        }
+    }
+
+    private void updateListing(CertifiedProductSearchDetails cpd, Long certificationStatusId, Date effectiveDate) {
+        cpd.getCertificationEvents().add(getCertifiectionStatusEvent(certificationStatusId, effectiveDate));
+        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+        updateRequest.setListing(cpd);
+
+        try {
+            certifiedProductManager.update(
+                    Long.parseLong(updateRequest.getListing().getCertifyingBody().get("id").toString()), updateRequest);
+        } catch (ValidationException e) {
+            LOGGER.error("Error validating {" + cpd.getId() + "}: " + cpd.getChplProductNumber());
+            e.getErrorMessages().stream()
+                    .forEach(msg -> LOGGER.error(msg));
+        } catch (Exception e) {
+            LOGGER.error(e);
+        }
+        LOGGER.info("Completed Updating certified product {" + updateRequest.getListing().getId() + "}: "
+                + updateRequest.getListing().getChplProductNumber());
+    }
+
+    private Date getStatusEffectiveDate(JobExecutionContext jobContext) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date statusDate;
         try {
@@ -70,42 +137,18 @@ public class UpdateListingStatusJob extends QuartzJob {
             LOGGER.error(
                     "Could not parse the effectiveDate" + jobContext.getMergedJobDataMap().getString("effectiveDate"),
                     e);
-            return;
+            throw new RuntimeException(e);
         }
+        return statusDate;
+    }
 
-        for (Long listingId : listingIds) {
-            try {
-                LOGGER.info("Getting certified product: " + listingId);
-                CertifiedProductSearchDetails cpd = certifiedProductDetailsManager
-                        .getCertifiedProductDetails(listingId, true);
-                LOGGER.info("Completed Getting certified product: " + listingId);
+    private List<Long> getListingIds(JobExecutionContext jobContext) {
+        String listingsCommaSeparated = jobContext.getMergedJobDataMap().getString("listings");
 
-                CertificationStatus cs = new CertificationStatus();
-                cs.setId(certificationStatusId);
-                cs.setName(CertificationStatusType.WithdrawnByDeveloper.toString());
-
-                CertificationStatusEvent cse = new CertificationStatusEvent();
-                cse.setStatus(cs);
-                cse.setEventDate(statusDate.getTime());
-
-                cpd.getCertificationEvents().add(cse);
-
-                LOGGER.info("Updating certified product: " + listingId);
-                ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-                updateRequest.setListing(cpd);
-                certifiedProductManager.update(
-                        Long.parseLong(cpd.getCertifyingBody().get("id").toString()), updateRequest);
-                LOGGER.info("Completed Updating certified product: " + listingId);
-            } catch (ValidationException e) {
-                LOGGER.error(e);
-                e.getErrorMessages().stream()
-                        .forEach(msg -> LOGGER.error(msg));
-            } catch (Exception e) {
-                LOGGER.error(e.getMessage(), e);
-            }
-        }
-
-        LOGGER.info("********* Completed the Update Listing Status job. *********");
+        return Stream.of(listingsCommaSeparated.split(","))
+                .map(str -> str.trim())
+                .map(Long::parseLong)
+                .collect(Collectors.toList());
     }
 
     private void setSecurityContext() {
@@ -117,5 +160,6 @@ public class UpdateListingStatusJob extends QuartzJob {
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 
         SecurityContextHolder.getContext().setAuthentication(adminUser);
+        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 }
