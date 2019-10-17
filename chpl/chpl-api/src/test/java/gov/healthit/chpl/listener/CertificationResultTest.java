@@ -4,10 +4,14 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import org.ff4j.FF4j;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
@@ -23,6 +27,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
@@ -56,6 +61,9 @@ public class CertificationResultTest extends TestCase {
     private static JWTAuthenticatedUser adminUser;
     private static final long ADMIN_ID = -2L;
 
+    @Autowired
+    private FF4j ff4j;
+
     @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
@@ -69,6 +77,12 @@ public class CertificationResultTest extends TestCase {
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ACB"));
+    }
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+        Mockito.doReturn(true).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE);
     }
 
     @Test
@@ -90,6 +104,7 @@ public class CertificationResultTest extends TestCase {
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(listing);
+        updateRequest.setReason("test reason");
         cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
 
@@ -126,6 +141,7 @@ public class CertificationResultTest extends TestCase {
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(listing);
+        updateRequest.setReason("test reason");
         cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
 
@@ -161,6 +177,7 @@ public class CertificationResultTest extends TestCase {
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(listing);
+        updateRequest.setReason("test reason");
         cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
 

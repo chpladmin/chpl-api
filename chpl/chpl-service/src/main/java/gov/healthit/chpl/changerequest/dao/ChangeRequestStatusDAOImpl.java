@@ -89,5 +89,4 @@ public class ChangeRequestStatusDAOImpl extends BaseDAOImpl implements ChangeReq
         entity.setLastModifiedDate(new Date());
         return entity;
     }
-
 }

@@ -28,16 +28,16 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/change-requests")
 public class ChangeRequestController {
-    
+
     private ChangeRequestManager changeRequestManager;
     private FF4j ff4j;
-    
+
     @Autowired
     public ChangeRequestController(final ChangeRequestManager changeRequestManager, final FF4j ff4j) {
         this.changeRequestManager = changeRequestManager;
         this.ff4j = ff4j;
     }
-    
+
     @ApiOperation(value = "Get details about a specific change request.", 
             notes="Security Restrictions: ROLE_ADMIN & ROLE_ONC can get all change requests.  ROLE_ACB can get change requests "
                     + "for developers where they manage at least one certified product for the developer.  ROLE_DEVELOPER can get "
@@ -50,9 +50,9 @@ public class ChangeRequestController {
 
         return changeRequestManager.getChangeRequest(changeRequestId);
     }
-    
+
     @ApiOperation(value = "Get details about all change requests.", 
-            notes="Security Restrictions: ROLE_ADMIN & ROLE_ONC can get all change requests.  ROLE_ACB can get change requests "
+            notes = "Security Restrictions: ROLE_ADMIN & ROLE_ONC can get all change requests.  ROLE_ACB can get change requests "
                     + "for developers where they manage at least one certified product for the developer.  ROLE_DEVELOPER can get "
                     + "change requests where they have administrative authority based on the developer.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
@@ -62,7 +62,7 @@ public class ChangeRequestController {
         }
         return changeRequestManager.getAllChangeRequestsForUser();
     }
-    
+
     @ApiOperation(value = "Create a new change request.",
             notes = "Security Restrictions: ROLE_DEVELOPER can create change requests where they have administrative authority based on the developer.")
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -74,13 +74,12 @@ public class ChangeRequestController {
 
         return changeRequestManager.createChangeRequest(cr);
     }
-    
-    
+
     @ApiOperation(value = "Update an existing request status or request details.",
-            notes="Security Restrictions: ROLE_ADMIN & ROLE_ONC can update all chnage requests.  ROLE_ACB can update change requests "
+            notes = "Security Restrictions: ROLE_ADMIN & ROLE_ONC can update all chnage requests.  ROLE_ACB can update change requests "
                     + "for developers where they manage at least one certified product for the developer.  ROLE_DEVELOPER can update "
                     + "change requests where they have administrative authority based on the developer.")
-    @RequestMapping(value = "/{changeRequestId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
+    @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public ChangeRequest updateChangeRequest(@RequestBody final ChangeRequest cr) throws EntityRetrievalException, ValidationException, EntityCreationException, JsonProcessingException {
         if (!ff4j.check(FeatureList.CHANGE_REQUEST)) {
@@ -89,5 +88,4 @@ public class ChangeRequestController {
 
         return changeRequestManager.updateChangeRequest(cr);
     }
-    
 }

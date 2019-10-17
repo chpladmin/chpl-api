@@ -46,5 +46,4 @@ public class DeveloperCertificationBodyMapDAOImpl extends BaseDAOImpl implements
                 .map(item -> new Developer(new DeveloperDTO(item.getDeveloper())))
                 .collect(Collectors.<Developer>toList());
     }
-
 }

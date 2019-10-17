@@ -75,7 +75,6 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
     }
 
     @Override
-
     public List<ChangeRequest> getByDeveloper(final Long developerId) throws EntityRetrievalException {
         List<Long> developers = new ArrayList<Long>(Arrays.asList(developerId));
 
