@@ -176,6 +176,7 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.DEVELOPER_EXISTENCE));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.DEVELOPER_ACTIVE));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_DETAILS_CREATE));
+        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.WEBSITE_VALID));
         return runValidations(rules, cr);
     }
 
@@ -187,6 +188,7 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.STATUS_TYPE));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.STATUS_NOT_UPDATABLE));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.COMMENT_REQUIRED));
+        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.WEBSITE_VALID));
         return runValidations(rules, cr);
     }
 
