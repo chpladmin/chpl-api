@@ -534,7 +534,7 @@
             <job-data-map>
                 <entry>
                     <key>parameters</key>
-                    <value>[{"label": "Listings [Comma Delimited]", "key": "listings", "type": "textarea"}, {"label": "Status Id", "key": "certificationStatusId"}, {"label": "Effective Date", "key": "effectiveDate", "type": "date"}]</value>
+                    <value>[{"label": "Listings [Comma Delimited]", "key": "listings", "type": "textarea"}, {"label": "ListingStatus", "key": "certificationStatusId", "type": "select", "items": [{"id": 1, "name": "Active"}, {"id": 3, "name": "Withdrawn by Developer"}] }, {"label": "Effective Date", "key": "effectiveDate", "type": "date"}]</value>
                 </entry>
             </job-data-map>
         </job>
