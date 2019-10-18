@@ -75,6 +75,13 @@ public class MissingReasonListener {
                     .getMessage("listing.reasonRequired", "updating a 2011 Edition Certified Product"));
         }
 
+        activity = listingQuestionableActivityProvider
+                .check2014EditionUpdated(origListing, newListing);
+        if (activity != null && StringUtils.isEmpty(updateRequest.getReason())) {
+            throw new MissingReasonException(errorMessageUtil
+                    .getMessage("listing.reasonRequired", "updating a 2014 Edition Certified Product"));
+        }
+
         activities = listingQuestionableActivityProvider.checkCqmsRemoved(origListing, newListing);
         if (activities.size() > 0 && StringUtils.isEmpty(updateRequest.getReason())) {
             throw new MissingReasonException(errorMessageUtil

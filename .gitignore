@@ -262,4 +262,5 @@ pip-log.txt
 *-api.sh
 push.sh
 promote.sh
+ready-for-test.sh
 node_modules/
