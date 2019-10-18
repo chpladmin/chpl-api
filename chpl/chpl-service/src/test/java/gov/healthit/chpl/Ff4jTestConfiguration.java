@@ -1,19 +1,19 @@
 package gov.healthit.chpl;
 
+import org.ff4j.FF4j;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 
-import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
-
-@Profile("ListingValidatorMock")
+@Profile("Ff4jMock")
 @Configuration
-public class ListingValidatorFactoryConfiguration {
+public class Ff4jTestConfiguration {
+
     @Bean
     @Primary
-    public ListingValidatorFactory listingValidatorFactory() {
-        return Mockito.mock(ListingValidatorFactory.class);
+    public FF4j ff4j() {
+        return Mockito.mock(FF4j.class);
     }
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
+import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -28,6 +29,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
@@ -73,11 +75,14 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import junit.framework.TestCase;
 
-@ActiveProfiles("MockValidation-test")
+@ActiveProfiles({
+        "ListingValidatorMock", "Ff4jMock"
+})
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
         gov.healthit.chpl.CHPLTestConfig.class,
         gov.healthit.chpl.ListingValidatorFactoryConfiguration.class,
+        gov.healthit.chpl.Ff4jTestConfiguration.class,
 })
 @TestExecutionListeners({
         DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
@@ -100,6 +105,9 @@ public class CertifiedProductManagerTest extends TestCase {
 
     @Autowired
     private ListingValidatorFactory validatorFactory;
+
+    @Autowired
+    private FF4j ff4j;
 
     @Rule
     @Autowired
@@ -132,6 +140,8 @@ public class CertifiedProductManagerTest extends TestCase {
     public void setup() {
         Mockito.when(validatorFactory.getValidator(ArgumentMatchers.any(CertifiedProductSearchDetails.class)))
                 .thenReturn(null);
+
+        Mockito.when(ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)).thenReturn(true);
 
     }
 
@@ -374,6 +384,7 @@ public class CertifiedProductManagerTest extends TestCase {
 
         ListingUpdateRequest toUpdate = new ListingUpdateRequest();
         toUpdate.setListing(updatedListing);
+        toUpdate.setReason("test reason");
         cpManager.update(acbId, toUpdate);
 
         DeveloperDTO dev = devManager.getById(-1L);
@@ -405,7 +416,7 @@ public class CertifiedProductManagerTest extends TestCase {
 
         Long acbId = 1L;
         Long listingId = 1L;
-        updateListingStatus(acbId, listingId, stat, null);
+        updateListingStatus(acbId, listingId, stat, "test reason");
 
         DeveloperDTO afterDev = devManager.getById(-1L);
         assertNotNull(afterDev);
@@ -950,6 +961,7 @@ public class CertifiedProductManagerTest extends TestCase {
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(toUpdateListing);
+        updateRequest.setReason("test reason");
         cpManager.update(acbId, updateRequest);
 
         CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -992,6 +1004,7 @@ public class CertifiedProductManagerTest extends TestCase {
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(toUpdateListing);
+        updateRequest.setReason("test reason");
         cpManager.update(acbId, updateRequest);
 
         CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1034,6 +1047,7 @@ public class CertifiedProductManagerTest extends TestCase {
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(toUpdateListing);
+        updateRequest.setReason("test reason");
         cpManager.update(acbId, updateRequest);
 
         CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1091,6 +1105,7 @@ public class CertifiedProductManagerTest extends TestCase {
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(toUpdateListing);
+        updateRequest.setReason("test reason");
         cpManager.update(acbId, updateRequest);
 
         CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1129,6 +1144,7 @@ public class CertifiedProductManagerTest extends TestCase {
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(toUpdateListing);
+        updateRequest.setReason("test reason");
         cpManager.update(acbId, updateRequest);
 
         // now update the justification
@@ -1141,6 +1157,7 @@ public class CertifiedProductManagerTest extends TestCase {
         }
         updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(toUpdateListing);
+        updateRequest.setReason("test reason");
         cpManager.update(acbId, updateRequest);
 
         CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1182,6 +1199,7 @@ public class CertifiedProductManagerTest extends TestCase {
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(toUpdateListing);
+        updateRequest.setReason("test reason");
         cpManager.update(acbId, updateRequest);
 
         CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1321,6 +1339,7 @@ public class CertifiedProductManagerTest extends TestCase {
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(toUpdateListing);
+        updateRequest.setReason("test reason");
         cpManager.update(acbId, updateRequest);
 
         CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1360,6 +1379,7 @@ public class CertifiedProductManagerTest extends TestCase {
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(toUpdateListing);
+        updateRequest.setReason("test reason");
         cpManager.update(acbId, updateRequest);
 
         // now update the details
@@ -1369,6 +1389,7 @@ public class CertifiedProductManagerTest extends TestCase {
         }
         updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(toUpdateListing);
+        updateRequest.setReason("test reason");
         cpManager.update(acbId, updateRequest);
 
         CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1406,6 +1427,7 @@ public class CertifiedProductManagerTest extends TestCase {
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(toUpdateListing);
+        updateRequest.setReason("test reason");
         cpManager.update(acbId, updateRequest);
 
         // remove the ucd
@@ -1413,6 +1435,7 @@ public class CertifiedProductManagerTest extends TestCase {
         toUpdateListing.getSed().getUcdProcesses().clear();
         updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(toUpdateListing);
+        updateRequest.setReason("test reason");
         cpManager.update(acbId, updateRequest);
 
         CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1448,6 +1471,7 @@ public class CertifiedProductManagerTest extends TestCase {
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(toUpdateListing);
+        updateRequest.setReason("test reason");
         cpManager.update(acbId, updateRequest);
 
         CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1487,6 +1511,7 @@ public class CertifiedProductManagerTest extends TestCase {
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(toUpdateListing);
+        updateRequest.setReason("test reason");
         cpManager.update(acbId, updateRequest);
 
         CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1527,6 +1552,7 @@ public class CertifiedProductManagerTest extends TestCase {
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(toUpdateListing);
+        updateRequest.setReason("test reason");
         cpManager.update(acbId, updateRequest);
 
         // remove the ucd
@@ -1538,6 +1564,7 @@ public class CertifiedProductManagerTest extends TestCase {
         }
         updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(toUpdateListing);
+        updateRequest.setReason("test reason");
         cpManager.update(acbId, updateRequest);
 
         CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -2582,6 +2609,7 @@ public class CertifiedProductManagerTest extends TestCase {
 
         ListingUpdateRequest toUpdate = new ListingUpdateRequest();
         toUpdate.setListing(updatedListing);
+        toUpdate.setReason("test reason");
         cpManager.update(acbId, toUpdate);
     }
 }
