@@ -183,7 +183,7 @@ public class ListingActivityMetadataTest extends TestCase {
 
         ListingUpdateRequest toUpdate = new ListingUpdateRequest();
         toUpdate.setListing(toUpdateListing);
-        cpManager.update(acbId, toUpdate, beforeListing);
+        cpManager.update(acbId, toUpdate);
 
         CertifiedProductSearchDetails afterListing = cpdManager.getCertifiedProductDetails(listingId);
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, listingId, "Updated certification status",
@@ -193,7 +193,7 @@ public class ListingActivityMetadataTest extends TestCase {
         Calendar end = getEndOfToday();
         List<ActivityMetadata> metadatas = metadataManager
                 .getActivityMetadataByConcept(ActivityConcept.CERTIFIED_PRODUCT, start.getTime(), end.getTime());
-        assertEquals(1, metadatas.size());
+        assertEquals(2, metadatas.size());
         ActivityMetadata metadata = metadatas.get(0);
         assertEquals(listingId.longValue(), metadata.getObjectId().longValue());
         assertTrue(metadata.getCategories().contains(ActivityCategory.LISTING));

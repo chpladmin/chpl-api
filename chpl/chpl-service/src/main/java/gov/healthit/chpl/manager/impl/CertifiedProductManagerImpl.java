@@ -5,7 +5,6 @@ import static org.quartz.TriggerBuilder.newTrigger;
 import static org.quartz.TriggerKey.triggerKey;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,7 +12,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TimeZone;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -83,6 +81,7 @@ import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
@@ -158,7 +157,9 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationResultManager;
+import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
@@ -166,119 +167,52 @@ import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
+import gov.healthit.chpl.validation.listing.Validator;
 
 @Service("certifiedProductManager")
 public class CertifiedProductManagerImpl extends SecuredManager implements CertifiedProductManager {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductManagerImpl.class);
 
-    @Autowired
     private ErrorMessageUtil msgUtil;
-
-    @Autowired
     private CertifiedProductDAO cpDao;
-
-    @Autowired
     private CertifiedProductSearchDAO searchDao;
-
-    @Autowired
     private CertificationResultDAO certDao;
-
-    @Autowired
     private CertificationCriterionDAO certCriterionDao;
-
-    @Autowired
     private QmsStandardDAO qmsDao;
-
-    @Autowired
     private TargetedUserDAO targetedUserDao;
-
-    @Autowired
     private AccessibilityStandardDAO asDao;
-
-    @Autowired
     private CertifiedProductQmsStandardDAO cpQmsDao;
-
-    @Autowired
     private CertifiedProductTestingLabDAO cpTestingLabDao;
-
-    @Autowired
     private CertifiedProductTargetedUserDAO cpTargetedUserDao;
-
-    @Autowired
     private CertifiedProductAccessibilityStandardDAO cpAccStdDao;
-
-    @Autowired
     private CQMResultDAO cqmResultDAO;
-
-    @Autowired
     private CQMCriterionDAO cqmCriterionDao;
-
-    @Autowired
     private TestingLabDAO atlDao;
-
-    @Autowired
     private DeveloperDAO developerDao;
-
-    @Autowired
     private DeveloperStatusDAO devStatusDao;
-
-    @Lazy
-    @Autowired
     private DeveloperManager developerManager;
-
-    @Autowired
     private ProductManager productManager;
-
-    @Autowired
     private ProductVersionManager versionManager;
-
-    @Autowired
     private CertificationStatusEventDAO statusEventDao;
-
-    @Autowired
     private MeaningfulUseUserDAO muuDao;
-
-    @Autowired
     private CertificationResultManager certResultManager;
-
-    @Autowired
     private TestToolDAO testToolDao;
-
-    @Autowired
     private TestStandardDAO testStandardDao;
-
-    @Autowired
     private TestProcedureDAO testProcDao;
-
-    @Autowired
     private TestDataDAO testDataDao;
-
-    @Autowired
     private TestFunctionalityDAO testFuncDao;
-
-    @Autowired
     private UcdProcessDAO ucdDao;
-
-    @Autowired
     private TestParticipantDAO testParticipantDao;
-
-    @Autowired
     private TestTaskDAO testTaskDao;
-
-    @Autowired
     private CertificationStatusDAO certStatusDao;
-
-    @Autowired
     private ListingGraphDAO listingGraphDao;
-
-    @Autowired
     private FuzzyChoicesDAO fuzzyChoicesDao;
-
-    @Autowired
     private ResourcePermissions resourcePermissions;
-
-    @Autowired
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
+    private CertifiedProductDetailsManager certifiedProductDetailsManager;
+    private ActivityManager activityManager;
+    private ListingValidatorFactory validatorFactory;
 
     private static final int PROD_CODE_LOC = 4;
     private static final int VER_CODE_LOC = 5;
@@ -286,10 +220,69 @@ public class CertifiedProductManagerImpl extends SecuredManager implements Certi
     private static final int SW_CODE_LOC = 7;
     private static final int DATE_CODE_LOC = 8;
 
-    /**
-     * Default constructor.
-     */
-    public CertifiedProductManagerImpl() {
+    @Autowired
+    public CertifiedProductManagerImpl(final ErrorMessageUtil msgUtil, final CertifiedProductDAO cpDao,
+            final CertifiedProductSearchDAO searchDao,
+            final CertificationResultDAO certDao, final CertificationCriterionDAO certCriterionDao,
+            final QmsStandardDAO qmsDao, final TargetedUserDAO targetedUserDao,
+            final AccessibilityStandardDAO asDao, final CertifiedProductQmsStandardDAO cpQmsDao,
+            final CertifiedProductTestingLabDAO cpTestingLabDao,
+            final CertifiedProductTargetedUserDAO cpTargetedUserDao,
+            final CertifiedProductAccessibilityStandardDAO cpAccStdDao, final CQMResultDAO cqmResultDAO,
+            final CQMCriterionDAO cqmCriterionDao, final TestingLabDAO atlDao,
+            final DeveloperDAO developerDao, final DeveloperStatusDAO devStatusDao,
+            final @Lazy DeveloperManager developerManager, final ProductManager productManager,
+            final ProductVersionManager versionManager, final CertificationStatusEventDAO statusEventDao,
+            final MeaningfulUseUserDAO muuDao, final CertificationResultManager certResultManager,
+            final TestToolDAO testToolDao, final TestStandardDAO testStandardDao,
+            final TestProcedureDAO testProcDao, final TestDataDAO testDataDao,
+            final TestFunctionalityDAO testFuncDao, final UcdProcessDAO ucdDao,
+            final TestParticipantDAO testParticipantDao, final TestTaskDAO testTaskDao,
+            final CertificationStatusDAO certStatusDao, final ListingGraphDAO listingGraphDao,
+            final FuzzyChoicesDAO fuzzyChoicesDao, final ResourcePermissions resourcePermissions,
+            final CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
+            final CertifiedProductDetailsManager certifiedProductDetailsManager,
+            final ActivityManager activityManager, final ListingValidatorFactory validatorFactory) {
+
+        this.msgUtil = msgUtil;
+        this.cpDao = cpDao;
+        this.searchDao = searchDao;
+        this.certDao = certDao;
+        this.certCriterionDao = certCriterionDao;
+        this.qmsDao = qmsDao;
+        this.targetedUserDao = targetedUserDao;
+        this.asDao = asDao;
+        this.cpQmsDao = cpQmsDao;
+        this.cpTestingLabDao = cpTestingLabDao;
+        this.cpTargetedUserDao = cpTargetedUserDao;
+        this.cpAccStdDao = cpAccStdDao;
+        this.cqmResultDAO = cqmResultDAO;
+        this.cqmCriterionDao = cqmCriterionDao;
+        this.atlDao = atlDao;
+        this.developerDao = developerDao;
+        this.devStatusDao = devStatusDao;
+        this.developerManager = developerManager;
+        this.productManager = productManager;
+        this.versionManager = versionManager;
+        this.statusEventDao = statusEventDao;
+        this.muuDao = muuDao;
+        this.certResultManager = certResultManager;
+        this.testToolDao = testToolDao;
+        this.testStandardDao = testStandardDao;
+        this.testProcDao = testProcDao;
+        this.testDataDao = testDataDao;
+        this.testFuncDao = testFuncDao;
+        this.ucdDao = ucdDao;
+        this.testParticipantDao = testParticipantDao;
+        this.testTaskDao = testTaskDao;
+        this.certStatusDao = certStatusDao;
+        this.listingGraphDao = listingGraphDao;
+        this.fuzzyChoicesDao = fuzzyChoicesDao;
+        this.resourcePermissions = resourcePermissions;
+        this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
+        this.certifiedProductDetailsManager = certifiedProductDetailsManager;
+        this.activityManager = activityManager;
+        this.validatorFactory = validatorFactory;
     }
 
     @Override
@@ -1088,11 +1081,7 @@ public class CertifiedProductManagerImpl extends SecuredManager implements Certi
         return cpDao.update(toUpdate);
     }
 
-    @Override
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).CLEAN_DATA, #acbId)")
-    @Transactional(readOnly = false)
-    public void sanitizeUpdatedListingData(final Long acbId, final CertifiedProductSearchDetails listing)
+    private void sanitizeUpdatedListingData(final Long acbId, final CertifiedProductSearchDetails listing)
             throws EntityNotFoundException {
         // make sure the ui didn't send any error or warning messages back
         listing.setErrorMessages(new HashSet<String>());
@@ -1144,12 +1133,70 @@ public class CertifiedProductManagerImpl extends SecuredManager implements Certi
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS
     }, allEntries = true)
-    public CertifiedProductDTO update(final Long acbId, final ListingUpdateRequest updateRequest,
-            final CertifiedProductSearchDetails existingListing)
+    public CertifiedProductDTO update(final Long acbId, final ListingUpdateRequest updateRequest)
             throws AccessDeniedException, EntityRetrievalException, JsonProcessingException, EntityCreationException,
             InvalidArgumentsException, IOException, ValidationException {
 
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
+        CertifiedProductSearchDetails existingListing = certifiedProductDetailsManager
+                .getCertifiedProductDetails(updatedListing.getId());
+
+        // clean up what was sent in - some necessary IDs or other fields may be missing
+        Long newAcbId = Long
+                .valueOf(updatedListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
+        sanitizeUpdatedListingData(newAcbId, updatedListing);
+
+        // validate - throws ValidationException if the listing cannot be updated
+        validateListingForUpdate(existingListing, updatedListing);
+
+        // if listing status has changed that may trigger other changes to developer status
+        performSecondaryActionsBasedOnStatusChanges(existingListing, updatedListing, updateRequest.getReason());
+
+        // Update the listing
+        CertifiedProductDTO dtoToUpdate = new CertifiedProductDTO(updatedListing);
+        CertifiedProductDTO result = cpDao.update(dtoToUpdate);
+        updateListingsChildData(existingListing, updatedListing, result);
+
+        // Log the activity
+        logCertifiedProductUpdateActivity(existingListing, updateRequest.getReason());
+
+        return result;
+    }
+
+    private void logCertifiedProductUpdateActivity(final CertifiedProductSearchDetails existingListing,
+            final String reason) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
+        CertifiedProductSearchDetails changedProduct = certifiedProductDetailsManager
+                .getCertifiedProductDetails(existingListing.getId());
+        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
+                "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingListing,
+                changedProduct, reason);
+    }
+
+    private void updateListingsChildData(final CertifiedProductSearchDetails existingListing,
+            final CertifiedProductSearchDetails updatedListing, final CertifiedProductDTO updatedListingDTO)
+            throws EntityCreationException, EntityRetrievalException, IOException {
+        updateTestingLabs(updatedListing.getId(), existingListing.getTestingLabs(), updatedListing.getTestingLabs());
+        updateIcsChildren(updatedListing.getId(), existingListing.getIcs(), updatedListing.getIcs());
+        updateIcsParents(updatedListing.getId(), existingListing.getIcs(), updatedListing.getIcs());
+        updateQmsStandards(updatedListing.getId(), existingListing.getQmsStandards(), updatedListing.getQmsStandards());
+        updateTargetedUsers(updatedListing.getId(), existingListing.getTargetedUsers(),
+                updatedListing.getTargetedUsers());
+        updateAccessibilityStandards(updatedListing.getId(), existingListing.getAccessibilityStandards(),
+                updatedListing.getAccessibilityStandards());
+        updateCertificationDate(updatedListing.getId(), new Date(existingListing.getCertificationDate()),
+                new Date(updatedListing.getCertificationDate()));
+        updateCertificationStatusEvents(updatedListing.getId(), existingListing.getCertificationEvents(),
+                updatedListing.getCertificationEvents());
+        updateMeaningfulUseUserHistory(updatedListing.getId(), existingListing.getMeaningfulUseUserHistory(),
+                updatedListing.getMeaningfulUseUserHistory());
+        updateCertifications(updatedListingDTO.getCertificationBodyId(), existingListing, updatedListing,
+                existingListing.getCertificationResults(), updatedListing.getCertificationResults());
+        updateCqms(updatedListingDTO, existingListing.getCqmResults(), updatedListing.getCqmResults());
+    }
+
+    private void performSecondaryActionsBasedOnStatusChanges(final CertifiedProductSearchDetails existingListing,
+            final CertifiedProductSearchDetails updatedListing, final String reason)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
         Long listingId = updatedListing.getId();
         Long productVersionId = updatedListing.getVersion().getVersionId();
         CertificationStatus updatedStatus = updatedListing.getCurrentStatus().getStatus();
@@ -1193,7 +1240,7 @@ public class CertifiedProductManagerImpl extends SecuredManager implements Certi
             case WithdrawnByDeveloperUnderReview:
                 // initiate TriggerDeveloperBan job, telling ONC that they might
                 // need to ban a Developer
-                triggerDeveloperBan(updatedListing, updateRequest.getReason());
+                triggerDeveloperBan(updatedListing, reason);
                 break;
             default:
                 LOGGER.info("New listing status is " + updatedStatusDto.getStatus()
@@ -1215,58 +1262,68 @@ public class CertifiedProductManagerImpl extends SecuredManager implements Certi
             }
         }
 
-        CertifiedProductDTO dtoToUpdate = new CertifiedProductDTO(updatedListing);
-
-        // Process the status changes, since this could change certified date
-        // code
-        updateCertificationDate(listingId, new Date(existingListing.getCertificationDate()),
-                new Date(updatedListing.getCertificationDate()));
-        updateCertificationStatusEvents(listingId, existingListing.getCertificationEvents(),
-                updatedListing.getCertificationEvents());
-        // Based on the StatusEvent updates, should we update the
-        // certifiedDateCode?
-        String certifiedDateCode = calculateCertifiedDateCode(listingId);
-        if (!certifiedDateCode.equals(dtoToUpdate.getCertifiedDateCode())) {
-            dtoToUpdate.setCertifiedDateCode(certifiedDateCode);
-        }
-
-        CertifiedProductDTO result = cpDao.update(dtoToUpdate);
-
-        // Findbugs says this cannot be null since it used above - an NPE would
-        // have been thrown
-        // if (updatedListing != null) {
-        updateTestingLabs(listingId, existingListing.getTestingLabs(), updatedListing.getTestingLabs());
-        updateIcsChildren(listingId, existingListing.getIcs(), updatedListing.getIcs());
-        updateIcsParents(listingId, existingListing.getIcs(), updatedListing.getIcs());
-        updateQmsStandards(listingId, existingListing.getQmsStandards(), updatedListing.getQmsStandards());
-        updateTargetedUsers(listingId, existingListing.getTargetedUsers(), updatedListing.getTargetedUsers());
-        updateAccessibilityStandards(listingId, existingListing.getAccessibilityStandards(),
-                updatedListing.getAccessibilityStandards());
-        updateCertificationDate(listingId, new Date(existingListing.getCertificationDate()),
-                new Date(updatedListing.getCertificationDate()));
-
-        updateCertificationStatusEvents(listingId, existingListing.getCertificationEvents(),
-                updatedListing.getCertificationEvents());
-        updateMeaningfulUseUserHistory(listingId, existingListing.getMeaningfulUseUserHistory(),
-                updatedListing.getMeaningfulUseUserHistory());
-        updateCertifications(result.getCertificationBodyId(), existingListing, updatedListing,
-                existingListing.getCertificationResults(), updatedListing.getCertificationResults());
-        updateCqms(result, existingListing.getCqmResults(), updatedListing.getCqmResults());
-        // }
-        return result;
     }
 
-    private String calculateCertifiedDateCode(final Long listingId) {
-        CertificationStatusEventDTO certificationEvent = statusEventDao
-                .findInitialCertificationEventForCertifiedProduct(listingId);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd");
-        TimeZone gmtTimeZone = TimeZone.getTimeZone("GMT");
-        sdf.setTimeZone(gmtTimeZone);
+    private void validateListingForUpdate(final CertifiedProductSearchDetails existingListing,
+            final CertifiedProductSearchDetails updatedListing) throws ValidationException {
+        Validator validator = validatorFactory.getValidator(updatedListing);
+        if (validator != null) {
+            validator.validate(updatedListing);
+        }
 
-        if (certificationEvent != null && certificationEvent.getEventDate() != null) {
-            return sdf.format(certificationEvent.getEventDate());
-        } else {
-            return "";
+        // The following checks will add errors/warning to the updated listing
+        checkForDeveloperBanStatusChange(existingListing, updatedListing);
+        checkForDuplicateChplProductNumber(existingListing, updatedListing);
+
+        if (updatedListing.getErrorMessages() != null && updatedListing.getErrorMessages().size() > 0) {
+            for (String err : updatedListing.getErrorMessages()) {
+                LOGGER.error("Error updating listing " + updatedListing.getChplProductNumber() + ": " + err);
+            }
+            throw new ValidationException(updatedListing.getErrorMessages(), updatedListing.getWarningMessages());
+        }
+
+    }
+
+    private void checkForDuplicateChplProductNumber(final CertifiedProductSearchDetails existingListing,
+            final CertifiedProductSearchDetails updatedListing) {
+        if (!existingListing.getChplProductNumber().equals(updatedListing.getChplProductNumber())) {
+            try {
+                boolean isDup = chplIdExists(updatedListing.getChplProductNumber());
+                if (isDup) {
+                    updatedListing.getErrorMessages()
+                            .add(msgUtil.getMessage("listing.chplProductNumber.changedNotUnique",
+                                    updatedListing.getChplProductNumber()));
+                }
+            } catch (final EntityRetrievalException ex) {
+            }
+        }
+    }
+
+    private void checkForDeveloperBanStatusChange(final CertifiedProductSearchDetails existingListing,
+            final CertifiedProductSearchDetails updatedListing) {
+        if (existingListing.getCurrentStatus() != null
+                && updatedListing.getCurrentStatus() != null
+                && !existingListing.getCurrentStatus().getStatus().getId()
+                        .equals(updatedListing.getCurrentStatus().getStatus().getId())) {
+            // if the status is to or from suspended by onc make sure the user
+            // has admin
+            if ((existingListing.getCurrentStatus().getStatus().getName()
+                    .equals(CertificationStatusType.SuspendedByOnc.toString())
+                    || updatedListing.getCurrentStatus().getStatus().getName()
+                            .equals(CertificationStatusType.SuspendedByOnc.toString())
+                    || existingListing.getCurrentStatus().getStatus().getName()
+                            .equals(CertificationStatusType.TerminatedByOnc.toString())
+                    || updatedListing.getCurrentStatus().getStatus().getName()
+                            .equals(CertificationStatusType.TerminatedByOnc.toString()))
+                    && !resourcePermissions.isUserRoleOnc()
+                    && !resourcePermissions.isUserRoleAdmin()) {
+                updatedListing.getErrorMessages()
+                        .add("User " + AuthUtil.getUsername()
+                                + " does not have permission to change certification status of "
+                                + existingListing.getChplProductNumber() + " from "
+                                + existingListing.getCurrentStatus().getStatus().getName() + " to "
+                                + updatedListing.getCurrentStatus().getStatus().getName());
+            }
         }
     }
 

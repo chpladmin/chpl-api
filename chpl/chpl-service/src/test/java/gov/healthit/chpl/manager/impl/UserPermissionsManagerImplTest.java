@@ -15,15 +15,20 @@ import org.springframework.security.acls.model.MutableAclService;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dao.UserTestingLabMapDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.dto.UserTestingLabMapDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 
@@ -57,8 +62,13 @@ public class UserPermissionsManagerImplTest {
     private UserPermissionsManagerImpl manager;
 
     @Before
-    public void setup() {
+    public void setup() throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
         MockitoAnnotations.initMocks(this);
+
+        // activityManager.addActivity(ActivityConcept.USER, userId, message, originalUser, updatedUser);
+        Mockito.doNothing().when(activityManager).addActivity(ArgumentMatchers.any(ActivityConcept.class),
+                ArgumentMatchers.anyLong(), ArgumentMatchers.anyString(), ArgumentMatchers.any(),
+                ArgumentMatchers.any());
     }
 
     @Test
