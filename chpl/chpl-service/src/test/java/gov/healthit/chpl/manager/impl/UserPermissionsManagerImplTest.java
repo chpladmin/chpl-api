@@ -125,12 +125,22 @@ public class UserPermissionsManagerImplTest {
         ucbms.add(ucbm);
         Mockito.when(userCertificationBodyMapDAO.getByUserId(ArgumentMatchers.anyLong())).thenReturn(ucbms);
 
+        Mockito.when(userDAO.getById(ArgumentMatchers.anyLong())).thenReturn(user);
+        Mockito.doNothing().when(activityManager).addActivity(
+                ArgumentMatchers.any(), ArgumentMatchers.anyLong(), ArgumentMatchers.anyString(),
+                ArgumentMatchers.any(), ArgumentMatchers.any());
+
         CertificationBodyDTO dto = new CertificationBodyDTO();
         dto.setId(1L);
         manager.deleteAcbPermission(dto, 2l);
 
         // Ensure the DAO 'delete' method was called...
         Mockito.verify(userCertificationBodyMapDAO).delete(ArgumentMatchers.any(UserCertificationBodyMapDTO.class));
+
+        // Ensure the activity was added
+        Mockito.verify(activityManager).addActivity(
+                ArgumentMatchers.any(), ArgumentMatchers.anyLong(), ArgumentMatchers.anyString(),
+                ArgumentMatchers.any(), ArgumentMatchers.any());
     }
 
     @Test

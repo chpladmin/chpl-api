@@ -17,6 +17,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
@@ -175,11 +176,12 @@ public class DeveloperManagerMockitoTest {
         }
     }
 
-    private static PendingCertifiedProductDetails getPopulatedPendingCertifiedProductDetails() {
+    public static PendingCertifiedProductDetails getPopulatedPendingCertifiedProductDetails() {
         PendingCertifiedProductDetails pcpd = new PendingCertifiedProductDetails();
         pcpd.setChplProductNumber(DEFAULT_TEST_PRODUCT_NUMBER);
         pcpd.setDeveloper(new Developer(getPopulatedDeveloperDTO()));
-        pcpd.getCertifyingBody().put("name", DeveloperValidationFactoryTest.DEFAULT_PENDING_ACB_NAME);
+        pcpd.getCertifyingBody().put(CertifiedProductSearchDetails.ACB_NAME_KEY,
+                DeveloperValidationFactoryTest.DEFAULT_PENDING_ACB_NAME);
         return pcpd;
     }
 

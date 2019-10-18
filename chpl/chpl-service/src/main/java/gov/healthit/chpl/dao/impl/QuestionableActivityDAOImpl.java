@@ -240,32 +240,32 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
         return results;
     }
 
-    private QuestionableActivityVersionDTO mapEntityToDto(QuestionableActivityVersionEntity entity) {
+    private QuestionableActivityVersionDTO mapEntityToDto(final QuestionableActivityVersionEntity entity) {
         QuestionableActivityVersionDTO dto = new QuestionableActivityVersionDTO(entity);
         dto.setUser(userMapper.from(entity.getUser()));
         return dto;
     }
 
-    private QuestionableActivityProductDTO mapEntityToDto(QuestionableActivityProductEntity entity) {
+    private QuestionableActivityProductDTO mapEntityToDto(final QuestionableActivityProductEntity entity) {
         QuestionableActivityProductDTO dto = new QuestionableActivityProductDTO(entity);
         dto.setUser(userMapper.from(entity.getUser()));
         return dto;
     }
 
-    private QuestionableActivityDeveloperDTO mapEntityToDto(QuestionableActivityDeveloperEntity entity) {
+    private QuestionableActivityDeveloperDTO mapEntityToDto(final QuestionableActivityDeveloperEntity entity) {
         QuestionableActivityDeveloperDTO dto = new QuestionableActivityDeveloperDTO(entity);
         dto.setUser(userMapper.from(entity.getUser()));
         return dto;
     }
 
-    private QuestionableActivityListingDTO mapEntityToDto(QuestionableActivityListingEntity entity) {
+    private QuestionableActivityListingDTO mapEntityToDto(final QuestionableActivityListingEntity entity) {
         QuestionableActivityListingDTO dto = new QuestionableActivityListingDTO(entity);
         dto.setUser(userMapper.from(entity.getUser()));
         return dto;
     }
 
     private QuestionableActivityCertificationResultDTO mapEntityToDto(
-            QuestionableActivityCertificationResultEntity entity) {
+            final QuestionableActivityCertificationResultEntity entity) {
         QuestionableActivityCertificationResultDTO dto = new QuestionableActivityCertificationResultDTO(entity);
         dto.setUser(userMapper.from(entity.getUser()));
         return dto;

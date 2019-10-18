@@ -231,7 +231,7 @@ public class CertifiedProductManagerImpl extends SecuredManager implements Certi
             final CertifiedProductAccessibilityStandardDAO cpAccStdDao, final CQMResultDAO cqmResultDAO,
             final CQMCriterionDAO cqmCriterionDao, final TestingLabDAO atlDao,
             final DeveloperDAO developerDao, final DeveloperStatusDAO devStatusDao,
-            @Lazy DeveloperManager developerManager, final ProductManager productManager,
+            final @Lazy DeveloperManager developerManager, final ProductManager productManager,
             final ProductVersionManager versionManager, final CertificationStatusEventDAO statusEventDao,
             final MeaningfulUseUserDAO muuDao, final CertificationResultManager certResultManager,
             final TestToolDAO testToolDao, final TestStandardDAO testStandardDao,
@@ -242,7 +242,7 @@ public class CertifiedProductManagerImpl extends SecuredManager implements Certi
             final FuzzyChoicesDAO fuzzyChoicesDao, final ResourcePermissions resourcePermissions,
             final CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
             final CertifiedProductDetailsManager certifiedProductDetailsManager,
-            final ActivityManager activityManager, @Lazy ListingValidatorFactory validatorFactory) {
+            final ActivityManager activityManager, final ListingValidatorFactory validatorFactory) {
 
         this.msgUtil = msgUtil;
         this.cpDao = cpDao;
