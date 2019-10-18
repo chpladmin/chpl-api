@@ -15,9 +15,12 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 @Component("validDataReviewer")
 public class ValidDataReviewer implements Reviewer {
 
-    @Lazy
-    @Autowired
     private CertifiedProductManager cpManager;
+
+    @Autowired
+    public ValidDataReviewer(final @Lazy CertifiedProductManager cpManager) {
+        this.cpManager = cpManager;
+    }
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
