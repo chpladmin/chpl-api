@@ -151,6 +151,7 @@ public class CertificationResultTest extends TestCase {
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(listing);
+        updateRequest.setReason("test reason");
         cpManager.update(
                 Long.parseLong(updateRequest.getListing().getCertifyingBody().get("id").toString()),
                 updateRequest);
@@ -189,6 +190,7 @@ public class CertificationResultTest extends TestCase {
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(listing);
+        updateRequest.setReason("test reason");
         cpManager.update(
                 Long.parseLong(updateRequest.getListing().getCertifyingBody().get("id").toString()),
                 updateRequest);

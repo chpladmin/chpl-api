@@ -143,42 +143,6 @@ public class ListingTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
-    @Test(expected = MissingReasonException.class)
-    @Transactional
-    @Rollback
-    public void testUpdate2011ListingWithoutReason() throws
-    EntityCreationException, EntityRetrievalException,
-    ValidationException, InvalidArgumentsException, JsonProcessingException,
-    MissingReasonException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        final long cpId = 3L;
-        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(cpId);
-        listing.setAcbCertificationId("NEWACBCERTIFICATIONID");
-        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setListing(listing);
-        cpController.updateCertifiedProduct(updateRequest);
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
-    @Test(expected = MissingReasonException.class)
-    @Transactional
-    @Rollback
-    public void testUpdate2014ListingWithoutReason() throws
-    EntityCreationException, EntityRetrievalException,
-    ValidationException, InvalidArgumentsException, JsonProcessingException,
-    MissingReasonException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        final long cpId = 1L;
-        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(cpId);
-        listing.setAcbCertificationId("NEWACBCERTIFICATIONID");
-        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setListing(listing);
-        cpController.updateCertifiedProduct(updateRequest);
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
     @Test
     @Transactional
     @Rollback
@@ -560,29 +524,6 @@ public class ListingTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
-    @Test(expected = MissingReasonException.class)
-    @Transactional
-    @Rollback
-    public void testRemoveCqmWithoutReason() throws
-    EntityCreationException, EntityRetrievalException,
-    ValidationException, InvalidArgumentsException, JsonProcessingException,
-    MissingReasonException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
-        for (CQMResultDetails cqm : listing.getCqmResults()) {
-            if (cqm.getCmsId() != null && cqm.getCmsId().equals("CMS146")) {
-                cqm.setSuccess(Boolean.FALSE);
-                cqm.setSuccessVersions(null);
-            }
-        }
-
-        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setListing(listing);
-        cpController.updateCertifiedProduct(updateRequest);
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
     @Test
     @Transactional
     @Rollback
@@ -686,27 +627,6 @@ public class ListingTest extends TestCase {
         activity = findActivityOfType(activities,
                 QuestionableActivityTriggerConcept.EDITION_2014_EDITED);
         assertNotNull(activity);
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
-    @Test(expected = MissingReasonException.class)
-    @Transactional
-    @Rollback
-    public void testRemoveCriteriaWithoutReason() throws EntityCreationException,
-    EntityRetrievalException, ValidationException,
-    InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
-        for (CertificationResult cert : listing.getCertificationResults()) {
-            if (cert.getId().longValue() == 1) {
-                cert.setSuccess(Boolean.FALSE);
-                cert.setSed(Boolean.FALSE);
-            }
-        }
-        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setListing(listing);
-        cpController.updateCertifiedProduct(updateRequest);
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
