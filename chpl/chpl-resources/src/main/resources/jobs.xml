@@ -534,7 +534,7 @@
             <job-data-map>
                 <entry>
                     <key>parameters</key>
-                    <value>[{"label": "Listings [Comma Delimited]", "key": "listings", "type": "textarea"}, {"label": "ListingStatus", "key": "certificationStatusId", "type": "select", "items": [{"id": 1, "name": "Active"}, {"id": 3, "name": "Withdrawn by Developer"}] }, {"label": "Effective Date", "key": "effectiveDate", "type": "date"}]</value>
+                    <value>[{"label": "Listings [Comma Delimited]", "key": "listings", "type": "textarea"}, {"label": "ListingStatus", "key": "certificationStatus", "type": "select", "items": [{"id": 1, "name": "Active"}, {"id": 2, "name": "Retired"}, {"id": 3, "name": "Withdrawn by Developer"}, {"id": 4, "name": "Withdrawn by ONC-ACB"}, {"id": 5, "name": "Pending"}, {"id": 6, "name": "Suspended by OCD-ACB"}, {"id": 7, "name": "Suspended by ONC"}, {"id": 8, "name": "Terminated by ONC"}, {"id": 9, "name": "Withdrawn by Developer Under Surveillance/Review"}] }, {"label": "Effective Date", "key": "effectiveDate", "type": "date"}]</value>
                 </entry>
             </job-data-map>
         </job>

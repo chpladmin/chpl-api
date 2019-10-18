@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -24,7 +25,6 @@ import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
-import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
@@ -38,12 +38,6 @@ public class UpdateListingStatusJob extends QuartzJob {
     @Autowired
     private CertifiedProductManager certifiedProductManager;
 
-    /**
-     * Default constructor.
-     */
-    public UpdateListingStatusJob() {
-    }
-
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         LOGGER.info("********* Starting the Update Listing Status job. *********");
@@ -53,8 +47,7 @@ public class UpdateListingStatusJob extends QuartzJob {
 
         List<Long> listings = getListingIds(jobContext);
 
-        Long certificationStatusId = Long
-                .parseLong(jobContext.getMergedJobDataMap().getString("certificationStatusId"));
+        CertificationStatus certificationStatus = getCertificationStatus(jobContext);
 
         Date statusDate = getStatusEffectiveDate(jobContext);
 
@@ -65,7 +58,7 @@ public class UpdateListingStatusJob extends QuartzJob {
             // This will get listing details, update the listing with the new status, and update listing
             CompletableFuture<Void> cpFuture = CompletableFuture
                     .supplyAsync(() -> getListing(cpId))
-                    .thenAccept(cp -> updateListing(cp, certificationStatusId, statusDate));
+                    .thenAccept(cp -> updateListing(cp, certificationStatus, statusDate));
 
             allUpdates.add(cpFuture);
         }
@@ -73,6 +66,16 @@ public class UpdateListingStatusJob extends QuartzJob {
         blockUntilAllFuturesComplete(allUpdates);
 
         LOGGER.info("********* Completed the Update Listing Status job. *********");
+    }
+
+    private CertificationStatus getCertificationStatus(JobExecutionContext context) {
+        @SuppressWarnings("unchecked") Map<String, Object> csMap = (Map<String, Object>) context.getMergedJobDataMap()
+                .get("certificationStatus");
+
+        CertificationStatus cs = new CertificationStatus();
+        cs.setId(Long.parseLong(csMap.get("id").toString()));
+        cs.setName(csMap.get("name").toString());
+        return cs;
     }
 
     private void blockUntilAllFuturesComplete(List<CompletableFuture<Void>> allUpdates) {
@@ -86,12 +89,7 @@ public class UpdateListingStatusJob extends QuartzJob {
         }
     }
 
-    private CertificationStatusEvent getCertifiectionStatusEvent(Long certificationStatusId, Date effectiveDate) {
-        CertificationStatus cs = new CertificationStatus();
-        cs.setId(certificationStatusId);
-        // TODO - Need to figure out how to handle this
-        cs.setName(CertificationStatusType.WithdrawnByDeveloper.toString());
-
+    private CertificationStatusEvent getCertifiectionStatusEvent(CertificationStatus cs, Date effectiveDate) {
         CertificationStatusEvent cse = new CertificationStatusEvent();
         cse.setStatus(cs);
         cse.setEventDate(effectiveDate.getTime());
@@ -109,8 +107,8 @@ public class UpdateListingStatusJob extends QuartzJob {
         }
     }
 
-    private void updateListing(CertifiedProductSearchDetails cpd, Long certificationStatusId, Date effectiveDate) {
-        cpd.getCertificationEvents().add(getCertifiectionStatusEvent(certificationStatusId, effectiveDate));
+    private void updateListing(CertifiedProductSearchDetails cpd, CertificationStatus cs, Date effectiveDate) {
+        cpd.getCertificationEvents().add(getCertifiectionStatusEvent(cs, effectiveDate));
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(cpd);
 
