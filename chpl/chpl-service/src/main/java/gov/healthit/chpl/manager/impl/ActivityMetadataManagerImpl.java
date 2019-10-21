@@ -207,12 +207,18 @@ public class ActivityMetadataManagerImpl extends SecuredManager implements Activ
         return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.CHANGE_REQUEST, startDate, endDate);
     }
 
+    @Override
+    public List<ActivityMetadata> getApiKeyManagementMetaData(Date startDate, Date endDate)
+        throws IOException {
+        return getActivityMetadataByConcept(ActivityConcept.API_KEY, startDate, endDate);
+    }
+
     private List<ActivityMetadata> getActivityMetadataByConceptWithoutSecurity(final ActivityConcept concept,
             final Date startDate, final Date endDate) throws JsonParseException, IOException {
         LOGGER.info("Getting " + concept.name() + " activity from " + startDate + " through " + endDate);
         // get the activity
         List<ActivityDTO> activityDtos = activityDAO.findByConcept(concept, startDate, endDate);
-        List<ActivityMetadata> activityMetas = new ArrayList<ActivityMetadata>();
+        List<ActivityMetadata> activityMetas = new ArrayList<>();
         ActivityMetadataBuilder builder = null;
         if (activityDtos != null && activityDtos.size() > 0) {
             LOGGER.info("Found " + activityDtos.size() + " activity events");
