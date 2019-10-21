@@ -62,7 +62,7 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
                             && !certHasUcdProcess(cert, listing.getSed().getUcdProcesses())) {
                         if (listing.getIcs() != null && listing.getIcs().getInherits() != null
                                 && listing.getIcs().getInherits().booleanValue()) {
-                            listing.getErrorMessages().add(
+                            listing.getWarningMessages().add(
                                     msgUtil.getMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
                         } else {
                             listing.getErrorMessages().add(
