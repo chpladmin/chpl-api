@@ -1,5 +1,22 @@
 # Release Notes
 
+## Version 21.10.0
+_21 October 2019_
+
+### Flagged Features
+* Add ability to edit basic information Certified Products on details page
+* Add ROLE_DEVELOPER User type
+* Allow ROLE_DEVELOPER to create "Change Requests" to change their Organization's website
+* Update objects in basic Certified Product response to not have errors/warnings inappropriately
+
+### Bug Fixes
+* Fix error/warning update exception and count discrepancy
+  * Fix exception thrown when updating pending listing error/warning counts
+  * Fix warning count discrepancy of auto-fixed warnings in confirm listings screen due to failed pending listing confirmation
+* Display CHPL Product Number change popup when oldest active status date is changed
+
+---
+
 ## Version 21.9.0
 _7 October 2019_
 

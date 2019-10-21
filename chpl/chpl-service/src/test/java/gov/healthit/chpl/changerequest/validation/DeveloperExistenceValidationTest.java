@@ -6,14 +6,13 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.changerequest.builders.ChangeRequestBuilder;
 import gov.healthit.chpl.changerequest.builders.DeveloperBuilder;
-import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationContext;
-import gov.healthit.chpl.changerequest.validation.DeveloperExistenceValidation;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -23,12 +22,12 @@ public class DeveloperExistenceValidationTest {
     @Mock
     private DeveloperDAO developerDAO;
 
+    @InjectMocks
     private DeveloperExistenceValidation validator;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        validator = new DeveloperExistenceValidation();
     }
 
     @Test
@@ -43,7 +42,7 @@ public class DeveloperExistenceValidationTest {
                                 .withId(22l)
                                 .build())
                         .build(),
-                null, null, null, developerDAO);
+                null);
 
         boolean isValid = validator.isValid(context);
 
@@ -59,7 +58,7 @@ public class DeveloperExistenceValidationTest {
                 new ChangeRequestBuilder()
                         .withId(1l)
                         .build(),
-                null, null, null, developerDAO);
+                null);
 
         boolean isValid = validator.isValid(context);
 
@@ -78,7 +77,7 @@ public class DeveloperExistenceValidationTest {
                                 .withId(22l)
                                 .build())
                         .build(),
-                null, null, null, developerDAO);
+                null);
 
         boolean isValid = validator.isValid(context);
 

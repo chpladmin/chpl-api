@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -20,12 +21,12 @@ public class ChangeRequestTypeValidationTest {
     @Mock
     private ChangeRequestTypeDAO changeRequestTypeDAO;
 
+    @InjectMocks
     private ChangeRequestTypeValidation validator;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        validator = new ChangeRequestTypeValidation();
     }
 
     @Test
@@ -38,7 +39,7 @@ public class ChangeRequestTypeValidationTest {
                         .withChangeRequestType(new ChangeRequestTypeBuilder()
                                 .withId(1l).withName("First Status").build())
                         .build(),
-                null, changeRequestTypeDAO, null, null));
+                null));
 
         assertTrue(isValid);
     }
@@ -51,7 +52,7 @@ public class ChangeRequestTypeValidationTest {
         boolean isValid = validator.isValid(new ChangeRequestValidationContext(
                 new ChangeRequestBuilder()
                         .build(),
-                null, changeRequestTypeDAO, null, null));
+                null));
 
         assertFalse(isValid);
     }
@@ -66,13 +67,13 @@ public class ChangeRequestTypeValidationTest {
                         .withChangeRequestType(new ChangeRequestTypeBuilder()
                                 .withName("First Status").build())
                         .build(),
-                null, changeRequestTypeDAO, null, null));
+                null));
 
         assertFalse(isValid);
     }
 
     @Test
-    public void isValid_Fail_ChangeRequetTypeNotInDb() throws EntityRetrievalException {
+    public void isValid_Fail_ChangeRequestTypeNotInDb() throws EntityRetrievalException {
         Mockito.when(changeRequestTypeDAO.getChangeRequestTypeById(ArgumentMatchers.anyLong()))
                 .thenThrow(EntityRetrievalException.class);
 
@@ -81,7 +82,7 @@ public class ChangeRequestTypeValidationTest {
                         .withChangeRequestType(new ChangeRequestTypeBuilder()
                                 .withId(1l).withName("First Status").build())
                         .build(),
-                null, changeRequestTypeDAO, null, null));
+                null));
 
         assertFalse(isValid);
     }
