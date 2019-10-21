@@ -263,3 +263,7 @@ pip-log.txt
 push.sh
 promote.sh
 node_modules/
+generate-release-notes.sh
+ready-for-deployment.sh
+ready-for-test.sh
+reset-qa.sh
