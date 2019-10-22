@@ -23,6 +23,7 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.Duplicat
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.SedG32015Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.TestFunctionality2015Reviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.TestTool2015Reviewer;
 
 /**
  * Validation interface for 2015 listings in the pending stage of upload to the CHPL.
@@ -76,6 +77,10 @@ public class Edition2015PendingListingValidator extends PendingValidator {
     private TestToolReviewer ttReviewer;
 
     @Autowired
+    @Qualifier("pendingTestTool2015Reviewer")
+    private TestTool2015Reviewer tt2015Reviewer;
+
+    @Autowired
     @Qualifier("pendingIcsReviewer")
     private InheritedCertificationStatusReviewer icsReviewer;
 
@@ -109,6 +114,7 @@ public class Edition2015PendingListingValidator extends PendingValidator {
             reviewers.add(requiredDataReviewer);
             reviewers.add(sedG3Reviewer);
             reviewers.add(ttReviewer);
+            reviewers.add(tt2015Reviewer);
             reviewers.add(icsReviewer);
             reviewers.add(urlReviewer);
             reviewers.add(testFunctionalityReviewer);

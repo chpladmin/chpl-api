@@ -19,7 +19,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
  * Test tool name must match a test tool in the database.
  * Test tool version is required
  * Listings shouldn't use retired test tools.
- * 
+ *
  * @author kekey
  *
  */
@@ -51,13 +51,6 @@ public class TestToolReviewer implements Reviewer {
                             listing.getErrorMessages()
                                     .add(msgUtil.getMessage("listing.criteria.missingTestToolName", cert.getNumber()));
                         } else {
-                            // require test tool version
-                            if (StringUtils.isEmpty(testTool.getVersion())) {
-                                listing.getErrorMessages()
-                                        .add(msgUtil.getMessage("listing.criteria.missingTestToolVersion",
-                                                testTool.getName(), cert.getNumber()));
-                            }
-
                             TestToolDTO foundTestTool = testToolDao.getByName(testTool.getName());
                             if (foundTestTool != null) {
                                 // retired tools aren't allowed if there is ICS or an ICS Mismatch
