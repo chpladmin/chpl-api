@@ -8,17 +8,24 @@ public class Validator2015 extends Validator {
 
     protected static final List<String> REQUIRED_CRITERIA = new ArrayList<String>(Arrays.asList("170.315 (a)(5)",
             "170.315 (a)(6)", "170.315 (a)(7)", "170.315 (a)(8)", "170.315 (a)(9)", "170.315 (a)(11)",
-            "170.315 (a)(14)", "170.315 (c)(1)", "170.315 (b)(1)", "170.315 (b)(6)", "170.315 (g)(7)",
-            "170.315 (g)(8)", "170.315 (g)(9)"));
+            "170.315 (a)(14)", "170.315 (c)(1)", "170.315 (b)(1)", "170.315 (b)(6)", "170.315 (g)(7)", "170.315 (g)(9)"));
 
     protected static final List<String> CPOE_CRITERIA_OR = new ArrayList<String>(Arrays.asList("170.315 (a)(1)",
             "170.315 (a)(2)", "170.315 (a)(3)"));
+
+    protected static final List<String> AA_CRITERIA_OR = new ArrayList<String>(Arrays.asList("170.315 (g)(8)",
+            "170.315 (g)(10)"));
+
+    protected static final List<String> DP_CRITERIA_OR = new ArrayList<String>(Arrays.asList("170.315 (h)(1)",
+            "170.315 (h)(2)"));
 
     public Validator2015() {
         this.counts.put("criteriaRequired", REQUIRED_CRITERIA.size());
         this.counts.put("criteriaRequiredMet", 0);
         this.counts.put("criteriaCpoeRequired", 1);
         this.counts.put("criteriaCpoeRequiredMet", 0);
+        this.counts.put("criteriaAaRequired", 1);
+        this.counts.put("criteriaAaRequiredMet", 0);
         this.counts.put("criteriaDpRequired", 1);
         this.counts.put("criteriaDpRequiredMet", 0);
         this.counts.put("cqmsInpatientRequired", 0);
@@ -60,6 +67,7 @@ public class Validator2015 extends Validator {
         }
 
         boolean cpoeValid = isCPOEValid();
+        boolean aaValid = isAAValid();
         boolean dpValid = isDPValid();
 
         this.counts.put(
@@ -71,7 +79,7 @@ public class Validator2015 extends Validator {
                 this.counts.get("criteriaRequiredMet") + this.counts.get("criteriaCpoeRequiredMet")
                         + this.counts.get("criteriaDpRequiredMet"));
 
-        return (criteriaValid && cpoeValid && dpValid);
+        return (criteriaValid && cpoeValid && aaValid && dpValid);
     }
 
     // **********************************************************************
@@ -109,6 +117,17 @@ public class Validator2015 extends Validator {
         return false;
     }
 
+    protected boolean isAAValid() {
+        for (String crit : AA_CRITERIA_OR) {
+            if (null != criteriaMet.get(crit)) {
+                this.counts.put("criteriaAaRequiredMet", 1);
+                return true;
+            }
+        }
+        missingOr.add(new ArrayList<String>(AA_CRITERIA_OR));
+        return false;
+    }
+
     // **********************************************************************
     // isDPValid
     //
@@ -116,26 +135,13 @@ public class Validator2015 extends Validator {
     // XDR/XDM must be met.
     // **********************************************************************
     protected boolean isDPValid() {
-        this.counts.put("criteriaDpRequired", 1);
-
-        boolean met = false;
-
-        // 170.315 (h)(1)
-        if (this.criteriaMet.containsKey("170.315 (h)(1)")) {
-            this.counts.put("criteriaDpRequiredMet", 1);
-            met = true;
+        for (String crit : DP_CRITERIA_OR) {
+            if (null != criteriaMet.get(crit)) {
+                this.counts.put("criteriaCpRequiredMet", 1);
+                return true;
+            }
         }
-
-        // 170.315 (h)(2)
-        if (this.criteriaMet.containsKey("170.315 (h)(2)")) {
-            this.counts.put("criteriaDpRequiredMet", 1);
-            met = true;
-        }
-
-        if (!met) {
-            missingOr.add(new ArrayList<String>(Arrays.asList("170.315 (h)(1)","170.315 (h)(2)")));
-        }
-
-        return (this.counts.get("criteriaDpRequiredMet") >= this.counts.get("criteriaDpRequired"));
+        missingOr.add(new ArrayList<String>(DP_CRITERIA_OR));
+        return false;
     }
 }
