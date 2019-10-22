@@ -7,7 +7,7 @@ public abstract class ValidatorFactory {
         if ("2014".equals(attYear)) {
             val = new Validator2014();
         } else if ("2015".equals(attYear)) {
-            val = new Validator2015();
+            val = new Validator2015Legacy();
         } else if ("2014/2015".equals(attYear)) {
             val = new Validator20142015();
         } else {
