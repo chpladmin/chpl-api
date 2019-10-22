@@ -1,7 +1,5 @@
 package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
-import java.util.Iterator;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -30,19 +28,14 @@ public class TestTool2015Reviewer implements Reviewer {
     @Override
     public void review(final CertifiedProductSearchDetails listing) {
         for (CertificationResult cert : listing.getCertificationResults()) {
-            if (cert.isSuccess()) {
-                if (cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0) {
-                    Iterator<CertificationResultTestTool> testToolIter = cert.getTestToolsUsed().iterator();
-                    while (testToolIter.hasNext()) {
-                        CertificationResultTestTool testTool = testToolIter.next();
-                        if (!StringUtils.isEmpty(testTool.getTestToolName())) {
-                            // require test tool version if a test tool name was entered
-                            if (StringUtils.isEmpty(testTool.getTestToolVersion())) {
-                                    listing.getErrorMessages()
-                                    .add(msgUtil.getMessage("listing.criteria.missingTestToolVersion",
-                                            testTool.getTestToolName(), cert.getNumber()));
-                            }
-                        }
+            if (cert.isSuccess() && cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0) {
+                for (CertificationResultTestTool testTool : cert.getTestToolsUsed()) {
+                    if (!StringUtils.isEmpty(testTool.getTestToolName())
+                            && StringUtils.isEmpty(testTool.getTestToolVersion())) {
+                        // require test tool version if a test tool name was entered
+                        listing.getErrorMessages()
+                        .add(msgUtil.getMessage("listing.criteria.missingTestToolVersion",
+                                testTool.getTestToolName(), cert.getNumber()));
                     }
                 }
             }
