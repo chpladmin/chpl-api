@@ -2,12 +2,9 @@ package gov.healthit.chpl.scheduler.job;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -51,19 +48,11 @@ public class UpdateListingStatusJob extends QuartzJob {
 
         Date statusDate = getStatusEffectiveDate(jobContext);
 
-        // This holds all of the Futures, so we can tell when all async processes have ended
-        List<CompletableFuture<Void>> allUpdates = new ArrayList<CompletableFuture<Void>>();
-
         for (Long cpId : listings) {
             // This will get listing details, update the listing with the new status, and update listing
-            CompletableFuture<Void> cpFuture = CompletableFuture
-                    .supplyAsync(() -> getListing(cpId))
-                    .thenAccept(cp -> updateListing(cp, certificationStatus, statusDate));
-
-            allUpdates.add(cpFuture);
+            CertifiedProductSearchDetails cpsd = getListing(cpId);
+            updateListing(cpsd, certificationStatus, statusDate);
         }
-
-        blockUntilAllFuturesComplete(allUpdates);
 
         LOGGER.info("********* Completed the Update Listing Status job. *********");
     }
@@ -78,17 +67,6 @@ public class UpdateListingStatusJob extends QuartzJob {
         return cs;
     }
 
-    private void blockUntilAllFuturesComplete(List<CompletableFuture<Void>> allUpdates) {
-        CompletableFuture<Void> combinedFuture = CompletableFuture
-                .allOf(allUpdates.toArray(new CompletableFuture[allUpdates.size()]));
-
-        try {
-            combinedFuture.get();
-        } catch (InterruptedException | ExecutionException e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-    }
-
     private CertificationStatusEvent getCertifiectionStatusEvent(CertificationStatus cs, Date effectiveDate) {
         CertificationStatusEvent cse = new CertificationStatusEvent();
         cse.setStatus(cs);
@@ -100,6 +78,8 @@ public class UpdateListingStatusJob extends QuartzJob {
     private CertifiedProductSearchDetails getListing(Long cpId) {
         try {
             CertifiedProductSearchDetails cpsd = certifiedProductDetailsManager.getCertifiedProductDetails(cpId);
+            LOGGER.info("Completed Retrieving certified product {" + cpsd.getId() + "}: "
+                    + cpsd.getChplProductNumber());
             return cpsd;
         } catch (Exception e) {
             LOGGER.error(e);
@@ -115,15 +95,20 @@ public class UpdateListingStatusJob extends QuartzJob {
         try {
             certifiedProductManager.update(
                     Long.parseLong(updateRequest.getListing().getCertifyingBody().get("id").toString()), updateRequest);
+            LOGGER.info("Completed Updating certified product {" + updateRequest.getListing().getId() + "}: "
+                    + updateRequest.getListing().getChplProductNumber());
         } catch (ValidationException e) {
             LOGGER.error("Error validating {" + cpd.getId() + "}: " + cpd.getChplProductNumber());
             e.getErrorMessages().stream()
                     .forEach(msg -> LOGGER.error(msg));
+            LOGGER.info("Unsuccessful Update certified product {" + updateRequest.getListing().getId() + "}: "
+                    + updateRequest.getListing().getChplProductNumber());
         } catch (Exception e) {
-            LOGGER.error(e);
+            LOGGER.error("An unexpected error occurred", e);
+            LOGGER.info("Unsuccessful Update certified product {" + updateRequest.getListing().getId() + "}: "
+                    + updateRequest.getListing().getChplProductNumber());
         }
-        LOGGER.info("Completed Updating certified product {" + updateRequest.getListing().getId() + "}: "
-                + updateRequest.getListing().getChplProductNumber());
+
     }
 
     private Date getStatusEffectiveDate(JobExecutionContext jobContext) {
