@@ -238,8 +238,6 @@ public class CertifiedProductManager extends SecuredManager {
             final CertifiedProductDetailsManager certifiedProductDetailsManager,
             final ActivityManager activityManager, final ListingValidatorFactory validatorFactory) {
 
-        LOGGER.info("TODD");
-
         this.msgUtil = msgUtil;
         this.cpDao = cpDao;
         this.searchDao = searchDao;
