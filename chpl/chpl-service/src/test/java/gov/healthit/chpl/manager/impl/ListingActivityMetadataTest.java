@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
@@ -55,6 +56,7 @@ import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.ActivityMetadataManager;
@@ -182,7 +184,8 @@ public class ListingActivityMetadataTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void testModifyCertificationStatusAndActivityHasStatusCategory() throws EntityRetrievalException,
-            ValidationException, IOException, InvalidArgumentsException, EntityCreationException {
+            ValidationException, IOException, InvalidArgumentsException, EntityCreationException, AccessDeniedException,
+            MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByAcb.getName());
         assertNotNull(stat);

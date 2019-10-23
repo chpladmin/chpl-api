@@ -3,6 +3,8 @@ package gov.healthit.chpl.listener;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +24,8 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 @Aspect
-public class MissingReasonListener {
+public class CertifiedProductMissingReasonListener {
+    private static final Logger LOGGER = LogManager.getLogger(CertifiedProductMissingReasonListener.class);
 
     private ErrorMessageUtil errorMessageUtil;
     private CertifiedProductDetailsManager cpdManager;
@@ -41,10 +44,11 @@ public class MissingReasonListener {
      *            - ListingQuestionableActivityProvider
      */
     @Autowired
-    public MissingReasonListener(final ErrorMessageUtil errorMessageUtil,
+    public CertifiedProductMissingReasonListener(final ErrorMessageUtil errorMessageUtil,
             final CertifiedProductDetailsManager cpdManager, final CertifiedProductDAO listingDao,
             final ListingQuestionableActivityProvider listingQuestionableActivityProvider) {
 
+        LOGGER.info("TODD");
         this.errorMessageUtil = errorMessageUtil;
         this.cpdManager = cpdManager;
         this.listingQuestionableActivityProvider = listingQuestionableActivityProvider;
@@ -60,8 +64,7 @@ public class MissingReasonListener {
      * @throws MissingReasonException
      *             if a reason was required but is not found
      */
-    @Before("execution(* gov.healthit.chpl.manager.CertifiedProductManager+.update(..)) && "
-            + "args(.., updateRequest))")
+    @Before("execution(* gov.healthit.chpl.manager.CertifiedProductManager+.update(..)) && args(.., updateRequest)")
     public void checkReasonProvidedIfRequiredOnListingUpdate(final ListingUpdateRequest updateRequest)
             throws EntityRetrievalException, MissingReasonException {
         CertifiedProductSearchDetails newListing = updateRequest.getListing();
