@@ -73,7 +73,8 @@ import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 @PropertySources({
     @PropertySource("classpath:/environment.test.properties"),
     @PropertySource("classpath:/lookup.test.properties"),
-})@EnableCaching
+})
+@EnableCaching
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableTransactionManagement
 @ComponentScan(basePackages = {
