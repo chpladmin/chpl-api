@@ -278,7 +278,10 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
     private ApiKeyEntity getEntityById(final Long entityId) throws EntityRetrievalException {
         ApiKeyEntity entity = null;
         Query query = entityManager.createQuery(
-                "from ApiKeyEntity where (api_key_id = :entityid) ", ApiKeyEntity.class);
+                "from ApiKeyEntity "
+                        + "where (api_key_id = :entityid) "
+                        + "and deleted <> true",
+                ApiKeyEntity.class);
         query.setParameter("entityid", entityId);
         List<ApiKeyEntity> result = query.getResultList();
 
