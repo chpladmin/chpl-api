@@ -29,6 +29,10 @@ public abstract class ActionPermissions {
 
     public abstract boolean hasAccess(Object obj);
 
+    public boolean hasAccess(final Object obj, final Object obj2) {
+        return false;
+    }
+
     public boolean isAcbValidForCurrentUser(final Long acbId) {
         List<CertificationBodyDTO> acbs = resourcePermissions.getAllAcbsForCurrentUser();
         for (CertificationBodyDTO dto : acbs) {
@@ -87,7 +91,7 @@ public abstract class ActionPermissions {
                 .getCertificationBodiesForDeveloper(developerId);
         List<CertificationBody> userAcbs = resourcePermissions.getAllAcbsForCurrentUser().stream()
                 .map(acb -> new CertificationBody(acb))
-                .collect(Collectors.<CertificationBody> toList());
+                .collect(Collectors.<CertificationBody>toList());
 
         return developerAcbs.stream()
                 .anyMatch(developerAcb -> userAcbs.stream()

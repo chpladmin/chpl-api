@@ -1136,7 +1136,7 @@ public class CertifiedProductManagerImpl extends SecuredManager implements Certi
 
     @Override
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).UPDATE, #acbId)")
+            + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).UPDATE, #acbId, #existingListing)")
     @Transactional(rollbackFor = {
             EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
             AccessDeniedException.class, InvalidArgumentsException.class

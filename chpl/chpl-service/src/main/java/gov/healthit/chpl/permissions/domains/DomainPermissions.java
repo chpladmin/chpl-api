@@ -22,6 +22,14 @@ public class DomainPermissions {
         }
     }
 
+    public boolean hasAccess(final String action, final Object obj, final Object obj2) {
+        if (getActionPermissions().containsKey(action)) {
+            return getActionPermissions().get(action).hasAccess(obj, obj2);
+        } else {
+            return false;
+        }
+    }
+
     public Map<String, ActionPermissions> getActionPermissions() {
         return actionPermissions;
     }
@@ -29,6 +37,5 @@ public class DomainPermissions {
     public void setActionPermissions(final Map<String, ActionPermissions> actionPermissions) {
         this.actionPermissions = actionPermissions;
     }
-
 
 }
