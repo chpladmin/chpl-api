@@ -48,7 +48,6 @@ public class CertifiedProductMissingReasonListener {
             final CertifiedProductDetailsManager cpdManager, final CertifiedProductDAO listingDao,
             final ListingQuestionableActivityProvider listingQuestionableActivityProvider) {
 
-        LOGGER.info("TODD");
         this.errorMessageUtil = errorMessageUtil;
         this.cpdManager = cpdManager;
         this.listingQuestionableActivityProvider = listingQuestionableActivityProvider;

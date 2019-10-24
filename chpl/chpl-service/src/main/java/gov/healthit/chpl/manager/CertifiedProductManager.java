@@ -214,6 +214,10 @@ public class CertifiedProductManager extends SecuredManager {
     private static final int SW_CODE_LOC = 7;
     private static final int DATE_CODE_LOC = 8;
 
+    public CertifiedProductManager() {
+
+    }
+
     @Autowired
     public CertifiedProductManager(final ErrorMessageUtil msgUtil, final CertifiedProductDAO cpDao,
             final CertifiedProductSearchDAO searchDao,
