@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version 21.11.0
+_24 October 2019_
+
+### Features
+* Add Quartz job that will update a set of listing's status
+
+---
+
 ## Version 21.10.0
 _21 October 2019_
 
