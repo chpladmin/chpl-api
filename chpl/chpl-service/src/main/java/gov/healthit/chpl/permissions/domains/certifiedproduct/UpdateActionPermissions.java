@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
 @Component("certifiedProductUpdateActionPermissions")
@@ -38,14 +39,14 @@ public class UpdateActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess(final Object obj, final Object listingObj) {
-        if (!(obj instanceof Long) || !(listingObj instanceof CertifiedProductSearchDetails)) {
+        if (!(obj instanceof Long) || !(listingObj instanceof ListingUpdateRequest)) {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             Long acbId = (Long) obj;
             if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)) {
-                CertifiedProductSearchDetails listing = (CertifiedProductSearchDetails) listingObj;
+                CertifiedProductSearchDetails listing = ((ListingUpdateRequest) listingObj).getListing();
                 return !listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY)
                         .toString().equalsIgnoreCase("2014") && isAcbValidForCurrentUser(acbId);
             } else {

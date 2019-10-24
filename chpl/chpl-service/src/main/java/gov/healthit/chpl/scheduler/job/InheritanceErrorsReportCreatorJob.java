@@ -135,7 +135,6 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
         return props;
     }
 
-
     private List<CertifiedProductSearchDetails> retrieveData() {
         List<CertifiedProductFlatSearchResult> listings = certifiedProductSearchDAO.getAllCertifiedProducts();
         List<CertifiedProductFlatSearchResult> certifiedProducts = filterData(listings);
