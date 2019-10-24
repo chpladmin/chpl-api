@@ -262,6 +262,7 @@ pip-log.txt
 *-api.sh
 push.sh
 promote.sh
+ready-for-test.sh
 node_modules/
 generate-release-notes.sh
 ready-for-deployment.sh

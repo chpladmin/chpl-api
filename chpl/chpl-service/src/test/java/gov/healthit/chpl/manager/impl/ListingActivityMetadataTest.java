@@ -6,13 +6,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.ff4j.FF4j;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -25,6 +30,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
@@ -50,6 +56,7 @@ import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.ActivityMetadataManager;
@@ -58,9 +65,14 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import junit.framework.TestCase;
 
+@ActiveProfiles({
+        "Ff4jMock"
+})
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        gov.healthit.chpl.CHPLTestConfig.class
+        gov.healthit.chpl.CHPLTestConfig.class,
+        gov.healthit.chpl.Ff4jTestConfiguration.class
 })
 @TestExecutionListeners({
         DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
@@ -92,6 +104,9 @@ public class ListingActivityMetadataTest extends TestCase {
     @Autowired
     private SurveillanceDAO survDao;
 
+    @Autowired
+    private FF4j ff4j;
+
     private static JWTAuthenticatedUser adminUser, acbUser;
 
     @Rule
@@ -113,6 +128,11 @@ public class ListingActivityMetadataTest extends TestCase {
         acbUser.setFriendlyName("User3");
         acbUser.setSubjectName("testUser3");
         acbUser.getPermissions().add(new GrantedPermission("ROLE_ACB"));
+    }
+
+    @Before
+    public void setup() {
+        Mockito.when(ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)).thenReturn(true);
     }
 
     @Test
@@ -164,7 +184,8 @@ public class ListingActivityMetadataTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void testModifyCertificationStatusAndActivityHasStatusCategory() throws EntityRetrievalException,
-            ValidationException, IOException, InvalidArgumentsException, EntityCreationException {
+            ValidationException, IOException, InvalidArgumentsException, EntityCreationException, AccessDeniedException,
+            MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByAcb.getName());
         assertNotNull(stat);
@@ -183,7 +204,8 @@ public class ListingActivityMetadataTest extends TestCase {
 
         ListingUpdateRequest toUpdate = new ListingUpdateRequest();
         toUpdate.setListing(toUpdateListing);
-        cpManager.update(acbId, toUpdate, beforeListing);
+        toUpdate.setReason("test reason");
+        cpManager.update(acbId, toUpdate);
 
         CertifiedProductSearchDetails afterListing = cpdManager.getCertifiedProductDetails(listingId);
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, listingId, "Updated certification status",
@@ -193,7 +215,7 @@ public class ListingActivityMetadataTest extends TestCase {
         Calendar end = getEndOfToday();
         List<ActivityMetadata> metadatas = metadataManager
                 .getActivityMetadataByConcept(ActivityConcept.CERTIFIED_PRODUCT, start.getTime(), end.getTime());
-        assertEquals(1, metadatas.size());
+        assertEquals(2, metadatas.size());
         ActivityMetadata metadata = metadatas.get(0);
         assertEquals(listingId.longValue(), metadata.getObjectId().longValue());
         assertTrue(metadata.getCategories().contains(ActivityCategory.LISTING));

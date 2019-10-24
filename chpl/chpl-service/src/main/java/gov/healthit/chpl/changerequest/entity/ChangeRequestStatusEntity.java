@@ -156,4 +156,13 @@ public class ChangeRequestStatusEntity {
     public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
+
+    @Override
+    public String toString() {
+        return "ChangeRequestStatusEntity [id=" + id + ", changeRequest=" + changeRequest + ", changeRequestStatusType="
+                + changeRequestStatusType + ", certificationBody=" + certificationBody + ", userPermission="
+                + userPermission + ", statusChangeDate=" + statusChangeDate + ", comment=" + comment + ", creationDate="
+                + creationDate + ", lastModifiedDate=" + lastModifiedDate + ", lastModifiedUser=" + lastModifiedUser
+                + ", deleted=" + deleted + "]";
+    }
 }
