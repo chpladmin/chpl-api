@@ -1108,7 +1108,7 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).UPDATE, #acbId, updateRequest)")
+            + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).UPDATE, #acbId, #updateRequest)")
     @Transactional(rollbackFor = {
             EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
             AccessDeniedException.class, InvalidArgumentsException.class

@@ -38,15 +38,15 @@ public class UpdateActionPermissions extends ActionPermissions {
     }
 
     @Override
-    public boolean hasAccess(final Object obj, final Object listingObj) {
-        if (!(obj instanceof Long) || !(listingObj instanceof ListingUpdateRequest)) {
+    public boolean hasAccess(final Object obj, final Object updateRequest) {
+        if (!(obj instanceof Long) || !(updateRequest instanceof ListingUpdateRequest)) {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             Long acbId = (Long) obj;
             if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)) {
-                CertifiedProductSearchDetails listing = ((ListingUpdateRequest) listingObj).getListing();
+                CertifiedProductSearchDetails listing = ((ListingUpdateRequest) updateRequest).getListing();
                 return !listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY)
                         .toString().equalsIgnoreCase("2014") && isAcbValidForCurrentUser(acbId);
             } else {

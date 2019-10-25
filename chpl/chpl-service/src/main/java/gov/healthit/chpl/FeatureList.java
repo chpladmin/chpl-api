@@ -1,7 +1,7 @@
 package gov.healthit.chpl;
 
 /**
- * All FF4J feature flags.
+ * All relevant FF4J feature flags.
  * @author alarned
  *
  */
