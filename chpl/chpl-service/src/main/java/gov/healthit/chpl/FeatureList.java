@@ -5,7 +5,9 @@ package gov.healthit.chpl;
  * @author alarned
  *
  */
-public class FeatureList {
+public final class FeatureList {
+    private FeatureList() {}
+
     /** Feature related to submitted Complaints. */
     public static final String COMPLAINTS = "complaints";
     /** System for Developers to submit change requests. */

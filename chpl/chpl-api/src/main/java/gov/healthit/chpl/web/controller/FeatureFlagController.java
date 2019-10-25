@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+/**
+ * Feature Flag Controller.
+ *
+ */
 @Api(value = "feature-flags")
 @RestController
 @RequestMapping("/feature-flags")
@@ -42,12 +46,13 @@ public class FeatureFlagController {
         return flags;
     }
 
-    private class Flag {
+    private static class Flag {
         private String key;
         private Boolean active;
         private String name;
         private String description;
 
+        @SuppressWarnings("unused")
         public String getKey() {
             return key;
         }
@@ -56,6 +61,7 @@ public class FeatureFlagController {
             this.key = key;
         }
 
+        @SuppressWarnings("unused")
         public Boolean getActive() {
             return active;
         }
@@ -64,6 +70,7 @@ public class FeatureFlagController {
             this.active = active;
         }
 
+        @SuppressWarnings("unused")
         public String getName() {
             return name;
         }
@@ -72,6 +79,7 @@ public class FeatureFlagController {
             this.name = name;
         }
 
+        @SuppressWarnings("unused")
         public String getDescription() {
             return description;
         }
