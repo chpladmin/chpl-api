@@ -7,8 +7,7 @@ import java.util.List;
 public class Validator2015 extends Validator {
 
     protected static final List<String> REQUIRED_CRITERIA = new ArrayList<String>(Arrays.asList("170.315 (a)(5)",
-            "170.315 (a)(6)", "170.315 (a)(7)", "170.315 (a)(8)", "170.315 (a)(9)", "170.315 (a)(11)",
-            "170.315 (a)(14)", "170.315 (c)(1)", "170.315 (b)(1)", "170.315 (b)(6)", "170.315 (g)(7)", "170.315 (g)(9)"));
+            "170.315 (a)(9)", "170.315 (a)(14)", "170.315 (b)(1)", "170.315 (c)(1)", "170.315 (g)(7)", "170.315 (g)(9)"));
 
     protected static final List<String> CPOE_CRITERIA_OR = new ArrayList<String>(Arrays.asList("170.315 (a)(1)",
             "170.315 (a)(2)", "170.315 (a)(3)"));
