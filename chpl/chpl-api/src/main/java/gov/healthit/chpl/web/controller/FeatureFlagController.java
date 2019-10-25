@@ -21,12 +21,12 @@ import io.swagger.annotations.ApiOperation;
 public class FeatureFlagController {
 
     private FF4j ff4j;
-    
+
     @Autowired
     public FeatureFlagController(final FF4j ff4j) {
         this.ff4j = ff4j;
     }
-    
+
     @ApiOperation(value = "List all feature flags.", notes = "")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<Flag> getFeatureFlags() {
@@ -34,49 +34,49 @@ public class FeatureFlagController {
         for (Map.Entry<String, Feature> entry : ff4j.getFeatures().entrySet()) {
             Flag flag = new Flag();
             flag.setKey(entry.getKey());
-            flag.setActive(entry.getValue().isEnable());
+            flag.setActive(ff4j.check(entry.getKey()));
             flag.setName(entry.getKey());
             flag.setDescription(entry.getValue().getDescription());
             flags.add(flag);
         }
         return flags;
     }
-    
+
     private class Flag {
         private String key;
         private Boolean active;
         private String name;
         private String description;
-        
+
         public String getKey() {
             return key;
         }
-        
-        public void setKey(String key) {
+
+        public void setKey(final String key) {
             this.key = key;
         }
-        
+
         public Boolean getActive() {
             return active;
         }
-        
-        public void setActive(Boolean active) {
+
+        public void setActive(final Boolean active) {
             this.active = active;
         }
-        
+
         public String getName() {
             return name;
         }
-        
-        public void setName(String name) {
+
+        public void setName(final String name) {
             this.name = name;
         }
-        
+
         public String getDescription() {
             return description;
         }
-        
-        public void setDescription(String description) {
+
+        public void setDescription(final String description) {
             this.description = description;
         }
     }
