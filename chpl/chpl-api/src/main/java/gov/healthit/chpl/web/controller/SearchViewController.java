@@ -115,7 +115,7 @@ public class SearchViewController {
 
     @Autowired
     private SurveillanceReportManager survReportManager;
-    
+
     @Autowired
     private ChangeRequestManager changeRequestManager;
 
@@ -409,8 +409,8 @@ public class SearchViewController {
                 String[] certificationCriteriaArr = certificationCriteriaDelimitedTrimmed.split(",");
                 if (certificationCriteriaArr.length > 0) {
                     Set<String> certificationCriterion = new HashSet<String>();
-                    Set<DescriptiveModel> availableCriterion = dimensionalDataManager
-                            .getCertificationCriterionNumbers(false);
+                    Set<CriteriaSpecificDescriptiveModel> availableCriterion = dimensionalDataManager
+                            .getCertificationCriterionNumbers();
 
                     for (int i = 0; i < certificationCriteriaArr.length; i++) {
                         String certCriteriaParam = certificationCriteriaArr[i].trim();
@@ -614,8 +614,8 @@ public class SearchViewController {
         }
 
         if (searchRequest.getCertificationCriteria() != null && searchRequest.getCertificationCriteria().size() > 0) {
-            Set<DescriptiveModel> availableCriterion = dimensionalDataManager
-                    .getCertificationCriterionNumbers(false);
+            Set<CriteriaSpecificDescriptiveModel> availableCriterion = dimensionalDataManager
+                    .getCertificationCriterionNumbers();
             for (String criteria : searchRequest.getCertificationCriteria()) {
                 validateCertificationCriteria(criteria, availableCriterion);
             }
@@ -680,7 +680,7 @@ public class SearchViewController {
     }
 
     private void validateCertificationCriteria(final String certCriteriaParam,
-            final Set<DescriptiveModel> availableCriterion) throws InvalidArgumentsException {
+            final Set<? extends DescriptiveModel> availableCriterion) throws InvalidArgumentsException {
         boolean found = false;
         for (DescriptiveModel currAvailableCriteria : availableCriterion) {
             if (currAvailableCriteria.getName().equalsIgnoreCase(certCriteriaParam)) {
@@ -1241,7 +1241,7 @@ public class SearchViewController {
         ddr.setDecertifiedDeveloperResults(results);
         return ddr;
     }
-    
+
     @ApiOperation(value = "Get all available filter type.")
     @RequestMapping(value = "/data/filter_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -1253,7 +1253,7 @@ public class SearchViewController {
         result.setData(data);
         return result;
     }
-    
+
     @ApiOperation(value = "Get all possible complainant types in the CHPL")
     @RequestMapping(value = "/data/complainant-types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -1277,7 +1277,7 @@ public class SearchViewController {
         result.setData(data);
         return result;
     }
-    
+
     @ApiOperation(value = "Get all possible certification criteria in the CHPL")
     @RequestMapping(value = "/data/certification-criteria", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -1290,7 +1290,7 @@ public class SearchViewController {
         }
         return result;
     }
-    
+
     @ApiOperation(value = "Get all possible change request types in the CHPL")
     @RequestMapping(value = "/data/change-request-types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -1302,7 +1302,7 @@ public class SearchViewController {
         result.setData(data);
         return result;
     }
-    
+
     @ApiOperation(value = "Get all possible change request status types in the CHPL")
     @RequestMapping(value = "/data/change-request-status-types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")

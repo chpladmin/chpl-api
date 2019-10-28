@@ -88,6 +88,10 @@ public class CertificationCriterionEntity implements Serializable {
     @Column(length = 250)
     private String title;
 
+    @Basic(optional = true)
+    @Column(name = "removed")
+    private Boolean removed;
+
     /**
      * Default constructor, mainly for hibernate use.
      */
@@ -319,6 +323,22 @@ public class CertificationCriterionEntity implements Serializable {
         this.title = title;
     }
 
+    public CertificationEditionEntity getCertificationEdition() {
+        return certificationEdition;
+    }
+
+    public void setCertificationEdition(final CertificationEditionEntity certificationEdition) {
+        this.certificationEdition = certificationEdition;
+    }
+
+    public Boolean getRemoved() {
+        return removed;
+    }
+
+    public void setRemoved(final Boolean removed) {
+        this.removed = removed;
+    }
+
     /**
      * Provides toString implementation.
      * @see java.lang.Object#toString()
@@ -338,15 +358,8 @@ public class CertificationCriterionEntity implements Serializable {
         sb.append("lastModifiedUser: " + this.getLastModifiedUser() + ", ");
         sb.append("number: " + this.getNumber() + ", ");
         sb.append("requiresSed: " + this.isRequiresSed() + ", ");
-        sb.append("title: " + this.getTitle());
+        sb.append("title: " + this.getTitle() + ", ");
+        sb.append("removed: " + this.getRemoved());
         return sb.toString();
-    }
-
-    public CertificationEditionEntity getCertificationEdition() {
-        return certificationEdition;
-    }
-
-    public void setCertificationEdition(final CertificationEditionEntity certificationEdition) {
-        this.certificationEdition = certificationEdition;
     }
 }

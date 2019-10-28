@@ -12,7 +12,7 @@ public class SearchableDimensionalData implements Serializable {
     private Set<KeyValueModelStatuses> productNames;
     private Set<KeyValueModelStatuses> developerNames;
     private Set<CertificationBody> certBodyNames;
-    private Set<DescriptiveModel> certificationCriterionNumbers;
+    private Set<CriteriaSpecificDescriptiveModel> certificationCriterionNumbers;
     private Set<DescriptiveModel> cqmCriterionNumbers;
 
     public Set<KeyValueModel> getProductClassifications() {
@@ -63,11 +63,11 @@ public class SearchableDimensionalData implements Serializable {
         this.certBodyNames = certBodyNames;
     }
 
-    public Set<DescriptiveModel> getCertificationCriterionNumbers() {
+    public Set<CriteriaSpecificDescriptiveModel> getCertificationCriterionNumbers() {
         return certificationCriterionNumbers;
     }
 
-    public void setCertificationCriterionNumbers(final Set<DescriptiveModel> certificationCriterionNumbers) {
+    public void setCertificationCriterionNumbers(final Set<CriteriaSpecificDescriptiveModel> certificationCriterionNumbers) {
         this.certificationCriterionNumbers = certificationCriterionNumbers;
     }
 
