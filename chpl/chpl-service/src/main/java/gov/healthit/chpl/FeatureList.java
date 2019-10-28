@@ -6,8 +6,6 @@ package gov.healthit.chpl;
  *
  */
 public class FeatureList {
-    /** Feature related to submitted Complaints. */
-    public static final String COMPLAINTS = "complaints";
     /** System for Developers to submit change requests. */
     public static final String CHANGE_REQUEST = "change-request";
     /** Features that will be turned on as of the effective rule date. */

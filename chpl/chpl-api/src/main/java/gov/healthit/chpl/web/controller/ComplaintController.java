@@ -44,32 +44,24 @@ public class ComplaintController {
             notes = "Security Restrictions: Only complaints owned by the current user's ACB will be returned")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ComplaintResults getComplaints() {
-        if (ff4j.check(FeatureList.COMPLAINTS)) {
-            ComplaintResults results = new ComplaintResults();
-            List<Complaint> complaints = complaintManager.getAllComplaints();
-            results.setResults(complaints);
-            return results;
-        } else {
-            throw new NotImplementedException();
-        }
+        ComplaintResults results = new ComplaintResults();
+        List<Complaint> complaints = complaintManager.getAllComplaints();
+        results.setResults(complaints);
+        return results;
     }
 
     @ApiOperation(value = "Save complaint for use in Surveillance Quarterly Report.",
             notes = "")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody Complaint create(@RequestBody final Complaint complaint) throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
-        if (ff4j.check(FeatureList.COMPLAINTS)) {
-            ValidationException error = new ValidationException();
-            //Make sure there is an ACB
-            if (complaint.getCertificationBody() == null || complaint.getCertificationBody().getId() == null) {
-                error.getErrorMessages().add(errorMessageUtil.getMessage("complaints.create.acbRequired"));
-                throw error;
-            }
-
-            return complaintManager.create(complaint);
-        } else {
-            throw new NotImplementedException();
+        ValidationException error = new ValidationException();
+        //Make sure there is an ACB
+        if (complaint.getCertificationBody() == null || complaint.getCertificationBody().getId() == null) {
+            error.getErrorMessages().add(errorMessageUtil.getMessage("complaints.create.acbRequired"));
+            throw error;
         }
+
+        return complaintManager.create(complaint);
     }
 
     @ApiOperation(value = "Update complaint for use in Surveillance Quarterly Report.",
@@ -77,16 +69,12 @@ public class ComplaintController {
     @RequestMapping(value = "/{complaintId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public @ResponseBody Complaint update(@RequestBody final Complaint complaint)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
-        if (ff4j.check(FeatureList.COMPLAINTS)) {
-            ValidationException error = new ValidationException();
-            if (complaint.getCertificationBody() == null || complaint.getCertificationBody().getId() == null) {
-                error.getErrorMessages().add(errorMessageUtil.getMessage("complaints.update.acbRequired"));
-                throw error;
-            }
-            return complaintManager.update(complaint);
-        } else {
-            throw new NotImplementedException();
+        ValidationException error = new ValidationException();
+        if (complaint.getCertificationBody() == null || complaint.getCertificationBody().getId() == null) {
+            error.getErrorMessages().add(errorMessageUtil.getMessage("complaints.update.acbRequired"));
+            throw error;
         }
+        return complaintManager.update(complaint);
     }
 
     @ApiOperation(value = "Delete complaint for use in Surveillance Quarterly Report.",
@@ -94,10 +82,6 @@ public class ComplaintController {
     @RequestMapping(value = "/{complaintId}", method = RequestMethod.DELETE, produces = "application/json; charset=utf-8")
     public @ResponseBody void delete(@PathVariable("complaintId") final Long complaintId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-        if (ff4j.check(FeatureList.COMPLAINTS)) {
-            complaintManager.delete(complaintId);
-        } else {
-            throw new NotImplementedException();
-        }
+        complaintManager.delete(complaintId);
     }
 }
