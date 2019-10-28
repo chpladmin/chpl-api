@@ -2,7 +2,6 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.List;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -30,13 +28,11 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/complaints")
 public class ComplaintController {
     private ComplaintManager complaintManager;
-    private FF4j ff4j;
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public ComplaintController(final ComplaintManager complaintManager, final FF4j ff4j, final ErrorMessageUtil errorMessageUtil) {
+    public ComplaintController(final ComplaintManager complaintManager, final ErrorMessageUtil errorMessageUtil) {
         this.complaintManager = complaintManager;
-        this.ff4j = ff4j;
         this.errorMessageUtil = errorMessageUtil;
     }
 
