@@ -1,7 +1,5 @@
 package gov.healthit.chpl.scheduler.job;
 
-import java.util.Properties;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.JobExecutionContext;
@@ -14,11 +12,10 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 
 /**
  * The RemoveCriteriaJob sets the removed flag to "true" for the following 2015 criteria:
- * (a)(6), (a)(7), (a)(8), (a)(10), (a)(11), (a)(13), (b)(4), (b)(5), and (e)(2)
+ * (a)(6), (a)(7), (a)(8), (a)(10), (a)(11), (a)(13), (b)(4), (b)(5), and (e)(2).
  */
 public class RemoveCriteriaJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("removeCriteriaJobLogger");
-    private Properties props;
 
     @Autowired
     private CertificationCriterionDAO certCriteriaDao;
@@ -43,7 +40,7 @@ public class RemoveCriteriaJob extends QuartzJob {
                 certCriteriaDao.update(certDto);
                 LOGGER.info("Updated criteria " + criteria);
             } catch (final Exception ex) {
-                LOGGER.info("Exception updating criteria " + criteria, ex);
+                LOGGER.error("Exception updating criteria " + criteria, ex);
             }
         }
         LOGGER.info("********* Completed the Remove Criteria job. *********");
