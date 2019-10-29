@@ -57,7 +57,6 @@ import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMetadataDTO;
-import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -607,88 +606,28 @@ public class CertifiedProductController {
             JsonProcessingException, IOException, ValidationException, MissingReasonException {
 
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
-
-        // clean up what was sent in - some necessary IDs or other fields may be
-        // missing
-        Long newAcbId = Long.valueOf(updatedListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
-        cpManager.sanitizeUpdatedListingData(newAcbId, updatedListing);
-
-        // validate
-        Validator validator = validatorFactory.getValidator(updatedListing);
-        if (validator != null) {
-            validator.validate(updatedListing);
-        }
-
+        
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(updatedListing.getId());
-
-        // make sure the old and new certification statuses aren't ONC bans
-        if (existingListing.getCurrentStatus() != null
-                && updatedListing.getCurrentStatus() != null
-                && !existingListing.getCurrentStatus().getStatus().getId()
-                .equals(updatedListing.getCurrentStatus().getStatus().getId())) {
-            // if the status is to or from suspended by onc make sure the user
-            // has admin
-            if ((existingListing.getCurrentStatus().getStatus().getName()
-                    .equals(CertificationStatusType.SuspendedByOnc.toString())
-                    || updatedListing.getCurrentStatus().getStatus().getName()
-                    .equals(CertificationStatusType.SuspendedByOnc.toString())
-                    || existingListing.getCurrentStatus().getStatus().getName()
-                    .equals(CertificationStatusType.TerminatedByOnc.toString())
-                    || updatedListing.getCurrentStatus().getStatus().getName()
-                    .equals(CertificationStatusType.TerminatedByOnc.toString()))
-                    && !resourcePermissions.isUserRoleOnc()
-                    && !resourcePermissions.isUserRoleAdmin()) {
-                updatedListing.getErrorMessages()
-                .add("User " + AuthUtil.getUsername()
-                + " does not have permission to change certification status of "
-                + existingListing.getChplProductNumber() + " from "
-                + existingListing.getCurrentStatus().getStatus().getName() + " to "
-                + updatedListing.getCurrentStatus().getStatus().getName());
-            }
-        }
-
-        // has the unique id changed? if so, make sure it is still unique
-        if (!existingListing.getChplProductNumber().equals(updatedListing.getChplProductNumber())) {
-            try {
-                boolean isDup = cpManager.chplIdExists(updatedListing.getChplProductNumber());
-                if (isDup) {
-                    updatedListing.getErrorMessages()
-                    .add(msgUtil.getMessage("listing.chplProductNumber.changedNotUnique",
-                            updatedListing.getChplProductNumber()));
-                }
-            } catch (final EntityRetrievalException ex) {
-            }
-        }
-
-        if (updatedListing.getErrorMessages() != null && updatedListing.getErrorMessages().size() > 0) {
-            for (String err : updatedListing.getErrorMessages()) {
-                LOGGER.error("Error updating listing " + updatedListing.getChplProductNumber() + ": " + err);
-            }
-            throw new ValidationException(updatedListing.getErrorMessages(), updatedListing.getWarningMessages());
-        }
-
         Long acbId = Long.parseLong(existingListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
 
-        // if the ACB owner is changed this is a separate action with different
-        // security
+        // if the ACB owner is changed this is a separate action with different security
+        Long newAcbId = Long
+                .valueOf(updatedListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
         if (acbId.longValue() != newAcbId.longValue()) {
             cpManager.changeOwnership(updatedListing.getId(), newAcbId);
-            CertifiedProductSearchDetails changedProduct = cpdManager
-                    .getCertifiedProductDetails(updatedListing.getId());
-            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
-                    "Changed ACB ownership.", existingListing, changedProduct);
+            CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());
+            activityManager.addActivity(
+                    ActivityConcept.CERTIFIED_PRODUCT, 
+                    existingListing.getId(),
+                    "Changed ACB ownership.", 
+                    existingListing, 
+                    changedProduct);
             existingListing = changedProduct;
         }
 
-        // update the listing
-        cpManager.update(acbId, updateRequest, existingListing);
-
-        // search for the product by id to get it with all the updates
+        cpManager.update(newAcbId, updateRequest);
+        
         CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());
-        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
-                "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingListing,
-                changedProduct, updateRequest.getReason());
-
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
         if (!changedProduct.getChplProductNumber().equals(existingListing.getChplProductNumber())) {
@@ -863,7 +802,7 @@ public class CertifiedProductController {
             PendingCertifiedProductDTO pcpDto = new PendingCertifiedProductDTO(pendingCp);
             PendingValidator validator = validatorFactory.getValidator(pcpDto);
             if (validator != null) {
-                validator.validate(pcpDto);
+                validator.validate(pcpDto, false);
             }
             if (pcpDto.getErrorMessages() != null && pcpDto.getErrorMessages().size() > 0) {
                 throw new ValidationException(pcpDto.getErrorMessages(), pcpDto.getWarningMessages());
