@@ -5,6 +5,7 @@ _24 October 2019_
 
 ### Features
 * Add Quartz job that will update a set of listing's status
+* Add User scheduled job to generate and send a report of Pending Change Requests
 
 ---
 
