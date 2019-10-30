@@ -55,60 +55,57 @@ public class Update2014ListingsStatusJob extends QuartzJob {
         setSecurityContext();
 
         List<Long> listings = getListingIds();
-        listings = listings.subList(831, 930);
-
-        CertificationStatus certificationStatus = getCertificationStatus(jobContext);
-
-        Date statusDate = getStatusEffectiveDate(jobContext);
-
-        String email = jobContext.getMergedJobDataMap().getString("email");
-
-        StatusCollectorTriggerListener listener = new StatusCollectorTriggerListener(email, env, LOGGER);
+        listings = listings.subList(831, 930); // TODO - This is only for testing!
         List<StatusCollectorTriggerWrapper> wrappers = new ArrayList<StatusCollectorTriggerWrapper>();
 
         for (Long cpId : listings) {
-            JobDataMap dataMap = new JobDataMap();
-            dataMap.put("listing", cpId);
-            dataMap.put("certificationStatus", certificationStatus);
-            dataMap.put("statusDate", statusDate);
-
-            StatusCollectorTriggerWrapper wrapper = new StatusCollectorTriggerWrapper(
-                    TriggerBuilder.newTrigger()
-                            .forJob(JOB_NAME, JOB_GROUP)
-                            .usingJobData(dataMap)
-                            .build());
-
-            wrappers.add(wrapper);
-            listener.getTriggerWrappers().add(wrapper);
+            wrappers.add(buildTriggerWrapper(cpId, jobContext));
         }
 
         try {
-            // Add the triggers to the listener
-            List<Matcher<TriggerKey>> matchers = wrappers.stream()
-                    .map(wrapper -> KeyMatcher.keyEquals(wrapper.getTrigger().getKey()))
-                    .collect(Collectors.toList());
+            StatusCollectorTriggerListener listener = new StatusCollectorTriggerListener(wrappers,
+                    jobContext.getMergedJobDataMap().getString("email"), env, LOGGER);
 
+            // Add the triggers and listener to the scheduler
             chplScheduler.getScheduler().getListenerManager()
-                    .addTriggerListener(listener, matchers);
+                    .addTriggerListener(listener, getTriggerKeyMatchers(wrappers));
 
-            // Fire the trigger
+            // Fire the triggers
             wrappers.stream()
                     .forEach(wrapper -> fireTrigger(wrapper.getTrigger()));
 
         } catch (SchedulerException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.error("Scheduler Error: " + e.getMessage(), e);
         }
 
         LOGGER.info("********* Completed the Update Listing Status job. *********");
+    }
+
+    private StatusCollectorTriggerWrapper buildTriggerWrapper(final Long cpId, final JobExecutionContext jobContext) {
+        JobDataMap dataMap = new JobDataMap();
+        dataMap.put("listing", cpId);
+        dataMap.put("certificationStatus", getCertificationStatus(jobContext));
+        dataMap.put("statusDate", getStatusEffectiveDate(jobContext));
+
+        return new StatusCollectorTriggerWrapper(
+                TriggerBuilder.newTrigger()
+                        .forJob(JOB_NAME, JOB_GROUP)
+                        .usingJobData(dataMap)
+                        .build());
+
+    }
+
+    private List<Matcher<TriggerKey>> getTriggerKeyMatchers(final List<StatusCollectorTriggerWrapper> wrappers) {
+        return wrappers.stream()
+                .map(wrapper -> KeyMatcher.keyEquals(wrapper.getTrigger().getKey()))
+                .collect(Collectors.toList());
     }
 
     private void fireTrigger(final Trigger trigger) {
         try {
             chplScheduler.getScheduler().scheduleJob(trigger);
         } catch (SchedulerException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.error("Scheduler Error: " + e.getMessage(), e);
         }
     }
 

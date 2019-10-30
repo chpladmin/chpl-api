@@ -23,7 +23,9 @@ public class StatusCollectorTriggerListener implements TriggerListener {
     private String email;
     private Environment env;
 
-    public StatusCollectorTriggerListener(final String email, final Environment env, final Logger logger) {
+    public StatusCollectorTriggerListener(List<StatusCollectorTriggerWrapper> triggerWrappers, final String email,
+            final Environment env, final Logger logger) {
+        this.triggerWrappers = triggerWrappers;
         this.email = email;
         this.env = env;
         this.logger = logger;
@@ -88,8 +90,7 @@ public class StatusCollectorTriggerListener implements TriggerListener {
                     .htmlMessage(buildTable())
                     .sendEmail();
         } catch (MessagingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("Error sending email: " + e.getMessage(), e);
         }
     }
 
@@ -118,13 +119,5 @@ public class StatusCollectorTriggerListener implements TriggerListener {
         sb.append("</td>");
         sb.append("</tr>");
         return sb.toString();
-    }
-
-    public List<StatusCollectorTriggerWrapper> getTriggerWrappers() {
-        return triggerWrappers;
-    }
-
-    public void setTriggerWrappers(List<StatusCollectorTriggerWrapper> triggerWrappers) {
-        this.triggerWrappers = triggerWrappers;
     }
 }
