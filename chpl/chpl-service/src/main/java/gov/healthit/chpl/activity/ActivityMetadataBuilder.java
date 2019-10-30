@@ -3,6 +3,7 @@ package gov.healthit.chpl.activity;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.AnnouncementActivityMetadata;
 import gov.healthit.chpl.domain.activity.AnnualReportActivityMetadata;
+import gov.healthit.chpl.domain.activity.ApiKeyManagementActivityMetadata;
 import gov.healthit.chpl.domain.activity.CertificationBodyActivityMetadata;
 import gov.healthit.chpl.domain.activity.ChangeRequestActivityMetadata;
 import gov.healthit.chpl.domain.activity.ComplaintActivityMetadata;
@@ -104,6 +105,9 @@ public abstract class ActivityMetadataBuilder {
             metadata = new AnnualReportActivityMetadata();
         case CHANGE_REQUEST:
             metadata = new ChangeRequestActivityMetadata();
+        case API_KEY:
+            metadata = new ApiKeyManagementActivityMetadata();
+            break;
         default:
             break;
         }

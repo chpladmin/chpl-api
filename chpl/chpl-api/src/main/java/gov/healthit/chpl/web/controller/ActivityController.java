@@ -814,12 +814,12 @@ public class ActivityController {
         notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
             + "Security Restrictions: Only ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/metadata/api-keys", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityDetails> metadataForApiKeys(@RequestParam final Long start,
+    public List<ActivityMetadata> metadataForApiKeys(@RequestParam final Long start,
         @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDatesAndDateRange(start, end);
-        return activityManager.getApiKeyActivity(startDate, endDate);
+        return activityMetadataManager.getApiKeyManagementMetaData(startDate, endDate);
     }
 
     @Deprecated
