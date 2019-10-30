@@ -362,7 +362,7 @@ public class DimensionalDataManagerTest {
     public void test_getCertificationCriterionNumbers_CachesData()
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         long startTime = System.currentTimeMillis();
-        Set<DescriptiveModel> results = dimensionalDataManager.getCertificationCriterionNumbers(false);
+        Set<CriteriaSpecificDescriptiveModel> results = dimensionalDataManager.getCertificationCriterionNumbers();
         // getCertificationCriterionNumbers should now be cached
         long endTime = System.currentTimeMillis();
         long timeLength = endTime - startTime;
@@ -378,7 +378,7 @@ public class DimensionalDataManagerTest {
 
         // now compare cached time vs non-cached time
         startTime = System.currentTimeMillis();
-        results = dimensionalDataManager.getCertificationCriterionNumbers(false);
+        results = dimensionalDataManager.getCertificationCriterionNumbers();
         endTime = System.currentTimeMillis();
         timeLength = endTime - startTime;
         elapsedSecs = timeLength / 1000.0;
