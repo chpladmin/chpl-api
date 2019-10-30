@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -36,8 +37,6 @@ public class Update2014ListingsToRetiredJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("updateListingStatusJobLogger");
     private static final String JOB_NAME = "updateSingleListingStatusJob";
     private static final String JOB_GROUP = "subordinateJobs";
-    private static final Long CERT_STATUS_ID = 2L;
-    private static final String CERT_STATUS_NAME = "Retired";
 
     @Autowired
     private CertifiedProductDAO certifiedProductDAO;
@@ -56,9 +55,9 @@ public class Update2014ListingsToRetiredJob extends QuartzJob {
         setSecurityContext();
 
         List<Long> listings = getListingIds();
-        listings = listings.subList(731, 830);
+        listings = listings.subList(831, 930);
 
-        CertificationStatus certificationStatus = getCertificationStatus();
+        CertificationStatus certificationStatus = getCertificationStatus(jobContext);
 
         Date statusDate = getStatusEffectiveDate(jobContext);
 
@@ -113,10 +112,13 @@ public class Update2014ListingsToRetiredJob extends QuartzJob {
         }
     }
 
-    private CertificationStatus getCertificationStatus() {
+    private CertificationStatus getCertificationStatus(JobExecutionContext context) {
+        @SuppressWarnings("unchecked") Map<String, Object> csMap = (Map<String, Object>) context.getMergedJobDataMap()
+                .get("certificationStatus");
+
         CertificationStatus cs = new CertificationStatus();
-        cs.setId(CERT_STATUS_ID);
-        cs.setName(CERT_STATUS_NAME);
+        cs.setId(Long.parseLong(csMap.get("id").toString()));
+        cs.setName(csMap.get("name").toString());
         return cs;
     }
 
