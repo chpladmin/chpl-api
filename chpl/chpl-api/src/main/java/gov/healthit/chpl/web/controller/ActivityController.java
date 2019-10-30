@@ -819,7 +819,7 @@ public class ActivityController {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDatesAndDateRange(start, end);
-        return activityMetadataManager.getApiKeyManagementMetaData(startDate, endDate);
+        return activityMetadataManager.getApiKeyManagementMetadata(startDate, endDate);
     }
 
     @Deprecated

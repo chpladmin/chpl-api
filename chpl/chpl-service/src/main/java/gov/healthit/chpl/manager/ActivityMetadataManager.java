@@ -50,5 +50,5 @@ public interface ActivityMetadataManager {
 
     List<ActivityMetadata> getChangeRequestActivityMetadata(Date startDate, Date endDate) throws IOException;
 
-    List<ActivityMetadata> getApiKeyManagementMetaData(Date startDate, Date endDate) throws IOException;
+    List<ActivityMetadata> getApiKeyManagementMetadata(Date startDate, Date endDate) throws IOException;
 }
