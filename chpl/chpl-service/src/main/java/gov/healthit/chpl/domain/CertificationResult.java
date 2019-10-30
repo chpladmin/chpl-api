@@ -31,14 +31,20 @@ public class CertificationResult implements Serializable {
     private Long id;
 
     /**
-     * Criteria number, i.e. 170.314 (a)(1)
+     * Criteria number, i.e. 170.314 (a)(1).
+     * This field is deprecated and will be removed in a future release.
+     * Users should reference criterion.number instead.
      */
+    @Deprecated
     @XmlElement(required = true)
     private String number;
 
     /**
-     * Short description of the criteria
+     * Short description of the criteria.
+     * This field is deprecated and will be removed in a future release.
+     * Users should reference criterion.title instead.
      */
+    @Deprecated
     @XmlElement(required = true)
     private String title;
 
