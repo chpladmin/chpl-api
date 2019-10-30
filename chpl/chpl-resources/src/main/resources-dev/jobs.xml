@@ -720,10 +720,6 @@
                     <key>authorities</key>
                     <value>ROLE_ADMIN;ROLE_ONC</value>
                 </entry>
-                <entry>
-                    <key>frequency</key>
-                    <value>WEEKLY</value>
-                </entry>
             </job-data-map>
         </job>
     </schedule>
