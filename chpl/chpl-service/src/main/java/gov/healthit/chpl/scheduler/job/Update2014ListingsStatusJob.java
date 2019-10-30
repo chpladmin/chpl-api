@@ -33,8 +33,8 @@ import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 import gov.healthit.chpl.scheduler.job.extra.StatusCollectorTriggerListener;
 import gov.healthit.chpl.scheduler.job.extra.StatusCollectorTriggerWrapper;
 
-public class Update2014ListingsToRetiredJob extends QuartzJob {
-    private static final Logger LOGGER = LogManager.getLogger("updateListingStatusJobLogger");
+public class Update2014ListingsStatusJob extends QuartzJob {
+    private static final Logger LOGGER = LogManager.getLogger("updateL2014istingStatusJobLogger");
     private static final String JOB_NAME = "updateSingleListingStatusJob";
     private static final String JOB_GROUP = "subordinateJobs";
 
@@ -63,7 +63,7 @@ public class Update2014ListingsToRetiredJob extends QuartzJob {
 
         String email = jobContext.getMergedJobDataMap().getString("email");
 
-        StatusCollectorTriggerListener listener = new StatusCollectorTriggerListener(email, env);
+        StatusCollectorTriggerListener listener = new StatusCollectorTriggerListener(email, env, LOGGER);
         List<StatusCollectorTriggerWrapper> wrappers = new ArrayList<StatusCollectorTriggerWrapper>();
 
         for (Long cpId : listings) {

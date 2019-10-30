@@ -247,6 +247,17 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <RollingFile name="update2014ListingStatusJob"
+            fileName="${logDir}/scheduler/update2014ListingStatusJob.log"
+            filePattern="${logDir}/scheduler/history/update2014ListingStatusJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
     </Appenders>
     <Loggers>
         <Logger name="org.jose4j" level="WARN" additivity="false">
@@ -368,6 +379,10 @@
         <Logger name="updateListingStatusJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="updateListingStatusJob" />
+        </Logger>
+        <Logger name="update2014ListingStatusJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="update2014ListingStatusJob" />
         </Logger>
         <!-- <Root level="INFO"> <AppenderRef ref="STDOUT" /> </Root> -->
     </Loggers>

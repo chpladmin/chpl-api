@@ -572,7 +572,7 @@
             <name>update2014ListingStatusJob</name>
             <group>systemJobs</group>
             <description>Updates the status for 2014 listings</description>
-            <job-class>gov.healthit.chpl.scheduler.job.Update2014ListingsToRetiredJob</job-class>
+            <job-class>gov.healthit.chpl.scheduler.job.Update2014ListingsStatusJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>
@@ -591,7 +591,7 @@
             </job-data-map>
         </job>
  
-         <!-- Job used to change status of a single listings -->
+        <!-- Job used to change status of a single listings -->
         <job>
             <name>updateSingleListingStatusJob</name>
             <group>subordinateJobs</group>

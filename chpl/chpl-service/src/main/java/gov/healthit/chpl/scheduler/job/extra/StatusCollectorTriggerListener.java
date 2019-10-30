@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.JobExecutionContext;
 import org.quartz.Trigger;
@@ -17,17 +16,17 @@ import org.springframework.core.env.Environment;
 import gov.healthit.chpl.util.EmailBuilder;
 
 public class StatusCollectorTriggerListener implements TriggerListener {
-
     private static final String TRIGGER_LISTENER_NAME = "UpdateSingleListingTriggerListener";
-    private static final Logger LOGGER = LogManager.getLogger("updateListingStatusJobLogger");
+    private Logger logger;
 
     private List<StatusCollectorTriggerWrapper> triggerWrappers = new ArrayList<StatusCollectorTriggerWrapper>();
     private String email;
     private Environment env;
 
-    public StatusCollectorTriggerListener(final String email, final Environment env) {
+    public StatusCollectorTriggerListener(final String email, final Environment env, final Logger logger) {
         this.email = email;
         this.env = env;
+        this.logger = logger;
     }
 
     @Override
@@ -37,25 +36,22 @@ public class StatusCollectorTriggerListener implements TriggerListener {
 
     @Override
     public void triggerFired(Trigger trigger, JobExecutionContext context) {
-
+        // Do nothing
     }
 
     @Override
     public boolean vetoJobExecution(Trigger trigger, JobExecutionContext context) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public void triggerMisfired(Trigger trigger) {
-        // TODO Auto-generated method stub
-
+        // Do nothing
     }
 
     @Override
     public void triggerComplete(Trigger trigger, JobExecutionContext context,
             CompletedExecutionInstruction triggerInstructionCode) {
-        // LOGGER.info(getName() + " trigger: " + trigger.getKey() + " completed at " + trigger.getStartTime());
 
         StatusCollectorTriggerWrapper wrapper = triggerWrappers.stream()
                 .filter(item -> item.getTrigger().getKey().equals(trigger.getKey()))
@@ -66,12 +62,7 @@ public class StatusCollectorTriggerListener implements TriggerListener {
         wrapper.setJobResponse((JobResponse) context.getResult());
 
         if (areAllTriggersComplete()) {
-            LOGGER.info("All jobs have completed!!!!!");
-            // triggerWrappers.stream()
-            // .forEach(item -> LOGGER
-            // .info(item.getTrigger().getJobDataMap().getLong("listing") + " - completed ["
-            // + getStatusAsString(item.isCompletedSuccessfully()) + "] - "
-            // + item.getMessage()));
+            logger.info("All jobs have completed!!!!!");
             sendEmail();
         }
     }
@@ -136,13 +127,4 @@ public class StatusCollectorTriggerListener implements TriggerListener {
     public void setTriggerWrappers(List<StatusCollectorTriggerWrapper> triggerWrappers) {
         this.triggerWrappers = triggerWrappers;
     }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
 }
