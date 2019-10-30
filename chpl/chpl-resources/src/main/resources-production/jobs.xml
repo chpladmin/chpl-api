@@ -16,7 +16,7 @@
         <job>
             <name>removeCriteriaJob</name>
             <group>systemJobs</group>
-            <description>Switches the removed flag to 'true' for specific 2015 criteria</description>
+            <description>Sets the removed flag to 'true' for specific 2015 criteria</description>
             <job-class>gov.healthit.chpl.scheduler.job.RemoveCriteriaJob</job-class>
             <durability>true</durability>
             <recover>false</recover>

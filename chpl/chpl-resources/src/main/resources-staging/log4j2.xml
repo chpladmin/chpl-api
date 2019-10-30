@@ -358,7 +358,7 @@
             additivity="false">
             <AppenderRef ref="updateListingStatusJob" />
         </Logger>
-        <Logger name="removeCriteriaJoblogger" level="INFO"
+        <Logger name="removeCriteriaJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="removeCriteriaJob" />
         </Logger>
