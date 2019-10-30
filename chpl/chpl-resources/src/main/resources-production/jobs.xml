@@ -49,7 +49,7 @@
             </job-data-map>
         </job>
         
-                <!-- Job used to change status of 2014 listings to retired-->
+        <!-- Job used to change status of 2014 listings to retired-->
         <job>
             <name>update2014ListingStatusJob</name>
             <group>systemJobs</group>
@@ -61,10 +61,6 @@
                 <entry>
                     <key>authorities</key>
                     <value>ROLE_ADMIN;ROLE_ONC</value>
-                </entry>
-                <entry>
-                    <key>frequency</key>
-                    <value>WEEKLY</value>
                 </entry>
                 <entry>
                     <key>parameters</key>
