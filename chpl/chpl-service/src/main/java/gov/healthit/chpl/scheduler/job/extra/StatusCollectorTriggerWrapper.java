@@ -6,8 +6,7 @@ public class StatusCollectorTriggerWrapper {
 
     private Trigger trigger;
     private boolean completed = false;
-    private boolean completedSuccessfully = false;
-    private String message = "";
+    private JobResponse jobResponse;
 
     public StatusCollectorTriggerWrapper(final Trigger trigger) {
         this.trigger = trigger;
@@ -29,20 +28,12 @@ public class StatusCollectorTriggerWrapper {
         this.completed = completed;
     }
 
-    public boolean isCompletedSuccessfully() {
-        return completedSuccessfully;
+    public JobResponse getJobResponse() {
+        return jobResponse;
     }
 
-    public void setCompletedSuccessfully(boolean completedSuccessfully) {
-        this.completedSuccessfully = completedSuccessfully;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
+    public void setJobResponse(JobResponse jobResponse) {
+        this.jobResponse = jobResponse;
     }
 
 }
