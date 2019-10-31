@@ -55,7 +55,7 @@ public class Update2014ListingsStatusJob extends QuartzJob {
         setSecurityContext();
 
         List<Long> listings = getListingIds();
-        listings = listings.subList(1000, 1010); // TODO - This is only for testing!
+        listings = listings.subList(1100, 1199); // TODO - This is only for testing!
         List<StatusCollectorTriggerWrapper> wrappers = new ArrayList<StatusCollectorTriggerWrapper>();
 
         for (Long cpId : listings) {
