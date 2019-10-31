@@ -247,9 +247,9 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
-        <RollingFile name="updateListingStatusJob"
-            fileName="${logDir}/scheduler/updateListingStatusJob.log"
-            filePattern="${logDir}/scheduler/history/updateListingStatusJob-%d{yyyy-MM-dd}.log">
+        <RollingFile name="update2014ListingStatusJob"
+            fileName="${logDir}/scheduler/update2014ListingStatusJob.log"
+            filePattern="${logDir}/scheduler/history/update2014ListingStatusJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
                 <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
             </PatternLayout>
