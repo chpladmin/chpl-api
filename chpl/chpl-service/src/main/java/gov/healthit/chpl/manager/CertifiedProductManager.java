@@ -1380,7 +1380,7 @@ public class CertifiedProductManager extends SecuredManager {
 
     /**
      * Intelligently determine what updates need to be made to ICS parents.
-     * 
+     *
      * @param existingIcs
      * @param updatedIcs
      */
@@ -1457,7 +1457,7 @@ public class CertifiedProductManager extends SecuredManager {
 
     /**
      * Intelligently update the ICS children relationships
-     * 
+     *
      * @param existingIcs
      * @param updatedIcs
      */

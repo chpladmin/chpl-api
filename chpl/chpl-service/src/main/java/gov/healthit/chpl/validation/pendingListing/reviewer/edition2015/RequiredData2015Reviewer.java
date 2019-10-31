@@ -839,6 +839,10 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                             if (foundMeasure == null || foundMeasure.getId() == null) {
                                 listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.invalidG1MacraMeasure",
                                         cert.getNumber(), pendingMeasureMap.getEnteredValue()));
+                            } else if ((listing.getIcs() == null || !listing.getIcs().booleanValue())
+                                    && foundMeasure.getRemoved() != null && foundMeasure.getRemoved().booleanValue()) {
+                                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.removedG1MacraMeasure",
+                                        cert.getNumber(), foundMeasure.getValue()));
                             } else {
                                 pendingMeasureMap.setMacraMeasure(foundMeasure);
                             }
@@ -856,6 +860,10 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                 listing.getErrorMessages().add(
                                         msgUtil.getMessage("listing.criteria.invalidG2MacraMeasure",
                                                 cert.getNumber(), pendingMeasureMap.getEnteredValue()));
+                            } else if ((listing.getIcs() == null || !listing.getIcs().booleanValue())
+                                    && foundMeasure.getRemoved() != null && foundMeasure.getRemoved().booleanValue()) {
+                                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.removedG2MacraMeasure",
+                                        cert.getNumber(), foundMeasure.getValue()));
                             } else {
                                 pendingMeasureMap.setMacraMeasure(foundMeasure);
                             }
