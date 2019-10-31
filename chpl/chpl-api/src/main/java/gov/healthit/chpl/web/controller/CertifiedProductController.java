@@ -606,7 +606,7 @@ public class CertifiedProductController {
             JsonProcessingException, IOException, ValidationException, MissingReasonException {
 
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
-        
+
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(updatedListing.getId());
         Long acbId = Long.parseLong(existingListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
 
@@ -617,16 +617,16 @@ public class CertifiedProductController {
             cpManager.changeOwnership(updatedListing.getId(), newAcbId);
             CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());
             activityManager.addActivity(
-                    ActivityConcept.CERTIFIED_PRODUCT, 
+                    ActivityConcept.CERTIFIED_PRODUCT,
                     existingListing.getId(),
-                    "Changed ACB ownership.", 
-                    existingListing, 
+                    "Changed ACB ownership.",
+                    existingListing,
                     changedProduct);
             existingListing = changedProduct;
         }
 
-        cpManager.update(newAcbId, updateRequest);
-        
+        cpManager.update(updateRequest);
+
         CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
