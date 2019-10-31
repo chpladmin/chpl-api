@@ -93,7 +93,7 @@ public class UpdateSingleListingStatusJob extends QuartzJob {
             return new JobResponse(cpd.getChplProductNumber(), false, msg);
         } catch (Exception e) {
             String msg = "Unsuccessful Update certified product {" + updateRequest.getListing().getId() + "}: "
-                    + updateRequest.getListing().getChplProductNumber();
+                    + updateRequest.getListing().getChplProductNumber() + "\n" + e.getMessage();
             return new JobResponse(cpd.getChplProductNumber(), false, msg);
         }
     }
