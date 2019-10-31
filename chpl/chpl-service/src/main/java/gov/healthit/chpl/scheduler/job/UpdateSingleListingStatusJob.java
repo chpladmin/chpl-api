@@ -23,7 +23,8 @@ import gov.healthit.chpl.scheduler.job.extra.JobResponse;
 
 public class UpdateSingleListingStatusJob extends QuartzJob {
 
-    private static final Logger LOGGER = LogManager.getLogger("updateListingStatusJobLogger");
+    // Default logger
+    private Logger logger = LogManager.getLogger("updateListingStatusJobLogger");
 
     @Autowired
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
@@ -35,24 +36,22 @@ public class UpdateSingleListingStatusJob extends QuartzJob {
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
 
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+        setLogger(jobContext);
         setSecurityContext();
 
         Long listing = jobContext.getMergedJobDataMap().getLong("listing");
-
-        LOGGER.info("********* Starting the Update Single Listing Status job. [" + listing + "] *********");
-
         CertificationStatus certificationStatus = (CertificationStatus) jobContext.getMergedJobDataMap()
                 .get("certificationStatus");
-
         Date statusDate = (Date) jobContext.getMergedJobDataMap().get("statusDate");
+
+        logger.info("********* Starting the Update Single Listing Status job. [" + listing + "] *********");
 
         // This will get listing details, update the listing with the new status, and update listing
         CertifiedProductSearchDetails cpsd = getListing(listing);
         JobResponse response = updateListing(cpsd, certificationStatus, statusDate);
 
         jobContext.setResult(response);
-
-        LOGGER.info("********* Completed the Update Listing Status job. [" + listing + "] *********");
+        logger.info("********* Completed the Update Listing Status job. [" + listing + "] *********");
     }
 
     private CertificationStatusEvent getCertificationStatusEvent(CertificationStatus cs, Date effectiveDate) {
@@ -63,6 +62,14 @@ public class UpdateSingleListingStatusJob extends QuartzJob {
         return cse;
     }
 
+    private void setLogger(JobExecutionContext jobContext) {
+        if (jobContext.getMergedJobDataMap().containsKey("logger")) {
+            if (jobContext.getMergedJobDataMap().get("logger") instanceof Logger) {
+                logger = (Logger) jobContext.getMergedJobDataMap().get("logger");
+            }
+        }
+    }
+
     private CertifiedProductSearchDetails getListing(Long cpId) {
         try {
             CertifiedProductSearchDetails cpsd = certifiedProductDetailsManager.getCertifiedProductDetails(cpId);
@@ -70,7 +77,7 @@ public class UpdateSingleListingStatusJob extends QuartzJob {
             // + cpsd.getChplProductNumber());
             return cpsd;
         } catch (Exception e) {
-            LOGGER.error(e);
+            logger.error(e);
             return null;
         }
     }

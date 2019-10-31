@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.TimeZone;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -108,13 +107,6 @@ public class SchedulerManagerImpl extends SecuredManager implements SchedulerMan
     public ChplOneTimeTrigger createOneTimeTrigger(final ChplOneTimeTrigger chplTrigger)
             throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
-
-        Date temp = new Date(chplTrigger.getRunDateMillis());
-        SimpleDateFormat sdfLocal = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        SimpleDateFormat sdfUTC = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        sdfUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
-        LOGGER.info("Local Date/Time: " + sdfLocal.format(temp));
-        LOGGER.info("UTC Date/Time: " + sdfLocal.format(temp));
 
         SimpleTrigger trigger = (SimpleTrigger) newTrigger()
                 .withIdentity(createTriggerName(chplTrigger), createTriggerGroup(chplTrigger.getJob()))
