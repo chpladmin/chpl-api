@@ -420,12 +420,12 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).CREATE_FROM_PENDING, #acbId)")
+            + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).CREATE_FROM_PENDING, #pendingCp)")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS
     }, allEntries = true)
-    public CertifiedProductDTO createFromPending(final Long acbId, final PendingCertifiedProductDTO pendingCp)
+    public CertifiedProductDTO createFromPending(final PendingCertifiedProductDTO pendingCp)
             throws EntityRetrievalException, EntityCreationException, IOException {
 
         CertifiedProductDTO toCreate = new CertifiedProductDTO();
@@ -1065,7 +1065,7 @@ public class CertifiedProductManager extends SecuredManager {
         return cpDao.update(toUpdate);
     }
 
-    private void sanitizeUpdatedListingData(final Long acbId, final CertifiedProductSearchDetails listing)
+    private void sanitizeUpdatedListingData(final CertifiedProductSearchDetails listing)
             throws EntityNotFoundException {
         // make sure the ui didn't send any error or warning messages back
         listing.setErrorMessages(new HashSet<String>());
@@ -1108,7 +1108,7 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).UPDATE, #acbId)")
+            + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).UPDATE, #updateRequest)")
     @Transactional(rollbackFor = {
             EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
             AccessDeniedException.class, InvalidArgumentsException.class
@@ -1116,7 +1116,7 @@ public class CertifiedProductManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS
     }, allEntries = true)
-    public CertifiedProductDTO update(final Long acbId, final ListingUpdateRequest updateRequest)
+    public CertifiedProductDTO update(final ListingUpdateRequest updateRequest)
             throws AccessDeniedException, EntityRetrievalException, JsonProcessingException, EntityCreationException,
             InvalidArgumentsException, IOException, ValidationException, MissingReasonException {
 
@@ -1125,9 +1125,7 @@ public class CertifiedProductManager extends SecuredManager {
                 .getCertifiedProductDetails(updatedListing.getId());
 
         // clean up what was sent in - some necessary IDs or other fields may be missing
-        Long newAcbId = Long
-                .valueOf(updatedListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
-        sanitizeUpdatedListingData(newAcbId, updatedListing);
+        sanitizeUpdatedListingData(updatedListing);
 
         // validate - throws ValidationException if the listing cannot be updated
         validateListingForUpdate(existingListing, updatedListing);
