@@ -124,13 +124,4 @@ public class Permissions {
             return false;
         }
     }
-
-
-    public boolean hasAccess(final String domain, final String action, final Object obj, final Object obj2) {
-        if (domainPermissions.containsKey(domain)) {
-            return domainPermissions.get(domain).hasAccess(action, obj, obj2);
-        } else {
-            return false;
-        }
-    }
 }
