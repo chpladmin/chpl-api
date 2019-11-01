@@ -49,7 +49,7 @@ public class Update2014ListingsStatusJob extends QuartzJob {
 
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
-        LOGGER.info("********* Starting the Update Listing Status job. *********");
+        LOGGER.info("********* Starting the Update 2014 Listings Status job. *********");
 
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         setSecurityContext();
@@ -78,7 +78,7 @@ public class Update2014ListingsStatusJob extends QuartzJob {
             LOGGER.error("Scheduler Error: " + e.getMessage(), e);
         }
 
-        LOGGER.info("********* Completed the Update Listing Status job. *********");
+        LOGGER.info("********* Completed the Update 2014 Listings Status job. *********");
     }
 
     private StatusCollectorTriggerWrapper buildTriggerWrapper(final Long cpId, final JobExecutionContext jobContext) {
