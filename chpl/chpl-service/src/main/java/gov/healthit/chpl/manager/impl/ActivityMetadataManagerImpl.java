@@ -208,6 +208,7 @@ public class ActivityMetadataManagerImpl extends SecuredManager implements Activ
     }
 
     @Override
+    @Transactional
     public List<ActivityMetadata> getApiKeyManagementMetadata(Date startDate, Date endDate)
         throws IOException {
         return getActivityMetadataByConcept(ActivityConcept.API_KEY, startDate, endDate);
