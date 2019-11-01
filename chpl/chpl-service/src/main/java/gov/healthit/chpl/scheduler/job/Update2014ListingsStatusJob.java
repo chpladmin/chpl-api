@@ -87,6 +87,7 @@ public class Update2014ListingsStatusJob extends QuartzJob {
         dataMap.put("certificationStatus", getCertificationStatus(jobContext));
         dataMap.put("statusDate", getStatusEffectiveDate(jobContext));
         dataMap.put("logger", LOGGER);
+        dataMap.put("reason", jobContext.getMergedJobDataMap().getString("reason"));
 
         return new StatusCollectorTriggerWrapper(
                 TriggerBuilder.newTrigger()

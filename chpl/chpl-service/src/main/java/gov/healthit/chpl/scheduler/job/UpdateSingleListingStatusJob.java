@@ -48,7 +48,7 @@ public class UpdateSingleListingStatusJob extends QuartzJob {
 
         // This will get listing details, update the listing with the new status, and update listing
         CertifiedProductSearchDetails cpsd = getListing(listing);
-        JobResponse response = updateListing(cpsd, certificationStatus, statusDate);
+        JobResponse response = updateListing(cpsd, certificationStatus, statusDate, getReason(jobContext));
 
         jobContext.setResult(response);
         logger.info("********* Completed the Update Listing Status job. [" + listing + "] *********");
@@ -82,10 +82,12 @@ public class UpdateSingleListingStatusJob extends QuartzJob {
         }
     }
 
-    private JobResponse updateListing(CertifiedProductSearchDetails cpd, CertificationStatus cs, Date effectiveDate) {
+    private JobResponse updateListing(CertifiedProductSearchDetails cpd, CertificationStatus cs, Date effectiveDate,
+            String reason) {
         cpd.getCertificationEvents().add(getCertificationStatusEvent(cs, effectiveDate));
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(cpd);
+        updateRequest.setReason(reason);
 
         try {
             certifiedProductManager.update(
@@ -103,6 +105,11 @@ public class UpdateSingleListingStatusJob extends QuartzJob {
                     + updateRequest.getListing().getChplProductNumber() + "\n" + e.getMessage();
             return new JobResponse(cpd.getChplProductNumber(), false, msg);
         }
+    }
+
+    private String getReason(final JobExecutionContext context) {
+        return context.getMergedJobDataMap().containsKey("reason") ? context.getMergedJobDataMap().getString("reason")
+                : null;
     }
 
     private void setSecurityContext() {
