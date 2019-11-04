@@ -15,13 +15,17 @@ public class JobResponseTriggerListener implements TriggerListener {
     private Logger logger;
 
     private List<JobResponseTriggerWrapper> triggerWrappers = new ArrayList<JobResponseTriggerWrapper>();
-    private String email;
+    private String emailAddress;
+    private String emailFileName;
+    private String emailSubject;
     private Environment env;
 
-    public JobResponseTriggerListener(List<JobResponseTriggerWrapper> triggerWrappers, final String email,
-            final Environment env, final Logger logger) {
+    public JobResponseTriggerListener(List<JobResponseTriggerWrapper> triggerWrappers, final String emailAddress,
+            final String emailFilename, final String emailSubject, final Environment env, final Logger logger) {
         this.triggerWrappers = triggerWrappers;
-        this.email = email;
+        this.emailAddress = emailAddress;
+        this.emailFileName = emailFilename;
+        this.emailSubject = emailSubject;
         this.env = env;
         this.logger = logger;
     }
@@ -74,7 +78,7 @@ public class JobResponseTriggerListener implements TriggerListener {
     }
 
     private void sendEmail() {
-        (new JobResponseEmail()).sendEmail(env, email, triggerWrappers, logger);
+        (new JobResponseEmail()).sendEmail(env, emailAddress, emailFileName, emailSubject, triggerWrappers, logger);
     }
 
 }

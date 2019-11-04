@@ -20,7 +20,7 @@ public class JobResponseCsvGenerator {
     }
 
     private File createFile(final String fileName) throws IOException {
-        File temp = File.createTempFile(fileName, ".csv");
+        File temp = File.createTempFile(fileName + " - ", ".csv");
         temp.deleteOnExit();
         return temp;
     }

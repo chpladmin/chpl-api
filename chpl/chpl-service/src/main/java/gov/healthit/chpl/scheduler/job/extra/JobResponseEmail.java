@@ -13,16 +13,16 @@ import org.springframework.core.env.Environment;
 import gov.healthit.chpl.util.EmailBuilder;
 
 public class JobResponseEmail {
-    private static final String FILENAME = "jobResponse.csv";
 
-    public void sendEmail(final Environment env, final String emailAddress,
+    public void sendEmail(final Environment env, final String emailAddress, final String emailFilename,
+            final String emailSubject,
             final List<JobResponseTriggerWrapper> triggerWrappers, final Logger logger) {
         try {
             new EmailBuilder(env)
                     .recipients(new ArrayList<String>(Arrays.asList(emailAddress)))
-                    .subject("Retire 2014 Listing Job Report")
+                    .subject(emailSubject)
                     .htmlMessage(buildTable(triggerWrappers))
-                    .fileAttachments(getFileAttachments(triggerWrappers))
+                    .fileAttachments(getFileAttachments(triggerWrappers, emailFilename))
                     .sendEmail();
         } catch (Exception e) {
             logger.error("Error sending email: " + e.getMessage(), e);
@@ -85,11 +85,12 @@ public class JobResponseEmail {
         return success ? "Success " : "Failure";
     }
 
-    private List<File> getFileAttachments(final List<JobResponseTriggerWrapper> triggerWrappers) throws IOException {
+    private List<File> getFileAttachments(final List<JobResponseTriggerWrapper> triggerWrappers, final String fileName)
+            throws IOException {
         List<JobResponse> responses = triggerWrappers.stream()
                 .map(wrapper -> wrapper.getJobResponse())
                 .collect(Collectors.toList());
 
-        return new ArrayList<File>(Arrays.asList((new JobResponseCsvGenerator()).getCsvFile(responses, FILENAME)));
+        return new ArrayList<File>(Arrays.asList((new JobResponseCsvGenerator()).getCsvFile(responses, fileName)));
     }
 }

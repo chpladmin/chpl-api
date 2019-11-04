@@ -55,6 +55,7 @@ public class Update2014ListingsStatusJob extends QuartzJob {
         setSecurityContext();
 
         List<Long> listings = getListingIds();
+        listings = listings.subList(2101, 2150);
         List<JobResponseTriggerWrapper> wrappers = new ArrayList<JobResponseTriggerWrapper>();
 
         for (Long cpId : listings) {
@@ -62,8 +63,13 @@ public class Update2014ListingsStatusJob extends QuartzJob {
         }
 
         try {
-            JobResponseTriggerListener listener = new JobResponseTriggerListener(wrappers,
-                    jobContext.getMergedJobDataMap().getString("email"), env, LOGGER);
+            JobResponseTriggerListener listener = new JobResponseTriggerListener(
+                    wrappers,
+                    jobContext.getMergedJobDataMap().getString("email"),
+                    jobContext.getMergedJobDataMap().getString("emailCsvFileName"),
+                    jobContext.getMergedJobDataMap().getString("emailSubject"),
+                    env,
+                    LOGGER);
 
             // Add the triggers and listener to the scheduler
             chplScheduler.getScheduler().getListenerManager()
