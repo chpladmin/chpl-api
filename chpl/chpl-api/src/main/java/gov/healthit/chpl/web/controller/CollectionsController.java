@@ -155,8 +155,8 @@ public class CollectionsController {
     }
 
     @Deprecated
-    @ApiOperation(value = "DEPRECATED. Get a list of all developers with transparency attestation URLs" + "and ACB attestations.",
-            notes = "")
+    @ApiOperation(value = "Get a list of all developers with transparency attestation URLs and ACB attestations.",
+            notes = "DEPRECATED")
     @RequestMapping(value = "/developers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody List<DeveloperTransparency> getDeveloperCollection() {
