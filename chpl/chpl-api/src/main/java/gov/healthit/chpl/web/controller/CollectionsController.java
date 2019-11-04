@@ -37,6 +37,10 @@ import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+/**
+ * Controller for getting collections of Listings and Developer.
+ *
+ */
 @Api(value = "collections")
 @RestController
 @RequestMapping("/collections")
@@ -47,6 +51,12 @@ public class CollectionsController {
     @Autowired
     private DeveloperManager developerManager;
 
+    /**
+     * Get basic data about all listings in the system.
+     * @param delimitedFieldNames the names of the fields needed for each listing
+     * @return an array of the listings
+     * @throws JsonProcessingException if processing fails
+     */
     @ApiOperation(value = "Get basic data about all certified products in the system.", notes = "")
     @RequestMapping(value = "/certified_products", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
@@ -144,7 +154,8 @@ public class CollectionsController {
         return result;
     }
 
-    @ApiOperation(value = "Get a list of all developers with transparency attestation URLs" + "and ACB attestations.",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Get a list of all developers with transparency attestation URLs" + "and ACB attestations.",
             notes = "")
     @RequestMapping(value = "/developers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
