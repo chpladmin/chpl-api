@@ -1170,7 +1170,7 @@ public class CertifiedProductManager extends SecuredManager {
                 updatedListing.getCertificationEvents());
         updateMeaningfulUseUserHistory(updatedListing.getId(), existingListing.getMeaningfulUseUserHistory(),
                 updatedListing.getMeaningfulUseUserHistory());
-        updateCertifications(updatedListingDTO.getCertificationBodyId(), existingListing, updatedListing,
+        updateCertifications(existingListing, updatedListing,
                 existingListing.getCertificationResults(), updatedListing.getCertificationResults());
         updateCqms(updatedListingDTO, existingListing.getCqmResults(), updatedListing.getCqmResults());
     }
@@ -1249,62 +1249,14 @@ public class CertifiedProductManager extends SecuredManager {
             final CertifiedProductSearchDetails updatedListing) throws ValidationException {
         Validator validator = validatorFactory.getValidator(updatedListing);
         if (validator != null) {
-            validator.validate(updatedListing);
+            validator.validate(existingListing, updatedListing);
         }
-
-        // The following checks will add errors/warning to the updated listing
-        checkForDeveloperBanStatusChange(existingListing, updatedListing);
-        checkForDuplicateChplProductNumber(existingListing, updatedListing);
 
         if (updatedListing.getErrorMessages() != null && updatedListing.getErrorMessages().size() > 0) {
             for (String err : updatedListing.getErrorMessages()) {
                 LOGGER.error("Error updating listing " + updatedListing.getChplProductNumber() + ": " + err);
             }
             throw new ValidationException(updatedListing.getErrorMessages(), updatedListing.getWarningMessages());
-        }
-
-    }
-
-    private void checkForDuplicateChplProductNumber(final CertifiedProductSearchDetails existingListing,
-            final CertifiedProductSearchDetails updatedListing) {
-        if (!existingListing.getChplProductNumber().equals(updatedListing.getChplProductNumber())) {
-            try {
-                boolean isDup = chplIdExists(updatedListing.getChplProductNumber());
-                if (isDup) {
-                    updatedListing.getErrorMessages()
-                            .add(msgUtil.getMessage("listing.chplProductNumber.changedNotUnique",
-                                    updatedListing.getChplProductNumber()));
-                }
-            } catch (final EntityRetrievalException ex) {
-            }
-        }
-    }
-
-    private void checkForDeveloperBanStatusChange(final CertifiedProductSearchDetails existingListing,
-            final CertifiedProductSearchDetails updatedListing) {
-        if (existingListing.getCurrentStatus() != null
-                && updatedListing.getCurrentStatus() != null
-                && !existingListing.getCurrentStatus().getStatus().getId()
-                        .equals(updatedListing.getCurrentStatus().getStatus().getId())) {
-            // if the status is to or from suspended by onc make sure the user
-            // has admin
-            if ((existingListing.getCurrentStatus().getStatus().getName()
-                    .equals(CertificationStatusType.SuspendedByOnc.toString())
-                    || updatedListing.getCurrentStatus().getStatus().getName()
-                            .equals(CertificationStatusType.SuspendedByOnc.toString())
-                    || existingListing.getCurrentStatus().getStatus().getName()
-                            .equals(CertificationStatusType.TerminatedByOnc.toString())
-                    || updatedListing.getCurrentStatus().getStatus().getName()
-                            .equals(CertificationStatusType.TerminatedByOnc.toString()))
-                    && !resourcePermissions.isUserRoleOnc()
-                    && !resourcePermissions.isUserRoleAdmin()) {
-                updatedListing.getErrorMessages()
-                        .add("User " + AuthUtil.getUsername()
-                                + " does not have permission to change certification status of "
-                                + existingListing.getChplProductNumber() + " from "
-                                + existingListing.getCurrentStatus().getStatus().getName() + " to "
-                                + updatedListing.getCurrentStatus().getStatus().getName());
-            }
         }
     }
 
@@ -2019,7 +1971,7 @@ public class CertifiedProductManager extends SecuredManager {
         return numChanges;
     }
 
-    private int updateCertifications(final Long acbId, final CertifiedProductSearchDetails existingListing,
+    private int updateCertifications(final CertifiedProductSearchDetails existingListing,
             final CertifiedProductSearchDetails updatedListing, final List<CertificationResult> existingCertifications,
             final List<CertificationResult> updatedCertifications)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
@@ -2036,7 +1988,7 @@ public class CertifiedProductManager extends SecuredManager {
             for (CertificationResult existingItem : existingCertifications) {
                 if (!StringUtils.isEmpty(updatedItem.getNumber()) && !StringUtils.isEmpty(existingItem.getNumber())
                         && updatedItem.getNumber().equals(existingItem.getNumber())) {
-                    numChanges += certResultManager.update(acbId, existingListing, updatedListing, existingItem,
+                    numChanges += certResultManager.update(existingListing, updatedListing, existingItem,
                             updatedItem);
                 }
             }

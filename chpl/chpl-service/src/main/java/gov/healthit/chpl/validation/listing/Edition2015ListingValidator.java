@@ -9,7 +9,10 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.validation.listing.reviewer.CertificationDateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationStatusReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.ChplNumberComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ChplNumberReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.DeveloperBanComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DeveloperStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.FieldLengthReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.InheritedCertificationStatusReviewer;
@@ -20,6 +23,7 @@ import gov.healthit.chpl.validation.listing.reviewer.UnattestedCriteriaWithDataR
 import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ValidDataReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.MacraMeasureComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestFunctionality2015Reviewer;
@@ -96,7 +100,20 @@ public class Edition2015ListingValidator extends Validator {
     @Qualifier("testFunctionality2015Reviewer")
     private TestFunctionality2015Reviewer testFunctionalityReviewer;
 
+    @Autowired
+    @Qualifier("developerBanComparisonReviewer")
+    private DeveloperBanComparisonReviewer devBanComparisonReviewer;
+
+    @Autowired
+    @Qualifier("chplNumberComparisonReviewer")
+    private ChplNumberComparisonReviewer chplNumberComparisonReviewer;
+
+    @Autowired
+    @Qualifier("macraMeasureComparisonReviewer")
+    private MacraMeasureComparisonReviewer macraComparisonReviewer;
+
     private List<Reviewer> reviewers;
+    private List<ComparisonReviewer> comparisonReviewers;
 
     @Override
     public List<Reviewer> getReviewers() {
@@ -120,5 +137,16 @@ public class Edition2015ListingValidator extends Validator {
             reviewers.add(testFunctionalityReviewer);
         }
         return reviewers;
+    }
+
+    @Override
+    public List<ComparisonReviewer> getComparisonReviewers() {
+        if (comparisonReviewers == null) {
+            comparisonReviewers = new ArrayList<ComparisonReviewer>();
+            comparisonReviewers.add(chplNumberComparisonReviewer);
+            comparisonReviewers.add(devBanComparisonReviewer);
+            comparisonReviewers.add(macraComparisonReviewer);
+        }
+        return comparisonReviewers;
     }
 }

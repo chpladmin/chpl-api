@@ -51,7 +51,6 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertificationResultManager;
-import gov.healthit.chpl.manager.impl.CertificationResultManagerImpl;
 
 /**
  * Tests of the Certified Product validator.
@@ -93,7 +92,7 @@ class CertifiedProductValidationTestConfig {
     }
 }
 
-class MyCertificationResultManager extends CertificationResultManagerImpl {
+class MyCertificationResultManager extends CertificationResultManager {
     @Override
     public boolean getCertifiedProductHasAdditionalSoftware(Long certifiedProductId) {
         return false;

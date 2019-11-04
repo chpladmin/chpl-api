@@ -841,7 +841,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                         cert.getNumber(), pendingMeasureMap.getEnteredValue()));
                             } else if ((listing.getIcs() == null || !listing.getIcs().booleanValue())
                                     && foundMeasure.getRemoved() != null && foundMeasure.getRemoved().booleanValue()) {
-                                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.removedG1MacraMeasure",
+                                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.removedG1MacraMeasureNoIcs",
                                         cert.getNumber(), foundMeasure.getValue()));
                             } else {
                                 pendingMeasureMap.setMacraMeasure(foundMeasure);
@@ -862,7 +862,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                                 cert.getNumber(), pendingMeasureMap.getEnteredValue()));
                             } else if ((listing.getIcs() == null || !listing.getIcs().booleanValue())
                                     && foundMeasure.getRemoved() != null && foundMeasure.getRemoved().booleanValue()) {
-                                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.removedG2MacraMeasure",
+                                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.removedG2MacraMeasureNoIcs",
                                         cert.getNumber(), foundMeasure.getValue()));
                             } else {
                                 pendingMeasureMap.setMacraMeasure(foundMeasure);
