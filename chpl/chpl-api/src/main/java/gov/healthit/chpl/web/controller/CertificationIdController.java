@@ -49,16 +49,18 @@ public class CertificationIdController {
     private CertifiedProductManager certifiedProductManager;
     private CertificationIdManager certificationIdManager;
     private ResourcePermissions resourcePermissions;
+    private ValidatorFactory validatorFactory;
     private FF4j ff4j;
 
     @Autowired
     public CertificationIdController(final CertifiedProductManager certifiedProductManager,
-            final CertificationIdManager certificationIdManager,
+            final CertificationIdManager certificationIdManager, final ValidatorFactory validatorFactory,
             final FF4j ff4j,
             final ResourcePermissions resourcePermissions) {
         this.certifiedProductManager = certifiedProductManager;
         this.certificationIdManager = certificationIdManager;
         this.resourcePermissions = resourcePermissions;
+        this.validatorFactory = validatorFactory;
         this.ff4j = ff4j;
     }
 
@@ -226,7 +228,7 @@ public class CertificationIdController {
 
                 // Add criteria and cqms met to results
                 if (includeCriteria || includeCqms) {
-                    Validator validator = ValidatorFactory.getValidator(certDto.getYear());
+                    Validator validator = this.validatorFactory.getValidator(certDto.getYear());
 
                     // Lookup Criteria for Validating
                     List<String> criteriaDtos = certificationIdManager
@@ -323,7 +325,7 @@ public class CertificationIdController {
         results.setYear(year);
 
         // Validate the collection
-        Validator validator = ValidatorFactory.getValidator(year);
+        Validator validator = this.validatorFactory.getValidator(year);
 
         // Lookup Criteria for Validating
         List<String> criteriaDtos = certificationIdManager.getCriteriaNumbersMetByCertifiedProductIds(productIdList);
