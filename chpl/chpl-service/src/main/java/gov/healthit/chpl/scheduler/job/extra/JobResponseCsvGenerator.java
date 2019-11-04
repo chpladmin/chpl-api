@@ -11,10 +11,8 @@ import java.util.List;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.logging.log4j.Logger;
 
 public class JobResponseCsvGenerator {
-    private Logger logger;
 
     public File getCsvFile(final List<JobResponse> responses, final String fileName)
             throws IOException {
