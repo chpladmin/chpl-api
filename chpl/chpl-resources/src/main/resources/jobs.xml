@@ -523,5 +523,48 @@
             <recover>false</recover>
         </job>
 
+        <!-- Pending Change Request data emailer -->
+        <job>
+            <name>Pending Change Request Report</name>
+            <group>chplJobs</group>
+            <description>Sends a report of all pending change requests</description>
+            <job-class>gov.healthit.chpl.scheduler.job.PendingChangeRequestEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>WEEKLY</value>
+                </entry>
+            </job-data-map>
+        </job>
+
+        <!-- Job used to change status of a set listings -->
+        <job>
+            <name>updateListingStatusJob</name>
+            <group>systemJobs</group>
+            <description>Updates the status for a set of listings</description>
+            <job-class>gov.healthit.chpl.scheduler.job.UpdateListingStatusJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>WEEKLY</value>
+                </entry>
+                <entry>
+                    <key>parameters</key>
+                    <value>[{"label": "Listings [Comma Delimited]", "key": "listings", "type": "textarea"}, {"label": "ListingStatus", "key": "certificationStatus", "type": "select", "items": [{"id": 1, "name": "Active"}, {"id": 2, "name": "Retired"}, {"id": 3, "name": "Withdrawn by Developer"}, {"id": 4, "name": "Withdrawn by ONC-ACB"}, {"id": 5, "name": "Pending"}, {"id": 6, "name": "Suspended by ONC-ACB"}, {"id": 7, "name": "Suspended by ONC"}, {"id": 8, "name": "Terminated by ONC"}, {"id": 9, "name": "Withdrawn by Developer Under Surveillance/Review"}] }, {"label": "Effective Date", "key": "effectiveDate", "type": "date"}]</value>
+                </entry>
+            </job-data-map>
+        </job>
     </schedule>
 </job-scheduling-data>

@@ -4,9 +4,11 @@ import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.entity.CertificationBodyEntity;
 
 /**
  * Certification body domain object.
+ * 
  * @author kekey
  *
  */
@@ -35,6 +37,18 @@ public class CertificationBody implements Serializable {
         this.retirementDate = dto.getRetirementDate();
         if (dto.getAddress() != null) {
             this.address = new Address(dto.getAddress());
+        }
+    }
+
+    public CertificationBody(final CertificationBodyEntity entity) {
+        this.id = entity.getId();
+        this.acbCode = entity.getAcbCode();
+        this.name = entity.getName();
+        this.website = entity.getWebsite();
+        this.retired = entity.getRetired();
+        this.retirementDate = entity.getRetirementDate();
+        if (entity.getAddress() != null) {
+            this.address = new Address(entity.getAddress());
         }
     }
 

@@ -18,10 +18,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.ff4j.FF4j;
+import org.json.JSONException;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +46,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.UploadFileUtils;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
@@ -98,12 +104,15 @@ public class CertifiedProductControllerTest {
 
     @Autowired
     ListingValidatorFactory validatorFactory;
-    
+
     private static final String TEST_TASK_TOO_LONG = "You have exceeded the max length, 20 characters, for the Task Identifier with ID A1.100000000000000000000.";
     private static final String PARTICIPANT_ID_TOO_LONG = "You have exceeded the max length, 20 characters, for the Participant Identifier ID ID0100000000000000000000.";
-    
+
     private static JWTAuthenticatedUser adminUser;
     private static final long ADMIN_ID = -2L;
+
+    @Autowired
+    private FF4j ff4j;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -114,6 +123,12 @@ public class CertifiedProductControllerTest {
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ACB"));
+    }
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+        Mockito.doReturn(true).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE);
     }
 
     /**
@@ -185,7 +200,6 @@ public class CertifiedProductControllerTest {
         status.setName("Active");
         cse.setStatus(status);
         updateRequest.getCertificationEvents().add(cse);
-
         updateRequest.getCertifyingBody().put("id", "-1");
         updateRequest.getSed().setTestTasks(null);
         updateRequest.getSed().setUcdProcesses(null);
@@ -255,6 +269,7 @@ public class CertifiedProductControllerTest {
         try {
             ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
             listingUpdateRequest.setListing(updateRequest);
+            listingUpdateRequest.setReason("test reason");
             certifiedProductController.updateCertifiedProduct(listingUpdateRequest);
         } catch (InvalidArgumentsException e) {
             e.printStackTrace();
@@ -271,6 +286,7 @@ public class CertifiedProductControllerTest {
         try {
             ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
             listingUpdateRequest.setListing(updateRequest);
+            listingUpdateRequest.setReason("test reason");
             certifiedProductController.updateCertifiedProduct(listingUpdateRequest);
         } catch (InvalidArgumentsException e) {
             e.printStackTrace();
@@ -293,6 +309,7 @@ public class CertifiedProductControllerTest {
         try {
             ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
             listingUpdateRequest.setListing(updateRequest);
+            listingUpdateRequest.setReason("test reason");
             certifiedProductController.updateCertifiedProduct(listingUpdateRequest);
         } catch (InvalidArgumentsException e) {
             e.printStackTrace();
@@ -309,6 +326,7 @@ public class CertifiedProductControllerTest {
         try {
             ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
             listingUpdateRequest.setListing(updateRequest);
+            listingUpdateRequest.setReason("test reason");
             certifiedProductController.updateCertifiedProduct(listingUpdateRequest);
         } catch (InvalidArgumentsException e) {
             e.printStackTrace();
@@ -598,6 +616,7 @@ public class CertifiedProductControllerTest {
         try {
             ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
             listingUpdateRequest.setListing(updateRequest);
+            listingUpdateRequest.setReason("test reason");
             certifiedProductController.updateCertifiedProduct(listingUpdateRequest);
         } catch (InvalidArgumentsException e) {
             e.printStackTrace();
@@ -723,6 +742,7 @@ public class CertifiedProductControllerTest {
         updateRequest.setChplProductNumber("15.07.07.2642.IC04.36.00.1.160402");
         ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
         listingUpdateRequest.setListing(updateRequest);
+        listingUpdateRequest.setReason("test reason");
         try {
             certifiedProductController.updateCertifiedProduct(listingUpdateRequest);
         } catch (InvalidArgumentsException e) {
@@ -1204,7 +1224,7 @@ public class CertifiedProductControllerTest {
         assertEquals(expectedParticipantCount, testParticipantCount);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
-    
+
     @Transactional
     @Test
     public void upLoadCertifiedProduct2015LongTestParticipant_TaskId()

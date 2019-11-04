@@ -1,6 +1,7 @@
 package gov.healthit.chpl.validation.listing.reviewer;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -14,7 +15,12 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 @Component("validDataReviewer")
 public class ValidDataReviewer implements Reviewer {
 
-    @Autowired private CertifiedProductManager cpManager;
+    private CertifiedProductManager cpManager;
+
+    @Autowired
+    public ValidDataReviewer(final @Lazy CertifiedProductManager cpManager) {
+        this.cpManager = cpManager;
+    }
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
@@ -26,8 +32,8 @@ public class ValidDataReviewer implements Reviewer {
                         .getValue(formattedPrivacyAndSecurityFramework);
                 if (foundPrivacyAndSecurityFramework == null) {
                     listing.getErrorMessages().add("Certification " + cert.getNumber()
-                    + " contains Privacy and Security Framework value '" + formattedPrivacyAndSecurityFramework
-                    + "' which must match one of " + PrivacyAndSecurityFrameworkConcept.getFormattedValues());
+                            + " contains Privacy and Security Framework value '" + formattedPrivacyAndSecurityFramework
+                            + "' which must match one of " + PrivacyAndSecurityFrameworkConcept.getFormattedValues());
                 }
             }
 
@@ -41,7 +47,8 @@ public class ValidDataReviewer implements Reviewer {
                                 listing.getErrorMessages().add("No CHPL product was found matching additional software "
                                         + asDto.getCertifiedProductNumber() + " for " + cert.getNumber());
                             }
-                        } catch (EntityRetrievalException e) { }
+                        } catch (EntityRetrievalException e) {
+                        }
                     }
                 }
             }

@@ -83,4 +83,11 @@ public class ChangeRequestTypeEntity {
     public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
+
+    @Override
+    public String toString() {
+        return "ChangeRequestTypeEntity [id=" + id + ", name=" + name + ", creationDate=" + creationDate
+                + ", lastModifiedDate=" + lastModifiedDate + ", lastModifiedUser=" + lastModifiedUser + ", deleted="
+                + deleted + "]";
+    }
 }

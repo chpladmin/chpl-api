@@ -4,10 +4,14 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import org.ff4j.FF4j;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
@@ -23,6 +27,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
@@ -38,23 +43,33 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
-import gov.healthit.chpl.web.controller.CertifiedProductController;
+import gov.healthit.chpl.manager.CertifiedProductManager;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class,
+        DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class,
+        DbUnitTestExecutionListener.class
+})
 @DatabaseSetup("classpath:data/testData.xml")
 public class CertificationResultTest extends TestCase {
 
-    @Autowired private QuestionableActivityDAO qaDao;
-    @Autowired private CertifiedProductController cpController;
-    @Autowired private CertifiedProductDetailsManager cpdManager;
+    @Autowired
+    private QuestionableActivityDAO qaDao;
+    @Autowired
+    private CertifiedProductManager cpManager;
+    @Autowired
+    private CertifiedProductDetailsManager cpdManager;
     private static JWTAuthenticatedUser adminUser;
     private static final long ADMIN_ID = -2L;
+
+    @Autowired
+    private FF4j ff4j;
 
     @Rule
     @Autowired
@@ -71,11 +86,18 @@ public class CertificationResultTest extends TestCase {
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ACB"));
     }
 
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+        Mockito.doReturn(true).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE);
+    }
+
     @Test
     @Transactional
     @Rollback
     public void testUpdateGap() throws EntityCreationException, EntityRetrievalException,
-    InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException, ValidationException {
+            InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException,
+            ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
@@ -90,7 +112,10 @@ public class CertificationResultTest extends TestCase {
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(listing);
-        cpController.updateCertifiedProduct(updateRequest);
+        updateRequest.setReason("test reason");
+        cpManager.update(
+                Long.parseLong(updateRequest.getListing().getCertifyingBody().get("id").toString()),
+                updateRequest);
         Date afterActivity = new Date();
 
         List<QuestionableActivityCertificationResultDTO> activities = qaDao
@@ -112,9 +137,9 @@ public class CertificationResultTest extends TestCase {
     @Test
     @Transactional
     @Rollback
-    public void testUpdateG1Success() throws
-        EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException,
-        MissingReasonException, IOException, ValidationException {
+    public void testUpdateG1Success() throws EntityCreationException, EntityRetrievalException,
+            InvalidArgumentsException, JsonProcessingException,
+            MissingReasonException, IOException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
@@ -126,11 +151,14 @@ public class CertificationResultTest extends TestCase {
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(listing);
-        cpController.updateCertifiedProduct(updateRequest);
+        updateRequest.setReason("test reason");
+        cpManager.update(
+                Long.parseLong(updateRequest.getListing().getCertifyingBody().get("id").toString()),
+                updateRequest);
         Date afterActivity = new Date();
 
-        List<QuestionableActivityCertificationResultDTO> activities =
-                qaDao.findCertificationResultActivityBetweenDates(beforeActivity, afterActivity);
+        List<QuestionableActivityCertificationResultDTO> activities = qaDao
+                .findCertificationResultActivityBetweenDates(beforeActivity, afterActivity);
         assertNotNull(activities);
         assertEquals(1, activities.size());
         QuestionableActivityCertificationResultDTO activity = activities.get(0);
@@ -149,7 +177,8 @@ public class CertificationResultTest extends TestCase {
     @Transactional
     @Rollback
     public void testUpdateG2Success() throws EntityCreationException, EntityRetrievalException,
-    InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException, ValidationException {
+            InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException,
+            ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
@@ -161,7 +190,10 @@ public class CertificationResultTest extends TestCase {
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(listing);
-        cpController.updateCertifiedProduct(updateRequest);
+        updateRequest.setReason("test reason");
+        cpManager.update(
+                Long.parseLong(updateRequest.getListing().getCertifyingBody().get("id").toString()),
+                updateRequest);
         Date afterActivity = new Date();
 
         List<QuestionableActivityCertificationResultDTO> activities = qaDao
@@ -180,7 +212,7 @@ public class CertificationResultTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
-    //TODO: add test for g1 and g2 macra measures added/removed.
-    //Need a 2015 listing that passes validation that also certifies to
-    //a criteria that can have g1 and g2 macra measures
+    // TODO: add test for g1 and g2 macra measures added/removed.
+    // Need a 2015 listing that passes validation that also certifies to
+    // a criteria that can have g1 and g2 macra measures
 }

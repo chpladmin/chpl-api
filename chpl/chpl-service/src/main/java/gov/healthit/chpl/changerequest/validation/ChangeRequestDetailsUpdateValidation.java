@@ -3,10 +3,12 @@ package gov.healthit.chpl.changerequest.validation;
 import java.util.HashMap;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.manager.rules.ValidationRule;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 
 @Component
 public class ChangeRequestDetailsUpdateValidation extends ValidationRule<ChangeRequestValidationContext> {
@@ -14,13 +16,21 @@ public class ChangeRequestDetailsUpdateValidation extends ValidationRule<ChangeR
     @Value("${changerequest.website}")
     private Long websiteChangeRequestType;
 
+    private ResourcePermissions resourcePermissions;
+
+    @Autowired
+    public ChangeRequestDetailsUpdateValidation(final ResourcePermissions resourcePermissions) {
+        this.resourcePermissions = resourcePermissions;
+    }
+
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
-        if (context.getChangeRequest().getChangeRequestType().getId().equals(websiteChangeRequestType)
-                && (context.getChangeRequest().getDetails() == null
-                        || !isChangeRequestWebsiteValid((HashMap) context.getChangeRequest().getDetails()))) {
-            getMessages().add(getErrorMessage("changeRequest.details.website.invalid"));
-            return false;
+        if (resourcePermissions.isUserRoleDeveloperAdmin()) {
+            if (context.getChangeRequest().getDetails() != null) {
+                if (isChangeRequestWebsite(context)) {
+                    return isChangeRequestWebsiteValid((HashMap) context.getChangeRequest().getDetails());
+                }
+            }
         }
 
         return true;
@@ -30,9 +40,6 @@ public class ChangeRequestDetailsUpdateValidation extends ValidationRule<ChangeR
         if (!doesKeyExistWithStringData(map, "website")) {
             return false;
         }
-        if (!doesKeyExistWithIntegerData(map, "id")) {
-            return false;
-        }
         return true;
     }
 
@@ -40,7 +47,7 @@ public class ChangeRequestDetailsUpdateValidation extends ValidationRule<ChangeR
         return map.containsKey(key) && !StringUtils.isEmpty(map.get(key));
     }
 
-    private boolean doesKeyExistWithIntegerData(final HashMap<String, String> map, final String key) {
-        return map.containsKey(key) && map.get(key) != null;
+    private boolean isChangeRequestWebsite(ChangeRequestValidationContext context) {
+        return context.getCrFromDb().getChangeRequestType().getId().equals(websiteChangeRequestType);
     }
 }

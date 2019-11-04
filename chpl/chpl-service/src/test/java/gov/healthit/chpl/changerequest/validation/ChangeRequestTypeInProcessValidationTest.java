@@ -9,6 +9,7 @@ import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -20,20 +21,18 @@ import gov.healthit.chpl.changerequest.builders.ChangeRequestStatusTypeBuilder;
 import gov.healthit.chpl.changerequest.builders.DeveloperBuilder;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
-import gov.healthit.chpl.changerequest.validation.ChangeRequestTypeInProcessValidation;
-import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationContext;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public class ChangeRequestTypeInProcessValidationTest {
     @Mock
     private ChangeRequestDAO changeRequestDAO;
 
+    @InjectMocks
     private ChangeRequestTypeInProcessValidation validator;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        validator = new ChangeRequestTypeInProcessValidation();
         ReflectionTestUtils.setField(validator, "pendingAcbAction", 1l);
         ReflectionTestUtils.setField(validator, "pendingDeveloperAction", 2l);
     }
@@ -46,7 +45,7 @@ public class ChangeRequestTypeInProcessValidationTest {
                                 .withId(1l)
                                 .withCurrentStatus(new ChangeRequestStatusBuilder()
                                         .withId(23l)
-                                        .withChangeReequestStatusType(new ChangeRequestStatusTypeBuilder()
+                                        .withChangeRequestStatusType(new ChangeRequestStatusTypeBuilder()
                                                 .withId(5l)
                                                 .build())
                                         .build())
@@ -59,7 +58,7 @@ public class ChangeRequestTypeInProcessValidationTest {
                                 .withId(345l)
                                 .build())
                         .build(),
-                changeRequestDAO, null, null, null);
+                null);
 
         boolean isValid = validator.isValid(context);
 
@@ -74,7 +73,7 @@ public class ChangeRequestTypeInProcessValidationTest {
                                 .withId(1l)
                                 .withCurrentStatus(new ChangeRequestStatusBuilder()
                                         .withId(23l)
-                                        .withChangeReequestStatusType(new ChangeRequestStatusTypeBuilder()
+                                        .withChangeRequestStatusType(new ChangeRequestStatusTypeBuilder()
                                                 .withId(5l)
                                                 .build())
                                         .build())
@@ -83,7 +82,7 @@ public class ChangeRequestTypeInProcessValidationTest {
                                 .withId(2l)
                                 .withCurrentStatus(new ChangeRequestStatusBuilder()
                                         .withId(23l)
-                                        .withChangeReequestStatusType(new ChangeRequestStatusTypeBuilder()
+                                        .withChangeRequestStatusType(new ChangeRequestStatusTypeBuilder()
                                                 .withId(4l)
                                                 .build())
                                         .build())
@@ -96,7 +95,7 @@ public class ChangeRequestTypeInProcessValidationTest {
                                 .withId(345l)
                                 .build())
                         .build(),
-                changeRequestDAO, null, null, null);
+                null);
 
         boolean isValid = validator.isValid(context);
 
@@ -112,7 +111,7 @@ public class ChangeRequestTypeInProcessValidationTest {
                                 .withId(1l)
                                 .withCurrentStatus(new ChangeRequestStatusBuilder()
                                         .withId(23l)
-                                        .withChangeReequestStatusType(new ChangeRequestStatusTypeBuilder()
+                                        .withChangeRequestStatusType(new ChangeRequestStatusTypeBuilder()
                                                 .withId(1l)
                                                 .build())
                                         .build())
@@ -125,7 +124,7 @@ public class ChangeRequestTypeInProcessValidationTest {
                                 .withId(345l)
                                 .build())
                         .build(),
-                changeRequestDAO, null, null, null);
+                null);
 
         boolean isValid = validator.isValid(context);
 
@@ -141,7 +140,7 @@ public class ChangeRequestTypeInProcessValidationTest {
                                 .withId(1l)
                                 .withCurrentStatus(new ChangeRequestStatusBuilder()
                                         .withId(23l)
-                                        .withChangeReequestStatusType(new ChangeRequestStatusTypeBuilder()
+                                        .withChangeRequestStatusType(new ChangeRequestStatusTypeBuilder()
                                                 .withId(1l)
                                                 .build())
                                         .build())
@@ -150,7 +149,7 @@ public class ChangeRequestTypeInProcessValidationTest {
                                 .withId(1l)
                                 .withCurrentStatus(new ChangeRequestStatusBuilder()
                                         .withId(23l)
-                                        .withChangeReequestStatusType(new ChangeRequestStatusTypeBuilder()
+                                        .withChangeRequestStatusType(new ChangeRequestStatusTypeBuilder()
                                                 .withId(5l)
                                                 .build())
                                         .build())
@@ -163,7 +162,7 @@ public class ChangeRequestTypeInProcessValidationTest {
                                 .withId(345l)
                                 .build())
                         .build(),
-                changeRequestDAO, null, null, null);
+                null);
 
         boolean isValid = validator.isValid(context);
 

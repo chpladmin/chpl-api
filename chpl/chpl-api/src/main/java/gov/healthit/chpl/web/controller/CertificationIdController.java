@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationId.Validator;
 import gov.healthit.chpl.certificationId.ValidatorFactory;
 import gov.healthit.chpl.domain.SimpleCertificationId;
@@ -44,13 +46,23 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/certification_ids")
 public class CertificationIdController {
 
-    @Autowired
     private CertifiedProductManager certifiedProductManager;
+    private CertificationIdManager certificationIdManager;
+    private ResourcePermissions resourcePermissions;
+    private ValidatorFactory validatorFactory;
+    private FF4j ff4j;
 
     @Autowired
-    private CertificationIdManager certificationIdManager;
-    
-    @Autowired ResourcePermissions resourcePermissions;
+    public CertificationIdController(final CertifiedProductManager certifiedProductManager,
+            final CertificationIdManager certificationIdManager, final ValidatorFactory validatorFactory,
+            final FF4j ff4j,
+            final ResourcePermissions resourcePermissions) {
+        this.certifiedProductManager = certifiedProductManager;
+        this.certificationIdManager = certificationIdManager;
+        this.resourcePermissions = resourcePermissions;
+        this.validatorFactory = validatorFactory;
+        this.ff4j = ff4j;
+    }
 
     // **********************************************************************************************************
     // getAll
@@ -216,7 +228,7 @@ public class CertificationIdController {
 
                 // Add criteria and cqms met to results
                 if (includeCriteria || includeCqms) {
-                    Validator validator = ValidatorFactory.getValidator(certDto.getYear());
+                    Validator validator = this.validatorFactory.getValidator(certDto.getYear());
 
                     // Lookup Criteria for Validating
                     List<String> criteriaDtos = certificationIdManager
@@ -301,6 +313,9 @@ public class CertificationIdController {
         SortedSet<Integer> yearSet = new TreeSet<Integer>();
         List<CertificationIdResults.Product> resultProducts = new ArrayList<CertificationIdResults.Product>();
         for (CertifiedProductDetailsDTO dto : productDtos) {
+            if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE) && create && !dto.getYear().equalsIgnoreCase("2015")) {
+                throw new CertificationIdException("New Certification IDs can only be created using 2015 Edition Listings");
+            }
             CertificationIdResults.Product p = new CertificationIdResults.Product(dto);
             resultProducts.add(p);
             yearSet.add(Integer.valueOf(dto.getYear()));
@@ -310,7 +325,7 @@ public class CertificationIdController {
         results.setYear(year);
 
         // Validate the collection
-        Validator validator = ValidatorFactory.getValidator(year);
+        Validator validator = this.validatorFactory.getValidator(year);
 
         // Lookup Criteria for Validating
         List<String> criteriaDtos = certificationIdManager.getCriteriaNumbersMetByCertifiedProductIds(productIdList);

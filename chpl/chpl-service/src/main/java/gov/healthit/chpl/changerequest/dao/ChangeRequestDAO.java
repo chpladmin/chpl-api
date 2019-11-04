@@ -6,11 +6,13 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface ChangeRequestDAO {
-    ChangeRequest create(final ChangeRequest cr) throws EntityRetrievalException;
+    ChangeRequest create(ChangeRequest cr) throws EntityRetrievalException;
 
-    ChangeRequest get(final Long changeRequestId) throws EntityRetrievalException;
+    ChangeRequest get(Long changeRequestId) throws EntityRetrievalException;
 
-    List<ChangeRequest> getAllForCurrentUser() throws EntityRetrievalException;
+    List<ChangeRequest> getByDeveloper(Long developerId) throws EntityRetrievalException;
 
-    List<ChangeRequest> getByDeveloper(final Long developerId) throws EntityRetrievalException;
+    List<ChangeRequest> getAll() throws EntityRetrievalException;
+
+    List<ChangeRequest> getAllPending() throws EntityRetrievalException;
 }

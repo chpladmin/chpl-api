@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 import gov.healthit.chpl.dto.AddressDTO;
+import gov.healthit.chpl.entity.AddressEntity;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -78,6 +79,16 @@ public class Address implements Serializable {
         this.state = dto.getState();
         this.zipcode = dto.getZipcode();
         this.country = dto.getCountry();
+    }
+
+    public Address(AddressEntity entity) {
+        this.addressId = entity.getId();
+        this.line1 = entity.getStreetLineOne();
+        this.line2 = entity.getStreetLineTwo();
+        this.city = entity.getCity();
+        this.state = entity.getState();
+        this.zipcode = entity.getZipcode();
+        this.country = entity.getCountry();
     }
 
     public Long getAddressId() {

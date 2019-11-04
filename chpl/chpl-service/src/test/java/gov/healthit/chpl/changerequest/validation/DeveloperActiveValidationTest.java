@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -28,12 +29,12 @@ public class DeveloperActiveValidationTest {
     @Mock
     private ChangeRequestDAO changeRequestDAO;
 
+    @InjectMocks
     private DeveloperActiveValidation validator;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        validator = new DeveloperActiveValidation();
     }
 
     @Test
@@ -55,7 +56,7 @@ public class DeveloperActiveValidationTest {
                                 .withId(22l)
                                 .build())
                         .build(),
-                changeRequestDAO, null, null, developerDAO);
+                null);
 
         boolean isValid = validator.isValid(context);
 
@@ -82,7 +83,7 @@ public class DeveloperActiveValidationTest {
                                 .withId(22l)
                                 .build())
                         .build(),
-                changeRequestDAO, null, null, developerDAO);
+                null);
 
         boolean isValid = validator.isValid(context);
 
