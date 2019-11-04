@@ -301,31 +301,6 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     @Transactional(readOnly = true)
-    public boolean chplIdExists(final String id) throws EntityRetrievalException {
-        if (StringUtils.isEmpty(id)) {
-            return false;
-        }
-
-        boolean exists = false;
-        if (id.startsWith("CHP")) {
-            CertifiedProductDTO existing = cpDao.getByChplNumber(id);
-            if (existing != null) {
-                exists = true;
-            }
-        } else {
-            try {
-                CertifiedProductDetailsDTO existing = cpDao.getByChplUniqueId(id);
-                if (existing != null) {
-                    exists = true;
-                }
-            } catch (final EntityRetrievalException ex) {
-                LOGGER.error("Could not look up " + id, ex);
-            }
-        }
-        return exists;
-    }
-
-    @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> getDetailsByIds(final List<Long> ids) throws EntityRetrievalException {
         return cpDao.getDetailsByIds(ids);
     }

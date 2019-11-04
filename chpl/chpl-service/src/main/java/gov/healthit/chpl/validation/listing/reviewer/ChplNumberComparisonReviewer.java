@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 /**
@@ -16,13 +16,13 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
  */
 @Component("chplNumberComparisonReviewer")
 public class ChplNumberComparisonReviewer implements ComparisonReviewer {
-    private CertifiedProductManager cpManager;
+    private ChplProductNumberUtil chplNumberUtil;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public ChplNumberComparisonReviewer(final CertifiedProductManager cpManager,
+    public ChplNumberComparisonReviewer(final ChplProductNumberUtil chplNumberUtil,
             final ErrorMessageUtil msgUtil) {
-        this.cpManager = cpManager;
+        this.chplNumberUtil = chplNumberUtil;
         this.msgUtil = msgUtil;
     }
 
@@ -31,7 +31,7 @@ public class ChplNumberComparisonReviewer implements ComparisonReviewer {
             final CertifiedProductSearchDetails updatedListing) {
         if (!existingListing.getChplProductNumber().equals(updatedListing.getChplProductNumber())) {
             try {
-                boolean isDup = cpManager.chplIdExists(updatedListing.getChplProductNumber());
+                boolean isDup = chplNumberUtil.chplIdExists(updatedListing.getChplProductNumber());
                 if (isDup) {
                     updatedListing.getErrorMessages()
                             .add(msgUtil.getMessage("listing.chplProductNumber.changedNotUnique",

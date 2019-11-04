@@ -839,13 +839,16 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                             if (foundMeasure == null || foundMeasure.getId() == null) {
                                 listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.invalidG1MacraMeasure",
                                         cert.getNumber(), pendingMeasureMap.getEnteredValue()));
-                            } else if ((listing.getIcs() == null || !listing.getIcs().booleanValue())
-                                    && foundMeasure.getRemoved() != null && foundMeasure.getRemoved().booleanValue()) {
-                                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.removedG1MacraMeasureNoIcs",
-                                        cert.getNumber(), foundMeasure.getValue()));
                             } else {
                                 pendingMeasureMap.setMacraMeasure(foundMeasure);
                             }
+                        }
+                        if (pendingMeasureMap.getMacraMeasure() != null
+                                && (listing.getIcs() == null || !listing.getIcs().booleanValue())
+                                && pendingMeasureMap.getMacraMeasure().getRemoved() != null
+                                && pendingMeasureMap.getMacraMeasure().getRemoved().booleanValue()) {
+                            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.removedG1MacraMeasureNoIcs",
+                                    cert.getNumber(), pendingMeasureMap.getMacraMeasure().getValue()));
                         }
                     }
                 }
@@ -860,13 +863,17 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                 listing.getErrorMessages().add(
                                         msgUtil.getMessage("listing.criteria.invalidG2MacraMeasure",
                                                 cert.getNumber(), pendingMeasureMap.getEnteredValue()));
-                            } else if ((listing.getIcs() == null || !listing.getIcs().booleanValue())
-                                    && foundMeasure.getRemoved() != null && foundMeasure.getRemoved().booleanValue()) {
-                                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.removedG2MacraMeasureNoIcs",
-                                        cert.getNumber(), foundMeasure.getValue()));
                             } else {
                                 pendingMeasureMap.setMacraMeasure(foundMeasure);
                             }
+                        }
+
+                        if (pendingMeasureMap.getMacraMeasure() != null
+                                && (listing.getIcs() == null || !listing.getIcs().booleanValue())
+                                && pendingMeasureMap.getMacraMeasure().getRemoved() != null
+                                && pendingMeasureMap.getMacraMeasure().getRemoved().booleanValue()) {
+                            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.removedG2MacraMeasureNoIcs",
+                                    cert.getNumber(), pendingMeasureMap.getMacraMeasure().getValue()));
                         }
                     }
                 }
