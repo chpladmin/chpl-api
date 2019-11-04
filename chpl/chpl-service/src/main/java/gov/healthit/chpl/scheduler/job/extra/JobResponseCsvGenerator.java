@@ -16,10 +16,8 @@ import org.apache.logging.log4j.Logger;
 public class JobResponseCsvGenerator {
     private Logger logger;
 
-    public File getCsvFile(final List<JobResponse> responses, final String fileName, final Logger logger)
+    public File getCsvFile(final List<JobResponse> responses, final String fileName)
             throws IOException {
-        this.logger = logger;
-
         return writeDataToFile(responses, createFile(fileName));
     }
 
