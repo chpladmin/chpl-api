@@ -14,8 +14,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
@@ -50,7 +48,6 @@ import gov.healthit.chpl.util.AuthUtil;
  */
 @Service
 public class SchedulerManagerImpl extends SecuredManager implements SchedulerManager {
-    private static final Logger LOGGER = LogManager.getLogger(SchedulerManagerImpl.class);
 
     private static final String AUTHORITY_DELIMITER = ";";
     private static final String DATA_DELIMITER = "\u263A";
