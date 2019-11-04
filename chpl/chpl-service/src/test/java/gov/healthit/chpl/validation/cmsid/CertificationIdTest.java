@@ -3,14 +3,12 @@ package gov.healthit.chpl.validation.cmsid;
 import java.util.ArrayList;
 import java.util.List;
 
-import gov.healthit.chpl.certificationId.Validator;
-import gov.healthit.chpl.certificationId.ValidatorFactory;
-import gov.healthit.chpl.dto.CQMMetDTO;
-import gov.healthit.chpl.manager.CertificationIdManager;
-import gov.healthit.chpl.manager.CertifiedProductManager;
-
+import org.ff4j.FF4j;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -23,6 +21,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.certificationId.Validator;
+import gov.healthit.chpl.certificationId.ValidatorFactory;
+import gov.healthit.chpl.dto.CQMMetDTO;
+import gov.healthit.chpl.manager.CertificationIdManager;
+import gov.healthit.chpl.manager.CertifiedProductManager;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -41,6 +45,15 @@ public class CertificationIdTest extends TestCase {
 
     @Autowired
     private CertificationIdManager certificationIdManager;
+
+    @Autowired
+    private FF4j ff4j;
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+        Mockito.doReturn(true).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE);
+    }
 
     @Test
     @Transactional
