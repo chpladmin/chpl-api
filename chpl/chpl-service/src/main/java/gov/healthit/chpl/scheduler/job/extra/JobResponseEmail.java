@@ -32,11 +32,36 @@ public class JobResponseEmail {
     private String buildTable(final List<JobResponseTriggerWrapper> triggerWrappers) {
         StringBuilder sb = new StringBuilder();
         sb.append("<table border='1'>");
+        sb.append(buildHeaderRow());
+        sb.append(buildTableBody(triggerWrappers));
+        sb.append("<table>");
+        return sb.toString();
+    }
 
+    private String buildTableBody(final List<JobResponseTriggerWrapper> triggerWrappers) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<tbody>");
         triggerWrappers.stream()
                 .forEach(wrapper -> sb.append(buildRow(wrapper)));
+        sb.append("</tbody>");
+        return sb.toString();
+    }
 
-        sb.append("<table>");
+    private String buildHeaderRow() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<thead>");
+        sb.append("<tr>");
+        sb.append("<th>");
+        sb.append("Identifier");
+        sb.append("</th>");
+        sb.append("<th>");
+        sb.append("Success");
+        sb.append("</th>");
+        sb.append("<th>");
+        sb.append("Message");
+        sb.append("</th>");
+        sb.append("</tr>");
+        sb.append("</thead>");
         return sb.toString();
     }
 
