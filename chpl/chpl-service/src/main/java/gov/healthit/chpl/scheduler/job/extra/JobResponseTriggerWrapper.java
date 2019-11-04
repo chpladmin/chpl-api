@@ -2,13 +2,13 @@ package gov.healthit.chpl.scheduler.job.extra;
 
 import org.quartz.Trigger;
 
-public class StatusCollectorTriggerWrapper {
+public class JobResponseTriggerWrapper {
 
     private Trigger trigger;
     private boolean completed = false;
     private JobResponse jobResponse;
 
-    public StatusCollectorTriggerWrapper(final Trigger trigger) {
+    public JobResponseTriggerWrapper(final Trigger trigger) {
         this.trigger = trigger;
     }
 

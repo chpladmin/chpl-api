@@ -30,8 +30,8 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.scheduler.ChplSchedulerReference;
-import gov.healthit.chpl.scheduler.job.extra.StatusCollectorTriggerListener;
-import gov.healthit.chpl.scheduler.job.extra.StatusCollectorTriggerWrapper;
+import gov.healthit.chpl.scheduler.job.extra.JobResponseTriggerListener;
+import gov.healthit.chpl.scheduler.job.extra.JobResponseTriggerWrapper;
 
 public class Update2014ListingsStatusJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("update2014ListingStatusJobLogger");
@@ -55,15 +55,15 @@ public class Update2014ListingsStatusJob extends QuartzJob {
         setSecurityContext();
 
         List<Long> listings = getListingIds();
-        // listings = listings.subList(1100, 1199); // TODO - This is only for testing!
-        List<StatusCollectorTriggerWrapper> wrappers = new ArrayList<StatusCollectorTriggerWrapper>();
+        listings = listings.subList(2000, 2100); // TODO - This is only for testing!
+        List<JobResponseTriggerWrapper> wrappers = new ArrayList<JobResponseTriggerWrapper>();
 
         for (Long cpId : listings) {
             wrappers.add(buildTriggerWrapper(cpId, jobContext));
         }
 
         try {
-            StatusCollectorTriggerListener listener = new StatusCollectorTriggerListener(wrappers,
+            JobResponseTriggerListener listener = new JobResponseTriggerListener(wrappers,
                     jobContext.getMergedJobDataMap().getString("email"), env, LOGGER);
 
             // Add the triggers and listener to the scheduler
@@ -81,7 +81,7 @@ public class Update2014ListingsStatusJob extends QuartzJob {
         LOGGER.info("********* Completed the Update 2014 Listings Status job. *********");
     }
 
-    private StatusCollectorTriggerWrapper buildTriggerWrapper(final Long cpId, final JobExecutionContext jobContext) {
+    private JobResponseTriggerWrapper buildTriggerWrapper(final Long cpId, final JobExecutionContext jobContext) {
         JobDataMap dataMap = new JobDataMap();
         dataMap.put("listing", cpId);
         dataMap.put("certificationStatus", getCertificationStatus(jobContext));
@@ -89,7 +89,7 @@ public class Update2014ListingsStatusJob extends QuartzJob {
         dataMap.put("logger", LOGGER);
         dataMap.put("reason", jobContext.getMergedJobDataMap().getString("reason"));
 
-        return new StatusCollectorTriggerWrapper(
+        return new JobResponseTriggerWrapper(
                 TriggerBuilder.newTrigger()
                         .forJob(JOB_NAME, JOB_GROUP)
                         .usingJobData(dataMap)
@@ -97,7 +97,7 @@ public class Update2014ListingsStatusJob extends QuartzJob {
 
     }
 
-    private List<Matcher<TriggerKey>> getTriggerKeyMatchers(final List<StatusCollectorTriggerWrapper> wrappers) {
+    private List<Matcher<TriggerKey>> getTriggerKeyMatchers(final List<JobResponseTriggerWrapper> wrappers) {
         return wrappers.stream()
                 .map(wrapper -> KeyMatcher.keyEquals(wrapper.getTrigger().getKey()))
                 .collect(Collectors.toList());
