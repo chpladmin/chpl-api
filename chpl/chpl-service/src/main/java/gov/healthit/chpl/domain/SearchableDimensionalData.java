@@ -3,6 +3,7 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.Set;
 
+@Deprecated
 public class SearchableDimensionalData implements Serializable {
     private static final long serialVersionUID = 448737963706046739L;
     private Set<KeyValueModel> productClassifications;

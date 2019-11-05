@@ -179,12 +179,12 @@ public class PrecacheableDimensionalDataManager {
 
     @Transactional
     @Cacheable(CacheNames.PRODUCT_NAMES)
-    public Set<KeyValueModelStatuses> getProductNamesCached() {
-        return getProductNames();
+    public Set<KeyValueModelStatuses> getProductsCached() {
+        return getProducts();
     }
 
     @Transactional
-    public Set<KeyValueModelStatuses> getProductNames() {
+    public Set<KeyValueModelStatuses> getProducts() {
         List<ProductDTO> productDTOs = this.productDao.findAll();
         Set<KeyValueModelStatuses> productNames = new HashSet<KeyValueModelStatuses>();
         for (ProductDTO dto : productDTOs) {
@@ -195,12 +195,12 @@ public class PrecacheableDimensionalDataManager {
 
     @Transactional
     @Cacheable(CacheNames.DEVELOPER_NAMES)
-    public Set<KeyValueModelStatuses> getDeveloperNamesCached() {
-        return getDeveloperNames();
+    public Set<KeyValueModelStatuses> getDevelopersCached() {
+        return getDevelopers();
     }
 
     @Transactional
-    public Set<KeyValueModelStatuses> getDeveloperNames() {
+    public Set<KeyValueModelStatuses> getDevelopers() {
         List<DeveloperDTO> developerDTOs = this.developerDao.findAll();
         Set<KeyValueModelStatuses> developerNames = new HashSet<KeyValueModelStatuses>();
         for (DeveloperDTO dto : developerDTOs) {

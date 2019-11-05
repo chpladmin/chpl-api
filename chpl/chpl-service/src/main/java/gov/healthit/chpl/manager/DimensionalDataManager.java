@@ -16,10 +16,12 @@ import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.AgeRangeDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.JobDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
+import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.dao.TestDataDAO;
@@ -35,6 +37,7 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
+import gov.healthit.chpl.domain.DimensionalData;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.NonconformityType;
@@ -53,9 +56,11 @@ import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AgeRangeDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
+import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
+import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.dto.TestDataCriteriaMapDTO;
@@ -80,7 +85,7 @@ public class DimensionalDataManager {
     private CertificationBodyDAO certificationBodyDAO;
 
     @Autowired
-    private CertificationCriterionDAO certificationCriterionDAO;
+    private CertificationCriterionDAO certificationCriterionDao;
 
     @Autowired
     private EducationTypeDAO educationTypeDao;
@@ -111,11 +116,12 @@ public class DimensionalDataManager {
     private UploadTemplateVersionDAO uploadTemplateDao;
     @Autowired
     private QuarterDAO quarterDao;
-
-
+    @Autowired
+    private ProductDAO productDao;
+    @Autowired
+    private DeveloperDAO devDao;
     @Autowired
     private JobDAO jobDao;
-
     @Autowired
     private MacraMeasureDAO macraDao;
 
@@ -300,13 +306,13 @@ public class DimensionalDataManager {
 
         SurveillanceRequirementOptions result = new SurveillanceRequirementOptions();
 
-        List<CertificationCriterionDTO> criteria2014 = certificationCriterionDAO.findByCertificationEditionYear("2014");
+        List<CertificationCriterionDTO> criteria2014 = certificationCriterionDao.findByCertificationEditionYear("2014");
         for (CertificationCriterionDTO crit : criteria2014) {
             result.getCriteriaOptions2014()
                     .add(new CriteriaSpecificDescriptiveModel(crit.getId(), crit.getNumber(), crit.getDescription(),
                             new CertificationCriterion(crit)));
         }
-        List<CertificationCriterionDTO> criteria2015 = certificationCriterionDAO.findByCertificationEditionYear("2015");
+        List<CertificationCriterionDTO> criteria2015 = certificationCriterionDao.findByCertificationEditionYear("2015");
         for (CertificationCriterionDTO crit : criteria2015) {
             result.getCriteriaOptions2015()
                     .add(new CriteriaSpecificDescriptiveModel(crit.getId(), crit.getNumber(), crit.getDescription(),
@@ -323,12 +329,12 @@ public class DimensionalDataManager {
 
         Set<KeyValueModel> result = new HashSet<KeyValueModel>();
 
-        List<CertificationCriterionDTO> criteria2014 = certificationCriterionDAO.findByCertificationEditionYear("2014");
+        List<CertificationCriterionDTO> criteria2014 = certificationCriterionDao.findByCertificationEditionYear("2014");
         for (CertificationCriterionDTO crit : criteria2014) {
             result.add(new CriteriaSpecificDescriptiveModel(crit.getId(), crit.getNumber(), crit.getDescription(),
                     new CertificationCriterion(crit)));
         }
-        List<CertificationCriterionDTO> criteria2015 = certificationCriterionDAO.findByCertificationEditionYear("2015");
+        List<CertificationCriterionDTO> criteria2015 = certificationCriterionDao.findByCertificationEditionYear("2015");
         for (CertificationCriterionDTO crit : criteria2015) {
             result.add(new CriteriaSpecificDescriptiveModel(crit.getId(), crit.getNumber(), crit.getDescription(),
                     new CertificationCriterion(crit)));
@@ -444,7 +450,7 @@ public class DimensionalDataManager {
     public Set<CertificationCriterion> getCertificationCriterion() {
         LOGGER.debug("Getting all criterion with editions from the database (not cached).");
 
-        List<CertificationCriterionDTO> dtos = this.certificationCriterionDAO.findAll();
+        List<CertificationCriterionDTO> dtos = this.certificationCriterionDao.findAll();
         Set<CertificationCriterion> criterion = new HashSet<CertificationCriterion>();
 
         for (CertificationCriterionDTO dto : dtos) {
@@ -452,6 +458,39 @@ public class DimensionalDataManager {
         }
 
         return criterion;
+    }
+
+    public DimensionalData getDimensionalData(final Boolean simple) throws EntityRetrievalException {
+        DimensionalData result = new DimensionalData();
+
+        List<ProductDTO> productDtos = productDao.findAllIdsAndNames();
+        Set<KeyValueModel> productNames = new HashSet<KeyValueModel>();
+        for (ProductDTO productDto : productDtos) {
+            productNames.add(new KeyValueModel(productDto.getId(), productDto.getName()));
+        }
+        result.setProducts(productNames);
+
+        List<DeveloperDTO> developerDtos = devDao.findAllIdsAndNames();
+        Set<KeyValueModel> developerNames = new HashSet<KeyValueModel>();
+        for (DeveloperDTO devDto : developerDtos) {
+            developerNames.add(new KeyValueModel(devDto.getId(), devDto.getName()));
+        }
+        result.setDevelopers(developerNames);
+
+        List<CertificationCriterionDTO> dtos = this.certificationCriterionDao.findAll();
+        Set<CertificationCriterion> criteria = new HashSet<CertificationCriterion>();
+        for (CertificationCriterionDTO dto : dtos) {
+            criteria.add(new CertificationCriterion(dto));
+        }
+        result.setCertificationCriteria(criteria);
+
+        result.setAcbs(getCertBodyNames());
+        result.setEditions(getEditionNames(simple));
+        result.setCertificationStatuses(getCertificationStatuses());
+        result.setPracticeTypes(getPracticeTypeNames());
+        result.setProductClassifications(getClassificationNames());
+        result.setCqms(getCQMCriterionNumbers(simple));
+        return result;
     }
 
     // The following methods are called from inside this class as searchable dimensional data.
@@ -474,13 +513,13 @@ public class DimensionalDataManager {
         return precache.getPracticeTypeNames();
     }
 
-    public Set<KeyValueModelStatuses> getProductNames() {
-        return precache.getProductNamesCached();
+    public Set<KeyValueModelStatuses> getProducts() {
+        return precache.getProductsCached();
     }
 
     @Transactional
-    public Set<KeyValueModelStatuses> getDeveloperNames() {
-        return precache.getDeveloperNamesCached();
+    public Set<KeyValueModelStatuses> getDevelopers() {
+        return precache.getDevelopersCached();
     }
 
     public Set<CriteriaSpecificDescriptiveModel> getCertificationCriterionNumbers() throws EntityRetrievalException {
@@ -491,13 +530,14 @@ public class DimensionalDataManager {
         return precache.getCQMCriterionNumbers(simple);
     }
 
+    @Deprecated
     public SearchableDimensionalData getSearchableDimensionalData(final Boolean simple) throws EntityRetrievalException {
         SearchableDimensionalData searchOptions = new SearchableDimensionalData();
         //the following calls contain data that could possibly change
         //without the system rebooting so we need to make sure to
         //keep their cached data up-to-date
-        searchOptions.setProductNames(getProductNames());
-        searchOptions.setDeveloperNames(getDeveloperNames());
+        searchOptions.setProductNames(getProducts());
+        searchOptions.setDeveloperNames(getDevelopers());
         //acb names can change but there are so few that it's fine to not cache them
         searchOptions.setCertBodyNames(getCertBodyNames());
 
@@ -512,4 +552,5 @@ public class DimensionalDataManager {
         searchOptions.setCertificationCriterionNumbers(getCertificationCriterionNumbers());
         return searchOptions;
     }
+
 }
