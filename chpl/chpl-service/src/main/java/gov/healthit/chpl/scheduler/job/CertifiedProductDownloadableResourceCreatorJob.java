@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -101,7 +102,10 @@ extends DownloadableResourceCreatorJob implements InterruptableJob {
         xmlPresenter.open(getXmlFile());
 
         csvPresenter.setLogger(LOGGER);
-        List<CertificationCriterionDTO> criteria = getCriteriaDao().findByCertificationEditionYear(edition);
+        List<CertificationCriterionDTO> criteria = getCriteriaDao().findByCertificationEditionYear(edition)
+                .stream()
+                .filter(cr -> cr.getId() % 5 == 0) //!cr.getRemoved()
+                .collect(Collectors.<CertificationCriterionDTO> toList());
         csvPresenter.setApplicableCriteria(criteria);
         csvPresenter.open(getCsvFile());
     }
