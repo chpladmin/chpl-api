@@ -11,6 +11,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
+import net.sf.ehcache.CacheManager;
 
 /**
  * The RemoveCriteriaJob sets the removed flag to "true" for the following 2015 criteria:
@@ -49,6 +50,7 @@ public class RemoveCriteriaJob extends QuartzJob {
                     LOGGER.error("Exception updating criteria " + criteria, ex);
                 }
             }
+            CacheManager.getInstance().clearAll();
         }
         LOGGER.info("********* Completed the Remove Criteria job. *********");
     }
