@@ -51,6 +51,8 @@ public class UpdateSingleListingStatusJob extends QuartzJob {
         JobResponse response = updateListing(cpsd, certificationStatus, statusDate, getReason(jobContext));
 
         jobContext.setResult(response);
+
+        logger.info(response.toString());
         logger.info("********* Completed the Update Listing Status job. [" + listing + "] *********");
     }
 

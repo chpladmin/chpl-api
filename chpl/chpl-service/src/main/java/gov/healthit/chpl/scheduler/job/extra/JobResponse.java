@@ -34,4 +34,16 @@ public class JobResponse {
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(identifier);
+        sb.append(",");
+        sb.append(completedSuccessfully);
+        sb.append(",");
+        sb.append(message);
+        return sb.toString();
+    }
+
 }
