@@ -72,7 +72,7 @@
                 </entry>
                 <entry>
                     <key>parameters</key>
-                    <value>[{"label": "Status Effective Date", "key": "effectiveDate", "type": "date"}, {"label": "New Listing Status", "key": "certificationStatus", "type": "select", "items": [{"id": 1, "name": "Active"}, {"id": 2, "name": "Retired"}, {"id": 3, "name": "Withdrawn by Developer"}, {"id": 4, "name": "Withdrawn by ONC-ACB"}, {"id": 5, "name": "Pending"}, {"id": 6, "name": "Suspended by ONC-ACB"}, {"id": 7, "name": "Suspended by ONC"}, {"id": 8, "name": "Terminated by ONC"}, {"id": 9, "name": "Withdrawn by Developer Under Surveillance/Review"}] }, {"label": "Email Report To", "key": "email", "type": "text"}]</value>
+                    <value>[{"label": "Status Effective Date", "key": "effectiveDate", "type": "date"}, {"label": "New Listing Status", "key": "certificationStatus", "type": "select", "items": [{"id": 1, "name": "Active"}, {"id": 2, "name": "Retired"}, {"id": 3, "name": "Withdrawn by Developer"}, {"id": 4, "name": "Withdrawn by ONC-ACB"}, {"id": 5, "name": "Pending"}, {"id": 6, "name": "Suspended by ONC-ACB"}, {"id": 7, "name": "Suspended by ONC"}, {"id": 8, "name": "Terminated by ONC"}, {"id": 9, "name": "Withdrawn by Developer Under Surveillance/Review"}] }, {"label": "Reason For Change", "key": "reason", "type": "text"}, {"label": "Email Report To", "key": "email", "type": "text"}, {"label": "Send Update Every (x) Listings", "key": "statusInterval", "type": "text"} ]</value>
                 </entry>
             </job-data-map>
         </job>

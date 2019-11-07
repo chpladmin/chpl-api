@@ -18,14 +18,17 @@ public class JobResponseTriggerListener implements TriggerListener {
     private String emailAddress;
     private String emailFileName;
     private String emailSubject;
+    private Integer statusInterval;
     private Environment env;
 
     public JobResponseTriggerListener(List<JobResponseTriggerWrapper> triggerWrappers, final String emailAddress,
-            final String emailFilename, final String emailSubject, final Environment env, final Logger logger) {
+            final String emailFilename, final String emailSubject, final Integer statusInterval, final Environment env,
+            final Logger logger) {
         this.triggerWrappers = triggerWrappers;
         this.emailAddress = emailAddress;
         this.emailFileName = emailFilename;
         this.emailSubject = emailSubject;
+        this.statusInterval = statusInterval;
         this.env = env;
         this.logger = logger;
     }
@@ -62,6 +65,8 @@ public class JobResponseTriggerListener implements TriggerListener {
         wrapper.setCompleted(true);
         wrapper.setJobResponse((JobResponse) context.getResult());
 
+        sendIntermittantStatusUpdate(trigger);
+
         if (areAllTriggersComplete()) {
             logger.info("All jobs have completed!!!!!");
             sendEmail();
@@ -75,6 +80,27 @@ public class JobResponseTriggerListener implements TriggerListener {
                 .count();
 
         return countOfIncomplete == 0L;
+    }
+
+    private void sendIntermittantStatusUpdate(final Trigger trigger) {
+        Long completedJobsCount = getCompletedJobCount();
+
+        if (completedJobsCount % statusInterval == 0) {
+            (new JobResponseStatusUpdateEmail()).sendEmail(
+                    env,
+                    emailAddress,
+                    trigger.getJobKey().getName(),
+                    Long.valueOf(triggerWrappers.size()),
+                    triggerWrappers.stream().filter(trig -> trig.isCompleted()).count(),
+                    logger);
+
+            logger.info("----------------------------Completed " + completedJobsCount + " out of "
+                    + triggerWrappers.size() + " jobs----------------------------");
+        }
+    }
+
+    private Long getCompletedJobCount() {
+        return triggerWrappers.stream().filter(trig -> trig.isCompleted()).count();
     }
 
     private void sendEmail() {

@@ -62,11 +62,14 @@ public class Update2014ListingsStatusJob extends QuartzJob {
         }
 
         try {
+            LOGGER.info("statusInterval = " + jobContext.getMergedJobDataMap().getInt("statusInterval"));
+
             JobResponseTriggerListener listener = new JobResponseTriggerListener(
                     wrappers,
                     jobContext.getMergedJobDataMap().getString("email"),
                     jobContext.getMergedJobDataMap().getString("emailCsvFileName"),
                     jobContext.getMergedJobDataMap().getString("emailSubject"),
+                    jobContext.getMergedJobDataMap().getInt("statusInterval"),
                     env,
                     LOGGER);
 
