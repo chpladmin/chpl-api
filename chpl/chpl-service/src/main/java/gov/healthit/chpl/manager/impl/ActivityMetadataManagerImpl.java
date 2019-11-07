@@ -208,10 +208,12 @@ public class ActivityMetadataManagerImpl extends SecuredManager implements Activ
     }
 
     @Override
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+        + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_API_KEY_MANAGEMENT_METADATA)")
     @Transactional
     public List<ActivityMetadata> getApiKeyManagementMetadata(Date startDate, Date endDate)
         throws IOException {
-        return getActivityMetadataByConcept(ActivityConcept.API_KEY, startDate, endDate);
+        return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.API_KEY, startDate, endDate);
     }
 
     private List<ActivityMetadata> getActivityMetadataByConceptWithoutSecurity(final ActivityConcept concept,
