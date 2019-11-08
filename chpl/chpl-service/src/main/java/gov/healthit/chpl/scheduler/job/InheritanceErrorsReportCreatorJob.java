@@ -4,11 +4,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,12 +33,12 @@ import gov.healthit.chpl.dto.scheduler.InheritanceErrorsReportDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
-import gov.healthit.chpl.scheduler.DataCollectorAsyncSchedulerHelper;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 
 /**
- * Initiates and runs the the Quartz job that generates the data that is used to to create
- * the Inheritance Errors Report notification.
+ * Initiates and runs the the Quartz job that generates the data that is used to to create the Inheritance Errors Report
+ * notification.
+ * 
  * @author alarned
  *
  */
@@ -60,9 +60,6 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
     @Autowired
-    private DataCollectorAsyncSchedulerHelper dataCollectorAsyncSchedulerHelper;
-
-    @Autowired
     private ListingGraphDAO listingGraphDAO;
 
     @Autowired
@@ -70,7 +67,9 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
 
     /**
      * Constructor to initialize InheritanceErrorsReportCreatorJob object.
-     * @throws Exception is thrown
+     * 
+     * @throws Exception
+     *             is thrown
      */
     public InheritanceErrorsReportCreatorJob() throws Exception {
         super();
@@ -81,49 +80,78 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
     @Transactional
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        dataCollectorAsyncSchedulerHelper.setLogger(LOGGER);
 
         LOGGER.info("********* Starting the Inheritance Error Report Creator job. *********");
-        List<CertifiedProductSearchDetails> results = retrieveData();
-        List<InheritanceErrorsReportDTO> errors = new ArrayList<InheritanceErrorsReportDTO>();
-        for (CertifiedProductSearchDetails listing : results) {
-            String reason = breaksIcsRules(listing);
-            if (!StringUtils.isEmpty(reason)) {
-                InheritanceErrorsReportDTO item = new InheritanceErrorsReportDTO();
-                item.setChplProductNumber(listing.getChplProductNumber());
-                item.setDeveloper(listing.getDeveloper().getName());
-                item.setProduct(listing.getProduct().getName());
-                item.setVersion(listing.getVersion().getVersion());
-                item.setAcb(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
-                String productDetailsUrl = props.getProperty("chplUrlBegin").trim();
-                if (!productDetailsUrl.endsWith("/")) {
-                    productDetailsUrl += "/";
-                }
-                productDetailsUrl += "#/product/" + listing.getId();
-                item.setUrl(productDetailsUrl);
-                item.setReason(reason);
-                errors.add(item);
-            }
-        }
+
         inheritanceErrorsReportDAO.deleteAll();
-        if (errors.size() > 0) {
-            saveInheritanceErrorsReport(errors);
+        List<CertifiedProductFlatSearchResult> listings = certifiedProductSearchDAO.getAllCertifiedProducts();
+        List<CertifiedProductFlatSearchResult> certifiedProducts = filterData(listings);
+        ExecutorService executorService = null;
+        try {
+            executorService = Executors.newFixedThreadPool(8);
+
+            for (CertifiedProductFlatSearchResult result : certifiedProducts) {
+                CompletableFuture<Void> future = CompletableFuture
+                        .supplyAsync(() -> getCertifiedProductSearchDetails(result.getId()), executorService)
+                        .thenApply(cp -> check(cp))
+                        .thenAccept(error -> saveInheritanceErrorsReportSingle(error));
+            }
+        } finally {
+            executorService.shutdown();
         }
+
         LOGGER.info("Completed the Inheritance Error Report Creator job. *********");
     }
 
-    private void saveInheritanceErrorsReport(final List<InheritanceErrorsReportDTO> items) {
+    private CertifiedProductSearchDetails getCertifiedProductSearchDetails(Long id) {
+        CertifiedProductSearchDetails cp = null;
         try {
-            inheritanceErrorsReportDAO.create(items);
+            cp = certifiedProductDetailsManager.getCertifiedProductDetails(id);
+            LOGGER.info("Completed retrieval of listing [" + cp.getChplProductNumber() + "]");
+        } catch (Exception e) {
+            LOGGER.error("Could not retrieve listing [" + id + "] - " + e.getMessage(), e);
+        }
+        return cp;
+    }
+
+    private InheritanceErrorsReportDTO check(CertifiedProductSearchDetails listing) {
+        if (listing == null) {
+            return null;
+        }
+        InheritanceErrorsReportDTO item = null;
+        String reason = breaksIcsRules(listing);
+        if (!StringUtils.isEmpty(reason)) {
+            item = new InheritanceErrorsReportDTO();
+            item.setChplProductNumber(listing.getChplProductNumber());
+            item.setDeveloper(listing.getDeveloper().getName());
+            item.setProduct(listing.getProduct().getName());
+            item.setVersion(listing.getVersion().getVersion());
+            item.setAcb(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
+            String productDetailsUrl = props.getProperty("chplUrlBegin").trim();
+            if (!productDetailsUrl.endsWith("/")) {
+                productDetailsUrl += "/";
+            }
+            productDetailsUrl += "#/product/" + listing.getId();
+            item.setUrl(productDetailsUrl);
+            item.setReason(reason);
+        }
+        LOGGER.info("Completed check of listing [" + listing.getChplProductNumber() + "]");
+        return item;
+    }
+
+    private void saveInheritanceErrorsReportSingle(final InheritanceErrorsReportDTO item) {
+        try {
+            inheritanceErrorsReportDAO.create(item);
+            LOGGER.info("Completed saving of error [" + item.getChplProductNumber() + "]");
         } catch (EntityCreationException | EntityRetrievalException e) {
             LOGGER.error("Unable to save Inheritance Errors Report {} with error message {}",
-                    items.toString(), e.getLocalizedMessage());
+                    item.toString(), e.getLocalizedMessage());
         }
     }
 
     private Properties loadProperties() throws IOException {
-        InputStream in =
-                InheritanceErrorsReportCreatorJob.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
+        InputStream in = InheritanceErrorsReportCreatorJob.class.getClassLoader()
+                .getResourceAsStream(DEFAULT_PROPERTIES_FILE);
         if (in == null) {
             props = null;
             throw new FileNotFoundException("Environment Properties File not found in class path.");
@@ -135,17 +163,6 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
         return props;
     }
 
-    private List<CertifiedProductSearchDetails> retrieveData() {
-        List<CertifiedProductFlatSearchResult> listings = certifiedProductSearchDAO.getAllCertifiedProducts();
-        List<CertifiedProductFlatSearchResult> certifiedProducts = filterData(listings);
-        LOGGER.info("2015 Certified Product Count: " + certifiedProducts.size());
-
-        List<CertifiedProductSearchDetails> certifiedProductsWithDetails = getCertifiedProductDetailsForAll(
-                certifiedProducts);
-
-        return certifiedProductsWithDetails;
-    }
-
     private List<CertifiedProductFlatSearchResult> filterData(
             final List<CertifiedProductFlatSearchResult> certifiedProducts) {
         List<CertifiedProductFlatSearchResult> results = new ArrayList<CertifiedProductFlatSearchResult>();
@@ -155,36 +172,6 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
             }
         }
         return results;
-    }
-
-    private List<CertifiedProductSearchDetails> getCertifiedProductDetailsForAll(
-            final List<CertifiedProductFlatSearchResult> certifiedProducts) {
-
-        List<CertifiedProductSearchDetails> details = new ArrayList<CertifiedProductSearchDetails>();
-        List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
-
-        for (CertifiedProductFlatSearchResult certifiedProduct : certifiedProducts) {
-            try {
-                futures.add(dataCollectorAsyncSchedulerHelper
-                        .getCertifiedProductDetail(certifiedProduct.getId(), certifiedProductDetailsManager));
-            } catch (EntityRetrievalException e) {
-                LOGGER.error("Could not retrieve certified product details for id: " + certifiedProduct.getId(), e);
-            }
-        }
-
-        Date startTime = new Date();
-        for (Future<CertifiedProductSearchDetails> future : futures) {
-            try {
-                details.add(future.get());
-            } catch (InterruptedException | ExecutionException e) {
-                LOGGER.error("Could not retrieve certified product details for unknown id.", e);
-            }
-        }
-
-        Date endTime = new Date();
-        LOGGER.info("Time to retrieve details: " + (endTime.getTime() - startTime.getTime()));
-
-        return details;
     }
 
     private String breaksIcsRules(final CertifiedProductSearchDetails listing) {
@@ -227,6 +214,17 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
                             existing, expected);
                 }
             }
+
+            if (listing.getCertificationEdition().get("id").equals("3") && !hasIcs) {
+                if (listing.getCertificationResults().stream()
+                        .filter(cert -> cert.isGap())
+                        .count() > 0) {
+
+                    return "Found the new error!";
+                }
+
+            }
+
         } catch (Exception ex) {
             LOGGER.error("Could not compare ICS value " + icsCodePart + " to inherits boolean value", ex);
         }
