@@ -102,8 +102,10 @@ public abstract class ActivityMetadataBuilder {
             break;
         case ANNUAL_REPORT:
             metadata = new AnnualReportActivityMetadata();
+            break;
         case CHANGE_REQUEST:
             metadata = new ChangeRequestActivityMetadata();
+            break;
         default:
             break;
         }

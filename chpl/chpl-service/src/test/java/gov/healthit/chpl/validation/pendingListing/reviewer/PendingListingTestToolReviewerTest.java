@@ -25,6 +25,7 @@ import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.AmbulatoryRequiredTestToolReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.TestTool2015Reviewer;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
@@ -60,6 +61,7 @@ public class PendingListingTestToolReviewerTest {
     private CertificationResultRules certRules;
 
     private TestToolReviewer testToolReviewer;
+    private TestTool2015Reviewer testTool2015Reviewer;
     private AmbulatoryRequiredTestToolReviewer ambulatoryTestToolReviewier;
 
     @Before
@@ -67,6 +69,7 @@ public class PendingListingTestToolReviewerTest {
         MockitoAnnotations.initMocks(this);
 
         testToolReviewer = new TestToolReviewer(testToolDao, msgUtil, productNumberUtil);
+        testTool2015Reviewer= new TestTool2015Reviewer(msgUtil);
         ambulatoryTestToolReviewier = new AmbulatoryRequiredTestToolReviewer(msgUtil, certRules);
 
         Mockito.doReturn(NO_TEST_TOOL_ERROR).when(msgUtil)
@@ -158,7 +161,7 @@ public class PendingListingTestToolReviewerTest {
 
         TestToolDTO testTool = createBogusTestTool(false);
         Mockito.when(testToolDao.getByName(ArgumentMatchers.eq("Bogus Test Tool"))).thenReturn(testTool);
-        testToolReviewer.review(listing);
+        testTool2015Reviewer.review(listing);
         assertFalse(listing.getErrorMessages().contains(NO_TEST_TOOL_NAME_ERROR));
         assertFalse(listing.getErrorMessages().contains(TEST_TOOL_NOT_FOUND_AND_REMOVED_ERROR));
         assertFalse(listing.getErrorMessages().contains(RETIRED_TEST_TOOL_NOT_ALLOWED_ERROR));

@@ -40,8 +40,13 @@ public class AmbulatoryRequiredTestToolReviewer implements Reviewer {
                         && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
                         && !ValidationUtils.containsCert(cert, TEST_TOOL_CHECK_CERTS)
                         && (cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
-                    listing.getErrorMessages()
-                    .add(msgUtil.getMessage("listing.criteria.missingTestTool", cert.getNumber()));
+                    if (listing.getIcs() != null && listing.getIcs().booleanValue()) {
+                        listing.getWarningMessages()
+                        .add(msgUtil.getMessage("listing.criteria.missingTestTool", cert.getNumber()));
+                    } else {
+                        listing.getErrorMessages()
+                        .add(msgUtil.getMessage("listing.criteria.missingTestTool", cert.getNumber()));
+                    }
                 }
             }
         }
