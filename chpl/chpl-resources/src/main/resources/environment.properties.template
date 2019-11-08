@@ -100,6 +100,7 @@ uploadErrorEmailSubject=CHPL Listing Upload Error
 schemaXmlName=listingSchema.xsd
 schemaCsv2014Name=listing2014Schema.csv
 schemaCsv2015Name=listing2015Schema.csv
+schemaCsv2015NameLegacy=2015 Listing CSV Data Dictionary Legacy.csv
 schemaSurveillanceName=surveillanceSchema.csv
 schemaBasicSurveillanceName=Surveillance (basic) CSV Data Dictionary.csv
 
