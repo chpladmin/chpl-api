@@ -55,7 +55,9 @@ import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 @EnableCaching
 @PropertySources({
         @PropertySource("classpath:/environment.properties"),
+        @PropertySource(value = "classpath:/environment-override.properties", ignoreResourceNotFound = true),
         @PropertySource("classpath:/lookup.properties"),
+        @PropertySource(value = "classpath:/lookup.properties", ignoreResourceNotFound = true),
 })
 @ComponentScan(basePackages = {
         "gov.healthit.chpl.**"
