@@ -8,6 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -23,7 +24,10 @@ import gov.healthit.chpl.filter.JWTAuthenticationFilter;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@PropertySource("classpath:/environment.properties")
+@PropertySources({
+    @PropertySource("classpath:/environment.properties"),
+    @PropertySource(value = "classpath:/environment-override.properties", ignoreResourceNotFound = true)
+})
 @ComponentScan(basePackages = { "gov.healthit.chpl.auth.**" }, excludeFilters = {
         @ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class) })
 public class CHPLHttpSecurityConfig extends WebSecurityConfigurerAdapter {
