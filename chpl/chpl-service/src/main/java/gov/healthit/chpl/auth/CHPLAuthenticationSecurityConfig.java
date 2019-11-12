@@ -14,6 +14,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.jndi.JndiObjectFactoryBean;
@@ -28,11 +29,8 @@ import org.springframework.security.acls.domain.EhCacheBasedAclCache;
 import org.springframework.security.acls.jdbc.BasicLookupStrategy;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -40,9 +38,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@PropertySource("classpath:/environment.properties")
-@ComponentScan(basePackages = { "gov.healthit.chpl.auth.**" }, excludeFilters = {
-        @ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class) })
+@PropertySources({
+        @PropertySource("classpath:/environment.properties"),
+        @PropertySource(value = "classpath:/environment-override.properties", ignoreResourceNotFound = true)
+})
+@ComponentScan(basePackages = {
+        "gov.healthit.chpl.auth.**"
+}, excludeFilters = {
+        @ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)
+})
 public class CHPLAuthenticationSecurityConfig implements EnvironmentAware {
 
     private static final Logger LOGGER = LogManager.getLogger(CHPLAuthenticationSecurityConfig.class);
@@ -190,7 +194,6 @@ public class CHPLAuthenticationSecurityConfig implements EnvironmentAware {
         return bean;
     }
 
-
     @Bean
     public AclPermissionCacheOptimizer aclPermissionCacheOptimizer() {
         LOGGER.info("Get AclPermissionCacheOptimizer");
@@ -203,8 +206,8 @@ public class CHPLAuthenticationSecurityConfig implements EnvironmentAware {
         LOGGER.info("Get DefaultMethodSecurityExpressionHandler");
         DefaultMethodSecurityExpressionHandler bean = new DefaultMethodSecurityExpressionHandler();
         bean.setPermissionEvaluator(permissionEvaluator());
-        //Commenting this out allows for our custom Postfilter'ing to work
-        //bean.setPermissionCacheOptimizer(aclPermissionCacheOptimizer());
+        // Commenting this out allows for our custom Postfilter'ing to work
+        // bean.setPermissionCacheOptimizer(aclPermissionCacheOptimizer());
         return bean;
     }
 
