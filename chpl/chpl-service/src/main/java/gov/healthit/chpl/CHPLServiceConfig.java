@@ -39,6 +39,8 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.view.JstlView;
 
 import gov.healthit.chpl.job.ExportQuarterlySurveillanceReportJob;
 import gov.healthit.chpl.job.MeaningfulUseUploadJob;
@@ -60,7 +62,7 @@ import gov.healthit.chpl.job.MeaningfulUseUploadJob;
         @PropertySource(value = "classpath:/lookup.properties", ignoreResourceNotFound = true),
 })
 @ComponentScan(basePackages = {
-        "gov.healthit.chpl.**"
+        "org.springframework.security.**", "org.springframework.core.env.**", "gov.healthit.chpl.**"
 })
 public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements EnvironmentAware {
 
@@ -169,6 +171,15 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
         LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
         interceptor.setParamName("lang");
         return interceptor;
+    }
+
+    @Bean
+    public InternalResourceViewResolver viewResolver() {
+        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+        viewResolver.setViewClass(JstlView.class);
+        viewResolver.setPrefix("/webapp/WEB-INF/jsp/");
+        viewResolver.setSuffix(".jsp");
+        return viewResolver;
     }
 
     @Override
