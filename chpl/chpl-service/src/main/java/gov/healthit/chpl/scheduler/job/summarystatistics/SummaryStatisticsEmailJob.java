@@ -103,7 +103,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
 
     private List<File> getSummaryStatisticsFile() {
         List<File> files = new ArrayList<File>();
-        File file = new File(System.getenv("downloadFolderPath") + File.separator
+        File file = new File(env.getProperty("downloadFolderPath") + File.separator
                 + env.getProperty("summaryEmailName", "summaryStatistics.csv"));
         files.add(file);
         return files;
