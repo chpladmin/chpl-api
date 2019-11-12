@@ -8,6 +8,7 @@ import java.util.concurrent.Future;
 import javax.annotation.PostConstruct;
 
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +30,7 @@ public class CacheInitializor {
 
     private AsynchronousCacheInitialization asynchronousCacheInitialization;
 
+    @Autowired
     public CacheInitializor(final AsynchronousCacheInitialization asynchronousCacheInitialization) {
         this.asynchronousCacheInitialization = asynchronousCacheInitialization;
     }
