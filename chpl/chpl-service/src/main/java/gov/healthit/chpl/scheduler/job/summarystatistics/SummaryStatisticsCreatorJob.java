@@ -1,15 +1,11 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -20,6 +16,7 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -39,15 +36,14 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 
 /**
- * Initiates and runs the the Quartz job that generates the data that is used to to create the Summary Statistics
- * Email.
+ * Initiates and runs the the Quartz job that generates the data that is used to to create the Summary Statistics Email.
+ * 
  * @author TYoung
  *
  */
 @DisallowConcurrentExecution
 public class SummaryStatisticsCreatorJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("summaryStatisticsCreatorJobLogger");
-    private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
 
     @Autowired
     private AsynchronousSummaryStatisticsInitializor asynchronousStatisticsInitializor;
@@ -58,15 +54,17 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
     @Autowired
     private JpaTransactionManager txManager;
 
-    private Properties props;
+    @Autowired
+    private Environment env;
 
     /**
      * Constructor to initialize SummaryStatisticsJobCreator object.
-     * @throws Exception is thrown
+     * 
+     * @throws Exception
+     *             is thrown
      */
     public SummaryStatisticsCreatorJob() throws Exception {
         super();
-        loadProperties();
     }
 
     @Override
@@ -82,7 +80,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
                 throw new RuntimeException("Could not obtain the startDate.");
             }
             Date endDate = new Date();
-            Integer numDaysInPeriod = Integer.valueOf(props.getProperty("summaryEmailPeriodInDays").toString());
+            Integer numDaysInPeriod = Integer.valueOf(env.getProperty("summaryEmailPeriodInDays").toString());
 
             Future<Statistics> futureEmailBodyStats = asynchronousStatisticsInitializor.getStatistics(null);
             Statistics emailBodyStats = futureEmailBodyStats.get();
@@ -127,10 +125,10 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         LOGGER.info("Writing statistics CSV");
         StatsCsvFileWriter csvFileWriter = new StatsCsvFileWriter();
         csvFileWriter.writeCsvFile(System.getenv("downloadFolderPath") + File.separator
-                + props.getProperty("summaryEmailName", "summaryStatistics.csv"), csvStats);
+                + env.getProperty("summaryEmailName", "summaryStatistics.csv"), csvStats);
 
         new File(System.getenv("downloadFolderPath") + File.separator
-                + props.getProperty("summaryEmailName", "summaryStatistics.csv"));
+                + env.getProperty("summaryEmailName", "summaryStatistics.csv"));
         LOGGER.info("Completed statistics CSV");
     }
 
@@ -165,20 +163,6 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
                 }
             }
         });
-    }
-
-    private Properties loadProperties() throws IOException {
-        InputStream in = SummaryStatisticsCreatorJob.class.getClassLoader()
-                .getResourceAsStream(DEFAULT_PROPERTIES_FILE);
-        if (in == null) {
-            props = null;
-            throw new FileNotFoundException("Environment Properties File not found in class path.");
-        } else {
-            props = new Properties();
-            props.load(in);
-            in.close();
-        }
-        return props;
     }
 
     private Date getStartDate() {
