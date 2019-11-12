@@ -842,7 +842,17 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                             } else {
                                 pendingMeasureMap.setMacraMeasure(foundMeasure);
                             }
+                        } else if (pendingMeasureMap.getMacraMeasure() == null) {
+                            MacraMeasureDTO foundMeasure = macraDao.getById(pendingMeasureMap.getMacraMeasureId());
+                            if (foundMeasure == null || foundMeasure.getId() == null) {
+                                listing.getErrorMessages().add(
+                                        msgUtil.getMessage("listing.criteria.invalidG1MacraMeasure",
+                                                cert.getNumber(), pendingMeasureMap.getEnteredValue()));
+                            } else {
+                                pendingMeasureMap.setMacraMeasure(foundMeasure);
+                            }
                         }
+
                         if (pendingMeasureMap.getMacraMeasure() != null
                                 && (listing.getIcs() == null || !listing.getIcs().booleanValue())
                                 && pendingMeasureMap.getMacraMeasure().getRemoved() != null
@@ -859,6 +869,15 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                         if (pendingMeasureMap.getMacraMeasureId() == null) {
                             MacraMeasureDTO foundMeasure = macraDao.getByCriteriaNumberAndValue(cert.getNumber(),
                                     pendingMeasureMap.getEnteredValue());
+                            if (foundMeasure == null || foundMeasure.getId() == null) {
+                                listing.getErrorMessages().add(
+                                        msgUtil.getMessage("listing.criteria.invalidG2MacraMeasure",
+                                                cert.getNumber(), pendingMeasureMap.getEnteredValue()));
+                            } else {
+                                pendingMeasureMap.setMacraMeasure(foundMeasure);
+                            }
+                        } else if (pendingMeasureMap.getMacraMeasure() == null) {
+                            MacraMeasureDTO foundMeasure = macraDao.getById(pendingMeasureMap.getMacraMeasureId());
                             if (foundMeasure == null || foundMeasure.getId() == null) {
                                 listing.getErrorMessages().add(
                                         msgUtil.getMessage("listing.criteria.invalidG2MacraMeasure",
