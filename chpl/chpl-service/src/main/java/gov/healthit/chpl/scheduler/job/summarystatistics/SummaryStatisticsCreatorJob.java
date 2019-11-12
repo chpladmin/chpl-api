@@ -124,10 +124,10 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
 
         LOGGER.info("Writing statistics CSV");
         StatsCsvFileWriter csvFileWriter = new StatsCsvFileWriter();
-        csvFileWriter.writeCsvFile(System.getenv("downloadFolderPath") + File.separator
+        csvFileWriter.writeCsvFile(env.getProperty("downloadFolderPath") + File.separator
                 + env.getProperty("summaryEmailName", "summaryStatistics.csv"), csvStats);
 
-        new File(System.getenv("downloadFolderPath") + File.separator
+        new File(env.getProperty("downloadFolderPath") + File.separator
                 + env.getProperty("summaryEmailName", "summaryStatistics.csv"));
         LOGGER.info("Completed statistics CSV");
     }
