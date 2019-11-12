@@ -214,7 +214,7 @@ public class CHPLAuthenticationSecurityConfig implements EnvironmentAware {
     @Bean
     public ReloadableResourceBundleMessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasename("classpath:/errors.auth");
+        messageSource.setBasenames("classpath:/errors", "classpath:/errors-override");
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
     }

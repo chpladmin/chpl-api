@@ -32,8 +32,8 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
-import gov.healthit.chpl.manager.ApiKeyManager;
 import gov.healthit.chpl.filter.APIKeyAuthenticationFilter;
+import gov.healthit.chpl.manager.ApiKeyManager;
 import gov.healthit.chpl.registration.RateLimitingInterceptor;
 import gov.healthit.chpl.web.controller.annotation.CacheControlHandlerInterceptor;
 
@@ -98,7 +98,7 @@ public class CHPLConfig extends WebMvcConfigurerAdapter {
     @Bean
     public ReloadableResourceBundleMessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasename("classpath:/errors");
+        messageSource.setBasenames("classpath:/errors", "classpath:/errors-override");
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
     }

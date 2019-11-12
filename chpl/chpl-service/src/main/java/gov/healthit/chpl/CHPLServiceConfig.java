@@ -152,7 +152,7 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
     @Bean
     public ReloadableResourceBundleMessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasename("classpath:/errors");
+        messageSource.setBasenames("classpath:/errors", "classpath:/errors-override");
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
     }
