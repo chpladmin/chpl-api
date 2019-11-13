@@ -12,6 +12,21 @@
     </pre-processing-commands>
     <schedule>
         <!-- Delete from here to "DELETE END MARKER" after PROD push -->
+        <!-- Job used to mark 2014 upload templates as deleted. -->
+        <job>
+            <name>remove2014UploadTemplates</name>
+            <group>systemJobs</group>
+            <description>Marks 2014 upload templates as deleted</description>
+            <job-class>gov.healthit.chpl.scheduler.job.Remove2014UploadTemplateJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+            </job-data-map>
+        </job>
         <!-- DELETE END MARKER -->
     </schedule>
 </job-scheduling-data>
