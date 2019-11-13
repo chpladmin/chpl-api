@@ -15,6 +15,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -50,7 +51,14 @@ import gov.healthit.chpl.web.controller.annotation.CacheControlHandlerIntercepto
 @EnableAsync
 @EnableAspectJAutoProxy
 @EnableScheduling
-@PropertySource("classpath:/environment.properties")
+@PropertySources({
+    @PropertySource("classpath:/environment.properties"),
+    @PropertySource(value = "classpath:/environment-override.properties", ignoreResourceNotFound = true),
+    @PropertySource("classpath:/lookup.properties"),
+    @PropertySource(value = "classpath:/lookup.properties", ignoreResourceNotFound = true),
+    @PropertySource("classpath:/email.properties"),
+    @PropertySource(value = "classpath:/email-override.properties", ignoreResourceNotFound = true),
+})
 @ComponentScan(basePackages = {
         "gov.healthit.chpl.**"
 })

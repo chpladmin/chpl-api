@@ -91,7 +91,7 @@ public class UpdateListingStatusJob extends QuartzJob {
         cpd.getCertificationEvents().add(getCertifiectionStatusEvent(cs, effectiveDate));
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(cpd);
-
+        updateRequest.setReason("System Change");
         try {
             certifiedProductManager.update(
                     Long.parseLong(updateRequest.getListing().getCertifyingBody().get("id").toString()), updateRequest);

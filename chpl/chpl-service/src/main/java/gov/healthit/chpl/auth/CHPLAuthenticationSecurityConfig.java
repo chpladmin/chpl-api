@@ -39,7 +39,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @PropertySources({
         @PropertySource("classpath:/environment.properties"),
-        @PropertySource(value = "classpath:/environment-override.properties", ignoreResourceNotFound = true)
+        @PropertySource(value = "classpath:/environment-override.properties", ignoreResourceNotFound = true),
+        @PropertySource("classpath:/lookup.properties"),
+        @PropertySource(value = "classpath:/lookup.properties", ignoreResourceNotFound = true),
+        @PropertySource("classpath:/email.properties"),
+        @PropertySource(value = "classpath:/email-override.properties", ignoreResourceNotFound = true),
 })
 @ComponentScan(basePackages = {
         "gov.healthit.chpl.auth.**"
@@ -209,12 +213,4 @@ public class CHPLAuthenticationSecurityConfig implements EnvironmentAware {
         // bean.setPermissionCacheOptimizer(aclPermissionCacheOptimizer());
         return bean;
     }
-
-    // @Bean
-    // public ReloadableResourceBundleMessageSource messageSource() {
-    // ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-    // messageSource.setBasenames("classpath:/errors", "classpath:/errors-override");
-    // messageSource.setDefaultEncoding("UTF-8");
-    // return messageSource;
-    // }
 }
