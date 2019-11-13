@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.EnvironmentAware;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +19,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.MediaType;
@@ -150,10 +151,16 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
     }
 
     @Bean
-    public ReloadableResourceBundleMessageSource messageSource() {
-        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasenames("classpath:/errors", "classpath:/errors-override");
+    public MessageSource messageSource() {
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasename("errors-override");
+
+        ResourceBundleMessageSource parentMessageSource = new ResourceBundleMessageSource();
+        parentMessageSource.setBasename("errors");
+
+        messageSource.setParentMessageSource(parentMessageSource);
         messageSource.setDefaultEncoding("UTF-8");
+
         return messageSource;
     }
 

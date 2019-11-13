@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.jndi.JndiObjectFactoryBean;
 import org.springframework.orm.jpa.LocalEntityManagerFactoryBean;
@@ -211,11 +210,11 @@ public class CHPLAuthenticationSecurityConfig implements EnvironmentAware {
         return bean;
     }
 
-    @Bean
-    public ReloadableResourceBundleMessageSource messageSource() {
-        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasenames("classpath:/errors", "classpath:/errors-override");
-        messageSource.setDefaultEncoding("UTF-8");
-        return messageSource;
-    }
+    // @Bean
+    // public ReloadableResourceBundleMessageSource messageSource() {
+    // ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+    // messageSource.setBasenames("classpath:/errors", "classpath:/errors-override");
+    // messageSource.setDefaultEncoding("UTF-8");
+    // return messageSource;
+    // }
 }
