@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Repository;
 
@@ -21,6 +22,7 @@ public class UploadTemplateVersionDAO extends BaseDAOImpl {
      * @return the template
      * @throws EntityRetrievalException if no template exists with this ID
      */
+    @Transactional
     public UploadTemplateVersionDTO getById(final Long id) throws EntityRetrievalException {
         UploadTemplateVersionEntity entity = getEntityById(id);
         UploadTemplateVersionDTO result = null;
@@ -34,6 +36,7 @@ public class UploadTemplateVersionDAO extends BaseDAOImpl {
      * Get all available upload templates.
      * @return a list of upload templates.
      */
+    @Transactional
     public List<UploadTemplateVersionDTO> findAll() {
 
         List<UploadTemplateVersionEntity> entities =
@@ -56,6 +59,7 @@ public class UploadTemplateVersionDAO extends BaseDAOImpl {
      * @param id the ID of the template to mark deleted.
      * @throws EntityRetrievalException
      */
+    @Transactional
     public void delete(final Long id) throws EntityRetrievalException {
         UploadTemplateVersionEntity entityToUpdate = getEntityById(id);
         entityToUpdate.setDeleted(true);
