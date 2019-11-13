@@ -21,7 +21,7 @@ public class JobResponseEmail {
             new EmailBuilder(env)
                     .recipients(new ArrayList<String>(Arrays.asList(emailAddress)))
                     .subject(emailSubject)
-                    .htmlMessage(buildTable(triggerWrappers))
+                    .htmlMessage(buildEmail(triggerWrappers))
                     .fileAttachments(getFileAttachments(triggerWrappers, emailFilename))
                     .sendEmail();
         } catch (Exception e) {
@@ -29,60 +29,26 @@ public class JobResponseEmail {
         }
     }
 
-    private String buildTable(final List<JobResponseTriggerWrapper> triggerWrappers) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<table border='1'>");
-        sb.append(buildHeaderRow());
-        sb.append(buildTableBody(triggerWrappers));
-        sb.append("<table>");
-        return sb.toString();
-    }
+    private String buildEmail(final List<JobResponseTriggerWrapper> triggerWrappers) {
+        Long total = Long.valueOf(triggerWrappers.size());
+        Long success = triggerWrappers.stream()
+                .filter(wrapper -> wrapper.getJobResponse().isCompletedSuccessfully())
+                .count();
+        Long failed = triggerWrappers.stream()
+                .filter(wrapper -> !wrapper.getJobResponse().isCompletedSuccessfully())
+                .count();
 
-    private String buildTableBody(final List<JobResponseTriggerWrapper> triggerWrappers) {
         StringBuilder sb = new StringBuilder();
-        sb.append("<tbody>");
-        triggerWrappers.stream()
-                .forEach(wrapper -> sb.append(buildRow(wrapper)));
-        sb.append("</tbody>");
+        sb.append("Total number of listings to update: ");
+        sb.append(total);
+        sb.append("<br />");
+        sb.append("Total number of listings to successfully updated: ");
+        sb.append(success);
+        sb.append("<br />");
+        sb.append("Total number of listings that failed update: ");
+        sb.append(failed);
+        sb.append("<br />");
         return sb.toString();
-    }
-
-    private String buildHeaderRow() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<thead>");
-        sb.append("<tr>");
-        sb.append("<th>");
-        sb.append("Identifier");
-        sb.append("</th>");
-        sb.append("<th>");
-        sb.append("Success");
-        sb.append("</th>");
-        sb.append("<th>");
-        sb.append("Message");
-        sb.append("</th>");
-        sb.append("</tr>");
-        sb.append("</thead>");
-        return sb.toString();
-    }
-
-    private String buildRow(JobResponseTriggerWrapper wrapper) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<tr>");
-        sb.append("<td>");
-        sb.append(wrapper.getJobResponse().getIdentifier());
-        sb.append("</td>");
-        sb.append("<td>");
-        sb.append(getStatusAsString(wrapper.getJobResponse().isCompletedSuccessfully()));
-        sb.append("</td>");
-        sb.append("<td>");
-        sb.append(wrapper.getJobResponse().getMessage().replace("\n", "<br />"));
-        sb.append("</td>");
-        sb.append("</tr>");
-        return sb.toString();
-    }
-
-    private String getStatusAsString(final boolean success) {
-        return success ? "Success " : "Failure";
     }
 
     private List<File> getFileAttachments(final List<JobResponseTriggerWrapper> triggerWrappers, final String fileName)
