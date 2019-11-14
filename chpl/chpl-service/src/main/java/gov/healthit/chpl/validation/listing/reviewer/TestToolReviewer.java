@@ -18,7 +18,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
  * Makes sure a valid test tool was entered by the user - otherwise removes it and includes an error.
  * Makes sure the version is included with a test tool.
  * Checks that retired test tools are not used if not appropriate.
- * 
+ *
  * @author kekey
  *
  */
@@ -48,13 +48,6 @@ public class TestToolReviewer implements Reviewer {
                             listing.getErrorMessages()
                                     .add(msgUtil.getMessage("listing.criteria.missingTestToolName", cert.getNumber()));
                         } else {
-                            // require test tool version if there is a name
-                            if (StringUtils.isEmpty(testTool.getTestToolVersion())) {
-                                listing.getErrorMessages()
-                                        .add(msgUtil.getMessage("listing.criteria.missingTestToolVersion",
-                                                testTool.getTestToolName(), cert.getNumber()));
-                            }
-
                             TestToolDTO tt = testToolDao.getByName(testTool.getTestToolName());
                             if (tt != null && tt.isRetired()) {
                                 listing.getWarningMessages()

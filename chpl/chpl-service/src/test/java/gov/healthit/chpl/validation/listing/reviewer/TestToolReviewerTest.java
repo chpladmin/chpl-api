@@ -23,6 +23,7 @@ import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.listing.ListingMockUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestTool2015Reviewer;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
@@ -55,12 +56,14 @@ public class TestToolReviewerTest {
     private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
 
     private TestToolReviewer testToolReviewer;
+    private TestTool2015Reviewer testTool2015Reviewer;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
         testToolReviewer = new TestToolReviewer(testToolDao, msgUtil, productNumberUtil);
+        testTool2015Reviewer = new TestTool2015Reviewer(msgUtil);
 
         Mockito.doReturn(NO_TEST_TOOL_NAME_ERROR).when(msgUtil)
                 .getMessage(ArgumentMatchers.eq("listing.criteria.missingTestToolName"), ArgumentMatchers.anyString());
@@ -136,7 +139,7 @@ public class TestToolReviewerTest {
         }
         TestToolDTO testTool = createBogusTestTool(false);
         Mockito.when(testToolDao.getByName(ArgumentMatchers.eq("Bogus Test Tool"))).thenReturn(testTool);
-        testToolReviewer.review(listing);
+        testTool2015Reviewer.review(listing);
         assertFalse(listing.getErrorMessages().contains(NO_TEST_TOOL_NAME_ERROR));
         assertFalse(listing.getErrorMessages().contains(TEST_TOOL_NOT_FOUND_AND_REMOVED_ERROR));
         assertFalse(listing.getErrorMessages().contains(RETIRED_TEST_TOOL_NOT_ALLOWED_ERROR));
