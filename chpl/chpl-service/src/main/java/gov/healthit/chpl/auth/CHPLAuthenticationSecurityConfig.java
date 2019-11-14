@@ -41,7 +41,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
         @PropertySource("classpath:/environment.properties"),
         @PropertySource(value = "classpath:/environment-override.properties", ignoreResourceNotFound = true),
         @PropertySource("classpath:/lookup.properties"),
-        @PropertySource(value = "classpath:/lookup.properties", ignoreResourceNotFound = true),
+        @PropertySource(value = "classpath:/lookup-override.properties", ignoreResourceNotFound = true),
         @PropertySource("classpath:/email.properties"),
         @PropertySource(value = "classpath:/email-override.properties", ignoreResourceNotFound = true),
 })
