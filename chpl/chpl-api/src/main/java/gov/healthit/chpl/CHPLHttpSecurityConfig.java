@@ -26,7 +26,11 @@ import gov.healthit.chpl.filter.JWTAuthenticationFilter;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @PropertySources({
     @PropertySource("classpath:/environment.properties"),
-    @PropertySource(value = "classpath:/environment-override.properties", ignoreResourceNotFound = true)
+    @PropertySource(value = "classpath:/environment-override.properties", ignoreResourceNotFound = true),
+    @PropertySource("classpath:/lookup.properties"),
+    @PropertySource(value = "classpath:/lookup-override.properties", ignoreResourceNotFound = true),
+    @PropertySource("classpath:/email.properties"),
+    @PropertySource(value = "classpath:/email-override.properties", ignoreResourceNotFound = true),
 })
 @ComponentScan(basePackages = { "gov.healthit.chpl.auth.**" }, excludeFilters = {
         @ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class) })
