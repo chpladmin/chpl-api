@@ -1,5 +1,6 @@
 package gov.healthit.chpl.permissions.domains;
 
+import gov.healthit.chpl.permissions.domains.activity.GetApiKeyManagementActivityMetadataActionPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -43,6 +44,7 @@ public class ActivityDomainPermissions extends DomainPermissions {
     public static final String GET_QUARTERLY_REPORT_METADATA = "GET_QUARTERLY_REPORT_METADATA";
     public static final String GET_ANNUAL_REPORT_METADATA = "GET_ANNUAL_REPORT_METADATA";
     public static final String GET_CHANGE_REQUEST_METADATA = "GET_CHANGE_REQUEST_METADATA";
+    public static final String GET_API_KEY_MANAGEMENT_METADATA = "GET_API_KEY_MANAGEMENT_METADATA";
 
     @Autowired
     public ActivityDomainPermissions(
@@ -63,7 +65,8 @@ public class ActivityDomainPermissions extends DomainPermissions {
             @Qualifier("activityGetComplaintActivityMetadataActionPermissions") GetComplaintActivityMetadataActionPermissions getComplaintActivityMetadataActionPermissions,
             @Qualifier("activityGetQuarterlyReportActivityMetadataActionPermissions") GetQuarterlyReportActivityMetadataActionPermissions getQuarterlyReportActivityMetadataActionPermissions,
             @Qualifier("activityGetAnnualReportActivityMetadataActionPermissions") GetAnnualReportActivityMetadataActionPermissions getAnnualReportActivityMetadataActionPermissions,
-            @Qualifier("activityGetChangeRequestActivityMetadataActionPermissions") GetChangeRequestActivityMetadataActionPermissions getChangeRequestActivityMetadataActionPermissions) {
+            @Qualifier("activityGetChangeRequestActivityMetadataActionPermissions") GetChangeRequestActivityMetadataActionPermissions getChangeRequestActivityMetadataActionPermissions,
+            @Qualifier("activityGetApiKeyManagementActivityMetadataActionPermissions") GetApiKeyManagementActivityMetadataActionPermissions getApiKeyManagementMetadataActionPermissions){
 
         getActionPermissions().put(GET_BY_ACB, getByAcbActionPermissions);
         getActionPermissions().put(GET_ACB_METADATA, getAcbActivityMetadataActionPermissions);
@@ -83,5 +86,6 @@ public class ActivityDomainPermissions extends DomainPermissions {
         getActionPermissions().put(GET_QUARTERLY_REPORT_METADATA, getQuarterlyReportActivityMetadataActionPermissions);
         getActionPermissions().put(GET_ANNUAL_REPORT_METADATA, getAnnualReportActivityMetadataActionPermissions);
         getActionPermissions().put(GET_CHANGE_REQUEST_METADATA, getChangeRequestActivityMetadataActionPermissions);
+        getActionPermissions().put(GET_API_KEY_MANAGEMENT_METADATA, getApiKeyManagementMetadataActionPermissions);
     }
 }

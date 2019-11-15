@@ -477,8 +477,8 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get metadata about auditable records in the system for announcements.",
-            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results." 
-                    + "Security Restrictions: Anonymous users are only allowed to see activity for public " 
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
+                    + "Security Restrictions: Anonymous users are only allowed to see activity for public "
                     + "announcements.  All other roles can see private and public announcements. ")
     @RequestMapping(value = "/metadata/announcements", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -491,7 +491,7 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get metadata about auditable records in the system for complaints.",
-            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results." 
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all complaints.  "
                     + "ROLE_ACB can see activity for their own ACBs.")
     @RequestMapping(value = "/metadata/complaints", method = RequestMethod.GET,
@@ -786,7 +786,8 @@ public class ActivityController {
         return activityManager.getAtlActivity(atls, startDate, endDate);
     }
 
-    @ApiOperation(value = "Get auditable data for all API keys",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Get auditable data for all API keys",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
                     + "Security Restrictions: Only ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/api_keys", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
@@ -796,6 +797,18 @@ public class ActivityController {
         Date endDate = new Date(end);
         validateActivityDatesAndDateRange(start, end);
         return activityManager.getApiKeyActivity(startDate, endDate);
+    }
+
+    @ApiOperation(value = "Get auditable data for all API keys",
+        notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
+            + "Security Restrictions: Only ROLE_ADMIN or ROLE_ONC")
+    @RequestMapping(value = "/metadata/api-keys", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public List<ActivityMetadata> metadataForApiKeys(@RequestParam final Long start,
+        @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
+        Date startDate = new Date(start);
+        Date endDate = new Date(end);
+        validateActivityDatesAndDateRange(start, end);
+        return activityMetadataManager.getApiKeyManagementMetadata(startDate, endDate);
     }
 
     @Deprecated
