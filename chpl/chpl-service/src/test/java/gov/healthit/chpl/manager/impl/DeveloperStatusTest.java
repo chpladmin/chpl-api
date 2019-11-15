@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -76,6 +77,9 @@ public class DeveloperStatusTest {
     @Autowired
     private DeveloperValidationFactory developerValidationFactory;
 
+    @Autowired
+    private FF4j ff4j;
+
     @Spy
     private DeveloperDAO devDao;
     @Spy
@@ -107,7 +111,7 @@ public class DeveloperStatusTest {
         MockitoAnnotations.initMocks(this);
         developerManager = new DeveloperManagerImpl(devDao, productManager, acbManager, cpManager, cpdManager,
                 certificationBodyDao, certifiedProductDao, chplProductNumberUtil, activityManager, msgUtil,
-                permissionChecker, developerValidationFactory);
+                permissionChecker, developerValidationFactory, ff4j);
 
         Mockito.when(permissionChecker.getAllAcbsForCurrentUser()).thenReturn(new ArrayList<CertificationBodyDTO>());
         Mockito.when(acbManager.getAll()).thenReturn(new ArrayList<CertificationBodyDTO>());
