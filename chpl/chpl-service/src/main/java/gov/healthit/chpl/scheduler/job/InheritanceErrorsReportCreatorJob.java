@@ -92,7 +92,6 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
         inheritanceErrorsReportDAO.deleteAll();
         List<CertifiedProductFlatSearchResult> listings = certifiedProductSearchDAO.getAllCertifiedProducts();
         List<CertifiedProductFlatSearchResult> certifiedProducts = filterData(listings);
-        certifiedProducts = certifiedProducts.subList(0, 100);
 
         ExecutorService executorService = null;
         try {
