@@ -57,7 +57,6 @@ public class ChangeRequestValidationFactory {
         this.commentRequiredValidation = commentRequiredValidation;
         this.roleAcbHasMultipleCertificationBodiesValidation = roleAcbHasMultipleCertificationBodiesValidation;
         this.websiteValidation = websiteValidation;
-
     }
 
     public ValidationRule<ChangeRequestValidationContext> getRule(String name) {

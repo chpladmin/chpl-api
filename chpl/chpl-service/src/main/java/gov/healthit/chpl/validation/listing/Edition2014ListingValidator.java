@@ -22,6 +22,7 @@ import gov.healthit.chpl.validation.listing.reviewer.ValidDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.RequiredData2014Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.SedG32014Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.TestFunctionality2014Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2014.TestTool2014Reviewer;
 
 /**
  * Validation interface for any listing that is already uploaded and confirmed on the CHPL.
@@ -79,6 +80,10 @@ public abstract class Edition2014ListingValidator extends Validator {
     private TestToolReviewer ttReviewer;
 
     @Autowired
+    @Qualifier("testTool2014Reviewer")
+    private TestTool2014Reviewer tt2014Reviewer;
+
+    @Autowired
     @Qualifier("testFunctionality2014Reviewer")
     private TestFunctionality2014Reviewer tfReviewer;
 
@@ -104,6 +109,7 @@ public abstract class Edition2014ListingValidator extends Validator {
             reviewers.add(certDateReviewer);
             reviewers.add(unattestedCriteriaWithDataReviewer);
             reviewers.add(ttReviewer);
+            reviewers.add(tt2014Reviewer);
             reviewers.add(tfReviewer);
             reviewers.add(urlReviewer);
         }

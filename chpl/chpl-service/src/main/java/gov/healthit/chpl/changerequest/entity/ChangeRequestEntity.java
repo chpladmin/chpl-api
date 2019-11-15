@@ -105,4 +105,10 @@ public class ChangeRequestEntity {
         this.deleted = deleted;
     }
 
+    @Override
+    public String toString() {
+        return "ChangeRequestEntity [id=" + id + ", changeRequestType=" + changeRequestType + ", developer=" + developer
+                + ", creationDate=" + creationDate + ", lastModifiedDate=" + lastModifiedDate + ", lastModifiedUser="
+                + lastModifiedUser + ", deleted=" + deleted + "]";
+    }
 }
