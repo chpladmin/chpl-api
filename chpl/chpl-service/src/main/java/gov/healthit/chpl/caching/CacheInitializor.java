@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -29,10 +30,13 @@ public class CacheInitializor {
     private String enableCacheInitializationValue;
 
     private AsynchronousCacheInitialization asynchronousCacheInitialization;
+    private Environment env;
 
     @Autowired
-    public CacheInitializor(final AsynchronousCacheInitialization asynchronousCacheInitialization) {
+    public CacheInitializor(final AsynchronousCacheInitialization asynchronousCacheInitialization,
+            final Environment env) {
         this.asynchronousCacheInitialization = asynchronousCacheInitialization;
+        this.env = env;
     }
 
     public static List<String> getPreInitializedCaches() {
@@ -55,6 +59,9 @@ public class CacheInitializor {
     @PostConstruct
     @Async
     public void initialize() throws IOException, EntityRetrievalException, InterruptedException {
+        enableCacheInitializationValue = env.getProperty("enableCacheInitialization");
+        initializeTimeoutSecs = Integer.parseInt(env.getProperty("cacheInitializeTimeoutSecs").toString());
+
         tInitStart = System.currentTimeMillis();
         if (tInitEnd != null) {
             tInitElapsedSecs = (tInitStart - tInitEnd) / 1000.0;
