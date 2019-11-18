@@ -15,15 +15,21 @@ import org.springframework.security.acls.model.MutableAclService;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dao.UserTestingLabMapDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.dto.UserTestingLabMapDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -43,16 +49,26 @@ public class UserPermissionsManagerImplTest {
     @Mock
     private UserDAO userDAO;
 
-    @Mock private UserManager userManager;
+    @Mock
+    private UserManager userManager;
 
-    @Mock private MutableAclService mutableAclService;
+    @Mock
+    private MutableAclService mutableAclService;
+
+    @Mock
+    private ActivityManager activityManager;
 
     @InjectMocks
     private UserPermissionsManagerImpl manager;
 
     @Before
-    public void setup() {
+    public void setup() throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
         MockitoAnnotations.initMocks(this);
+
+        // activityManager.addActivity(ActivityConcept.USER, userId, message, originalUser, updatedUser);
+        Mockito.doNothing().when(activityManager).addActivity(ArgumentMatchers.any(ActivityConcept.class),
+                ArgumentMatchers.anyLong(), ArgumentMatchers.anyString(), ArgumentMatchers.any(),
+                ArgumentMatchers.any());
     }
 
     @Test
@@ -109,12 +125,22 @@ public class UserPermissionsManagerImplTest {
         ucbms.add(ucbm);
         Mockito.when(userCertificationBodyMapDAO.getByUserId(ArgumentMatchers.anyLong())).thenReturn(ucbms);
 
+        Mockito.when(userDAO.getById(ArgumentMatchers.anyLong())).thenReturn(user);
+        Mockito.doNothing().when(activityManager).addActivity(
+                ArgumentMatchers.any(), ArgumentMatchers.anyLong(), ArgumentMatchers.anyString(),
+                ArgumentMatchers.any(), ArgumentMatchers.any());
+
         CertificationBodyDTO dto = new CertificationBodyDTO();
         dto.setId(1L);
         manager.deleteAcbPermission(dto, 2l);
 
         // Ensure the DAO 'delete' method was called...
         Mockito.verify(userCertificationBodyMapDAO).delete(ArgumentMatchers.any(UserCertificationBodyMapDTO.class));
+
+        // Ensure the activity was added
+        Mockito.verify(activityManager).addActivity(
+                ArgumentMatchers.any(), ArgumentMatchers.anyLong(), ArgumentMatchers.anyString(),
+                ArgumentMatchers.any(), ArgumentMatchers.any());
     }
 
     @Test

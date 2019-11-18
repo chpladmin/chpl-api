@@ -1,7 +1,6 @@
 package gov.healthit.chpl.dao;
 
 import java.util.List;
-import java.util.Set;
 
 import gov.healthit.chpl.domain.DeveloperTransparency;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
@@ -19,10 +18,13 @@ public interface DeveloperDAO {
     DeveloperACBMapDTO createTransparencyMapping(DeveloperACBMapDTO dto);
 
     DeveloperDTO update(DeveloperDTO dto) throws EntityRetrievalException, EntityCreationException;
+
     void createDeveloperStatusEvent(DeveloperStatusEventDTO statusEventDto)
             throws EntityCreationException;
+
     void updateDeveloperStatusEvent(DeveloperStatusEventDTO statusEventDto)
             throws EntityRetrievalException;
+
     void deleteDeveloperStatusEvent(DeveloperStatusEventDTO statusEvent)
             throws EntityRetrievalException;
 
@@ -42,6 +44,8 @@ public interface DeveloperDAO {
 
     DeveloperDTO getByVersion(Long productVersionId) throws EntityRetrievalException;
 
+    List<DeveloperDTO> getByWebsite(String website);
+
     DeveloperACBMapDTO updateTransparencyMapping(DeveloperACBMapDTO dto);
 
     void deleteTransparencyMapping(Long vendorId, Long acbId);
@@ -54,5 +58,8 @@ public interface DeveloperDAO {
 
     @Deprecated
     List<DecertifiedDeveloperDTODeprecated> getDecertifiedDevelopers();
+
     List<DecertifiedDeveloperDTO> getDecertifiedDeveloperCollection();
+
+    List<DeveloperDTO> getByCertificationBodyId(final List<Long> certificationBodyIds);
 }

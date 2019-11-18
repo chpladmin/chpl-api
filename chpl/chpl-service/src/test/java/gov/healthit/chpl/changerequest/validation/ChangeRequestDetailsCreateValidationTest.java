@@ -8,6 +8,8 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import gov.healthit.chpl.changerequest.builders.ChangeRequestBuilder;
@@ -16,18 +18,19 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 
 public class ChangeRequestDetailsCreateValidationTest {
 
+    @InjectMocks
     private ChangeRequestDetailsCreateValidation validator;
 
     @Before
     public void setup() {
-        validator = new ChangeRequestDetailsCreateValidation();
+        MockitoAnnotations.initMocks(this);
         ReflectionTestUtils.setField(validator, "websiteChangeRequestType", 1l);
     }
 
     @Test
     public void isValid_Success_Website() {
         ChangeRequestValidationContext context = new ChangeRequestValidationContext(
-                getValidWebsiteChangeRequest(), null, null, null, null);
+                getValidWebsiteChangeRequest(), null);
 
         assertTrue(validator.isValid(context));
 
@@ -36,7 +39,7 @@ public class ChangeRequestDetailsCreateValidationTest {
     @Test
     public void isValid_Fail_Website() {
         ChangeRequestValidationContext context = new ChangeRequestValidationContext(
-                getInvalidWebsiteChangeRequest(), null, null, null, null);
+                getInvalidWebsiteChangeRequest(), null);
 
         assertFalse(validator.isValid(context));
     }

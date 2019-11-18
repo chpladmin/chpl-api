@@ -19,7 +19,7 @@ public class CertificationResultDetailsDAOImpl extends BaseDAOImpl implements Ce
     @Override
     @Transactional
     public List<CertificationResultDetailsDTO> getCertificationResultDetailsByCertifiedProductId(
-            Long certifiedProductId) throws EntityRetrievalException {
+            final Long certifiedProductId) throws EntityRetrievalException {
         List<CertificationResultDetailsEntity> entities = getEntitiesByCertifiedProductId(certifiedProductId);
         List<CertificationResultDetailsDTO> dtos = new ArrayList<CertificationResultDetailsDTO>(entities.size());
 
@@ -29,7 +29,7 @@ public class CertificationResultDetailsDAOImpl extends BaseDAOImpl implements Ce
         return dtos;
     }
 
-    private List<CertificationResultDetailsEntity> getEntitiesByCertifiedProductId(Long productId)
+    private List<CertificationResultDetailsEntity> getEntitiesByCertifiedProductId(final Long productId)
             throws EntityRetrievalException {
 
         CertificationResultDetailsEntity entity = null;
@@ -45,7 +45,7 @@ public class CertificationResultDetailsDAOImpl extends BaseDAOImpl implements Ce
 
     @Override
     public List<CertificationResultDetailsDTO> getCertificationResultDetailsByCertifiedProductIdSED(
-            Long certifiedProductId) throws EntityRetrievalException {
+            final Long certifiedProductId) throws EntityRetrievalException {
         List<CertificationResultDetailsEntity> entities = getEntitiesByCertifiedProductIdSED(certifiedProductId);
         List<CertificationResultDetailsDTO> dtos = new ArrayList<CertificationResultDetailsDTO>(entities.size());
 
@@ -55,7 +55,7 @@ public class CertificationResultDetailsDAOImpl extends BaseDAOImpl implements Ce
         return dtos;
     }
 
-    private List<CertificationResultDetailsEntity> getEntitiesByCertifiedProductIdSED(Long productId)
+    private List<CertificationResultDetailsEntity> getEntitiesByCertifiedProductIdSED(final Long productId)
             throws EntityRetrievalException {
 
         CertificationResultDetailsEntity entity = null;
@@ -67,6 +67,24 @@ public class CertificationResultDetailsDAOImpl extends BaseDAOImpl implements Ce
         List<CertificationResultDetailsEntity> result = query.getResultList();
 
         return result;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CertificationResultDetailsDTO> getByUrl(final String url) {
+        String queryStr = "SELECT cr "
+                + "FROM CertificationResultDetailsEntity cr "
+                + "WHERE cr.deleted = false "
+                + "AND cr.apiDocumentation = :url";
+
+        Query query = entityManager.createQuery(queryStr, CertificationResultDetailsEntity.class);
+        query.setParameter("url", url);
+        List<CertificationResultDetailsEntity> entities = query.getResultList();
+        List<CertificationResultDetailsDTO> resultDtos = new ArrayList<CertificationResultDetailsDTO>();
+        for (CertificationResultDetailsEntity entity : entities) {
+            resultDtos.add(new CertificationResultDetailsDTO(entity));
+        }
+        return resultDtos;
     }
 
 }

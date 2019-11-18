@@ -1,5 +1,63 @@
 # Release Notes
 
+## Version 21.13.0
+_18 November 2019_
+
+### Features
+* Add endpoint to retrieve API Key activity metadata
+  * Update API Key calls to follow the metadata/details pattern used in other reports
+* Create report for pending Website Change Requests
+
+---
+
+## Version 21.12.0
+_4 November 2019_
+
+### Features
+* Do not require test tools or UCD Processes for 2014 listings that have ICS
+
+---
+
+## Version 21.11.0
+_24 October 2019_
+
+### Features
+* Add Quartz job that will update a set of listing's status
+* Add User scheduled job to generate and send a report of Pending Change Requests
+
+---
+
+## Version 21.10.0
+_21 October 2019_
+
+### Flagged Features
+* Add ROLE_DEVELOPER User type
+* Allow ROLE_DEVELOPER to create "Change Requests" to change their Organization's website
+* Update objects in basic Certified Product response to not have errors/warnings inappropriately
+
+### Bug Fixes
+* Fix error/warning update exception and count discrepancy
+  * Fix exception thrown when updating pending listing error/warning counts
+  * Fix warning count discrepancy of auto-fixed warnings in confirm listings screen due to failed pending listing confirmation
+* Display CHPL Product Number change popup when oldest active status date is changed
+
+---
+
+## Version 21.9.0
+_7 October 2019_
+
+### Features
+* Give errors on confirm if missing developer data
+* Add scheduled jobs to gather and report on questionable urls
+  * System job to gather questionable URL data runs at 0330 GMT
+  * User-triggered job to email questionable URL report runs on demand
+
+### Bug Fixes
+* Log appropriate activity upon user deletion
+  * Only log one activity when a user is deleted
+  * Update activity description to match in both user delete scenarios
+
+---
 
 ## Version 21.8.0
 _23 September 2019_
@@ -60,7 +118,7 @@ _29 July 2019_
 _22 July 2019_
 
 ## New Features
-* Add three more optional fields to the /collections/certified_products endpoint.
+* Add three more optional fields to the /collections/certified_products endpoint
   * openSurveillanceCount, closedSurveillanceCount, surveillanceDates
 * Remove insertMissingSplitActivity quartz job
 * Add new endpoint for activity metadata for announcements. Endpoint is:
@@ -73,8 +131,8 @@ _17 June 2019_
 
 ### New Features
 * Add endpoints to provide activity metadata for users, announcements, pending listings, corrective action plans, and pending surveillances
-* Add activity for split actions to allow for better history display in listing 'eye'.
-* Add temporary quartz job to insert missing split activity. Can only be run by ADMIN and should be removed in a following release.
+* Add activity for split actions to allow for better history display in listing 'eye'
+* Add temporary quartz job to insert missing split activity. Can only be run by ADMIN and should be removed in a following release
 * Add /versions/{versionId}/split endpoint
 
 ---
@@ -85,10 +143,10 @@ _3 June 2019_
 ### New Features
 * Add FF4j framework (feature flags)
 * Add endpoints to provide ability for users to save filters for admin reports
-* Updated product and version activity metadata to parse activity for merges and splits; better parsing of product and developer names if they have been deleted.
+* Updated product and version activity metadata to parse activity for merges and splits; better parsing of product and developer names if they have been deleted
 
 ### Bugs Fixed
-* Correctly handle scheduled job update when an ACB is renamed.
+* Correctly handle scheduled job update when an ACB is renamed
 
 ---
 
@@ -104,8 +162,8 @@ _20 May 2019_
 
 ### New features
 * Add endpoints to provide ability for users to save filters for admin report
-* Updated product and version activity metadata to parse activity for merges and splits; better parsing of product and developer names if they have been deleted.
-* Added endpoints for ACB and ATL activity metadata.
+* Updated product and version activity metadata to parse activity for merges and splits; better parsing of product and developer names if they have been deleted
+* Added endpoints for ACB and ATL activity metadata
   * /activity/metadata/acbs
   * /activity/metadata/acb/{acbId}
   * /activity/metadata/atls
@@ -122,7 +180,7 @@ _20 May 2019_
 _8 May 2019_
 
 ### New Features
-* Added endpoint /collections/decertified-developers to improve response time getting that data. This endpoint will eventually replace /decertifications/developers which has been deprecated.
+* Added endpoint /collections/decertified-developers to improve response time getting that data. This endpoint will eventually replace /decertifications/developers which has been deprecated
 * Updated security for edit/split/merge of developers, products, and versions
 
 ---
@@ -148,9 +206,9 @@ _22 April 2019_
 _8 April 2019_
 
 ### New features
-* Add /system-status API call which returns the combined server up/down status and the cache initliazing/ok status.
-* Deprecated /status and /cache_status API calls. Will be removed in a future release.
-* Add new API call /certified_products/pending/metadata for high-level information about pending listings. /certified_products/pending is now deprecated.
+* Add /system-status API call which returns the combined server up/down status and the cache initliazing/ok status
+* Deprecated /status and /cache_status API calls. Will be removed in a future release
+* Add new API call /certified_products/pending/metadata for high-level information about pending listings. /certified_products/pending is now deprecated
 * Add new endpoints for activity metadata for lisings, developers, products, and versions. Endpoints are:
   * /activity/metadata/listings
   * /activity/metadata/listings/{id}
@@ -172,7 +230,7 @@ _8 April 2019_
 _1 April 2019_
 
 ### Refactoring Changes
-* Removed unused references to certification status in pending listing objects.
+* Removed unused references to certification status in pending listing objects
 
 ---
 
@@ -197,7 +255,7 @@ _27 March 2019_
 _11 March 2019_
 
 ### Bug Fixes
-* Fix incorrect developer appearing in product owner history after developer split.
+* Fix incorrect developer appearing in product owner history after developer split
 
 ---
 
@@ -219,9 +277,9 @@ _25 February 2019_
 
 ### New features
 * Allow upload / confirm of macra measures RT 13, 14, 15
-* Update behavior of pre-loaded caches which will affect the /cache_status call.
-  * All pre-loaded caches have an additional copy loaded in the background when their data changes. The background cache is then swapped with the live cache when necessary.
-  * The /cache_status call was reporting OK after initial startup but would later report INITIALIZING if user actions changed any cached data. Now once it reports OK it should continue to do so.
+* Update behavior of pre-loaded caches which will affect the /cache_status call
+  * All pre-loaded caches have an additional copy loaded in the background when their data changes. The background cache is then swapped with the live cache when necessary
+  * The /cache_status call was reporting OK after initial startup but would later report INITIALIZING if user actions changed any cached data. Now once it reports OK it should continue to do so
 * Save uploaded SED task/participant numbers as text; give error when cannot be parsed to numbers
 
 ---
@@ -238,8 +296,8 @@ _11 February 2019_
 * Change InfoGard's name to UL LLC
 
 ### Bug Fixes
-* Allow newly added ACBs and ATLs to have users added to them.
-* Remove duplicate G1/G2 macra measures and warn the user for criteria that are not attested to.
+* Allow newly added ACBs and ATLs to have users added to them
+* Remove duplicate G1/G2 macra measures and warn the user for criteria that are not attested to
 
 ---
 
@@ -247,8 +305,8 @@ _11 February 2019_
 _28 January 2019_
 
 ### New Features
-* Added ROLE_ONC user role. ROLE_ONC replaces the existing ROLE_ADMIN and all relevant accounts were converted to the new role.
-* Removed references to ROLE_ONC_STAFF.
+* Added ROLE_ONC user role. ROLE_ONC replaces the existing ROLE_ADMIN and all relevant accounts were converted to the new role
+* Removed references to ROLE_ONC_STAFF
 * Add upload errors for test task id and participant id being too long
 
 ---
@@ -257,7 +315,7 @@ _28 January 2019_
 _14 January 2019_
 
 ### New Features
-* Change surveillance and sed report filenames to include timestamp when the file was last generated.
+* Change surveillance and sed report filenames to include timestamp when the file was last generated
 * Update edit and confirm of criteria to remove phantom data
 * Update certain warnings to errors for uploading, editing, and confirming certified products
 * When validating pending listings, check for duplicate values, remove the duplicate value, and provide a warning message that the duplicate was removed
@@ -290,10 +348,10 @@ _17 December 2018_
   * /acbs
 * Removed space following the colon in the /cache_status response. {"status": "OK"} becomes {"status":"OK"}
 * Removed space following the colon in the /status response. {"status": "OK"} becomes {"status":"OK"}
-* Removed /notifications endpoints.
+* Removed /notifications endpoints
 
 ### New Features
-* Add retired flag to ACBs and ATLs to replace the functionality that previously used the deleted flag.
+* Add retired flag to ACBs and ATLs to replace the functionality that previously used the deleted flag
 * Add Quartz job to require all users to change password on next login
 * Update email notification about potential Developer ban to include:
   * Reason for status change
@@ -301,7 +359,7 @@ _17 December 2018_
 * Prevent users from using the following macra measures which are under review: RT13 EH/CAH Stage 3, RT14 EH/CAH Stage 3, RT15 EH/CAH Stage 3 
 
 ### Bugs Fixed
-* Do not show error for 2014 listings on upload or edit if they attest to g3, have ICS = true, and do not have any criteria marked as SED.
+* Do not show error for 2014 listings on upload or edit if they attest to g3, have ICS = true, and do not have any criteria marked as SED
 * Fix issue with determining whether there is additional software associated with the certified product
 
 ---
@@ -310,12 +368,12 @@ _17 December 2018_
 _3 December 2018_
 
 ### New Features
-* 2015 Functionality testing is restricted by criteria.
-* Save 'reason' for developer's status change in questionable activivty.
-* Output 'reason' for developer's status change on questionable activity report.
-* When uploading a listing, remove duplicate G1 and G2 macra measures and provide a warning.
+* 2015 Functionality testing is restricted by criteria
+* Save 'reason' for developer's status change in questionable activivty
+* Output 'reason' for developer's status change on questionable activity report
+* When uploading a listing, remove duplicate G1 and G2 macra measures and provide a warning
 * Implement user ability to reset their password using a unique link
-* Change /cache_status endpoint to report "OK" status only when all pre-loaded caches have completed.
+* Change /cache_status endpoint to report "OK" status only when all pre-loaded caches have completed
 * Add "user must reset password on next login" workflow
   * Gives error when user tries to log in and needs to change password
   * Adds end point to change_expired_password
@@ -328,12 +386,12 @@ _3 December 2018_
 _19 November 2018_
 
 ### New Features
-* Update ONC contact information for CHPL API and on user invitation emails.
+* Update ONC contact information for CHPL API and on user invitation emails
 * Check various site counts in surveillance to make sure they are reasonable
-* Refresh the listing collection cache on demand when data has changed vs at timed intervals.
+* Refresh the listing collection cache on demand when data has changed vs at timed intervals
 
 ### Bug Fixes
-* Fix dependency injection problem that prevented implementing security in the chpl-service classes.
+* Fix dependency injection problem that prevented implementing security in the chpl-service classes
 
 ---
 
@@ -364,24 +422,24 @@ _5 November 2018_
 _22 October 2018_
 
 ### Backwards compatibility breaking features
-* Removed deprecated /certified_products/meaningful_use/upload. Use /meaningful_use/upload instead.
+* Removed deprecated /certified_products/meaningful_use/upload. Use /meaningful_use/upload instead
 
 ### New Features
 * Added "last modified date" for surveillance and non-conformities to download files
 * Move generate chart data app to quartz
 
 ### Bugs Fixed
-* Fix creation of public announcement ignoring 'public' checkbox.
+* Fix creation of public announcement ignoring 'public' checkbox
 * Fix incorrect errors for changing sed to false for a criteria
 * Modified the Summary Statistics Report email
   * Re-arranged the order of some headings
   * Added totals for Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2014 Listings
   * Added totals for Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015 Listings
   * Added active ACBs (when broken out) where the total for the ACB is 0
-* Allow editing of meaningful use user count and history of muu counts for individual listings.
+* Allow editing of meaningful use user count and history of muu counts for individual listings
 
 ### Bugs Fixed
-* Fix creation of public announcement ignoring 'public' checkbox.
+* Fix creation of public announcement ignoring 'public' checkbox
 * Fix incorrect error messages when editing SED = false for a criteria
 
 ---
@@ -393,8 +451,8 @@ _8 October 2018_
 * When retrieving Pending Surveillances, the listing details will no longer be populated
 
 ### New Features
-* Move surveillance download file generation into quartz job to allow for better job management.
-* Move SED G3 download file generation into quartz job for allow for better job management.
+* Move surveillance download file generation into quartz job to allow for better job management
+* Move SED G3 download file generation into quartz job for allow for better job management
 * Added scheduled job to send warning to users who have not used thier API key in the last X days
 * Added scheduled job to delete api keys that have not been used in X days
 * Added LastUsedDate and DeleteWarningSentDate to the ./key endpoint return value(s)
@@ -402,11 +460,11 @@ _8 October 2018_
   * creates a new User
   * updates a password
 * Add Developer Status to search results view
-* Catch any unexpected error that occurs during a listing upload. Allow the error to be emailed to CHPL team if desired.
+* Catch any unexpected error that occurs during a listing upload. Allow the error to be emailed to CHPL team if desired
 
 ### Bugs Fixed
-* Invalid test functionality names are removed and an error is given to the user for 2014 and 2015 uploads.
-* Fix questionable activity report end of the month date rollover.
+* Invalid test functionality names are removed and an error is given to the user for 2014 and 2015 uploads
+* Fix questionable activity report end of the month date rollover
 
 ---
 
@@ -422,7 +480,7 @@ _24 September 2018_
   * Developer website
 * Add info messages for 2014 cms id widget
 * Add info messages for 2014/2015 id widget
-* Move questionable activity email code into quartz job to allow user scheduling.
+* Move questionable activity email code into quartz job to allow user scheduling
 
 ---
 
@@ -430,7 +488,7 @@ _24 September 2018_
 _10 September 2018_
 
 ### New Features
-* Add required reason business logic for developer bans.
+* Add required reason business logic for developer bans
 * Add API throttling
 * Moved the Quartz scheduler to run in the Tomcat context
 * Each Quartz job writes to a separate log file
@@ -439,12 +497,12 @@ _10 September 2018_
 * Return info messages for CMS ID missing criteria
 
 ### Bugs Fixed
-* Extra test data/test procedure/test functionality/etc. no longer appears after attesting to a criteria with previously entered phantom data.
+* Extra test data/test procedure/test functionality/etc. no longer appears after attesting to a criteria with previously entered phantom data
 * Fixed the "basic" certified product service to return the correct additional software code in the CHPL Product Number
-* Fixed XML generation process to properly output `<tasks></tasks>` tag - was previously outputing as `<></>`.
+* Fixed XML generation process to properly output `<tasks></tasks>` tag - was previously outputing as `<></>`
 * Use "full name" and "friendly name" for users/contacts
-* Fix reason required error to show again for certain listing updates.
-* Fix possibility of multiple developer status edits happening at the same time.
+* Fix reason required error to show again for certain listing updates
+* Fix possibility of multiple developer status edits happening at the same time
 
 ---
 
@@ -470,7 +528,7 @@ _16 August 2018_
 
 ### New Features
 * Add nonconformity charts statistics endpoint
-* Identify questionable activity based on the confirmed date of a listing rather than the certification date.
+* Identify questionable activity based on the confirmed date of a listing rather than the certification date
 * Add "Trigger Developer Ban" notification
 * Migrate "Summary Statistics" to Quartz
   * Added new Quartz job to gather and store Summary Statistics
@@ -492,11 +550,11 @@ _16 August 2018_
 _7 August 2018_
 
 ### Backwards compatibility breaking changes
-* Require start and end data parameters on all /activity API calls that are not for a single item.
+* Require start and end data parameters on all /activity API calls that are not for a single item
 
 ### New Features
-* Added JavaMelody to provide Tomcat performance monitoring page.
-* Restrict certain /activity data to admin, acb, atl, or cms users as appropriate.
+* Added JavaMelody to provide Tomcat performance monitoring page
+* Restrict certain /activity data to admin, acb, atl, or cms users as appropriate
 * Update text describing /download endpoint
 
 ---
@@ -505,7 +563,7 @@ _7 August 2018_
 _18 July 2018_
 
 ### New Features
-* Legacy 2014 listings (those with product numbers like "CHP-") are allowed to have attested to 170.314 (g)(3) but not required to have a criteria with SED and vice versa.
+* Legacy 2014 listings (those with product numbers like "CHP-") are allowed to have attested to 170.314 (g)(3) but not required to have a criteria with SED and vice versa
 
 ---
 
@@ -531,7 +589,7 @@ _5 July 2018_
 ### New Features
 * Converted "Downloadable Resource File" generation application to Quartz Job
   * Updated API endpoints to not return "System jobs" in regular GET call
-* Logs for individually run apps will now show up in separate files under the logs directory.
+* Logs for individually run apps will now show up in separate files under the logs directory
 * Validate 2014 test functionalities to ensure they are valid based on practice type and certification criterion
 * Modified certified product details to return the allowable test functionalities for each criteria
 
@@ -546,7 +604,7 @@ _18 June 2018_
 
 ### New Features
 * Updated the XML and CSV file creation batch process to retrieve data asynchronously
-* Added check for 2015 listings to ensure if they have attested to G1 or G2 that they also have listed G1 or G2 macra measures for at least one criteria.
+* Added check for 2015 listings to ensure if they have attested to G1 or G2 that they also have listed G1 or G2 macra measures for at least one criteria
 * Added Quartz Scheduler component
   * Includes API endpoints for GET/PUT/POST/DELETE of schedule Triggers
   * Converted Cache Status Age app to Cache Status Age Quartz Job
@@ -561,7 +619,7 @@ _18 June 2018_
 _6 June 2018_
 
 ### Bug Fixes
-* Handle blank or null test tool version in listing updates.
+* Handle blank or null test tool version in listing updates
 
 ---
 
@@ -569,7 +627,7 @@ _6 June 2018_
 _4 June 2018_
 
 ### New Features
-* Added new service /activity/corrective_action_plans to return just legacy corrective action plan activities.
+* Added new service /activity/corrective_action_plans to return just legacy corrective action plan activities
 * Add new chart: New vs. Incumbent Developer chart
   * Update chart data generation application
   * Add API endpoint to retrieve chart data
@@ -581,7 +639,7 @@ _4 June 2018_
   * Add API endpoint to retrieve chart data
 
 ### Bug Fixes
-* Handle SED boolean parsing and UCD Process existence mistmatch for 2014 upload.
+* Handle SED boolean parsing and UCD Process existence mistmatch for 2014 upload
 
 ---
 
@@ -601,7 +659,7 @@ _21 May 2018_
 
 ### Bugs Fixed
 * Fix Summary Statistics Report missing ISCA count under the Total # of Unique Products with Active 2015 Listings section
-* Respect configured questionable activity window to allow a user to make edits that do not get logged as questionable activity for a short amount of time after a listing's certification date.
+* Respect configured questionable activity window to allow a user to make edits that do not get logged as questionable activity for a short amount of time after a listing's certification date
 * Fix bug restricting add/edit of Versions of Test Data
 
 ---
@@ -702,10 +760,10 @@ _18 February 2018_
 * Add /data/fuzzy_choices controller for getting and updating fuzzy match choices
 
 ### Minor features
-* Look for required reason for certain questionable activities; error on those actions if a reason is not found.
-* Add reason to questionable activity report.
-* Add reference of pending listing to confirmed listings to enable tracking between pending and confirmed.
-* Add certification status change reason to listing activity entities and to questionable activity report.
+* Look for required reason for certain questionable activities; error on those actions if a reason is not found
+* Add reason to questionable activity report
+* Add reference of pending listing to confirmed listings to enable tracking between pending and confirmed
+* Add certification status change reason to listing activity entities and to questionable activity report
 * Use most recently generated CMS ID if multiple exist with same product list set
 
 ---
@@ -714,7 +772,7 @@ _18 February 2018_
 _1 February 2018_
 
 ### Tiny features
-* Do not require UCD Processes for 2014 criteria with SED true if the listing ICS is false.
+* Do not require UCD Processes for 2014 criteria with SED true if the listing ICS is false
 * Do not require a reason for listing certification status change
 
 ---
@@ -722,7 +780,7 @@ _1 February 2018_
 ## Version 15.4.2
 _25 January 2018_
 
-* Do not allow users to update listings certification status history if they remove the original Active status.
+* Do not allow users to update listings certification status history if they remove the original Active status
 
 ---
 
@@ -730,7 +788,7 @@ _25 January 2018_
 _19 January 2018_
 
 ### Bugs Fixed
-* Save g1 and g2 success values for new 2014 listings with 170.314 (a)(4) criteria.
+* Save g1 and g2 success values for new 2014 listings with 170.314 (a)(4) criteria
 
 ---
 
@@ -738,14 +796,14 @@ _19 January 2018_
 _17 January 2018_
 
 ### Major features
-* Add new surveillance upload job type; process large upload files as background jobs.
+* Add new surveillance upload job type; process large upload files as background jobs
 
 ### Minor features
-* Allow reason for certification status change for any listing. Require reason for certification status change if new status is Withdrawn by ONC-ACB.
+* Allow reason for certification status change for any listing. Require reason for certification status change if new status is Withdrawn by ONC-ACB
 * Stop using 'certificationStatus' field; instead use "latest" of the certificationEvents array for current status
 
 ### Bugs Fixed
-* Statistics correctly account for deleted listings/unique products.
+* Statistics correctly account for deleted listings/unique products
 
 ---
 
@@ -756,7 +814,7 @@ _2 January 2018_
 * Made ICS Source required for 2015 w/ICS on upload/confirm/edit
 * Test tools are required for 170.315 (b)(8)
 * GAP is required for 170.314 (b)(5)(B)
-* Add warning messages to uploaded listings and surveillance regarding invalid characters found.
+* Add warning messages to uploaded listings and surveillance regarding invalid characters found
 * Do not include 'deleted' field in listing update generated sql
 
 ### Bugs fixed
@@ -777,8 +835,8 @@ _18 December 2017_
   * Remove ROLE_ATL_STAFF
 
 ### Minor Features
-* Do not allow duplicate QMS Standards or UCD Processes to be added.
-* If GAP is not specified for 170.314 (b)(5)(B) a warning will be returned instead of an error.
+* Do not allow duplicate QMS Standards or UCD Processes to be added
+* If GAP is not specified for 170.314 (b)(5)(B) a warning will be returned instead of an error
 
 ---
 
@@ -788,12 +846,12 @@ _5 December 2017_
 ### Minor Features
 * Added /data/test_data service to get all criteria with allowable test data
 * Added /data/test_procedure service to get all criteria with allowable test procedure
-* Use new test data values for upload and validation of listings.
-* Use new test procedure values for upload and validation of listings.
-* Support 2015 upload template v12.
+* Use new test data values for upload and validation of listings
+* Use new test procedure values for upload and validation of listings
+* Support 2015 upload template v12
 
 ### Bugs Fixed
-* Surveillance upload fixed to match on criteria number without space between number and letters.
+* Surveillance upload fixed to match on criteria number without space between number and letters
 
 ---
 
@@ -801,10 +859,10 @@ _5 December 2017_
 _20 November 2017_
 
 ### Backwards compatibility breaking features
-* Re-wrote API search code. See documentation for the HTTP GET /search call for information.
+* Re-wrote API search code. See documentation for the HTTP GET /search call for information
 
 ### Bugs Fixed
-* Fix 60 day date range check for activity when date range overlaps daylight savings.
+* Fix 60 day date range check for activity when date range overlaps daylight savings
 
 ---
 
@@ -812,7 +870,7 @@ _20 November 2017_
 _07 November 2017_
 
 ### Bugs Fixed
-* 170.315 (b)(8) is not required to have test procedures or test tools. Will become required on the Nov 20 push.
+* 170.315 (b)(8) is not required to have test procedures or test tools. Will become required on the Nov 20 push
 
 ---
 
@@ -823,7 +881,7 @@ _06 November 2017_
 * Add certified_products/sed_details endpoint that returns the latest SED all Details document
 * Add new version of 2014 upload template that adds a GAP column for 170.314 (b)(5)(B)
 * Change warning message for transparency attestation saving
-* Re-work handling of questionable activities. Do not send an email each time questionable activity appears, but save it all and send as a weekly report to subscribers instead.
+* Re-work handling of questionable activities. Do not send an email each time questionable activity appears, but save it all and send as a weekly report to subscribers instead
 
 ### Bugs fixed
 * Fix bug where uploaded SED Test Participants with identical demographics are not recognized correctly
@@ -872,8 +930,8 @@ _10 October 2017_
   * Add `0 1 * * * cd /opt/chpl && ./generateListingResources.sh 2015`
   * Add `0 1 * * * cd /opt/chpl && ./generateSurveillanceResources.sh`
   * Add lines as well for the cleanup script (may have been done by andlar already)
-* Return HTTP 404 for /certified_products/{id}/details if listing has never existed or has been deleted.
-* Change any URL with an ID in the path to return 404 if that ID is not found.
+* Return HTTP 404 for /certified_products/{id}/details if listing has never existed or has been deleted
+* Change any URL with an ID in the path to return 404 if that ID is not found
 * Allow all URLs to be accessed with or without a trailing slash ('/')
 
 ### Bug Fixes
@@ -887,11 +945,11 @@ _25 September 2017_
 ### Minor features
 * Speed up API call to retrieve a Listing's entire ICS family
 * Add /data/job_types call to get list of possible background job types that can be run
-* Add background job processing and apply it to meaningful use user upload.
+* Add background job processing and apply it to meaningful use user upload
 * Update 'cleanupXml' script to allow for some parameters
 
 ### Bug Fixes
-* Save ICS family data when going through pending listing confirm workflow.
+* Save ICS family data when going through pending listing confirm workflow
 
 ---
 
@@ -903,7 +961,7 @@ _Backwards compatibility breaking changes_
 * Reorganize SED data within the listing details request and response. UCD and Test tasks/participants are now located under a "sed" field. Listing update code has changed significantly as a result
 
 ### Minor Features
-* Add warnings for 'phantom' criteria data where criteria is not attested to but has associated data from the upload.
+* Add warnings for 'phantom' criteria data where criteria is not attested to but has associated data from the upload
 * Added SED Task/Participant required fields
 * Added errors on edit/upload/confirm
 * Allowed uploads to complete with missing age range/education
@@ -918,8 +976,8 @@ _Backwards compatibility breaking changes_
 _14 August 2017_
 
 ## Minor Features
-* Enforce ICS codes with 2 numbers (00-99) instead of just 1 number.
-* Improve error messages returned for unknown user-entered values for SED age and education levels.
+* Enforce ICS codes with 2 numbers (00-99) instead of just 1 number
+* Improve error messages returned for unknown user-entered values for SED age and education levels
 * Use subscriptions for weekly statistics email and questionable activity emails
 
 ## Bugs Fixed
@@ -932,8 +990,8 @@ _14 August 2017_
 _31 July 2017_
 
 ## Minor Features
-* Improve capturing of database errors on listing upload or update.
-* Improve error handling for invalid length/format codes in the CHPL unique product id.
+* Improve capturing of database errors on listing upload or update
+* Improve error handling for invalid length/format codes in the CHPL unique product id
 * Send a cache-cleared header when the search cache has been evicted
 * Eliminate on-demand listing search cache eviction
 * Add timed refresh of listings search
@@ -945,12 +1003,12 @@ _17 July 2017_
 
 ## Minor Features
 * Added /collections/developers API call to return a list of all developers, attestations, urls, and counts of their listings
-* Completed bulk reject of pending surveillance.
-* Pulling pending surveillance validation out of a db table instead of calculating on the fly to speed up large uploads.
+* Completed bulk reject of pending surveillance
+* Pulling pending surveillance validation out of a db table instead of calculating on the fly to speed up large uploads
 
 ## Bug Fixes
-* Fixed incorrect contact name displayed if pending surveillance or listing had already been confirmed/rejected.
-* Only evict basic search cache if listing create/update methods return successfully.
+* Fixed incorrect contact name displayed if pending surveillance or listing had already been confirmed/rejected
+* Only evict basic search cache if listing create/update methods return successfully
 
 ---
 
@@ -958,7 +1016,7 @@ _17 July 2017_
 _3 July 2017_
 
 ## Minor Features
-* Improve /update API call speed. Selectively update only items that have changed rather than doing a replace on the entire listing.
+* Improve /update API call speed. Selectively update only items that have changed rather than doing a replace on the entire listing
 * Allow mass reject of pending surveillances
 
 ---
@@ -968,7 +1026,7 @@ _3 July 2017_
 
 ### Major Features
 _Backwards compatibility breaking changes_
-* Changed ICS field in certified product details object (used on get and update calls) from a boolean to a more complex object to include whether something was inherited and a list of parents and children.
+* Changed ICS field in certified product details object (used on get and update calls) from a boolean to a more complex object to include whether something was inherited and a list of parents and children
 
 ## Minor Features
 * Changed ICS code from a string to an integer
@@ -984,11 +1042,11 @@ _19 June 2017_
 
 ### Major Features
 _Backwards compatibility breaking changes_
-* Removed /decertifications/certified_products and /decertifications/inactive_certificates API calls. This same data can now be accessed through the /certified_products API method.
+* Removed /decertifications/certified_products and /decertifications/inactive_certificates API calls. This same data can now be accessed through the /certified_products API method
 
 ### Minor Features
 * Add decertification date, numMeaningfulUse, transparency attestation url, and api documentation url fields to the flat search results
-* Fill in blank cells for subelements in nonconformtiy and surveillance downloads.
+* Fill in blank cells for subelements in nonconformtiy and surveillance downloads
 
 ---
 
@@ -1010,10 +1068,10 @@ _22 May 2017_
 * Add surveillance rule when a Listing has an open Non-conformity and status of "Withdrawn by..."
 * Add daily/weekly surveillance trigger emails that use notification subscriptions and are specific to ACB
 * Update /data/test_standards to include certification edition
-* Disallow duplicate test standards per certification criterion.
-* Check for exisitng test standard in the listing's edition before adding a new one (eliminates repeated entries in the database and keeps the selection dropdowns manageable).
-* Update all test standard entities, dtos, and domain objects to include certification edition.
-* Use error message file for error messages and support internationalization.
+* Disallow duplicate test standards per certification criterion
+* Check for exisitng test standard in the listing's edition before adding a new one (eliminates repeated entries in the database and keeps the selection dropdowns manageable)
+* Update all test standard entities, dtos, and domain objects to include certification edition
+* Use error message file for error messages and support internationalization
 
 ---
 
@@ -1030,7 +1088,7 @@ Surveillance by ONC-ACB
 * Validate the privacy and security framework users enter for listing criteria
 * Add notifications service to allow registration, getting, and deleting of email subscriptions
 * Add /data/notification_types service to send back the types of notifications a logged-in user may work with
-* Add certification edition to test functionality and check that the right edition of test functionality is used during listing edit and upload.
+* Add certification edition to test functionality and check that the right edition of test functionality is used during listing edit and upload
 
 ---
 
@@ -1038,15 +1096,15 @@ Surveillance by ONC-ACB
 _24 April 2017_
 
 ### Features Added
-* Update parameters for HTTP GET /search call. All the same options that were previously available only to POST exist for the GET. Updated related API documentation.
-* Add /cache_status endpoint. Returns a status of OK or INITIALIZING based on whether the basic search cache has been loaded.
+* Update parameters for HTTP GET /search call. All the same options that were previously available only to POST exist for the GET. Updated related API documentation
+* Add /cache_status endpoint. Returns a status of OK or INITIALIZING based on whether the basic search cache has been loaded
 * Add statistics to ONC weekly email body and csv file
-* Add endpoint /{productId}/split to allow splitting of products and moving versions to the old or new product.
-* Add optional contact information for a product that can be changed by ONC or ACB Admins.
-* Add optional showDeleted flag to the /data/search_options call. Defaults to false but setting to true will include deleted ACBs in the response.
+* Add endpoint /{productId}/split to allow splitting of products and moving versions to the old or new product
+* Add optional contact information for a product that can be changed by ONC or ACB Admins
+* Add optional showDeleted flag to the /data/search_options call. Defaults to false but setting to true will include deleted ACBs in the response
 
 ### Bugs Fixed
-* Fix error saving developer with updated contact information.
+* Fix error saving developer with updated contact information
 
 ---
 
@@ -1056,15 +1114,15 @@ _10 April 2017_
 ### Features Added
 * Show error to ONC-ACB during upload and edit when Surveillance Activity has a nonconformity with an entry for "Date Corrective Action Plan Was Approved" but no entry for "Date Corrective Action Plan Must Be Completed"
 * Show error to ONC-ACB during upload and edit for a Surveillance Activity nonconformity that violates business rules for "Corrective Action Plan End Date"
-* Add statusEvents field to developers to track past status changes (Active, Suspended by Onc, etc) and the date on which each status change occurred. Provide create, read, update, and delete API functionality for developer status changes.
-* Add decertificationDate to the data returned in the banned developers API call.
+* Add statusEvents field to developers to track past status changes (Active, Suspended by Onc, etc) and the date on which each status change occurred. Provide create, read, update, and delete API functionality for developer status changes
+* Add decertificationDate to the data returned in the banned developers API call
 * Updated basic search objects that get returned:
   * remove has open surveillance, has closed surveillance, has open nonconformities, has closed nonconformities
   * add surveillanceCount, openNonconformityCount, closedNonconformityCount fields
 * Cache results of /certified_products/pending to improve view time by ~683%
 * Add Surveillance Friendly ID to Surveillance (Basic) CSV file download
 * Add optional "fields" parameter to /certified_products call to allow only sending back a custom list of fields
-* Add nonconformity status to daily and weekly surveillance broken rules reports. Only include values in the reports with Open nonconformities.
+* Add nonconformity status to daily and weekly surveillance broken rules reports. Only include values in the reports with Open nonconformities
 
 ### Bugs Fixed
 * Fix misaligned cells in nonconformity download file
@@ -1088,7 +1146,7 @@ _27 March 2017_
 _13 March 2017_
 
 ### Features Added
-* No longer use ACLs that were getting added to each pending product x ACB Admin.
+* No longer use ACLs that were getting added to each pending product x ACB Admin
 
 ---
 
@@ -1102,7 +1160,7 @@ _27 February 2017_
 * Add functionality to allow a "rolling cache" that refreshes the cache asynchronously while allowing the user to view currently available cached data
 * Make caches eternal so the user gets cached data more often
 * Add columns to surveillance reports (ACB Name, certification status, hyperlink to CHPL listing) and reformat dates (yyyy/mm/dd)
-* Add daily and weekly surveillance oversight reports to calculate which surveillance items have broken a given set of rules.
+* Add daily and weekly surveillance oversight reports to calculate which surveillance items have broken a given set of rules
   * Environment properties have been added:
  ```
  #oversight email properties
@@ -1179,10 +1237,10 @@ _23 January 2017_
 _6 January 2017_
 
 ### Features Added
-* Add API methods for surveillance-related acivities. This includes upload, confirm, and reject for the bulk upload of surveillance data. It also includes create, update, and delete for singular changes to surveillance. Surveillance and associated non-conformities are returned with certified product details.
+* Add API methods for surveillance-related acivities. This includes upload, confirm, and reject for the bulk upload of surveillance data. It also includes create, update, and delete for singular changes to surveillance. Surveillance and associated non-conformities are returned with certified product details
 * Add API call to support updating certified_product meaningful_use_user counts with a CSV upload in CMS Management
 * Change behavior if certified product is marked as suspended or terminated by ONC. These statuses also result in a developer status change and require ROLE_ADMIN
-* Add API call to get decertified developers with developer name, the developer's associated ONC_ACBs, the developer status, and the sum of the developer's estimated number of meaningful use users for all certified products associated with the developer.
+* Add API call to get decertified developers with developer name, the developer's associated ONC_ACBs, the developer status, and the sum of the developer's estimated number of meaningful use users for all certified products associated with the developer
 * Add API call to get decertified certified products with pageCount set to the total number of decertified products
 * Add certificationDateStart and certificationDateEnd as advanced search parameters
 * Change corrective action plan search parameters to new surveillance search parameters - *NOT BACKWARDS COMPATIBLE*
@@ -1190,11 +1248,11 @@ _6 January 2017_
 * Add /surveillance/download[?type=all|basic|nonconformities] endpoint to allow download of CSV file with all surveillance and download of CSV file with surveillance that resulted in nonconformities
 * Add lookup to new tables for certification status event history
 * Add date of last certification status change to certified product details
-* Add script cleanupXml.sh to remove download files older than 30 days except for the first of each month. Needs to be given executable permission and have a cron job set up.
+* Add script cleanupXml.sh to remove download files older than 30 days except for the first of each month. Needs to be given executable permission and have a cron job set up
 * Add decertification date to certified product details *CHANGES XML DOWNLOAD FORMAT*
 
 ### Bugs Fixed
-* Changed transition of care calculations for the EHR Certification ID to more closely match the rule.
+* Changed transition of care calculations for the EHR Certification ID to more closely match the rule
 
 ---
 
@@ -1202,7 +1260,7 @@ _6 January 2017_
 _17 November 2016_
 
 ### Bugs Fixed
-* Mark all DAO methods that return certified product details as transactional so they can retrieve the product owner history. Fixes issue with summary email being sent and with xml download not being generated.
+* Mark all DAO methods that return certified product details as transactional so they can retrieve the product owner history. Fixes issue with summary email being sent and with xml download not being generated
 
 ---
 
@@ -1211,7 +1269,7 @@ _15 November 2016_
 
 ### Features Added
 * Add ability to retrieve and edit product ownership history (which developers a product has previously been owned by). BREAKS BACKWARDS COMPATIBILITY when retrieving certified product details
-* Add "showDeleted" parameter to /developers call. Defaults to false.
+* Add "showDeleted" parameter to /developers call. Defaults to false
 
 ### Bugs Fixed
 * Make it impossible to confirm duplicate pending certified products
@@ -1227,7 +1285,7 @@ _21 October 2016_
   * Temporailly turned off due to transaction/caching issues
 * Updated the algorithm for calculating weekly aggregate counts in order to take into account deleted developers/products
 * Generating simple CSV files for quicker download and viewing than the large XML files
-* Added "format" parameter to the download API endpoint which can be blank and will default to xml. Either xml or csv may be specified.
+* Added "format" parameter to the download API endpoint which can be blank and will default to xml. Either xml or csv may be specified
 * Added Developer status view / edit
 * Cleaned up persistence.xml resource files
 * Added role 'ROLE_ONC_STAFF'
@@ -1258,14 +1316,14 @@ _5 October 2016_
 _4 October 2016_
 
 ### Features Added
-* Changed certification status names previously known as Suspended, Terminated, and Withdrawn.
+* Changed certification status names previously known as Suspended, Terminated, and Withdrawn
 * Created Java program to send weekly email with aggregate counts for developers, products, certified products, and 2014 + 2015 CPs
 	* weekly email will be sent to weekly addresses defined in summary email
 	* [TEMPLATE] for deployment, update the properties.environment to add summaryEmail property
-* Updated /certification_ids/ call. Still returns the list of certification_ids and the date each was created. If user is ROLE_ADMIN, also returns a semi-colon separated list of CHPL product numbers with each certification_id.
-* Remove terms of use and api documentation from certified products.
-* Check product code, version code, and ICS code against specific sets of characters to make sure no special characters are used.
-* Add retired flag for test tools. Do not allow products to change associations with retired test tools.
+* Updated /certification_ids/ call. Still returns the list of certification_ids and the date each was created. If user is ROLE_ADMIN, also returns a semi-colon separated list of CHPL product numbers with each certification_id
+* Remove terms of use and api documentation from certified products
+* Check product code, version code, and ICS code against specific sets of characters to make sure no special characters are used
+* Add retired flag for test tools. Do not allow products to change associations with retired test tools
 * Add script to generate weekly summary email that is run as scheduled cron job
 
 ---
@@ -1274,13 +1332,13 @@ _4 October 2016_
 _19 September 2016_
 
 ### Features added
-* Add optional argument 'edition' to /download call.
-  * Generate the chpl-all file as well as a chpl-{edition} file for each edition present in the database for download.
+* Add optional argument 'edition' to /download call
+  * Generate the chpl-all file as well as a chpl-{edition} file for each edition present in the database for download
   * Downloads chpl-all by default
 * Allowed c3/c4 to be connected to CQMs
 * Added error messages for c1/2/3/4-CQM mismatch
 * Re-factored Certification Id web services to improve performance
-* Added statuses object that shows aggregate number of certified products associated with each developer and product. These objects will allow the website search page to filter on a developer/product's number of certified products that are active/retired/withdrawn/suspended/terminated.
+* Added statuses object that shows aggregate number of certified products associated with each developer and product. These objects will allow the website search page to filter on a developer/product's number of certified products that are active/retired/withdrawn/suspended/terminated
 * Updated /developers call to be faster
 * Changed /developers/update to update transparency attestation based on acb name, not acb ID
 * Re-factored Certification Id API controller to support new operations ("create", "search", "verify(GET)")
@@ -1297,17 +1355,17 @@ _19 September 2016_
 _30 August 2016_
 
 ### Features Added
-* Added a new service certification_ids/all to generate JSON with two fields - the certification ID and the date created. This includes all certification IDS ever and could be large.
+* Added a new service certification_ids/all to generate JSON with two fields - the certification ID and the date created. This includes all certification IDS ever and could be large
 * Change all /activity calls that used to accept a lastNDays parameter to accept start and end parameters instead. Start and end are longs and treated as timestamps. (Not backwards compatible)
 * Set up log4j2 and set hopefully appropriate log levels
-* Updated /activity API endpoint to incorporate new parameters to filter by API-Key, sort dateAscending, and filter by start & end date.
+* Updated /activity API endpoint to incorporate new parameters to filter by API-Key, sort dateAscending, and filter by start & end date
 * Do not allow 170.315 (d)(3) to mark GAP as true
 * Added 'responsibleUser' field with all user data for /activity reports
 * Removed CORSFilter in web.xml; this was preventing some ajax calls from other domains
 * Add developer object to /activity/product calls using the developer present in "newData"
 
 ### Bugs fixed
-* Upload field values for SED parsed as integers but entered as floats were not saved. Fixed.
+* Upload field values for SED parsed as integers but entered as floats were not saved. Fixed
 * Task success avg was getting mixed up with Task errors avg
 * Task time deviation optimal avg was getting mixed up with task path deviation optimal avg
 * Test Task Participant Product & Professional experience was getting mixed up
@@ -1318,13 +1376,13 @@ _30 August 2016_
 _10 August 2016_
 
 ### Features Added
-* By default do not return retired products. Still allow searching for retired products.
+* By default do not return retired products. Still allow searching for retired products
 * Remove visibleOnChpl filter from queries (not backwards compatible)
-* Adjust developer merge code to automatically select transparency attestations for each ACB/Developer, throwing an error if an ACB has inconsistent attestations already defined for the developers being merged.
-* Add descriptions to CQMs in /details results.
+* Adjust developer merge code to automatically select transparency attestations for each ACB/Developer, throwing an error if an ACB has inconsistent attestations already defined for the developers being merged
+* Add descriptions to CQMs in /details results
 * Add descriptions to test standards and test functionality in /data/test_functionality
-* For criteria that are eligible for and meet GAP, test tools, test procedure, and test data are not required.
-* ICS is no longer required when editing 2014 products.
+* For criteria that are eligible for and meet GAP, test tools, test procedure, and test data are not required
+* ICS is no longer required when editing 2014 products
 * Added optional inclusion of criteria met for Certification ID details through the API
 
 ---
@@ -1333,7 +1391,7 @@ _10 August 2016_
 _2 August 2016_
 
 ### Features Added
-* The searchTerm parameter of a certified product search may now be a CHP- id or a 9-part unique ID or an ACB certification ID number. Wildcards are not supported.
+* The searchTerm parameter of a certified product search may now be a CHP- id or a 9-part unique ID or an ACB certification ID number. Wildcards are not supported
 * Allow updating of accessibility standards list
 * Added /data/test_standards
 * Added /data/qms_standards
@@ -1403,10 +1461,10 @@ _24 May 2016_
 
 ### Bugs Fixed
 * 170.314 (f)(3) does not require test tools for ambulatory products but does for inpatient
-* Editing a product was requiring g1 and g2 when it should not have.
+* Editing a product was requiring g1 and g2 when it should not have
 * Trim spaces from the ends of all fields in the upload file
-* Properly save test functionality and test tools if an invalid one was in the upload file but was edited to be a valid one during confirm.
-* Fix logging bug when invalid column header is in upload file.
+* Properly save test functionality and test tools if an invalid one was in the upload file but was edited to be a valid one during confirm
+* Fix logging bug when invalid column header is in upload file
 
 ---
 
@@ -1415,13 +1473,13 @@ _16 May 2016_
 
 ### Features Added
 * Added EHR Certification ID rest service
-* Rearranged data for the corrective action plan reports/activity so there is just one activity event per CAP change.
+* Rearranged data for the corrective action plan reports/activity so there is just one activity event per CAP change
 * Added EHR Certification ID rest service verify operation
 
 ### Bugs fixed
-* Fix parsing error when spreadsheet has only a single row.
-* Only return last N days of activity as requested.
-* Fix 2015 upload file validation to catch missing UCD Process, test tasks, and test participants.
+* Fix parsing error when spreadsheet has only a single row
+* Only return last N days of activity as requested
+* Fix 2015 upload file validation to catch missing UCD Process, test tasks, and test participants
 * Fix met calculation for Certification ID 2015 Ambulatory CQM validation
 * Save sed testing end date and sed intended users on confirm
 
@@ -1451,10 +1509,10 @@ _20 April 2016_
 * Moved developer information around into the standard object when returning product or pending product details
 
 ### Bugs fixed
-* Fix 'null' in developer report when transparency attestation is changed.
-* Standards tested against are now saved.
-* Functionality tested against is now saved.
-* Fix error related to merging of products.
+* Fix 'null' in developer report when transparency attestation is changed
+* Standards tested against are now saved
+* Functionality tested against is now saved
+* Fix error related to merging of products
 * Product ownership change shows up correctly in activity report.`
 * Do not allow duplicate chpl ids in the same file unless they have XXXX (new developers)
 
@@ -1465,17 +1523,17 @@ _12 April 2016_
 
 ### Features Added
 * Test tools are not required for 2014 g1 and g2
-* Test data is optional in 2015 for everything except g1 and g2.
-* Improved education level name matching and error messages for education levels that are not in the database.
-* Allow portions of CHPL Product Number to be changed.
-* Allow ACB_ADMIN role to change the name of their own ACB.
+* Test data is optional in 2015 for everything except g1 and g2
+* Improved education level name matching and error messages for education levels that are not in the database
+* Allow portions of CHPL Product Number to be changed
+* Allow ACB_ADMIN role to change the name of their own ACB
 * Add service for version activity
 * Trigger emails on version name change, product name change, developer name change, or certified product status change
 
 ### Bugs fixed
-* Test tool version is now saved.
+* Test tool version is now saved
 * Fix activity report link email
-* Allow certification date to be changed.
+* Allow certification date to be changed
 
 ---
 
@@ -1483,7 +1541,7 @@ _12 April 2016_
 _30 March 2016_
 
 ### Features added
-* Check for questionable certified product updates and trigger email if found.
+* Check for questionable certified product updates and trigger email if found
 * Return list of applicable transparency attestations for each developer
 
 ### Bugs fixed
@@ -1543,9 +1601,9 @@ _18 February 2016_
 
 ### Features added or Updated
 * Changed Corrective Action Plan/Surveillance API parameters
-* Added descriptions to API methods.
-* Changed API for certified products and certification results to match 2014 data requirements.
-* Allow multiple values for the 'hasCap' field in search.
+* Added descriptions to API methods
+* Changed API for certified products and certification results to match 2014 data requirements
+* Allow multiple values for the 'hasCap' field in search
 
 ---
 
@@ -1556,7 +1614,7 @@ _3 February 2016_
 * Set up swagger API and endpoint annotations
 * Added code to create the XML download file
 * Added code to allow a currently logged in user to get additional permissions if invited (/users/authorize)
-* Adjust what happens when an ACB gets deleted. The ACB is marked as deleted and any users who were ONLY associated with that ACB (no other ACBs, no ATLs, no ADMIN role) will have their account disabled.
+* Adjust what happens when an ACB gets deleted. The ACB is marked as deleted and any users who were ONLY associated with that ACB (no other ACBs, no ATLs, no ADMIN role) will have their account disabled
 * Add service to undelete ACBs and ATLs accessed by /acbs/3/undelete or /atls/3/undelete
 * Added service for announcements
 
@@ -1583,14 +1641,14 @@ _12 January 2016_
 _5 January 2016_
 
 Features added or Updated
-* Added terms of use and api documentation to the certified product apis.
-* Added ability to update transparencyAttestation field per vendor and ACB combination. ADMINs can update the transparencyAttestation for all vendor/ACB combinations and anyone else can only update that field for the ACBs to which they have access.
-* Added transparencyAttestation to the fields that come back with certified product details and search results. It is inferred from the vendor/ACB mapping.
-* Added APIs for testing labs, found under /atls urls.
-* Complete CHPL Product Number for 2015 products with testing lab code.
+* Added terms of use and api documentation to the certified product apis
+* Added ability to update transparencyAttestation field per vendor and ACB combination. ADMINs can update the transparencyAttestation for all vendor/ACB combinations and anyone else can only update that field for the ACBs to which they have access
+* Added transparencyAttestation to the fields that come back with certified product details and search results. It is inferred from the vendor/ACB mapping
+* Added APIs for testing labs, found under /atls urls
+* Complete CHPL Product Number for 2015 products with testing lab code
 
 Bugs Fixed
-* Correct CHPL number is inserted in corrective action plan documentation activity.
+* Correct CHPL number is inserted in corrective action plan documentation activity
 * Authorizing existing users for new roles or ACBs/ATLs is fixed
 
 ---
@@ -1599,9 +1657,9 @@ Bugs Fixed
 _7 December 2015_
 
 Features added or Updated
-* Updated the format activity streams for users are returned.
+* Updated the format activity streams for users are returned
 * Updated search options to remove references to 2011 edition data in UI
-* Added Api key requirement and Api key activity logging.
+* Added Api key requirement and Api key activity logging
 * Updated search to allow search by "hasCAP" (search by Corrective Action Plan)
 
 Bugs fixed

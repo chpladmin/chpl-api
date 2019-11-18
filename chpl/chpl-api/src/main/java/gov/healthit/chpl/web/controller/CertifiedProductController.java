@@ -1,5 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
+import gov.healthit.chpl.domain.CertifiedProductSearchBasicDetails;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import java.util.function.Function;
 import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletResponse;
@@ -42,7 +44,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.IcsFamilyTreeNode;
@@ -56,7 +57,6 @@ import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMetadataDTO;
-import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -68,8 +68,8 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
-import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandler;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFactory;
@@ -97,47 +97,57 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/certified_products")
 public class CertifiedProductController {
-
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductController.class);
 
-    @Autowired
     private CertifiedProductUploadHandlerFactory uploadHandlerFactory;
-
-    @Autowired
     private CertifiedProductDetailsManager cpdManager;
-
-    @Autowired
     private CertifiedProductManager cpManager;
-
-    @Autowired 
-    private UserPermissionsManager userPermissionsManager;
-    
-    @Autowired 
     private ResourcePermissions resourcePermissions;
-    
-    @Autowired
     private PendingCertifiedProductManager pcpManager;
-
-    @Autowired
-    private PendingCertifiedProductDAO pcpDao;
-
-    @Autowired
     private ActivityManager activityManager;
-
-    @Autowired
     private ListingValidatorFactory validatorFactory;
-
-    @Autowired
     private Environment env;
-
-    @Autowired
     private ErrorMessageUtil msgUtil;
-
-    @Autowired
     private FileUtils fileUtils;
-
-    @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
+    private DeveloperManager developerManager;
+
+    /**
+     * Autowired constructor for dependency injection.
+     *
+     * @param uploadHandlerFactory
+     * @param cpdManager
+     * @param cpManager
+     * @param resourcePermissions
+     * @param pcpManager
+     * @param activityManager
+     * @param validatorFactory
+     * @param env
+     * @param msgUtil
+     * @param fileUtils
+     * @param chplProductNumberUtil
+     * @param developerManager
+     */
+    @Autowired
+    public CertifiedProductController(final CertifiedProductUploadHandlerFactory uploadHandlerFactory,
+            final CertifiedProductDetailsManager cpdManager, final CertifiedProductManager cpManager,
+            final ResourcePermissions resourcePermissions, final PendingCertifiedProductManager pcpManager,
+            final ActivityManager activityManager, final ListingValidatorFactory validatorFactory,
+            final Environment env, final ErrorMessageUtil msgUtil, final FileUtils fileUtils,
+            final ChplProductNumberUtil chplProductNumberUtil, final DeveloperManager developerManager) {
+        this.uploadHandlerFactory = uploadHandlerFactory;
+        this.cpdManager = cpdManager;
+        this.cpManager = cpManager;
+        this.resourcePermissions = resourcePermissions;
+        this.pcpManager = pcpManager;
+        this.activityManager = activityManager;
+        this.validatorFactory = validatorFactory;
+        this.env = env;
+        this.msgUtil = msgUtil;
+        this.fileUtils = fileUtils;
+        this.chplProductNumberUtil = chplProductNumberUtil;
+        this.developerManager = developerManager;
+    }
 
     /**
      * List all certified products.
@@ -279,13 +289,12 @@ public class CertifiedProductController {
     method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByIdBasic(
+    public @ResponseBody CertifiedProductSearchBasicDetails getCertifiedProductByIdBasic(
             @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
 
         CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetailsBasic(certifiedProductId);
-        certifiedProduct = validateCertifiedProduct(certifiedProduct);
 
-        return certifiedProduct;
+        return mapCertifiedProductDetailsToBasic.apply(certifiedProduct);
     }
 
     /**
@@ -317,7 +326,8 @@ public class CertifiedProductController {
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumberBasic(
+    public @ResponseBody
+    CertifiedProductSearchBasicDetails getCertifiedProductByChplProductNumberBasic(
             @PathVariable("year") final String year,
             @PathVariable("testingLab") final String testingLab,
             @PathVariable("certBody") final String certBody,
@@ -335,9 +345,8 @@ public class CertifiedProductController {
         CertifiedProductSearchDetails certifiedProduct =
                 cpdManager.getCertifiedProductDetailsBasicByChplProductNumber(chplProductNumber);
 
-        certifiedProduct = validateCertifiedProduct(certifiedProduct);
 
-        return certifiedProduct;
+        return mapCertifiedProductDetailsToBasic.apply(certifiedProduct);
     }
 
     @ApiOperation(value = "Get all basic information for a specified certified product.  Does not include "
@@ -350,7 +359,7 @@ public class CertifiedProductController {
     method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumberBasic2(
+    public @ResponseBody CertifiedProductSearchBasicDetails getCertifiedProductByChplProductNumberBasic2(
             @PathVariable("chplPrefix") final String chplPrefix,
             @PathVariable("identifier") final String identifier) throws EntityRetrievalException {
 
@@ -359,9 +368,7 @@ public class CertifiedProductController {
         CertifiedProductSearchDetails certifiedProduct =
                 cpdManager.getCertifiedProductDetailsBasicByChplProductNumber(chplProductNumber);
 
-        certifiedProduct = validateCertifiedProduct(certifiedProduct);
-
-        return certifiedProduct;
+        return mapCertifiedProductDetailsToBasic.apply(certifiedProduct);
     }
 
     @ApiOperation(value = "Get all of the CQM results for a specified certified product.",
@@ -432,7 +439,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/certification_results", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody CertificationResults getCertificationResultssByCertifiedProductId(
+    public @ResponseBody CertificationResults getCertificationResultsByCertifiedProductId(
             @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
 
         CertificationResults results =
@@ -449,7 +456,7 @@ public class CertifiedProductController {
      */
     @ApiOperation(value = "Get all of the certification results for a specified certified "
             + "product based on a CHPL Product Number.",
-            notes = "Returns all of the certifiection results in the CHPL related to the specified certified product.  "
+            notes = "Returns all of the certification results in the CHPL related to the specified certified product.  "
                     + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
                     + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number. "
                     + "A valid call to this service would look like "
@@ -458,7 +465,7 @@ public class CertifiedProductController {
             + ".{certDateCode}/certification_results", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody CertificationResults getCertificationResultssByCertifiedProductId(
+    public @ResponseBody CertificationResults getCertificationResultsByCertifiedProductId(
             @PathVariable("year") final String year,
             @PathVariable("testingLab") final String testingLab,
             @PathVariable("certBody") final String certBody,
@@ -481,13 +488,13 @@ public class CertifiedProductController {
 
     @ApiOperation(value = "Get all of the certification results for a specified certified product based on a legacy "
             + "CHPL Product Number.",
-            notes = "Returns all of the certifiection results in the CHPL related to the specified certified product.  "
+            notes = "Returns all of the certification results in the CHPL related to the specified certified product.  "
                     + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call to this "
                     + "service would look like /certified_products/CHP-999999/certification_results.")
     @RequestMapping(value = "/{chplPrefix}-{identifier}/certification_results", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody CertificationResults getCertificationResultssByCertifiedProductId(
+    public @ResponseBody CertificationResults getCertificationResultsByCertifiedProductId(
             @PathVariable("chplPrefix") final String chplPrefix,
             @PathVariable("identifier") final String identifier) throws EntityRetrievalException  {
 
@@ -521,7 +528,7 @@ public class CertifiedProductController {
      * @throws EntityRetrievalException if cannot retrieve entity
      */
     @ApiOperation(value = "Get the ICS family tree for the specified certified product.",
-            notes = "Returns all member of the family tree conected to the specified certified product.")
+            notes = "Returns all member of the family tree connected to the specified certified product.")
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/ics_relationships", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -599,88 +606,28 @@ public class CertifiedProductController {
             JsonProcessingException, IOException, ValidationException, MissingReasonException {
 
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
-
-        // clean up what was sent in - some necessary IDs or other fields may be
-        // missing
-        Long newAcbId = Long.valueOf(updatedListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
-        cpManager.sanitizeUpdatedListingData(newAcbId, updatedListing);
-
-        // validate
-        Validator validator = validatorFactory.getValidator(updatedListing);
-        if (validator != null) {
-            validator.validate(updatedListing);
-        }
-
+        
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(updatedListing.getId());
-
-        // make sure the old and new certification statuses aren't ONC bans
-        if (existingListing.getCurrentStatus() != null
-                && updatedListing.getCurrentStatus() != null
-                && !existingListing.getCurrentStatus().getStatus().getId()
-                .equals(updatedListing.getCurrentStatus().getStatus().getId())) {
-            // if the status is to or from suspended by onc make sure the user
-            // has admin
-            if ((existingListing.getCurrentStatus().getStatus().getName()
-                    .equals(CertificationStatusType.SuspendedByOnc.toString())
-                    || updatedListing.getCurrentStatus().getStatus().getName()
-                    .equals(CertificationStatusType.SuspendedByOnc.toString())
-                    || existingListing.getCurrentStatus().getStatus().getName()
-                    .equals(CertificationStatusType.TerminatedByOnc.toString())
-                    || updatedListing.getCurrentStatus().getStatus().getName()
-                    .equals(CertificationStatusType.TerminatedByOnc.toString()))
-                    && !resourcePermissions.isUserRoleOnc()
-                    && !resourcePermissions.isUserRoleAdmin()) {
-                updatedListing.getErrorMessages()
-                .add("User " + AuthUtil.getUsername()
-                + " does not have permission to change certification status of "
-                + existingListing.getChplProductNumber() + " from "
-                + existingListing.getCurrentStatus().getStatus().getName() + " to "
-                + updatedListing.getCurrentStatus().getStatus().getName());
-            }
-        }
-
-        // has the unique id changed? if so, make sure it is still unique
-        if (!existingListing.getChplProductNumber().equals(updatedListing.getChplProductNumber())) {
-            try {
-                boolean isDup = cpManager.chplIdExists(updatedListing.getChplProductNumber());
-                if (isDup) {
-                    updatedListing.getErrorMessages()
-                    .add(msgUtil.getMessage("listing.chplProductNumber.changedNotUnique",
-                            updatedListing.getChplProductNumber()));
-                }
-            } catch (final EntityRetrievalException ex) {
-            }
-        }
-
-        if (updatedListing.getErrorMessages() != null && updatedListing.getErrorMessages().size() > 0) {
-            for (String err : updatedListing.getErrorMessages()) {
-                LOGGER.error("Error updating listing " + updatedListing.getChplProductNumber() + ": " + err);
-            }
-            throw new ValidationException(updatedListing.getErrorMessages(), updatedListing.getWarningMessages());
-        }
-
         Long acbId = Long.parseLong(existingListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
 
-        // if the ACB owner is changed this is a separate action with different
-        // security
+        // if the ACB owner is changed this is a separate action with different security
+        Long newAcbId = Long
+                .valueOf(updatedListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
         if (acbId.longValue() != newAcbId.longValue()) {
             cpManager.changeOwnership(updatedListing.getId(), newAcbId);
-            CertifiedProductSearchDetails changedProduct = cpdManager
-                    .getCertifiedProductDetails(updatedListing.getId());
-            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
-                    "Changed ACB ownership.", existingListing, changedProduct);
+            CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());
+            activityManager.addActivity(
+                    ActivityConcept.CERTIFIED_PRODUCT, 
+                    existingListing.getId(),
+                    "Changed ACB ownership.", 
+                    existingListing, 
+                    changedProduct);
             existingListing = changedProduct;
         }
 
-        // update the listing
-        cpManager.update(acbId, updateRequest, existingListing);
-
-        // search for the product by id to get it with all the updates
+        cpManager.update(newAcbId, updateRequest);
+        
         CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());
-        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
-                "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingListing,
-                changedProduct, updateRequest.getReason());
-
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
         if (!changedProduct.getChplProductNumber().equals(existingListing.getChplProductNumber())) {
@@ -855,11 +802,13 @@ public class CertifiedProductController {
             PendingCertifiedProductDTO pcpDto = new PendingCertifiedProductDTO(pendingCp);
             PendingValidator validator = validatorFactory.getValidator(pcpDto);
             if (validator != null) {
-                validator.validate(pcpDto);
+                validator.validate(pcpDto, false);
             }
             if (pcpDto.getErrorMessages() != null && pcpDto.getErrorMessages().size() > 0) {
                 throw new ValidationException(pcpDto.getErrorMessages(), pcpDto.getWarningMessages());
             }
+
+            developerManager.validateDeveloperInSystemIfExists(pendingCp);
 
             CertifiedProductDTO createdProduct = cpManager.createFromPending(acbId, pcpDto);
             pcpManager.confirm(acbId, pendingCp.getId());
@@ -1087,4 +1036,48 @@ public class CertifiedProductController {
             LOGGER.error("Could not send team email about failed listing upload.", msgEx);
         }
     }
+
+    private static Function<CertifiedProductSearchDetails, CertifiedProductSearchBasicDetails> mapCertifiedProductDetailsToBasic = (CertifiedProductSearchDetails e)-> {
+        CertifiedProductSearchBasicDetails certifiedProductSearchBasicDetails = new CertifiedProductSearchBasicDetails();
+        certifiedProductSearchBasicDetails.setAcbCertificationId(e.getAcbCertificationId());
+        certifiedProductSearchBasicDetails.setAccessibilityCertified(e.getAccessibilityCertified());
+        certifiedProductSearchBasicDetails.setAccessibilityStandards(e.getAccessibilityStandards());
+        certifiedProductSearchBasicDetails.setCertificationDate(e.getCertificationDate());
+        certifiedProductSearchBasicDetails.setCertificationEdition(e.getCertificationEdition());
+        certifiedProductSearchBasicDetails.setCertificationEvents(e.getCertificationEvents());
+        certifiedProductSearchBasicDetails.setCertificationStatus(e.getCertificationStatus());
+        certifiedProductSearchBasicDetails.setCertifyingBody(e.getCertifyingBody());
+        certifiedProductSearchBasicDetails.setChplProductNumber(e.getChplProductNumber());
+        certifiedProductSearchBasicDetails.setClassificationType(e.getClassificationType());
+        certifiedProductSearchBasicDetails.setCountCerts(e.getCountCerts());
+        certifiedProductSearchBasicDetails.setCountClosedNonconformities(e.getCountClosedNonconformities());
+        certifiedProductSearchBasicDetails.setCountClosedSurveillance(e.getCountClosedSurveillance());
+        certifiedProductSearchBasicDetails.setCountCqms(e.getCountCqms());
+        certifiedProductSearchBasicDetails.setCountOpenNonconformities(e.getCountOpenNonconformities());
+        certifiedProductSearchBasicDetails.setCountOpenSurveillance(e.getCountOpenSurveillance());
+        certifiedProductSearchBasicDetails.setCountSurveillance(e.getCountSurveillance());
+        certifiedProductSearchBasicDetails.setDecertificationDate(e.getDecertificationDate());
+        certifiedProductSearchBasicDetails.setDeveloper(e.getDeveloper());
+        certifiedProductSearchBasicDetails.setIcs(e.getIcs());
+        certifiedProductSearchBasicDetails.setId(e.getId());
+        certifiedProductSearchBasicDetails.setLastModifiedDate(e.getLastModifiedDate());
+        certifiedProductSearchBasicDetails.setMeaningfulUseUserHistory(e.getMeaningfulUseUserHistory());
+        certifiedProductSearchBasicDetails.setOtherAcb(e.getOtherAcb());
+        certifiedProductSearchBasicDetails.setPracticeType(e.getPracticeType());
+        certifiedProductSearchBasicDetails.setProduct(e.getProduct());
+        certifiedProductSearchBasicDetails.setProductAdditionalSoftware(e.getProductAdditionalSoftware());
+        certifiedProductSearchBasicDetails.setQmsStandards(e.getQmsStandards());
+        certifiedProductSearchBasicDetails.setReportFileLocation(e.getReportFileLocation());
+        certifiedProductSearchBasicDetails.setSed(e.getSed());
+        certifiedProductSearchBasicDetails.setSedIntendedUserDescription(e.getSedIntendedUserDescription());
+        certifiedProductSearchBasicDetails.setSedReportFileLocation(e.getSedReportFileLocation());
+        certifiedProductSearchBasicDetails.setSedTestingEndDate(e.getSedTestingEndDate());
+        certifiedProductSearchBasicDetails.setSurveillance(e.getSurveillance());
+        certifiedProductSearchBasicDetails.setTargetedUsers(e.getTargetedUsers());
+        certifiedProductSearchBasicDetails.setTestingLabs(e.getTestingLabs());
+        certifiedProductSearchBasicDetails.setTransparencyAttestation(e.getTransparencyAttestation());
+        certifiedProductSearchBasicDetails.setTransparencyAttestationUrl(e.getTransparencyAttestationUrl());
+        certifiedProductSearchBasicDetails.setVersion(e.getVersion());
+        return certifiedProductSearchBasicDetails;
+    };
 }

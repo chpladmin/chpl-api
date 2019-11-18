@@ -3,6 +3,7 @@ package gov.healthit.chpl.dao.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
@@ -485,6 +486,31 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
         return null;
     }
 
+    /**
+     * Find any Developers with the given website.
+     *
+     * @param website
+     * @return the developers
+     */
+    @Override
+    public List<DeveloperDTO> getByWebsite(final String website) {
+        Query query = entityManager.createQuery("SELECT DISTINCT dev "
+                + "FROM DeveloperEntity dev "
+                + "LEFT OUTER JOIN FETCH dev.address "
+                + "LEFT OUTER JOIN FETCH dev.contact "
+                + "LEFT OUTER JOIN FETCH dev.statusEvents statusEvents "
+                + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
+                + "WHERE dev.deleted = false "
+                + "AND dev.website = :website ", DeveloperEntity.class);
+        query.setParameter("website", website);
+        List<DeveloperEntity> results = query.getResultList();
+        List<DeveloperDTO> resultDtos = new ArrayList<DeveloperDTO>();
+        for (DeveloperEntity entity : results) {
+            resultDtos.add(new DeveloperDTO(entity));
+        }
+        return resultDtos;
+    }
+
     @Override
     public List<DecertifiedDeveloperDTODeprecated> getDecertifiedDevelopers() {
 
@@ -603,6 +629,13 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
         return decertifiedDevelopers;
     }
 
+    @Override
+    public List<DeveloperDTO> getByCertificationBodyId(final List<Long> certificationBodyIds) {
+        return getEntitiesByCertificationBodyId(certificationBodyIds).stream()
+                .map(dev -> new DeveloperDTO(dev))
+                .collect(Collectors.<DeveloperDTO> toList());
+    }
+
     private void create(final DeveloperEntity entity) {
         entityManager.persist(entity);
         entityManager.flush();
@@ -660,7 +693,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
         return entity;
     }
 
-    private DeveloperEntity getEntityByName(String name) {
+    private DeveloperEntity getEntityByName(final String name) {
 
         DeveloperEntity entity = null;
 
@@ -679,7 +712,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
         return entity;
     }
 
-    private DeveloperEntity getEntityByCode(String code) {
+    private DeveloperEntity getEntityByCode(final String code) {
 
         DeveloperEntity entity = null;
 
@@ -698,7 +731,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
         return entity;
     }
 
-    private DeveloperACBMapEntity getTransparencyMappingEntity(Long developerId, Long acbId) {
+    private DeveloperACBMapEntity getTransparencyMappingEntity(final Long developerId, final Long acbId) {
         Query query = entityManager.createQuery("FROM DeveloperACBMapEntity map "
                 + "LEFT OUTER JOIN FETCH map.certificationBody where " + "(NOT map.deleted = true) "
                 + "AND map.developerId = :developerId " + "AND map.certificationBodyId = :acbId",
@@ -720,7 +753,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
         return result;
     }
 
-    private DeveloperStatusEntity getStatusByName(String statusName) {
+    private DeveloperStatusEntity getStatusByName(final String statusName) {
         DeveloperStatusDAOImpl statusDaoImpl = (DeveloperStatusDAOImpl) statusDao;
         List<DeveloperStatusEntity> statuses = statusDaoImpl.getEntitiesByName(statusName);
         if (statuses == null || statuses.size() == 0) {
@@ -729,4 +762,18 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
         }
         return statuses.get(0);
     }
+
+    private List<DeveloperEntity> getEntitiesByCertificationBodyId(final List<Long> certificationBodyIds) {
+        String hql = "SELECT DISTINCT dev "
+                + "FROM CertifiedProductEntity cp "
+                + "JOIN FETCH cp.productVersion pv "
+                + "JOIN FETCH pv.product prod "
+                + "JOIN FETCH prod.developer dev "
+                + "WHERE cp.certificationBody.id IN (:certificationBodyIds)";
+
+        return entityManager.createQuery(hql, DeveloperEntity.class)
+                .setParameter("certificationBodyIds", certificationBodyIds)
+                .getResultList();
+    }
+
 }

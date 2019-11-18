@@ -2,6 +2,7 @@ package gov.healthit.chpl.dao.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
@@ -21,7 +22,7 @@ import gov.healthit.chpl.util.AuthUtil;
 
 /**
  * Data access methods for certification bodies (ACBs).
- * 
+ *
  * @author kekey
  *
  */
@@ -137,7 +138,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 
     /**
      * Finds an ACB by ID.
-     * 
+     *
      * @param acbId
      * @return the ACB
      */
@@ -153,7 +154,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 
     /**
      * Find an ACB by name.
-     * 
+     *
      * @param name
      * @return the ACB
      */
@@ -165,6 +166,28 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
             dto = new CertificationBodyDTO(entity);
         }
         return dto;
+    }
+
+    /**
+     * Find any ACBs with the given website.
+     *
+     * @param website
+     * @return the ACBs
+     */
+    @Override
+    public List<CertificationBodyDTO> getByWebsite(final String website) {
+        Query query = entityManager.createQuery("SELECT acb "
+                + "FROM CertificationBodyEntity acb "
+                + "LEFT OUTER JOIN FETCH acb.address "
+                + "WHERE acb.deleted = false "
+                + "AND acb.website = :website");
+        query.setParameter("website", website);
+        List<CertificationBodyEntity> results = query.getResultList();
+        List<CertificationBodyDTO> resultDtos = new ArrayList<CertificationBodyDTO>();
+        for (CertificationBodyEntity entity : results) {
+            resultDtos.add(new CertificationBodyDTO(entity));
+        }
+        return resultDtos;
     }
 
     /**
@@ -183,6 +206,13 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
         return maxCode;
     }
 
+    @Override
+    public List<CertificationBodyDTO> getByDeveloperId(final Long developerId) {
+        return getEntitiesByDeveloperId(developerId).stream()
+                .map(acb -> new CertificationBodyDTO(acb))
+                .collect(Collectors.<CertificationBodyDTO> toList());
+    }
+
     private void create(final CertificationBodyEntity acb) {
         entityManager.persist(acb);
         entityManager.flush();
@@ -191,12 +221,11 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
     private void update(final CertificationBodyEntity acb) {
         entityManager.merge(acb);
         entityManager.flush();
-
     }
 
     /**
      * Get all ACBs.
-     * 
+     *
      * @return
      */
     private List<CertificationBodyEntity> getAllEntities() {
@@ -207,7 +236,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 
     /**
      * Find an ACB by ID.
-     * 
+     *
      * @param entityId
      * @return
      * @throws EntityRetrievalException
@@ -236,7 +265,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 
     /**
      * Find an ACB by name.
-     * 
+     *
      * @param name
      * @return
      */
@@ -254,6 +283,19 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
             entity = result.get(0);
         }
         return entity;
+    }
+
+    private List<CertificationBodyEntity> getEntitiesByDeveloperId(final Long developerId) {
+        String hql = "SELECT DISTINCT cp.certificationBody "
+                + "FROM CertifiedProductEntity cp "
+                + "JOIN FETCH cp.productVersion pv "
+                + "JOIN FETCH pv.product prod "
+                + "JOIN FETCH prod.developer dev "
+                + "WHERE dev.id = :developerId";
+
+        return entityManager.createQuery(hql, CertificationBodyEntity.class)
+                .setParameter("developerId", developerId)
+                .getResultList();
     }
 
 }

@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
+import gov.healthit.chpl.domain.CertifiedProductSearchBasicDetails;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -87,7 +88,7 @@ public class CertifiedProductControllerMockitoTest {
         when(cpdManager.getCertifiedProductDetailsBasic(anyLong())).thenReturn(getCertifiedProductBasicForAdditionalSoftwareTest());
         when(valFactory.getValidator(any(CertifiedProductSearchDetails.class))).thenReturn(edition2015Validator);
 
-        CertifiedProductSearchDetails cp = myController.getCertifiedProductByIdBasic(8252L);
+        CertifiedProductSearchBasicDetails cp = myController.getCertifiedProductByIdBasic(8252L);
 
         assertEquals("15.04.04.2945.Ligh.21.00.1.161229", cp.getChplProductNumber());
     }

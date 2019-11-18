@@ -312,6 +312,11 @@ public class ChplProductNumberUtil {
         return hasIcsConflict;
     }
 
+    public String getDeveloperCode(final String chplProductNumber) {
+        ChplProductNumberParts parts = parseChplProductNumber(chplProductNumber);
+        return parts.getDeveloperCode();
+    }
+
     private String[] splitUniqueIdParts(final String uniqueId) {
         String[] uniqueIdParts = uniqueId.split("\\.");
         if (uniqueIdParts == null || uniqueIdParts.length != ChplProductNumberUtil.CHPL_PRODUCT_ID_PARTS) {

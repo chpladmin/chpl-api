@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.DeveloperTransparency;
+import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -17,6 +18,8 @@ import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 
 public interface DeveloperManager {
+    String NEW_DEVELOPER_CODE = "XXXX";
+
     List<DeveloperDTO> getAll();
 
     List<DeveloperDTO> getAllIncludingDeleted();
@@ -42,6 +45,9 @@ public interface DeveloperManager {
     DeveloperDTO split(DeveloperDTO oldDeveloper, DeveloperDTO developerToCreate, List<Long> productIdsToMove)
             throws AccessDeniedException, EntityRetrievalException, EntityCreationException,
             JsonProcessingException, ValidationException;
+
+    void validateDeveloperInSystemIfExists(PendingCertifiedProductDetails pendingCp)
+            throws EntityRetrievalException, ValidationException;
 
     @Deprecated
     List<DecertifiedDeveloperResult> getDecertifiedDevelopers() throws EntityRetrievalException;

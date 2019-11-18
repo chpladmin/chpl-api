@@ -14,6 +14,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.CertificationBodyEntity;
+import gov.healthit.chpl.entity.auth.UserPermissionEntity;
 
 @Entity
 @Table(name = "change_request_status")
@@ -42,6 +43,11 @@ public class ChangeRequestStatusEntity {
     @JoinColumn(name = "certification_body_id", nullable = true, insertable = true,
             updatable = false)
     private CertificationBodyEntity certificationBody;
+
+    @Basic(optional = false)
+    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_permission_id", nullable = false, insertable = true, updatable = false)
+    private UserPermissionEntity userPermission;
 
     @Basic(optional = false)
     @Column(name = "status_change_date", nullable = false)
@@ -91,8 +97,16 @@ public class ChangeRequestStatusEntity {
         return certificationBody;
     }
 
-    public void setCertificationBody(CertificationBodyEntity certificationBody) {
+    public void setCertificationBody(final CertificationBodyEntity certificationBody) {
         this.certificationBody = certificationBody;
+    }
+
+    public UserPermissionEntity getUserPermission() {
+        return userPermission;
+    }
+
+    public void setUserPermission(final UserPermissionEntity userPermission) {
+        this.userPermission = userPermission;
     }
 
     public Date getStatusChangeDate() {
@@ -141,5 +155,14 @@ public class ChangeRequestStatusEntity {
 
     public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
+    }
+
+    @Override
+    public String toString() {
+        return "ChangeRequestStatusEntity [id=" + id + ", changeRequest=" + changeRequest + ", changeRequestStatusType="
+                + changeRequestStatusType + ", certificationBody=" + certificationBody + ", userPermission="
+                + userPermission + ", statusChangeDate=" + statusChangeDate + ", comment=" + comment + ", creationDate="
+                + creationDate + ", lastModifiedDate=" + lastModifiedDate + ", lastModifiedUser=" + lastModifiedUser
+                + ", deleted=" + deleted + "]";
     }
 }

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.auth.UserPermission;
 
 public class ChangeRequestStatus implements Serializable {
     private static final long serialVersionUID = 3333749014276324377L;
@@ -13,6 +14,7 @@ public class ChangeRequestStatus implements Serializable {
     private Date statusChangeDate;
     private String comment;
     private CertificationBody certificationBody;
+    private UserPermission userPermission;
 
     public Long getId() {
         return id;
@@ -52,5 +54,20 @@ public class ChangeRequestStatus implements Serializable {
 
     public void setCertificationBody(final CertificationBody certificationBody) {
         this.certificationBody = certificationBody;
+    }
+
+    public UserPermission getUserPermission() {
+        return userPermission;
+    }
+
+    public void setUserPermission(final UserPermission userPermission) {
+        this.userPermission = userPermission;
+    }
+
+    @Override
+    public String toString() {
+        return "ChangeRequestStatus [id=" + id + ", changeRequestStatusType=" + changeRequestStatusType
+                + ", statusChangeDate=" + statusChangeDate + ", comment=" + comment + ", certificationBody="
+                + certificationBody + ", userPermission=" + userPermission + "]";
     }
 }

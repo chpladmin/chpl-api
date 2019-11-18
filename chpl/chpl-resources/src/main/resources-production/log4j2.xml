@@ -6,17 +6,6 @@
         <Property name="logDir">${sys:catalina.home}/logs</Property>
     </Properties>
     <Appenders>
-        <RollingFile name="insertMissingSplitActivityJob"
-            fileName="${logDir}/scheduler/insertMissingSplitActivityJob.log"
-            filePattern="${logDir}/scheduler/history/insertMissingSplitActivityJob-%d{yyyy-MM-dd}.log">
-            <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
-            </PatternLayout>
-            <Policies>
-                <TimeBasedTriggeringPolicy
-                    interval="1" modulate="true" />
-            </Policies>
-        </RollingFile>
         <RollingFile name="FILE" fileName="${logDir}/chplservice.log"
             filePattern="${logDir}/chplservice-%d{yyyyMMdd}.log">
             <PatternLayout>
@@ -52,6 +41,28 @@
         <RollingFile name="summaryStatisticsCreatorJob"
             fileName="${logDir}/scheduler/summaryStatisticsCreatorJob.log"
             filePattern="${logDir}/scheduler/history/summaryStatisticsCreatorJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
+        <RollingFile name="urlStatusDataCollectorJob"
+            fileName="${logDir}/scheduler/urlStatusDataCollectorJob.log"
+            filePattern="${logDir}/scheduler/history/urlStatusDataCollectorJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
+        <RollingFile name="questionableUrlReportGeneratorJob"
+            fileName="${logDir}/scheduler/questionableUrlReportGeneratorJob.log"
+            filePattern="${logDir}/scheduler/history/questionableUrlReportGeneratorJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
                 <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
             </PatternLayout>
@@ -192,6 +203,17 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <RollingFile name="pendingChangeRequestEmailJob"
+            fileName="${logDir}/scheduler/pendingChangeRequestEmailJob.log"
+            filePattern="${logDir}/scheduler/history/pendingChangeRequestEmailJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
         <RollingFile name="interruptJob"
             fileName="${logDir}/scheduler/interruptJob.log"
             filePattern="${logDir}/scheduler/history/interruptJob-%d{yyyy-MM-dd}.log">
@@ -206,6 +228,17 @@
         <RollingFile name="massRequirePasswordChangeJob"
             fileName="${logDir}/scheduler/massRequirePasswordChangeJob.log"
             filePattern="${logDir}/scheduler/history/massRequirePasswordChangeJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
+        <RollingFile name="updateListingStatusJob"
+            fileName="${logDir}/scheduler/updateListingStatusJob.log"
+            filePattern="${logDir}/scheduler/history/updateListingStatusJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
                 <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
             </PatternLayout>
@@ -229,10 +262,6 @@
         <Logger name="gov.healthit.chpl" level="INFO" additivity="false">
             <AppenderRef ref="FILE" />
         </Logger>
-        <Logger name="insertMissingSplitActivityJobLogger" level="INFO"
-            additivity="false">
-            <AppenderRef ref="insertMissingSplitActivityJob" />
-        </Logger>
         <Logger name="summaryStatisticsEmailJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="summaryStatisticsEmailJob" />
@@ -240,6 +269,14 @@
         <Logger name="summaryStatisticsCreatorJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="summaryStatisticsCreatorJob" />
+        </Logger>
+        <Logger name="urlStatusDataCollectorJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="urlStatusDataCollectorJob" />
+        </Logger>
+        <Logger name="questionableUrlReportGeneratorJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="questionableUrlReportGeneratorJob" />
         </Logger>
         <Logger name="chartDataCreatorJobLogger" level="INFO"
             additivity="false">
@@ -294,6 +331,10 @@
             additivity="false">
             <AppenderRef ref="questionableActivityEmailJob" />
         </Logger>
+        <Logger name="pendingChangeRequestEmailJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="pendingChangeRequestEmailJob" />
+        </Logger>
         <Logger name="interruptJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="interruptJob" />
@@ -301,6 +342,10 @@
         <Logger name="massRequirePasswordChangeJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="massRequirePasswordChangeJob" />
+        </Logger>
+        <Logger name="updateListingStatusJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="updateListingStatusJob" />
         </Logger>
     </Loggers>
 </Configuration>

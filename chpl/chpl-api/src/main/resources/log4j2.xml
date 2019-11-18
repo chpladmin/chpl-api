@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Configuration>
-<Configuration status="debug" name="CHPLService" packages="">
+<Configuration status="debug" monitorInterval="300"
+    name="CHPLService-local" packages="">
     <Properties>
         <Property name="logDir">${sys:catalina.home}/logs</Property>
     </Properties>
@@ -10,6 +11,17 @@
                 <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
             </PatternLayout>
         </Console>
+        <RollingFile name="chartDataCreatorJob"
+            fileName="${logDir}/scheduler/chartDataCreatorJob.log"
+            filePattern="${logDir}/scheduler/history/chartDataCreatorJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
         <RollingFile name="summaryStatisticsEmailJob"
             fileName="${logDir}/scheduler/summaryStatisticsEmailJob.log"
             filePattern="${logDir}/scheduler/history/summaryStatisticsEmailJob-%d{yyyy-MM-dd}.log">
@@ -32,9 +44,9 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
-        <RollingFile name="chartDataCreatorJob"
-            fileName="${logDir}/scheduler/chartDataCreatorJob.log"
-            filePattern="${logDir}/scheduler/history/chartDataCreatorJob-%d{yyyy-MM-dd}.log">
+                <RollingFile name="urlStatusDataCollectorJob"
+            fileName="${logDir}/scheduler/urlStatusDataCollectorJob.log"
+            filePattern="${logDir}/scheduler/history/urlStatusDataCollectorJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
                 <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
             </PatternLayout>
@@ -43,7 +55,19 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
-        <RollingFile name="certifiedProductDownloadableResourceCreatorJob"
+                <RollingFile name="questionableUrlReportGeneratorJob"
+            fileName="${logDir}/scheduler/questionableUrlReportGeneratorJob.log"
+            filePattern="${logDir}/scheduler/history/questionableUrlReportGeneratorJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
+        <RollingFile
+            name="certifiedProductDownloadableResourceCreatorJob"
             fileName="${logDir}/scheduler/certifiedProductDownloadableResourceCreatorJob.log"
             filePattern="${logDir}/scheduler/history/certifiedProductDownloadableResourceCreatorJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
@@ -54,7 +78,8 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
-        <RollingFile name="g3Sed2015DownloadableResourceCreatorJob"
+        <RollingFile
+            name="g3Sed2015DownloadableResourceCreatorJob"
             fileName="${logDir}/scheduler/g3Sed2015DownloadableResourceCreatorJob.log"
             filePattern="${logDir}/scheduler/history/g3Sed2015DownloadableResourceCreatorJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
@@ -65,7 +90,8 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
-        <RollingFile name="surveillanceDownloadableResourceCreatorJob"
+        <RollingFile
+            name="surveillanceDownloadableResourceCreatorJob"
             fileName="${logDir}/scheduler/surveillanceDownloadableResourceCreatorJob.log"
             filePattern="${logDir}/scheduler/history/surveillanceDownloadableResourceCreatorJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
@@ -76,7 +102,8 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
-        <RollingFile name="brokenSurveillanceRulesCreatorJob"
+        <RollingFile
+            name="brokenSurveillanceRulesCreatorJob"
             fileName="${logDir}/scheduler/brokenSurveillanceRulesCreatorJob.log"
             filePattern="${logDir}/scheduler/history/brokenSurveillanceRulesCreatorJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
@@ -98,7 +125,8 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
-        <RollingFile name="inheritanceErrorsReportCreatorJob"
+        <RollingFile
+            name="inheritanceErrorsReportCreatorJob"
             fileName="${logDir}/scheduler/inheritanceErrorsReportCreatorJob.log"
             filePattern="${logDir}/scheduler/history/inheritanceErrorsReportCreatorJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
@@ -175,6 +203,17 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <RollingFile name="pendingChangeRequestEmailJob"
+            fileName="${logDir}/scheduler/pendingChangeRequestEmailJob.log"
+            filePattern="${logDir}/scheduler/history/pendingChangeRequestEmailJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
         <RollingFile name="interruptJob"
             fileName="${logDir}/scheduler/interruptJob.log"
             filePattern="${logDir}/scheduler/history/interruptJob-%d{yyyy-MM-dd}.log">
@@ -197,6 +236,17 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <RollingFile name="updateListingStatusJob"
+            fileName="${logDir}/scheduler/updateListingStatusJob.log"
+            filePattern="${logDir}/scheduler/history/updateListingStatusJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
     </Appenders>
     <Loggers>
         <Logger name="org.jose4j" level="WARN" additivity="false">
@@ -206,62 +256,82 @@
             additivity="false">
             <AppenderRef ref="STDOUT" />
         </Logger>
-        <Logger name="org.hibernate" level="INFO" additivity="false">
+        <Logger name="org.hibernate" level="INFO"
+            additivity="false">
             <AppenderRef ref="STDOUT" />
         </Logger>
         <!-- Logging for hibernate stuff. Leave off generally -->
-        <!-- <Logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
+        <!-- <Logger name="org.hibernate.SQL" level="DEBUG" additivity="false"> 
             <AppenderRef ref="STDOUT" /> </Logger> -->
         <Logger name="org.springframework" level="INFO"
             additivity="false">
             <AppenderRef ref="STDOUT" />
         </Logger>
-        <Logger name="net.sf.ehcache" level="INFO" additivity="false">
-            <AppenderRef ref="STDOUT" />
-        </Logger>
-        <Logger name="gov.healthit.chpl" level="INFO" additivity="false">
-            <AppenderRef ref="STDOUT" />
-        </Logger>
-        <Logger name="summaryStatisticsEmailJobLogger" level="INFO"
+        <Logger name="net.sf.ehcache" level="INFO"
             additivity="false">
+            <AppenderRef ref="STDOUT" />
+        </Logger>
+        <Logger name="gov.healthit.chpl" level="INFO"
+            additivity="false">
+            <AppenderRef ref="STDOUT" />
+        </Logger>
+        <Logger name="summaryStatisticsEmailJobLogger"
+            level="INFO" additivity="false">
             <AppenderRef ref="summaryStatisticsEmailJob" />
         </Logger>
-        <Logger name="summaryStatisticsCreatorJobLogger" level="INFO"
-            additivity="false">
+        <Logger name="summaryStatisticsCreatorJobLogger"
+            level="INFO" additivity="false">
             <AppenderRef ref="summaryStatisticsCreatorJob" />
+        </Logger>
+        <Logger name="urlStatusDataCollectorJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="urlStatusDataCollectorJob" />
+        </Logger>
+        <Logger name="questionableUrlReportGeneratorJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="questionableUrlReportGeneratorJob" />
         </Logger>
         <Logger name="chartDataCreatorJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="chartDataCreatorJob" />
         </Logger>
-        <Logger name="certifiedProductDownloadableResourceCreatorJobLogger"
+        <Logger
+            name="certifiedProductDownloadableResourceCreatorJobLogger"
             level="INFO" additivity="false">
             <AppenderRef
                 ref="certifiedProductDownloadableResourceCreatorJob" />
         </Logger>
-        <Logger name="g3Sed2015DownloadableResourceCreatorJobLogger"
+        <Logger
+            name="g3Sed2015DownloadableResourceCreatorJobLogger"
             level="INFO" additivity="false">
-            <AppenderRef ref="g3Sed2015DownloadableResourceCreatorJob" />
+            <AppenderRef
+                ref="g3Sed2015DownloadableResourceCreatorJob" />
         </Logger>
-        <Logger name="surveillanceDownloadableResourceCreatorJobLogger"
+        <Logger
+            name="surveillanceDownloadableResourceCreatorJobLogger"
             level="INFO" additivity="false">
-            <AppenderRef ref="surveillanceDownloadableResourceCreatorJob" />
+            <AppenderRef
+                ref="surveillanceDownloadableResourceCreatorJob" />
         </Logger>
         <Logger name="brokenSurveillanceRulesCreatorJobLogger"
             level="INFO" additivity="false">
-            <AppenderRef ref="brokenSurveillanceRulesCreatorJob" />
+            <AppenderRef
+                ref="brokenSurveillanceRulesCreatorJob" />
         </Logger>
         <Logger name="brokenSurveillanceRulesEmailJobLogger"
             level="INFO" additivity="false">
-            <AppenderRef ref="brokenSurveillanceRulesEmailJob" />
+            <AppenderRef
+                ref="brokenSurveillanceRulesEmailJob" />
         </Logger>
         <Logger name="inheritanceErrorsReportCreatorJobLogger"
             level="INFO" additivity="false">
-            <AppenderRef ref="inheritanceErrorsReportCreatorJob" />
+            <AppenderRef
+                ref="inheritanceErrorsReportCreatorJob" />
         </Logger>
         <Logger name="inheritanceErrorsReportEmailJobLogger"
             level="INFO" additivity="false">
-            <AppenderRef ref="inheritanceErrorsReportEmailJob" />
+            <AppenderRef
+                ref="inheritanceErrorsReportEmailJob" />
         </Logger>
         <Logger name="cacheStatusAgeJobLogger" level="INFO"
             additivity="false">
@@ -279,17 +349,25 @@
             additivity="false">
             <AppenderRef ref="apiKeyDeleteJob" />
         </Logger>
-        <Logger name="questionableActivityEmailJobLogger" level="INFO"
-            additivity="false">
+        <Logger name="questionableActivityEmailJobLogger"
+            level="INFO" additivity="false">
             <AppenderRef ref="questionableActivityEmailJob" />
+        </Logger>
+        <Logger name="pendingChangeRequestEmailJobLogger"
+            level="INFO" additivity="false">
+            <AppenderRef ref="pendingChangeRequestEmailJob" />
         </Logger>
         <Logger name="interruptJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="interruptJob" />
         </Logger>
-        <Logger name="massRequirePasswordChangeJobLogger" level="INFO"
-            additivity="false">
+        <Logger name="massRequirePasswordChangeJobLogger"
+            level="INFO" additivity="false">
             <AppenderRef ref="massRequirePasswordChangeJob" />
+        </Logger>
+        <Logger name="updateListingStatusJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="updateListingStatusJob" />
         </Logger>
         <!-- <Root level="INFO"> <AppenderRef ref="STDOUT" /> </Root> -->
     </Loggers>

@@ -397,7 +397,7 @@ public class UserManagementController {
         userManager.delete(toDelete);
         //db soft delete trigger takes care of deleting things associated with this user.
 
-        String activityDescription = "User " + toDelete.getSubjectName() + " was deleted.";
+        String activityDescription = "Deleted user " + toDelete.getSubjectName() + ".";
         activityManager.addActivity(ActivityConcept.USER, toDelete.getId(), activityDescription,
                 toDelete, null);
 
