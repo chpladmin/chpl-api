@@ -1105,7 +1105,7 @@ public class SearchViewController {
     }
 
     @Deprecated
-    @ApiOperation(value = "Deprecated. Use /data/macra-measures. "
+    @ApiOperation(value = "DEPRECATED. Use /data/macra-measures. "
             + "Get all possible macra measure options in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/macra_measures", method = RequestMethod.GET,
