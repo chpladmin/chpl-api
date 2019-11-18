@@ -1,5 +1,15 @@
 # Release Notes
 
+## Version 21.13.0
+_18 November 2019_
+
+### Features
+* Add endpoint to retrieve API Key activity metadata
+  * Update API Key calls to follow the metadata/details pattern used in other reports
+* Create report for pending Website Change Requests
+
+---
+
 ## Version 21.12.0
 _4 November 2019_
 
