@@ -8,6 +8,7 @@ import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
+import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.SearchableDimensionalData;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
@@ -73,7 +74,9 @@ public interface DimensionalDataManager {
 
     Set<UploadTemplateVersion> getUploadTemplateVersions();
 
-    Set<CriteriaSpecificDescriptiveModel> getMacraMeasures();
+    Set<CriteriaSpecificDescriptiveModel> getMacraMeasuresDeprecated();
+
+    Set<MacraMeasure> getMacraMeasures();
 
     Set<DescriptiveModel> getCertificationCriterionNumbers(Boolean simple) throws EntityRetrievalException;
 
