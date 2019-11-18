@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang.ObjectUtils;
@@ -803,8 +804,8 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
         } else {
             for (DeveloperACBMapDTO originalMapping : original.getTransparencyAttestationMappings()) {
                 for (DeveloperACBMapDTO changedMapping : changed.getTransparencyAttestationMappings()) {
-                    if (isBasicPropertyChanged(originalMapping.getAcbName(), changedMapping.getAcbName())
-                            || isBasicPropertyChanged(originalMapping.getTransparencyAttestation(),
+                    if (!Objects.equals(originalMapping.getAcbName(), changedMapping.getAcbName())
+                            || !Objects.equals(originalMapping.getTransparencyAttestation(),
                                     changedMapping.getTransparencyAttestation())) {
                         return true;
                     }
@@ -812,14 +813,6 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
             }
         }
         return false;
-    }
-
-    private static boolean isBasicPropertyChanged(final Object originalProperty, final Object otherProperty) {
-        if ((originalProperty != null && otherProperty == null)
-                || (originalProperty == null && otherProperty != null)) {
-            return true;
-        }
-        return originalProperty == null && otherProperty == null ? false : !originalProperty.equals(otherProperty);
     }
 
     @Override
