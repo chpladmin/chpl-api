@@ -149,9 +149,11 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
         List<String> results = new ArrayList<String>();
         if ((null != productIds) && (productIds.size() > 0)) {
             Query query = entityManager.createQuery(
-                    "SELECT number FROM CertificationResultDetailsEntity "
-                            + "WHERE success = TRUE AND deleted = FALSE AND certified_product_id IN :productIds "
-                            + "GROUP BY number",
+                    "SELECT crd.number FROM CertificationResultDetailsEntity crd "
+                            + "WHERE crd.success = TRUE "
+                            + "AND crd.deleted = FALSE "
+                            + "AND crd.certifiedProductId IN (:productIds) "
+                            + "GROUP BY crd.number",
                             String.class);
             query.setParameter("productIds", productIds);
             results = query.getResultList();

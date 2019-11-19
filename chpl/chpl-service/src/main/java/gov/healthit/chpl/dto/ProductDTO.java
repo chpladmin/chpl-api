@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.entity.ProductActiveOwnerEntity;
 import gov.healthit.chpl.entity.ProductEntity;
+import gov.healthit.chpl.entity.ProductEntitySimple;
 import gov.healthit.chpl.entity.ProductVersionEntity;
 import gov.healthit.chpl.util.Util;
 
@@ -37,7 +38,22 @@ public class ProductDTO implements Serializable {
         this.ownerHistory = new ArrayList<ProductOwnerDTO>();
     }
 
-    public ProductDTO(ProductEntity entity) {
+    public ProductDTO(final ProductEntitySimple entity) {
+        this();
+
+        this.id = entity.getId();
+        this.creationDate = entity.getCreationDate();
+        this.deleted = entity.isDeleted();
+        this.lastModifiedDate = entity.getLastModifiedDate();
+        this.lastModifiedUser = entity.getLastModifiedUser();
+        this.name = entity.getName();
+        this.reportFileLocation = entity.getReportFileLocation();
+        this.developerId = entity.getDeveloperId();
+        this.contact = new ContactDTO();
+        this.contact.setId(entity.getContactId());
+    }
+
+    public ProductDTO(final ProductEntity entity) {
         this();
 
         this.id = entity.getId();
@@ -110,7 +126,7 @@ public class ProductDTO implements Serializable {
     public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
-    
+
     public Long getLastModifiedUser() {
         return lastModifiedUser;
     }
