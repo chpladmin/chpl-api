@@ -3,7 +3,6 @@ package gov.healthit.chpl.manager.rules.developer;
 import java.util.Objects;
 
 import org.ff4j.FF4j;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
@@ -17,7 +16,6 @@ public class DeveloperEditTransparencyAttestationValidation extends ValidationRu
     private FF4j ff4j;
     private ResourcePermissions resourcePermissions;
 
-    @Autowired
     public DeveloperEditTransparencyAttestationValidation(final FF4j ff4j,
             final ResourcePermissions resourcePermissions) {
         this.ff4j = ff4j;

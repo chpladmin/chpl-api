@@ -222,13 +222,9 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
             }
         }
 
+        // TODO-DB: Remove these 2 declarations after all subsequent routines are externalized to validation
         DeveloperStatusEventDTO newDevStatus = updatedDev.getStatus();
         DeveloperStatusEventDTO currDevStatus = beforeDev.getStatus();
-        if (currDevStatus == null || currDevStatus.getStatus() == null) {
-            String msg = msgUtil.getMessage("developer.noStatusFound", beforeDev.getName());
-            LOGGER.error(msg);
-            throw new EntityCreationException(msg);
-        }
 
         // if any of the statuses (new, old, or any other status in the history)
         // is Under Certification Ban by ONC make sure there is a reason given
@@ -828,6 +824,7 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
     private Set<String> runChangeValidations(final DeveloperDTO dto, final DeveloperDTO beforeDev) {
         List<ValidationRule<DeveloperValidationContext>> rules = new ArrayList<ValidationRule<DeveloperValidationContext>>();
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.EDIT_TRANSPARENCY_ATTESTATION));
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.HAS_STATUS_VALIDATION));
         // TODO-DB: Add the others from update method here...
         return runValidations(rules, dto, null, beforeDev);
     }
