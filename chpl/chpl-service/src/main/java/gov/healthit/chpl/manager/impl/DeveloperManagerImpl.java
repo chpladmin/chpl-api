@@ -225,25 +225,6 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
         DeveloperStatusEventDTO newDevStatus = updatedDev.getStatus();
         DeveloperStatusEventDTO currDevStatus = beforeDev.getStatus();
 
-        // if the status history has been modified, the user must be role admin
-        // except that an acb admin can change to UnderCertificationBanByOnc
-        // triggered by listing status update
-        boolean devStatusHistoryUpdated = isStatusHistoryUpdated(beforeDev, updatedDev);
-        if (devStatusHistoryUpdated
-                && newDevStatus.getStatus().getStatusName()
-                        .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
-                && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
-            String msg = msgUtil.getMessage("developer.statusChangeNotAllowedWithoutAdmin",
-                    DeveloperStatusType.UnderCertificationBanByOnc.toString());
-            throw new EntityCreationException(msg);
-        } else if (devStatusHistoryUpdated
-                && !newDevStatus.getStatus().getStatusName()
-                        .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
-                && resourcePermissions.isUserRoleAdmin() && resourcePermissions.isUserRoleOnc()) {
-            String msg = msgUtil.getMessage("developer.statusHistoryChangeNotAllowedWithoutAdmin");
-            throw new EntityCreationException(msg);
-        }
-
         // determine if the status has been changed in most cases only allowed by ROLE_ADMIN but ROLE_ACB
         // can change it to UnderCertificationBanByOnc
         boolean currentStatusChanged = !currDevStatus.getStatus().getStatusName()
@@ -686,32 +667,6 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
         return decertifiedDeveloperResults;
     }
 
-    private boolean isStatusHistoryUpdated(final DeveloperDTO original, final DeveloperDTO changed) {
-        boolean hasChanged = false;
-        if ((original.getStatusEvents() != null && changed.getStatusEvents() == null)
-                || (original.getStatusEvents() == null && changed.getStatusEvents() != null)
-                || (original.getStatusEvents().size() != changed.getStatusEvents().size())) {
-            hasChanged = true;
-        } else {
-            // neither status history is null and they have the same size history arrays
-            // so now check for any differences in the values of each
-            for (DeveloperStatusEventDTO origStatusHistory : original.getStatusEvents()) {
-                boolean foundMatchInChanged = false;
-                for (DeveloperStatusEventDTO changedStatusHistory : changed.getStatusEvents()) {
-                    if (origStatusHistory.getStatus().getId() != null
-                            && changedStatusHistory.getStatus().getId() != null
-                            && origStatusHistory.getStatus().getId().equals(changedStatusHistory.getStatus().getId())
-                            && origStatusHistory.getStatusDate().getTime() == changedStatusHistory.getStatusDate()
-                                    .getTime()) {
-                        foundMatchInChanged = true;
-                    }
-                }
-                hasChanged = hasChanged || !foundMatchInChanged;
-            }
-        }
-        return hasChanged;
-    }
-
     private List<DeveloperDTO> addTransparencyMappings(final List<DeveloperDTO> developers) {
         List<DeveloperACBMapDTO> transparencyMaps = developerDao.getAllTransparencyMappings();
         Map<Long, DeveloperDTO> mappedDevelopers = new HashMap<Long, DeveloperDTO>();
@@ -805,6 +760,7 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.HAS_STATUS));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.STATUS_MISSING_BAN_REASON));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.PRIOR_STATUS_ACTIVE));
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.EDIT_STATUS_HISTORY));
         return runValidations(rules, dto, null, beforeDev);
     }
 
