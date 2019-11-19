@@ -8,7 +8,7 @@ import gov.healthit.chpl.dto.ActivityDTO;
 
 /**
  * Creates an appropriate metadata buidler object for the type of activity.
- * 
+ *
  * @author kekey
  *
  */
@@ -29,6 +29,7 @@ public class ActivityMetadataBuilderFactory {
     private QuarterlyReportActivityMetadataBuilder quarterlyReportActivityMetadataBuilder;
     private AnnualReportActivityMetadataBuilder annualReportActivityMetadataBuilder;
     private ChangeRequestActivityMetadataBuilder changeRequestActivityMetadataBuilder;
+    private ApiKeyManagementReportActivityMetadataBuilder apiKeyManagementReportActivityMetadataBuilder;
 
     @Autowired
     public ActivityMetadataBuilderFactory(
@@ -46,7 +47,8 @@ public class ActivityMetadataBuilderFactory {
             @Qualifier("complaintActivityMetadataBuilder") final ComplaintActivityMetadataBuilder complaintActivityMetadataBuilder,
             @Qualifier("quarterlyReportActivityMetadataBuilder") final QuarterlyReportActivityMetadataBuilder quarterlyReportActivityMetadataBuilder,
             @Qualifier("annualReportActivityMetadataBuilder") final AnnualReportActivityMetadataBuilder annualReportActivityMetadataBuilder,
-            @Qualifier("changeRequestActivityMetadataBuilder") final ChangeRequestActivityMetadataBuilder changeRequestActivityMetadataBuilder) {
+            @Qualifier("changeRequestActivityMetadataBuilder") final ChangeRequestActivityMetadataBuilder changeRequestActivityMetadataBuilder,
+            @Qualifier("apiKeyManagementReportActivityMetadataBuilder") final ApiKeyManagementReportActivityMetadataBuilder apiKeyManagementReportActivityMetadataBuilder) {
         this.listingBuilder = listingBuilder;
         this.developerBuilder = developerBuilder;
         this.productBuilder = productBuilder;
@@ -62,12 +64,13 @@ public class ActivityMetadataBuilderFactory {
         this.quarterlyReportActivityMetadataBuilder = quarterlyReportActivityMetadataBuilder;
         this.annualReportActivityMetadataBuilder = annualReportActivityMetadataBuilder;
         this.changeRequestActivityMetadataBuilder = changeRequestActivityMetadataBuilder;
+        this.apiKeyManagementReportActivityMetadataBuilder = apiKeyManagementReportActivityMetadataBuilder;
     }
 
     /**
      * Factory method to get a metadata builder of the appropriate class based
      * on what type of activity object is passed in.
-     * 
+     *
      * @param dto
      *            the activity object
      * @return the appropriate builder
@@ -120,6 +123,9 @@ public class ActivityMetadataBuilderFactory {
             break;
         case CHANGE_REQUEST:
             builder = changeRequestActivityMetadataBuilder;
+            break;
+        case API_KEY:
+            builder = apiKeyManagementReportActivityMetadataBuilder;
             break;
         default:
             break;
