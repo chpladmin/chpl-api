@@ -40,6 +40,7 @@ import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.DimensionalData;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
+import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.SearchableDimensionalData;
 import gov.healthit.chpl.domain.TestFunctionality;
@@ -398,9 +399,9 @@ public class DimensionalDataManager {
         return templates;
     }
 
+    @Deprecated
     @Transactional
-    @Cacheable(value = CacheNames.MACRA_MEASURES)
-    public Set<CriteriaSpecificDescriptiveModel> getMacraMeasures() {
+    public Set<CriteriaSpecificDescriptiveModel> getMacraMeasuresDeprecated() {
         LOGGER.debug("Getting all macra measuresfrom the database (not cached).");
 
         List<MacraMeasureDTO> measureDtos = macraDao.findAll();
@@ -409,6 +410,19 @@ public class DimensionalDataManager {
         for (MacraMeasureDTO dto : measureDtos) {
             measures.add(new CriteriaSpecificDescriptiveModel(dto.getId(), dto.getValue(), dto.getName(),
                     dto.getDescription(), new CertificationCriterion(dto.getCriteria())));
+        }
+        return measures;
+    }
+
+    @Transactional
+    @Cacheable(value = CacheNames.MACRA_MEASURES)
+    public Set<MacraMeasure> getMacraMeasures() {
+        LOGGER.debug("Getting all macra measuresfrom the database (not cached).");
+
+        List<MacraMeasureDTO> measureDtos = macraDao.findAll();
+        Set<MacraMeasure> measures = new HashSet<MacraMeasure>();
+        for (MacraMeasureDTO dto : measureDtos) {
+            measures.add(new MacraMeasure(dto));
         }
         return measures;
     }
@@ -552,5 +566,4 @@ public class DimensionalDataManager {
         searchOptions.setCertificationCriterionNumbers(getCertificationCriterionNumbers());
         return searchOptions;
     }
-
 }

@@ -43,6 +43,7 @@ import gov.healthit.chpl.domain.DimensionalData;
 import gov.healthit.chpl.domain.FuzzyChoices;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
+import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.SearchOption;
 import gov.healthit.chpl.domain.SearchableDimensionalData;
 import gov.healthit.chpl.domain.TestFunctionality;
@@ -1104,13 +1105,28 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible macra measure options in the CHPL",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Use /data/macra-measures. "
+            + "Get all possible macra measure options in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/macra_measures", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody SearchOption getMacraMeasuresDeprecated() {
+        Set<CriteriaSpecificDescriptiveModel> data = dimensionalDataManager.getMacraMeasuresDeprecated();
+        SearchOption result = new SearchOption();
+        result.setExpandable(false);
+        result.setData(data);
+        return result;
+    }
+
+    @ApiOperation(value = "Get all possible macra measure options in the CHPL",
+            notes = "This is useful for knowing what values one might possibly search for.")
+    @RequestMapping(value = "/data/macra-measures", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getMacraMeasures() {
-        Set<CriteriaSpecificDescriptiveModel> data = dimensionalDataManager.getMacraMeasures();
+        Set<MacraMeasure> data = dimensionalDataManager.getMacraMeasures();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);

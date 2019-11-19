@@ -10,16 +10,16 @@ import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.PrivacyAndSecurityFrameworkConcept;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
 
 @Component("validDataReviewer")
 public class ValidDataReviewer implements Reviewer {
 
-    private CertifiedProductManager cpManager;
+    private ChplProductNumberUtil chplNumberUtil;
 
     @Autowired
-    public ValidDataReviewer(final @Lazy CertifiedProductManager cpManager) {
-        this.cpManager = cpManager;
+    public ValidDataReviewer(final @Lazy ChplProductNumberUtil chplNumberUtil) {
+        this.chplNumberUtil = chplNumberUtil;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class ValidDataReviewer implements Reviewer {
                     if (asDto.getCertifiedProductId() == null
                             && !StringUtils.isEmpty(asDto.getCertifiedProductNumber())) {
                         try {
-                            boolean exists = cpManager.chplIdExists(asDto.getCertifiedProductNumber());
+                            boolean exists = chplNumberUtil.chplIdExists(asDto.getCertifiedProductNumber());
                             if (!exists) {
                                 listing.getErrorMessages().add("No CHPL product was found matching additional software "
                                         + asDto.getCertifiedProductNumber() + " for " + cert.getNumber());

@@ -33,9 +33,8 @@ public class ChplNumberReviewer implements Reviewer {
      * and if the CHPL ID is changed, confirms that the new ID is unique.
      */
     public void review(final CertifiedProductSearchDetails listing) {
-        boolean productIdChanged = false;
-        String uniqueId = listing.getChplProductNumber();
-        String[] uniqueIdParts = uniqueId.split("\\.");
+        String origUniqueId = listing.getChplProductNumber();
+        String[] uniqueIdParts = origUniqueId.split("\\.");
         if (uniqueIdParts.length == ChplProductNumberUtil.CHPL_PRODUCT_ID_PARTS) {
             // validate that these pieces match up with data
             String additionalSoftwareCode = uniqueIdParts[ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_INDEX];
@@ -91,7 +90,6 @@ public class ChplNumberReviewer implements Reviewer {
                 if (!additionalSoftwareCode.equals(desiredAdditionalSoftwareCode)) {
                     updateChplProductNumber(listing, ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_INDEX,
                             desiredAdditionalSoftwareCode);
-                    productIdChanged = true;
                 }
             }
 
@@ -109,17 +107,19 @@ public class ChplNumberReviewer implements Reviewer {
                 // date
                 updateChplProductNumber(listing, ChplProductNumberUtil.CERTIFIED_DATE_CODE_INDEX,
                         desiredCertificationDateCode);
-                productIdChanged = true;
             }
         }
 
-        if (productIdChanged) {
+        String updatedUniqueId = listing.getChplProductNumber();
+        if (!origUniqueId.equals(updatedUniqueId)) {
             // make sure the unique id is really unique -
             // only check this if we know it changed
             // because if it hasn't changed there will be 1 product with its id (itself)
             if (!chplProductNumberUtil.isUnique(listing.getChplProductNumber())) {
-                listing.getErrorMessages().add("The id " + listing.getChplProductNumber()
-                + " must be unique among all other certified products but one already exists with this ID.");
+                listing.getErrorMessages().add(
+                        msgUtil.getMessage("listing.chplProductNumber.systemChangedNotUnique",
+                        origUniqueId,
+                        updatedUniqueId));
             }
         }
     }
