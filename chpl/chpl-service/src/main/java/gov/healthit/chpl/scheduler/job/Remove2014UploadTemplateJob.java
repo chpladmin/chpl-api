@@ -13,6 +13,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.UploadTemplateVersionDAO;
 import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
+import net.sf.ehcache.CacheManager;
 
 /**
  * Job that can be scheduled to mark all 2014 upload templates as deleted.
@@ -40,6 +41,8 @@ public class Remove2014UploadTemplateJob implements Job {
             }
         } catch (final Exception e) {
             LOGGER.error(e);
+        } finally {
+            CacheManager.getInstance().clearAll();
         }
         LOGGER.info("********* Completed the Remove 2014 Upload Template job. *********");
     }
