@@ -6,14 +6,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -25,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -92,7 +89,6 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
     private ErrorMessageUtil msgUtil;
     private ResourcePermissions resourcePermissions;
     private DeveloperValidationFactory developerValidationFactory;
-    private FF4j ff4j;
 
     /**
      * Autowired constructor for dependency injection.
@@ -117,7 +113,7 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
             final CertifiedProductDAO certifiedProductDAO, final ChplProductNumberUtil chplProductNumberUtil,
             final ActivityManager activityManager, final ErrorMessageUtil msgUtil,
             final ResourcePermissions resourcePermissions,
-            final DeveloperValidationFactory developerValidationFactory, FF4j ff4j) {
+            final DeveloperValidationFactory developerValidationFactory) {
         this.developerDao = developerDao;
         this.productManager = productManager;
         this.acbManager = acbManager;
@@ -130,7 +126,6 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
         this.msgUtil = msgUtil;
         this.resourcePermissions = resourcePermissions;
         this.developerValidationFactory = developerValidationFactory;
-        this.ff4j = ff4j;
     }
 
     @Override
@@ -216,24 +211,14 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
     public DeveloperDTO update(final DeveloperDTO updatedDev, final boolean doValidation)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, MissingReasonException,
             ValidationException {
+        DeveloperDTO beforeDev = getById(updatedDev.getId());
         if (doValidation) {
             // validation is not done during listing update -> developer ban
             // but should be done at other times
             Set<String> errors = runUpdateValidations(updatedDev);
+            errors.addAll(runChangeValidations(updatedDev, beforeDev));
             if (errors != null && errors.size() > 0) {
                 throw new ValidationException(errors);
-            }
-        }
-
-        DeveloperDTO beforeDev = getById(updatedDev.getId());
-
-        // ROLE_ACB cannot edit Transparency Attestation as per OCD-3164
-        if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)) {
-            if (resourcePermissions.isUserRoleAcbAdmin()) {
-                if (isTransparencyAttestationUpdated(beforeDev, updatedDev)) {
-                    String msg = msgUtil.getMessage("developer.transparencyAttestationEditNotAllowedForRoleACB");
-                    throw new EntityCreationException(msg);
-                }
             }
         }
 
@@ -796,25 +781,6 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
         }
     }
 
-    private static boolean isTransparencyAttestationUpdated(final DeveloperDTO original, final DeveloperDTO changed) {
-        if ((original.getTransparencyAttestationMappings() != null && changed.getTransparencyAttestationMappings() == null)
-                || (original.getTransparencyAttestationMappings() == null && changed.getTransparencyAttestationMappings() != null)
-                || (original.getTransparencyAttestationMappings().size() != changed.getTransparencyAttestationMappings().size())) {
-            return true;
-        } else {
-            for (DeveloperACBMapDTO originalMapping : original.getTransparencyAttestationMappings()) {
-                for (DeveloperACBMapDTO changedMapping : changed.getTransparencyAttestationMappings()) {
-                    if (!Objects.equals(originalMapping.getAcbName(), changedMapping.getAcbName())
-                            || !Objects.equals(originalMapping.getTransparencyAttestation(),
-                                    changedMapping.getTransparencyAttestation())) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
     @Override
     public void validateDeveloperInSystemIfExists(final PendingCertifiedProductDetails pendingCp)
             throws EntityRetrievalException, ValidationException {
@@ -859,6 +825,13 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
         return runValidations(rules, dto);
     }
 
+    private Set<String> runChangeValidations(final DeveloperDTO dto, final DeveloperDTO beforeDev) {
+        List<ValidationRule<DeveloperValidationContext>> rules = new ArrayList<ValidationRule<DeveloperValidationContext>>();
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.EDIT_TRANSPARENCY_ATTESTATION));
+        // TODO-DB: Add the others from update method here...
+        return runValidations(rules, dto, null, beforeDev);
+    }
+
     private Set<String> runCreateValidations(final DeveloperDTO dto) {
         List<ValidationRule<DeveloperValidationContext>> rules = new ArrayList<ValidationRule<DeveloperValidationContext>>();
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.NAME));
@@ -885,8 +858,13 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
 
     private Set<String> runValidations(final List<ValidationRule<DeveloperValidationContext>> rules,
             final DeveloperDTO dto, final String pendingAcbName) {
+        return runValidations(rules, dto, pendingAcbName, null);
+    }
+
+    private Set<String> runValidations(final List<ValidationRule<DeveloperValidationContext>> rules,
+            final DeveloperDTO dto, final String pendingAcbName, final DeveloperDTO beforeDev) {
         Set<String> errorMessages = new HashSet<String>();
-        DeveloperValidationContext context = new DeveloperValidationContext(dto, msgUtil, pendingAcbName);
+        DeveloperValidationContext context = new DeveloperValidationContext(dto, msgUtil, pendingAcbName, beforeDev);
 
         for (ValidationRule<DeveloperValidationContext> rule : rules) {
             if (!rule.isValid(context)) {

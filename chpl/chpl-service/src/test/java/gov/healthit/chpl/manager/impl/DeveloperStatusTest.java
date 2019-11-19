@@ -111,7 +111,7 @@ public class DeveloperStatusTest {
         MockitoAnnotations.initMocks(this);
         developerManager = new DeveloperManagerImpl(devDao, productManager, acbManager, cpManager, cpdManager,
                 certificationBodyDao, certifiedProductDao, chplProductNumberUtil, activityManager, msgUtil,
-                permissionChecker, developerValidationFactory, ff4j);
+                permissionChecker, developerValidationFactory);
 
         Mockito.when(permissionChecker.getAllAcbsForCurrentUser()).thenReturn(new ArrayList<CertificationBodyDTO>());
         Mockito.when(acbManager.getAll()).thenReturn(new ArrayList<CertificationBodyDTO>());

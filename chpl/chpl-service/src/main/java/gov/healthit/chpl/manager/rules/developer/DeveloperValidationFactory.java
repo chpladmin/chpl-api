@@ -1,8 +1,11 @@
 package gov.healthit.chpl.manager.rules.developer;
 
+import org.ff4j.FF4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.manager.rules.ValidationRule;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 
 @Component
 public class DeveloperValidationFactory {
@@ -13,6 +16,16 @@ public class DeveloperValidationFactory {
     public static final String ADDRESS = "ADDRESS";
     public static final String TRANSPARENCY_ATTESTATION = "TRANSPARENCY_ATTESTATION";
     public static final String STATUS_EVENTS = "STATUS_EVENTS";
+    public static final String EDIT_TRANSPARENCY_ATTESTATION = "EDIT_TRANSPARENCY_ATTESTATION";
+
+    private FF4j ff4j;
+    private ResourcePermissions resourcePermissions;
+
+    @Autowired
+    public DeveloperValidationFactory(final FF4j ff4j, final ResourcePermissions resourcePermissions) {
+        this.ff4j = ff4j;
+        this.resourcePermissions = resourcePermissions;
+    }
 
     public ValidationRule<DeveloperValidationContext> getRule(String name) {
         switch (name) {
@@ -30,6 +43,8 @@ public class DeveloperValidationFactory {
             return new DeveloperTransparencyAttestationValidation();
         case STATUS_EVENTS:
             return new DeveloperStatusEventsValidation();
+        case EDIT_TRANSPARENCY_ATTESTATION:
+            return new DeveloperEditTransparencyAttestationValidation(ff4j, resourcePermissions);
         default:
             return null;
         }
