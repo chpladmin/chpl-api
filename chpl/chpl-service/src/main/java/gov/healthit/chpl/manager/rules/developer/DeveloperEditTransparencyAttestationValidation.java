@@ -12,7 +12,6 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class DeveloperEditTransparencyAttestationValidation extends ValidationRule<DeveloperValidationContext> {
-
     private FF4j ff4j;
     private ResourcePermissions resourcePermissions;
 
@@ -61,5 +60,4 @@ public class DeveloperEditTransparencyAttestationValidation extends ValidationRu
         }
         return false;
     }
-
 }

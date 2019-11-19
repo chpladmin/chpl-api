@@ -61,7 +61,6 @@ import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.manager.rules.developer.DeveloperValidationContext;
 import gov.healthit.chpl.manager.rules.developer.DeveloperValidationFactory;
 import gov.healthit.chpl.permissions.ResourcePermissions;
-import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -225,16 +224,6 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
         // TODO-DB: Remove these 2 declarations after all subsequent routines are externalized to validation
         DeveloperStatusEventDTO newDevStatus = updatedDev.getStatus();
         DeveloperStatusEventDTO currDevStatus = beforeDev.getStatus();
-
-        // if the before status is not Active and the user is not ROLE_ADMIN
-        // then nothing can be changed
-        if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
-                && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
-            String msg = msgUtil.getMessage("developer.notActiveNotAdminCantChangeStatus", AuthUtil.getUsername(),
-                    beforeDev.getName());
-            LOGGER.error(msg);
-            throw new EntityCreationException(msg);
-        }
 
         // if the status history has been modified, the user must be role admin
         // except that an acb admin can change to UnderCertificationBanByOnc
@@ -815,6 +804,7 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.EDIT_TRANSPARENCY_ATTESTATION));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.HAS_STATUS));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.STATUS_MISSING_BAN_REASON));
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.PRIOR_STATUS_ACTIVE));
         return runValidations(rules, dto, null, beforeDev);
     }
 
