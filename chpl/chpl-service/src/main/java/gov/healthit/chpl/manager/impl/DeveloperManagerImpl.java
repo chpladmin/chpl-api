@@ -226,17 +226,6 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
         DeveloperStatusEventDTO newDevStatus = updatedDev.getStatus();
         DeveloperStatusEventDTO currDevStatus = beforeDev.getStatus();
 
-        // if any of the statuses (new, old, or any other status in the history)
-        // is Under Certification Ban by ONC make sure there is a reason given
-        for (DeveloperStatusEventDTO statusEvent : updatedDev.getStatusEvents()) {
-            if (statusEvent.getStatus().getStatusName()
-                    .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
-                    && StringUtils.isEmpty(statusEvent.getReason())) {
-                throw new MissingReasonException(msgUtil.getMessage("developer.missingReasonForBan",
-                        DeveloperStatusType.UnderCertificationBanByOnc.toString()));
-            }
-        }
-
         // if the before status is not Active and the user is not ROLE_ADMIN
         // then nothing can be changed
         if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
@@ -824,8 +813,8 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
     private Set<String> runChangeValidations(final DeveloperDTO dto, final DeveloperDTO beforeDev) {
         List<ValidationRule<DeveloperValidationContext>> rules = new ArrayList<ValidationRule<DeveloperValidationContext>>();
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.EDIT_TRANSPARENCY_ATTESTATION));
-        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.HAS_STATUS_VALIDATION));
-        // TODO-DB: Add the others from update method here...
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.HAS_STATUS));
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.STATUS_MISSING_BAN_REASON));
         return runValidations(rules, dto, null, beforeDev);
     }
 
