@@ -7,14 +7,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.ff4j.FF4j;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,7 +27,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.UnitTestUtil;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
@@ -58,9 +53,6 @@ public class SurveillanceReportControllerAnnualReportsTest {
     @Autowired
     private SurveillanceReportController reportController;
 
-    @Autowired
-    private FF4j ff4j;
-
     @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
@@ -80,12 +72,6 @@ public class SurveillanceReportControllerAnnualReportsTest {
         acbUser.setFriendlyName("User3");
         acbUser.setSubjectName("testUser3");
         acbUser.getPermissions().add(new GrantedPermission("ROLE_ACB"));
-    }
-
-    @Before
-    public void setup() {
-        MockitoAnnotations.initMocks(this);
-        Mockito.doReturn(true).when(ff4j).check(FeatureList.SURVEILLANCE_REPORTING);
     }
 
     @Transactional

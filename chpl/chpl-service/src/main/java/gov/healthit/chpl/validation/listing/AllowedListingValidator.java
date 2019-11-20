@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
 /**
@@ -17,12 +18,18 @@ import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 public class AllowedListingValidator extends Validator {
 
     private List<Reviewer> reviewers;
+    private List<ComparisonReviewer> comparisonReviewers;
 
     public AllowedListingValidator() {
         reviewers = new ArrayList<Reviewer>();
+        comparisonReviewers = new ArrayList<ComparisonReviewer>();
     }
 
     public List<Reviewer> getReviewers() {
         return reviewers;
+    }
+
+    public List<ComparisonReviewer> getComparisonReviewers() {
+        return comparisonReviewers;
     }
 }

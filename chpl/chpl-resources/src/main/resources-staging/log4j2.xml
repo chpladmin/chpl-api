@@ -247,6 +247,17 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <RollingFile name="removeCriteriaJob"
+            fileName="${logDir}/scheduler/removeCriteriaJob.log"
+            filePattern="${logDir}/scheduler/history/removeCriteriaJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
     </Appenders>
     <Loggers>
         <Logger name="org.jose4j" level="ERROR" additivity="false">
@@ -346,6 +357,10 @@
         <Logger name="updateListingStatusJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="updateListingStatusJob" />
+        </Logger>
+        <Logger name="removeCriteriaJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="removeCriteriaJob" />
         </Logger>
     </Loggers>
 </Configuration>
