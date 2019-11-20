@@ -10,7 +10,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class DeveloperStatusMissingBanReasonValidation extends ValidationRule<DeveloperValidationContext> {
     /**
-     * if any of the statuses (new, old, or any other status in the history) is
+     * If any of the statuses (new, old, or any other status in the history) is
      * Under Certification Ban by ONC make sure there is a reason given
      */
     @Override

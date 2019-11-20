@@ -46,7 +46,6 @@ import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.AttestationType;
-import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.MissingReasonException;
@@ -211,6 +210,7 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, MissingReasonException,
             ValidationException {
         DeveloperDTO beforeDev = getById(updatedDev.getId());
+
         if (doValidation) {
             // validation is not done during listing update -> developer ban
             // but should be done at other times
@@ -221,39 +221,13 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
             }
         }
 
-        // TODO-DB: Remove these 2 declarations after all subsequent routines are externalized to validation
-        DeveloperStatusEventDTO newDevStatus = updatedDev.getStatus();
-        DeveloperStatusEventDTO currDevStatus = beforeDev.getStatus();
-
-        // determine if the status has been changed in most cases only allowed by ROLE_ADMIN but ROLE_ACB
-        // can change it to UnderCertificationBanByOnc
-        boolean currentStatusChanged = !currDevStatus.getStatus().getStatusName()
-                .equals(newDevStatus.getStatus().getStatusName());
-        if (currentStatusChanged
-                && !newDevStatus.getStatus().getStatusName()
-                        .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
-                && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
-            String msg = msgUtil.getMessage("developer.statusChangeNotAllowedWithoutAdmin");
-            throw new EntityCreationException(msg);
-        } else {
-            /*
-             * Check to see that the Developer's website is valid.
-             */
-            if (!StringUtils.isEmpty(updatedDev.getWebsite())) {
-                if (!ValidationUtils.isWellFormedUrl(updatedDev.getWebsite())) {
-                    String msg = msgUtil.getMessage("developer.websiteIsInvalid");
-                    throw new EntityCreationException(msg);
-                }
-            }
-
-            if (beforeDev.getContact() != null && beforeDev.getContact().getId() != null) {
-                updatedDev.getContact().setId(beforeDev.getContact().getId());
-            }
-
-            developerDao.update(updatedDev);
-            updateStatusHistory(beforeDev, updatedDev);
-            createOrUpdateTransparencyMappings(updatedDev);
+        if (beforeDev.getContact() != null && beforeDev.getContact().getId() != null) {
+            updatedDev.getContact().setId(beforeDev.getContact().getId());
         }
+        developerDao.update(updatedDev);
+        updateStatusHistory(beforeDev, updatedDev);
+        createOrUpdateTransparencyMappings(updatedDev);
+
         DeveloperDTO after = getById(updatedDev.getId());
         activityManager.addActivity(ActivityConcept.DEVELOPER, after.getId(),
                 "Developer " + updatedDev.getName() + " was updated.", beforeDev, after);
@@ -761,6 +735,7 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.STATUS_MISSING_BAN_REASON));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.PRIOR_STATUS_ACTIVE));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.EDIT_STATUS_HISTORY));
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.STATUS_CHANGED));
         return runValidations(rules, dto, null, beforeDev);
     }
 

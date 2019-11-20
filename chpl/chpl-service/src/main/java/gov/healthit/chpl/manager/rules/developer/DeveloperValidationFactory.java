@@ -16,11 +16,13 @@ public class DeveloperValidationFactory {
     public static final String ADDRESS = "ADDRESS";
     public static final String TRANSPARENCY_ATTESTATION = "TRANSPARENCY_ATTESTATION";
     public static final String STATUS_EVENTS = "STATUS_EVENTS";
+
     public static final String EDIT_TRANSPARENCY_ATTESTATION = "EDIT_TRANSPARENCY_ATTESTATION";
     public static final String HAS_STATUS = "HAS_STATUS";
     public static final String STATUS_MISSING_BAN_REASON = "STATUS_MISSING_BAN_REASON";
     public static final String PRIOR_STATUS_ACTIVE = "PRIOR_STATUS_ACTIVE";
     public static final String EDIT_STATUS_HISTORY = "EDIT_STATUS_HISTORY";
+    public static final String STATUS_CHANGED = "STATUS_CHANGED";
 
     private FF4j ff4j;
     private ResourcePermissions resourcePermissions;
@@ -57,6 +59,8 @@ public class DeveloperValidationFactory {
             return new DeveloperPriorStatusActiveValidation(resourcePermissions);
         case EDIT_STATUS_HISTORY:
             return new DeveloperEditStatusHistoryValidation(resourcePermissions);
+        case STATUS_CHANGED:
+            return new DeveloperStatusChangedValidation(resourcePermissions);
         default:
             return null;
         }
