@@ -21,9 +21,6 @@ public class DeveloperEditTransparencyAttestationValidation extends ValidationRu
         this.resourcePermissions = resourcePermissions;
     }
 
-    /**
-     * ROLE_ACB cannot edit Transparency Attestation as per OCD-3164
-     */
     @Override
     public boolean isValid(DeveloperValidationContext context) {
         ErrorMessageUtil msgUtil = context.getErrorMessageUtil();
