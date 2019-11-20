@@ -19,10 +19,6 @@ public class DeveloperPriorStatusActiveValidation extends ValidationRule<Develop
         this.resourcePermissions = resourcePermissions;
     }
 
-    /**
-     * If the before status is not Active and the user is not ROLE_ADMIN then
-     * nothing can be changed
-     */
     @Override
     public boolean isValid(DeveloperValidationContext context) {
         ErrorMessageUtil msgUtil = context.getErrorMessageUtil();
