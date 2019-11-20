@@ -50,7 +50,6 @@ public class ChplRepeatableTrigger extends ChplTrigger implements Serializable {
         getJob().setDescription("");
         getJob().setGroup(quartzTrigger.getJobKey().getGroup());
         getJob().setName(quartzTrigger.getJobKey().getName());
-        // getJob().setJobDataMap(mergeJobData(quartzTrigger, getJob()));
         this.cronSchedule = quartzTrigger.getCronExpression();
         this.email = quartzTrigger.getJobDataMap().getString("email");
         this.acb = quartzTrigger.getJobDataMap().getString("acb");

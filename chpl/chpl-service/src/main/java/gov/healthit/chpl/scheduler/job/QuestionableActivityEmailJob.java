@@ -88,9 +88,10 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         LOGGER.info("********* Starting the Questionable Activity Email job. *********");
         LOGGER.info("Creating questionable activity email for: " + jobContext.getMergedJobDataMap().getString("email"));
 
+        Integer range = getRangeInDays(jobContext);
         Calendar end = Calendar.getInstance();
         Calendar start = Calendar.getInstance();
-        start.add(Calendar.DAY_OF_MONTH, -7);
+        start.add(Calendar.DAY_OF_MONTH, range);
         List<List<String>> csvRows = getAppropriateActivities(jobContext, start.getTime(), end.getTime());
         String to = jobContext.getMergedJobDataMap().getString("email");
         String subject = props.getProperty("questionableActivityEmailSubject");
@@ -131,6 +132,14 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             LOGGER.error(e);
         }
         LOGGER.info("********* Completed the Questionable Activity Email job. *********");
+    }
+
+    private Integer getRangeInDays(final JobExecutionContext jobContext) {
+        Integer range = 7;
+        if (jobContext.getMergedJobDataMap().containsKey("range")) {
+            range = jobContext.getMergedJobDataMap().getInt("range");
+        }
+        return range * -1;
     }
 
     private List<List<String>> getAppropriateActivities(final JobExecutionContext jobContext,
