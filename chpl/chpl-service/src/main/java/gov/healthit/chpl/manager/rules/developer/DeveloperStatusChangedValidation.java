@@ -24,10 +24,6 @@ public class DeveloperStatusChangedValidation extends ValidationRule<DeveloperVa
         this.resourcePermissions = resourcePermissions;
     }
 
-    /**
-     * determine if the status has been changed in most cases only allowed by
-     * ROLE_ADMIN but ROLE_ACB can change it to UnderCertificationBanByOnc
-     */
     @Override
     public boolean isValid(DeveloperValidationContext context) {
         ErrorMessageUtil msgUtil = context.getErrorMessageUtil();
