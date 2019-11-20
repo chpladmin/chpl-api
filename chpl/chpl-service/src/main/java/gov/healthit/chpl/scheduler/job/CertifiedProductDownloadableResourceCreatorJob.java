@@ -104,8 +104,8 @@ extends DownloadableResourceCreatorJob implements InterruptableJob {
         csvPresenter.setLogger(LOGGER);
         List<CertificationCriterionDTO> criteria = getCriteriaDao().findByCertificationEditionYear(edition)
                 .stream()
-                .filter(cr -> cr.getId() % 5 == 0) //!cr.getRemoved()
-                .collect(Collectors.<CertificationCriterionDTO> toList());
+                .filter(cr -> !cr.getRemoved())
+                .collect(Collectors.<CertificationCriterionDTO>toList());
         csvPresenter.setApplicableCriteria(criteria);
         csvPresenter.open(getCsvFile());
     }

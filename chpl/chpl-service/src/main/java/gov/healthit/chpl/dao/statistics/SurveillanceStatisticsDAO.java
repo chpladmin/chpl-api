@@ -223,19 +223,12 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
      * @return a list of the DTOs that hold the counts
      */
     public List<NonconformityTypeStatisticsDTO> getAllNonconformitiesByCriterion() {
-        /* to be used when "removed" exists
-        String hql = "SELECT COUNT(type), type "
+        String hql = "SELECT COUNT(sne.type), sne.type "
                 + "FROM SurveillanceNonconformityEntity sne "
-                + "LEFT JOIN CertificationCriterionEntity cce "
+                + "LEFT JOIN sne.certificationCriterionEntity cce "
                 + "WHERE sne.deleted = false "
                 + "AND ((cce is not NULL AND cce.removed = false) OR cce is NULL) "
-                + "GROUP BY type";
-                */
-        String hql = "SELECT COUNT(type), type "
-                + "FROM SurveillanceNonconformityEntity sne "
-                + "LEFT JOIN CertificationCriterionEntity cce "
-                + "WHERE sne.deleted = false "
-                + "GROUP BY type";
+                + "GROUP BY sne.type";
         Query query = entityManager.createQuery(hql);
 
         List<Object[]> entities = query.getResultList();

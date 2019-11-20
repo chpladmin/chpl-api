@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -111,8 +110,7 @@ public class CriterionProductStatisticsCalculator {
         List<CriterionProductStatisticsEntity> entities = new ArrayList<CriterionProductStatisticsEntity>();
         for (Entry<String, Long> entry : productCounts.entrySet()) {
             CertificationCriterionDTO criterion = certificationCriterionDAO.getByName(entry.getKey());
-            //TODO - get the other code working
-            if (criterion.getId() % 5 == 0) { //!criterion.getRemoved()) {
+            if (!criterion.getRemoved()) {
                 CriterionProductStatisticsEntity entity = new CriterionProductStatisticsEntity();
                 entity.setProductCount(entry.getValue());
                 entity.setCertificationCriterionId(criterion.getId());
