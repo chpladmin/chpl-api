@@ -1,7 +1,5 @@
 package gov.healthit.chpl.manager.rules.developer;
 
-import org.apache.commons.lang.StringUtils;
-
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
@@ -10,7 +8,6 @@ import gov.healthit.chpl.manager.impl.DeveloperManagerImpl;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.util.ValidationUtils;
 
 public class DeveloperStatusChangedValidation extends ValidationRule<DeveloperValidationContext> {
     private ResourcePermissions resourcePermissions;
@@ -41,14 +38,6 @@ public class DeveloperStatusChangedValidation extends ValidationRule<DeveloperVa
             String msg = msgUtil.getMessage("developer.statusChangeNotAllowedWithoutAdmin");
             getMessages().add(msg);
             return false;
-        }
-        // Check to see that the Developer's website is valid.
-        if (!StringUtils.isEmpty(updatedDev.getWebsite())) {
-            if (!ValidationUtils.isWellFormedUrl(updatedDev.getWebsite())) {
-                String msg = msgUtil.getMessage("developer.websiteIsInvalid");
-                getMessages().add(msg);
-                return false;
-            }
         }
         return true;
     }
