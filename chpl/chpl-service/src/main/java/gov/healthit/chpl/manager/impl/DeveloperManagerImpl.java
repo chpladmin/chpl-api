@@ -48,7 +48,6 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
@@ -207,8 +206,7 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
             CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
     public DeveloperDTO update(final DeveloperDTO updatedDev, final boolean doValidation)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, MissingReasonException,
-            ValidationException {
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
         DeveloperDTO beforeDev = getById(updatedDev.getId());
 
         if (doValidation) {

@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.Date;
 
-import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -76,9 +75,6 @@ public class DeveloperStatusTest {
 
     @Autowired
     private DeveloperValidationFactory developerValidationFactory;
-
-    @Autowired
-    private FF4j ff4j;
 
     @Spy
     private DeveloperDAO devDao;
