@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.quartz.CronTrigger;
+import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
@@ -76,12 +77,23 @@ public class SchedulerManagerImpl extends SecuredManager implements SchedulerMan
         if (doesUserHavePermissionToJob(scheduler.getJobDetail(jobId))) {
             Trigger qzTrigger = null;
             if (trigger.getJob().getJobDataMap().getBooleanValue("acbSpecific")) {
-                qzTrigger = newTrigger().withIdentity(triggerId).startNow().forJob(jobId)
-                        .usingJobData("email", trigger.getEmail()).usingJobData("acb", trigger.getAcb())
-                        .withSchedule(cronSchedule(trigger.getCronSchedule())).build();
+                qzTrigger = newTrigger()
+                        .withIdentity(triggerId)
+                        .startNow()
+                        .forJob(jobId)
+                        .usingJobData("email", trigger.getEmail())
+                        .usingJobData("acb", trigger.getAcb())
+                        .usingJobData(trigger.getJob().getJobDataMap())
+                        .withSchedule(cronSchedule(trigger.getCronSchedule()))
+                        .build();
             } else {
-                qzTrigger = newTrigger().withIdentity(triggerId).startNow().forJob(jobId)
-                        .usingJobData("email", trigger.getEmail()).withSchedule(cronSchedule(trigger.getCronSchedule()))
+                qzTrigger = newTrigger()
+                        .withIdentity(triggerId)
+                        .startNow()
+                        .forJob(jobId)
+                        .usingJobData("email", trigger.getEmail())
+                        .usingJobData(trigger.getJob().getJobDataMap())
+                        .withSchedule(cronSchedule(trigger.getCronSchedule()))
                         .build();
             }
 
@@ -162,12 +174,23 @@ public class SchedulerManagerImpl extends SecuredManager implements SchedulerMan
         Trigger qzTrigger = null;
         if (doesUserHavePermissionToTrigger(oldTrigger)) {
             if (trigger.getJob().getJobDataMap().getBooleanValue("acbSpecific")) {
-                qzTrigger = newTrigger().withIdentity(oldTrigger.getKey()).startNow().forJob(oldTrigger.getJobKey())
-                        .usingJobData(oldTrigger.getJobDataMap()).usingJobData("acb", trigger.getAcb())
-                        .withSchedule(cronSchedule(trigger.getCronSchedule())).build();
+                qzTrigger = newTrigger()
+                        .withIdentity(oldTrigger.getKey())
+                        .startNow()
+                        .forJob(oldTrigger.getJobKey())
+                        .usingJobData(trigger.getJob().getJobDataMap())
+                        .usingJobData("acb", trigger.getAcb())
+                        .withSchedule(cronSchedule(trigger.getCronSchedule()))
+                        .build();
             } else {
-                qzTrigger = newTrigger().withIdentity(oldTrigger.getKey()).startNow().forJob(oldTrigger.getJobKey())
-                        .usingJobData(oldTrigger.getJobDataMap()).withSchedule(cronSchedule(trigger.getCronSchedule()))
+                JobDataMap mergedMap = new JobDataMap(oldTrigger.getJobDataMap());
+                mergedMap.putAll(trigger.getJob().getJobDataMap());
+                qzTrigger = newTrigger()
+                        .withIdentity(oldTrigger.getKey())
+                        .startNow()
+                        .forJob(oldTrigger.getJobKey())
+                        .usingJobData(mergedMap)
+                        .withSchedule(cronSchedule(trigger.getCronSchedule()))
                         .build();
             }
             scheduler.rescheduleJob(oldTrigger.getKey(), qzTrigger);
@@ -304,9 +327,9 @@ public class SchedulerManagerImpl extends SecuredManager implements SchedulerMan
         ChplRepeatableTrigger chplTrigger = new ChplRepeatableTrigger(
                 (CronTrigger) getScheduler().getTrigger(triggerKey));
 
-        JobDetail jobDetail = getScheduler().getJobDetail(getScheduler().getTrigger(triggerKey).getJobKey());
-        ChplJob chplJob = new ChplJob(jobDetail);
-        chplTrigger.setJob(chplJob);
+        // JobDetail jobDetail = getScheduler().getJobDetail(getScheduler().getTrigger(triggerKey).getJobKey());
+        // ChplJob chplJob = new ChplJob(jobDetail);
+        // chplTrigger.setJob(chplJob);
         return chplTrigger;
     }
 

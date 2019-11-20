@@ -3,6 +3,8 @@ package gov.healthit.chpl.domain.schedule;
 import java.io.Serializable;
 
 import org.quartz.CronTrigger;
+import org.quartz.JobDataMap;
+import org.quartz.Trigger;
 
 /**
  * Basic representation of Quartz Triggers.
@@ -50,9 +52,22 @@ public class ChplRepeatableTrigger extends ChplTrigger implements Serializable {
         getJob().setDescription("");
         getJob().setGroup(quartzTrigger.getJobKey().getGroup());
         getJob().setName(quartzTrigger.getJobKey().getName());
+        getJob().setJobDataMap(mergeJobData(quartzTrigger, getJob()));
         this.cronSchedule = quartzTrigger.getCronExpression();
         this.email = quartzTrigger.getJobDataMap().getString("email");
         this.acb = quartzTrigger.getJobDataMap().getString("acb");
+    }
+
+    private JobDataMap mergeJobData(Trigger trigger, ChplJob job) {
+        JobDataMap merged = new JobDataMap();
+        if (job.getJobDataMap() != null) {
+            merged.putAll(job.getJobDataMap());
+        }
+        if (trigger.getJobDataMap() != null) {
+            merged.putAll(trigger.getJobDataMap());
+        }
+
+        return merged;
     }
 
     public String getName() {
