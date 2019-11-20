@@ -205,18 +205,22 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
-    public DeveloperDTO update(final DeveloperDTO updatedDev, final boolean doValidation)
+    public DeveloperDTO update(final DeveloperDTO updatedDev, final boolean doUpdateValidations)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
         DeveloperDTO beforeDev = getById(updatedDev.getId());
 
-        if (doValidation) {
-            // validation is not done during listing update -> developer ban
-            // but should be done at other times
-            Set<String> errors = runUpdateValidations(updatedDev);
-            errors.addAll(runChangeValidations(updatedDev, beforeDev));
-            if (errors != null && errors.size() > 0) {
-                throw new ValidationException(errors);
-            }
+        Set<String> errors = null;
+        if (doUpdateValidations) {
+            // update validations are not done during listing update -> developer ban
+            // but should be done at other times, with some possible exceptions
+            errors = runUpdateValidations(updatedDev);
+        }
+        if (errors == null) {
+            errors = new HashSet<String>();
+        }
+        errors.addAll(runChangeValidations(updatedDev, beforeDev));
+        if (errors.size() > 0) {
+            throw new ValidationException(errors);
         }
 
         if (beforeDev.getContact() != null && beforeDev.getContact().getId() != null) {
