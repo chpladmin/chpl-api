@@ -337,13 +337,12 @@ public class SchedulerManagerImpl extends SecuredManager implements SchedulerMan
 
     private JobDataMap mergeJobData(Trigger trigger, ChplJob job) {
         JobDataMap merged = new JobDataMap();
-        if (job.getJobDataMap() != null) {
-            merged.putAll(job.getJobDataMap());
-        }
         if (trigger.getJobDataMap() != null) {
             merged.putAll(trigger.getJobDataMap());
         }
-
+        if (job.getJobDataMap() != null) {
+            merged.putAll(job.getJobDataMap());
+        }
         return merged;
     }
 
