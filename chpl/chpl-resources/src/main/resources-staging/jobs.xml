@@ -452,7 +452,7 @@
                 </entry>
                 <entry>
                     <key>parameters</key>
-                    <value>[{"label": "Range (in days)", "key": "range", "type": "int"} ]</value>
+                    <value>[{"label": "Range (in days)", "key": "range", "type": "int", "min": "7"} ]</value>
                 </entry>
             </job-data-map>
         </job>
