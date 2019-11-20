@@ -217,7 +217,8 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
     }
 
     private boolean isCertificationDateAfterRuleEffectiveDate(CertifiedProductSearchDetails listing) {
-        return new Date(listing.getCertificationDate()).after(curesRuleEffectiveDate);
+        Date certDate = new Date(listing.getCertificationDate());
+        return certDate.equals(curesRuleEffectiveDate) || certDate.after(curesRuleEffectiveDate);
     }
 
     private Date getCuresRuleEffectiveDate() {
