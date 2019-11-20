@@ -395,8 +395,12 @@
                     <value>WEEKLY</value>
                 </entry>
                 <entry>
+                    <key>range</key>
+                    <value>7</value>
+                </entry>
+                <entry>
                     <key>parameters</key>
-                    <value>[{"label": "Range (in days)", "key": "range", "type": "int", "intialValue": "7"} ]</value>
+                    <value>[{"label": "Range (in days)", "key": "range", "type": "int"} ]</value>
                 </entry>
             </job-data-map>
         </job>

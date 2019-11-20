@@ -324,13 +324,27 @@ public class SchedulerManagerImpl extends SecuredManager implements SchedulerMan
     }
 
     private ChplRepeatableTrigger getChplTrigger(final TriggerKey triggerKey) throws SchedulerException {
-        ChplRepeatableTrigger chplTrigger = new ChplRepeatableTrigger(
-                (CronTrigger) getScheduler().getTrigger(triggerKey));
+        CronTrigger cronTrigger = (CronTrigger) getScheduler().getTrigger(triggerKey);
+        ChplRepeatableTrigger chplTrigger = new ChplRepeatableTrigger(cronTrigger);
 
-        // JobDetail jobDetail = getScheduler().getJobDetail(getScheduler().getTrigger(triggerKey).getJobKey());
-        // ChplJob chplJob = new ChplJob(jobDetail);
-        // chplTrigger.setJob(chplJob);
+        JobDetail jobDetail = getScheduler().getJobDetail(getScheduler().getTrigger(triggerKey).getJobKey());
+        ChplJob chplJob = new ChplJob(jobDetail);
+        chplTrigger.setJob(chplJob);
+        chplTrigger.getJob().setJobDataMap(mergeJobData(cronTrigger, chplJob));
+
         return chplTrigger;
+    }
+
+    private JobDataMap mergeJobData(Trigger trigger, ChplJob job) {
+        JobDataMap merged = new JobDataMap();
+        if (job.getJobDataMap() != null) {
+            merged.putAll(job.getJobDataMap());
+        }
+        if (trigger.getJobDataMap() != null) {
+            merged.putAll(trigger.getJobDataMap());
+        }
+
+        return merged;
     }
 
     private Boolean doesUserHavePermissionToJob(final JobDetail jobDetail) {
