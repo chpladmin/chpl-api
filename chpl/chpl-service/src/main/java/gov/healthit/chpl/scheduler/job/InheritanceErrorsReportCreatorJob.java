@@ -95,7 +95,8 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
 
         ExecutorService executorService = null;
         try {
-            executorService = Executors.newFixedThreadPool(8);
+            Integer threadPoolSize = getThreadCountForJob();
+            executorService = Executors.newFixedThreadPool(threadPoolSize);
 
             for (CertifiedProductFlatSearchResult result : certifiedProducts) {
                 CompletableFuture.supplyAsync(() -> getCertifiedProductSearchDetails(result.getId()), executorService)
@@ -108,6 +109,8 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
                             return null;
                         });
             }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
         } finally {
             executorService.shutdown();
         }
@@ -240,5 +243,9 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
             LOGGER.error("Could not parse: " + dateFromPropertiesFile, e);
             return null;
         }
+    }
+
+    private Integer getThreadCountForJob() throws NumberFormatException {
+        return Integer.parseInt(env.getProperty("executorThreadCountForQuartzJobs"));
     }
 }
