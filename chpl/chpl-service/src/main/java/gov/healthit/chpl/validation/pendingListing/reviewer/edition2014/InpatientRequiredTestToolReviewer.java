@@ -24,21 +24,21 @@ public class InpatientRequiredTestToolReviewer implements Reviewer {
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
             if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria()) {
                 boolean gapEligibleAndTrue = false;
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
+                if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.GAP)
                         && cert.getGap()) {
                     gapEligibleAndTrue = true;
                 }
 
                 if (!gapEligibleAndTrue
-                        && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
+                        && certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.TEST_TOOLS_USED)
                         && !ValidationUtils.containsCert(cert, TEST_TOOL_CHECK_CERTS)
                         && (cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
                     if (listing.getIcs() != null && listing.getIcs().booleanValue()) {
                         listing.getWarningMessages()
-                        .add(msgUtil.getMessage("listing.criteria.missingTestTool", cert.getNumber()));
+                        .add(msgUtil.getMessage("listing.criteria.missingTestTool", cert.getCriterion().getNumber()));
                     } else {
                         listing.getErrorMessages()
-                        .add(msgUtil.getMessage("listing.criteria.missingTestTool", cert.getNumber()));
+                        .add(msgUtil.getMessage("listing.criteria.missingTestTool", cert.getCriterion().getNumber()));
                     }
                 }
             }

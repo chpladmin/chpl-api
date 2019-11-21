@@ -272,7 +272,8 @@ public final class ValidationUtils {
     public static boolean containsCert(final PendingCertificationResultDTO certToCompare, final String[] certs) {
         boolean hasCert = false;
         for (String cert : certs) {
-            if (certToCompare.getNumber().equals(cert)) {
+            if (certToCompare.getCriterion() != null
+                    && certToCompare.getCriterion().getNumber().equals(cert)) {
                 hasCert = true;
             }
         }

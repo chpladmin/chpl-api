@@ -34,6 +34,7 @@ import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.AgeRangeDTO;
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
@@ -287,8 +288,11 @@ public class PendingCertifiedProductDTO implements Serializable {
         List<CertificationResult> certificationResults = details.getCertificationResults();
         for (CertificationResult crResult : certificationResults) {
             PendingCertificationResultDTO certDto = new PendingCertificationResultDTO();
-            certDto.setNumber(crResult.getNumber());
-            certDto.setTitle(crResult.getTitle());
+            CertificationCriterionDTO criterion = null;
+            if (crResult.getCriterion() != null) {
+                criterion = new CertificationCriterionDTO(crResult.getCriterion());
+            }
+            certDto.setCriterion(criterion);
             certDto.setMeetsCriteria(crResult.isSuccess());
             certDto.setGap(crResult.isGap());
             certDto.setG1Success(crResult.isG1Success());
@@ -407,7 +411,7 @@ public class PendingCertifiedProductDTO implements Serializable {
                 for (UcdProcess ucd : details.getSed().getUcdProcesses()) {
                     boolean hasCriteria = false;
                     for (CertificationCriterion criteria : ucd.getCriteria()) {
-                        if (criteria.getNumber().equals(certDto.getNumber())) {
+                        if (criteria.getNumber().equals(certDto.getCriterion().getNumber())) {
                             hasCriteria = true;
                         }
                     }
@@ -426,7 +430,7 @@ public class PendingCertifiedProductDTO implements Serializable {
                 for (TestTask task : details.getSed().getTestTasks()) {
                     boolean hasCriteria = false;
                     for (CertificationCriterion criteria : task.getCriteria()) {
-                        if (criteria.getNumber().equals(certDto.getNumber())) {
+                        if (criteria.getNumber().equals(certDto.getCriterion().getNumber())) {
                             hasCriteria = true;
                         }
                     }

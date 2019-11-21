@@ -618,10 +618,10 @@ public class CertifiedProductManager extends SecuredManager {
             List<TestTaskDTO> testTasksAdded = new ArrayList<TestTaskDTO>();
 
             for (PendingCertificationResultDTO certResult : pendingCp.getCertificationCriterion()) {
-                CertificationCriterionDTO criterion = certCriterionDao.getByName(certResult.getNumber());
+                CertificationCriterionDTO criterion = certCriterionDao.getByName(certResult.getCriterion().getNumber());
                 if (criterion == null) {
                     throw new EntityCreationException(
-                            "Could not find certification criterion with number " + certResult.getNumber());
+                            "Could not find certification criterion with number " + certResult.getCriterion().getNumber());
                 }
                 CertificationResultDTO certResultToCreate = new CertificationResultDTO();
                 certResultToCreate.setCertificationCriterionId(criterion.getId());
@@ -699,9 +699,9 @@ public class CertifiedProductManager extends SecuredManager {
                                 certDao.addTestDataMapping(testDto);
                             } else if (testData.getTestData() != null) {
                                 TestDataDTO foundTestData = testDataDao.getByCriteriaNumberAndValue(
-                                        certResult.getNumber(), testData.getTestData().getName());
+                                        certResult.getCriterion().getNumber(), testData.getTestData().getName());
                                 if (foundTestData == null) {
-                                    LOGGER.error("Could not find test data for " + certResult.getNumber()
+                                    LOGGER.error("Could not find test data for " + certResult.getCriterion().getNumber()
                                             + " and test data name " + testData.getTestData().getName());
                                 } else {
                                     testDto.setTestData(foundTestData);
@@ -758,9 +758,9 @@ public class CertifiedProductManager extends SecuredManager {
                                 // because
                                 // the user could have edited it since upload
                                 TestProcedureDTO foundTp = testProcDao.getByCriteriaNumberAndValue(
-                                        certResult.getNumber(), proc.getTestProcedure().getName());
+                                        certResult.getCriterion().getNumber(), proc.getTestProcedure().getName());
                                 if (foundTp == null) {
-                                    LOGGER.error("Could not find test procedure for " + certResult.getNumber()
+                                    LOGGER.error("Could not find test procedure for " + certResult.getCriterion().getNumber()
                                             + " and test procedure name " + proc.getTestProcedure().getName());
                                 } else {
                                     procDto.setTestProcedure(foundTp);
@@ -1002,7 +1002,7 @@ public class CertifiedProductManager extends SecuredManager {
                     crMeasure.setCertificationResultId(createdCert.getId());
                     certDao.addG1MacraMeasureMapping(crMeasure);
                 } else {
-                    LOGGER.error("Found G1 Macra Measure with null value for " + certResult.getNumber());
+                    LOGGER.error("Found G1 Macra Measure with null value for " + certResult.getCriterion().getNumber());
                 }
             }
         }
@@ -1017,7 +1017,7 @@ public class CertifiedProductManager extends SecuredManager {
                     crMeasure.setCertificationResultId(createdCert.getId());
                     certDao.addG2MacraMeasureMapping(crMeasure);
                 } else {
-                    LOGGER.error("Found G2 Macra Measure with null value for " + certResult.getNumber());
+                    LOGGER.error("Found G2 Macra Measure with null value for " + certResult.getCriterion().getNumber());
                 }
             }
         }
