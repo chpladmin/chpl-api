@@ -27,6 +27,21 @@
                 </entry>
             </job-data-map>
         </job>
+        <!-- Job used to mark specific 2015 criteria as removed -->
+        <job>
+            <name>removeCriteriaJob</name>
+            <group>systemJobs</group>
+            <description>Sets the removed flag to 'true' for specific 2015 criteria</description>
+            <job-class>gov.healthit.chpl.scheduler.job.RemoveCriteriaJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+            </job-data-map>
+        </job>
         <!-- DELETE END MARKER -->
     </schedule>
 </job-scheduling-data>

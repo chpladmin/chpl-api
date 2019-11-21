@@ -22,11 +22,12 @@ public class CertificationCriterionDTO implements Serializable {
     private String number;
     private Boolean requiresSed;
     private String title;
+    private Boolean removed;
 
     public CertificationCriterionDTO() {
     }
 
-    public CertificationCriterionDTO(CertificationCriterionEntity entity) {
+    public CertificationCriterionDTO(final CertificationCriterionEntity entity) {
 
         this.id = entity.getId();
         this.automatedMeasureCapable = entity.isAutomatedMeasureCapable();
@@ -44,9 +45,10 @@ public class CertificationCriterionDTO implements Serializable {
 
         this.requiresSed = entity.isRequiresSed();
         this.title = entity.getTitle();
+        this.removed = entity.getRemoved();
     }
 
-    public CertificationCriterionDTO(CertificationCriterion domain) {
+    public CertificationCriterionDTO(final CertificationCriterion domain) {
 
         this.id = domain.getId();
         this.certificationEditionId = domain.getCertificationEditionId();
@@ -56,6 +58,7 @@ public class CertificationCriterionDTO implements Serializable {
         this.description = domain.getDescription();
         this.number = domain.getNumber();
         this.title = domain.getTitle();
+        this.removed = domain.getRemoved();
     }
 
     public Long getId() {
@@ -160,5 +163,13 @@ public class CertificationCriterionDTO implements Serializable {
 
     public void setCertificationEdition(final String certificationEdition) {
         this.certificationEdition = certificationEdition;
+    }
+
+    public Boolean getRemoved() {
+        return removed;
+    }
+
+    public void setRemoved(final Boolean removed) {
+        this.removed = removed;
     }
 }

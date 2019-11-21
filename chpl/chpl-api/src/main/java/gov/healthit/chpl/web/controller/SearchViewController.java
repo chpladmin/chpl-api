@@ -39,9 +39,11 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.DescriptiveModel;
+import gov.healthit.chpl.domain.DimensionalData;
 import gov.healthit.chpl.domain.FuzzyChoices;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
+import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.SearchOption;
 import gov.healthit.chpl.domain.SearchableDimensionalData;
 import gov.healthit.chpl.domain.TestFunctionality;
@@ -115,7 +117,7 @@ public class SearchViewController {
 
     @Autowired
     private SurveillanceReportManager survReportManager;
-    
+
     @Autowired
     private ChangeRequestManager changeRequestManager;
 
@@ -409,8 +411,8 @@ public class SearchViewController {
                 String[] certificationCriteriaArr = certificationCriteriaDelimitedTrimmed.split(",");
                 if (certificationCriteriaArr.length > 0) {
                     Set<String> certificationCriterion = new HashSet<String>();
-                    Set<DescriptiveModel> availableCriterion = dimensionalDataManager
-                            .getCertificationCriterionNumbers(false);
+                    Set<CriteriaSpecificDescriptiveModel> availableCriterion = dimensionalDataManager
+                            .getCertificationCriterionNumbers();
 
                     for (int i = 0; i < certificationCriteriaArr.length; i++) {
                         String certCriteriaParam = certificationCriteriaArr[i].trim();
@@ -614,8 +616,8 @@ public class SearchViewController {
         }
 
         if (searchRequest.getCertificationCriteria() != null && searchRequest.getCertificationCriteria().size() > 0) {
-            Set<DescriptiveModel> availableCriterion = dimensionalDataManager
-                    .getCertificationCriterionNumbers(false);
+            Set<CriteriaSpecificDescriptiveModel> availableCriterion = dimensionalDataManager
+                    .getCertificationCriterionNumbers();
             for (String criteria : searchRequest.getCertificationCriteria()) {
                 validateCertificationCriteria(criteria, availableCriterion);
             }
@@ -680,7 +682,7 @@ public class SearchViewController {
     }
 
     private void validateCertificationCriteria(final String certCriteriaParam,
-            final Set<DescriptiveModel> availableCriterion) throws InvalidArgumentsException {
+            final Set<? extends DescriptiveModel> availableCriterion) throws InvalidArgumentsException {
         boolean found = false;
         for (DescriptiveModel currAvailableCriteria : availableCriterion) {
             if (currAvailableCriteria.getName().equalsIgnoreCase(certCriteriaParam)) {
@@ -939,7 +941,7 @@ public class SearchViewController {
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModelStatuses> getProductNames() {
-        return dimensionalDataManager.getProductNames();
+        return dimensionalDataManager.getProducts();
     }
 
     @ApiOperation(value = "Get all possible developer names in the CHPL",
@@ -948,7 +950,7 @@ public class SearchViewController {
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModelStatuses> getDeveloperNames() {
-        return dimensionalDataManager.getDeveloperNames();
+        return dimensionalDataManager.getDevelopers();
     }
 
     @ApiOperation(value = "Get all possible ACBs in the CHPL",
@@ -1103,13 +1105,28 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible macra measure options in the CHPL",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Use /data/macra-measures. "
+            + "Get all possible macra measure options in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/macra_measures", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody SearchOption getMacraMeasuresDeprecated() {
+        Set<CriteriaSpecificDescriptiveModel> data = dimensionalDataManager.getMacraMeasuresDeprecated();
+        SearchOption result = new SearchOption();
+        result.setExpandable(false);
+        result.setData(data);
+        return result;
+    }
+
+    @ApiOperation(value = "Get all possible macra measure options in the CHPL",
+            notes = "This is useful for knowing what values one might possibly search for.")
+    @RequestMapping(value = "/data/macra-measures", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getMacraMeasures() {
-        Set<CriteriaSpecificDescriptiveModel> data = dimensionalDataManager.getMacraMeasures();
+        Set<MacraMeasure> data = dimensionalDataManager.getMacraMeasures();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
@@ -1216,16 +1233,35 @@ public class SearchViewController {
      * @return a map of all filterable values
      * @throws EntityRetrievalException if an item cannot be retrieved from the db
      */
-    @ApiOperation(value = "Get all search options in the CHPL",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Use /data/search-options instead. Get all search options in the CHPL",
             notes = "This returns all of the other /data/{something} results in one single response.")
     @RequestMapping(value = "/data/search_options", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody SearchableDimensionalData getSearchOptions(
+    public @ResponseBody SearchableDimensionalData getSearchOptionsDeprecated(
             @RequestParam(value = "simple", required = false, defaultValue = "false") final Boolean simple)
                     throws EntityRetrievalException {
 
         return dimensionalDataManager.getSearchableDimensionalData(simple);
+    }
+
+    /**
+     * Returns all of the fields that have a finite set of values and may be used
+     * as filers when searching for listings.
+     * @param simple whether to include data relevant to 2011 listings (2011 edition and NQF numbers)
+     * @return a map of all filterable values
+     * @throws EntityRetrievalException if an item cannot be retrieved from the db
+     */
+    @ApiOperation(value = "Get all search options in the CHPL",
+            notes = "This returns all of the other /data/{something} results in one single response.")
+    @RequestMapping(value = "/data/search-options", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody DimensionalData getSearchOptions(
+            @RequestParam(value = "simple", required = false, defaultValue = "false") final Boolean simple)
+                    throws EntityRetrievalException {
+        return dimensionalDataManager.getDimensionalData(simple);
     }
 
     @Deprecated
@@ -1241,7 +1277,7 @@ public class SearchViewController {
         ddr.setDecertifiedDeveloperResults(results);
         return ddr;
     }
-    
+
     @ApiOperation(value = "Get all available filter type.")
     @RequestMapping(value = "/data/filter_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -1253,7 +1289,7 @@ public class SearchViewController {
         result.setData(data);
         return result;
     }
-    
+
     @ApiOperation(value = "Get all possible complainant types in the CHPL")
     @RequestMapping(value = "/data/complainant-types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -1277,7 +1313,7 @@ public class SearchViewController {
         result.setData(data);
         return result;
     }
-    
+
     @ApiOperation(value = "Get all possible certification criteria in the CHPL")
     @RequestMapping(value = "/data/certification-criteria", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -1290,7 +1326,7 @@ public class SearchViewController {
         }
         return result;
     }
-    
+
     @ApiOperation(value = "Get all possible change request types in the CHPL")
     @RequestMapping(value = "/data/change-request-types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -1302,7 +1338,7 @@ public class SearchViewController {
         result.setData(data);
         return result;
     }
-    
+
     @ApiOperation(value = "Get all possible change request status types in the CHPL")
     @RequestMapping(value = "/data/change-request-status-types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")

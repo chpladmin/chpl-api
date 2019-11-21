@@ -259,7 +259,7 @@ public class DimensionalDataManagerTest {
     public void test_getProductNames_CachesData()
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         long startTime = System.currentTimeMillis();
-        Set<KeyValueModelStatuses> results = dimensionalDataManager.getProductNames();
+        Set<KeyValueModelStatuses> results = dimensionalDataManager.getProducts();
         // getProductNames should now be cached
         long endTime = System.currentTimeMillis();
         long timeLength = endTime - startTime;
@@ -272,7 +272,7 @@ public class DimensionalDataManagerTest {
 
         // now compare cached time vs non-cached time
         startTime = System.currentTimeMillis();
-        results = dimensionalDataManager.getProductNames();
+        results = dimensionalDataManager.getProducts();
         endTime = System.currentTimeMillis();
         timeLength = endTime - startTime;
         elapsedSecs = timeLength / 1000.0;
@@ -292,7 +292,7 @@ public class DimensionalDataManagerTest {
     public void test_getDeveloperNames_CachesData()
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         long startTime = System.currentTimeMillis();
-        Set<KeyValueModelStatuses> results = dimensionalDataManager.getDeveloperNames();
+        Set<KeyValueModelStatuses> results = dimensionalDataManager.getDevelopers();
         // getDeveloperNames should now be cached
         long endTime = System.currentTimeMillis();
         long timeLength = endTime - startTime;
@@ -306,7 +306,7 @@ public class DimensionalDataManagerTest {
 
         // now compare cached time vs non-cached time
         startTime = System.currentTimeMillis();
-        results = dimensionalDataManager.getDeveloperNames();
+        results = dimensionalDataManager.getDevelopers();
         endTime = System.currentTimeMillis();
         timeLength = endTime - startTime;
         elapsedSecs = timeLength / 1000.0;
@@ -362,7 +362,7 @@ public class DimensionalDataManagerTest {
     public void test_getCertificationCriterionNumbers_CachesData()
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         long startTime = System.currentTimeMillis();
-        Set<DescriptiveModel> results = dimensionalDataManager.getCertificationCriterionNumbers(false);
+        Set<CriteriaSpecificDescriptiveModel> results = dimensionalDataManager.getCertificationCriterionNumbers();
         // getCertificationCriterionNumbers should now be cached
         long endTime = System.currentTimeMillis();
         long timeLength = endTime - startTime;
@@ -378,7 +378,7 @@ public class DimensionalDataManagerTest {
 
         // now compare cached time vs non-cached time
         startTime = System.currentTimeMillis();
-        results = dimensionalDataManager.getCertificationCriterionNumbers(false);
+        results = dimensionalDataManager.getCertificationCriterionNumbers();
         endTime = System.currentTimeMillis();
         timeLength = endTime - startTime;
         elapsedSecs = timeLength / 1000.0;
@@ -425,7 +425,7 @@ public class DimensionalDataManagerTest {
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         long getDeveloperNamesStartTime = System.currentTimeMillis();
-        Set<KeyValueModelStatuses> results = dimensionalDataManager.getDeveloperNames();
+        Set<KeyValueModelStatuses> results = dimensionalDataManager.getDevelopers();
         long getDeveloperNamesEndTime = System.currentTimeMillis();
         long getDeveloperNamesTimeLength = getDeveloperNamesEndTime - getDeveloperNamesStartTime;
         double getDeveloperNamesElapsedSeconds = getDeveloperNamesTimeLength / 1000.0;
@@ -455,7 +455,7 @@ public class DimensionalDataManagerTest {
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         long getProductNamesStartTime = System.currentTimeMillis();
-        Set<KeyValueModelStatuses> results = dimensionalDataManager.getProductNames();
+        Set<KeyValueModelStatuses> results = dimensionalDataManager.getProducts();
         long getProductNamesEndTime = System.currentTimeMillis();
         long getProductNamesTimeLength = getProductNamesEndTime - getProductNamesStartTime;
         double getProductNamesElapsedSeconds = getProductNamesTimeLength / 1000.0;
@@ -487,7 +487,7 @@ public class DimensionalDataManagerTest {
     public void test_getDeveloperNames_ReturnsValidStatusesObject()
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        Set<KeyValueModelStatuses> results = dimensionalDataManager.getDeveloperNames();
+        Set<KeyValueModelStatuses> results = dimensionalDataManager.getDevelopers();
         for (KeyValueModelStatuses result : results) {
             Statuses status = result.getStatuses();
 
@@ -523,7 +523,7 @@ public class DimensionalDataManagerTest {
     public void test_getProductNames_ReturnsValidStatusesObject()
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        Set<KeyValueModelStatuses> results = dimensionalDataManager.getProductNames();
+        Set<KeyValueModelStatuses> results = dimensionalDataManager.getProducts();
         for (KeyValueModelStatuses result : results) {
             Statuses status = result.getStatuses();
 

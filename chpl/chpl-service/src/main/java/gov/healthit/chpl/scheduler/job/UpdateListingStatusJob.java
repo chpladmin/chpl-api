@@ -93,8 +93,7 @@ public class UpdateListingStatusJob extends QuartzJob {
         updateRequest.setListing(cpd);
 
         try {
-            certifiedProductManager.update(
-                    Long.parseLong(updateRequest.getListing().getCertifyingBody().get("id").toString()), updateRequest);
+            certifiedProductManager.update(updateRequest);
             LOGGER.info("Completed Updating certified product {" + updateRequest.getListing().getId() + "}: "
                     + updateRequest.getListing().getChplProductNumber());
         } catch (ValidationException e) {

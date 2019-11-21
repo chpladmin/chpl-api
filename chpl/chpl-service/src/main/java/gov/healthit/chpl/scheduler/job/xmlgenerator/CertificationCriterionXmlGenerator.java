@@ -27,6 +27,7 @@ public class CertificationCriterionXmlGenerator extends XmlGenerator {
             createSimpleElement(criterion.getId(), "id", sw);
             createSimpleElement(criterion.getNumber(), "number", sw);
             createSimpleElement(criterion.getTitle(), "title", sw);
+            createSimpleElement(criterion.getRemoved(), "removed", sw);
             sw.writeEndElement();
         }
     }

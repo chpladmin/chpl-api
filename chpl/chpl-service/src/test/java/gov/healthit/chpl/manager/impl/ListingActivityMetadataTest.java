@@ -190,7 +190,6 @@ public class ListingActivityMetadataTest extends TestCase {
         CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByAcb.getName());
         assertNotNull(stat);
         String reason = "Reason Text";
-        Long acbId = 1L;
         Long listingId = 1L;
 
         CertifiedProductSearchDetails beforeListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -205,7 +204,7 @@ public class ListingActivityMetadataTest extends TestCase {
         ListingUpdateRequest toUpdate = new ListingUpdateRequest();
         toUpdate.setListing(toUpdateListing);
         toUpdate.setReason("test reason");
-        cpManager.update(acbId, toUpdate);
+        cpManager.update(toUpdate);
 
         CertifiedProductSearchDetails afterListing = cpdManager.getCertifiedProductDetails(listingId);
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, listingId, "Updated certification status",

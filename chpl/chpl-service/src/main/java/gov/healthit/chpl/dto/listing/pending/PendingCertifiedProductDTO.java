@@ -381,6 +381,7 @@ public class PendingCertifiedProductDTO implements Serializable {
                     MacraMeasureDTO measure = new MacraMeasureDTO();
                     measure.setId(mm.getId());
                     measure.setValue(mm.getAbbreviation());
+                    measure.setRemoved(mm.getRemoved());
                     mmDto.setMacraMeasure(measure);
                     certDto.getG1MacraMeasures().add(mmDto);
                 }
@@ -395,6 +396,7 @@ public class PendingCertifiedProductDTO implements Serializable {
                     MacraMeasureDTO measure = new MacraMeasureDTO();
                     measure.setId(mm.getId());
                     measure.setValue(mm.getAbbreviation());
+                    measure.setRemoved(mm.getRemoved());
                     mmDto.setMacraMeasure(measure);
                     certDto.getG2MacraMeasures().add(mmDto);
                 }
