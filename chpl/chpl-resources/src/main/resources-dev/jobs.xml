@@ -428,7 +428,6 @@
                 </entry>
             </job-data-map>
         </job>
-
         <!-- Questionable Activity data emailer -->
         <job>
             <name>Questionable Activity Report</name>
@@ -456,7 +455,6 @@
                 </entry>
             </job-data-map>
         </job>
-        
         <trigger>
             <cron>
                 <name>qaAllBrokenSurveillanceEmailJob</name>
