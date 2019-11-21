@@ -27,8 +27,6 @@
                 </entry>
             </job-data-map>
         </job>
-<<<<<<< HEAD
-=======
 
         <!-- Questionable URL Data Collector -->
         <!-- URL Status Data Collector -->
@@ -134,7 +132,6 @@
                 </entry>
             </job-data-map>
         </job>
->>>>>>> 660eb643f... update Questionable Activity Email Quartz job definition to include user params
         <!-- DELETE END MARKER -->
     </schedule>
 </job-scheduling-data>
