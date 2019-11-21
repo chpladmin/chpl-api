@@ -100,7 +100,13 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
             for (CertifiedProductFlatSearchResult result : certifiedProducts) {
                 CompletableFuture.supplyAsync(() -> getCertifiedProductSearchDetails(result.getId()), executorService)
                         .thenApply(cp -> check(cp))
-                        .thenAccept(error -> saveInheritanceErrorsReportSingle(error));
+                        .thenAccept(error -> saveInheritanceErrorsReportSingle(error))
+                        .exceptionally(ex -> {
+                            if (ex != null) {
+                                LOGGER.error(ex.getMessage(), ex);
+                            }
+                            return null;
+                        });
             }
         } finally {
             executorService.shutdown();
@@ -147,6 +153,9 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
     }
 
     private void saveInheritanceErrorsReportSingle(final InheritanceErrorsReportDTO item) {
+        if (item == null) {
+            return;
+        }
         try {
             inheritanceErrorsReportDAO.create(item);
             LOGGER.info("Completed saving of error [" + item.getChplProductNumber() + "]");
