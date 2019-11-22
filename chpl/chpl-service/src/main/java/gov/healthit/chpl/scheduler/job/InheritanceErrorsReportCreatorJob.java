@@ -28,8 +28,6 @@ import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.dto.scheduler.InheritanceErrorsReportDTO;
-import gov.healthit.chpl.exception.EntityCreationException;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -101,13 +99,7 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
             for (CertifiedProductFlatSearchResult result : certifiedProducts) {
                 CompletableFuture.supplyAsync(() -> getCertifiedProductSearchDetails(result.getId()), executorService)
                         .thenApply(cp -> check(cp))
-                        .thenAccept(error -> saveInheritanceErrorsReportSingle(error))
-                        .exceptionally(ex -> {
-                            if (ex != null) {
-                                LOGGER.error(ex.getMessage(), ex);
-                            }
-                            return null;
-                        });
+                        .thenAccept(error -> saveInheritanceErrorsReportSingle(error));
             }
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -134,22 +126,26 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
             return null;
         }
         InheritanceErrorsReportDTO item = null;
-        String reason = breaksIcsRules(listing);
-        if (!StringUtils.isEmpty(reason)) {
-            item = new InheritanceErrorsReportDTO();
-            item.setChplProductNumber(listing.getChplProductNumber());
-            item.setDeveloper(listing.getDeveloper().getName());
-            item.setProduct(listing.getProduct().getName());
-            item.setVersion(listing.getVersion().getVersion());
-            item.setAcb(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
-            String productDetailsUrl = env.getProperty("chplUrlBegin").trim();
-            LOGGER.info("productDetailsUrl = " + productDetailsUrl);
-            if (!productDetailsUrl.endsWith("/")) {
-                productDetailsUrl += "/";
+        try {
+            String reason = breaksIcsRules(listing);
+            if (!StringUtils.isEmpty(reason)) {
+                item = new InheritanceErrorsReportDTO();
+                item.setChplProductNumber(listing.getChplProductNumber());
+                item.setDeveloper(listing.getDeveloper().getName());
+                item.setProduct(listing.getProduct().getName());
+                item.setVersion(listing.getVersion().getVersion());
+                item.setAcb(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
+                String productDetailsUrl = env.getProperty("chplUrlBegin").trim();
+                LOGGER.info("productDetailsUrl = " + productDetailsUrl);
+                if (!productDetailsUrl.endsWith("/")) {
+                    productDetailsUrl += "/";
+                }
+                productDetailsUrl += "#/product/" + listing.getId();
+                item.setUrl(productDetailsUrl);
+                item.setReason(reason);
             }
-            productDetailsUrl += "#/product/" + listing.getId();
-            item.setUrl(productDetailsUrl);
-            item.setReason(reason);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
         }
         LOGGER.info("Completed check of listing [" + listing.getChplProductNumber() + "]");
         return item;
@@ -162,7 +158,7 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
         try {
             inheritanceErrorsReportDAO.create(item);
             LOGGER.info("Completed saving of error [" + item.getChplProductNumber() + "]");
-        } catch (EntityCreationException | EntityRetrievalException e) {
+        } catch (Exception e) {
             LOGGER.error("Unable to save Inheritance Errors Report {} with error message {}",
                     item.toString(), e.getLocalizedMessage());
         }
