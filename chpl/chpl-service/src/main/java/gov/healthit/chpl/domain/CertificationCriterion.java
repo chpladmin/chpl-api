@@ -32,16 +32,20 @@ public class CertificationCriterion implements Serializable {
     @XmlElement(required = false, nillable = true)
     private String description;
 
+    @XmlElement(required = true, nillable = false)
+    private Boolean removed;
+
     public CertificationCriterion() {
     }
 
-    public CertificationCriterion(CertificationCriterionDTO dto) {
+    public CertificationCriterion(final CertificationCriterionDTO dto) {
         this.id = dto.getId();
         this.certificationEditionId = dto.getCertificationEditionId();
         this.certificationEdition = dto.getCertificationEdition();
         this.description = dto.getDescription();
         this.number = dto.getNumber();
         this.title = dto.getTitle();
+        this.removed = dto.getRemoved();
     }
 
     public String getCertificationEdition() {
@@ -90,5 +94,13 @@ public class CertificationCriterion implements Serializable {
 
     public void setDescription(final String description) {
         this.description = description;
+    }
+
+    public Boolean getRemoved() {
+        return removed;
+    }
+
+    public void setRemoved(final Boolean removed) {
+        this.removed = removed;
     }
 }

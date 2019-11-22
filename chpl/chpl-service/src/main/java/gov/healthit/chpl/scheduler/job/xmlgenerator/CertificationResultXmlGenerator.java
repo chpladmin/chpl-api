@@ -38,6 +38,7 @@ public class CertificationResultXmlGenerator extends XmlGenerator {
             CertificationResultTestStandardXmlGenerator.add(result.getTestStandards(), "testStandards", sw);
             CertificationResultTestToolXmlGenerator.add(result.getTestToolsUsed(), "testTools", sw);
             createSimpleElement(result.getTitle(), "title", sw);
+            CertificationCriterionXmlGenerator.add(result.getCriterion(), "criterion", sw);
             sw.writeEndElement();
         }
     }

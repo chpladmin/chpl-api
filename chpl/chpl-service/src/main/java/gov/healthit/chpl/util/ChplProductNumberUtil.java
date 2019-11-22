@@ -2,17 +2,21 @@ package gov.healthit.chpl.util;
 
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.ChplProductNumberDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
@@ -26,6 +30,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
  */
 @Component
 public class ChplProductNumberUtil {
+    private static final Logger LOGGER = LogManager.getLogger(ChplProductNumberUtil.class);
 
     /**
      * Location of the EDITION in the CHPL_PRODUCT_ID.
@@ -145,23 +150,29 @@ public class ChplProductNumberUtil {
     public static final String CHPL_PRODUCT_NUMBER_SEARCH_REGEX =
             "(\\d{2}\\.){3}\\d{4}\\.(\\w{4}\\.(\\w{2}\\.(\\d{2}\\.(\\d\\.(\\d{6})?)?)?)?)?";
 
-    @Autowired
     private TestingLabDAO testingLabDAO;
-
-    @Autowired
     private CertificationBodyDAO certBodyDAO;
-
-    @Autowired
     private DeveloperDAO developerDAO;
-
-    @Autowired
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
-
-    @Autowired
     private ChplProductNumberDAO chplProductNumberDAO;
+    private CertifiedProductDAO cpDao;
+
+    @Autowired public ChplProductNumberUtil(final TestingLabDAO testingLabDAO,
+            final CertificationBodyDAO certBodyDAO,
+            final DeveloperDAO developerDAO,
+            final CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
+            final ChplProductNumberDAO chplProductNumberDAO,
+            final CertifiedProductDAO cpDao) {
+        this.testingLabDAO = testingLabDAO;
+        this.certBodyDAO = certBodyDAO;
+        this.developerDAO = developerDAO;
+        this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
+        this.chplProductNumberDAO = chplProductNumberDAO;
+        this.cpDao = cpDao;
+    }
 
     /**
-     * Gets the CHPL Product Number as calculated by the DB
+     * Gets the CHPL Product Number as calculated by the DB.
      * @param certifiedProductId - Long
      * @return - String
      */
@@ -214,6 +225,36 @@ public class ChplProductNumberUtil {
         return !(details != null && details.size() > 0);
     }
 
+
+    /**
+     * Determines if the given CHPL ID is a listing in the system.
+     * @param id
+     * @return true if there is a listing with the chpl product number, false otherwise
+     * @throws EntityRetrievalException
+     */
+    public boolean chplIdExists(final String chplProductNumber) throws EntityRetrievalException {
+        if (StringUtils.isEmpty(chplProductNumber)) {
+            return false;
+        }
+
+        boolean exists = false;
+        if (chplProductNumber.startsWith("CHP")) {
+            CertifiedProductDTO existing = cpDao.getByChplNumber(chplProductNumber);
+            if (existing != null) {
+                exists = true;
+            }
+        } else {
+            try {
+                CertifiedProductDetailsDTO existing = cpDao.getByChplUniqueId(chplProductNumber);
+                if (existing != null) {
+                    exists = true;
+                }
+            } catch (final EntityRetrievalException ex) {
+                LOGGER.error("Could not look up " + chplProductNumber, ex);
+            }
+        }
+        return exists;
+    }
 
     /**
      * Properly concats all of the parts of a CHPL Product Number.

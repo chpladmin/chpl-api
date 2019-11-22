@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultAdditionalSoftwareEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultG1MacraMeasureEntity;
@@ -30,6 +31,7 @@ public class PendingCertificationResultDTO implements Serializable {
     private Boolean g2Success;
     private String apiDocumentation;
     private String privacySecurityFramework;
+    private CertificationCriterionDTO criterion;
 
     private List<PendingCertificationResultUcdProcessDTO> ucdProcesses;
     private List<PendingCertificationResultAdditionalSoftwareDTO> additionalSoftware;
@@ -55,7 +57,7 @@ public class PendingCertificationResultDTO implements Serializable {
         testTasks = new ArrayList<PendingCertificationResultTestTaskDTO>();
     }
 
-    public PendingCertificationResultDTO(PendingCertificationResultEntity entity) {
+    public PendingCertificationResultDTO(final PendingCertificationResultEntity entity) {
         this();
         this.setId(entity.getId());
 
@@ -63,6 +65,7 @@ public class PendingCertificationResultDTO implements Serializable {
             this.setCertificationCriterionId(entity.getMappedCriterion().getId());
             this.setNumber(entity.getMappedCriterion().getNumber());
             this.setTitle(entity.getMappedCriterion().getTitle());
+            this.criterion = new CertificationCriterionDTO(entity.getMappedCriterion());
         }
 
         this.setPendingCertifiedProductId(entity.getPendingCertifiedProductId());
@@ -305,6 +308,14 @@ public class PendingCertificationResultDTO implements Serializable {
 
     public void setG2MacraMeasures(final List<PendingCertificationResultMacraMeasureDTO> g2Measures) {
         this.g2MacraMeasures = g2Measures;
+    }
+
+    public CertificationCriterionDTO getCriterion() {
+        return criterion;
+    }
+
+    public void setCriterion(final CertificationCriterionDTO criterion) {
+        this.criterion = criterion;
     }
 
 }

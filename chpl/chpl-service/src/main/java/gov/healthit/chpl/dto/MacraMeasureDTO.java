@@ -14,6 +14,7 @@ public class MacraMeasureDTO implements Serializable {
     private String value;
     private String name;
     private String description;
+    private Boolean removed;
     private Date creationDate;
     private Boolean deleted;
     private Date lastModifiedDate;
@@ -22,7 +23,7 @@ public class MacraMeasureDTO implements Serializable {
     public MacraMeasureDTO() {
     }
 
-    public MacraMeasureDTO(MacraMeasureEntity entity) {
+    public MacraMeasureDTO(final MacraMeasureEntity entity) {
         this();
 
         this.id = entity.getId();
@@ -33,7 +34,7 @@ public class MacraMeasureDTO implements Serializable {
         this.value = entity.getValue();
         this.name = entity.getName();
         this.description = entity.getDescription();
-
+        this.removed = entity.getRemoved();
         this.creationDate = entity.getCreationDate();
         this.deleted = entity.getDeleted();
         this.lastModifiedDate = entity.getLastModifiedDate();
@@ -118,5 +119,13 @@ public class MacraMeasureDTO implements Serializable {
 
     public void setDescription(final String description) {
         this.description = description;
+    }
+
+    public Boolean getRemoved() {
+        return removed;
+    }
+
+    public void setRemoved(final Boolean removed) {
+        this.removed = removed;
     }
 }

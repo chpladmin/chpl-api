@@ -21,7 +21,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.PrivacyAndSecurityFrameworkConcept;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.listing.ListingMockUtil;
-import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -34,7 +34,7 @@ public class ValidDataReviewerTest {
     private static final String BAD_ADDL_SOFTWARE_ERROR =
             "No CHPL product was found matching additional software CHP-12345 for " + D_1;
 
-    @Spy private CertifiedProductManager cpManager;
+    @Spy private ChplProductNumberUtil chplNumberUtil;
     @Autowired private ListingMockUtil mockUtil;
 
     @InjectMocks
@@ -73,7 +73,7 @@ public class ValidDataReviewerTest {
             }
         }
         try {
-            Mockito.when(cpManager.chplIdExists(ArgumentMatchers.anyString()))
+            Mockito.when(chplNumberUtil.chplIdExists(ArgumentMatchers.anyString()))
         .thenReturn(true);
         } catch (EntityRetrievalException ex) { }
         validDataReivewer.review(listing);
@@ -90,7 +90,7 @@ public class ValidDataReviewerTest {
             }
         }
         try {
-            Mockito.when(cpManager.chplIdExists(ArgumentMatchers.anyString()))
+            Mockito.when(chplNumberUtil.chplIdExists(ArgumentMatchers.anyString()))
         .thenReturn(true);
         } catch (EntityRetrievalException ex) { }
         validDataReivewer.review(listing);
@@ -110,7 +110,7 @@ public class ValidDataReviewerTest {
             }
         }
         try {
-            Mockito.when(cpManager.chplIdExists(ArgumentMatchers.anyString()))
+            Mockito.when(chplNumberUtil.chplIdExists(ArgumentMatchers.anyString()))
         .thenReturn(false);
         } catch (EntityRetrievalException ex) { }
         validDataReivewer.review(listing);
