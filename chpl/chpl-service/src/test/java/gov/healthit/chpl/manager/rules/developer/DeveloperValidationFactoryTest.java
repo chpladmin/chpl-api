@@ -20,6 +20,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.CHPLTestConfig;
+import gov.healthit.chpl.Ff4jTestConfiguration;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
@@ -36,7 +37,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
         CHPLTestConfig.class, CHPLTestDeveloperValidationConfig.class, ErrorMessageUtil.class,
-        DeveloperValidationFactory.class
+        DeveloperValidationFactory.class, Ff4jTestConfiguration.class
 })
 public class DeveloperValidationFactoryTest {
     @Autowired
