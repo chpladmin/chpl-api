@@ -73,6 +73,9 @@ public class QuestionableActivityEmailJob extends QuartzJob {
     private static final int ACTIVITY_CERT_STATUS_CHANGE_REASON_COL = 11;
     private static final int ACTIVITY_REASON_COL = 12;
 
+    private static final int MIN_RANGE_IN_DAYS = 1;
+    private static final int MAX_RANGE_IN_DAYS = 365;
+
     /**
      * Constructor that initializes the QuestionableActivityEmailJob object.
      * 
@@ -91,9 +94,14 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         LOGGER.info("Creating questionable activity email for: " + jobContext.getMergedJobDataMap().getString("email"));
 
         Integer range = getRangeInDays(jobContext);
+        if (!isRangeValid(range)) {
+            LOGGER.error(
+                    "Range is invalid.  It must be between " + MIN_RANGE_IN_DAYS + " and " + MAX_RANGE_IN_DAYS + ".");
+            return;
+        }
         Calendar end = Calendar.getInstance();
         Calendar start = Calendar.getInstance();
-        start.add(Calendar.DAY_OF_MONTH, range);
+        start.add(Calendar.DAY_OF_MONTH, range * -1);
         List<List<String>> csvRows = getAppropriateActivities(jobContext, start.getTime(), end.getTime());
         String to = jobContext.getMergedJobDataMap().getString("email");
         String subject = props.getProperty("questionableActivityEmailSubject");
@@ -145,7 +153,11 @@ public class QuestionableActivityEmailJob extends QuartzJob {
                 LOGGER.info("Range is not stored as an integer.  Using the default value of: " + range);
             }
         }
-        return range * -1;
+        return range;
+    }
+
+    private Boolean isRangeValid(Integer range) {
+        return range >= MIN_RANGE_IN_DAYS && range <= MAX_RANGE_IN_DAYS;
     }
 
     private List<List<String>> getAppropriateActivities(final JobExecutionContext jobContext,
