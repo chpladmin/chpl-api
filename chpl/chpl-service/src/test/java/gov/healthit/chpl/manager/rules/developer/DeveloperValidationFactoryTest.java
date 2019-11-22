@@ -10,12 +10,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.ff4j.FF4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import gov.healthit.chpl.CHPLTestConfig;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
@@ -26,9 +30,13 @@ import gov.healthit.chpl.manager.impl.DeveloperStatusTest;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
+@ActiveProfiles({
+    "Ff4jMock"
+})
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        CHPLTestDeveloperValidationConfig.class, ErrorMessageUtil.class, DeveloperValidationFactory.class
+        CHPLTestConfig.class, CHPLTestDeveloperValidationConfig.class, ErrorMessageUtil.class,
+        DeveloperValidationFactory.class
 })
 public class DeveloperValidationFactoryTest {
     @Autowired
@@ -36,6 +44,9 @@ public class DeveloperValidationFactoryTest {
 
     @Autowired
     private ErrorMessageUtil msgUtil;
+
+    @Mock
+    private FF4j ff4j;
 
     public static final String DEFAULT_PENDING_ACB_NAME = "ACB_NAME";
     private static final String DEFAULT_DEVELOPER_STATUS_TYPE_LITERAL = "Under certification ban by ONC";
