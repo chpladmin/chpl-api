@@ -20,6 +20,7 @@ import javax.mail.MessagingException;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.lang3.Range;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.JobExecutionContext;
@@ -69,8 +70,9 @@ public class QuestionableActivityEmailJob extends QuartzJob {
     private static final int ACTIVITY_CERT_STATUS_CHANGE_REASON_COL = 11;
     private static final int ACTIVITY_REASON_COL = 12;
 
-    private Integer minRangeInDays = 1;
-    private Integer maxRangeInDays = 365;
+    // private Integer minRangeInDays = 1;
+    // private Integer maxRangeInDays = 365;
+    private Range<Integer> rangeInDays = Range.between(1, 365);
     private static final Integer DEFAULT_RANGE = 7;
 
     /**
@@ -91,13 +93,14 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         LOGGER.info("Creating questionable activity email for: " + jobContext.getMergedJobDataMap().getString("email"));
 
         populateRangeDefaultsFromJobData(jobContext);
-        LOGGER.info("Valid range read from job context: " + minRangeInDays + " - " + maxRangeInDays);
+        LOGGER.info("Valid range read from job context: " + rangeInDays.getMinimum() + " - " + rangeInDays.getMaximum());
 
         String errors = "";
         Integer range = getRangeInDays(jobContext);
-        if (!isRangeValid(range)) {
-            errors = String.format("Range is invalid.  It must be numeric and between %d and %d.  Using %d.", minRangeInDays,
-                    maxRangeInDays, range);
+        if (!rangeInDays.contains(range)) {
+            errors = String.format("Range is invalid.  It must be numeric and between %d and %d.  Using %d.",
+                    rangeInDays.getMinimum(),
+                    rangeInDays.getMaximum(), range);
             LOGGER.error(errors);
         }
 
@@ -156,10 +159,6 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             }
         }
         return range;
-    }
-
-    private Boolean isRangeValid(Integer range) {
-        return range >= minRangeInDays && range <= maxRangeInDays;
     }
 
     private List<List<String>> getAppropriateActivities(final JobExecutionContext jobContext, final Date start,
@@ -682,19 +681,22 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             rootNode = mapper.readTree(parametersJson);
         } catch (Exception e) {
             LOGGER.error(
-                    "Could not determine min and max range values.  "
-                            + "Using default: " + minRangeInDays + " - " + maxRangeInDays);
+                    String.format("Could not determine min and max range values.  Using default: %d - %d.",
+                            rangeInDays.getMinimum(), rangeInDays.getMaximum()));
             return;
         }
         if (rootNode != null) {
+            Integer min = rangeInDays.getMinimum();
+            Integer max = rangeInDays.getMaximum();
             JsonNode minNode = rootNode.findValue("min");
             if (minNode != null) {
-                minRangeInDays = minNode.asInt();
+                min = minNode.asInt();
             }
             JsonNode maxNode = rootNode.findValue("max");
             if (maxNode != null) {
-                maxRangeInDays = maxNode.asInt();
+                max = maxNode.asInt();
             }
+            rangeInDays = Range.between(min, max);
         }
     }
 
