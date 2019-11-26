@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Configuration>
 <Configuration status="warn" monitorInterval="300"
-    name="CHPL-Service-STG" packages="">
+    name="CHPL-Service-local" packages="">
     <Properties>
         <Property name="logDir">${sys:catalina.home}/logs</Property>
     </Properties>
