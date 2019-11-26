@@ -92,8 +92,7 @@ public class UpdateSingleListingStatusJob extends QuartzJob {
         updateRequest.setReason(reason);
 
         try {
-            certifiedProductManager.update(
-                    Long.parseLong(updateRequest.getListing().getCertifyingBody().get("id").toString()), updateRequest);
+            certifiedProductManager.update(updateRequest);
 
             String msg = "Completed Updating certified product {" + updateRequest.getListing().getId() + "}: "
                     + updateRequest.getListing().getChplProductNumber();
