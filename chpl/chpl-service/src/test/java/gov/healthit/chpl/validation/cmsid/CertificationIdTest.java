@@ -3,14 +3,12 @@ package gov.healthit.chpl.validation.cmsid;
 import java.util.ArrayList;
 import java.util.List;
 
-import gov.healthit.chpl.certificationId.Validator;
-import gov.healthit.chpl.certificationId.ValidatorFactory;
-import gov.healthit.chpl.dto.CQMMetDTO;
-import gov.healthit.chpl.manager.CertificationIdManager;
-import gov.healthit.chpl.manager.CertifiedProductManager;
-
+import org.ff4j.FF4j;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -23,6 +21,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.certificationId.Validator;
+import gov.healthit.chpl.certificationId.ValidatorFactory;
+import gov.healthit.chpl.dto.CQMMetDTO;
+import gov.healthit.chpl.manager.CertificationIdManager;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -35,12 +38,20 @@ import junit.framework.TestCase;
 })
 @DatabaseSetup("classpath:data/testData.xml")
 public class CertificationIdTest extends TestCase {
-
-    @Autowired
-    private CertifiedProductManager certifiedProductManager;
-
     @Autowired
     private CertificationIdManager certificationIdManager;
+
+    @Autowired
+    private ValidatorFactory validatorFactory;
+
+    @Autowired
+    private FF4j ff4j;
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+        Mockito.doReturn(true).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE);
+    }
 
     @Test
     @Transactional
@@ -49,7 +60,7 @@ public class CertificationIdTest extends TestCase {
         List<Long> productIdList = new ArrayList<Long>();
         productIdList.add(294L);
 
-        Validator validator = ValidatorFactory.getValidator("2014");
+        Validator validator = validatorFactory.getValidator("2014");
 
         // Lookup Criteria for Validating
         List<String> criteriaDtos = certificationIdManager.getCriteriaNumbersMetByCertifiedProductIds(productIdList);
@@ -71,7 +82,7 @@ public class CertificationIdTest extends TestCase {
         List<Long> productIdList = new ArrayList<Long>();
         productIdList.add(9261L);
 
-        Validator validator = ValidatorFactory.getValidator("2015");
+        Validator validator = validatorFactory.getValidator("2015");
 
         // Lookup Criteria for Validating
         List<String> criteriaDtos = certificationIdManager.getCriteriaNumbersMetByCertifiedProductIds(productIdList);
@@ -94,7 +105,7 @@ public class CertificationIdTest extends TestCase {
         productIdList.add(294L);
         productIdList.add(9261L);
 
-        Validator validator = ValidatorFactory.getValidator("2014/2015");
+        Validator validator = validatorFactory.getValidator("2014/2015");
 
         // Lookup Criteria for Validating
         List<String> criteriaDtos = certificationIdManager.getCriteriaNumbersMetByCertifiedProductIds(productIdList);

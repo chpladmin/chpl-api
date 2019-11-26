@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Configuration>
 <Configuration status="warn" monitorInterval="300"
-    name="CHPL-Service-PROD" packages="">
+    name="CHPL-Service-STG" packages="">
     <Properties>
         <Property name="logDir">${sys:catalina.home}/logs</Property>
     </Properties>
@@ -248,8 +248,30 @@
             </Policies>
         </RollingFile>
         <RollingFile name="update2014ListingStatusJob"
-            fileName="${logDir}/scheduler/update2014ListingStatusJob.log"
-            filePattern="${logDir}/scheduler/history/update2014ListingStatusJob-%d{yyyy-MM-dd}.log">
+            fileName="${logDir}/scheduler/updateListingStatusJob.log"
+            filePattern="${logDir}/scheduler/history/updateListingStatusJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
+        <RollingFile name="remove2014UploadTemplateJob"
+            fileName="${logDir}/scheduler/remove2014UploadTemplateJob.log"
+            filePattern="${logDir}/scheduler/history/remove2014UploadTemplateJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
+        <RollingFile name="removeCriteriaJob"
+            fileName="${logDir}/scheduler/removeCriteriaJob.log"
+            filePattern="${logDir}/scheduler/history/removeCriteriaJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
                 <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
             </PatternLayout>
@@ -361,6 +383,14 @@
         <Logger name="update2014ListingStatusJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="update2014ListingStatusJob" />
+        </Logger>
+        <Logger name="remove2014UploadTemplateJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="remove2014UploadTemplateJob" />
+        </Logger>
+        <Logger name="removeCriteriaJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="removeCriteriaJob" />
         </Logger>
     </Loggers>
 </Configuration>

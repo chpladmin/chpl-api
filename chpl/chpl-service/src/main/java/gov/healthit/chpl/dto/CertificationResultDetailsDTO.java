@@ -18,6 +18,7 @@ public class CertificationResultDetailsDTO implements Serializable {
     private Boolean g2Success;
     private String apiDocumentation;
     private String privacySecurityFramework;
+    private CertificationCriterionDTO criterion;
 
     public CertificationResultDetailsDTO() {
     }
@@ -36,6 +37,9 @@ public class CertificationResultDetailsDTO implements Serializable {
         this.g2Success = entity.getG2Success();
         this.apiDocumentation = entity.getApiDocumentation();
         this.privacySecurityFramework = entity.getPrivacySecurityFramework();
+        if (entity.getCertificationCriterion() != null) {
+            this.criterion = new CertificationCriterionDTO(entity.getCertificationCriterion());
+        }
     }
 
     public Long getId() {
@@ -132,5 +136,13 @@ public class CertificationResultDetailsDTO implements Serializable {
 
     public void setPrivacySecurityFramework(final String privacySecurityFramework) {
         this.privacySecurityFramework = privacySecurityFramework;
+    }
+
+    public CertificationCriterionDTO getCriterion() {
+        return criterion;
+    }
+
+    public void setCriterion(final CertificationCriterionDTO criterion) {
+        this.criterion = criterion;
     }
 }

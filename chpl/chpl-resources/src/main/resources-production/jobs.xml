@@ -12,12 +12,12 @@
     </pre-processing-commands>
     <schedule>
         <!-- Delete from here to "DELETE END MARKER" after PROD push -->
-        <!-- Pending Change Request data emailer -->
+        <!-- Job used to mark 2014 upload templates as deleted. -->
         <job>
-            <name>Pending Change Request Report</name>
-            <group>chplJobs</group>
-            <description>Sends a report of all pending change requests</description>
-            <job-class>gov.healthit.chpl.scheduler.job.PendingChangeRequestEmailJob</job-class>
+            <name>remove2014UploadTemplates</name>
+            <group>systemJobs</group>
+            <description>Marks 2014 upload templates as deleted</description>
+            <job-class>gov.healthit.chpl.scheduler.job.Remove2014UploadTemplateJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>
@@ -25,26 +25,24 @@
                     <key>authorities</key>
                     <value>ROLE_ADMIN;ROLE_ONC</value>
                 </entry>
-                <entry>
-                    <key>frequency</key>
-                    <value>WEEKLY</value>
-                </entry>
             </job-data-map>
         </job>
-        <!-- Questionable URL Data Collector -->
-        <!-- URL Status Data Collector -->
-        <!-- Job used to change status of a set listings -->
+        <!-- Job used to mark specific 2015 criteria as removed -->
         <job>
-            <name>updateListingStatusJob</name>
+            <name>removeCriteriaJob</name>
             <group>systemJobs</group>
-            <description>Updates the status for a set of listings</description>
-            <job-class>gov.healthit.chpl.scheduler.job.UpdateListingStatusJob</job-class>
+            <description>Sets the removed flag to 'true' for specific 2015 criteria</description>
+            <job-class>gov.healthit.chpl.scheduler.job.RemoveCriteriaJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>
                 <entry>
                     <key>parameters</key>
                     <value>[{"label": "Status Effective Date", "key": "effectiveDate", "type": "date"}, {"label": "New Listing Status", "key": "certificationStatus", "type": "select", "items": [{"id": 1, "name": "Active"}, {"id": 2, "name": "Retired"}, {"id": 3, "name": "Withdrawn by Developer"}, {"id": 4, "name": "Withdrawn by ONC-ACB"}, {"id": 5, "name": "Pending"}, {"id": 6, "name": "Suspended by ONC-ACB"}, {"id": 7, "name": "Suspended by ONC"}, {"id": 8, "name": "Terminated by ONC"}, {"id": 9, "name": "Withdrawn by Developer Under Surveillance/Review"}] }, {"label": "Reason For Change", "key": "reason", "type": "text"}, {"label": "Email Report To", "key": "email", "type": "text"} ]</value>
+                </entry>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
                 </entry>
             </job-data-map>
         </job>

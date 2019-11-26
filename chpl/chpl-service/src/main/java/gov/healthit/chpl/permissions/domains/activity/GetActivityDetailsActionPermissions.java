@@ -240,7 +240,7 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
     /**
      * Non-logged in user can only see activity for public announcements. Other
      * users can see all activity.
-     * 
+     *
      * @param announcementJson
      * @return
      */
@@ -265,7 +265,7 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
     /**
      * Admin and onc can see all atl activity including for retired atls. Atl
      * user can see activity for their own atl. Others should get access denied.
-     * 
+     *
      * @param atlJson
      * @return
      */
@@ -290,7 +290,7 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
     /**
      * Admin and onc can see all acb activity including for retired acbs. Acb
      * user can see activity for their own acb. Others should get access denied.
-     * 
+     *
      * @param acbJson
      * @return
      */
@@ -316,7 +316,7 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
      * Admin and onc can see all pending listing activity. Acb user can see
      * activity for listing uploaded to their Acb. Others should get access
      * denied.
-     * 
+     *
      * @param pendingListingJson
      * @return
      */
@@ -344,7 +344,7 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
      * Admin and Onc can see activity for any user. Acb, Atl, and Cms staff
      * users can see activity for any user they have access to. Non-logged in
      * users get access denied.
-     * 
+     *
      * @param userJson
      * @return
      */

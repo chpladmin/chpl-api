@@ -31,14 +31,20 @@ public class CertificationResult implements Serializable {
     private Long id;
 
     /**
-     * Criteria number, i.e. 170.314 (a)(1)
+     * Criteria number, i.e. 170.314 (a)(1).
+     * This field is deprecated and will be removed in a future release.
+     * Users should reference criterion.number instead.
      */
+    @Deprecated
     @XmlElement(required = true)
     private String number;
 
     /**
-     * Short description of the criteria
+     * Short description of the criteria.
+     * This field is deprecated and will be removed in a future release.
+     * Users should reference criterion.title instead.
      */
+    @Deprecated
     @XmlElement(required = true)
     private String title;
 
@@ -194,6 +200,12 @@ public class CertificationResult implements Serializable {
     @XmlElement(name = "macraMeasure")
     private List<MacraMeasure> g2MacraMeasures;
 
+    /**
+     * Detailed information about the relevant certification criterion.
+     */
+    @XmlElement(name = "criterion")
+    private CertificationCriterion criterion;
+
     public CertificationResult() {
         allowedMacraMeasures = new ArrayList<MacraMeasure>();
         additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
@@ -206,11 +218,7 @@ public class CertificationResult implements Serializable {
         g2MacraMeasures = new ArrayList<MacraMeasure>();
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public CertificationResult(CertificationResultDetailsDTO certResult) {
+    public CertificationResult(final CertificationResultDetailsDTO certResult) {
         this();
         this.setId(certResult.getId());
         this.setNumber(certResult.getNumber());
@@ -222,6 +230,13 @@ public class CertificationResult implements Serializable {
         this.setG2Success(certResult.getG2Success() == null ? Boolean.FALSE : certResult.getG2Success());
         this.setApiDocumentation(certResult.getApiDocumentation());
         this.setPrivacySecurityFramework(certResult.getPrivacySecurityFramework());
+        if (certResult.getCriterion() != null) {
+            this.criterion = new CertificationCriterion(certResult.getCriterion());
+        }
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public void setId(final Long id) {
@@ -380,13 +395,22 @@ public class CertificationResult implements Serializable {
         this.allowedTestFunctionalities = testFunctionalities;
     }
 
-    public static String formatPrivacyAndSecurityFramework(String privacyAndSecurityFramework) {
+    public CertificationCriterion getCriterion() {
+        return criterion;
+    }
+
+    public void setCriterion(final CertificationCriterion criterion) {
+        this.criterion = criterion;
+    }
+
+    public static String formatPrivacyAndSecurityFramework(final String privacyAndSecurityFramework) {
         if (StringUtils.isEmpty(privacyAndSecurityFramework)) {
             return privacyAndSecurityFramework;
         }
-        privacyAndSecurityFramework = privacyAndSecurityFramework.replace(",", PRIVACY_SECURITY_FRAMEWORK_DELIMITER);
+        String privacyAndSecurityFrameworkFormatted =
+                privacyAndSecurityFramework.replace(",", PRIVACY_SECURITY_FRAMEWORK_DELIMITER);
         StringBuilder result = new StringBuilder();
-        String[] frameworks = privacyAndSecurityFramework.split(PRIVACY_SECURITY_FRAMEWORK_DELIMITER);
+        String[] frameworks = privacyAndSecurityFrameworkFormatted.split(PRIVACY_SECURITY_FRAMEWORK_DELIMITER);
         for (int i = 0; i < frameworks.length; i++) {
             if (result.length() > 0) {
                 result.append(PRIVACY_SECURITY_FRAMEWORK_DELIMITER);

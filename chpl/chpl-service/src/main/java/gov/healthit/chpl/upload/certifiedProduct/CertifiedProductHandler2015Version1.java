@@ -86,8 +86,9 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
     private List<PendingTestParticipantEntity> participants;
     private List<PendingTestTaskEntity> tasks;
 
-    /** Default constructor. */
-    public CertifiedProductHandler2015Version1() {
+    @Autowired
+    public CertifiedProductHandler2015Version1(final ErrorMessageUtil msgUtil) {
+        super(msgUtil);
         templateColumnIndexMap = new TemplateColumnIndexMap2015Version1();
     }
 
