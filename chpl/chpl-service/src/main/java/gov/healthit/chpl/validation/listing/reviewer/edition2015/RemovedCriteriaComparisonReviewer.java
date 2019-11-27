@@ -50,7 +50,9 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
                 //find matching criteria in existing/updated listings
                 if (!StringUtils.isEmpty(updatedCert.getNumber()) && !StringUtils.isEmpty(existingCert.getNumber())
                         && updatedCert.getNumber().equals(existingCert.getNumber())) {
-                    if (isCertAdded(existingCert, updatedCert)) {
+                    if (isCertAdded(existingCert, updatedCert)
+                            && (updatedCert.getCriterion().getRemoved() != null
+                            && updatedCert.getCriterion().getRemoved().booleanValue())) {
                         updatedListing.getErrorMessages().add(
                                 msgUtil.getMessage("listing.removedCriteriaNotAllowed", updatedCert.getNumber()));
                     }
