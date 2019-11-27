@@ -247,6 +247,17 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <RollingFile name="update2014ListingStatusJob"
+            fileName="${logDir}/scheduler/updateListingStatusJob.log"
+            filePattern="${logDir}/scheduler/history/updateListingStatusJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
         <RollingFile name="remove2014UploadTemplateJob"
             fileName="${logDir}/scheduler/remove2014UploadTemplateJob.log"
             filePattern="${logDir}/scheduler/history/remove2014UploadTemplateJob-%d{yyyy-MM-dd}.log">
@@ -368,6 +379,10 @@
         <Logger name="updateListingStatusJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="updateListingStatusJob" />
+        </Logger>
+        <Logger name="update2014ListingStatusJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="update2014ListingStatusJob" />
         </Logger>
         <Logger name="remove2014UploadTemplateJobLogger" level="INFO"
             additivity="false">
