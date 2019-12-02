@@ -15,6 +15,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CriterionProductStatisticsDAO;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CriterionProductStatisticsDTO;
 import gov.healthit.chpl.entity.CriterionProductStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -108,10 +109,13 @@ public class CriterionProductStatisticsCalculator {
             final Map<String, Long> productCounts) {
         List<CriterionProductStatisticsEntity> entities = new ArrayList<CriterionProductStatisticsEntity>();
         for (Entry<String, Long> entry : productCounts.entrySet()) {
-            CriterionProductStatisticsEntity entity = new CriterionProductStatisticsEntity();
-            entity.setProductCount(entry.getValue());
-            entity.setCertificationCriterionId(certificationCriterionDAO.getByName(entry.getKey()).getId());
-            entities.add(entity);
+            CertificationCriterionDTO criterion = certificationCriterionDAO.getByName(entry.getKey());
+            if (!criterion.getRemoved()) {
+                CriterionProductStatisticsEntity entity = new CriterionProductStatisticsEntity();
+                entity.setProductCount(entry.getValue());
+                entity.setCertificationCriterionId(criterion.getId());
+                entities.add(entity);
+            }
         }
         return entities;
     }
