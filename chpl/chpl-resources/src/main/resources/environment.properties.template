@@ -100,6 +100,7 @@ uploadErrorEmailSubject=CHPL Listing Upload Error
 schemaXmlName=listingSchema.xsd
 schemaCsv2014Name=listing2014Schema.csv
 schemaCsv2015Name=listing2015Schema.csv
+schemaCsv2015NameLegacy=2015 Listing CSV Data Dictionary Legacy.csv
 schemaSurveillanceName=surveillanceSchema.csv
 schemaBasicSurveillanceName=Surveillance (basic) CSV Data Dictionary.csv
 
@@ -157,7 +158,7 @@ asyncCacheRefreshEnabled=true
 
 #Website Change Request Email
 changeRequest.website.approval.subject=Website URL change request approved
-changeRequest.website.approval.body=Hello,<br/><br/>The website change request that was submitted on %s to change the website URL to %s has been approved by %s.  The updated website URL will now be reflected in CHPL.<br/><br/>Thanks,<br/>The CHPL Team 
+changeRequest.website.approval.body=Hello,<br/><br/>The website change request that was submitted on %s to change the website URL to %s has been approved by %s.  The updated website URL will now be reflected in CHPL.<br/><br/>Thanks,<br/>The CHPL Team
 changeRequest.website.pendingDeveloperAction.subject=Website change request requires further action
 changeRequest.website.pendingDeveloperAction.body=Hello,<br/><br/>The website change request that was submitted on %s to change the website URL to %s requires further action.  %s has sent this change request back you for updating with the following comment:<br><ul><li>%s</li></ul><br/><br/>Thanks,<br/>The CHPL Team
 changeRequest.website.rejected.subject=Website change request rejected

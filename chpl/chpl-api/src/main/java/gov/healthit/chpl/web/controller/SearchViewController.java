@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Lazy;
@@ -33,6 +34,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
@@ -123,6 +125,9 @@ public class SearchViewController {
 
     @Autowired private FileUtils fileUtils;
 
+    @Autowired
+    private FF4j ff4j;
+
     private static final Logger LOGGER = LogManager.getLogger(SearchViewController.class);
 
     /**
@@ -180,7 +185,11 @@ public class SearchViewController {
             } else if (edition.equals("2014")) {
                 toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2014Name"));
             } else if (edition.equals("2015")) {
-                toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015Name"));
+                if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
+                    toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015Name"));
+                } else {
+                    toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015NameLegacy"));
+                }
             }
 
             if (!toDownload.exists()) {
