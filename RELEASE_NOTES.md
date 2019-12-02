@@ -1,10 +1,42 @@
 # Release Notes
 
+## Version 21.14.0
+_2 December 2019_
+
+### Features
+* Add scheduled job to update 2014 listing status
+* Add a scheduled job that will remove 2014 upload templates
+* Stop displaying "removed" criteria in download files or on Charts
+  * Add new (flagged) CSV definition file to be used when criteria are removed
+* Add a 'removed' field to macra measures
+* Add job to mark specific 2015 criteria as removed
+
+---
+
+## Version 21.13.0
+_18 November 2019_
+
+### Features
+* Add endpoint to retrieve API Key activity metadata
+  * Update API Key calls to follow the metadata/details pattern used in other reports
+* Create report for pending Website Change Requests
+
+---
+
+## Version 21.12.0
+_4 November 2019_
+
+### Features
+* Do not require test tools or UCD Processes for 2014 listings that have ICS
+
+---
+
 ## Version 21.11.0
 _24 October 2019_
 
 ### Features
 * Add Quartz job that will update a set of listing's status
+* Add User scheduled job to generate and send a report of Pending Change Requests
 
 ---
 

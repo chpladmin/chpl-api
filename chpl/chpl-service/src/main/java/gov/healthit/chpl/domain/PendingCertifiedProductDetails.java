@@ -237,11 +237,10 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 
         List<CertificationResult> certList = new ArrayList<CertificationResult>();
         for (PendingCertificationResultDTO certCriterion : dto.getCertificationCriterion()) {
-            CertificationCriterion criteria = new CertificationCriterion();
-            criteria.setNumber(certCriterion.getNumber());
-            criteria.setTitle(certCriterion.getTitle());
+            CertificationCriterion criterion = new CertificationCriterion(certCriterion.getCriterion());
 
             CertificationResult cert = new CertificationResult();
+            cert.setCriterion(criterion);
             cert.setNumber(certCriterion.getNumber());
             cert.setTitle(certCriterion.getTitle());
             cert.setSuccess(certCriterion.getMeetsCriteria());
@@ -382,11 +381,11 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
                     for (UcdProcess currUcd : this.getSed().getUcdProcesses()) {
                         if (newUcd.matches(currUcd)) {
                             alreadyExists = true;
-                            currUcd.getCriteria().add(criteria);
+                            currUcd.getCriteria().add(criterion);
                         }
                     }
                     if (!alreadyExists) {
-                        newUcd.getCriteria().add(criteria);
+                        newUcd.getCriteria().add(criterion);
                         this.getSed().getUcdProcesses().add(newUcd);
                     }
                 }
@@ -451,11 +450,11 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
                         for (TestTask currTask : this.getSed().getTestTasks()) {
                             if (newTask.matches(currTask)) {
                                 alreadyExists = true;
-                                currTask.getCriteria().add(criteria);
+                                currTask.getCriteria().add(criterion);
                             }
                         }
                         if (!alreadyExists) {
-                            newTask.getCriteria().add(criteria);
+                            newTask.getCriteria().add(criterion);
                             this.getSed().getTestTasks().add(newTask);
                         }
                     }

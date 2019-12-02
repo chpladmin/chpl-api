@@ -94,7 +94,7 @@ import gov.healthit.chpl.util.PropertyUtil;
 
 /**
  * Certified Product Details Manager implementation.
- * 
+ *
  * @author alarned
  *
  */
@@ -174,7 +174,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 
     /**
      * Default constructor.
-     * 
+     *
      * @param cqmCriterionDAO
      *            DAO for CQMs
      * @param macraDao
@@ -674,10 +674,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 
         // get all SED data for the listing
         // ucd processes and test tasks with participants
-        CertificationCriterion criteria = new CertificationCriterion();
-        criteria.setNumber(result.getNumber());
-        criteria.setTitle(result.getTitle());
-
+        CertificationCriterion criteria = result.getCriterion();
         if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.UCD_FIELDS)) {
             List<CertificationResultUcdProcessDTO> ucdProcesses = certResultManager
                     .getUcdProcessesForCertificationResult(result.getId());

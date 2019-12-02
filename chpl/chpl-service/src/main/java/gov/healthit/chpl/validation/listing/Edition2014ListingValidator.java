@@ -9,7 +9,10 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.validation.listing.reviewer.CertificationDateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationStatusReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.ChplNumberComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ChplNumberReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.DeveloperBanComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DeveloperStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.FieldLengthReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
@@ -22,6 +25,7 @@ import gov.healthit.chpl.validation.listing.reviewer.ValidDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.RequiredData2014Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.SedG32014Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.TestFunctionality2014Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2014.TestTool2014Reviewer;
 
 /**
  * Validation interface for any listing that is already uploaded and confirmed on the CHPL.
@@ -79,6 +83,10 @@ public abstract class Edition2014ListingValidator extends Validator {
     private TestToolReviewer ttReviewer;
 
     @Autowired
+    @Qualifier("testTool2014Reviewer")
+    private TestTool2014Reviewer tt2014Reviewer;
+
+    @Autowired
     @Qualifier("testFunctionality2014Reviewer")
     private TestFunctionality2014Reviewer tfReviewer;
 
@@ -86,7 +94,16 @@ public abstract class Edition2014ListingValidator extends Validator {
     @Qualifier("urlReviewer")
     private UrlReviewer urlReviewer;
 
+    @Autowired
+    @Qualifier("chplNumberComparisonReviewer")
+    private ChplNumberComparisonReviewer chplNumberComparisonReviewer;
+
+    @Autowired
+    @Qualifier("developerBanComparisonReviewer")
+    private DeveloperBanComparisonReviewer devBanComparisonReviewer;
+
     private List<Reviewer> reviewers;
+    private List<ComparisonReviewer> comparisonReviewers;
 
     @Override
     public List<Reviewer> getReviewers() {
@@ -104,9 +121,20 @@ public abstract class Edition2014ListingValidator extends Validator {
             reviewers.add(certDateReviewer);
             reviewers.add(unattestedCriteriaWithDataReviewer);
             reviewers.add(ttReviewer);
+            reviewers.add(tt2014Reviewer);
             reviewers.add(tfReviewer);
             reviewers.add(urlReviewer);
         }
         return reviewers;
+    }
+
+    @Override
+    public List<ComparisonReviewer> getComparisonReviewers() {
+        if (comparisonReviewers == null) {
+            comparisonReviewers = new ArrayList<ComparisonReviewer>();
+            comparisonReviewers.add(chplNumberComparisonReviewer);
+            comparisonReviewers.add(devBanComparisonReviewer);
+        }
+        return comparisonReviewers;
     }
 }
