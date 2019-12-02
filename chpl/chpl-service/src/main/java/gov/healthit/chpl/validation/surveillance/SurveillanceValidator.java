@@ -4,10 +4,12 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -43,16 +45,24 @@ public class SurveillanceValidator {
     private static final String CRITERION_REQUIREMENT_TYPE = "Certified Capability";
     private static final String TRANSPARENCY_REQUIREMENT_TYPE = "Transparency or Disclosure Requirement";
 
-    @Autowired
     private SurveillanceDAO survDao;
-    @Autowired
     private CertifiedProductDAO cpDao;
-    @Autowired
     private CertificationResultDetailsDAO certResultDetailsDao;;
-    @Autowired
     private CertificationCriterionDAO criterionDao;
-    @Autowired
     private ErrorMessageUtil msgUtil;
+    private FF4j ff4j;
+
+    @Autowired
+    public SurveillanceValidator(SurveillanceDAO survDao, CertifiedProductDAO cpDao,
+            CertificationResultDetailsDAO certResultDetailsDao, CertificationCriterionDAO criterionDao,
+            ErrorMessageUtil msgUtil, FF4j ff4j) {
+        this.survDao = survDao;
+        this.cpDao = cpDao;
+        this.certResultDetailsDao = certResultDetailsDao;
+        this.criterionDao = criterionDao;
+        this.msgUtil = msgUtil;
+        this.ff4j = ff4j;
+    }
 
     /**
      * Validate a surveillance.
@@ -237,9 +247,6 @@ public class SurveillanceValidator {
                         CertificationCriterionDTO criterion = null;
                         // see if the nonconformity type is a criterion that the
                         // product has attested to
-                        // List<CertificationResultDetailsDTO> certResults =
-                        // certResultDetailsDao.getCertificationResultDetailsByCertifiedProductId(
-                        // surv.getCertifiedProduct().getId());
                         if (certResults != null && certResults.size() > 0) {
                             for (CertificationResultDetailsDTO certResult : certResults) {
                                 if (!StringUtils.isEmpty(certResult.getNumber()) && certResult.getSuccess() != null
@@ -250,9 +257,14 @@ public class SurveillanceValidator {
                             }
                         }
                         if (criterion == null) {
-                            surv.getErrorMessages()
-                                    .add(msgUtil.getMessage("surveillance.requirementInvalidForRequirementType",
+                            surv.getErrorMessages().add(
+                                    msgUtil.getMessage("surveillance.requirementInvalidForRequirementType",
                                             req.getRequirement(), req.getType().getName()));
+                        } else if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)
+                                && criterion.getRemoved() != null && criterion.getRemoved().booleanValue()) {
+                            surv.getErrorMessages().add(
+                                    msgUtil.getMessage("surveillance.requirementInvalidForRemovedCriteria",
+                                            req.getRequirement(), criterion.getNumber()));
                         }
                     } else if (req.getType().getName().equals(TRANSPARENCY_REQUIREMENT_TYPE)) {
                         // requirement has to be one of 170.523 (k)(1) or (k)(2)
@@ -345,6 +357,12 @@ public class SurveillanceValidator {
                                                 && certResult.getSuccess() != null && certResult.getSuccess()
                                                 && certResult.getNumber().equals(nc.getNonconformityType())) {
                                             criterion = criterionDao.getByName(nc.getNonconformityType());
+                                            if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE) && criterion != null
+                                                    && criterion.getRemoved() != null && criterion.getRemoved().booleanValue()) {
+                                                surv.getErrorMessages().add(
+                                                        msgUtil.getMessage("surveillance.requirementInvalidForRemovedCriteria",
+                                                                req.getRequirement(), criterion.getNumber()));
+                                            }
                                         }
                                     }
                                 }
