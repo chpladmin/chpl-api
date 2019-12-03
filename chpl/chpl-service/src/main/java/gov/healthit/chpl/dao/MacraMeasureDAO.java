@@ -59,7 +59,7 @@ public class MacraMeasureDAO extends BaseDAOImpl {
         return new MacraMeasureDTO(entity);
     }
 
-    public void remove(String value) {
+    public void removeAllByValue(String value) {
         getMeasuresByValue(value).stream()
                 .forEach(measure -> {
                     measure.setRemoved(true);

@@ -27,7 +27,7 @@ public class RemoveRT13ECMacraMeasureJob extends QuartzJob {
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        LOGGER.info("********* Starting the Remove Criteria job. *********");
+        LOGGER.info("********* Starting the Remove RT13 EC Macra Measure job. *********");
 
         // Since there is no manager, we need to handle the transaction.
         // @Transactional does not work in Quartz jobs, since Spring context
@@ -37,7 +37,7 @@ public class RemoveRT13ECMacraMeasureJob extends QuartzJob {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try {
-                    macraMeasureDAO.remove(RT13_EC);
+                    macraMeasureDAO.removeAllByValue(RT13_EC);
                 } catch (Exception e) {
                     LOGGER.error(e.getMessage(), e);
                     status.setRollbackOnly();
@@ -45,6 +45,6 @@ public class RemoveRT13ECMacraMeasureJob extends QuartzJob {
             }
         });
 
-        LOGGER.info("********* Completed the Remove Criteria job. *********");
+        LOGGER.info("********* Completed the Remove RT13 EC Macra Measure job. *********");
     }
 }
