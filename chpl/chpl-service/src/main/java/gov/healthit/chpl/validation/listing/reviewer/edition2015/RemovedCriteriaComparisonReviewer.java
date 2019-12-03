@@ -171,25 +171,19 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
     private boolean isAdditionalSoftwareChanged(CertificationResult existingCert, CertificationResult updatedCert) {
         if (certResultRules.hasCertOption(updatedCert.getNumber(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
             for (CertificationResultAdditionalSoftware updatedAdditionalSoftware : updatedCert.getAdditionalSoftware()) {
-                boolean hasMatch = false;
-                for (CertificationResultAdditionalSoftware existingAdditionalSoftware : existingCert.getAdditionalSoftware()) {
-                    if (updatedAdditionalSoftware.matches(existingAdditionalSoftware)) {
-                        hasMatch = true;
-                    }
-                }
-                if (!hasMatch) {
+                boolean isInExistingCert =
+                        existingCert.getAdditionalSoftware().stream()
+                        .anyMatch(existingAdditionalSoftware -> existingAdditionalSoftware.matches(updatedAdditionalSoftware));
+                if (!isInExistingCert) {
                     return true;
                 }
             }
 
             for (CertificationResultAdditionalSoftware existingAdditionalSoftware : existingCert.getAdditionalSoftware()) {
-                boolean hasMatch = false;
-                for (CertificationResultAdditionalSoftware updatedAdditionalSoftware : updatedCert.getAdditionalSoftware()) {
-                    if (existingAdditionalSoftware.matches(updatedAdditionalSoftware)) {
-                        hasMatch = true;
-                    }
-                }
-                if (!hasMatch) {
+                boolean isInUpdatedCert =
+                        updatedCert.getAdditionalSoftware().stream()
+                        .anyMatch(updatedAdditionalSoftware -> updatedAdditionalSoftware.matches(existingAdditionalSoftware));
+                if (!isInUpdatedCert) {
                     return true;
                 }
             }
@@ -200,25 +194,19 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
     private boolean isFunctionalityTestedChanged(CertificationResult existingCert, CertificationResult updatedCert) {
         if (certResultRules.hasCertOption(updatedCert.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
             for (CertificationResultTestFunctionality updatedTestFunctionality : updatedCert.getTestFunctionality()) {
-                boolean hasMatch = false;
-                for (CertificationResultTestFunctionality existingTestFunctionality : existingCert.getTestFunctionality()) {
-                    if (updatedTestFunctionality.matches(existingTestFunctionality)) {
-                        hasMatch = true;
-                    }
-                }
-                if (!hasMatch) {
+                boolean isInExistingCert =
+                        existingCert.getTestFunctionality().stream()
+                        .anyMatch(existingTestFunctionality -> existingTestFunctionality.matches(updatedTestFunctionality));
+                if (!isInExistingCert) {
                     return true;
                 }
             }
 
             for (CertificationResultTestFunctionality existingTestFunctionality : existingCert.getTestFunctionality()) {
-                boolean hasMatch = false;
-                for (CertificationResultTestFunctionality updatedTestFunctionality : updatedCert.getTestFunctionality()) {
-                    if (existingTestFunctionality.matches(updatedTestFunctionality)) {
-                        hasMatch = true;
-                    }
-                }
-                if (!hasMatch) {
+                boolean isInUpdatedCert =
+                        updatedCert.getTestFunctionality().stream()
+                        .anyMatch(updatedTestFunctionality -> updatedTestFunctionality.matches(existingTestFunctionality));
+                if (!isInUpdatedCert) {
                     return true;
                 }
             }
@@ -229,25 +217,19 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
     private boolean isG1MacraMeasuresChanged(CertificationResult existingCert, CertificationResult updatedCert) {
         if (certResultRules.hasCertOption(updatedCert.getNumber(), CertificationResultRules.G1_MACRA)) {
             for (MacraMeasure updatedMacra : updatedCert.getG1MacraMeasures()) {
-                boolean hasMatch = false;
-                for (MacraMeasure existingMacra : existingCert.getG1MacraMeasures()) {
-                    if (updatedMacra.matches(existingMacra)) {
-                        hasMatch = true;
-                    }
-                }
-                if (!hasMatch) {
+                boolean isInExistingCert =
+                        existingCert.getG1MacraMeasures().stream()
+                        .anyMatch(existingMacra -> existingMacra.matches(updatedMacra));
+                if (!isInExistingCert) {
                     return true;
                 }
             }
 
             for (MacraMeasure existingMacra : existingCert.getG1MacraMeasures()) {
-                boolean hasMatch = false;
-                for (MacraMeasure updatedMacra : updatedCert.getG1MacraMeasures()) {
-                    if (existingMacra.matches(updatedMacra)) {
-                        hasMatch = true;
-                    }
-                }
-                if (!hasMatch) {
+                boolean isInUpdatedCert =
+                        updatedCert.getG1MacraMeasures().stream()
+                        .anyMatch(updatedMacra -> updatedMacra.matches(existingMacra));
+                if (!isInUpdatedCert) {
                     return true;
                 }
             }
@@ -258,25 +240,19 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
     private boolean isG2MacraMeasuresChanged(CertificationResult existingCert, CertificationResult updatedCert) {
         if (certResultRules.hasCertOption(updatedCert.getNumber(), CertificationResultRules.G2_MACRA)) {
             for (MacraMeasure updatedMacra : updatedCert.getG2MacraMeasures()) {
-                boolean hasMatch = false;
-                for (MacraMeasure existingMacra : existingCert.getG2MacraMeasures()) {
-                    if (updatedMacra.matches(existingMacra)) {
-                        hasMatch = true;
-                    }
-                }
-                if (!hasMatch) {
+                boolean isInExistingCert =
+                        existingCert.getG2MacraMeasures().stream()
+                        .anyMatch(existingMacra -> existingMacra.matches(updatedMacra));
+                if (!isInExistingCert) {
                     return true;
                 }
             }
 
             for (MacraMeasure existingMacra : existingCert.getG2MacraMeasures()) {
-                boolean hasMatch = false;
-                for (MacraMeasure updatedMacra : updatedCert.getG2MacraMeasures()) {
-                    if (existingMacra.matches(updatedMacra)) {
-                        hasMatch = true;
-                    }
-                }
-                if (!hasMatch) {
+                boolean isInUpdatedCert =
+                        updatedCert.getG2MacraMeasures().stream()
+                        .anyMatch(updatedMacra -> updatedMacra.matches(existingMacra));
+                if (!isInUpdatedCert) {
                     return true;
                 }
             }
@@ -287,25 +263,19 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
     private boolean isTestStandardsChanged(CertificationResult existingCert, CertificationResult updatedCert) {
         if (certResultRules.hasCertOption(updatedCert.getNumber(), CertificationResultRules.STANDARDS_TESTED)) {
             for (CertificationResultTestStandard updatedTestStandard : updatedCert.getTestStandards()) {
-                boolean hasMatch = false;
-                for (CertificationResultTestStandard existingTestStandard : existingCert.getTestStandards()) {
-                    if (updatedTestStandard.matches(existingTestStandard)) {
-                        hasMatch = true;
-                    }
-                }
-                if (!hasMatch) {
+                boolean isInExistingCert =
+                        existingCert.getTestStandards().stream()
+                        .anyMatch(existingTestStandard -> existingTestStandard.matches(updatedTestStandard));
+                if (!isInExistingCert) {
                     return true;
                 }
             }
 
             for (CertificationResultTestStandard existingTestStandard : existingCert.getTestStandards()) {
-                boolean hasMatch = false;
-                for (CertificationResultTestStandard updatedTestStandard : updatedCert.getTestStandards()) {
-                    if (existingTestStandard.matches(updatedTestStandard)) {
-                        hasMatch = true;
-                    }
-                }
-                if (!hasMatch) {
+                boolean isInUpdatedCert =
+                        updatedCert.getTestStandards().stream()
+                        .anyMatch(updatedTestStandard -> updatedTestStandard.matches(existingTestStandard));
+                if (!isInUpdatedCert) {
                     return true;
                 }
             }
@@ -316,25 +286,19 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
     private boolean isTestDataChanged(CertificationResult existingCert, CertificationResult updatedCert) {
         if (certResultRules.hasCertOption(updatedCert.getNumber(), CertificationResultRules.TEST_DATA)) {
             for (CertificationResultTestData updatedTestData : updatedCert.getTestDataUsed()) {
-                boolean hasMatch = false;
-                for (CertificationResultTestData existingTestData : existingCert.getTestDataUsed()) {
-                    if (updatedTestData.matches(existingTestData)) {
-                        hasMatch = true;
-                    }
-                }
-                if (!hasMatch) {
+                boolean isInExistingCert =
+                        existingCert.getTestDataUsed().stream()
+                        .anyMatch(existingTestData -> existingTestData.matches(updatedTestData));
+                if (!isInExistingCert) {
                     return true;
                 }
             }
 
             for (CertificationResultTestData existingTestData : existingCert.getTestDataUsed()) {
-                boolean hasMatch = false;
-                for (CertificationResultTestData updatedTestData : updatedCert.getTestDataUsed()) {
-                    if (existingTestData.matches(updatedTestData)) {
-                        hasMatch = true;
-                    }
-                }
-                if (!hasMatch) {
+                boolean isInUpdatedCert =
+                        updatedCert.getTestDataUsed().stream()
+                        .anyMatch(updatedTestData -> updatedTestData.matches(existingTestData));
+                if (!isInUpdatedCert) {
                     return true;
                 }
             }
@@ -345,25 +309,19 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
     private boolean isTestProceduresChanged(CertificationResult existingCert, CertificationResult updatedCert) {
         if (certResultRules.hasCertOption(updatedCert.getNumber(), CertificationResultRules.TEST_PROCEDURE)) {
             for (CertificationResultTestProcedure updatedTestProcedure : updatedCert.getTestProcedures()) {
-                boolean hasMatch = false;
-                for (CertificationResultTestProcedure existingTestProcedure : existingCert.getTestProcedures()) {
-                    if (updatedTestProcedure.matches(existingTestProcedure)) {
-                        hasMatch = true;
-                    }
-                }
-                if (!hasMatch) {
+                boolean isInExistingCert =
+                        existingCert.getTestProcedures().stream()
+                        .anyMatch(existingTestProcedure -> existingTestProcedure.matches(updatedTestProcedure));
+                if (!isInExistingCert) {
                     return true;
                 }
             }
 
             for (CertificationResultTestProcedure existingTestProcedure : existingCert.getTestProcedures()) {
-                boolean hasMatch = false;
-                for (CertificationResultTestProcedure updatedTestProcedure : updatedCert.getTestProcedures()) {
-                    if (existingTestProcedure.matches(updatedTestProcedure)) {
-                        hasMatch = true;
-                    }
-                }
-                if (!hasMatch) {
+                boolean isInUpdatedCert =
+                        updatedCert.getTestProcedures().stream()
+                        .anyMatch(updatedTestProcedure -> updatedTestProcedure.matches(existingTestProcedure));
+                if (!isInUpdatedCert) {
                     return true;
                 }
             }
@@ -374,25 +332,19 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
     private boolean isTestToolsChanged(CertificationResult existingCert, CertificationResult updatedCert) {
         if (certResultRules.hasCertOption(updatedCert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)) {
             for (CertificationResultTestTool updatedTestTool : updatedCert.getTestToolsUsed()) {
-                boolean hasMatch = false;
-                for (CertificationResultTestTool existingTestTool : existingCert.getTestToolsUsed()) {
-                    if (updatedTestTool.matches(existingTestTool)) {
-                        hasMatch = true;
-                    }
-                }
-                if (!hasMatch) {
+                boolean isInExistingCert =
+                        existingCert.getTestToolsUsed().stream()
+                        .anyMatch(existingTestTool -> existingTestTool.matches(updatedTestTool));
+                if (!isInExistingCert) {
                     return true;
                 }
             }
 
             for (CertificationResultTestTool existingTestTool : existingCert.getTestToolsUsed()) {
-                boolean hasMatch = false;
-                for (CertificationResultTestTool updatedTestTool : updatedCert.getTestToolsUsed()) {
-                    if (existingTestTool.matches(updatedTestTool)) {
-                        hasMatch = true;
-                    }
-                }
-                if (!hasMatch) {
+                boolean isInUpdatedCert =
+                        updatedCert.getTestToolsUsed().stream()
+                        .anyMatch(updatedTestTool -> updatedTestTool.matches(existingTestTool));
+                if (!isInUpdatedCert) {
                     return true;
                 }
             }
