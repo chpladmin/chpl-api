@@ -12,7 +12,7 @@
     </pre-processing-commands>
     <schedule>
         <!-- Delete from here to "DELETE END MARKER" after PROD push -->
-<!-- Job used to mark 2014 upload templates as deleted. -->
+        <!-- Job used to mark 2014 upload templates as deleted. -->
         <job>
             <name>remove2014UploadTemplates</name>
             <group>systemJobs</group>
