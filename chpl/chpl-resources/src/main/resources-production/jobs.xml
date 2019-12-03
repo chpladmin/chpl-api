@@ -95,7 +95,7 @@
         <job>
             <name>removeRT13ECMacraMeasureJob</name>
             <group>systemJobs</group>
-            <description>Sets the removed flag to 'true' for RT 13 EC macra measure</description>
+            <description>Sets the removed flag to 'true' for RT13 EC macra measure</description>
             <job-class>gov.healthit.chpl.scheduler.job.RemoveRT13ECMacraMeasureJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
