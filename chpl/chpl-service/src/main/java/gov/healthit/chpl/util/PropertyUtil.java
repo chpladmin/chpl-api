@@ -6,18 +6,24 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**
- * A utility class for reading or interpreting properties
- * from the environment.properties file.
+ * A utility class for reading or interpreting properties from the environment.properties file.
+ * 
  * @author kekey
  *
  */
 @Component
 public class PropertyUtil {
-    @Autowired private Environment env;
+    private Environment env;
+
+    @Autowired
+    public PropertyUtil(final Environment env) {
+        this.env = env;
+    }
 
     /**
-     * Determines if listing details may be retrieved asynchronously.
-     * Defaults to false if the property is not specified.
+     * Determines if listing details may be retrieved asynchronously. Defaults to false if the property is not
+     * specified.
+     * 
      * @return
      */
     public Boolean isAsyncListingDetailsEnabled() {
@@ -28,8 +34,9 @@ public class PropertyUtil {
     }
 
     /**
-     * Determines if the listing collection cache may be refreshed asynchronously.
-     * Defaults to false if the property is not specified.
+     * Determines if the listing collection cache may be refreshed asynchronously. Defaults to false if the property is
+     * not specified.
+     * 
      * @return
      */
     public Boolean isAsyncCacheRefreshEnabled() {

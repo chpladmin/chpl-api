@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.EnvironmentAware;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +19,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.MediaType;
@@ -39,6 +40,8 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.view.JstlView;
 
 import gov.healthit.chpl.job.ExportQuarterlySurveillanceReportJob;
 import gov.healthit.chpl.job.MeaningfulUseUploadJob;
@@ -55,10 +58,14 @@ import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 @EnableCaching
 @PropertySources({
         @PropertySource("classpath:/environment.properties"),
+        @PropertySource(value = "classpath:/environment-override.properties", ignoreResourceNotFound = true),
         @PropertySource("classpath:/lookup.properties"),
+        @PropertySource(value = "classpath:/lookup-override.properties", ignoreResourceNotFound = true),
+        @PropertySource("classpath:/email.properties"),
+        @PropertySource(value = "classpath:/email-override.properties", ignoreResourceNotFound = true),
 })
 @ComponentScan(basePackages = {
-        "gov.healthit.chpl.**"
+        "org.springframework.security.**", "org.springframework.core.env.**", "gov.healthit.chpl.**"
 })
 public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements EnvironmentAware {
 
@@ -146,10 +153,16 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
     }
 
     @Bean
-    public ReloadableResourceBundleMessageSource messageSource() {
-        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasename("classpath:/errors");
+    public MessageSource messageSource() {
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasename("errors-override");
+
+        ResourceBundleMessageSource parentMessageSource = new ResourceBundleMessageSource();
+        parentMessageSource.setBasename("errors");
+
+        messageSource.setParentMessageSource(parentMessageSource);
         messageSource.setDefaultEncoding("UTF-8");
+
         return messageSource;
     }
 
@@ -167,6 +180,15 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
         LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
         interceptor.setParamName("lang");
         return interceptor;
+    }
+
+    @Bean
+    public InternalResourceViewResolver viewResolver() {
+        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+        viewResolver.setViewClass(JstlView.class);
+        viewResolver.setPrefix("/webapp/WEB-INF/jsp/");
+        viewResolver.setSuffix(".jsp");
+        return viewResolver;
     }
 
     @Override

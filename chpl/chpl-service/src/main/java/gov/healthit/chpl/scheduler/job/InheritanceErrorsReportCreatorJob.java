@@ -1,14 +1,14 @@
 package gov.healthit.chpl.scheduler.job;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,9 +16,7 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
@@ -30,15 +28,14 @@ import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.dto.scheduler.InheritanceErrorsReportDTO;
-import gov.healthit.chpl.exception.EntityCreationException;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
-import gov.healthit.chpl.scheduler.DataCollectorAsyncSchedulerHelper;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 /**
- * Initiates and runs the the Quartz job that generates the data that is used to to create
- * the Inheritance Errors Report notification.
+ * Initiates and runs the the Quartz job that generates the data that is used to to create the Inheritance Errors Report
+ * notification.
+ * 
  * @author alarned
  *
  */
@@ -46,9 +43,7 @@ import gov.healthit.chpl.util.ChplProductNumberUtil;
 public class InheritanceErrorsReportCreatorJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("inheritanceErrorsReportCreatorJobLogger");
     private static final String EDITION_2015 = "2015";
-    private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
     private static final int MIN_NUMBER_TO_NOT_NEED_PREFIX = 10;
-    private Properties props;
 
     @Autowired
     private CertifiedProductSearchDAO certifiedProductSearchDAO;
@@ -60,131 +55,120 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
     @Autowired
-    private DataCollectorAsyncSchedulerHelper dataCollectorAsyncSchedulerHelper;
-
-    @Autowired
     private ListingGraphDAO listingGraphDAO;
 
     @Autowired
-    private MessageSource messageSource;
+    private ErrorMessageUtil errorMessageUtil;
+
+    @Autowired
+    private Environment env;
+
+    private Date curesRuleEffectiveDate;
 
     /**
      * Constructor to initialize InheritanceErrorsReportCreatorJob object.
-     * @throws Exception is thrown
+     * 
+     * @throws Exception
+     *             is thrown
      */
     public InheritanceErrorsReportCreatorJob() throws Exception {
         super();
-        loadProperties();
     }
 
     @Override
     @Transactional
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        dataCollectorAsyncSchedulerHelper.setLogger(LOGGER);
 
         LOGGER.info("********* Starting the Inheritance Error Report Creator job. *********");
-        List<CertifiedProductSearchDetails> results = retrieveData();
-        List<InheritanceErrorsReportDTO> errors = new ArrayList<InheritanceErrorsReportDTO>();
-        for (CertifiedProductSearchDetails listing : results) {
+
+        curesRuleEffectiveDate = getCuresRuleEffectiveDate();
+        if (curesRuleEffectiveDate == null) {
+            return;
+        }
+
+        inheritanceErrorsReportDAO.deleteAll();
+        List<CertifiedProductFlatSearchResult> listings = certifiedProductSearchDAO.getAllCertifiedProducts();
+        List<CertifiedProductFlatSearchResult> certifiedProducts = filterData(listings);
+
+        ExecutorService executorService = null;
+        try {
+            Integer threadPoolSize = getThreadCountForJob();
+            executorService = Executors.newFixedThreadPool(threadPoolSize);
+
+            for (CertifiedProductFlatSearchResult result : certifiedProducts) {
+                CompletableFuture.supplyAsync(() -> getCertifiedProductSearchDetails(result.getId()), executorService)
+                        .thenApply(cp -> check(cp))
+                        .thenAccept(error -> saveInheritanceErrorsReportSingle(error));
+            }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        } finally {
+            executorService.shutdown();
+        }
+
+        LOGGER.info("Completed the Inheritance Error Report Creator job. *********");
+    }
+
+    private CertifiedProductSearchDetails getCertifiedProductSearchDetails(Long id) {
+        CertifiedProductSearchDetails cp = null;
+        try {
+            cp = certifiedProductDetailsManager.getCertifiedProductDetails(id);
+            LOGGER.info("Completed retrieval of listing [" + cp.getChplProductNumber() + "]");
+        } catch (Exception e) {
+            LOGGER.error("Could not retrieve listing [" + id + "] - " + e.getMessage(), e);
+        }
+        return cp;
+    }
+
+    private InheritanceErrorsReportDTO check(CertifiedProductSearchDetails listing) {
+        if (listing == null) {
+            return null;
+        }
+        InheritanceErrorsReportDTO item = null;
+        try {
             String reason = breaksIcsRules(listing);
             if (!StringUtils.isEmpty(reason)) {
-                InheritanceErrorsReportDTO item = new InheritanceErrorsReportDTO();
+                item = new InheritanceErrorsReportDTO();
                 item.setChplProductNumber(listing.getChplProductNumber());
                 item.setDeveloper(listing.getDeveloper().getName());
                 item.setProduct(listing.getProduct().getName());
                 item.setVersion(listing.getVersion().getVersion());
                 item.setAcb(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
-                String productDetailsUrl = props.getProperty("chplUrlBegin").trim();
+                String productDetailsUrl = env.getProperty("chplUrlBegin").trim();
+                LOGGER.info("productDetailsUrl = " + productDetailsUrl);
                 if (!productDetailsUrl.endsWith("/")) {
                     productDetailsUrl += "/";
                 }
                 productDetailsUrl += "#/product/" + listing.getId();
                 item.setUrl(productDetailsUrl);
                 item.setReason(reason);
-                errors.add(item);
             }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
         }
-        inheritanceErrorsReportDAO.deleteAll();
-        if (errors.size() > 0) {
-            saveInheritanceErrorsReport(errors);
-        }
-        LOGGER.info("Completed the Inheritance Error Report Creator job. *********");
+        LOGGER.info("Completed check of listing [" + listing.getChplProductNumber() + "]");
+        return item;
     }
 
-    private void saveInheritanceErrorsReport(final List<InheritanceErrorsReportDTO> items) {
+    private void saveInheritanceErrorsReportSingle(final InheritanceErrorsReportDTO item) {
+        if (item == null) {
+            return;
+        }
         try {
-            inheritanceErrorsReportDAO.create(items);
-        } catch (EntityCreationException | EntityRetrievalException e) {
+            inheritanceErrorsReportDAO.create(item);
+            LOGGER.info("Completed saving of error [" + item.getChplProductNumber() + "]");
+        } catch (Exception e) {
             LOGGER.error("Unable to save Inheritance Errors Report {} with error message {}",
-                    items.toString(), e.getLocalizedMessage());
+                    item.toString(), e.getLocalizedMessage());
         }
-    }
-
-    private Properties loadProperties() throws IOException {
-        InputStream in =
-                InheritanceErrorsReportCreatorJob.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
-        if (in == null) {
-            props = null;
-            throw new FileNotFoundException("Environment Properties File not found in class path.");
-        } else {
-            props = new Properties();
-            props.load(in);
-            in.close();
-        }
-        return props;
-    }
-
-    private List<CertifiedProductSearchDetails> retrieveData() {
-        List<CertifiedProductFlatSearchResult> listings = certifiedProductSearchDAO.getAllCertifiedProducts();
-        List<CertifiedProductFlatSearchResult> certifiedProducts = filterData(listings);
-        LOGGER.info("2015 Certified Product Count: " + certifiedProducts.size());
-
-        List<CertifiedProductSearchDetails> certifiedProductsWithDetails = getCertifiedProductDetailsForAll(
-                certifiedProducts);
-
-        return certifiedProductsWithDetails;
     }
 
     private List<CertifiedProductFlatSearchResult> filterData(
             final List<CertifiedProductFlatSearchResult> certifiedProducts) {
-        List<CertifiedProductFlatSearchResult> results = new ArrayList<CertifiedProductFlatSearchResult>();
-        for (CertifiedProductFlatSearchResult result : certifiedProducts) {
-            if (result.getEdition().equalsIgnoreCase(EDITION_2015)) {
-                results.add(result);
-            }
-        }
-        return results;
-    }
-
-    private List<CertifiedProductSearchDetails> getCertifiedProductDetailsForAll(
-            final List<CertifiedProductFlatSearchResult> certifiedProducts) {
-
-        List<CertifiedProductSearchDetails> details = new ArrayList<CertifiedProductSearchDetails>();
-        List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
-
-        for (CertifiedProductFlatSearchResult certifiedProduct : certifiedProducts) {
-            try {
-                futures.add(dataCollectorAsyncSchedulerHelper
-                        .getCertifiedProductDetail(certifiedProduct.getId(), certifiedProductDetailsManager));
-            } catch (EntityRetrievalException e) {
-                LOGGER.error("Could not retrieve certified product details for id: " + certifiedProduct.getId(), e);
-            }
-        }
-
-        Date startTime = new Date();
-        for (Future<CertifiedProductSearchDetails> future : futures) {
-            try {
-                details.add(future.get());
-            } catch (InterruptedException | ExecutionException e) {
-                LOGGER.error("Could not retrieve certified product details for unknown id.", e);
-            }
-        }
-
-        Date endTime = new Date();
-        LOGGER.info("Time to retrieve details: " + (endTime.getTime() - startTime.getTime()));
-
-        return details;
+        return certifiedProducts.stream()
+                .filter(cp -> cp.getEdition().equalsIgnoreCase(EDITION_2015))
+                .collect(Collectors.toList());
     }
 
     private String breaksIcsRules(final CertifiedProductSearchDetails listing) {
@@ -202,8 +186,7 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
             // check if listing has ICS but no family ties
             if (hasIcs && (listing.getIcs() == null || listing.getIcs().getParents() == null
                     || listing.getIcs().getParents().size() == 0)) {
-                return messageSource.getMessage(new DefaultMessageSourceResolvable("ics.noInheritanceError"),
-                        LocaleContextHolder.getLocale());
+                return errorMessageUtil.getMessage("ics.noInheritanceError");
             }
 
             // check if this listing has correct ICS increment
@@ -221,15 +204,44 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
                 if (icsCode.intValue() != expectedIcsCode) {
                     String existing = (icsCode.toString().length() == 1 ? "0" : "") + icsCode.toString();
                     String expected = (expectedIcsCode < MIN_NUMBER_TO_NOT_NEED_PREFIX ? "0" : "") + expectedIcsCode;
-                    return String.format(
-                            messageSource.getMessage(new DefaultMessageSourceResolvable("ics.badIncrementError"),
-                                    LocaleContextHolder.getLocale()),
-                            existing, expected);
+                    return errorMessageUtil.getMessage("ics.badIncrementError", existing, expected);
                 }
             }
+
+            if (!hasIcs && doesGapExistForListing(listing) && isCertificationDateAfterRuleEffectiveDate(listing)) {
+                return errorMessageUtil.getMessage("ics.gapListingError");
+            }
+
         } catch (Exception ex) {
             LOGGER.error("Could not compare ICS value " + icsCodePart + " to inherits boolean value", ex);
         }
         return null;
+    }
+
+    private boolean doesGapExistForListing(CertifiedProductSearchDetails listing) {
+        return listing.getCertificationResults().stream()
+                .filter(cert -> cert.isGap() != null ? cert.isGap() : false)
+                .count() > 0;
+    }
+
+    private boolean isCertificationDateAfterRuleEffectiveDate(CertifiedProductSearchDetails listing) {
+        Date certDate = new Date(listing.getCertificationDate());
+        return certDate.equals(curesRuleEffectiveDate) || certDate.after(curesRuleEffectiveDate);
+    }
+
+    private Date getCuresRuleEffectiveDate() {
+        String dateFromPropertiesFile = env.getProperty("cures.ruleEffectiveDate");
+        LOGGER.info("cures.ruleEffectiveDate = " + dateFromPropertiesFile);
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+        try {
+            return sdf.parse(dateFromPropertiesFile);
+        } catch (ParseException e) {
+            LOGGER.error("Could not parse: " + dateFromPropertiesFile, e);
+            return null;
+        }
+    }
+
+    private Integer getThreadCountForJob() throws NumberFormatException {
+        return Integer.parseInt(env.getProperty("executorThreadCountForQuartzJobs"));
     }
 }
