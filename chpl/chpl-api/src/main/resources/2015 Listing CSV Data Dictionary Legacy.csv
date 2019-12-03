@@ -26,8 +26,12 @@ Open Nonconformities,Yes,<int>,"The total number of open (unresolved) non-confor
 170.315 (a)(3),Yes,TRUE; FALSE,CPOE - Diagnostic Imaging
 170.315 (a)(4),Yes,TRUE; FALSE,"Drug-Drug, Drug-Allergy Interaction Checks for CPOE"
 170.315 (a)(5),Yes,TRUE; FALSE,Demographics
+170.315 (a)(6),Yes,TRUE; FALSE,Problem List
+170.315 (a)(7),Yes,TRUE; FALSE,Medication List
+170.315 (a)(8),Yes,TRUE; FALSE,Medication Allergy List
 170.315 (a)(9),Yes,TRUE; FALSE,Clinical Decision Support
 170.315 (a)(10),Yes,TRUE; FALSE,Drug-Formulary and Preferred Drug List Checks
+170.315 (a)(11),Yes,TRUE; FALSE,Smoking Status
 170.315 (a)(12),Yes,TRUE; FALSE,Family Health History
 170.315 (a)(13),Yes,TRUE; FALSE,Patient-Specific Education Resources
 170.315 (a)(14),Yes,TRUE; FALSE,Implantable Device List
@@ -35,6 +39,8 @@ Open Nonconformities,Yes,<int>,"The total number of open (unresolved) non-confor
 170.315 (b)(1),Yes,TRUE; FALSE,Transitions of Care
 170.315 (b)(2),Yes,TRUE; FALSE,Clinical Information Reconciliation and Incorporation
 170.315 (b)(3),Yes,TRUE; FALSE,Electronic Prescribing
+170.315 (b)(4),Yes,TRUE; FALSE,Common Clinical Data Set Summary Record - Create
+170.315 (b)(5),Yes,TRUE; FALSE,Common Clinical Data Set Summary Record - Receive
 170.315 (b)(6),Yes,TRUE; FALSE,Data Export
 170.315 (b)(7),Yes,TRUE; FALSE,Data Segmentation for Privacy - Send
 170.315 (b)(8),Yes,TRUE; FALSE,Data Segmentation for Privacy - Receive

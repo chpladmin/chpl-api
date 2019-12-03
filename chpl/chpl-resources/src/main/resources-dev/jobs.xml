@@ -704,12 +704,53 @@
                     <value>ROLE_ADMIN;ROLE_ONC</value>
                 </entry>
                 <entry>
-                    <key>frequency</key>
-                    <value>WEEKLY</value>
+                    <key>parameters</key>
+                    <value>[{"label": "Listings [Comma Delimited]", "key": "listings", "type": "textarea"}, {"label": "ListingStatus", "key": "certificationStatus", "type": "select", "items": [{"id": 1, "name": "Active"}, {"id": 2, "name": "Retired"}, {"id": 3, "name": "Withdrawn by Developer"}, {"id": 4, "name": "Withdrawn by ONC-ACB"}, {"id": 5, "name": "Pending"}, {"id": 6, "name": "Suspended by ONC-ACB"}, {"id": 7, "name": "Suspended by ONC"}, {"id": 8, "name": "Terminated by ONC"}, {"id": 9, "name": "Withdrawn by Developer Under Surveillance/Review"}] }, {"label": "Effective Date", "key": "effectiveDate", "type": "date"}]</value>
+                </entry>
+            </job-data-map>
+        </job>
+
+        <!-- Job used to change status of 2014 listings to retired-->
+        <job>
+            <name>update2014ListingStatusJob</name>
+            <group>systemJobs</group>
+            <description>Updates the status for 2014 listings</description>
+            <job-class>gov.healthit.chpl.scheduler.job.Update2014ListingsStatusJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+                <entry>
+                    <key>emailCsvFileName</key>
+                    <value>2014ListingUpdateResults.csv</value>
+                </entry>
+                <entry>
+                    <key>emailSubject</key>
+                    <value>2014 Listing Update Output Results</value>
                 </entry>
                 <entry>
                     <key>parameters</key>
-                    <value>[{"label": "Listings [Comma Delimited]", "key": "listings", "type": "textarea"}, {"label": "ListingStatus", "key": "certificationStatus", "type": "select", "items": [{"id": 1, "name": "Active"}, {"id": 2, "name": "Retired"}, {"id": 3, "name": "Withdrawn by Developer"}, {"id": 4, "name": "Withdrawn by ONC-ACB"}, {"id": 5, "name": "Pending"}, {"id": 6, "name": "Suspended by ONC-ACB"}, {"id": 7, "name": "Suspended by ONC"}, {"id": 8, "name": "Terminated by ONC"}, {"id": 9, "name": "Withdrawn by Developer Under Surveillance/Review"}] }, {"label": "Effective Date", "key": "effectiveDate", "type": "date"}]</value>
+                    <value>[{"label": "Status Effective Date", "key": "effectiveDate", "type": "date"}, {"label": "New Listing Status", "key": "certificationStatus", "type": "select", "items": [{"id": 1, "name": "Active"}, {"id": 2, "name": "Retired"}, {"id": 3, "name": "Withdrawn by Developer"}, {"id": 4, "name": "Withdrawn by ONC-ACB"}, {"id": 5, "name": "Pending"}, {"id": 6, "name": "Suspended by ONC-ACB"}, {"id": 7, "name": "Suspended by ONC"}, {"id": 8, "name": "Terminated by ONC"}, {"id": 9, "name": "Withdrawn by Developer Under Surveillance/Review"}] }, {"label": "Reason For Change", "key": "reason", "type": "text"}, {"label": "Email Report To", "key": "email", "type": "text"}, {"label": "Send Update Every (x) Listings", "key": "statusInterval", "type": "text"} ]</value>
+                </entry>
+            </job-data-map>
+        </job>
+ 
+        <!-- Job used to change status of a single listings -->
+        <job>
+            <name>updateSingleListingStatusJob</name>
+            <group>subordinateJobs</group>
+            <description>Updates the status for a single listing</description>
+            <job-class>gov.healthit.chpl.scheduler.job.UpdateSingleListingStatusJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
                 </entry>
             </job-data-map>
         </job>
@@ -729,6 +770,7 @@
                 </entry>
             </job-data-map>
         </job>
+
         <!-- Job used to mark specific 2015 criteria as removed -->
         <job>
             <name>removeCriteriaJob</name>
