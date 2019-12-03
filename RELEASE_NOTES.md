@@ -1,5 +1,18 @@
 # Release Notes
 
+## Version 21.14.0
+_2 December 2019_
+
+### Features
+* Add scheduled job to update 2014 listing status
+* Add a scheduled job that will remove 2014 upload templates
+* Stop displaying "removed" criteria in download files or on Charts
+  * Add new (flagged) CSV definition file to be used when criteria are removed
+* Add a 'removed' field to macra measures
+* Add job to mark specific 2015 criteria as removed
+
+---
+
 ## Version 21.13.0
 _18 November 2019_
 
