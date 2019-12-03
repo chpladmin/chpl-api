@@ -10,6 +10,7 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 
 import com.google.common.base.Predicate;
@@ -28,7 +29,10 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  *
  */
 @Configuration
-@PropertySource("classpath:environment.properties")
+@PropertySources({
+    @PropertySource("classpath:/environment.properties"),
+    @PropertySource(value = "classpath:/environment-override.properties", ignoreResourceNotFound = true)
+})
 @EnableSwagger2
 public class SwaggerConfig implements EnvironmentAware {
 

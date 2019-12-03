@@ -1,10 +1,8 @@
 package gov.healthit.chpl.scheduler.job;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.time.Instant;
@@ -16,7 +14,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.mail.MessagingException;
 
@@ -37,16 +34,15 @@ import gov.healthit.chpl.dto.scheduler.BrokenSurveillanceRulesDTO;
 import gov.healthit.chpl.util.EmailBuilder;
 
 /**
- * The BrokenSurveillanceRulesEmailJob implements a Quartz job and is available to ROLE_ADMIN and ROLE_ACB. When
- * invoked it emails relevant individuals with Surveillance error reports.
+ * The BrokenSurveillanceRulesEmailJob implements a Quartz job and is available to ROLE_ADMIN and ROLE_ACB. When invoked
+ * it emails relevant individuals with Surveillance error reports.
+ * 
  * @author alarned
  *
  */
 public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("brokenSurveillanceRulesEmailJobLogger");
-    private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
     private DateTimeFormatter dateFormatter;
-    private Properties props;
     private Map<SurveillanceOversightRule, Integer> allBrokenRulesCounts;
 
     @Autowired
@@ -71,11 +67,12 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
 
     /**
      * Constructor that initializes the BrokenSurveillanceRulesEmailJob object.
-     * @throws Exception if thrown
+     * 
+     * @throws Exception
+     *             if thrown
      */
     public BrokenSurveillanceRulesEmailJob() throws Exception {
         super();
-        loadProperties();
         allBrokenRulesCounts = new HashMap<SurveillanceOversightRule, Integer>();
         allBrokenRulesCounts.put(SurveillanceOversightRule.LONG_SUSPENSION, 0);
         allBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_APPROVED, 0);
@@ -95,9 +92,9 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         List<BrokenSurveillanceRulesDTO> errors = getAppropriateErrors(jobContext);
         String filename = null;
         if (jobContext.getMergedJobDataMap().getString("type").equalsIgnoreCase("All")) {
-            filename = props.getProperty("oversightEmailWeeklyFileName");
+            filename = env.getProperty("oversightEmailWeeklyFileName");
         } else {
-            filename = props.getProperty("oversightEmailDailyFileName");
+            filename = env.getProperty("oversightEmailDailyFileName");
         }
         File output = null;
         List<File> files = new ArrayList<File>();
@@ -110,24 +107,26 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         String htmlMessage = null;
         if (jobContext.getMergedJobDataMap().getString("type").equalsIgnoreCase("All")) {
             if (jobContext.getMergedJobDataMap().getBoolean("acbSpecific")) {
-                String subjectSuffix = props.getProperty("oversightEmailAcbWeeklySubjectSuffix");
-                subject = jobContext.getMergedJobDataMap().getString("acb").replaceAll("\u263A", ", ") + " " + subjectSuffix;
-                htmlMessage = props.getProperty("oversightEmailAcbWeeklyHtmlMessage");
+                String subjectSuffix = env.getProperty("oversightEmailAcbWeeklySubjectSuffix");
+                subject = jobContext.getMergedJobDataMap().getString("acb").replaceAll("\u263A", ", ") + " "
+                        + subjectSuffix;
+                htmlMessage = env.getProperty("oversightEmailAcbWeeklyHtmlMessage");
             } else {
-                subject = props.getProperty("oversightEmailWeeklySubject");
-                htmlMessage = props.getProperty("oversightEmailWeeklyHtmlMessage");
+                subject = env.getProperty("oversightEmailWeeklySubject");
+                htmlMessage = env.getProperty("oversightEmailWeeklyHtmlMessage");
             }
-            htmlMessage += createHtmlEmailBody(errors.size(), props.getProperty("oversightEmailWeeklyNoContent"));
+            htmlMessage += createHtmlEmailBody(errors.size(), env.getProperty("oversightEmailWeeklyNoContent"));
         } else {
             if (jobContext.getMergedJobDataMap().getBoolean("acbSpecific")) {
-                String subjectSuffix = props.getProperty("oversightEmailAcbDailySubjectSuffix");
-                subject = jobContext.getMergedJobDataMap().getString("acb").replaceAll("\u263A", ", ") + " " + subjectSuffix;
-                htmlMessage = props.getProperty("oversightEmailAcbDailyHtmlMessage");
+                String subjectSuffix = env.getProperty("oversightEmailAcbDailySubjectSuffix");
+                subject = jobContext.getMergedJobDataMap().getString("acb").replaceAll("\u263A", ", ") + " "
+                        + subjectSuffix;
+                htmlMessage = env.getProperty("oversightEmailAcbDailyHtmlMessage");
             } else {
-                subject = props.getProperty("oversightEmailDailySubject");
-                htmlMessage = props.getProperty("oversightEmailDailyHtmlMessage");
+                subject = env.getProperty("oversightEmailDailySubject");
+                htmlMessage = env.getProperty("oversightEmailDailyHtmlMessage");
             }
-            htmlMessage += createHtmlEmailBody(errors.size(), props.getProperty("oversightEmailDailyNoContent"));
+            htmlMessage += createHtmlEmailBody(errors.size(), env.getProperty("oversightEmailDailyNoContent"));
         }
         LOGGER.info("Sending email to {} with contents {} and a total of {} broken rules",
                 to, htmlMessage, errors.size());
@@ -137,10 +136,10 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
 
             EmailBuilder emailBuilder = new EmailBuilder(env);
             emailBuilder.recipients(addresses)
-                            .subject(subject)
-                            .htmlMessage(htmlMessage)
-                            .fileAttachments(files)
-                            .sendEmail();
+                    .subject(subject)
+                    .htmlMessage(htmlMessage)
+                    .fileAttachments(files)
+                    .sendEmail();
         } catch (MessagingException e) {
             LOGGER.error(e);
         }
@@ -208,8 +207,9 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         }
 
         if (temp != null) {
-            try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(temp), Charset.forName("UTF-8").newEncoder());
-                CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
+            try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(temp),
+                    Charset.forName("UTF-8").newEncoder());
+                    CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
                 csvPrinter.printRecord(getHeaderRow());
                 for (BrokenSurveillanceRulesDTO error : errors) {
                     List<String> rowValue = generateRowValue(error);
@@ -290,19 +290,26 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         result.add(data.getDateCorrectiveActionMustBeCompleted());
         result.add(data.getDateCorrectiveActionWasCompleted());
         result.add(data.getNumberOfDaysFromDeterminationToCapApproval() > Long.MIN_VALUE
-                ? "" + data.getNumberOfDaysFromDeterminationToCapApproval() : "");
+                ? "" + data.getNumberOfDaysFromDeterminationToCapApproval()
+                : "");
         result.add(data.getNumberOfDaysFromDeterminationToPresent() > Long.MIN_VALUE
-                ? "" + data.getNumberOfDaysFromDeterminationToPresent() : "");
+                ? "" + data.getNumberOfDaysFromDeterminationToPresent()
+                : "");
         result.add(data.getNumberOfDaysFromCapApprovalToCapBegan() > Long.MIN_VALUE
-                ? "" + data.getNumberOfDaysFromCapApprovalToCapBegan() : "");
+                ? "" + data.getNumberOfDaysFromCapApprovalToCapBegan()
+                : "");
         result.add(data.getNumberOfDaysFromCapApprovalToPresent() > Long.MIN_VALUE
-                ? "" + data.getNumberOfDaysFromCapApprovalToPresent() : "");
+                ? "" + data.getNumberOfDaysFromCapApprovalToPresent()
+                : "");
         result.add(data.getNumberOfDaysFromCapBeganToCapCompleted() > Long.MIN_VALUE
-                ? "" + data.getNumberOfDaysFromCapBeganToCapCompleted() : "");
+                ? "" + data.getNumberOfDaysFromCapBeganToCapCompleted()
+                : "");
         result.add(data.getNumberOfDaysFromCapBeganToPresent() > Long.MIN_VALUE
-                ? "" + data.getNumberOfDaysFromCapBeganToPresent() : "");
+                ? "" + data.getNumberOfDaysFromCapBeganToPresent()
+                : "");
         result.add(data.getDifferenceFromCapCompletedAndCapMustBeCompleted() > Long.MIN_VALUE
-                ? "" + data.getDifferenceFromCapCompletedAndCapMustBeCompleted() : "N/A");
+                ? "" + data.getDifferenceFromCapCompletedAndCapMustBeCompleted()
+                : "N/A");
 
         return result;
     }
@@ -357,20 +364,6 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
 
         htmlMessage += TRIGGER_DESCRIPTIONS;
         return htmlMessage;
-    }
-
-    private Properties loadProperties() throws IOException {
-        InputStream in =
-                BrokenSurveillanceRulesEmailJob.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
-        if (in == null) {
-            props = null;
-            throw new FileNotFoundException("Environment Properties File not found in class path.");
-        } else {
-            props = new Properties();
-            props.load(in);
-            in.close();
-        }
-        return props;
     }
 
     private void setBrokenSurveillanceRulesDAO(final BrokenSurveillanceRulesDAO brokenSurveillanceRulesDAO) {
