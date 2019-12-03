@@ -70,8 +70,10 @@ public class MacraMeasureDAO extends BaseDAOImpl {
 
     private List<MacraMeasureEntity> getMeasuresByCertificationCriteria(String criteriaNumber) {
         Query query = entityManager
-                .createQuery("FROM MacraMeasureEntity mme " + "LEFT OUTER JOIN FETCH mme.certificationCriterion cce "
-                        + "LEFT OUTER JOIN FETCH cce.certificationEdition " + "WHERE (NOT mme.deleted = true) "
+                .createQuery("FROM MacraMeasureEntity mme "
+                        + "LEFT OUTER JOIN FETCH mme.certificationCriterion cce "
+                        + "LEFT OUTER JOIN FETCH cce.certificationEdition "
+                        + "WHERE (NOT mme.deleted = true) "
                         + "AND (UPPER(cce.number) = :criteriaNumber)", MacraMeasureEntity.class);
         query.setParameter("criteriaNumber", criteriaNumber.trim().toUpperCase());
         List<MacraMeasureEntity> result = query.getResultList();
@@ -92,9 +94,12 @@ public class MacraMeasureDAO extends BaseDAOImpl {
 
     private MacraMeasureEntity getMeasureByCertificationCriteriaAndValue(String criteriaNumber, String value) {
         Query query = entityManager.createQuery(
-                "FROM MacraMeasureEntity mme " + "LEFT OUTER JOIN FETCH mme.certificationCriterion cce "
-                        + "LEFT OUTER JOIN FETCH cce.certificationEdition " + "WHERE (NOT mme.deleted = true) "
-                        + "AND (UPPER(cce.number) = :criteriaNumber) " + "AND (UPPER(mme.value) = :value)",
+                "FROM MacraMeasureEntity mme "
+                        + "LEFT OUTER JOIN FETCH mme.certificationCriterion cce "
+                        + "LEFT OUTER JOIN FETCH cce.certificationEdition "
+                        + "WHERE (NOT mme.deleted = true) "
+                        + "AND (UPPER(cce.number) = :criteriaNumber) "
+                        + "AND (UPPER(mme.value) = :value)",
                 MacraMeasureEntity.class);
         query.setParameter("criteriaNumber", criteriaNumber.trim().toUpperCase());
         query.setParameter("value", value.trim().toUpperCase());
@@ -107,10 +112,12 @@ public class MacraMeasureDAO extends BaseDAOImpl {
 
     private MacraMeasureEntity getEntityById(Long id) {
         MacraMeasureEntity entity = null;
-        Query query = entityManager
-                .createQuery("from MacraMeasureEntity mme " + "LEFT OUTER JOIN FETCH mme.certificationCriterion cce "
+        Query query = entityManager.createQuery(
+                "from MacraMeasureEntity mme "
+                        + "LEFT OUTER JOIN FETCH mme.certificationCriterion cce "
                         + "LEFT OUTER JOIN FETCH cce.certificationEdition "
-                        + "where (NOT mme.deleted = true) AND (mme.id = :entityid) ", MacraMeasureEntity.class);
+                        + "where (NOT mme.deleted = true) AND (mme.id = :entityid) ",
+                MacraMeasureEntity.class);
         query.setParameter("entityid", id);
         List<MacraMeasureEntity> result = query.getResultList();
 
