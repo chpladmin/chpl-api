@@ -432,7 +432,7 @@
         <job>
             <name>Questionable Activity Report</name>
             <group>chplJobs</group>
-            <description>Sends a report of questionable activity within the last week</description>
+            <description>Sends a report of questionable activity within a user defined range of days</description>
             <job-class>gov.healthit.chpl.scheduler.job.QuestionableActivityEmailJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
