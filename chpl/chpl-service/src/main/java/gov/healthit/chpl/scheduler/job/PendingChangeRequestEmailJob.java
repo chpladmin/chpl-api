@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
@@ -34,12 +33,11 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.EmailBuilder;
 
 /**
- * The PendingChangeRequestEmailJob implements a Quartz job and is available to ROLE_ADMIN and ROLE_ONC. When
- * invoked it emails configured individuals with the Change Requests that are in a pending state.
+ * The PendingChangeRequestEmailJob implements a Quartz job and is available to ROLE_ADMIN and ROLE_ONC. When invoked it
+ * emails configured individuals with the Change Requests that are in a pending state.
  */
 public class PendingChangeRequestEmailJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("pendingChangeRequestEmailJobLogger");
-    private Properties props;
 
     @Autowired
     private CertificationBodyDAO certificationBodyDAO;
@@ -69,14 +67,14 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
 
     public PendingChangeRequestEmailJob() throws Exception {
         super();
-        props = getProperties();
     }
 
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Pending Change Request job. *********");
-        LOGGER.info("Creating pending change request email for: " + jobContext.getMergedJobDataMap().getString("email"));
+        LOGGER.info(
+                "Creating pending change request email for: " + jobContext.getMergedJobDataMap().getString("email"));
 
         List<CertificationBodyDTO> activeAcbs = certificationBodyDAO.findAllActive();
         Date currentDate = new Date();
@@ -84,13 +82,13 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         try {
             csvRows = getAppropriateActivities(activeAcbs, currentDate);
             String to = jobContext.getMergedJobDataMap().getString("email");
-            String subject = props.getProperty("pendingChangeRequestEmailSubject");
+            String subject = env.getProperty("pendingChangeRequestEmailSubject");
             String htmlMessage = null;
             List<File> files = null;
             if (csvRows.size() > 0) {
-                htmlMessage = String.format(props.getProperty("pendingChangeRequestHasDataEmailBody"),
+                htmlMessage = String.format(env.getProperty("pendingChangeRequestHasDataEmailBody"),
                         csvRows.size());
-                String filename = props.getProperty("pendingChangeRequestReportFilename");
+                String filename = env.getProperty("pendingChangeRequestReportFilename");
                 File output = null;
                 files = new ArrayList<File>();
                 if (csvRows.size() > 0) {
@@ -98,7 +96,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
                     files.add(output);
                 }
             } else {
-                htmlMessage = String.format(props.getProperty("pendingChangeRequestNoDataEmailBody"));
+                htmlMessage = String.format(env.getProperty("pendingChangeRequestNoDataEmailBody"));
             }
 
             LOGGER.info("Sending email to {} with contents {} and a total of {} pending change requests",
@@ -109,10 +107,10 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
 
             EmailBuilder emailBuilder = new EmailBuilder(env);
             emailBuilder.recipients(recipients)
-            .subject(subject)
-            .htmlMessage(htmlMessage)
-            .fileAttachments(files)
-            .sendEmail();
+                    .subject(subject)
+                    .htmlMessage(htmlMessage)
+                    .fileAttachments(files)
+                    .sendEmail();
 
         } catch (MessagingException e) {
             LOGGER.error(e);
@@ -174,11 +172,11 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
 
     private List<List<String>> createChangeWebsiteRows(final List<CertificationBodyDTO> activeAcbs,
             final Date currentDate)
-                    throws EntityRetrievalException {
+            throws EntityRetrievalException {
         LOGGER.debug("Getting change website requests");
         List<ChangeRequest> requests = changeRequestDAO.getAllPending().stream()
                 .sorted((cr1, cr2) -> cr1.getSubmittedDate().compareTo(cr2.getSubmittedDate()))
-                .collect(Collectors.<ChangeRequest>toList());
+                .collect(Collectors.<ChangeRequest> toList());
         LOGGER.debug("Found " + requests.size() + "pending change requests");
 
         List<List<String>> activityCsvRows = new ArrayList<List<String>>();
@@ -211,7 +209,6 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         Date changeRequestLatestDate = activity.getCurrentStatus().getStatusChangeDate();
         long daysLatestOpen = ((currentDate.getTime() - changeRequestLatestDate.getTime()) / MILLIS_PER_DAY);
         currRow.set(CHANGE_REQUEST_LATEST_DAYS_OPEN, Double.toString(daysLatestOpen));
-
 
         // Is the CR relevant for each ONC-ACB?
         for (int i = 0; i < activeAcbs.size(); i++) {

@@ -1,12 +1,9 @@
 package gov.healthit.chpl.scheduler.job;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
@@ -27,38 +24,23 @@ import gov.healthit.chpl.util.Util;
 
 /**
  * Job run by Scheduler to send email when an ONC-ACB did something that might trigger a Developer Ban.
+ * 
  * @author alarned
  *
  */
 public class TriggerDeveloperBanJob implements Job {
     private static final Logger LOGGER = LogManager.getLogger("triggerDeveloperBanJobLogger");
-    private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
-    private Properties properties = null;
 
     @Autowired
     private Environment env;
 
     /**
-     * Default constructor.
-     * @throws IOException if unable to load properties
-     */
-    public TriggerDeveloperBanJob() throws IOException {
-        InputStream in = TriggerDeveloperBanJob.class.getClassLoader()
-                .getResourceAsStream(DEFAULT_PROPERTIES_FILE);
-        if (in == null) {
-            properties = null;
-            throw new FileNotFoundException("Environment Properties File not found in class path.");
-        } else {
-            properties = new Properties();
-            properties.load(in);
-            in.close();
-        }
-    }
-
-    /**
      * Main method. Sends email messages to subscribers of that notification.
-     * @param jobContext for context of the job
-     * @throws JobExecutionException if necessary
+     * 
+     * @param jobContext
+     *            for context of the job
+     * @throws JobExecutionException
+     *             if necessary
      */
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
@@ -90,9 +72,9 @@ public class TriggerDeveloperBanJob implements Job {
 
         EmailBuilder emailBuilder = new EmailBuilder(env);
         emailBuilder.recipients(addresses)
-        .subject(subject)
-        .htmlMessage(htmlMessage)
-        .sendEmail();
+                .subject(subject)
+                .htmlMessage(htmlMessage)
+                .sendEmail();
     }
 
     private String createHtmlEmailBody(final JobExecutionContext jobContext) {
@@ -121,19 +103,19 @@ public class TriggerDeveloperBanJob implements Job {
                 + "<p>There %s %d Open Nonconformit%s and %d Closed Nonconformit%s.</p>"
                 + "<p>ONC should review the activity and all details of the listing to determine if "
                 + "this action warrants a ban on the Developer.</p>",
-                properties.getProperty("chplUrlBegin"),                                 // root of URL
-                jdm.getLong("dbId"),                                                    // for URL to product page
-                jdm.getString("chplId"),                                                // visible link
-                jdm.getString("developer"),                                             // developer name
-                jdm.getString("acb"),                                                   // ACB name
-                Util.getDateFormatter().format(new Date(jdm.getLong("changeDate"))),    // date of change
-                jdm.getString("fullName"),                                              // user making change
-                jdm.getString("status"),                                                // target status
+                env.getProperty("chplUrlBegin"), // root of URL
+                jdm.getLong("dbId"), // for URL to product page
+                jdm.getString("chplId"), // visible link
+                jdm.getString("developer"), // developer name
+                jdm.getString("acb"), // ACB name
+                Util.getDateFormatter().format(new Date(jdm.getLong("changeDate"))), // date of change
+                jdm.getString("fullName"), // user making change
+                jdm.getString("status"), // target status
                 Util.getDateFormatter().format(new Date(jdm.getLong("effectiveDate"))), // effective date of change
-                reasonForStatusChange,                                                  // reason for change
-                reasonForListingChange,                                                 // reason for change
+                reasonForStatusChange, // reason for change
+                reasonForListingChange, // reason for change
                 (openNcs != 1 ? "were" : "was"), openNcs, (openNcs != 1 ? "ies" : "y"), // formatted counts of open
-                closedNcs, (closedNcs != 1 ? "ies" : "y"));    // and closed nonconformities, with English word endings
+                closedNcs, (closedNcs != 1 ? "ies" : "y")); // and closed nonconformities, with English word endings
         return htmlMessage;
     }
 }
