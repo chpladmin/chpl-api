@@ -43,7 +43,7 @@ public class RemovedCriteriaReviewer implements Reviewer {
                         && (listing.getIcs() == null || !listing.getIcs().booleanValue())
                         && cert.getCriterion().getRemoved()) {
                     listing.getErrorMessages().add(
-                            msgUtil.getMessage("listing.removedCriteriaNotAllowed", cert.getCriterion().getNumber()));
+                            msgUtil.getMessage("listing.removedCriteriaAddNotAllowed", cert.getCriterion().getNumber()));
                 }
             }
         }
