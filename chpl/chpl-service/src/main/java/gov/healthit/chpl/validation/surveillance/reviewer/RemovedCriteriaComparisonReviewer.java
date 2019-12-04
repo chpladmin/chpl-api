@@ -1,6 +1,7 @@
 package gov.healthit.chpl.validation.surveillance.reviewer;
 
-import java.util.Set;
+import java.util.List;
+import java.util.Optional;
 
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
+import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -36,35 +38,41 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
         if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
             return;
         } else if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)) {
-            for (SurveillanceRequirement req : updatedSurveillance.getRequirements()) {
-                SurveillanceRequirement existingReq = findExistingRequirement(req, existingSurveillance.getRequirements());
-                //if it's a new requirement it can't have any removed criteria
-                if (existingReq == null && hasRemovedCriteria(req)) {
+            for (SurveillanceRequirement updatedReq : updatedSurveillance.getRequirements()) {
+                //look for an existing surv requirement that matches the updated requirement
+                //and check for removed criteria and/or updates to the requirement
+                Optional<SurveillanceRequirement> existingReq
+                    = existingSurveillance.getRequirements().stream()
+                        .filter(existingSurvReq ->
+                            doRequirementsMatch(updatedReq, existingSurvReq)
+                            && hasRemovedCriteria(updatedReq))
+                        .findFirst();
+
+                if (!existingReq.isPresent()) {
+                    //if it's a new requirement it can't have any removed criteria
                     updatedSurveillance.getErrorMessages().add(
                             msgUtil.getMessage("surveillance.requirementNotAddedForRemovedCriteria",
-                                        req.getRequirement()));
-                } else if (existingReq != null && hasRemovedCriteria(req)
-                        && !req.matches(existingReq)) {
+                                    updatedReq.getRequirement()));
+                } else if (updatedReq.matches(existingReq.get())){
                     //if it's an existing requirement with a removed criteria then it can't
                     //be edited
                     updatedSurveillance.getErrorMessages().add(
                             msgUtil.getMessage("surveillance.requirementNotEditedForRemovedCriteria",
-                                        req.getRequirement()));
+                                    updatedReq.getRequirement()));
                 }
+
+                checkNonconformitiesForRemovedCriteria(updatedReq.getNonconformities());
             }
         }
     }
 
-    private SurveillanceRequirement findExistingRequirement(
-            SurveillanceRequirement updatedReq, Set<SurveillanceRequirement> existingReqs) {
-        SurveillanceRequirement existing = null;
-        for (SurveillanceRequirement existingReq : existingReqs) {
-            if (updatedReq.getId() != null && existingReq.getId() != null
-                    && updatedReq.getId().equals(existingReq.getId())) {
-                existing = existingReq;
-            }
-        }
-        return existing;
+    private void checkNonconformitiesForRemovedCriteria(List<SurveillanceNonconformity> nonconformities) {
+
+    }
+
+    private boolean doRequirementsMatch(SurveillanceRequirement updatedReq, SurveillanceRequirement existingReq) {
+        return updatedReq.getId() != null && existingReq.getId() != null
+                && updatedReq.getId().equals(existingReq.getId());
     }
 
     private boolean hasRemovedCriteria(SurveillanceRequirement req) {
