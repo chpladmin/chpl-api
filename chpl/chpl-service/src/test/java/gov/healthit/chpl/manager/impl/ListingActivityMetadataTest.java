@@ -253,7 +253,7 @@ public class ListingActivityMetadataTest extends TestCase {
         surv.getRequirements().add(req);
 
         try {
-            survManager.createSurveillance(-1L, surv);
+            survManager.createSurveillance(surv);
         } catch (Exception e) {
             fail("Could not insert surveillance: " + e.getMessage());
             e.printStackTrace();
@@ -325,7 +325,7 @@ public class ListingActivityMetadataTest extends TestCase {
         try {
             Surveillance surv = beforeListing.getSurveillance().get(0);
             surv.setEndDate(new Date());
-            survManager.updateSurveillance(-1L, surv);
+            survManager.updateSurveillance(surv);
         } catch (Exception e) {
             fail("Could not update surveillance: " + e.getMessage());
             e.printStackTrace();

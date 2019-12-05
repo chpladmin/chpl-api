@@ -34,57 +34,124 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
         this.ff4j = ff4j;
     }
 
+    /**
+     * Removed criteria cannot be added to requirements or nonconformities by ACBs.
+     * If a removed criteria is already referenced by a requirement or nonconformity,
+     * then the details of that item cannot be edited by an ACB.
+     */
     public void review(Surveillance existingSurveillance, Surveillance updatedSurveillance) {
         if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
             return;
-        } else if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)) {
-            for (SurveillanceRequirement updatedReq : updatedSurveillance.getRequirements()) {
-                //look for an existing surv requirement that matches the updated requirement
-                //and check for removed criteria and/or updates to the requirement
-                Optional<SurveillanceRequirement> existingReq
-                    = existingSurveillance.getRequirements().stream()
-                        .filter(existingSurvReq ->
-                            doRequirementsMatch(updatedReq, existingSurvReq)
-                            && hasRemovedCriteria(updatedReq))
-                        .findFirst();
+        } else if (!ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)) {
+            return;
+        }
 
-                if (!existingReq.isPresent()) {
-                    //if it's a new requirement it can't have any removed criteria
-                    updatedSurveillance.getErrorMessages().add(
-                            msgUtil.getMessage("surveillance.requirementNotAddedForRemovedCriteria",
-                                    updatedReq.getRequirement()));
-                } else if (updatedReq.matches(existingReq.get())){
-                    //if it's an existing requirement with a removed criteria then it can't
-                    //be edited
+        for (SurveillanceRequirement updatedReq : updatedSurveillance.getRequirements()) {
+            //look for an existing surv requirement that matches the updated requirement
+            //and check for removed criteria and/or updates to the requirement
+            Optional<SurveillanceRequirement> existingReq
+                = existingSurveillance.getRequirements().stream()
+                    .filter(existingSurvReq ->
+                        doRequirementsMatch(updatedReq, existingSurvReq))
+                    .findFirst();
+
+            if (!existingReq.isPresent() && hasRemovedCriteria(updatedReq)) {
+                //if it's a new requirement it can't have any removed criteria
+                updatedSurveillance.getErrorMessages().add(
+                        msgUtil.getMessage("surveillance.requirementNotAddedForRemovedCriteria",
+                                updatedReq.getRequirement()));
+                checkNonconformitiesForRemovedCriteria(updatedSurveillance, null, updatedReq.getNonconformities());
+            } else if (existingReq.isPresent()) {
+                if (hasRemovedCriteria(updatedReq) && !updatedReq.matches(existingReq.get())) {
+                    //if it's an existing requirement with a removed criteria then it can't be edited
                     updatedSurveillance.getErrorMessages().add(
                             msgUtil.getMessage("surveillance.requirementNotEditedForRemovedCriteria",
                                     updatedReq.getRequirement()));
                 }
-
-                checkNonconformitiesForRemovedCriteria(updatedReq.getNonconformities());
+                checkNonconformitiesForRemovedCriteria(
+                        updatedSurveillance, existingReq.get().getNonconformities(), updatedReq.getNonconformities());
             }
         }
     }
 
-    private void checkNonconformitiesForRemovedCriteria(List<SurveillanceNonconformity> nonconformities) {
+    /**
+     * Look for new or updated nonconformities that reference removed criteria.
+     * Add error message if found.
+     */
+    private void checkNonconformitiesForRemovedCriteria(Surveillance updatedSurveillance,
+            List<SurveillanceNonconformity> existingSurvNonconformities,
+            List<SurveillanceNonconformity> updatedSurvNonconformities) {
+        for (SurveillanceNonconformity updatedNonconformity : updatedSurvNonconformities) {
+            //look for an existing nonconformity that matches the updated nonconformity
+            //and check for removed criteria and/or updates to the nonconformity
+            Optional<SurveillanceNonconformity> existingNonconformity
+                = existingSurvNonconformities.stream()
+                    .filter(existingSurvNonconformity ->
+                        doNonconformitiesMatch(updatedNonconformity, existingSurvNonconformity))
+                    .findFirst();
 
+            if (!existingNonconformity.isPresent() && hasRemovedCriteria(updatedNonconformity)) {
+                //if it's a new nonconformity it can't have any removed criteria
+                updatedSurveillance.getErrorMessages().add(
+                        msgUtil.getMessage("surveillance.nonconformityNotAddedForRemovedCriteria",
+                                updatedNonconformity.getNonconformityType()));
+            } else if (existingNonconformity.isPresent()
+                    && hasRemovedCriteria(updatedNonconformity)
+                    && !updatedNonconformity.matches(existingNonconformity.get())) {
+                    //if it's an existing nonconformity with a removed criteria then it can't be edited
+                    updatedSurveillance.getErrorMessages().add(
+                            msgUtil.getMessage("surveillance.nonconformityNotEditedForRemovedCriteria",
+                                    updatedNonconformity.getNonconformityType()));
+            }
+        }
     }
 
+    /**
+     * Determine if two surveillance requirements have the same ID.
+     */
     private boolean doRequirementsMatch(SurveillanceRequirement updatedReq, SurveillanceRequirement existingReq) {
         return updatedReq.getId() != null && existingReq.getId() != null
                 && updatedReq.getId().equals(existingReq.getId());
     }
 
+    /**
+     * Determine if two nonconformities have the same ID.
+     */
+    private boolean doNonconformitiesMatch(SurveillanceNonconformity updatedNonconformity,
+            SurveillanceNonconformity existingNonconformity) {
+        return updatedNonconformity.getId() != null && existingNonconformity.getId() != null
+                && updatedNonconformity.getId().equals(existingNonconformity.getId());
+    }
+
+    /**
+     * Determine if a surveillance requirement references a removed criteria.
+     */
     private boolean hasRemovedCriteria(SurveillanceRequirement req) {
         if (req.getType() != null && !StringUtils.isEmpty(req.getType().getName())) {
-            if (req.getType().getName().equalsIgnoreCase(SurveillanceReviewerUtils.CRITERION_REQUIREMENT_TYPE)) {
-                req.setRequirement(
-                        gov.healthit.chpl.util.Util.coerceToCriterionNumberFormat(req.getRequirement()));
-                CertificationCriterionDTO criterion = criterionDao.getByName(req.getRequirement());
+            if (req.getType().getName().equalsIgnoreCase(Surveillance.CRITERION_REQUIREMENT_TYPE)) {
+                String requirementCriteria =
+                        gov.healthit.chpl.util.Util.coerceToCriterionNumberFormat(req.getRequirement());
+                CertificationCriterionDTO criterion = criterionDao.getByName(requirementCriteria);
                 if (criterion != null && criterion.getRemoved() != null
                         && criterion.getRemoved().booleanValue()) {
                     return true;
                 }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Determine if a nonconformity references a removed criteria.
+     */
+    private boolean hasRemovedCriteria(SurveillanceNonconformity nonconformity) {
+        if (!StringUtils.isEmpty(nonconformity.getNonconformityType())) {
+            String nonconformityType =
+                    gov.healthit.chpl.util.Util.coerceToCriterionNumberFormat(nonconformity.getNonconformityType());
+            CertificationCriterionDTO criterion = criterionDao.getByName(nonconformityType);
+            if (criterion != null && criterion.getRemoved() != null
+                    && criterion.getRemoved().booleanValue()) {
+                return true;
             }
         }
         return false;

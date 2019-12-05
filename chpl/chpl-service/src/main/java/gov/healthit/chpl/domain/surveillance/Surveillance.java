@@ -16,6 +16,7 @@ import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.util.Util;
 
@@ -27,6 +28,9 @@ import gov.healthit.chpl.util.Util;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Surveillance implements Serializable {
     private static final long serialVersionUID = 7018071250912371691L;
+    public static final String HAS_NON_CONFORMITY = "Non-Conformity";
+    public static final String CRITERION_REQUIREMENT_TYPE = "Certified Capability";
+    public static final String TRANSPARENCY_REQUIREMENT_TYPE = "Transparency or Disclosure Requirement";
 
     /**
      * Surveillance internal ID

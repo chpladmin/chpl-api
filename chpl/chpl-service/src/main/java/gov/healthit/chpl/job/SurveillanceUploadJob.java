@@ -35,7 +35,7 @@ import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandler;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandlerFactory;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
+import gov.healthit.chpl.validation.surveillance.PendingSurveillanceValidator;
 
 @Component
 @Scope("prototype") // tells spring to make a new instance of this class every
@@ -47,16 +47,16 @@ public class SurveillanceUploadJob extends RunnableJob {
     private CertifiedProductManager cpManager;
     private SurveillanceManager survManager;
     private SurveillanceUploadManager survUploadManager;
-    private SurveillanceValidator survValidator;
+    private PendingSurveillanceValidator survValidator;
     private SurveillanceUploadHandlerFactory uploadHandlerFactory;
     private SurveillanceDAO surveillanceDAO;
     private CertificationBodyDAO acbDAO;
 
     @Autowired
-    public SurveillanceUploadJob(final ErrorMessageUtil errorMessageUtil, final CertifiedProductManager cpManager,
-            final SurveillanceManager survManager, final SurveillanceUploadManager survUploadManager,
-            final SurveillanceValidator survValidator, final SurveillanceUploadHandlerFactory uploadHandlerFactory,
-            final SurveillanceDAO surveillanceDAO, CertificationBodyDAO acbDAO) {
+    public SurveillanceUploadJob(ErrorMessageUtil errorMessageUtil, CertifiedProductManager cpManager,
+            SurveillanceManager survManager, SurveillanceUploadManager survUploadManager,
+            PendingSurveillanceValidator survValidator, SurveillanceUploadHandlerFactory uploadHandlerFactory,
+            SurveillanceDAO surveillanceDAO, CertificationBodyDAO acbDAO) {
         this.errorMessageUtil = errorMessageUtil;
         this.cpManager = cpManager;
         this.survManager = survManager;
@@ -209,7 +209,7 @@ public class SurveillanceUploadJob extends RunnableJob {
                 try {
                     owningCp = cpManager.getById(surv.getCertifiedProduct().getId());
 
-                    survValidator.validate(surv, false);
+                    survValidator.validate(surv);
                     surveillanceDAO.insertPendingSurveillance(surv);
 
                     jobPercentComplete += 50.0 / pendingSurvs.size();
@@ -251,11 +251,11 @@ public class SurveillanceUploadJob extends RunnableJob {
         this.survManager = survManager;
     }
 
-    public SurveillanceValidator getSurvValidator() {
+    public PendingSurveillanceValidator getSurvValidator() {
         return survValidator;
     }
 
-    public void setSurvValidator(final SurveillanceValidator survValidator) {
+    public void setSurvValidator(final PendingSurveillanceValidator survValidator) {
         this.survValidator = survValidator;
     }
 

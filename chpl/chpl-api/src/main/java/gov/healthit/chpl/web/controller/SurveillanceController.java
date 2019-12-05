@@ -54,15 +54,13 @@ import gov.healthit.chpl.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.PendingSurveillanceManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
-import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.FileUtils;
-import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
+import gov.healthit.chpl.validation.surveillance.reviewer.AuthorityReviewer;
 import gov.healthit.chpl.web.controller.results.SurveillanceResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -87,7 +85,7 @@ public class SurveillanceController implements MessageSourceAware {
     @Autowired
     private CertifiedProductDetailsManager cpdetailsManager;
     @Autowired
-    private SurveillanceValidator survValidator;
+    private AuthorityReviewer survAuthorityReviewer;
     @Autowired
     private PendingSurveillanceManager pendingSurveillanceManager;
     @Autowired
@@ -154,43 +152,10 @@ public class SurveillanceController implements MessageSourceAware {
             @RequestBody(required = true) final Surveillance survToInsert) throws ValidationException,
     EntityRetrievalException, CertificationBodyAccessException, UserPermissionRetrievalException,
     EntityCreationException, JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
-
-        return create(survToInsert);
-    }
-
-    private synchronized ResponseEntity<Surveillance> create(final Surveillance survToInsert)
-            throws ValidationException, EntityRetrievalException, CertificationBodyAccessException,
-            UserPermissionRetrievalException, EntityCreationException, JsonProcessingException,
-            SurveillanceAuthorityAccessDeniedException {
-
-        survToInsert.getErrorMessages().clear();
-
-        // validate first. this ensures we have all the info filled in
-        // that we need to continue
-        survManager.validate(survToInsert);
-
-        if (survToInsert.getErrorMessages() != null && survToInsert.getErrorMessages().size() > 0) {
-            throw new ValidationException(survToInsert.getErrorMessages(), null);
-        }
-
-        // look up the ACB
-        CertifiedProductSearchDetails beforeCp = cpdetailsManager
-                .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
-        CertificationBodyDTO owningAcb = null;
-        try {
-            owningAcb = resourcePermissions.getAcbIfPermissionById(
-                    Long.valueOf(beforeCp.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()));
-        } catch (final AccessDeniedException ex) {
-            throw new CertificationBodyAccessException(
-                    "User does not have permission to add surveillance to a certified product under ACB "
-                            + beforeCp.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY));
-        } 
-
-        // insert the surveillance
         HttpHeaders responseHeaders = new HttpHeaders();
         Long insertedSurv = null;
         try {
-            insertedSurv = survManager.createSurveillance(owningAcb.getId(), survToInsert);
+            insertedSurv = survManager.createSurveillance(survToInsert);
             responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
         } catch (final SurveillanceAuthorityAccessDeniedException ex) {
             LOGGER.error("User lacks authority to create surveillance");
@@ -200,11 +165,6 @@ public class SurveillanceController implements MessageSourceAware {
         if (insertedSurv == null) {
             throw new EntityCreationException("Error creating new surveillance.");
         }
-
-        CertifiedProductSearchDetails afterCp = cpdetailsManager
-                .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
-        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, afterCp.getId(),
-                "Surveillance was added to certified product " + afterCp.getChplProductNumber(), beforeCp, afterCp);
 
         // query the inserted surveillance
         Surveillance result = survManager.getById(insertedSurv);
@@ -281,39 +241,10 @@ public class SurveillanceController implements MessageSourceAware {
             @RequestBody(required = true) final Surveillance survToUpdate) throws
     InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
     JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
-
-        return update(survToUpdate);
-    }
-
-    private synchronized ResponseEntity<Surveillance> update(final Surveillance survToUpdate)
-            throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
-            JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
-        survToUpdate.getErrorMessages().clear();
-
-        // validate first. this ensures we have all the info filled in
-        // that we need to continue
-        survManager.validate(survToUpdate);
-
-        if (survToUpdate.getErrorMessages() != null && survToUpdate.getErrorMessages().size() > 0) {
-            throw new ValidationException(survToUpdate.getErrorMessages(), null);
-        }
-
-        // look up the ACB
-        CertifiedProductSearchDetails beforeCp = cpdetailsManager
-                .getCertifiedProductDetails(survToUpdate.getCertifiedProduct().getId());
-        CertificationBodyDTO owningAcb = null;
-        try {
-            owningAcb = resourcePermissions.getAcbIfPermissionById(
-                    Long.valueOf(beforeCp.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()));
-        } catch (Exception ex) {
-            LOGGER.error("Error looking up ACB associated with surveillance.", ex);
-            throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
-        }
-
         // update the surveillance
         HttpHeaders responseHeaders = new HttpHeaders();
         try {
-            survManager.updateSurveillance(owningAcb.getId(), survToUpdate);
+            survManager.updateSurveillance(survToUpdate);
             responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
         } catch (final SurveillanceAuthorityAccessDeniedException ex) {
             LOGGER.error("User lacks authority to update surveillance");
@@ -321,11 +252,6 @@ public class SurveillanceController implements MessageSourceAware {
         } catch (Exception ex) {
             LOGGER.error("Error updating surveillance with id " + survToUpdate.getId());
         }
-
-        CertifiedProductSearchDetails afterCp = cpdetailsManager
-                .getCertifiedProductDetails(survToUpdate.getCertifiedProduct().getId());
-        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, afterCp.getId(),
-                "Surveillance was updated on certified product " + afterCp.getChplProductNumber(), beforeCp, afterCp);
 
         // query the inserted surveillance
         Surveillance result = survManager.getById(survToUpdate.getId());
@@ -359,7 +285,7 @@ public class SurveillanceController implements MessageSourceAware {
             throw new InvalidArgumentsException("Cannot find surveillance with id " + surveillanceId + " to delete.");
         }
 
-        survValidator.validateSurveillanceAuthority(survToDelete);
+        survAuthorityReviewer.review(survToDelete);
         if (survToDelete.getErrorMessages() != null && survToDelete.getErrorMessages().size() > 0) {
             throw new ValidationException(survToDelete.getErrorMessages(), null);
         }

@@ -132,7 +132,7 @@ public class SurveillanceManagerTest extends TestCase {
 
         boolean failed = false;
         try {
-            Long insertedId = survManager.createSurveillance(-1L, surv);
+            Long insertedId = survManager.createSurveillance(surv);
             assertNull(insertedId);
         } catch (AccessDeniedException ex) {
             System.out.println(ex.getClass() + ": " + ex.getMessage());
@@ -174,7 +174,7 @@ public class SurveillanceManagerTest extends TestCase {
 
         boolean failed = false;
         try {
-            Long insertedId = survManager.createSurveillance(-1L, surv);
+            Long insertedId = survManager.createSurveillance(surv);
             assertNull(insertedId);
         } catch (AccessDeniedException ex) {
             System.out.println(ex.getClass() + ": " + ex.getMessage());
@@ -216,7 +216,7 @@ public class SurveillanceManagerTest extends TestCase {
 
         Long insertedId;
         try {
-            insertedId = survManager.createSurveillance(-1L, surv);
+            insertedId = survManager.createSurveillance(surv);
             assertNotNull(insertedId);
             Surveillance got = survManager.getById(insertedId);
             assertNotNull(got);
@@ -284,7 +284,7 @@ public class SurveillanceManagerTest extends TestCase {
 
         Long insertedId;
         try {
-            insertedId = survManager.createSurveillance(-1L, surv);
+            insertedId = survManager.createSurveillance(surv);
             assertNotNull(insertedId);
             Surveillance got = survManager.getById(insertedId);
             assertNotNull(got);
@@ -340,7 +340,7 @@ public class SurveillanceManagerTest extends TestCase {
 
         Long insertedId;
         try {
-            insertedId = survManager.createSurveillance(-1L, surv);
+            insertedId = survManager.createSurveillance(surv);
             Surveillance insertedSurv = survManager.getById(insertedId);
             assertNotNull(insertedId);
             survManager.deleteSurveillance(-1L, insertedSurv);
@@ -384,7 +384,7 @@ public class SurveillanceManagerTest extends TestCase {
         surv.getRequirements().add(req);
         surv.setAuthority(Authority.ROLE_ACB);
 
-        Long insertedId = survManager.createSurveillance(-1L, surv);
+        Long insertedId = survManager.createSurveillance(surv);
         assertNotNull(insertedId);
 
         Surveillance got = survManager.getById(insertedId);
@@ -398,7 +398,7 @@ public class SurveillanceManagerTest extends TestCase {
         resType = survDao.findSurveillanceResultType("No Non-Conformity");
         req2.setResult(resType);
         got.getRequirements().add(req2);
-        survManager.updateSurveillance(-1L, got);
+        survManager.updateSurveillance(got);
 
         got = survManager.getById(insertedId);
         assertNotNull(got);
@@ -441,7 +441,7 @@ public class SurveillanceManagerTest extends TestCase {
         req2.setResult(resType);
         surv.getRequirements().add(req2);
 
-        Long insertedId = survManager.createSurveillance(-1L, surv);
+        Long insertedId = survManager.createSurveillance(surv);
         assertNotNull(insertedId);
 
         Surveillance got = survManager.getById(insertedId);
@@ -449,7 +449,7 @@ public class SurveillanceManagerTest extends TestCase {
         assertEquals(2, got.getRequirements().size());
 
         got.getRequirements().remove(got.getRequirements().iterator().next());
-        survManager.updateSurveillance(-1L, got);
+        survManager.updateSurveillance(got);
         got = survManager.getById(insertedId);
         assertNotNull(got);
         assertEquals(1, got.getRequirements().size());
@@ -484,7 +484,7 @@ public class SurveillanceManagerTest extends TestCase {
         surv.getRequirements().add(req);
         surv.setAuthority(Authority.ROLE_ACB);
 
-        Long insertedId = survManager.createSurveillance(-1L, surv);
+        Long insertedId = survManager.createSurveillance(surv);
         assertNotNull(insertedId);
 
         Surveillance got = survManager.getById(insertedId);
@@ -504,7 +504,7 @@ public class SurveillanceManagerTest extends TestCase {
         SurveillanceNonconformityStatus ncStatus = survDao.findSurveillanceNonconformityStatusType("Open");
         nc.setStatus(ncStatus);
         gotReq.getNonconformities().add(nc);
-        survManager.updateSurveillance(-1L, got);
+        survManager.updateSurveillance(got);
 
         got = survManager.getById(insertedId);
         assertNotNull(got);
@@ -557,7 +557,7 @@ public class SurveillanceManagerTest extends TestCase {
         req.getNonconformities().add(nc);
         surv.setAuthority(Authority.ROLE_ACB);
 
-        Long insertedId = survManager.createSurveillance(-1L, surv);
+        Long insertedId = survManager.createSurveillance(surv);
         assertNotNull(insertedId);
 
         Surveillance got = survManager.getById(insertedId);
@@ -568,7 +568,7 @@ public class SurveillanceManagerTest extends TestCase {
         gotReq.setResult(resType);
         gotReq.getNonconformities().clear();
 
-        survManager.updateSurveillance(-1L, got);
+        survManager.updateSurveillance(got);
 
         got = survManager.getById(insertedId);
         assertNotNull(got);
@@ -607,14 +607,14 @@ public class SurveillanceManagerTest extends TestCase {
         surv.getRequirements().add(req);
         surv.setAuthority(Authority.ROLE_ACB);
 
-        Long insertedId = survManager.createSurveillance(-1L, surv);
+        Long insertedId = survManager.createSurveillance(surv);
         assertNotNull(insertedId);
 
         Surveillance got = survManager.getById(insertedId);
         assertNotNull(got);
         assertNull(got.getEndDate());
         got.setEndDate(new Date());
-        survManager.updateSurveillance(-1L, got);
+        survManager.updateSurveillance(got);
 
         got = survManager.getById(insertedId);
         assertNotNull(got);
@@ -625,7 +625,7 @@ public class SurveillanceManagerTest extends TestCase {
 
     /**
      * OCD-1810.
-     * 
+     *
      * @throws EntityRetrievalException
      *             if entity can't be retrieved
      */
@@ -676,7 +676,7 @@ public class SurveillanceManagerTest extends TestCase {
 
         Long insertedId;
         try {
-            insertedId = survManager.createSurveillance(-1L, surv);
+            insertedId = survManager.createSurveillance(surv);
             assertNotNull(insertedId);
             Surveillance got = survManager.getById(insertedId);
             assertNotNull(got.getErrorMessages());
