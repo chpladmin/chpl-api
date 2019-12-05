@@ -9,7 +9,7 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
-@Component
+@Component("surveillanceUnsupportedCharacterReviewer")
 public class UnsupportedCharacterReviewer implements Reviewer {
     private ErrorMessageUtil msgUtil;
 

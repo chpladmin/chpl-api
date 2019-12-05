@@ -35,7 +35,7 @@ import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandler;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandlerFactory;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.validation.surveillance.PendingSurveillanceValidator;
+import gov.healthit.chpl.validation.surveillance.SurveillanceCreationValidator;
 
 @Component
 @Scope("prototype") // tells spring to make a new instance of this class every
@@ -47,7 +47,7 @@ public class SurveillanceUploadJob extends RunnableJob {
     private CertifiedProductManager cpManager;
     private SurveillanceManager survManager;
     private SurveillanceUploadManager survUploadManager;
-    private PendingSurveillanceValidator survValidator;
+    private SurveillanceCreationValidator survValidator;
     private SurveillanceUploadHandlerFactory uploadHandlerFactory;
     private SurveillanceDAO surveillanceDAO;
     private CertificationBodyDAO acbDAO;
@@ -55,7 +55,7 @@ public class SurveillanceUploadJob extends RunnableJob {
     @Autowired
     public SurveillanceUploadJob(ErrorMessageUtil errorMessageUtil, CertifiedProductManager cpManager,
             SurveillanceManager survManager, SurveillanceUploadManager survUploadManager,
-            PendingSurveillanceValidator survValidator, SurveillanceUploadHandlerFactory uploadHandlerFactory,
+            SurveillanceCreationValidator survValidator, SurveillanceUploadHandlerFactory uploadHandlerFactory,
             SurveillanceDAO surveillanceDAO, CertificationBodyDAO acbDAO) {
         this.errorMessageUtil = errorMessageUtil;
         this.cpManager = cpManager;
@@ -251,11 +251,11 @@ public class SurveillanceUploadJob extends RunnableJob {
         this.survManager = survManager;
     }
 
-    public PendingSurveillanceValidator getSurvValidator() {
+    public SurveillanceCreationValidator getSurvValidator() {
         return survValidator;
     }
 
-    public void setSurvValidator(final PendingSurveillanceValidator survValidator) {
+    public void setSurvValidator(final SurveillanceCreationValidator survValidator) {
         this.survValidator = survValidator;
     }
 

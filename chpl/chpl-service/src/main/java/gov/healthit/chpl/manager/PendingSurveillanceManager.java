@@ -8,6 +8,7 @@ import javax.persistence.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.AccessDeniedException;
@@ -66,8 +67,8 @@ import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.FileUtils;
-import gov.healthit.chpl.validation.surveillance.PendingSurveillanceValidator;
-import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
+import gov.healthit.chpl.validation.surveillance.SurveillanceCreationValidator;
+import gov.healthit.chpl.validation.surveillance.SurveillanceUpdateValidator;
 
 @Component
 public class PendingSurveillanceManager extends SecuredManager {
@@ -85,8 +86,8 @@ public class PendingSurveillanceManager extends SecuredManager {
     private UserDAO userDao;
     private ActivityManager activityManager;
     private CertifiedProductDetailsManager cpDetailsManager;
-    private SurveillanceValidator validator;
-    private PendingSurveillanceValidator pendingValidator;
+    private SurveillanceCreationValidator survCreationValidator;
+    private SurveillanceUpdateValidator survUpdateValidator;
     private UserPermissionDAO userPermissionDAO;
     private CertifiedProductDAO cpDAO;
 
@@ -95,7 +96,8 @@ public class PendingSurveillanceManager extends SecuredManager {
             SurveillanceUploadManager survUploadManager, JobManager jobManager,
             UserManager userManager, CertifiedProductManager cpManager, SurveillanceDAO survDao, UserDAO userDao,
             ActivityManager activityManager, CertifiedProductDetailsManager cpDetailsManager,
-            SurveillanceValidator validator, PendingSurveillanceValidator pendingValidator,
+            SurveillanceCreationValidator survCreationValidator,
+            @Qualifier("surveillanceUpdateValidator") SurveillanceUpdateValidator survUpdateValidator,
             UserPermissionDAO userPermissionDAO, CertifiedProductDAO cpDAO) {
         this.env = env;
         this.fileUtils = fileUtils;
@@ -107,8 +109,8 @@ public class PendingSurveillanceManager extends SecuredManager {
         this.userDao = userDao;
         this.activityManager = activityManager;
         this.cpDetailsManager = cpDetailsManager;
-        this.validator = validator;
-        this.pendingValidator = pendingValidator;
+        this.survCreationValidator = survCreationValidator;
+        this.survUpdateValidator = survUpdateValidator;
         this.userPermissionDAO = userPermissionDAO;
         this.cpDAO = cpDAO;
     }
@@ -189,7 +191,15 @@ public class PendingSurveillanceManager extends SecuredManager {
             throw new ValidationException("A valid pending surveillance id must be provided.");
         }
 
-        HttpHeaders responseHeaders = new HttpHeaders();
+        // the confirmation could be an update to an existing surveillance.
+        //if so, find the existing surveillane that's being updated
+        Surveillance existingSurveillance = null;
+        if (!StringUtils.isEmpty(survToInsert.getSurveillanceIdToReplace())) {
+            existingSurveillance = getByFriendlyIdAndListing(
+                    survToInsert.getCertifiedProduct().getId(),
+                    survToInsert.getSurveillanceIdToReplace());
+        }
+
         CertifiedProductSearchDetails beforeCp = cpDetailsManager
                 .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
 
@@ -198,20 +208,23 @@ public class PendingSurveillanceManager extends SecuredManager {
             return null;
         }
 
-        pendingValidator.validate(survToInsert);
+        if (existingSurveillance != null) {
+            survUpdateValidator.validate(existingSurveillance, survToInsert);
+        } else {
+            survCreationValidator.validate(survToInsert);
+        }
         if (survToInsert.getErrorMessages() != null && survToInsert.getErrorMessages().size() > 0) {
             throw new ValidationException(survToInsert.getErrorMessages(), null);
         }
 
-        // insert or update the surveillance
-        Long insertedSurv = createSurveillance(survToInsert);
+        Long insertedSurvId = createSurveillance(survToInsert);
+        HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
-        if (insertedSurv == null) {
+        if (insertedSurvId == null) {
             throw new EntityCreationException("Error creating new surveillance.");
         }
 
-        // delete the pending surveillance item if this one was successfully
-        // inserted
+        // delete the pending surveillance item if this one was successfully inserted
         try {
             deletePendingSurveillance(pendingSurvToDelete, true);
         } catch (Exception ex) {
@@ -220,10 +233,8 @@ public class PendingSurveillanceManager extends SecuredManager {
 
         // if a surveillance was getting replaced, delete it
         try {
-            if (!StringUtils.isEmpty(survToInsert.getSurveillanceIdToReplace())) {
-                Surveillance survToReplace = getByFriendlyIdAndProduct(survToInsert.getCertifiedProduct().getId(),
-                        survToInsert.getSurveillanceIdToReplace());
-                deleteSurveillance(survToReplace);
+            if (existingSurveillance != null) {
+                deleteSurveillance(existingSurveillance);
             }
         } catch (Exception ex) {
             LOGGER.error("Deleting surveillance with id " + survToInsert.getSurveillanceIdToReplace()
@@ -238,7 +249,8 @@ public class PendingSurveillanceManager extends SecuredManager {
                 afterCp);
 
         // query the inserted surveillance
-        Surveillance result = getSurveillanceById(insertedSurv);
+        SurveillanceEntity insertedSurv = survDao.getSurveillanceById(insertedSurvId);
+        Surveillance result = convertToDomain(insertedSurv);
         return result;
     }
 
@@ -308,7 +320,7 @@ public class PendingSurveillanceManager extends SecuredManager {
             CertifiedProductDTO owningCp = null;
             try {
                 owningCp = cpManager.getById(surv.getCertifiedProduct().getId());
-                validate(surv);
+                validateSurveillanceCreation(surv);
                 Long pendingId = createPendingSurveillance(surv);
                 Surveillance uploaded = getPendingById(pendingId);
                 uploadedSurveillance.add(uploaded);
@@ -485,9 +497,9 @@ public class PendingSurveillanceManager extends SecuredManager {
         return surveillanceThresholdToProcessAsJob;
     }
 
-    private void validate(final Surveillance surveillance) {
-        surveillance.getErrorMessages().clear();
-        validator.validate(null, surveillance);
+    private void validateSurveillanceCreation(Surveillance createdSurv) {
+        createdSurv.getErrorMessages().clear();
+        survCreationValidator.validate(createdSurv);
     }
 
     private Long createSurveillance(final Surveillance surv)
@@ -504,7 +516,7 @@ public class PendingSurveillanceManager extends SecuredManager {
         return insertedId;
     }
 
-    public Surveillance getByFriendlyIdAndProduct(final Long certifiedProductId, final String survFriendlyId) {
+    private Surveillance getByFriendlyIdAndListing(Long certifiedProductId, String survFriendlyId) {
         SurveillanceEntity surv = survDao.getSurveillanceByCertifiedProductAndFriendlyId(certifiedProductId,
                 survFriendlyId);
         if (surv == null) {
@@ -512,7 +524,6 @@ public class PendingSurveillanceManager extends SecuredManager {
                     + " with friendly id " + survFriendlyId);
         }
         Surveillance result = convertToDomain(surv);
-        validate(result);
         return result;
     }
 
@@ -641,13 +652,6 @@ public class PendingSurveillanceManager extends SecuredManager {
     private void deleteSurveillance(final Surveillance surv)
             throws EntityRetrievalException, SurveillanceAuthorityAccessDeniedException {
         survDao.deleteSurveillance(surv);
-    }
-
-    private Surveillance getSurveillanceById(final Long survId) throws EntityRetrievalException {
-        SurveillanceEntity surv = survDao.getSurveillanceById(survId);
-        Surveillance result = convertToDomain(surv);
-        validate(result);
-        return result;
     }
 
     private ObjectMissingValidationException createdObjectMissingValidationException(PendingSurveillanceEntity entity) {

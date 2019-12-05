@@ -5,10 +5,14 @@ import java.util.Iterator;
 
 import javax.persistence.EntityNotFoundException;
 
+import org.ff4j.FF4j;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
@@ -67,6 +72,9 @@ public class SurveillanceManagerTest extends TestCase {
     @Autowired
     public UnitTestRules cacheInvalidationRule;
 
+    @Autowired
+    private FF4j ff4j;
+
     private static JWTAuthenticatedUser adminUser;
     private static JWTAuthenticatedUser acbUser;
     private static JWTAuthenticatedUser acbUser2;
@@ -101,6 +109,12 @@ public class SurveillanceManagerTest extends TestCase {
         atlUser.setFriendlyName("User");
         atlUser.setSubjectName("atlUser");
         atlUser.getPermissions().add(new GrantedPermission("ROLE_ATL"));
+    }
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+        Mockito.doReturn(true).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK);
     }
 
     @Test
@@ -371,6 +385,7 @@ public class SurveillanceManagerTest extends TestCase {
         cp.setEdition(cp.getEdition());
         surv.setCertifiedProduct(cp);
         surv.setStartDate(new Date());
+        surv.setEndDate(new Date(surv.getStartDate().getTime() + 1000));
         surv.setRandomizedSitesUsed(10);
         SurveillanceType type = survDao.findSurveillanceType("Randomized");
         surv.setType(type);
@@ -421,6 +436,7 @@ public class SurveillanceManagerTest extends TestCase {
         cp.setEdition(cp.getEdition());
         surv.setCertifiedProduct(cp);
         surv.setStartDate(new Date());
+        surv.setEndDate(new Date(surv.getStartDate().getTime() + 1000));
         surv.setRandomizedSitesUsed(10);
         SurveillanceType type = survDao.findSurveillanceType("Randomized");
         surv.setType(type);
@@ -471,6 +487,7 @@ public class SurveillanceManagerTest extends TestCase {
         cp.setEdition(cp.getEdition());
         surv.setCertifiedProduct(cp);
         surv.setStartDate(new Date());
+        surv.setEndDate(new Date(surv.getStartDate().getTime() + 1000));
         surv.setRandomizedSitesUsed(10);
         SurveillanceType type = survDao.findSurveillanceType("Randomized");
         surv.setType(type);
@@ -567,7 +584,7 @@ public class SurveillanceManagerTest extends TestCase {
         resType = survDao.findSurveillanceResultType("No Non-Conformity");
         gotReq.setResult(resType);
         gotReq.getNonconformities().clear();
-
+        got.setEndDate(new Date(got.getStartDate().getTime() + 1000));
         survManager.updateSurveillance(got);
 
         got = survManager.getById(insertedId);
@@ -594,6 +611,7 @@ public class SurveillanceManagerTest extends TestCase {
         cp.setEdition(cp.getEdition());
         surv.setCertifiedProduct(cp);
         surv.setStartDate(new Date());
+        surv.setEndDate(new Date(surv.getStartDate().getTime() + 1000));
         surv.setRandomizedSitesUsed(10);
         SurveillanceType type = survDao.findSurveillanceType("Randomized");
         surv.setType(type);
@@ -612,7 +630,6 @@ public class SurveillanceManagerTest extends TestCase {
 
         Surveillance got = survManager.getById(insertedId);
         assertNotNull(got);
-        assertNull(got.getEndDate());
         got.setEndDate(new Date());
         survManager.updateSurveillance(got);
 

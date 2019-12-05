@@ -47,7 +47,8 @@ import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.FileUtils;
-import gov.healthit.chpl.validation.surveillance.SurveillanceWithAuthorityValidator;
+import gov.healthit.chpl.validation.surveillance.SurveillanceCreationValidator;
+import gov.healthit.chpl.validation.surveillance.SurveillanceUpdateWithAuthorityValidator;
 
 @Service
 public class SurveillanceManager extends SecuredManager {
@@ -57,7 +58,8 @@ public class SurveillanceManager extends SecuredManager {
     private CertifiedProductDAO cpDao;
     private CertifiedProductDetailsManager cpDetailsManager;
     private ActivityManager activityManager;
-    private SurveillanceWithAuthorityValidator survValidator;
+    private SurveillanceUpdateWithAuthorityValidator survWithAuthorityValidator;
+    private SurveillanceCreationValidator survCreationValidator;
     private UserPermissionDAO userPermissionDao;
     private FileUtils fileUtils;
     private Environment env;
@@ -66,13 +68,16 @@ public class SurveillanceManager extends SecuredManager {
     @Autowired
     public SurveillanceManager(SurveillanceDAO survDao, CertifiedProductDAO cpDao,
             CertifiedProductDetailsManager cpDetailsManager, ActivityManager activityManager,
-            SurveillanceWithAuthorityValidator survValidator, UserPermissionDAO userPermissionDao,
-            FileUtils fileUtils, Environment env, ResourcePermissions resourcePermissions) {
+            SurveillanceUpdateWithAuthorityValidator survWithAuthorityValidator,
+            UserPermissionDAO userPermissionDao,
+            FileUtils fileUtils, Environment env, ResourcePermissions resourcePermissions,
+            SurveillanceCreationValidator survCreationValidator) {
         this.survDao = survDao;
         this.cpDao = cpDao;
         this.cpDetailsManager = cpDetailsManager;
         this.activityManager = activityManager;
-        this.survValidator = survValidator;
+        this.survWithAuthorityValidator = survWithAuthorityValidator;
+        this.survCreationValidator = survCreationValidator;
         this.userPermissionDao = userPermissionDao;
         this.fileUtils = fileUtils;
         this.env = env;
@@ -83,7 +88,7 @@ public class SurveillanceManager extends SecuredManager {
     public Surveillance getById(final Long survId) throws EntityRetrievalException {
         SurveillanceEntity surv = survDao.getSurveillanceById(survId);
         Surveillance result = convertToDomain(surv);
-        survValidator.validate(result, result);
+        survWithAuthorityValidator.validate(result, result);
         return result;
     }
 
@@ -94,7 +99,7 @@ public class SurveillanceManager extends SecuredManager {
         if (survResults != null) {
             for (SurveillanceEntity survResult : survResults) {
                 Surveillance surv = convertToDomain(survResult);
-                survValidator.validate(surv, surv);
+                survWithAuthorityValidator.validate(surv, surv);
                 results.add(surv);
             }
         }
@@ -115,7 +120,7 @@ public class SurveillanceManager extends SecuredManager {
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
-            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).CREATE, #surv)")
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).CREATE, #survToInsert)")
     public Long createSurveillance(Surveillance survToInsert)
             throws UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException,
             EntityRetrievalException, JsonProcessingException, EntityCreationException,
@@ -123,7 +128,7 @@ public class SurveillanceManager extends SecuredManager {
         CertifiedProductSearchDetails beforeListing = cpDetailsManager
                 .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
 
-        validate(null, survToInsert);
+        validateSurveillanceCreation(survToInsert);
         if (survToInsert.getErrorMessages() != null && survToInsert.getErrorMessages().size() > 0) {
             throw new ValidationException(survToInsert.getErrorMessages(), null);
         }
@@ -154,7 +159,7 @@ public class SurveillanceManager extends SecuredManager {
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
-            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).UPDATE, #surv)")
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).UPDATE, #survToUpdate)")
     public void updateSurveillance(final Surveillance survToUpdate) throws EntityRetrievalException,
             UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException,
             EntityCreationException, JsonProcessingException, ValidationException {
@@ -164,7 +169,7 @@ public class SurveillanceManager extends SecuredManager {
         Optional<Surveillance> foundSurv = beforeListing.getSurveillance().stream()
             .filter(surv -> surv.getId().equals(survToUpdate.getId()))
             .findFirst();
-        validate(foundSurv.isPresent() ? foundSurv.get() : null, survToUpdate);
+        validateSurveillanceUpdate(foundSurv.isPresent() ? foundSurv.get() : null, survToUpdate);
         if (survToUpdate.getErrorMessages() != null && survToUpdate.getErrorMessages().size() > 0) {
             throw new ValidationException(survToUpdate.getErrorMessages(), null);
         }
@@ -205,10 +210,14 @@ public class SurveillanceManager extends SecuredManager {
         survDao.deleteNonconformityDocument(documentId);
     }
 
-    @Transactional(readOnly = true)
-    public void validate(Surveillance existingSurv, Surveillance updatedSurv) {
+    private void validateSurveillanceUpdate(Surveillance existingSurv, Surveillance updatedSurv) {
         updatedSurv.getErrorMessages().clear();
-        survValidator.validate(existingSurv, updatedSurv);
+        survWithAuthorityValidator.validate(existingSurv, updatedSurv);
+    }
+
+    private void validateSurveillanceCreation(Surveillance createdSurv) {
+        createdSurv.getErrorMessages().clear();
+        survCreationValidator.validate(createdSurv);
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
