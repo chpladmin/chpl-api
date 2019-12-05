@@ -301,31 +301,6 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     @Transactional(readOnly = true)
-    public boolean chplIdExists(final String id) throws EntityRetrievalException {
-        if (StringUtils.isEmpty(id)) {
-            return false;
-        }
-
-        boolean exists = false;
-        if (id.startsWith("CHP")) {
-            CertifiedProductDTO existing = cpDao.getByChplNumber(id);
-            if (existing != null) {
-                exists = true;
-            }
-        } else {
-            try {
-                CertifiedProductDetailsDTO existing = cpDao.getByChplUniqueId(id);
-                if (existing != null) {
-                    exists = true;
-                }
-            } catch (final EntityRetrievalException ex) {
-                LOGGER.error("Could not look up " + id, ex);
-            }
-        }
-        return exists;
-    }
-
-    @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> getDetailsByIds(final List<Long> ids) throws EntityRetrievalException {
         return cpDao.getDetailsByIds(ids);
     }
@@ -420,12 +395,12 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).CREATE_FROM_PENDING, #acbId)")
+            + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).CREATE_FROM_PENDING, #pendingCp)")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS
     }, allEntries = true)
-    public CertifiedProductDTO createFromPending(final Long acbId, final PendingCertifiedProductDTO pendingCp)
+    public CertifiedProductDTO createFromPending(final PendingCertifiedProductDTO pendingCp)
             throws EntityRetrievalException, EntityCreationException, IOException {
 
         CertifiedProductDTO toCreate = new CertifiedProductDTO();
@@ -1065,7 +1040,7 @@ public class CertifiedProductManager extends SecuredManager {
         return cpDao.update(toUpdate);
     }
 
-    private void sanitizeUpdatedListingData(final Long acbId, final CertifiedProductSearchDetails listing)
+    private void sanitizeUpdatedListingData(final CertifiedProductSearchDetails listing)
             throws EntityNotFoundException {
         // make sure the ui didn't send any error or warning messages back
         listing.setErrorMessages(new HashSet<String>());
@@ -1125,9 +1100,7 @@ public class CertifiedProductManager extends SecuredManager {
                 .getCertifiedProductDetails(updatedListing.getId());
 
         // clean up what was sent in - some necessary IDs or other fields may be missing
-        Long newAcbId = Long
-                .valueOf(updatedListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
-        sanitizeUpdatedListingData(newAcbId, updatedListing);
+        sanitizeUpdatedListingData(updatedListing);
 
         // validate - throws ValidationException if the listing cannot be updated
         validateListingForUpdate(existingListing, updatedListing);
@@ -1172,7 +1145,7 @@ public class CertifiedProductManager extends SecuredManager {
                 updatedListing.getCertificationEvents());
         updateMeaningfulUseUserHistory(updatedListing.getId(), existingListing.getMeaningfulUseUserHistory(),
                 updatedListing.getMeaningfulUseUserHistory());
-        updateCertifications(updatedListingDTO.getCertificationBodyId(), existingListing, updatedListing,
+        updateCertifications(existingListing, updatedListing,
                 existingListing.getCertificationResults(), updatedListing.getCertificationResults());
         updateCqms(updatedListingDTO, existingListing.getCqmResults(), updatedListing.getCqmResults());
     }
@@ -1251,62 +1224,14 @@ public class CertifiedProductManager extends SecuredManager {
             final CertifiedProductSearchDetails updatedListing) throws ValidationException {
         Validator validator = validatorFactory.getValidator(updatedListing);
         if (validator != null) {
-            validator.validate(updatedListing);
+            validator.validate(existingListing, updatedListing);
         }
-
-        // The following checks will add errors/warning to the updated listing
-        checkForDeveloperBanStatusChange(existingListing, updatedListing);
-        checkForDuplicateChplProductNumber(existingListing, updatedListing);
 
         if (updatedListing.getErrorMessages() != null && updatedListing.getErrorMessages().size() > 0) {
             for (String err : updatedListing.getErrorMessages()) {
                 LOGGER.error("Error updating listing " + updatedListing.getChplProductNumber() + ": " + err);
             }
             throw new ValidationException(updatedListing.getErrorMessages(), updatedListing.getWarningMessages());
-        }
-
-    }
-
-    private void checkForDuplicateChplProductNumber(final CertifiedProductSearchDetails existingListing,
-            final CertifiedProductSearchDetails updatedListing) {
-        if (!existingListing.getChplProductNumber().equals(updatedListing.getChplProductNumber())) {
-            try {
-                boolean isDup = chplIdExists(updatedListing.getChplProductNumber());
-                if (isDup) {
-                    updatedListing.getErrorMessages()
-                            .add(msgUtil.getMessage("listing.chplProductNumber.changedNotUnique",
-                                    updatedListing.getChplProductNumber()));
-                }
-            } catch (final EntityRetrievalException ex) {
-            }
-        }
-    }
-
-    private void checkForDeveloperBanStatusChange(final CertifiedProductSearchDetails existingListing,
-            final CertifiedProductSearchDetails updatedListing) {
-        if (existingListing.getCurrentStatus() != null
-                && updatedListing.getCurrentStatus() != null
-                && !existingListing.getCurrentStatus().getStatus().getId()
-                        .equals(updatedListing.getCurrentStatus().getStatus().getId())) {
-            // if the status is to or from suspended by onc make sure the user
-            // has admin
-            if ((existingListing.getCurrentStatus().getStatus().getName()
-                    .equals(CertificationStatusType.SuspendedByOnc.toString())
-                    || updatedListing.getCurrentStatus().getStatus().getName()
-                            .equals(CertificationStatusType.SuspendedByOnc.toString())
-                    || existingListing.getCurrentStatus().getStatus().getName()
-                            .equals(CertificationStatusType.TerminatedByOnc.toString())
-                    || updatedListing.getCurrentStatus().getStatus().getName()
-                            .equals(CertificationStatusType.TerminatedByOnc.toString()))
-                    && !resourcePermissions.isUserRoleOnc()
-                    && !resourcePermissions.isUserRoleAdmin()) {
-                updatedListing.getErrorMessages()
-                        .add("User " + AuthUtil.getUsername()
-                                + " does not have permission to change certification status of "
-                                + existingListing.getChplProductNumber() + " from "
-                                + existingListing.getCurrentStatus().getStatus().getName() + " to "
-                                + updatedListing.getCurrentStatus().getStatus().getName());
-            }
         }
     }
 
@@ -1380,7 +1305,7 @@ public class CertifiedProductManager extends SecuredManager {
 
     /**
      * Intelligently determine what updates need to be made to ICS parents.
-     * 
+     *
      * @param existingIcs
      * @param updatedIcs
      */
@@ -1457,7 +1382,7 @@ public class CertifiedProductManager extends SecuredManager {
 
     /**
      * Intelligently update the ICS children relationships
-     * 
+     *
      * @param existingIcs
      * @param updatedIcs
      */
@@ -2021,7 +1946,7 @@ public class CertifiedProductManager extends SecuredManager {
         return numChanges;
     }
 
-    private int updateCertifications(final Long acbId, final CertifiedProductSearchDetails existingListing,
+    private int updateCertifications(final CertifiedProductSearchDetails existingListing,
             final CertifiedProductSearchDetails updatedListing, final List<CertificationResult> existingCertifications,
             final List<CertificationResult> updatedCertifications)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
@@ -2038,7 +1963,7 @@ public class CertifiedProductManager extends SecuredManager {
             for (CertificationResult existingItem : existingCertifications) {
                 if (!StringUtils.isEmpty(updatedItem.getNumber()) && !StringUtils.isEmpty(existingItem.getNumber())
                         && updatedItem.getNumber().equals(existingItem.getNumber())) {
-                    numChanges += certResultManager.update(acbId, existingListing, updatedListing, existingItem,
+                    numChanges += certResultManager.update(existingListing, updatedListing, existingItem,
                             updatedItem);
                 }
             }

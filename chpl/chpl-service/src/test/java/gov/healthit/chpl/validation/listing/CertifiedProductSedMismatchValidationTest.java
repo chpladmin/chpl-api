@@ -36,10 +36,6 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.manager.CertificationResultManager;
-import gov.healthit.chpl.manager.impl.CertificationResultManagerImpl;
-import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
-import gov.healthit.chpl.validation.listing.PendingValidator;
-import gov.healthit.chpl.validation.listing.Validator;
 
 /**
  * Tests certified product sed+g3 mismatch rule
@@ -72,7 +68,7 @@ class CertifiedProductSedMismatchValidationTestConfig {
     }
 }
 
-class TestCertificationResultManager extends CertificationResultManagerImpl  {
+class TestCertificationResultManager extends CertificationResultManager  {
     @Override
     public boolean getCertifiedProductHasAdditionalSoftware(Long certifiedProductId) {
         return false;

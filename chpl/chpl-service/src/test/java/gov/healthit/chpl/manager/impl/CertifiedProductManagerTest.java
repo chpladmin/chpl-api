@@ -484,7 +484,7 @@ public class CertifiedProductManagerTest extends TestCase {
 
     /*********************
      * QMS Standard crud tests.
-     * 
+     *
      * @throws MissingReasonException
      * @throws AccessDeniedException
      *************************/
@@ -496,7 +496,6 @@ public class CertifiedProductManagerTest extends TestCase {
             ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 5L;
         final Long qmsToAdd = 1L;
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -533,7 +532,6 @@ public class CertifiedProductManagerTest extends TestCase {
             ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 5L;
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         int origQmsLength = existingListing.getQmsStandards().size();
@@ -570,7 +568,6 @@ public class CertifiedProductManagerTest extends TestCase {
             ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 5L;
         final Long qmsToAdd = 1L;
 
@@ -612,7 +609,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 5L;
         final Long qmsToAdd = 1L;
 
@@ -650,7 +646,7 @@ public class CertifiedProductManagerTest extends TestCase {
 
     /*********************
      * Targeted User crud tests.
-     * 
+     *
      * @throws MissingReasonException
      * @throws AccessDeniedException
      *************************/
@@ -662,7 +658,6 @@ public class CertifiedProductManagerTest extends TestCase {
             ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 5L;
         final Long targetedUserToAdd = -1L;
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -696,7 +691,6 @@ public class CertifiedProductManagerTest extends TestCase {
             ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 5L;
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         int origTuLength = existingListing.getTargetedUsers().size();
@@ -728,7 +722,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 5L;
         final Long targetedUserToAdd = -1L;
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -759,7 +752,7 @@ public class CertifiedProductManagerTest extends TestCase {
 
     /*********************
      * Accessibility Standard crud tests.
-     * 
+     *
      * @throws MissingReasonException
      * @throws AccessDeniedException
      *************************/
@@ -772,7 +765,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 5L;
         final Long accStdIdToAdd = 1L;
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -806,7 +798,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 5L;
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         int origStdLength = existingListing.getAccessibilityStandards().size();
@@ -838,7 +829,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 5L;
         final Long accStdIdToAdd = 1L;
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -878,7 +868,6 @@ public class CertifiedProductManagerTest extends TestCase {
             ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 5L;
         final Long now = System.currentTimeMillis();
         final Long newMuuCount = 60L;
@@ -916,7 +905,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 5L;
         final Long now = System.currentTimeMillis();
         final Long newMuuCount = 60L;
@@ -959,7 +947,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 1L;
         final Long certIdToUpdate = 4L;
 
@@ -999,7 +986,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 1L;
         final Long certIdToUpdate = 2L;
 
@@ -1044,7 +1030,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 1L;
         final Long certIdToUpdate = 2L;
 
@@ -1088,7 +1073,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 1L;
         final Long certIdToUpdate = 2L;
         final int expectedSwCount = 3;
@@ -1139,7 +1123,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 1L;
         final Long certIdToUpdate = 2L;
 
@@ -1197,7 +1180,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 1L;
         final Long certIdToUpdate = 1L;
 
@@ -1237,7 +1219,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 5L;
         final Long certIdToUpdate = 7L;
 
@@ -1280,7 +1261,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 5L;
         final Long certIdToUpdate = 7L;
 
@@ -1331,7 +1311,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 1L;
         final Long certIdToUpdate = 2L;
 
@@ -1372,7 +1351,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 1L;
         final Long certIdToUpdate = 2L;
 
@@ -1420,7 +1398,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 1L;
         final Long certIdToUpdate = 2L;
 
@@ -1468,7 +1445,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 1L;
         final Long certIdToUpdate = 2L;
 
@@ -1507,7 +1483,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 1L;
         final Long certIdToUpdate = 2L;
 
@@ -1549,7 +1524,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 1L;
         final Long certIdToUpdate = 2L;
 
@@ -1602,7 +1576,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 5L;
         final Long certIdToUpdate = 11L;
 
@@ -1642,7 +1615,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 5L;
         final Long certIdToUpdate = 11L;
 
@@ -1697,7 +1669,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 5L;
         final Long certIdToUpdate = 11L;
 
@@ -1748,7 +1719,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 5L;
         final Long certIdToUpdate = 11L;
 
@@ -1794,7 +1764,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 5L;
         final Long certIdToUpdate = 11L;
 
@@ -1848,7 +1817,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 5L;
         final Long certIdToUpdate = 11L;
 
@@ -1903,7 +1871,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 5L;
         final Long certIdToUpdate = 11L;
 
@@ -1947,7 +1914,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 5L;
         final Long certIdToUpdate = 11L;
 
@@ -2001,7 +1967,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 5L;
         final Long certIdToUpdate = 11L;
 
@@ -2039,7 +2004,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 5L;
         final Long certIdToUpdate = 11L;
 
@@ -2090,7 +2054,6 @@ public class CertifiedProductManagerTest extends TestCase {
             MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = -1L;
         final Long listingId = 5L;
         final String cqmToUpdate = "CMS163";
 
@@ -2134,7 +2097,6 @@ public class CertifiedProductManagerTest extends TestCase {
             MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = -1L;
         final Long listingId = 5L;
         final String cqmToUpdate = "CMS163";
 
@@ -2190,7 +2152,6 @@ public class CertifiedProductManagerTest extends TestCase {
             MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = -1L;
         final Long listingId = 2L;
 
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -2228,7 +2189,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 5L;
 
         TestTask toAdd = new TestTask();
@@ -2289,7 +2249,6 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException, ValidationException, AccessDeniedException, MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        final Long acbId = 1L;
         final Long listingId = 5L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -2332,7 +2291,6 @@ public class CertifiedProductManagerTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long listingId = 5L;
-        final Long acbId = -1L;
         final Long certResultId = 7L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -2382,7 +2340,6 @@ public class CertifiedProductManagerTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long listingId = 5L;
-        final Long acbId = -1L;
         final Long certResultId = 7L;
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 
@@ -2433,7 +2390,6 @@ public class CertifiedProductManagerTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long listingId = 5L;
-        final Long acbId = -1L;
         final Long certResultId = 7L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -2487,7 +2443,6 @@ public class CertifiedProductManagerTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long listingId = 3L;
-        final Long acbId = -1L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 
@@ -2530,7 +2485,6 @@ public class CertifiedProductManagerTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long listingId = 3L;
-        final Long acbId = -1L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 
@@ -2572,7 +2526,6 @@ public class CertifiedProductManagerTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         final Long listingId = 3L;
-        final Long acbId = -1L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 

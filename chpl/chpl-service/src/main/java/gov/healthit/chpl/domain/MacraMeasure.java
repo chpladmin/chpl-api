@@ -48,10 +48,16 @@ public class MacraMeasure implements Serializable {
     @XmlElement(required = false, nillable = true)
     private String description;
 
+    /**
+     * A flag indicating whether or not the measure has been marked as removed.
+     */
+    @XmlElement(required = true, nillable = false)
+    private Boolean removed;
+
     public MacraMeasure() {
     }
 
-    public MacraMeasure(MacraMeasureDTO dto) {
+    public MacraMeasure(final MacraMeasureDTO dto) {
         this.id = dto.getId();
         if (dto.getCriteria() != null) {
             this.criteria = new CertificationCriterion(dto.getCriteria());
@@ -62,6 +68,7 @@ public class MacraMeasure implements Serializable {
         this.abbreviation = dto.getValue();
         this.name = dto.getName();
         this.description = dto.getDescription();
+        this.removed = dto.getRemoved();
     }
 
     // not overriding equals on purpose
@@ -117,5 +124,13 @@ public class MacraMeasure implements Serializable {
 
     public void setDescription(final String description) {
         this.description = description;
+    }
+
+    public Boolean getRemoved() {
+        return removed;
+    }
+
+    public void setRemoved(final Boolean removed) {
+        this.removed = removed;
     }
 }

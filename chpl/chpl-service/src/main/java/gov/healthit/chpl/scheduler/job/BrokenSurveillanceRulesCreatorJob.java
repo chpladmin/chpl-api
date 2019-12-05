@@ -1,8 +1,5 @@
 package gov.healthit.chpl.scheduler.job;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -11,7 +8,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -21,6 +17,7 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
@@ -43,8 +40,9 @@ import gov.healthit.chpl.scheduler.DataCollectorAsyncSchedulerHelper;
 import gov.healthit.chpl.scheduler.surveillance.rules.RuleComplianceCalculator;
 
 /**
- * Initiates and runs the the Quartz job that generates the data that is used to to create
- * the Broken Surveillance Rules report.
+ * Initiates and runs the the Quartz job that generates the data that is used to to create the Broken Surveillance Rules
+ * report.
+ * 
  * @author alarned
  *
  */
@@ -52,11 +50,9 @@ import gov.healthit.chpl.scheduler.surveillance.rules.RuleComplianceCalculator;
 public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("brokenSurveillanceRulesCreatorJobLogger");
     private static final String EDITION_2011 = "2011";
-    private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
     private static final Long MILLISECONDS_PER_SECOND = 1000L;
     private static final Long SECONDS_PER_MINUTE = 60L;
     private DateTimeFormatter dateFormatter;
-    private Properties props;
 
     @Autowired
     private CertifiedProductSearchDAO certifiedProductSearchDAO;
@@ -73,13 +69,17 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
     @Autowired
     private RuleComplianceCalculator ruleComplianceCalculator;
 
+    @Autowired
+    private Environment env;
+
     /**
      * Constructor to initialize BrokenSurveillanceRulesCreatorJob object.
-     * @throws Exception is thrown
+     * 
+     * @throws Exception
+     *             is thrown
      */
     public BrokenSurveillanceRulesCreatorJob() throws Exception {
         super();
-        loadProperties();
         dateFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd");
     }
 
@@ -87,7 +87,6 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
     @Transactional
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        ruleComplianceCalculator.setProps(props);
         dataCollectorAsyncSchedulerHelper.setLogger(LOGGER);
 
         LOGGER.info("********* Starting the Broken Surveillance Rules Creator job. *********");
@@ -112,20 +111,6 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
             LOGGER.error("Unable to save Broken Surveillance Rules {} with error message {}",
                     items.toString(), e.getLocalizedMessage());
         }
-    }
-
-    private Properties loadProperties() throws IOException {
-        InputStream in =
-                BrokenSurveillanceRulesCreatorJob.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
-        if (in == null) {
-            props = null;
-            throw new FileNotFoundException("Environment Properties File not found in class path.");
-        } else {
-            props = new Properties();
-            props.load(in);
-            in.close();
-        }
-        return props;
     }
 
     private List<CertifiedProductSearchDetails> retrieveData() {
@@ -203,8 +188,8 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
                             BrokenSurveillanceRulesDTO rule = getDefaultBrokenRule(listing);
                             rule = addSurveillanceData(rule, surv);
                             rule = addNcData(rule, nc);
-                            List<OversightRuleResult> oversightResult =
-                                    ruleComplianceCalculator.calculateCompliance(listing, surv, nc);
+                            List<OversightRuleResult> oversightResult = ruleComplianceCalculator
+                                    .calculateCompliance(listing, surv, nc);
                             for (OversightRuleResult currResult : oversightResult) {
                                 String dateBrokenStr = "";
                                 if (currResult.getDateBroken() != null) {
@@ -268,7 +253,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         base.setVersion(listing.getVersion().getVersion());
         base.setAcb(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
         base.setChplProductNumber(listing.getChplProductNumber());
-        String productDetailsUrl = props.getProperty("chplUrlBegin").trim();
+        String productDetailsUrl = env.getProperty("chplUrlBegin").trim();
         if (!productDetailsUrl.endsWith("/")) {
             productDetailsUrl += "/";
         }

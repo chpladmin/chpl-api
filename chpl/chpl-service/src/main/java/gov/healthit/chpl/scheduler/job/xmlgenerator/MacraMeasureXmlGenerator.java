@@ -26,6 +26,7 @@ public class MacraMeasureXmlGenerator extends XmlGenerator {
             createSimpleElement(measure.getDescription(), "description", sw);
             createSimpleElement(measure.getId(), "id", sw);
             createSimpleElement(measure.getName(), "name", sw);
+            createSimpleElement(measure.getRemoved(), "removed", sw);
             sw.writeEndElement();
         }
     }

@@ -10,6 +10,7 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 
 import com.google.common.base.Predicate;
@@ -28,7 +29,10 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  *
  */
 @Configuration
-@PropertySource("classpath:environment.properties")
+@PropertySources({
+    @PropertySource("classpath:/environment.properties"),
+    @PropertySource(value = "classpath:/environment-override.properties", ignoreResourceNotFound = true)
+})
 @EnableSwagger2
 public class SwaggerConfig implements EnvironmentAware {
 
@@ -54,7 +58,7 @@ public class SwaggerConfig implements EnvironmentAware {
                 + "select the \"Certified Health IT Products List (CHPL)\" category.",
                 "https://www.healthit.gov/form/healthit-feedback-form",
                 "");
-        return new ApiInfo("CHPL", "Certified Health IT Product Listing", "21.12.0", "",
+        return new ApiInfo("CHPL", "Certified Health IT Product Listing", "21.14.0", "",
                 contact, "License Text", "https://github.com/chpladmin/chpl-api/blob/staging/LICENSE");
     }
 

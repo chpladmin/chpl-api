@@ -1,11 +1,7 @@
 package gov.healthit.chpl.scheduler.job.chartdata;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,12 +18,11 @@ import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
 import gov.healthit.chpl.dto.ListingCountStatisticsDTO;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
-import gov.healthit.chpl.scheduler.job.BrokenSurveillanceRulesCreatorJob;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 
 /**
- * This is the starting point for populating statistics tables that will be used
- * for the charts. As new tables need to be populated, they will be added here.
+ * This is the starting point for populating statistics tables that will be used for the charts. As new tables need to
+ * be populated, they will be added here.
  *
  * @author TYoung
  *
@@ -35,8 +30,6 @@ import gov.healthit.chpl.scheduler.job.QuartzJob;
 @DisallowConcurrentExecution
 public final class ChartDataCreatorJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
-    private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
-    private Properties props;
 
     @Autowired
     private CertifiedProductSearchDAO certifiedProductSearchDAO;
@@ -49,21 +42,6 @@ public final class ChartDataCreatorJob extends QuartzJob {
      */
     public ChartDataCreatorJob() throws Exception {
         super();
-        loadProperties();
-    }
-
-    private Properties loadProperties() throws IOException {
-        InputStream in = BrokenSurveillanceRulesCreatorJob.class.getClassLoader()
-                .getResourceAsStream(DEFAULT_PROPERTIES_FILE);
-        if (in == null) {
-            props = null;
-            throw new FileNotFoundException("Environment Properties File not found in class path.");
-        } else {
-            props = new Properties();
-            props.load(in);
-            in.close();
-        }
-        return props;
     }
 
     @Override

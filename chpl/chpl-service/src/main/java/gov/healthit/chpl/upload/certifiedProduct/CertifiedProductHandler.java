@@ -9,9 +9,6 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -35,7 +32,7 @@ import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("certifiedProductHandler")
-public abstract class CertifiedProductHandler extends CertifiedProductUploadHandlerImpl {
+public abstract class CertifiedProductHandler extends CertifiedProductUploadHandler {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductHandler.class);
     protected static final String PRACTICE_TYPE_AMBULATORY = "AMBULATORY";
     protected static final String PRACTICE_TYPE_INPATIENT = "INPATIENT";
@@ -43,10 +40,12 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
     protected static final String SUBSEQUENT_ROW_INDICATOR = "SUBELEMENT";
     protected static final String CRITERIA_COL_HEADING_BEGIN = "CRITERIA_";
 
-    @Autowired
-    private MessageSource messageSource;
-    @Autowired
     private ErrorMessageUtil msgUtil;
+
+    @Autowired
+    public CertifiedProductHandler(final ErrorMessageUtil msgUtil) {
+        this.msgUtil = msgUtil;
+    }
 
     @Override
     public abstract PendingCertifiedProductEntity handle() throws InvalidArgumentsException;
@@ -56,8 +55,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
     public abstract String[] getCriteriaNames();
 
     public String getErrorMessage(final String errorField) {
-        return String.format(messageSource.getMessage(new DefaultMessageSourceResolvable(errorField),
-                LocaleContextHolder.getLocale()));
+        return msgUtil.getMessage(errorField);
     }
 
     protected void parseUniqueId(final PendingCertifiedProductEntity pendingCertifiedProduct, final CSVRecord record) {
@@ -179,7 +177,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
 
     /**
      * Parse ATL(s).
-     * 
+     *
      * @param pendingCertifiedProduct
      *            the pending product
      * @param record
