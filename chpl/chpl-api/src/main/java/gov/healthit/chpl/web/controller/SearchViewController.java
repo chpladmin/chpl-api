@@ -57,6 +57,7 @@ import gov.healthit.chpl.domain.search.SearchRequest;
 import gov.healthit.chpl.domain.search.SearchResponse;
 import gov.healthit.chpl.domain.search.SearchSetOperator;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptions;
+import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptionsDeprecated;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -1190,12 +1191,24 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible surveillance requirement options in the CHPL")
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Get all possible surveillance requirement options in the CHPL")
     @RequestMapping(value = "/data/surveillance_requirements", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody SurveillanceRequirementOptionsDeprecated getSurveillanceRequirementOptionsDeprecated() {
+        SurveillanceRequirementOptionsDeprecated data =
+                dimensionalDataManager.getSurveillanceRequirementOptionsDeprecated();
+        return data;
+    }
+
+    @ApiOperation(value = "Get all possible surveillance requirement options in the CHPL")
+    @RequestMapping(value = "/data/surveillance-requirements", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SurveillanceRequirementOptions getSurveillanceRequirementOptions() {
-        SurveillanceRequirementOptions data = dimensionalDataManager.getSurveillanceRequirementOptions();
+        SurveillanceRequirementOptions data =
+                dimensionalDataManager.getSurveillanceRequirementOptions();
         return data;
     }
 
@@ -1211,12 +1224,25 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible nonconformity type options in the CHPL")
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Get all possible nonconformity type options in the CHPL")
     @RequestMapping(value = "/data/nonconformity_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody SearchOption getNonconformityTypeOptionsDeprecated() {
+        Set<KeyValueModel> data = dimensionalDataManager.getNonconformityTypeOptionsDeprecated();
+        SearchOption result = new SearchOption();
+        result.setExpandable(false);
+        result.setData(data);
+        return result;
+    }
+
+    @ApiOperation(value = "Get all possible nonconformity type options in the CHPL")
+    @RequestMapping(value = "/data/nonconformity-types", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getNonconformityTypeOptions() {
-        Set<KeyValueModel> data = dimensionalDataManager.getNonconformityTypeOptions();
+        Set<CertificationCriterion> data = dimensionalDataManager.getNonconformityTypeOptions();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
