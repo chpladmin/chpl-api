@@ -12,6 +12,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.MacraMeasureDAO;
+import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 
 public class RemoveRT13ECMacraMeasureJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("removeRT13ECMacraMeasureJobLogger");
@@ -20,6 +21,9 @@ public class RemoveRT13ECMacraMeasureJob extends QuartzJob {
 
     @Autowired
     private MacraMeasureDAO macraMeasureDAO;
+
+    @Autowired
+    private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
     @Autowired
     private JpaTransactionManager txnMgr;
@@ -44,6 +48,9 @@ public class RemoveRT13ECMacraMeasureJob extends QuartzJob {
                 }
             }
         });
+
+        // Need to "refresh" the data in CertifiedProductDetailsManager since it is stored within the bean.
+        certifiedProductDetailsManager.refreshData();
 
         LOGGER.info("********* Completed the Remove RT13 EC Macra Measure job. *********");
     }
