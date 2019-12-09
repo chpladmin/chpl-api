@@ -189,6 +189,8 @@ public class PendingSurveillanceManager extends SecuredManager {
 
         if (survToInsert == null || survToInsert.getId() == null) {
             throw new ValidationException("A valid pending surveillance id must be provided.");
+        } else {
+            survToInsert.getErrorMessages().clear();
         }
 
         // the confirmation could be an update to an existing surveillance.

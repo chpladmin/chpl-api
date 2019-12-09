@@ -160,9 +160,9 @@ public class SurveillanceController implements MessageSourceAware {
         } catch (final SurveillanceAuthorityAccessDeniedException ex) {
             LOGGER.error("User lacks authority to create surveillance");
             throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to create surveillance");
-        }
-
-        if (insertedSurv == null) {
+        } catch (ValidationException ex) {
+            throw ex;
+        } catch (Exception ex) {
             throw new EntityCreationException("Error creating new surveillance.");
         }
 

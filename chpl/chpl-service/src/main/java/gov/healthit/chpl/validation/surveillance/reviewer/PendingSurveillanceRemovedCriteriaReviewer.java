@@ -63,7 +63,7 @@ public class PendingSurveillanceRemovedCriteriaReviewer implements Reviewer {
     }
 
     private void checkNonconformityForRemovedCriteria(Surveillance surv, SurveillanceNonconformity nc) {
-        if (StringUtils.isEmpty(nc.getNonconformityType())) {
+        if (!StringUtils.isEmpty(nc.getNonconformityType())) {
                 CertificationCriterionDTO criterion = certDao.getByName(nc.getNonconformityType());
                 if (criterion != null && criterion.getRemoved() != null
                         && criterion.getRemoved().booleanValue()) {

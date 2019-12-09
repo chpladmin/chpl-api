@@ -27,7 +27,7 @@ public class SurveillanceUpdateValidator {
             SurveillanceRequirementReviewer survReqReviewer,
             SurveillanceNonconformityReviewer survNcReviewer,
             @Qualifier("surveillanceUnsupportedCharacterReviewer") UnsupportedCharacterReviewer charReviewer,
-            RemovedCriteriaComparisonReviewer removedCriteriaReviewer) {
+            @Qualifier("survRemovedCriteriaComparisonReviewer") RemovedCriteriaComparisonReviewer removedCriteriaReviewer) {
         reviewers = new ArrayList<Reviewer>();
         reviewers.add(survDetailsReviewer);
         reviewers.add(survReqReviewer);

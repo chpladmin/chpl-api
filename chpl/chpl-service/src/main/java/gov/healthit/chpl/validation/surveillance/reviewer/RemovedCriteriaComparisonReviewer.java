@@ -17,7 +17,7 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-@Component
+@Component("survRemovedCriteriaComparisonReviewer")
 public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
 
     private CertificationCriterionDAO criterionDao;

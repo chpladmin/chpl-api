@@ -20,7 +20,7 @@ public class SurveillanceUpdateWithAuthorityValidator extends SurveillanceUpdate
             SurveillanceNonconformityReviewer survNcReviewer,
             @Qualifier("surveillanceUnsupportedCharacterReviewer") UnsupportedCharacterReviewer charReviewer,
             AuthorityReviewer authorityReviewer,
-            RemovedCriteriaComparisonReviewer removedCriteriaReviewer) {
+            @Qualifier("survRemovedCriteriaComparisonReviewer") RemovedCriteriaComparisonReviewer removedCriteriaReviewer) {
         super(survDetailsReviewer, survReqReviewer, survNcReviewer, charReviewer, removedCriteriaReviewer);
         getReviewers().add(authorityReviewer);
     }
