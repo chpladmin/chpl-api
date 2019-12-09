@@ -36,7 +36,7 @@ public class TestStandardDuplicateReviewer {
 
         if (testStandardDuplicateResults.duplicatesExist()) {
             listing.getWarningMessages().addAll(
-                    getWarnings(testStandardDuplicateResults.getDuplicateList(), certificationResult.getNumber()));
+                    getWarnings(testStandardDuplicateResults.getDuplicateList(), certificationResult.getCriterion().getNumber()));
             certificationResult.setTestStandards(testStandardDuplicateResults.getUniqueList());
         }
     }

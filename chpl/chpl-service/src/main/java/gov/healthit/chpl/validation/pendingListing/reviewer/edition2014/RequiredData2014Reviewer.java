@@ -55,48 +55,48 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
         boolean isCqmRequired = false;
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
             if (cert.getMeetsCriteria()) {
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_SUCCESS)
+                if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.G1_SUCCESS)
                         && cert.getG1Success() == null) {
                     listing.getErrorMessages().add(
-                            msgUtil.getMessage("listing.criteria.missingG1Success", cert.getNumber()));
+                            msgUtil.getMessage("listing.criteria.missingG1Success", cert.getCriterion().getNumber()));
                 }
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_SUCCESS)
+                if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.G2_SUCCESS)
                         && cert.getG2Success() == null) {
                     listing.getErrorMessages().add(
-                            msgUtil.getMessage("listing.criteria.missingG2Success", cert.getNumber()));
+                            msgUtil.getMessage("listing.criteria.missingG2Success", cert.getCriterion().getNumber()));
                 }
                 boolean gapEligibleAndTrue = false;
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
+                if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.GAP)
                         && cert.getGap() != null && cert.getGap()) {
                     gapEligibleAndTrue = true;
                 }
 
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.SED)) {
+                if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.SED)) {
                     if (cert.getSed() == null) {
                         listing.getErrorMessages().add(
-                                msgUtil.getMessage("listing.criteria.SEDRequired", cert.getNumber()));
+                                msgUtil.getMessage("listing.criteria.SEDRequired", cert.getCriterion().getNumber()));
                     } else if (cert.getSed() != null && cert.getSed().booleanValue()
                             && (cert.getUcdProcesses() == null || cert.getUcdProcesses().size() == 0)) {
                         if (listing.getIcs() != null && listing.getIcs().booleanValue()) {
                             listing.getWarningMessages().add(
-                                    msgUtil.getMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
+                                    msgUtil.getMessage("listing.criteria.missingUcdProccesses", cert.getCriterion().getNumber()));
                         } else {
                             listing.getErrorMessages().add(
-                                    msgUtil.getMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
+                                    msgUtil.getMessage("listing.criteria.missingUcdProccesses", cert.getCriterion().getNumber()));
                         }
                     } else if (cert.getSed() != null && !cert.getSed().booleanValue()
                             && cert.getUcdProcesses() != null && cert.getUcdProcesses().size() > 0) {
                         listing.getWarningMessages().add(
-                                msgUtil.getMessage("listing.criteria.sedUcdMismatch", cert.getNumber()));
+                                msgUtil.getMessage("listing.criteria.sedUcdMismatch", cert.getCriterion().getNumber()));
                     }
                 }
 
-                if (!gapEligibleAndTrue && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_DATA)
+                if (!gapEligibleAndTrue && certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.TEST_DATA)
                         && (cert.getTestData() == null || cert.getTestData().size() == 0)) {
-                    listing.getErrorMessages().add("Test Data is required for certification " + cert.getNumber() + ".");
+                    listing.getErrorMessages().add("Test Data is required for certification " + cert.getCriterion().getNumber() + ".");
                 }
                 for (int i = 0; i < CQM_REQUIRED_CERTS.length; i++) {
-                    if (cert.getNumber().equals(CQM_REQUIRED_CERTS[i])) {
+                    if (cert.getCriterion().getNumber().equals(CQM_REQUIRED_CERTS[i])) {
                         isCqmRequired = true;
                     }
                 }
@@ -119,14 +119,14 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
         boolean hasG3 = false;
         boolean hasG3Complement = false;
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
-            if (cert.getNumber().equals("170.314 (g)(4)") && cert.getMeetsCriteria()) {
+            if (cert.getCriterion().getNumber().equals("170.314 (g)(4)") && cert.getMeetsCriteria()) {
                 hasG4 = true;
             }
-            if (cert.getNumber().equals("170.314 (g)(3)") && cert.getMeetsCriteria()) {
+            if (cert.getCriterion().getNumber().equals("170.314 (g)(3)") && cert.getMeetsCriteria()) {
                 hasG3 = true;
             }
             for (int i = 0; i < G3_COMPLEMENTARY_CERTS.length; i++) {
-                if (cert.getNumber().equals(G3_COMPLEMENTARY_CERTS[i]) && cert.getMeetsCriteria()) {
+                if (cert.getCriterion().getNumber().equals(G3_COMPLEMENTARY_CERTS[i]) && cert.getMeetsCriteria()) {
                     hasG3Complement = true;
                 }
             }

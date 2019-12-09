@@ -59,10 +59,10 @@ public class UrlReviewer implements Reviewer {
         if (!StringUtils.isEmpty(input)) {
             if (ValidationUtils.hasNewline(input)) {
                 listing.getErrorMessages().add(
-                        msgUtil.getMessage("listing.criteria.invalidUrlFound", fieldName, cert.getNumber()));
+                        msgUtil.getMessage("listing.criteria.invalidUrlFound", fieldName, cert.getCriterion().getNumber()));
             }  else if (!ValidationUtils.isWellFormedUrl(input)) {
                 listing.getErrorMessages().add(
-                        msgUtil.getMessage("listing.criteria.invalidUrlFound", fieldName, cert.getNumber()));
+                        msgUtil.getMessage("listing.criteria.invalidUrlFound", fieldName, cert.getCriterion().getNumber()));
             }
         }
     }

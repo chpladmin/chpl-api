@@ -211,11 +211,11 @@ public class UnsupportedCharacterReviewer implements Reviewer {
             final PendingCertificationResultDTO criteria, final String input, final String fieldName) {
         if (!ValidationUtils.isValidUtf8(input)) {
             listing.getWarningMessages().add(
-                    msgUtil.getMessage("listing.criteria.badCharacterFound", criteria.getNumber(), fieldName));
+                    msgUtil.getMessage("listing.criteria.badCharacterFound", criteria.getCriterion().getNumber(), fieldName));
         }
         if (ValidationUtils.hasNewline(input)) {
             listing.getWarningMessages().add(
-                    msgUtil.getMessage("listing.criteria.newlineCharacterFound", criteria.getNumber(), fieldName));
+                    msgUtil.getMessage("listing.criteria.newlineCharacterFound", criteria.getCriterion().getNumber(), fieldName));
         }
     }
 }

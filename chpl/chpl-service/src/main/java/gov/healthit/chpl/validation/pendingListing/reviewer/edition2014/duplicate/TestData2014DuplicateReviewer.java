@@ -36,7 +36,8 @@ public class TestData2014DuplicateReviewer {
 
         if (testDataDuplicateResults.duplicatesExist()) {
             listing.getWarningMessages().addAll(
-                    getWarnings(testDataDuplicateResults.getDuplicateList(), certificationResult.getNumber()));
+                    getWarnings(testDataDuplicateResults.getDuplicateList(),
+                            certificationResult.getCriterion().getNumber()));
             certificationResult.setTestData(testDataDuplicateResults.getUniqueList());
         }
     }

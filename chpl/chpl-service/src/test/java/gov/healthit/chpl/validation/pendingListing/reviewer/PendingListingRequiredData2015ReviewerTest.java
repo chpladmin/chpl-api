@@ -391,7 +391,7 @@ public class PendingListingRequiredData2015ReviewerTest {
             final MacraMeasureDTO measure) {
         for (String message : listing.getErrorMessages()) {
             if (StringUtils.contains(message, "Certification "
-                    + cert.getNumber() + " may not reference the G1 Macra Measure: '"
+                    + cert.getCriterion().getNumber() + " may not reference the G1 Macra Measure: '"
                     + measure.getValue() + "' since this listing does not have ICS. The measure has been removed.")) {
                 return true;
             }
@@ -449,7 +449,7 @@ public class PendingListingRequiredData2015ReviewerTest {
     private PendingCertificationResultDTO findPendingCertification(final PendingCertifiedProductDTO listing,
             final String certNumber) {
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
-            if (cert.getNumber().equals(certNumber)) {
+            if (cert.getCriterion().getNumber().equals(certNumber)) {
                 return cert;
             }
         }

@@ -46,8 +46,8 @@ public class TestToolReviewer implements Reviewer {
                     while (testToolIter.hasNext()) {
                         PendingCertificationResultTestToolDTO testTool = testToolIter.next();
                         if (StringUtils.isEmpty(testTool.getName())) {
-                            listing.getErrorMessages()
-                                    .add(msgUtil.getMessage("listing.criteria.missingTestToolName", cert.getNumber()));
+                            listing.getErrorMessages().add(
+                                    msgUtil.getMessage("listing.criteria.missingTestToolName", cert.getCriterion().getNumber()));
                         } else {
                             TestToolDTO foundTestTool = testToolDao.getByName(testTool.getName());
                             if (foundTestTool != null) {
@@ -57,13 +57,13 @@ public class TestToolReviewer implements Reviewer {
                                         listing.getErrorMessages()
                                                 .add(msgUtil.getMessage(
                                                         "listing.criteria.retiredTestToolNoIcsNotAllowed",
-                                                        testTool.getName(), cert.getNumber()));
+                                                        testTool.getName(), cert.getCriterion().getNumber()));
                                     }
                                 }
                             } else {
                                 listing.getErrorMessages()
                                         .add(msgUtil.getMessage("listing.criteria.testToolNotFoundAndRemoved",
-                                                cert.getNumber(), testTool.getName()));
+                                                cert.getCriterion().getNumber(), testTool.getName()));
                                 testToolIter.remove();
                             }
                         }
