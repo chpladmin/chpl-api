@@ -10,6 +10,7 @@ import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
+import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -51,7 +52,7 @@ public class PendingSurveillanceRemovedCriteriaReviewer implements Reviewer {
 
     private void checkRequirementForRemovedCriteria(Surveillance surv, SurveillanceRequirement req) {
         if (req.getType() != null && !StringUtils.isEmpty(req.getType().getName())
-                && req.getType().getName().equalsIgnoreCase(Surveillance.CRITERION_REQUIREMENT_TYPE)) {
+                && req.getType().getName().equalsIgnoreCase(SurveillanceRequirementType.CERTIFIED_CAPABILITY)) {
                 CertificationCriterionDTO criterion = certDao.getByName(req.getRequirement());
                 if (criterion != null && criterion.getRemoved() != null
                         && criterion.getRemoved().booleanValue()) {

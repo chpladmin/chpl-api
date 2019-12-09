@@ -13,6 +13,7 @@ import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
+import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -128,7 +129,7 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
      */
     private boolean hasRemovedCriteria(SurveillanceRequirement req) {
         if (req.getType() != null && !StringUtils.isEmpty(req.getType().getName())) {
-            if (req.getType().getName().equalsIgnoreCase(Surveillance.CRITERION_REQUIREMENT_TYPE)) {
+            if (req.getType().getName().equalsIgnoreCase(SurveillanceRequirementType.CERTIFIED_CAPABILITY)) {
                 String requirementCriteria =
                         gov.healthit.chpl.util.Util.coerceToCriterionNumberFormat(req.getRequirement());
                 CertificationCriterionDTO criterion = criterionDao.getByName(requirementCriteria);

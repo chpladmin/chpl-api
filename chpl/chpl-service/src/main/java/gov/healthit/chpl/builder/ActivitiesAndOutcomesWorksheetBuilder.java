@@ -42,6 +42,7 @@ import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
+import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.dto.surveillance.report.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
@@ -1247,7 +1248,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         //get unique set of nonconformity types
         for (SurveillanceRequirement req : surv.getRequirements()) {
             if (req.getResult() != null &&
-                    req.getResult().getName().equalsIgnoreCase(Surveillance.HAS_NON_CONFORMITY)) {
+                    req.getResult().getName().equalsIgnoreCase(SurveillanceResultType.NON_CONFORMITY)) {
                 for (SurveillanceNonconformity nc : req.getNonconformities()) {
                     if (!StringUtils.isEmpty(nc.getNonconformityType())) {
                         nonconformityTypes.add(nc.getNonconformityType());

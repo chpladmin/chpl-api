@@ -383,6 +383,7 @@ public class PendingSurveillanceManager extends SecuredManager {
                 CertifiedProduct cp = new CertifiedProduct();
                 cp.setId(pr.getCertifiedProductId());
                 cp.setChplProductNumber(pr.getCertifiedProductUniqueId());
+                cp.setEdition(pr.getCertifiedProduct().getYear());
                 surv.setCertifiedProduct(cp);
 
                 if (preq.getNonconformities() != null) {

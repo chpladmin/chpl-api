@@ -14,6 +14,7 @@ import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
+import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -42,7 +43,7 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
         // assume surveillance requires a close date until proven otherwise
         for (SurveillanceRequirement req : surv.getRequirements()) {
             if (req.getResult() != null && !StringUtils.isEmpty(req.getResult().getName())
-                    && req.getResult().getName().equalsIgnoreCase(Surveillance.HAS_NON_CONFORMITY)) {
+                    && req.getResult().getName().equalsIgnoreCase(SurveillanceResultType.NON_CONFORMITY)) {
                 // there should be nonconformities
                 if (req.getNonconformities() == null || req.getNonconformities().size() == 0) {
                     surv.getErrorMessages()

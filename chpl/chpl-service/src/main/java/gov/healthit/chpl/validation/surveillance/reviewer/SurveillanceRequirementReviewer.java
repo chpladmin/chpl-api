@@ -45,10 +45,10 @@ public class SurveillanceRequirementReviewer implements Reviewer {
             checkRequirementTypeExists(surv, req);
 
             if (req.getType() != null && !StringUtils.isEmpty(req.getType().getName())) {
-                if (req.getType().getName().equalsIgnoreCase(Surveillance.CRITERION_REQUIREMENT_TYPE)
+                if (req.getType().getName().equalsIgnoreCase(SurveillanceRequirementType.CERTIFIED_CAPABILITY)
                         && surv.getCertifiedProduct() != null && surv.getCertifiedProduct().getId() != null) {
                     checkCriterionRequirementTypeValidity(surv, req, certResults);
-                } else if (req.getType().getName().equals(Surveillance.TRANSPARENCY_REQUIREMENT_TYPE)) {
+                } else if (req.getType().getName().equals(SurveillanceRequirementType.TRANS_DISCLOSURE_REQ)) {
                     checkTransparencyRequirementTypeValidity(surv, req);
                 }
             } else {

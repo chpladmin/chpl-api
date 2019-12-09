@@ -13,6 +13,8 @@ import org.apache.commons.lang3.StringUtils;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SurveillanceResultType implements Serializable {
     private static final long serialVersionUID = 120064764043803388L;
+    public static final String NON_CONFORMITY = "Non-Conformity";
+    public static final String NO_NON_CONFORMITY = "No Non-Conformity";
 
     /**
      * Surveillance result type internal ID
