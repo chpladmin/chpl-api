@@ -36,7 +36,8 @@ public class TestProcedure2014DuplicateReviewer {
 
         if (testProcedureDuplicateResults.duplicatesExist()) {
             listing.getWarningMessages().addAll(
-                    getWarnings(testProcedureDuplicateResults.getDuplicateList(), certificationResult.getNumber()));
+                    getWarnings(testProcedureDuplicateResults.getDuplicateList(),
+                            certificationResult.getCriterion().getNumber()));
             certificationResult.setTestProcedures(testProcedureDuplicateResults.getUniqueList());
         }
     }

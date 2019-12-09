@@ -66,7 +66,7 @@ public class UcdProcess implements Serializable {
         this.details = dto.getUcdProcessDetails();
     }
 
-    public boolean matches(UcdProcess anotherUcd) {
+    public boolean matches(final UcdProcess anotherUcd) {
         boolean result = false;
         if (this.getId() != null && anotherUcd.getId() != null
                 && this.getId().longValue() == anotherUcd.getId().longValue()) {

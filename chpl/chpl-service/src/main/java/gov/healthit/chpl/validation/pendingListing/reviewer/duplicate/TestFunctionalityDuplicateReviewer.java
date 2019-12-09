@@ -34,8 +34,9 @@ public class TestFunctionalityDuplicateReviewer {
         }
 
         if (testFunctionalityDuplicateResults.duplicatesExist()) {
-            listing.getWarningMessages().addAll(
-                    getWarnings(testFunctionalityDuplicateResults.getDuplicateList(), certificationResult.getNumber()));
+            listing.getWarningMessages().addAll(getWarnings(
+                            testFunctionalityDuplicateResults.getDuplicateList(),
+                            certificationResult.getCriterion().getNumber()));
             certificationResult.setTestFunctionality(testFunctionalityDuplicateResults.getUniqueList());
         }
     }

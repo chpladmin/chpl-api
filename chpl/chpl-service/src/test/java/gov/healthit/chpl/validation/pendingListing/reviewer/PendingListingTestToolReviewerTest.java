@@ -124,7 +124,7 @@ public class PendingListingTestToolReviewerTest {
     public void testValidTestTool_NoError() {
         PendingCertifiedProductDTO listing = mockUtil.createPending2014Listing();
         for (PendingCertificationResultDTO certResult : listing.getCertificationCriterion()) {
-            if (certResult.getNumber().equals(B_2)) {
+            if (certResult.getCriterion().getNumber().equals(B_2)) {
                 certResult.getTestTools().clear();
                 PendingCertificationResultTestToolDTO crtt = new PendingCertificationResultTestToolDTO();
                 crtt.setId(1L);
@@ -148,7 +148,7 @@ public class PendingListingTestToolReviewerTest {
     public void testMissingTestToolVersion_HasError() {
         PendingCertifiedProductDTO listing = mockUtil.createPending2014Listing();
         for (PendingCertificationResultDTO certResult : listing.getCertificationCriterion()) {
-            if (certResult.getNumber().equals(B_2)) {
+            if (certResult.getCriterion().getNumber().equals(B_2)) {
                 certResult.getTestTools().clear();
                 PendingCertificationResultTestToolDTO crtt = new PendingCertificationResultTestToolDTO();
                 crtt.setId(1L);
@@ -172,7 +172,7 @@ public class PendingListingTestToolReviewerTest {
     public void testMissingTestToolName_HasError() {
         PendingCertifiedProductDTO listing = mockUtil.createPending2014Listing();
         for (PendingCertificationResultDTO certResult : listing.getCertificationCriterion()) {
-            if (certResult.getNumber().equals(B_2)) {
+            if (certResult.getCriterion().getNumber().equals(B_2)) {
                 certResult.getTestTools().clear();
                 PendingCertificationResultTestToolDTO crtt = new PendingCertificationResultTestToolDTO();
                 crtt.setId(1L);
@@ -193,7 +193,7 @@ public class PendingListingTestToolReviewerTest {
     public void testBadTestToolName_HasError() {
         PendingCertifiedProductDTO listing = mockUtil.createPending2014Listing();
         for (PendingCertificationResultDTO certResult : listing.getCertificationCriterion()) {
-            if (certResult.getNumber().equals(B_2)) {
+            if (certResult.getCriterion().getNumber().equals(B_2)) {
                 certResult.getTestTools().clear();
                 PendingCertificationResultTestToolDTO crtt = new PendingCertificationResultTestToolDTO();
                 crtt.setId(1L);
@@ -215,7 +215,7 @@ public class PendingListingTestToolReviewerTest {
     public void testListingWithoutIcsAndRetiredTestTool_HasError() {
         PendingCertifiedProductDTO listing = mockUtil.createPending2014Listing();
         for (PendingCertificationResultDTO certResult : listing.getCertificationCriterion()) {
-            if (certResult.getNumber().equals(B_2)) {
+            if (certResult.getCriterion().getNumber().equals(B_2)) {
                 certResult.getTestTools().clear();
                 PendingCertificationResultTestToolDTO crtt = new PendingCertificationResultTestToolDTO();
                 crtt.setId(1L);
@@ -240,7 +240,7 @@ public class PendingListingTestToolReviewerTest {
         PendingCertifiedProductDTO listing = mockUtil.createPending2014Listing();
         listing.setIcs(Boolean.TRUE);
         for (PendingCertificationResultDTO certResult : listing.getCertificationCriterion()) {
-            if (certResult.getNumber().equals(B_2)) {
+            if (certResult.getCriterion().getNumber().equals(B_2)) {
                 certResult.getTestTools().clear();
                 PendingCertificationResultTestToolDTO crtt = new PendingCertificationResultTestToolDTO();
                 crtt.setId(1L);
@@ -268,7 +268,7 @@ public class PendingListingTestToolReviewerTest {
                 ChplProductNumberUtil.ICS_CODE_INDEX, "01");
         listing.setUniqueId(updatedListingId);
         for (PendingCertificationResultDTO certResult : listing.getCertificationCriterion()) {
-            if (certResult.getNumber().equals(B_2)) {
+            if (certResult.getCriterion().getNumber().equals(B_2)) {
                 certResult.getTestTools().clear();
                 PendingCertificationResultTestToolDTO crtt = new PendingCertificationResultTestToolDTO();
                 crtt.setId(1L);
@@ -291,7 +291,7 @@ public class PendingListingTestToolReviewerTest {
     public void testMissingRequiredTestTool_HasError() {
         PendingCertifiedProductDTO listing = mockUtil.createPending2014Listing();
         for (PendingCertificationResultDTO certResult : listing.getCertificationCriterion()) {
-            if (certResult.getNumber().equals(B_2)) {
+            if (certResult.getCriterion().getNumber().equals(B_2)) {
                 certResult.getTestTools().clear();
             }
         }
@@ -303,8 +303,9 @@ public class PendingListingTestToolReviewerTest {
     public void testMissingOptionalTestTools_NoError() {
         PendingCertifiedProductDTO listing = mockUtil.createPending2014Listing();
         for (PendingCertificationResultDTO certResult : listing.getCertificationCriterion()) {
-            if (certResult.getNumber().equals(G_1) || certResult.getNumber().equals(G_2)
-                    || certResult.getNumber().equals(F_3)) {
+            if (certResult.getCriterion().getNumber().equals(G_1)
+                    || certResult.getCriterion().getNumber().equals(G_2)
+                    || certResult.getCriterion().getNumber().equals(F_3)) {
                 certResult.getTestTools().clear();
             }
         }

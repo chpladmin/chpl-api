@@ -1206,7 +1206,7 @@ public class CertifiedProductValidationTest {
         PendingCertificationResultMacraMeasureDTO crmm = new PendingCertificationResultMacraMeasureDTO();
         crmm.setEnteredValue("EH/CAH Stage 3");
         crmm.setMacraMeasureId(macraMeasureId);
-        MacraMeasureDTO mmDto = mmDao.getByCriteriaNumberAndValue(pendingCertResult2.getNumber(),
+        MacraMeasureDTO mmDto = mmDao.getByCriteriaNumberAndValue(pendingCertResult2.getCriterion().getNumber(),
                 crmm.getEnteredValue());
         crmm.setMacraMeasure(mmDto);
         pendingCertResult2.getG1MacraMeasures().add(crmm);
@@ -1238,7 +1238,7 @@ public class CertifiedProductValidationTest {
         PendingCertificationResultMacraMeasureDTO crmm = new PendingCertificationResultMacraMeasureDTO();
         crmm.setEnteredValue("EH/CAH Stage 3");
         crmm.setMacraMeasureId(macraMeasureId);
-        MacraMeasureDTO mmDto = mmDao.getByCriteriaNumberAndValue(pendingCertResult2.getNumber(),
+        MacraMeasureDTO mmDto = mmDao.getByCriteriaNumberAndValue(pendingCertResult2.getCriterion().getNumber(),
                 crmm.getEnteredValue());
         crmm.setMacraMeasure(mmDto);
         pendingCertResult2.getG2MacraMeasures().add(crmm);
