@@ -249,6 +249,8 @@ public class SurveillanceController implements MessageSourceAware {
         } catch (final SurveillanceAuthorityAccessDeniedException ex) {
             LOGGER.error("User lacks authority to update surveillance");
             throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to update surveillance");
+        } catch (ValidationException ex) {
+            throw ex;
         } catch (Exception ex) {
             LOGGER.error("Error updating surveillance with id " + survToUpdate.getId());
         }

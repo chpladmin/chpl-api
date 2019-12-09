@@ -48,6 +48,7 @@ import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceCreationValidator;
+import gov.healthit.chpl.validation.surveillance.SurveillanceReadValidator;
 import gov.healthit.chpl.validation.surveillance.SurveillanceUpdateWithAuthorityValidator;
 
 @Service
@@ -58,6 +59,7 @@ public class SurveillanceManager extends SecuredManager {
     private CertifiedProductDAO cpDao;
     private CertifiedProductDetailsManager cpDetailsManager;
     private ActivityManager activityManager;
+    private SurveillanceReadValidator survReadValidator;
     private SurveillanceUpdateWithAuthorityValidator survWithAuthorityValidator;
     private SurveillanceCreationValidator survCreationValidator;
     private UserPermissionDAO userPermissionDao;
@@ -68,16 +70,18 @@ public class SurveillanceManager extends SecuredManager {
     @Autowired
     public SurveillanceManager(SurveillanceDAO survDao, CertifiedProductDAO cpDao,
             CertifiedProductDetailsManager cpDetailsManager, ActivityManager activityManager,
+            SurveillanceReadValidator survReadValidator,
+            SurveillanceCreationValidator survCreationValidator,
             SurveillanceUpdateWithAuthorityValidator survWithAuthorityValidator,
             UserPermissionDAO userPermissionDao,
-            FileUtils fileUtils, Environment env, ResourcePermissions resourcePermissions,
-            SurveillanceCreationValidator survCreationValidator) {
+            FileUtils fileUtils, Environment env, ResourcePermissions resourcePermissions) {
         this.survDao = survDao;
         this.cpDao = cpDao;
         this.cpDetailsManager = cpDetailsManager;
         this.activityManager = activityManager;
         this.survWithAuthorityValidator = survWithAuthorityValidator;
         this.survCreationValidator = survCreationValidator;
+        this.survReadValidator = survReadValidator;
         this.userPermissionDao = userPermissionDao;
         this.fileUtils = fileUtils;
         this.env = env;
@@ -88,7 +92,7 @@ public class SurveillanceManager extends SecuredManager {
     public Surveillance getById(final Long survId) throws EntityRetrievalException {
         SurveillanceEntity surv = survDao.getSurveillanceById(survId);
         Surveillance result = convertToDomain(surv);
-        survWithAuthorityValidator.validate(result, result);
+        survReadValidator.validate(result);
         return result;
     }
 
@@ -99,7 +103,7 @@ public class SurveillanceManager extends SecuredManager {
         if (survResults != null) {
             for (SurveillanceEntity survResult : survResults) {
                 Surveillance surv = convertToDomain(survResult);
-                survWithAuthorityValidator.validate(surv, surv);
+                survReadValidator.validate(surv);
                 results.add(surv);
             }
         }
