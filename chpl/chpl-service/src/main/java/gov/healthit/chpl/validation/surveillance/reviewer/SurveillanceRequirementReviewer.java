@@ -35,6 +35,7 @@ public class SurveillanceRequirementReviewer implements Reviewer {
         if (surv.getRequirements() == null || surv.getRequirements().size() == 0) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.requirementIsRequiredForProduct",
                     surv.getCertifiedProduct().getChplProductNumber()));
+            return;
         }
 
         List<CertificationResultDetailsDTO> certResults =
@@ -43,7 +44,6 @@ public class SurveillanceRequirementReviewer implements Reviewer {
         for (SurveillanceRequirement req : surv.getRequirements()) {
             checkRequirementExists(surv, req);
             checkRequirementTypeExists(surv, req);
-
             if (req.getType() != null && !StringUtils.isEmpty(req.getType().getName())) {
                 if (req.getType().getName().equalsIgnoreCase(SurveillanceRequirementType.CERTIFIED_CAPABILITY)
                         && surv.getCertifiedProduct() != null && surv.getCertifiedProduct().getId() != null) {
@@ -56,7 +56,7 @@ public class SurveillanceRequirementReviewer implements Reviewer {
                         .add(msgUtil.getMessage("surveillance.requirementMustHaveValue", req.getRequirement()));
             }
 
-            checkResultExistsIfRequirementClosed(surv, req);
+            checkResultExistsIfSurveillanceClosed(surv, req);
             checkResultTypeValidity(surv, req);
         }
     }
@@ -94,6 +94,9 @@ public class SurveillanceRequirementReviewer implements Reviewer {
 
     private void checkCriterionRequirementTypeValidity(Surveillance surv, SurveillanceRequirement req,
             List<CertificationResultDetailsDTO> certResults) {
+        if (StringUtils.isEmpty(req.getRequirement())) {
+            return;
+        }
         req.setRequirement(
                 gov.healthit.chpl.util.Util.coerceToCriterionNumberFormat(req.getRequirement()));
         // see if the requirement type is a criterion that the product has attested to
@@ -130,7 +133,7 @@ public class SurveillanceRequirementReviewer implements Reviewer {
         }
     }
 
-    private void checkResultExistsIfRequirementClosed(Surveillance surv, SurveillanceRequirement req) {
+    private void checkResultExistsIfSurveillanceClosed(Surveillance surv, SurveillanceRequirement req) {
         if (surv.getEndDate() != null) {
             if (req.getResult() == null) {
                 surv.getErrorMessages()

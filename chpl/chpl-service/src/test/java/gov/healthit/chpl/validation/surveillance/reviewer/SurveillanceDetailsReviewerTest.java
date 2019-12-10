@@ -204,6 +204,11 @@ public class SurveillanceDetailsReviewerTest {
         type.setId(null);
         type.setName("BAD");
         surv.setType(type);
+
+        Mockito.when(
+                survDao.findSurveillanceType(ArgumentMatchers.eq(type.getName())))
+                .thenReturn(null);
+
         reviewer.review(surv);
         assertTrue(hasSurveillanceTypeNotFoundErrorMessage(surv, type.getName()));
     }

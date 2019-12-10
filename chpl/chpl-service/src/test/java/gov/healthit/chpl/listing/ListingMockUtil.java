@@ -34,6 +34,7 @@ import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.TestData;
 import gov.healthit.chpl.domain.TestProcedure;
 import gov.healthit.chpl.dto.AddressDTO;
+import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
@@ -789,6 +790,40 @@ public class ListingMockUtil {
         }
         if (!certRules.hasCertOption(number, CertificationResultRules.TEST_TOOLS_USED)) {
             certResult.setTestToolsUsed(null);
+        }
+        return certResult;
+    }
+
+    public CertificationResultDetailsDTO create2015CertResultDetails(
+            final Long id, final String number, final Boolean success) {
+        CertificationResultDetailsDTO certResult = new CertificationResultDetailsDTO();
+        certResult.setId(id);
+        certResult.setNumber(number);
+        certResult.setSuccess(success);
+
+        if (!certRules.hasCertOption(number, CertificationResultRules.API_DOCUMENTATION)) {
+            certResult.setApiDocumentation(null);
+        }
+        if (!certRules.hasCertOption(number, CertificationResultRules.G1_SUCCESS)) {
+            certResult.setG1Success(null);
+        }
+        if (!certRules.hasCertOption(number, CertificationResultRules.G2_SUCCESS)) {
+            certResult.setG2Success(null);
+        }
+        if (!certRules.hasCertOption(number, CertificationResultRules.GAP)) {
+            certResult.setGap(null);
+        } else {
+            certResult.setGap(Boolean.FALSE);
+        }
+
+        if (!certRules.hasCertOption(number, CertificationResultRules.PRIVACY_SECURITY)) {
+            certResult.setPrivacySecurityFramework(null);
+        }
+
+        if (!certRules.hasCertOption(number, CertificationResultRules.SED)) {
+            certResult.setSed(null);
+        } else {
+            certResult.setSed(Boolean.FALSE);
         }
         return certResult;
     }
