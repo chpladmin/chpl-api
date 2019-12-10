@@ -193,8 +193,8 @@ public class SurveillanceComparisonRemovedCriteriaReviewerTest {
     public void testAcbNotAllowedToUpdateSurveillanceEditNonconformityWithRemovedCriteria() {
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
 
-        Surveillance existingSurveillance = mockUtil.createOpenSurveillanceWithNonconformity();
-        Surveillance updatedSurveillance = mockUtil.createOpenSurveillanceWithNonconformity();
+        Surveillance existingSurveillance = mockUtil.createOpenSurveillanceWithOpenNonconformity();
+        Surveillance updatedSurveillance = mockUtil.createOpenSurveillanceWithOpenNonconformity();
         SurveillanceNonconformity nc = updatedSurveillance.getRequirements().iterator().next().getNonconformities().get(0);
         nc.setNonconformityType("170.315 (a)(1)");
 
@@ -247,8 +247,8 @@ public class SurveillanceComparisonRemovedCriteriaReviewerTest {
     public void testAcbNotAllowedToUpdateSurveillanceAddNonconformityWithRemovedCriteria() {
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
 
-        Surveillance existingSurveillance = mockUtil.createOpenSurveillanceWithNonconformity();
-        Surveillance updatedSurveillance = mockUtil.createOpenSurveillanceWithNonconformity();
+        Surveillance existingSurveillance = mockUtil.createOpenSurveillanceWithOpenNonconformity();
+        Surveillance updatedSurveillance = mockUtil.createOpenSurveillanceWithOpenNonconformity();
         SurveillanceNonconformity nc = mockUtil.createSurveillanceNonconformity(null, "170.315 (b)(2)",
                 SurveillanceNonconformityStatus.OPEN);
         updatedSurveillance.getRequirements().iterator().next().getNonconformities().add(nc);

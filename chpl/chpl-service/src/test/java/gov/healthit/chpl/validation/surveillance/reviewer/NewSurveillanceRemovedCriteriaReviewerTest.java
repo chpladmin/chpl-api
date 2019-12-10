@@ -108,7 +108,7 @@ public class NewSurveillanceRemovedCriteriaReviewerTest {
     public void testOncAllowedToCreateSurveillanceWithNonconformityWithRemovedCriteria() {
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(true);
 
-        Surveillance newSurveillance = mockUtil.createOpenSurveillanceWithNonconformity();
+        Surveillance newSurveillance = mockUtil.createOpenSurveillanceWithOpenNonconformity();
         SurveillanceNonconformity nc = newSurveillance.getRequirements().iterator().next().getNonconformities().get(0);
         String criteriaNumber = nc.getNonconformityType();
         CertificationCriterionDTO removedCriteria = new CertificationCriterionDTO();
@@ -151,7 +151,7 @@ public class NewSurveillanceRemovedCriteriaReviewerTest {
     public void testAdminAllowedToCreateSurveillanceWithNonconformityWithRemovedCriteria() {
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
 
-        Surveillance newSurveillance = mockUtil.createOpenSurveillanceWithNonconformity();
+        Surveillance newSurveillance = mockUtil.createOpenSurveillanceWithOpenNonconformity();
         SurveillanceNonconformity nc = newSurveillance.getRequirements().iterator().next().getNonconformities().get(0);
         String criteriaNumber = nc.getNonconformityType();
         CertificationCriterionDTO removedCriteria = new CertificationCriterionDTO();
@@ -194,7 +194,7 @@ public class NewSurveillanceRemovedCriteriaReviewerTest {
     public void testAcbNotAllowedToCreateSurveillanceWithNonconformityWithRemovedCriteria() {
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
 
-        Surveillance newSurveillance = mockUtil.createOpenSurveillanceWithNonconformity();
+        Surveillance newSurveillance = mockUtil.createOpenSurveillanceWithOpenNonconformity();
         SurveillanceNonconformity nc = newSurveillance.getRequirements().iterator().next().getNonconformities().get(0);
         String criteriaNumber = nc.getNonconformityType();
         CertificationCriterionDTO removedCriteria = new CertificationCriterionDTO();
@@ -237,7 +237,7 @@ public class NewSurveillanceRemovedCriteriaReviewerTest {
     public void testAcbAllowedToCreateSurveillanceWithNonconformityWithRegularCriteria() {
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
 
-        Surveillance newSurveillance = mockUtil.createOpenSurveillanceWithNonconformity();
+        Surveillance newSurveillance = mockUtil.createOpenSurveillanceWithOpenNonconformity();
         SurveillanceNonconformity nc = newSurveillance.getRequirements().iterator().next().getNonconformities().get(0);
         String criteriaNumber = nc.getNonconformityType();
         CertificationCriterionDTO removedCriteria = new CertificationCriterionDTO();

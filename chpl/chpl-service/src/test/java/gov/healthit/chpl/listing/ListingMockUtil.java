@@ -19,6 +19,7 @@ import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -60,6 +61,16 @@ public class ListingMockUtil {
     private static final Long EDITION_2015_ID = 3L;
     private static final Long EDITION_2014_ID = 2L;
     @Autowired private CertificationResultRules certRules;
+
+    public CertifiedProduct createSimpleCertifiedProduct(Long id, String chplProductNumber,
+            String edition, Date certificationDate) {
+        CertifiedProduct listing = new CertifiedProduct();
+        listing.setId(id);
+        listing.setCertificationDate(certificationDate.getTime());
+        listing.setChplProductNumber(chplProductNumber);
+        listing.setEdition(edition);
+        return listing;
+    }
 
     public PendingCertifiedProductDTO createPending2014Listing() {
         PendingCertifiedProductDTO listing = createPendingListing("2014");

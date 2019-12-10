@@ -11,10 +11,10 @@ import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
@@ -23,12 +23,14 @@ public class SurveillanceDetailsReviewer implements Reviewer {
     private ErrorMessageUtil msgUtil;
     private CertifiedProductDAO cpDao;
     private SurveillanceDAO survDao;
+    private ChplProductNumberUtil chplProductNumberUtil;
 
     @Autowired
     public SurveillanceDetailsReviewer(CertifiedProductDAO cpDao, SurveillanceDAO survDao,
-            ErrorMessageUtil msgUtil) {
+            ChplProductNumberUtil chplProductNumberUtil, ErrorMessageUtil msgUtil) {
         this.cpDao = cpDao;
         this.survDao = survDao;
+        this.chplProductNumberUtil = chplProductNumberUtil;
         this.msgUtil = msgUtil;
     }
 
@@ -53,36 +55,11 @@ public class SurveillanceDetailsReviewer implements Reviewer {
         } else if (surv.getCertifiedProduct().getId() == null || surv.getCertifiedProduct().getId().longValue() <= 0) {
             // the id is null, try to lookup by unique chpl number
             String chplId = surv.getCertifiedProduct().getChplProductNumber();
-            if (chplId.startsWith("CHP-")) {
-                try {
-                    CertifiedProductDTO chplProduct = cpDao.getByChplNumber(chplId);
-                    if (chplProduct != null) {
-                        cpDetails = cpDao.getDetailsById(chplProduct.getId());
-                        if (cpDetails != null) {
-                            surv.setCertifiedProduct(new CertifiedProduct(cpDetails));
-                        } else {
-                            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.certifiedProductIdNotFound",
-                                    chplId, chplProduct.getId()));
-                        }
-                    } else {
-                        surv.getErrorMessages().add(msgUtil.getMessage("surveillance.productIdNotFound", chplId));
-                    }
-                } catch (final EntityRetrievalException ex) {
-                    surv.getErrorMessages()
-                            .add(msgUtil.getMessage("surveillance.productDetailsRetrievalException", chplId));
-                }
+            CertifiedProduct listing = chplProductNumberUtil.getListing(chplId);
+            if (listing != null) {
+                surv.setCertifiedProduct(listing);
             } else {
-                try {
-                    cpDetails = cpDao.getByChplUniqueId(chplId);
-                    if (cpDetails != null) {
-                        surv.setCertifiedProduct(new CertifiedProduct(cpDetails));
-                    } else {
-                        surv.getErrorMessages().add(msgUtil.getMessage("surveillance.productUniqueIdNotFound", chplId));
-                    }
-                } catch (final EntityRetrievalException ex) {
-                    surv.getErrorMessages()
-                            .add(msgUtil.getMessage("surveillance.productDetailsRetrievalException", chplId));
-                }
+                surv.getErrorMessages().add(msgUtil.getMessage("surveillance.productUniqueIdNotFound", chplId));
             }
         } else if (surv.getCertifiedProduct().getId() != null) {
             try {
@@ -136,12 +113,12 @@ public class SurveillanceDetailsReviewer implements Reviewer {
         // randomized surveillance requires number of sites used but
         // any other type of surveillance should not have that value
         if (surv.getType() != null && surv.getType().getName() != null
-                && surv.getType().getName().equalsIgnoreCase("Randomized")) {
+                && surv.getType().getName().equalsIgnoreCase(SurveillanceType.RANDOMIZED)) {
             if (surv.getRandomizedSitesUsed() == null || surv.getRandomizedSitesUsed().intValue() < 0) {
                 surv.getErrorMessages().add(msgUtil.getMessage("surveillance.randomizedNonzeroValue"));
             }
         } else if (surv.getType() != null && surv.getType().getName() != null
-                && !surv.getType().getName().equalsIgnoreCase("Randomized")) {
+                && !surv.getType().getName().equalsIgnoreCase(SurveillanceType.RANDOMIZED)) {
             if (surv.getRandomizedSitesUsed() != null && surv.getRandomizedSitesUsed().intValue() >= 0) {
                 surv.getErrorMessages()
                         .add(msgUtil.getMessage("surveillance.randomizedSitesNotApplicable", surv.getType().getName()));

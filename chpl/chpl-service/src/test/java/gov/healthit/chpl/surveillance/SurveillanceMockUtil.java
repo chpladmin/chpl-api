@@ -33,11 +33,10 @@ public class SurveillanceMockUtil {
         type.setName(SurveillanceType.RANDOMIZED);
         surv.setType(type);
         CertifiedProductSearchDetails mockListing = listingMockUtil.createValid2015Listing();
-        CertifiedProduct listing = new CertifiedProduct();
-        listing.setCertificationDate(mockListing.getCertificationDate());
-        listing.setChplProductNumber(mockListing.getChplProductNumber());
-        listing.setEdition(mockListing.getCertificationEdition().get("name").toString());
-        listing.setId(mockListing.getId());
+        CertifiedProduct listing = listingMockUtil.createSimpleCertifiedProduct(
+                mockListing.getId(), mockListing.getChplProductNumber(),
+                mockListing.getCertificationEdition().get("name").toString(),
+                new Date(mockListing.getCertificationDate()));
         surv.setCertifiedProduct(listing);
         surv.getRequirements().add(createSurveillanceRequirement(
                 1L, "170.315 (a)(6)", SurveillanceResultType.NO_NON_CONFORMITY,
@@ -45,7 +44,7 @@ public class SurveillanceMockUtil {
         return surv;
     }
 
-    public Surveillance createOpenSurveillanceWithNonconformity() {
+    public Surveillance createOpenSurveillanceWithOpenNonconformity() {
         Surveillance surv = new Surveillance();
         surv.setStartDate(new Date(System.currentTimeMillis() - WEEK_IN_MILLIS));
         surv.setFriendlyId("SURV01");
@@ -55,17 +54,40 @@ public class SurveillanceMockUtil {
         type.setName(SurveillanceType.RANDOMIZED);
         surv.setType(type);
         CertifiedProductSearchDetails mockListing = listingMockUtil.createValid2015Listing();
-        CertifiedProduct listing = new CertifiedProduct();
-        listing.setCertificationDate(mockListing.getCertificationDate());
-        listing.setChplProductNumber(mockListing.getChplProductNumber());
-        listing.setEdition(mockListing.getCertificationEdition().get("name").toString());
-        listing.setId(mockListing.getId());
+        CertifiedProduct listing = listingMockUtil.createSimpleCertifiedProduct(
+                mockListing.getId(), mockListing.getChplProductNumber(),
+                mockListing.getCertificationEdition().get("name").toString(),
+                new Date(mockListing.getCertificationDate()));
         surv.setCertifiedProduct(listing);
         SurveillanceRequirement req = createSurveillanceRequirement(
                 1L, "170.315 (a)(6)", SurveillanceResultType.NON_CONFORMITY,
                 SurveillanceRequirementType.CERTIFIED_CAPABILITY);
         req.getNonconformities().add(createSurveillanceNonconformity(1L, "170.315 (a)(7)",
                 SurveillanceNonconformityStatus.OPEN));
+        surv.getRequirements().add(req);
+        return surv;
+    }
+
+    public Surveillance createOpenSurveillanceWithClosedNonconformity() {
+        Surveillance surv = new Surveillance();
+        surv.setStartDate(new Date(System.currentTimeMillis() - WEEK_IN_MILLIS));
+        surv.setFriendlyId("SURV01");
+        surv.setRandomizedSitesUsed(10);
+        SurveillanceType type = new SurveillanceType();
+        type.setId(1L);
+        type.setName(SurveillanceType.RANDOMIZED);
+        surv.setType(type);
+        CertifiedProductSearchDetails mockListing = listingMockUtil.createValid2015Listing();
+        CertifiedProduct listing = listingMockUtil.createSimpleCertifiedProduct(
+                mockListing.getId(), mockListing.getChplProductNumber(),
+                mockListing.getCertificationEdition().get("name").toString(),
+                new Date(mockListing.getCertificationDate()));
+        surv.setCertifiedProduct(listing);
+        SurveillanceRequirement req = createSurveillanceRequirement(
+                1L, "170.315 (a)(6)", SurveillanceResultType.NON_CONFORMITY,
+                SurveillanceRequirementType.CERTIFIED_CAPABILITY);
+        req.getNonconformities().add(createSurveillanceNonconformity(1L, "170.315 (a)(7)",
+                SurveillanceNonconformityStatus.CLOSED));
         surv.getRequirements().add(req);
         return surv;
     }
