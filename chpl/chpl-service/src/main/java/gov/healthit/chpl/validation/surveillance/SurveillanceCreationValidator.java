@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.surveillance.Surveillance;
-import gov.healthit.chpl.validation.surveillance.reviewer.PendingSurveillanceRemovedCriteriaReviewer;
+import gov.healthit.chpl.validation.surveillance.reviewer.NewSurveillanceRemovedCriteriaReviewer;
 import gov.healthit.chpl.validation.surveillance.reviewer.Reviewer;
 import gov.healthit.chpl.validation.surveillance.reviewer.SurveillanceDetailsReviewer;
 import gov.healthit.chpl.validation.surveillance.reviewer.SurveillanceNonconformityReviewer;
@@ -25,7 +25,7 @@ public class SurveillanceCreationValidator {
             SurveillanceRequirementReviewer survReqReviewer,
             SurveillanceNonconformityReviewer survNcReviewer,
             @Qualifier("surveillanceUnsupportedCharacterReviewer") UnsupportedCharacterReviewer charReviewer,
-            PendingSurveillanceRemovedCriteriaReviewer removedCriteriaReviewer) {
+            NewSurveillanceRemovedCriteriaReviewer removedCriteriaReviewer) {
         reviewers = new ArrayList<Reviewer>();
         reviewers.add(survDetailsReviewer);
         reviewers.add(survReqReviewer);

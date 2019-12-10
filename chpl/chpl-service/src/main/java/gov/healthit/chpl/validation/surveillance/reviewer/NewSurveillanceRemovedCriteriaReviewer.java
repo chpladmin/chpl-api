@@ -16,7 +16,7 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
-public class PendingSurveillanceRemovedCriteriaReviewer implements Reviewer {
+public class NewSurveillanceRemovedCriteriaReviewer implements Reviewer {
 
     private CertificationCriterionDAO certDao;
     private ErrorMessageUtil msgUtil;
@@ -24,7 +24,7 @@ public class PendingSurveillanceRemovedCriteriaReviewer implements Reviewer {
     private FF4j ff4j;
 
     @Autowired
-    public PendingSurveillanceRemovedCriteriaReviewer(
+    public NewSurveillanceRemovedCriteriaReviewer(
             CertificationCriterionDAO certDao,
             ErrorMessageUtil msgUtil,
             ResourcePermissions resourcePermissions,
