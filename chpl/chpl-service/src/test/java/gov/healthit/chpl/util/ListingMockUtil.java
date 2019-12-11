@@ -1,4 +1,4 @@
-package gov.healthit.chpl.listing;
+package gov.healthit.chpl.util;
 
 import static org.junit.Assert.fail;
 

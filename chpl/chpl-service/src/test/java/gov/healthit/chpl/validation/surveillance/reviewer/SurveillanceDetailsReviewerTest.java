@@ -28,10 +28,10 @@ import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.listing.ListingMockUtil;
-import gov.healthit.chpl.surveillance.SurveillanceMockUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ListingMockUtil;
+import gov.healthit.chpl.util.SurveillanceMockUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })

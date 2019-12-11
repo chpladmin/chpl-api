@@ -1,4 +1,4 @@
-package gov.healthit.chpl.surveillance;
+package gov.healthit.chpl.util;
 
 import java.util.Date;
 
@@ -14,7 +14,6 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
-import gov.healthit.chpl.listing.ListingMockUtil;
 
 @Component
 public class SurveillanceMockUtil {

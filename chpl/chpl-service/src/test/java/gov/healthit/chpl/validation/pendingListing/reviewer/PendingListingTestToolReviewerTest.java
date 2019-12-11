@@ -20,10 +20,10 @@ import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
-import gov.healthit.chpl.listing.ListingMockUtil;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ListingMockUtil;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.AmbulatoryRequiredTestToolReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.TestTool2015Reviewer;
 
