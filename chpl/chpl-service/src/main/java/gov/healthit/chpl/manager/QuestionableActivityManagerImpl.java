@@ -1,4 +1,4 @@
-package gov.healthit.chpl.manager.impl;
+package gov.healthit.chpl.manager;
 
 import java.util.Date;
 import java.util.List;
@@ -25,7 +25,6 @@ import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityProductDTO
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityTriggerDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityVersionDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
-import gov.healthit.chpl.manager.QuestionableActivityManager;
 import gov.healthit.chpl.questionableactivity.CertificationResultQuestionableActivityProvider;
 import gov.healthit.chpl.questionableactivity.DeveloperQuestionableActivityProvider;
 import gov.healthit.chpl.questionableactivity.ListingQuestionableActivityProvider;
@@ -34,7 +33,7 @@ import gov.healthit.chpl.questionableactivity.VersionQuestionableActivityProvide
 import gov.healthit.chpl.util.CertificationResultRules;
 
 @Service("questionableActivityManager")
-public class QuestionableActivityManagerImpl implements QuestionableActivityManager, EnvironmentAware {
+public class QuestionableActivityManagerImpl implements EnvironmentAware {
     private static final Logger LOGGER = LogManager.getLogger(QuestionableActivityManagerImpl.class);
     private static final long MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
     private long listingActivityThresholdMillis = -1;
@@ -49,37 +48,17 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
     private QuestionableActivityDAO questionableActivityDao;
     private CertifiedProductDAO listingDao;
 
-    /**
-     * Autowired constructor for dependency injection.
-     * 
-     * @param developerQuestionableActivityProvider
-     *            - DeveloperQuestionableActivityProvider
-     * @param productQuestionableActivityProvider
-     *            - ProductQuestionableActivityProvider
-     * @param versionQuestionableActivityProvider
-     *            - VersionQuestionableActivityProvider
-     * @param listingQuestionableActivityProvider
-     *            - ListingQuestionableActivityProvider
-     * @param certResultQuestionableActivityProvider
-     *            - CertificationResultQuestionableActivityProvider
-     * @param certResultRules
-     *            - CertificationResultRules
-     * @param questionableActivityDao
-     *            - QuestionableActivityDAO
-     * @param listingDao
-     *            - CertifiedProductDAO
-     */
     @Autowired
     public QuestionableActivityManagerImpl(
-            final DeveloperQuestionableActivityProvider developerQuestionableActivityProvider,
-            final ProductQuestionableActivityProvider productQuestionableActivityProvider,
-            final VersionQuestionableActivityProvider versionQuestionableActivityProvider,
-            final ListingQuestionableActivityProvider listingQuestionableActivityProvider,
-            final CertificationResultQuestionableActivityProvider certResultQuestionableActivityProvider,
-            final CertificationResultRules certResultRules,
-            final QuestionableActivityDAO questionableActivityDao,
-            final CertifiedProductDAO listingDao,
-            final Environment env) {
+            DeveloperQuestionableActivityProvider developerQuestionableActivityProvider,
+            ProductQuestionableActivityProvider productQuestionableActivityProvider,
+            VersionQuestionableActivityProvider versionQuestionableActivityProvider,
+            ListingQuestionableActivityProvider listingQuestionableActivityProvider,
+            CertificationResultQuestionableActivityProvider certResultQuestionableActivityProvider,
+            CertificationResultRules certResultRules,
+            QuestionableActivityDAO questionableActivityDao,
+            CertifiedProductDAO listingDao,
+            Environment env) {
 
         this.developerQuestionableActivityProvider = developerQuestionableActivityProvider;
         this.productQuestionableActivityProvider = productQuestionableActivityProvider;
@@ -93,7 +72,6 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
         triggerTypes = questionableActivityDao.getAllTriggers();
     }
 
-    @Override
     public void setEnvironment(final Environment e) {
         this.env = e;
         String activityThresholdDaysStr = env.getProperty("questionableActivityThresholdDays");
@@ -101,9 +79,8 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
         listingActivityThresholdMillis = activityThresholdDays * MILLIS_PER_DAY;
     }
 
-    @Override
-    public void checkDeveloperQuestionableActivity(final DeveloperDTO origDeveloper, final DeveloperDTO newDeveloper,
-            final Date activityDate, final Long activityUser) {
+    public void checkDeveloperQuestionableActivity(DeveloperDTO origDeveloper, DeveloperDTO newDeveloper,
+            Date activityDate, Long activityUser) {
         QuestionableActivityDeveloperDTO devActivity = null;
         List<QuestionableActivityDeveloperDTO> devActivities = null;
 
@@ -144,9 +121,8 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
         }
     }
 
-    @Override
-    public void checkProductQuestionableActivity(final ProductDTO origProduct, final ProductDTO newProduct,
-            final Date activityDate, final Long activityUser) {
+    public void checkProductQuestionableActivity(ProductDTO origProduct, ProductDTO newProduct,
+            Date activityDate, Long activityUser) {
         QuestionableActivityProductDTO productActivity = null;
         List<QuestionableActivityProductDTO> productActivities = null;
 
@@ -184,9 +160,8 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
         }
     }
 
-    @Override
-    public void checkVersionQuestionableActivity(final ProductVersionDTO origVersion,
-            final ProductVersionDTO newVersion, final Date activityDate, final Long activityUser) {
+    public void checkVersionQuestionableActivity(ProductVersionDTO origVersion, ProductVersionDTO newVersion,
+            Date activityDate, Long activityUser) {
         QuestionableActivityVersionDTO activity = versionQuestionableActivityProvider.checkNameUpdated(origVersion, newVersion);
         if (activity != null) {
             createVersionActivity(activity, origVersion.getId(), activityDate,
@@ -194,10 +169,8 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
         }
     }
 
-    @Override
-    public void checkListingQuestionableActivity(final CertifiedProductSearchDetails origListing,
-            final CertifiedProductSearchDetails newListing, final Date activityDate, final Long activityUser,
-            final String activityReason) {
+    public void checkListingQuestionableActivityOnEdit(CertifiedProductSearchDetails origListing,
+            CertifiedProductSearchDetails newListing, Date activityDate, Long activityUser, String activityReason) {
         QuestionableActivityListingDTO activity = listingQuestionableActivityProvider.check2011EditionUpdated(
                 origListing, newListing);
         if (activity != null) {
@@ -229,7 +202,7 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
                 createListingActivity(activity, origListing.getId(), activityDate, activityUser,
                         QuestionableActivityTriggerConcept.TESTING_LAB_CHANGED, activityReason);
             }
-            activity = listingQuestionableActivityProvider.checkCriteriaB3Changed(origListing, newListing);
+            activity = listingQuestionableActivityProvider.checkCriteriaB3ChangedOnEdit(origListing, newListing);
             if (activity != null) {
                 createListingActivity(activity, origListing.getId(), activityDate, activityUser,
                         QuestionableActivityTriggerConcept.CRITERIA_B3_ADDED, activityReason);
@@ -295,10 +268,13 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
         }
     }
 
-    @Override
-    public void checkCertificationResultQuestionableActivity(final CertificationResult origCertResult,
-            final CertificationResult newCertResult, final Date activityDate, final Long activityUser,
-            final String activityReason) {
+    public void checkListingQuestionableActivityOnEdit(CertifiedProductSearchDetails newListing, Date activityDate,
+            Long activityUser, String activityReason) {
+
+    }
+
+    public void checkCertificationResultQuestionableActivity(CertificationResult origCertResult,
+            CertificationResult newCertResult, Date activityDate, Long activityUser, String activityReason) {
         QuestionableActivityCertificationResultDTO certActivity = null;
         List<QuestionableActivityCertificationResultDTO> certActivities = null;
 
@@ -357,9 +333,8 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
         }
     }
 
-    private void createListingActivity(final QuestionableActivityListingDTO activity, final Long listingId,
-            final Date activityDate, final Long activityUser, final QuestionableActivityTriggerConcept trigger,
-            final String activityReason) {
+    private void createListingActivity(QuestionableActivityListingDTO activity, Long listingId, Date activityDate,
+            Long activityUser, QuestionableActivityTriggerConcept trigger, String activityReason) {
         activity.setListingId(listingId);
         activity.setActivityDate(activityDate);
         activity.setUserId(activityUser);
@@ -369,9 +344,9 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
         questionableActivityDao.create(activity);
     }
 
-    private void createCertificationActivity(final QuestionableActivityCertificationResultDTO activity,
-            final Long certResultId, final Date activityDate, final Long activityUser,
-            final QuestionableActivityTriggerConcept trigger, final String activityReason) {
+    private void createCertificationActivity(QuestionableActivityCertificationResultDTO activity,
+            Long certResultId, Date activityDate, Long activityUser, QuestionableActivityTriggerConcept trigger,
+            String activityReason) {
         activity.setCertResultId(certResultId);
         activity.setActivityDate(activityDate);
         activity.setUserId(activityUser);
@@ -381,9 +356,9 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
         questionableActivityDao.create(activity);
     }
 
-    private void createDeveloperActivity(final QuestionableActivityDeveloperDTO activity, final Long developerId,
-            final Date activityDate, final Long activityUser, final QuestionableActivityTriggerConcept trigger,
-            final String reason) {
+    private void createDeveloperActivity(QuestionableActivityDeveloperDTO activity, Long developerId,
+            Date activityDate, Long activityUser, QuestionableActivityTriggerConcept trigger,
+            String reason) {
         activity.setDeveloperId(developerId);
         activity.setActivityDate(activityDate);
         activity.setUserId(activityUser);
@@ -393,13 +368,13 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
         questionableActivityDao.create(activity);
     }
 
-    private void createDeveloperActivity(final QuestionableActivityDeveloperDTO activity, final Long developerId,
-            final Date activityDate, final Long activityUser, final QuestionableActivityTriggerConcept trigger) {
+    private void createDeveloperActivity(QuestionableActivityDeveloperDTO activity, Long developerId,
+            Date activityDate, Long activityUser, QuestionableActivityTriggerConcept trigger) {
         createDeveloperActivity(activity, developerId, activityDate, activityUser, trigger, null);
     }
 
-    private void createProductActivity(final QuestionableActivityProductDTO activity, final Long productId,
-            final Date activityDate, final Long activityUser, final QuestionableActivityTriggerConcept trigger) {
+    private void createProductActivity(QuestionableActivityProductDTO activity, Long productId,
+            Date activityDate, Long activityUser, QuestionableActivityTriggerConcept trigger) {
         activity.setProductId(productId);
         activity.setActivityDate(activityDate);
         activity.setUserId(activityUser);
@@ -408,8 +383,8 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
         questionableActivityDao.create(activity);
     }
 
-    private void createVersionActivity(final QuestionableActivityVersionDTO activity, final Long versionId,
-            final Date activityDate, final Long activityUser, final QuestionableActivityTriggerConcept trigger) {
+    private void createVersionActivity(QuestionableActivityVersionDTO activity, Long versionId,
+            Date activityDate, Long activityUser, QuestionableActivityTriggerConcept trigger) {
         activity.setVersionId(versionId);
         activity.setActivityDate(activityDate);
         activity.setUserId(activityUser);
@@ -418,7 +393,7 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
         questionableActivityDao.create(activity);
     }
 
-    private QuestionableActivityTriggerDTO getTrigger(final QuestionableActivityTriggerConcept trigger) {
+    private QuestionableActivityTriggerDTO getTrigger(QuestionableActivityTriggerConcept trigger) {
         QuestionableActivityTriggerDTO result = null;
         for (QuestionableActivityTriggerDTO currTrigger : triggerTypes) {
             if (trigger.getName().equalsIgnoreCase(currTrigger.getName())) {

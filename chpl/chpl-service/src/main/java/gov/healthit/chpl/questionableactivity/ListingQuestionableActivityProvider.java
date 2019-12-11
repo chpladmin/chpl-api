@@ -542,7 +542,7 @@ public class ListingQuestionableActivityProvider {
         return activity;
     }
 
-    public QuestionableActivityListingDTO checkCriteriaB3Changed(
+    public QuestionableActivityListingDTO checkCriteriaB3ChangedOnEdit(
             final CertifiedProductSearchDetails origListing, final CertifiedProductSearchDetails newListing) {
         QuestionableActivityListingDTO activity = null;
         CertificationResult originalB3 = getB3Criteria(origListing);
@@ -558,6 +558,27 @@ public class ListingQuestionableActivityProvider {
 
         if (currentDate.after(b3ChangeDate)
                 && isB3CriteriaNew(originalB3, newB3)
+                && !hasICS(newListing)) {
+            activity = new QuestionableActivityListingDTO();
+            activity.setAfter(B3_CRITERIA_NUMER);
+        }
+        return activity;
+    }
+
+    public QuestionableActivityListingDTO checkCriteriaB3SuccessOnCreate(CertifiedProductSearchDetails newListing) {
+        QuestionableActivityListingDTO activity = null;
+        CertificationResult newB3 = getB3Criteria(newListing);
+        Date b3ChangeDate = null;
+        Date currentDate = new Date();
+        try {
+            b3ChangeDate = getB3ChangeDate();
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            return null;
+        }
+
+        if (currentDate.after(b3ChangeDate)
+                && newB3.isSuccess()
                 && !hasICS(newListing)) {
             activity = new QuestionableActivityListingDTO();
             activity.setAfter(B3_CRITERIA_NUMER);
