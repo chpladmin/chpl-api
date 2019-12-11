@@ -23,6 +23,7 @@ import gov.healthit.chpl.util.AuthUtil;
 
 /**
  * Checks for and adds Questionable Activity when appropriate.
+ * 
  * @author TYoung
  *
  */
@@ -39,9 +40,13 @@ public class QuestionableActivityListener implements EnvironmentAware {
 
     /**
      * Autowired constructor for dependency injection.
-     * @param env - Environment
-     * @param listingDao - CertifiedProductDAO
-     * @param questionableActivityManager - QuestionableActivityManager
+     * 
+     * @param env
+     *            - Environment
+     * @param listingDao
+     *            - CertifiedProductDAO
+     * @param questionableActivityManager
+     *            - QuestionableActivityManager
      */
     @Autowired
     public QuestionableActivityListener(final Environment env, final CertifiedProductDAO listingDao,
@@ -59,60 +64,48 @@ public class QuestionableActivityListener implements EnvironmentAware {
         listingActivityThresholdMillis = activityThresholdDays * MILLIS_PER_DAY;
     }
 
-    /**
-     * Any activity added with a reason would be handled here.
-     * @param concept - Activity Concept
-     * @param objectId - Long
-     * @param activityDescription - String
-     * @param originalData - Object
-     * @param newData - Object
-     * @param reason - String
-     */
+    // By "typing" the originalData and newData parameters in the method signature, the AOP advice will
+    // only intercept when the parameters are of type 'CertifiedProductSearchDetails'.
     @After("execution(* gov.healthit.chpl.manager.impl.ActivityManagerImpl.addActivity(..)) && "
             + "args(concept,objectId,activityDescription,originalData,newData,reason,..)")
-    public void checkQuestionableActivityWithReason(final ActivityConcept concept,
-            final Long objectId, String activityDescription, final Object originalData,
-            final Object newData, final String reason) {
+    public void checkQuestionableActivityForListingEdit(ActivityConcept concept, Long objectId, String activityDescription,
+            CertifiedProductSearchDetails originalData, CertifiedProductSearchDetails newData, String reason) {
+
         if (originalData == null || newData == null
                 || !originalData.getClass().equals(newData.getClass())
                 || AuthUtil.getCurrentUser() == null) {
             return;
         }
 
-        //all questionable activity from this action should have the exact same date and user id
+        // all questionable activity from this action should have the exact same date and user id
         Date activityDate = new Date();
         Long activityUser = AuthUtil.getAuditId();
 
-        if (originalData instanceof CertifiedProductSearchDetails
-                && newData instanceof CertifiedProductSearchDetails) {
-            CertifiedProductSearchDetails origListing = (CertifiedProductSearchDetails) originalData;
-            CertifiedProductSearchDetails newListing = (CertifiedProductSearchDetails) newData;
+        // look for any of the listing questionable activity
+        questionableActivityManager.checkListingQuestionableActivity(
+                originalData, newData, activityDate, activityUser, reason);
 
-            //look for any of the listing questionable activity
-            questionableActivityManager.checkListingQuestionableActivity(origListing, newListing, activityDate, activityUser, reason);
+        // check for cert result questionable activity
+        // outside of the acceptable activity threshold
+        // get confirm date of the listing to check against the threshold
+        Date confirmDate = listingDao.getConfirmDate(originalData.getId());
+        if (confirmDate != null && newData.getLastModifiedDate() != null
+                && (newData.getLastModifiedDate().longValue()
+                        - confirmDate.getTime() > listingActivityThresholdMillis)) {
 
-            //check for cert result questionable activity
-            //outside of the acceptable activity threshold
+            // look for certification result questionable activity
+            if (originalData.getCertificationResults() != null && originalData.getCertificationResults().size() > 0
+                    && newData.getCertificationResults() != null
+                    && newData.getCertificationResults().size() > 0) {
 
-            //get confirm date of the listing to check against the threshold
-            Date confirmDate = listingDao.getConfirmDate(origListing.getId());
-            if (confirmDate != null && newListing.getLastModifiedDate() != null
-                    && (newListing.getLastModifiedDate().longValue()
-                            - confirmDate.getTime() > listingActivityThresholdMillis)) {
-
-                //look for certification result questionable activity
-                if (origListing.getCertificationResults() != null && origListing.getCertificationResults().size() > 0
-                        && newListing.getCertificationResults() != null
-                        && newListing.getCertificationResults().size() > 0) {
-
-                    //all cert results are in the details so find matches based on the
-                    //original and new criteria number fields
-                    for (CertificationResult origCertResult : origListing.getCertificationResults()) {
-                        for (CertificationResult newCertResult : newListing.getCertificationResults()) {
-                            if (origCertResult.getNumber().equals(newCertResult.getNumber())) {
-                                questionableActivityManager.checkCertificationResultQuestionableActivity(origCertResult, newCertResult,
-                                        activityDate, activityUser, reason);
-                            }
+                // all cert results are in the details so find matches based on the
+                // original and new criteria number fields
+                for (CertificationResult origCertResult : originalData.getCertificationResults()) {
+                    for (CertificationResult newCertResult : newData.getCertificationResults()) {
+                        if (origCertResult.getNumber().equals(newCertResult.getNumber())) {
+                            questionableActivityManager.checkCertificationResultQuestionableActivity(origCertResult,
+                                    newCertResult,
+                                    activityDate, activityUser, reason);
                         }
                     }
                 }
@@ -122,11 +115,17 @@ public class QuestionableActivityListener implements EnvironmentAware {
 
     /**
      * Adds Questionable Activity for Developer, Product, or Version when appropriate
-     * @param concept - ActivityConcept
-     * @param objectId - Long
-     * @param activityDescription - String
-     * @param originalData - Object (DeveloperDTO, ProductDTO, or ProductVersionDTO)
-     * @param newData - Object (DeveloperDTO, ProductDTO, or ProductVersionDTO)
+     * 
+     * @param concept
+     *            - ActivityConcept
+     * @param objectId
+     *            - Long
+     * @param activityDescription
+     *            - String
+     * @param originalData
+     *            - Object (DeveloperDTO, ProductDTO, or ProductVersionDTO)
+     * @param newData
+     *            - Object (DeveloperDTO, ProductDTO, or ProductVersionDTO)
      */
     @After("execution(* gov.healthit.chpl.manager.impl.ActivityManagerImpl.addActivity(..)) && "
             + "args(concept,objectId,activityDescription,originalData,newData,..)")
@@ -138,22 +137,25 @@ public class QuestionableActivityListener implements EnvironmentAware {
             return;
         }
 
-        //all questionable activity from this action should have the exact same date and user id
+        // all questionable activity from this action should have the exact same date and user id
         Date activityDate = new Date();
         Long activityUser = AuthUtil.getAuditId();
 
         if (originalData instanceof DeveloperDTO && newData instanceof DeveloperDTO) {
             DeveloperDTO origDeveloper = (DeveloperDTO) originalData;
             DeveloperDTO newDeveloper = (DeveloperDTO) newData;
-            questionableActivityManager.checkDeveloperQuestionableActivity(origDeveloper, newDeveloper, activityDate, activityUser);
+            questionableActivityManager.checkDeveloperQuestionableActivity(origDeveloper, newDeveloper, activityDate,
+                    activityUser);
         } else if (originalData instanceof ProductDTO && newData instanceof ProductDTO) {
             ProductDTO origProduct = (ProductDTO) originalData;
             ProductDTO newProduct = (ProductDTO) newData;
-            questionableActivityManager.checkProductQuestionableActivity(origProduct, newProduct, activityDate, activityUser);
+            questionableActivityManager.checkProductQuestionableActivity(origProduct, newProduct, activityDate,
+                    activityUser);
         } else if (originalData instanceof ProductVersionDTO && newData instanceof ProductVersionDTO) {
             ProductVersionDTO origVersion = (ProductVersionDTO) originalData;
             ProductVersionDTO newVersion = (ProductVersionDTO) newData;
-            questionableActivityManager.checkVersionQuestionableActivity(origVersion, newVersion, activityDate, activityUser);
+            questionableActivityManager.checkVersionQuestionableActivity(origVersion, newVersion, activityDate,
+                    activityUser);
         }
     }
 
