@@ -34,7 +34,7 @@ import gov.healthit.chpl.questionableactivity.VersionQuestionableActivityProvide
 import gov.healthit.chpl.util.CertificationResultRules;
 
 @Service("questionableActivityManager")
-public class QuestionableActivityManagerImpl implements QuestionableActivityManager, EnvironmentAware  {
+public class QuestionableActivityManagerImpl implements QuestionableActivityManager, EnvironmentAware {
     private static final Logger LOGGER = LogManager.getLogger(QuestionableActivityManagerImpl.class);
     private static final long MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
     private long listingActivityThresholdMillis = -1;
@@ -51,14 +51,23 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
 
     /**
      * Autowired constructor for dependency injection.
-     * @param developerQuestionableActivityProvider - DeveloperQuestionableActivityProvider
-     * @param productQuestionableActivityProvider - ProductQuestionableActivityProvider
-     * @param versionQuestionableActivityProvider - VersionQuestionableActivityProvider
-     * @param listingQuestionableActivityProvider - ListingQuestionableActivityProvider
-     * @param certResultQuestionableActivityProvider - CertificationResultQuestionableActivityProvider
-     * @param certResultRules - CertificationResultRules
-     * @param questionableActivityDao - QuestionableActivityDAO
-     * @param listingDao - CertifiedProductDAO
+     * 
+     * @param developerQuestionableActivityProvider
+     *            - DeveloperQuestionableActivityProvider
+     * @param productQuestionableActivityProvider
+     *            - ProductQuestionableActivityProvider
+     * @param versionQuestionableActivityProvider
+     *            - VersionQuestionableActivityProvider
+     * @param listingQuestionableActivityProvider
+     *            - ListingQuestionableActivityProvider
+     * @param certResultQuestionableActivityProvider
+     *            - CertificationResultQuestionableActivityProvider
+     * @param certResultRules
+     *            - CertificationResultRules
+     * @param questionableActivityDao
+     *            - QuestionableActivityDAO
+     * @param listingDao
+     *            - CertifiedProductDAO
      */
     @Autowired
     public QuestionableActivityManagerImpl(
@@ -94,7 +103,7 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
 
     @Override
     public void checkDeveloperQuestionableActivity(final DeveloperDTO origDeveloper, final DeveloperDTO newDeveloper,
-             final Date activityDate, final Long activityUser) {
+            final Date activityDate, final Long activityUser) {
         QuestionableActivityDeveloperDTO devActivity = null;
         List<QuestionableActivityDeveloperDTO> devActivities = null;
 
@@ -178,8 +187,7 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
     @Override
     public void checkVersionQuestionableActivity(final ProductVersionDTO origVersion,
             final ProductVersionDTO newVersion, final Date activityDate, final Long activityUser) {
-        QuestionableActivityVersionDTO activity
-        = versionQuestionableActivityProvider.checkNameUpdated(origVersion, newVersion);
+        QuestionableActivityVersionDTO activity = versionQuestionableActivityProvider.checkNameUpdated(origVersion, newVersion);
         if (activity != null) {
             createVersionActivity(activity, origVersion.getId(), activityDate,
                     activityUser, QuestionableActivityTriggerConcept.VERSION_NAME_EDITED);
@@ -196,7 +204,7 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
             createListingActivity(activity, origListing.getId(), activityDate, activityUser,
                     QuestionableActivityTriggerConcept.EDITION_2011_EDITED, activityReason);
         } else {
-            //it wasn't a 2011 update, check for any changes that are questionable at any time
+            // it wasn't a 2011 update, check for any changes that are questionable at any time
             activity = listingQuestionableActivityProvider.check2014EditionUpdated(
                     origListing, newListing);
             if (activity != null) {
@@ -221,10 +229,16 @@ public class QuestionableActivityManagerImpl implements QuestionableActivityMana
                 createListingActivity(activity, origListing.getId(), activityDate, activityUser,
                         QuestionableActivityTriggerConcept.TESTING_LAB_CHANGED, activityReason);
             }
-            //finally check for other changes that are only questionable
-            //outside of the acceptable activity threshold
+            activity = listingQuestionableActivityProvider.checkCriteriaB3Changed(origListing, newListing);
+            if (activity != null) {
+                createListingActivity(activity, origListing.getId(), activityDate, activityUser,
+                        QuestionableActivityTriggerConcept.CRITERIA_B3_ADDED, activityReason);
+            }
 
-            //get the confirm date of the listing to check against the threshold
+            // finally check for other changes that are only questionable
+            // outside of the acceptable activity threshold
+
+            // get the confirm date of the listing to check against the threshold
             Date confirmDate = listingDao.getConfirmDate(origListing.getId());
             if (confirmDate != null && newListing.getLastModifiedDate() != null
                     && (newListing.getLastModifiedDate().longValue()
