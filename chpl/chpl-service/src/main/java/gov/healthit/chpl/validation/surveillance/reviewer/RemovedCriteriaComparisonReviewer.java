@@ -40,6 +40,7 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
      * If a removed criteria is already referenced by a requirement or nonconformity,
      * then the details of that item cannot be edited by an ACB.
      */
+    @Override
     public void review(Surveillance existingSurveillance, Surveillance updatedSurveillance) {
         if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
             return;

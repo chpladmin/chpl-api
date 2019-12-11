@@ -18,6 +18,7 @@ public class UnsupportedCharacterReviewer implements Reviewer {
         this.msgUtil = msgUtil;
     }
 
+    @Override
     public void review(Surveillance surv) {
         if (surv.getType() != null) {
             addSurveillanceWarningForInvalidCharacters(surv, surv.getType().getName(), "Surveillance Type");

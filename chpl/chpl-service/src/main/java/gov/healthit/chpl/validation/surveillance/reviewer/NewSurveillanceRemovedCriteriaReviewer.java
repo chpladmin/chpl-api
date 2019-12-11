@@ -35,6 +35,7 @@ public class NewSurveillanceRemovedCriteriaReviewer implements Reviewer {
         this.ff4j = ff4j;
     }
 
+    @Override
     public void review(Surveillance surv) {
         if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
             return;

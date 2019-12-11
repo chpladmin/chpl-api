@@ -17,6 +17,7 @@ public class AuthorityReviewer implements Reviewer {
         this.msgUtil = msgUtil;
     }
 
+    @Override
     public void review(Surveillance surv) {
         if (!StringUtils.isEmpty(surv.getAuthority())) {
             if (!surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ONC)
