@@ -38,6 +38,7 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.listener.QuestionableActivityListener;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.JSONUtils;
@@ -50,11 +51,14 @@ public class ActivityManagerImpl extends SecuredManager implements ActivityManag
     private DeveloperDAO devDao;
     private ObjectMapper jsonMapper = new ObjectMapper();
     private JsonFactory factory = jsonMapper.getFactory();
+    private QuestionableActivityListener questionableActivityListener;
 
     @Autowired
-    public ActivityManagerImpl(final ActivityDAO activityDAO, final DeveloperDAO devDao) {
+    public ActivityManagerImpl(ActivityDAO activityDAO, DeveloperDAO devDao,
+            QuestionableActivityListener questionableActivityListener) {
         this.activityDAO = activityDAO;
         this.devDao = devDao;
+        this.questionableActivityListener = questionableActivityListener;
     }
 
     @Override
@@ -104,6 +108,8 @@ public class ActivityManagerImpl extends SecuredManager implements ActivityManag
             final Object newData, final String reason)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
         this.addActivity(concept, objectId, activityDescription, originalData, newData);
+        questionableActivityListener.checkQuestionableActivity(concept, objectId, activityDescription, originalData, newData,
+                reason);
     }
 
     @Override
@@ -225,8 +231,8 @@ public class ActivityManagerImpl extends SecuredManager implements ActivityManag
     }
 
     /**
-     * Get activity only for public announcements. This will return activity
-     * where the isPublic flag is true on both the original and updated data.
+     * Get activity only for public announcements. This will return activity where the isPublic flag is true on both the
+     * original and updated data.
      */
     @Override
     @Transactional
@@ -243,9 +249,8 @@ public class ActivityManagerImpl extends SecuredManager implements ActivityManag
     }
 
     /**
-     * Get activity only for a specific public announcement. This will only
-     * return activity for the announcement if the isPublic flag is set to true
-     * in both the original data and new data.
+     * Get activity only for a specific public announcement. This will only return activity for the announcement if the
+     * isPublic flag is set to true in both the original data and new data.
      */
     @Override
     @Transactional

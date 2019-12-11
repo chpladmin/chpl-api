@@ -4,7 +4,6 @@ import java.util.Date;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.EnvironmentAware;
@@ -38,16 +37,10 @@ public class QuestionableActivityListener implements EnvironmentAware {
     private long listingActivityThresholdMillis = -1;
     private static final long MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
 
-    /**
-     * Autowired constructor for dependency injection.
-     * 
-     * @param env
-     *            - Environment
-     * @param listingDao
-     *            - CertifiedProductDAO
-     * @param questionableActivityManager
-     *            - QuestionableActivityManager
-     */
+    private enum ListingMode {
+        EDIT, ADD
+    };
+
     @Autowired
     public QuestionableActivityListener(final Environment env, final CertifiedProductDAO listingDao,
             final QuestionableActivityManager questionableActivityManager) {
@@ -64,16 +57,36 @@ public class QuestionableActivityListener implements EnvironmentAware {
         listingActivityThresholdMillis = activityThresholdDays * MILLIS_PER_DAY;
     }
 
-    // By "typing" the originalData and newData parameters in the method signature, the AOP advice will
-    // only intercept when the parameters are of type 'CertifiedProductSearchDetails'.
-    @After("execution(* gov.healthit.chpl.manager.impl.ActivityManagerImpl.addActivity(..)) && "
-            + "args(concept,objectId,activityDescription,originalData,newData,reason,..)")
-    public void checkQuestionableActivityForListingEdit(ActivityConcept concept, Long objectId, String activityDescription,
+    public void checkQuestionableActivity(ActivityConcept concept, Long objectId, String activityDescription,
+            Object originalData, Object newData, String reason) {
+
+        if (originalData instanceof CertifiedProductSearchDetails) {
+            if (isListingMode((CertifiedProductSearchDetails) originalData) == ListingMode.ADD) {
+                checkQuestionableActivityForListingAdd(concept, objectId, activityDescription,
+                        (CertifiedProductSearchDetails) newData, reason);
+            } else {
+                checkQuestionableActivityForListingEdit(concept, objectId, activityDescription,
+                        (CertifiedProductSearchDetails) originalData, (CertifiedProductSearchDetails) newData, reason);
+            }
+        } else if (areAllValuesNonNull(originalData, newData) && originalData instanceof DeveloperDTO
+                && newData instanceof DeveloperDTO) {
+            checkQuestionableActivityForDeveloper(concept, objectId, activityDescription, (DeveloperDTO) originalData,
+                    (DeveloperDTO) newData);
+        } else if (areAllValuesNonNull(originalData, newData) && originalData instanceof ProductDTO
+                && newData instanceof ProductDTO) {
+            checkQuestionableActivityForProduct(concept, objectId, activityDescription, (ProductDTO) originalData,
+                    (ProductDTO) newData);
+        } else if (areAllValuesNonNull(originalData, newData) && originalData instanceof ProductVersionDTO
+                && newData instanceof ProductVersionDTO) {
+            checkQuestionableActivityForVersion(concept, objectId, activityDescription, (ProductVersionDTO) originalData,
+                    (ProductVersionDTO) newData);
+        }
+    }
+
+    private void checkQuestionableActivityForListingEdit(ActivityConcept concept, Long objectId, String activityDescription,
             CertifiedProductSearchDetails originalData, CertifiedProductSearchDetails newData, String reason) {
 
-        if (originalData == null || newData == null
-                || !originalData.getClass().equals(newData.getClass())
-                || AuthUtil.getCurrentUser() == null) {
+        if (originalData == null || newData == null || AuthUtil.getCurrentUser() == null) {
             return;
         }
 
@@ -82,7 +95,7 @@ public class QuestionableActivityListener implements EnvironmentAware {
         Long activityUser = AuthUtil.getAuditId();
 
         // look for any of the listing questionable activity
-        questionableActivityManager.checkListingQuestionableActivity(
+        questionableActivityManager.checkListingQuestionableActivityOnEdit(
                 originalData, newData, activityDate, activityUser, reason);
 
         // check for cert result questionable activity
@@ -113,27 +126,21 @@ public class QuestionableActivityListener implements EnvironmentAware {
         }
     }
 
-    /**
-     * Adds Questionable Activity for Developer, Product, or Version when appropriate
-     * 
-     * @param concept
-     *            - ActivityConcept
-     * @param objectId
-     *            - Long
-     * @param activityDescription
-     *            - String
-     * @param originalData
-     *            - Object (DeveloperDTO, ProductDTO, or ProductVersionDTO)
-     * @param newData
-     *            - Object (DeveloperDTO, ProductDTO, or ProductVersionDTO)
-     */
-    @After("execution(* gov.healthit.chpl.manager.impl.ActivityManagerImpl.addActivity(..)) && "
-            + "args(concept,objectId,activityDescription,originalData,newData,..)")
-    public void checkQuestionableActivity(final ActivityConcept concept,
-            final Long objectId, final String activityDescription, final Object originalData, final Object newData) {
-        if (originalData == null || newData == null
-                || !originalData.getClass().equals(newData.getClass())
-                || AuthUtil.getCurrentUser() == null) {
+    private void checkQuestionableActivityForListingAdd(ActivityConcept concept, Long objectId, String activityDescription,
+            CertifiedProductSearchDetails newData, String reason) {
+
+        // all questionable activity from this action should have the exact same date and user id
+        Date activityDate = new Date();
+        Long activityUser = AuthUtil.getAuditId();
+
+        // look for any of the listing questionable activity
+        questionableActivityManager.checkListingQuestionableActivityOnAdd(newData, activityDate, activityUser, reason);
+    }
+
+    private void checkQuestionableActivityForDeveloper(ActivityConcept concept, Long objectId, String activityDescription,
+            DeveloperDTO originalDeveloper, DeveloperDTO newDeveloper) {
+
+        if (originalDeveloper == null || newDeveloper == null || AuthUtil.getCurrentUser() == null) {
             return;
         }
 
@@ -141,22 +148,53 @@ public class QuestionableActivityListener implements EnvironmentAware {
         Date activityDate = new Date();
         Long activityUser = AuthUtil.getAuditId();
 
-        if (originalData instanceof DeveloperDTO && newData instanceof DeveloperDTO) {
-            DeveloperDTO origDeveloper = (DeveloperDTO) originalData;
-            DeveloperDTO newDeveloper = (DeveloperDTO) newData;
-            questionableActivityManager.checkDeveloperQuestionableActivity(origDeveloper, newDeveloper, activityDate,
-                    activityUser);
-        } else if (originalData instanceof ProductDTO && newData instanceof ProductDTO) {
-            ProductDTO origProduct = (ProductDTO) originalData;
-            ProductDTO newProduct = (ProductDTO) newData;
-            questionableActivityManager.checkProductQuestionableActivity(origProduct, newProduct, activityDate,
-                    activityUser);
-        } else if (originalData instanceof ProductVersionDTO && newData instanceof ProductVersionDTO) {
-            ProductVersionDTO origVersion = (ProductVersionDTO) originalData;
-            ProductVersionDTO newVersion = (ProductVersionDTO) newData;
-            questionableActivityManager.checkVersionQuestionableActivity(origVersion, newVersion, activityDate,
-                    activityUser);
+        questionableActivityManager.checkDeveloperQuestionableActivity(originalDeveloper, newDeveloper, activityDate,
+                activityUser);
+    }
+
+    private void checkQuestionableActivityForProduct(ActivityConcept concept, Long objectId, String activityDescription,
+            ProductDTO originalProduct, ProductDTO newProduct) {
+
+        if (originalProduct == null || newProduct == null || AuthUtil.getCurrentUser() == null) {
+            return;
         }
+
+        // all questionable activity from this action should have the exact same date and user id
+        Date activityDate = new Date();
+        Long activityUser = AuthUtil.getAuditId();
+
+        questionableActivityManager.checkProductQuestionableActivity(originalProduct, newProduct, activityDate, activityUser);
+    }
+
+    private void checkQuestionableActivityForVersion(ActivityConcept concept, Long objectId, String activityDescription,
+            ProductVersionDTO originalVersion, ProductVersionDTO newVersion) {
+
+        if (originalVersion == null || newVersion == null || AuthUtil.getCurrentUser() == null) {
+            return;
+        }
+
+        // all questionable activity from this action should have the exact same date and user id
+        Date activityDate = new Date();
+        Long activityUser = AuthUtil.getAuditId();
+
+        questionableActivityManager.checkVersionQuestionableActivity(originalVersion, newVersion, activityDate, activityUser);
+    }
+
+    private ListingMode isListingMode(CertifiedProductSearchDetails originalData) {
+        if (originalData == null) {
+            return ListingMode.ADD;
+        } else {
+            return ListingMode.EDIT;
+        }
+    }
+
+    private boolean areAllValuesNonNull(Object... values) {
+        for (Object value : values) {
+            if (value == null) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }
