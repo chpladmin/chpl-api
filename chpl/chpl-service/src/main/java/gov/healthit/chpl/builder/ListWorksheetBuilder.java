@@ -121,10 +121,10 @@ public class ListWorksheetBuilder {
         int complaintStatusTypeRow = 0;
         choicesRow = workbook.getRow(sheet, complaintStatusTypeRow++);
         choicesCell = choicesRow.createCell(complaintStatusTypeCol);
-        choicesCell.setCellValue(Complaint.OPEN);
+        choicesCell.setCellValue(Complaint.COMPLAINT_OPEN);
         choicesRow = workbook.getRow(sheet, complaintStatusTypeRow++);
         choicesCell = choicesRow.createCell(complaintStatusTypeCol);
-        choicesCell.setCellValue(Complaint.CLOSED);
+        choicesCell.setCellValue(Complaint.COMPLAINT_CLOSED);
 
         // unselect that sheet because we will hide it later
         sheet.setSelected(false);

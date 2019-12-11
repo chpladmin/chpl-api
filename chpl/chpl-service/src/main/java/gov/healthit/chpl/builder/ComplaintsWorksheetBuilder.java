@@ -46,6 +46,9 @@ public class ComplaintsWorksheetBuilder {
     private static final Logger LOGGER = LogManager.getLogger(ComplaintsWorksheetBuilder.class);
     private static final int LAST_DATA_COLUMN = 21;
 
+    private static final String BOOLEAN_YES = "Yes";
+    private static final String BOOLEAN_NO = "No";
+
     private static final int COL_COMPLAINT_DATE = 1;
     private static final int COL_ACB_COMPLAINT_ID = 2;
     private static final int COL_ONC_COMPLAINT_ID = 3;
@@ -472,11 +475,11 @@ public class ComplaintsWorksheetBuilder {
         addDataCell(workbook, row, COL_COMPLAINANT_TYPE,
                 complaint.getComplainantType() != null ? complaint.getComplainantType().getName() : "");
         addDataCell(workbook, row, COL_COMPLAINANT_TYPE_OTHER, complaint.getComplainantTypeOther());
-        addDataCell(workbook, row, COL_COMPLAINANT_CONTACTED, complaint.isComplainantContacted() ? Complaint.YES : Complaint.NO);
-        addDataCell(workbook, row, COL_DEVELOPER_CONTACTED, complaint.isDeveloperContacted() ? Complaint.YES : Complaint.NO);
-        addDataCell(workbook, row, COL_ATL_CONTACTED, complaint.isOncAtlContacted() ? Complaint.YES : Complaint.NO);
-        addDataCell(workbook, row, COL_COMPLAINT_STATUS, complaint.getClosedDate() == null ? Complaint.OPEN : Complaint.CLOSED);
-        addDataCell(workbook, row, COL_FLAGGED_FOR_ONC, complaint.isFlagForOncReview() ? Complaint.YES : Complaint.NO);
+        addDataCell(workbook, row, COL_COMPLAINANT_CONTACTED, complaint.isComplainantContacted() ? BOOLEAN_YES : BOOLEAN_NO);
+        addDataCell(workbook, row, COL_DEVELOPER_CONTACTED, complaint.isDeveloperContacted() ? BOOLEAN_YES : BOOLEAN_NO);
+        addDataCell(workbook, row, COL_ATL_CONTACTED, complaint.isOncAtlContacted() ? BOOLEAN_YES : BOOLEAN_NO);
+        addDataCell(workbook, row, COL_COMPLAINT_STATUS, complaint.getClosedDate() == null ? Complaint.COMPLAINT_OPEN : Complaint.COMPLAINT_CLOSED);
+        addDataCell(workbook, row, COL_FLAGGED_FOR_ONC, complaint.isFlagForOncReview() ? BOOLEAN_YES : BOOLEAN_NO);
     }
 
     private Cell addHeadingCell(final SurveillanceReportWorkbookWrapper workbook,
