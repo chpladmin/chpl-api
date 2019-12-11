@@ -17,6 +17,12 @@ import gov.healthit.chpl.dto.ComplaintSurveillanceMapDTO;
 public class Complaint implements Serializable {
     private static final long serialVersionUID = -7018474294841580851L;
 
+    public static final String OPEN = "Open";
+    public static final String CLOSED = "Closed";
+    public static final String YES = "Yes";
+    public static final String NO = "No";
+    public static final int NUMBER_OF_STATES = 2;
+
     private Long id;
     private CertificationBody certificationBody;
     private ComplainantType complainantType;

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.ComplaintDAO;
 import gov.healthit.chpl.dao.surveillance.report.PrivilegedSurveillanceDAO;
+import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.dto.ComplainantTypeDTO;
 import gov.healthit.chpl.dto.surveillance.report.SurveillanceOutcomeDTO;
 import gov.healthit.chpl.dto.surveillance.report.SurveillanceProcessTypeDTO;
@@ -120,10 +121,10 @@ public class ListWorksheetBuilder {
         int complaintStatusTypeRow = 0;
         choicesRow = workbook.getRow(sheet, complaintStatusTypeRow++);
         choicesCell = choicesRow.createCell(complaintStatusTypeCol);
-        choicesCell.setCellValue("Open");
+        choicesCell.setCellValue(Complaint.OPEN);
         choicesRow = workbook.getRow(sheet, complaintStatusTypeRow++);
         choicesCell = choicesRow.createCell(complaintStatusTypeCol);
-        choicesCell.setCellValue("Closed");
+        choicesCell.setCellValue(Complaint.CLOSED);
 
         // unselect that sheet because we will hide it later
         sheet.setSelected(false);

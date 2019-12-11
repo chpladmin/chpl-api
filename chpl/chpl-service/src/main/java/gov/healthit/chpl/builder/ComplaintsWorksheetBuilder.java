@@ -154,7 +154,7 @@ public class ComplaintsWorksheetBuilder {
 
         Name complaintStatusTypeNamedCell = workbook.getWorkbook().createName();
         complaintStatusTypeNamedCell.setNameName("ComplaintStatusTypeList");
-        reference = "Lists!$F$1:$F$" + 2;
+        reference = "Lists!$F$1:$F$" + Complaint.NUMBER_OF_STATES;
         complaintStatusTypeNamedCell.setRefersToFormula(reference);
 
         Name booleanNamedCell = workbook.getWorkbook().createName();
@@ -472,11 +472,11 @@ public class ComplaintsWorksheetBuilder {
         addDataCell(workbook, row, COL_COMPLAINANT_TYPE,
                 complaint.getComplainantType() != null ? complaint.getComplainantType().getName() : "");
         addDataCell(workbook, row, COL_COMPLAINANT_TYPE_OTHER, complaint.getComplainantTypeOther());
-        addDataCell(workbook, row, COL_COMPLAINANT_CONTACTED, complaint.isComplainantContacted() ? "Yes" : "No");
-        addDataCell(workbook, row, COL_DEVELOPER_CONTACTED, complaint.isDeveloperContacted() ? "Yes" : "No");
-        addDataCell(workbook, row, COL_ATL_CONTACTED, complaint.isOncAtlContacted() ? "Yes" : "No");
-        addDataCell(workbook, row, COL_COMPLAINT_STATUS, complaint.getClosedDate() == null ? "Open" : "Closed");
-        addDataCell(workbook, row, COL_FLAGGED_FOR_ONC, complaint.isFlagForOncReview() ? "Yes" : "No");
+        addDataCell(workbook, row, COL_COMPLAINANT_CONTACTED, complaint.isComplainantContacted() ? Complaint.YES : Complaint.NO);
+        addDataCell(workbook, row, COL_DEVELOPER_CONTACTED, complaint.isDeveloperContacted() ? Complaint.YES : Complaint.NO);
+        addDataCell(workbook, row, COL_ATL_CONTACTED, complaint.isOncAtlContacted() ? Complaint.YES : Complaint.NO);
+        addDataCell(workbook, row, COL_COMPLAINT_STATUS, complaint.getClosedDate() == null ? Complaint.OPEN : Complaint.CLOSED);
+        addDataCell(workbook, row, COL_FLAGGED_FOR_ONC, complaint.isFlagForOncReview() ? Complaint.YES : Complaint.NO);
     }
 
     private Cell addHeadingCell(final SurveillanceReportWorkbookWrapper workbook,
