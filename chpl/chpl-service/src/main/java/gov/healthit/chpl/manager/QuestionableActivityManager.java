@@ -33,8 +33,8 @@ import gov.healthit.chpl.questionableactivity.VersionQuestionableActivityProvide
 import gov.healthit.chpl.util.CertificationResultRules;
 
 @Service("questionableActivityManager")
-public class QuestionableActivityManagerImpl implements EnvironmentAware {
-    private static final Logger LOGGER = LogManager.getLogger(QuestionableActivityManagerImpl.class);
+public class QuestionableActivityManager implements EnvironmentAware {
+    private static final Logger LOGGER = LogManager.getLogger(QuestionableActivityManager.class);
     private static final long MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
     private long listingActivityThresholdMillis = -1;
     private List<QuestionableActivityTriggerDTO> triggerTypes;
@@ -49,7 +49,7 @@ public class QuestionableActivityManagerImpl implements EnvironmentAware {
     private CertifiedProductDAO listingDao;
 
     @Autowired
-    public QuestionableActivityManagerImpl(
+    public QuestionableActivityManager(
             DeveloperQuestionableActivityProvider developerQuestionableActivityProvider,
             ProductQuestionableActivityProvider productQuestionableActivityProvider,
             VersionQuestionableActivityProvider versionQuestionableActivityProvider,
