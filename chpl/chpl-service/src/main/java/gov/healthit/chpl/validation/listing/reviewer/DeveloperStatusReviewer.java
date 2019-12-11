@@ -1,5 +1,7 @@
 package gov.healthit.chpl.validation.listing.reviewer;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +16,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("developerStatusReviewer")
 public class DeveloperStatusReviewer implements Reviewer {
+    private static final Logger LOGGER = LogManager.getLogger(DeveloperStatusReviewer.class);
 
     private DeveloperDAO developerDao;
     private ResourcePermissions resourcePermissions;
@@ -36,24 +39,27 @@ public class DeveloperStatusReviewer implements Reviewer {
                     DeveloperStatusEventDTO mostRecentStatus = developer.getStatus();
                     if (mostRecentStatus == null || mostRecentStatus.getStatus() == null) {
                         listing.getErrorMessages().add(msgUtil.getMessage(
-                                "listing.developer.noStatusFound", developer.getName()));
+                                "listing.developer.noStatusFound.noUpdate", developer.getName()));
                     } else {
                         if ((resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc())
                                 && !checkAdminOrOncAllowedToEdit(developer)) {
-
+                            listing.getErrorMessages().add(msgUtil.getMessage(
+                                    "listing.developer.notActiveOrBanned.noUpdate",
+                                    developer.getName(), mostRecentStatus.getStatus().getStatusName(),
+                                    DeveloperStatusType.Active.getName(),
+                                    DeveloperStatusType.UnderCertificationBanByOnc.getName()));
                         } else if (!checkAcbAllowedToEdit(developer)) {
                             listing.getErrorMessages().add(msgUtil.getMessage(
-                                    "listing.developer.notActive", developer.getName(), mostRecentStatus.getStatus().getStatusName()));
+                                    "listing.developer.notActive.noUpdate", developer.getName(), mostRecentStatus.getStatus().getStatusName()));
                         }
                     }
                 } else {
-                    listing.getErrorMessages()
-                    .add("Could not find developer with id " + listing.getDeveloper().getDeveloperId());
+                    listing.getErrorMessages().add(msgUtil.getMessage("developer.notFound"));
                 }
             }
         } catch (final EntityRetrievalException ex) {
-            listing.getErrorMessages()
-            .add("Could not find distinct developer with id " + listing.getDeveloper().getDeveloperId());
+            listing.getErrorMessages().add(msgUtil.getMessage("developer.notFound"));
+            LOGGER.error(ex.getMessage(), ex);
         }
     }
 
