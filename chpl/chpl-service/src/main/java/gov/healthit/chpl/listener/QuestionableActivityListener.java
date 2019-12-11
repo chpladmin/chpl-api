@@ -58,12 +58,17 @@ public class QuestionableActivityListener implements EnvironmentAware {
     }
 
     public void checkQuestionableActivity(ActivityConcept concept, Long objectId, String activityDescription,
+            Object originalData, Object newData) {
+        checkQuestionableActivity(concept, objectId, activityDescription, originalData, newData, null);
+    }
+
+    public void checkQuestionableActivity(ActivityConcept concept, Long objectId, String activityDescription,
             Object originalData, Object newData, String reason) {
 
         if (originalData instanceof CertifiedProductSearchDetails) {
             if (isListingMode((CertifiedProductSearchDetails) originalData) == ListingMode.ADD) {
                 checkQuestionableActivityForListingAdd(concept, objectId, activityDescription,
-                        (CertifiedProductSearchDetails) newData, reason);
+                        (CertifiedProductSearchDetails) newData);
             } else {
                 checkQuestionableActivityForListingEdit(concept, objectId, activityDescription,
                         (CertifiedProductSearchDetails) originalData, (CertifiedProductSearchDetails) newData, reason);
@@ -127,14 +132,14 @@ public class QuestionableActivityListener implements EnvironmentAware {
     }
 
     private void checkQuestionableActivityForListingAdd(ActivityConcept concept, Long objectId, String activityDescription,
-            CertifiedProductSearchDetails newData, String reason) {
+            CertifiedProductSearchDetails newData) {
 
         // all questionable activity from this action should have the exact same date and user id
         Date activityDate = new Date();
         Long activityUser = AuthUtil.getAuditId();
 
         // look for any of the listing questionable activity
-        questionableActivityManager.checkListingQuestionableActivityOnAdd(newData, activityDate, activityUser, reason);
+        questionableActivityManager.checkListingQuestionableActivityOnAdd(newData, activityDate, activityUser);
     }
 
     private void checkQuestionableActivityForDeveloper(ActivityConcept concept, Long objectId, String activityDescription,

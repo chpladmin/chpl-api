@@ -269,7 +269,7 @@ public class QuestionableActivityManager implements EnvironmentAware {
     }
 
     public void checkListingQuestionableActivityOnAdd(CertifiedProductSearchDetails newListing, Date activityDate,
-            Long activityUser, String activityReason) {
+            Long activityUser) {
 
     }
 
