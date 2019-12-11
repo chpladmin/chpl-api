@@ -163,8 +163,10 @@ public class ComplaintsWorksheetBuilder {
         booleanNamedCell.setRefersToFormula(reference);
 
         //complainant type is a dropdown list of choices
-        CellRangeAddressList addressList = new CellRangeAddressList(2, getLastDataRow(), COL_COMPLAINANT_TYPE, COL_COMPLAINANT_TYPE);
-        XSSFDataValidationConstraint dvConstraint = (XSSFDataValidationConstraint) dvHelper.createFormulaListConstraint("ComplainantTypeList");
+        CellRangeAddressList addressList = new CellRangeAddressList(2, getLastDataRow(),
+                COL_COMPLAINANT_TYPE, COL_COMPLAINANT_TYPE);
+        XSSFDataValidationConstraint dvConstraint = (XSSFDataValidationConstraint)
+                dvHelper.createFormulaListConstraint("ComplainantTypeList");
         XSSFDataValidation validation = (XSSFDataValidation) dvHelper.createValidation(dvConstraint, addressList);
         validation.setSuppressDropDownArrow(true);
         validation.setShowErrorBox(false);
@@ -316,7 +318,8 @@ public class ComplaintsWorksheetBuilder {
             for (ComplaintListingMap listingMap : complaint.getListings()) {
                 try {
                     CertifiedProductSearchDetails cpd =
-                            cpdManager.getCertifiedProductDetailsBasicByChplProductNumber(listingMap.getChplProductNumber(), false);
+                            cpdManager.getCertifiedProductDetailsBasicByChplProductNumber(
+                                    listingMap.getChplProductNumber(), false);
                     listingDetailsCache.put(cpd.getId(), cpd);
                     orderedListings.add(cpd);
                 } catch (EntityRetrievalException ex) {
@@ -466,7 +469,7 @@ public class ComplaintsWorksheetBuilder {
         addDataCell(workbook, row, COL_ONC_COMPLAINT_ID, complaint.getOncComplaintId());
         addDataCell(workbook, row, COL_SUMMARY, complaint.getSummary());
         addDataCell(workbook, row, COL_ACTIONS_RESPONSE, complaint.getActions());
-        addDataCell(workbook, row, COL_COMPLAINANT_TYPE, 
+        addDataCell(workbook, row, COL_COMPLAINANT_TYPE,
                 complaint.getComplainantType() != null ? complaint.getComplainantType().getName() : "");
         addDataCell(workbook, row, COL_COMPLAINANT_TYPE_OTHER, complaint.getComplainantTypeOther());
         addDataCell(workbook, row, COL_COMPLAINANT_CONTACTED, complaint.isComplainantContacted() ? "Yes" : "No");
