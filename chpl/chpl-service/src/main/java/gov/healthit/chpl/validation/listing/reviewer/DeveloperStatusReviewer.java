@@ -9,11 +9,24 @@ import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("developerStatusReviewer")
 public class DeveloperStatusReviewer implements Reviewer {
 
-    @Autowired private DeveloperDAO developerDao;
+    private DeveloperDAO developerDao;
+    private ResourcePermissions resourcePermissions;
+    private ErrorMessageUtil msgUtil;
+
+    @Autowired
+    public DeveloperStatusReviewer(DeveloperDAO developerDao,
+            ResourcePermissions resourcePermissions,
+            ErrorMessageUtil msgUtil) {
+        this.developerDao = developerDao;
+        this.resourcePermissions = resourcePermissions;
+        this.msgUtil = msgUtil;
+    }
 
     public void review(CertifiedProductSearchDetails listing) {
         try {
@@ -22,13 +35,16 @@ public class DeveloperStatusReviewer implements Reviewer {
                 if (developer != null) {
                     DeveloperStatusEventDTO mostRecentStatus = developer.getStatus();
                     if (mostRecentStatus == null || mostRecentStatus.getStatus() == null) {
-                        listing.getErrorMessages().add("The current status of the developer " + developer.getName()
-                        + " cannot be determined. A developer must be listed as Active in order to update certified products belongong to it.");
-                    } else if (!mostRecentStatus.getStatus().getStatusName()
-                            .equals(DeveloperStatusType.Active.toString())) {
-                        listing.getErrorMessages().add("The developer " + developer.getName() + " has a status of "
-                                + mostRecentStatus.getStatus().getStatusName()
-                                + ". Certified products belonging to this developer cannot be updated until its status returns to Active.");
+                        listing.getErrorMessages().add(msgUtil.getMessage(
+                                "listing.developer.noStatusFound", developer.getName()));
+                    } else {
+                        if ((resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc())
+                                && !checkAdminOrOncAllowedToEdit(developer)) {
+
+                        } else if (!checkAcbAllowedToEdit(developer)) {
+                            listing.getErrorMessages().add(msgUtil.getMessage(
+                                    "listing.developer.notActive", developer.getName(), mostRecentStatus.getStatus().getStatusName()));
+                        }
                     }
                 } else {
                     listing.getErrorMessages()
@@ -39,5 +55,16 @@ public class DeveloperStatusReviewer implements Reviewer {
             listing.getErrorMessages()
             .add("Could not find distinct developer with id " + listing.getDeveloper().getDeveloperId());
         }
+    }
+
+    private boolean checkAcbAllowedToEdit(DeveloperDTO developer) {
+        DeveloperStatusEventDTO mostRecentStatus = developer.getStatus();
+        return mostRecentStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString());
+    }
+
+    private boolean checkAdminOrOncAllowedToEdit(DeveloperDTO developer) {
+        DeveloperStatusEventDTO mostRecentStatus = developer.getStatus();
+        return mostRecentStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
+                || mostRecentStatus.getStatus().getStatusName().equals(DeveloperStatusType.UnderCertificationBanByOnc.toString());
     }
 }
