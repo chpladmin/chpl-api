@@ -22,7 +22,6 @@ import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.ComplainantTypeDTO;
 import gov.healthit.chpl.dto.ComplaintDTO;
-import gov.healthit.chpl.dto.ComplaintStatusTypeDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -36,7 +35,6 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class ComplaintManagerImpl extends SecuredManager implements ComplaintManager {
-    private static final String OPEN_STATUS = "Open";
 
     private ComplaintDAO complaintDAO;
     private ComplaintValidationFactory complaintValidationFactory;
@@ -65,17 +63,6 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
         Set<KeyValueModel> results = new HashSet<KeyValueModel>();
         for (ComplainantTypeDTO complaintType : complaintTypes) {
             results.add(new KeyValueModel(complaintType.getId(), complaintType.getName()));
-        }
-        return results;
-    }
-
-    @Override
-    @Transactional
-    public Set<KeyValueModel> getComplaintStatusTypes() {
-        List<ComplaintStatusTypeDTO> complaintStatusTypes = complaintDAO.getComplaintStatusTypes();
-        Set<KeyValueModel> results = new HashSet<KeyValueModel>();
-        for (ComplaintStatusTypeDTO complaintStatusType : complaintStatusTypes) {
-            results.add(new KeyValueModel(complaintStatusType.getId(), complaintStatusType.getName()));
         }
         return results;
     }
@@ -124,8 +111,6 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
             throw validationException;
         }
 
-        complaintDTO.setComplaintStatusType(getComplaintStatusType(OPEN_STATUS));
-
         ComplaintDTO newComplaint = complaintDAO.create(complaintDTO);
 
         activityManager.addActivity(ActivityConcept.COMPLAINT, newComplaint.getId(), "Complaint has been created", null,
@@ -170,21 +155,10 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
         }
     }
 
-    @Override
-    public ComplaintStatusTypeDTO getComplaintStatusType(String name) {
-        for (ComplaintStatusTypeDTO dto : complaintDAO.getComplaintStatusTypes()) {
-            if (dto.getName().equals(name)) {
-                return dto;
-            }
-        }
-        return null;
-    }
-
     private List<String> runUpdateValidations(ComplaintDTO dto) {
         List<ValidationRule<ComplaintValidationContext>> rules = new ArrayList<ValidationRule<ComplaintValidationContext>>();
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.ACB_CHANGE));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.COMPLAINT_TYPE));
-        rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.COMPLAINT_STATUS_TYPE));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.RECEIVED_DATE));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.ACB_COMPLAINT_ID));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.SUMMARY));
@@ -196,7 +170,6 @@ public class ComplaintManagerImpl extends SecuredManager implements ComplaintMan
         List<ValidationRule<ComplaintValidationContext>> rules = new ArrayList<ValidationRule<ComplaintValidationContext>>();
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.OPEN_STATUS));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.COMPLAINT_TYPE));
-        rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.COMPLAINT_STATUS_TYPE));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.RECEIVED_DATE));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.ACB_COMPLAINT_ID));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.SUMMARY));

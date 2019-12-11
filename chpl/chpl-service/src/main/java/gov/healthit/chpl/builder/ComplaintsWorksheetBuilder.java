@@ -154,7 +154,7 @@ public class ComplaintsWorksheetBuilder {
 
         Name complaintStatusTypeNamedCell = workbook.getWorkbook().createName();
         complaintStatusTypeNamedCell.setNameName("ComplaintStatusTypeList");
-        reference = "Lists!$F$1:$F$" + getNumberOfComplaintStatusTypes();
+        reference = "Lists!$F$1:$F$" + 2;
         complaintStatusTypeNamedCell.setRefersToFormula(reference);
 
         Name booleanNamedCell = workbook.getWorkbook().createName();
@@ -472,7 +472,7 @@ public class ComplaintsWorksheetBuilder {
         addDataCell(workbook, row, COL_COMPLAINANT_CONTACTED, complaint.isComplainantContacted() ? "Yes" : "No");
         addDataCell(workbook, row, COL_DEVELOPER_CONTACTED, complaint.isDeveloperContacted() ? "Yes" : "No");
         addDataCell(workbook, row, COL_ATL_CONTACTED, complaint.isOncAtlContacted() ? "Yes" : "No");
-        addDataCell(workbook, row, COL_COMPLAINT_STATUS, complaint.getComplaintStatusType().getName());
+        addDataCell(workbook, row, COL_COMPLAINT_STATUS, complaint.getClosedDate() == null ? "Open" : "Closed");
         addDataCell(workbook, row, COL_FLAGGED_FOR_ONC, complaint.isFlagForOncReview() ? "Yes" : "No");
     }
 
@@ -492,9 +492,5 @@ public class ComplaintsWorksheetBuilder {
 
     private int getNumberOfComplainantTypes() {
         return complaintManager.getComplainantTypes().size();
-    }
-
-    private int getNumberOfComplaintStatusTypes() {
-        return complaintManager.getComplaintStatusTypes().size();
     }
 }

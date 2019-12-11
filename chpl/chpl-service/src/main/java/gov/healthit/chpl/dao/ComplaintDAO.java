@@ -3,15 +3,12 @@ package gov.healthit.chpl.dao;
 import java.util.Date;
 import java.util.List;
 
-import gov.healthit.chpl.dto.ComplaintDTO;
-import gov.healthit.chpl.dto.ComplaintStatusTypeDTO;
 import gov.healthit.chpl.dto.ComplainantTypeDTO;
+import gov.healthit.chpl.dto.ComplaintDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface ComplaintDAO {
     List<ComplainantTypeDTO> getComplainantTypes();
-
-    List<ComplaintStatusTypeDTO> getComplaintStatusTypes();
 
     List<ComplaintDTO> getAllComplaints();
 

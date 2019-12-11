@@ -21,7 +21,6 @@ public class Complaint implements Serializable {
     private CertificationBody certificationBody;
     private ComplainantType complainantType;
     private String complainantTypeOther;
-    private ComplaintStatusType complaintStatusType;
     private String oncComplaintId;
     private String acbComplaintId;
     private Date receivedDate;
@@ -59,7 +58,6 @@ public class Complaint implements Serializable {
         }
 
         this.certificationBody = new CertificationBody(dto.getCertificationBody());
-        this.complaintStatusType = new ComplaintStatusType(dto.getComplaintStatusType());
         this.complainantType = new ComplainantType(dto.getComplainantType());
     }
 
@@ -93,14 +91,6 @@ public class Complaint implements Serializable {
 
     public void setComplainantTypeOther(String complainantTypeOther) {
         this.complainantTypeOther = complainantTypeOther;
-    }
-
-    public ComplaintStatusType getComplaintStatusType() {
-        return complaintStatusType;
-    }
-
-    public void setComplaintStatusType(final ComplaintStatusType complaintStatusType) {
-        this.complaintStatusType = complaintStatusType;
     }
 
     public String getOncComplaintId() {
@@ -234,8 +224,8 @@ public class Complaint implements Serializable {
     @Override
     public String toString() {
         return "Complaint [id=" + id + ", certificationBody=" + certificationBody + ", complainantType="
-                + complainantType + ", complainantTypeOther=" + complainantTypeOther + ", complaintStatusType="
-                + complaintStatusType + ", oncComplaintId=" + oncComplaintId + ", acbComplaintId=" + acbComplaintId
+                + complainantType + ", complainantTypeOther=" + complainantTypeOther + ", oncComplaintId="
+                + oncComplaintId + ", acbComplaintId=" + acbComplaintId
                 + ", receivedDate=" + receivedDate + ", summary=" + summary + ", actions=" + actions
                 + ", complainantContacted=" + complainantContacted + ", developerContacted=" + developerContacted
                 + ", oncAtlContacted=" + oncAtlContacted + ", flagForOncReview=" + flagForOncReview + ", closedDate="

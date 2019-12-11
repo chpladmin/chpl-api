@@ -19,13 +19,11 @@ import gov.healthit.chpl.dto.ComplainantTypeDTO;
 import gov.healthit.chpl.dto.ComplaintCriterionMapDTO;
 import gov.healthit.chpl.dto.ComplaintDTO;
 import gov.healthit.chpl.dto.ComplaintListingMapDTO;
-import gov.healthit.chpl.dto.ComplaintStatusTypeDTO;
 import gov.healthit.chpl.dto.ComplaintSurveillanceMapDTO;
 import gov.healthit.chpl.entity.ComplainantTypeEntity;
 import gov.healthit.chpl.entity.ComplaintCriterionMapEntity;
 import gov.healthit.chpl.entity.ComplaintEntity;
 import gov.healthit.chpl.entity.ComplaintListingMapEntity;
-import gov.healthit.chpl.entity.ComplaintStatusTypeEntity;
 import gov.healthit.chpl.entity.ComplaintSurveillanceMapEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceBasicEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -37,7 +35,7 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
     private static final Logger LOGGER = LogManager.getLogger(ComplaintDAOImpl.class);
     private static final String GET_COMPLAINTS_HQL = "SELECT DISTINCT c " + "FROM ComplaintEntity c "
             + "LEFT JOIN FETCH c.listings " + "LEFT JOIN FETCH c.surveillances " + "LEFT JOIN FETCH c.criteria "
-            + "JOIN FETCH c.certificationBody " + "JOIN FETCH c.complainantType " + "JOIN FETCH c.complaintStatusType "
+            + "JOIN FETCH c.certificationBody " + "JOIN FETCH c.complainantType "
             + "WHERE c.deleted = false ";
 
     private ChplProductNumberUtil chplProductNumberUtil;
@@ -56,16 +54,6 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
         List<ComplainantTypeDTO> dtos = new ArrayList<ComplainantTypeDTO>();
         for (ComplainantTypeEntity entity : entities) {
             dtos.add(new ComplainantTypeDTO(entity));
-        }
-        return dtos;
-    }
-
-    @Override
-    public List<ComplaintStatusTypeDTO> getComplaintStatusTypes() {
-        List<ComplaintStatusTypeEntity> entities = getComplaintStatusTypeEntities();
-        List<ComplaintStatusTypeDTO> dtos = new ArrayList<ComplaintStatusTypeDTO>();
-        for (ComplaintStatusTypeEntity entity : entities) {
-            dtos.add(new ComplaintStatusTypeDTO(entity));
         }
         return dtos;
     }
@@ -103,7 +91,6 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
         entity.setCertificationBodyId(complaintDTO.getCertificationBody().getId());
         entity.setComplainantTypeId(complaintDTO.getComplainantType().getId());
         entity.setComplainantTypeOther(complaintDTO.getComplainantTypeOther());
-        entity.setComplaintStatusTypeId(complaintDTO.getComplaintStatusType().getId());
         entity.setOncComplaintId(complaintDTO.getOncComplaintId());
         entity.setAcbComplaintId(complaintDTO.getAcbComplaintId());
         entity.setReceivedDate(complaintDTO.getReceivedDate());
@@ -136,7 +123,6 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
         entity.setCertificationBodyId(complaintDTO.getCertificationBody().getId());
         entity.setComplainantTypeId(complaintDTO.getComplainantType().getId());
         entity.setComplainantTypeOther(complaintDTO.getComplainantTypeOther());
-        entity.setComplaintStatusTypeId(complaintDTO.getComplaintStatusType().getId());
         entity.setOncComplaintId(complaintDTO.getOncComplaintId());
         entity.setAcbComplaintId(complaintDTO.getAcbComplaintId());
         entity.setReceivedDate(complaintDTO.getReceivedDate());
@@ -207,13 +193,6 @@ public class ComplaintDAOImpl extends BaseDAOImpl implements ComplaintDAO {
         Query query = entityManager.createQuery("from ComplainantTypeEntity where (NOT deleted = true) ",
                 ComplainantTypeEntity.class);
         List<ComplainantTypeEntity> result = query.getResultList();
-        return result;
-    }
-
-    private List<ComplaintStatusTypeEntity> getComplaintStatusTypeEntities() {
-        Query query = entityManager.createQuery("from ComplaintStatusTypeEntity where (NOT deleted = true) ",
-                ComplaintStatusTypeEntity.class);
-        List<ComplaintStatusTypeEntity> result = query.getResultList();
         return result;
     }
 

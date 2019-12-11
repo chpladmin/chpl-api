@@ -1311,18 +1311,6 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible complaint status types in the CHPL")
-    @RequestMapping(value = "/data/complaint-status-types", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody SearchOption getComplaintStatusTypes() {
-        Set<KeyValueModel> data = complaintManager.getComplaintStatusTypes();
-        SearchOption result = new SearchOption();
-        result.setExpandable(false);
-        result.setData(data);
-        return result;
-    }
-
     @ApiOperation(value = "Get all possible certification criteria in the CHPL")
     @RequestMapping(value = "/data/certification-criteria", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
