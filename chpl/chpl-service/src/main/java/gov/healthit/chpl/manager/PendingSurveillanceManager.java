@@ -141,7 +141,7 @@ public class PendingSurveillanceManager extends SecuredManager {
         int numSurveillance = survUploadHelper.countSurveillanceRecords(data);
         if (numSurveillance < surveillanceThresholdToProcessAsJob) {
             uploadResult = processAsFile(file);
-        } else { // process as job
+        } else {
             uploadResult = processUploadAsJob(data);
         }
         return uploadResult;
@@ -154,7 +154,6 @@ public class PendingSurveillanceManager extends SecuredManager {
     public void rejectPendingSurveillance(final Long pendingSurveillanceId) throws ObjectMissingValidationException,
             JsonProcessingException, EntityRetrievalException, EntityCreationException {
 
-        // Check if
         PendingSurveillanceEntity entity = survDao.getPendingSurveillanceById(pendingSurveillanceId, true);
         if (entity.getDeleted()) {
             throw createdObjectMissingValidationException(entity);
@@ -260,7 +259,6 @@ public class PendingSurveillanceManager extends SecuredManager {
             throws EntityCreationException, EntityRetrievalException {
         SurveillanceUploadResult result = new SurveillanceUploadResult();
 
-        // figure out the user
         UserDTO currentUser = null;
         try {
             currentUser = userManager.getById(AuthUtil.getCurrentUser().getId());
