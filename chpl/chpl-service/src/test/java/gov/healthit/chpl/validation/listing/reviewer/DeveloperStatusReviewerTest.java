@@ -10,9 +10,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -25,6 +25,8 @@ import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.listing.ListingMockUtil;
+import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -33,22 +35,28 @@ public class DeveloperStatusReviewerTest {
     private static final String NO_DEV_STATUS_ERROR =
             "The current status of the developer " + DEV_NAME + " cannot be determined. "
                     + "A developer must be listed as Active in order to update certified products belongong to it.";
-    private static final String DEV_SUSPENDED_ERROR =
-            "The developer " + DEV_NAME + " has a status of "
-                    + DeveloperStatusType.SuspendedByOnc.toString()
-                    + ". Certified products belonging to this developer cannot be updated until "
-                    + "its status returns to Active.";
+    private static final String DEV_SUSPENDED_ERROR = "The developer " + DEV_NAME + " has a status of "
+                    + DeveloperStatusType.SuspendedByOnc.getName() + ". Certified products belonging "
+                    + "to this developer cannot be updated until its status returns to "
+                    + DeveloperStatusType.Active.getName() + " or "
+                    + DeveloperStatusType.UnderCertificationBanByOnc.getName() + ".";
     private static final String DEV_BANNED_ERROR =
             "The developer " + DEV_NAME + " has a status of "
                     + DeveloperStatusType.UnderCertificationBanByOnc.toString()
                     + ". Certified products belonging to this developer cannot be updated until "
                     + "its status returns to Active.";
-    private static final String NO_DEV_FOUND_ERROR = "Could not find developer with id 1";
 
-    @Autowired private ListingMockUtil mockUtil;
+    @Autowired
+    private ListingMockUtil mockUtil;
 
-    @Spy
-    private DeveloperDAO devDao;
+    @Mock
+    private DeveloperDAO developerDao;
+
+    @Mock
+    private ResourcePermissions resourcePermissions;
+
+    @Mock
+    private ErrorMessageUtil msgUtil;
 
     @InjectMocks
     private DeveloperStatusReviewer devStatusReviewer;
@@ -56,27 +64,61 @@ public class DeveloperStatusReviewerTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+
+        Mockito.doReturn(NO_DEV_STATUS_ERROR)
+        .when(msgUtil).getMessage(
+                ArgumentMatchers.eq("listing.developer.noStatusFound.noUpdate"));
+        Mockito.doReturn(DEV_SUSPENDED_ERROR)
+        .when(msgUtil).getMessage(
+                ArgumentMatchers.eq("listing.developer.noStatusFound.noUpdate"));
+        Mockito.doReturn(DEV_BANNED_ERROR)
+        .when(msgUtil).getMessage(
+                ArgumentMatchers.eq("listing.developer.notActive.noUpdate"));
     }
 
     @Test
-    public void testActiveDeveloper_NoErrors() {
-        try {
-            Mockito.when(devDao.getById(ArgumentMatchers.anyLong()))
-        .thenReturn(createDeveloperDTO(DeveloperStatusType.Active));
-        } catch (EntityRetrievalException ex) { }
+    public void testActiveDeveloper_EditedByNonAdmin_NoErrors() throws EntityRetrievalException {
+        Mockito.when(developerDao.getById(ArgumentMatchers.anyLong())).thenReturn(createDeveloperDTO(DeveloperStatusType.Active));
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
 
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         devStatusReviewer.review(listing);
         assertFalse(listing.getErrorMessages().contains(NO_DEV_STATUS_ERROR));
         assertFalse(listing.getErrorMessages().contains(DEV_SUSPENDED_ERROR));
         assertFalse(listing.getErrorMessages().contains(DEV_BANNED_ERROR));
-        assertFalse(listing.getErrorMessages().contains(NO_DEV_FOUND_ERROR));
+    }
+
+    @Test
+    public void testActiveDeveloper_EditedByAdmin_NoErrors() throws EntityRetrievalException {
+        Mockito.when(developerDao.getById(ArgumentMatchers.anyLong())).thenReturn(createDeveloperDTO(DeveloperStatusType.Active));
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+
+        CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
+        devStatusReviewer.review(listing);
+        assertFalse(listing.getErrorMessages().contains(NO_DEV_STATUS_ERROR));
+        assertFalse(listing.getErrorMessages().contains(DEV_SUSPENDED_ERROR));
+        assertFalse(listing.getErrorMessages().contains(DEV_BANNED_ERROR));
+    }
+
+    @Test
+    public void testActiveDeveloper_EditedByOnc_NoErrors() throws EntityRetrievalException {
+        Mockito.when(developerDao.getById(ArgumentMatchers.anyLong())).thenReturn(createDeveloperDTO(DeveloperStatusType.Active));
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(true);
+
+        CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
+        devStatusReviewer.review(listing);
+        assertFalse(listing.getErrorMessages().contains(NO_DEV_STATUS_ERROR));
+        assertFalse(listing.getErrorMessages().contains(DEV_SUSPENDED_ERROR));
+        assertFalse(listing.getErrorMessages().contains(DEV_BANNED_ERROR));
     }
 
     @Test
     public void testSuspendedDeveloper_HasError() {
         try {
-            Mockito.when(devDao.getById(ArgumentMatchers.anyLong()))
+            Mockito.when(developerDao.getById(ArgumentMatchers.anyLong()))
         .thenReturn(createDeveloperDTO(DeveloperStatusType.SuspendedByOnc));
         } catch (EntityRetrievalException ex) { }
 
@@ -85,13 +127,12 @@ public class DeveloperStatusReviewerTest {
         assertFalse(listing.getErrorMessages().contains(NO_DEV_STATUS_ERROR));
         assertTrue(listing.getErrorMessages().contains(DEV_SUSPENDED_ERROR));
         assertFalse(listing.getErrorMessages().contains(DEV_BANNED_ERROR));
-        assertFalse(listing.getErrorMessages().contains(NO_DEV_FOUND_ERROR));
     }
 
     @Test
     public void testBannedDeveloper_HasError() {
         try {
-            Mockito.when(devDao.getById(ArgumentMatchers.anyLong()))
+            Mockito.when(developerDao.getById(ArgumentMatchers.anyLong()))
         .thenReturn(createDeveloperDTO(DeveloperStatusType.UnderCertificationBanByOnc));
         } catch (EntityRetrievalException ex) { }
 
@@ -100,13 +141,12 @@ public class DeveloperStatusReviewerTest {
         assertFalse(listing.getErrorMessages().contains(NO_DEV_STATUS_ERROR));
         assertFalse(listing.getErrorMessages().contains(DEV_SUSPENDED_ERROR));
         assertTrue(listing.getErrorMessages().contains(DEV_BANNED_ERROR));
-        assertFalse(listing.getErrorMessages().contains(NO_DEV_FOUND_ERROR));
     }
 
     @Test
     public void testNoDeveloperWithIdFound_HasError() {
         try {
-            Mockito.when(devDao.getById(ArgumentMatchers.anyLong()))
+            Mockito.when(developerDao.getById(ArgumentMatchers.anyLong()))
         .thenReturn(null);
         } catch (EntityRetrievalException ex) { }
 
@@ -115,7 +155,6 @@ public class DeveloperStatusReviewerTest {
         assertFalse(listing.getErrorMessages().contains(NO_DEV_STATUS_ERROR));
         assertFalse(listing.getErrorMessages().contains(DEV_SUSPENDED_ERROR));
         assertFalse(listing.getErrorMessages().contains(DEV_BANNED_ERROR));
-        assertTrue(listing.getErrorMessages().contains(NO_DEV_FOUND_ERROR));
     }
 
     private DeveloperDTO createDeveloperDTO(DeveloperStatusType currentStatus) {
