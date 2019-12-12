@@ -52,7 +52,7 @@ public class FuzzyMatchReviewer implements Reviewer {
                                 ucd.setUcdProcessName(fuzzyMatchedUcd.getName());
                                 String warningMsg = msgUtil.getMessage("listing.criteria.fuzzyMatch",
                                         FuzzyType.UCD_PROCESS.fuzzyType(),
-                                        cert.getNumber(), origUcdProcessName, topChoice);
+                                        cert.getCriterion().getNumber(), origUcdProcessName, topChoice);
                                 listing.getWarningMessages().add(warningMsg);
 
                             }

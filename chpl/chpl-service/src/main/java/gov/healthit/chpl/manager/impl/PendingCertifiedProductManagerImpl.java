@@ -149,7 +149,7 @@ public class PendingCertifiedProductManagerImpl extends SecuredManager implement
     /**
      * This method is included so that the pending listings may be pre-loaded in a background cache without having to
      * duplicate manager logic. Prefer users of this class to call getPendingCertifiedProductsCached.
-     * 
+     *
      * @param acbId
      * @return
      */
@@ -285,52 +285,52 @@ public class PendingCertifiedProductManagerImpl extends SecuredManager implement
     private void updateCertResults(final List<PendingCertifiedProductDTO> products) {
         for (PendingCertifiedProductDTO product : products) {
             for (PendingCertificationResultDTO certResult : product.getCertificationCriterion()) {
-                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.GAP)) {
+                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.GAP)) {
                     certResult.setGap(null);
                 }
-                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G1_SUCCESS)) {
+                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.G1_SUCCESS)) {
                     certResult.setG1Success(null);
                 }
-                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_SUCCESS)) {
+                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.G2_SUCCESS)) {
                     certResult.setG2Success(null);
                 }
-                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G1_MACRA)) {
+                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.G1_MACRA)) {
                     certResult.setG1MacraMeasures(null);
                 }
-                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_MACRA)) {
+                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.G2_MACRA)) {
                     certResult.setG2MacraMeasures(null);
                 }
-                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
+                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
                     certResult.setApiDocumentation(null);
                 }
-                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.PRIVACY_SECURITY)) {
+                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.PRIVACY_SECURITY)) {
                     certResult.setPrivacySecurityFramework(null);
                 }
-                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.SED)) {
+                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.SED)) {
                     certResult.setSed(null);
                 }
-                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.UCD_FIELDS)) {
+                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.UCD_FIELDS)) {
                     certResult.setUcdProcesses(null);
                 }
-                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
+                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
                     certResult.setAdditionalSoftware(null);
                 }
-                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
+                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
                     certResult.setTestFunctionality(null);
                 }
-                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.STANDARDS_TESTED)) {
+                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.STANDARDS_TESTED)) {
                     certResult.setTestStandards(null);
                 }
-                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_DATA)) {
+                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_DATA)) {
                     certResult.setTestData(null);
                 }
-                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_PROCEDURE)) {
+                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_PROCEDURE)) {
                     certResult.setTestProcedures(null);
                 }
-                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TOOLS_USED)) {
+                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_TOOLS_USED)) {
                     certResult.setTestTools(null);
                 }
-                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TASK)) {
+                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_TASK)) {
                     certResult.setTestTasks(null);
                 }
             }

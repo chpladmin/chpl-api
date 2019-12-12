@@ -11,6 +11,8 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Immutable;
 
+import gov.healthit.chpl.entity.CertificationCriterionEntity;
+
 @Immutable
 @Entity
 @Table(name = "certification_result_details")
@@ -26,6 +28,10 @@ public class CertificationResultDetailsEntity {
 
     @Column(name = "certification_criterion_id")
     private Long certificationCriterionId;
+
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "certification_criterion_id", insertable = false, updatable = false)
+    private CertificationCriterionEntity certificationCriterion;
 
     @Column(name = "certified_product_id")
     private Long certifiedProductId;
@@ -174,5 +180,13 @@ public class CertificationResultDetailsEntity {
 
     public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public CertificationCriterionEntity getCertificationCriterion() {
+        return certificationCriterion;
+    }
+
+    public void setCertificationCriterion(final CertificationCriterionEntity certificationCriterion) {
+        this.certificationCriterion = certificationCriterion;
     }
 }

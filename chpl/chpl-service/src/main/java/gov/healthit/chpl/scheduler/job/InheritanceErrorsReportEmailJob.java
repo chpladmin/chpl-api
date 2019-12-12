@@ -1,15 +1,12 @@
 package gov.healthit.chpl.scheduler.job;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import javax.mail.MessagingException;
 
@@ -28,28 +25,29 @@ import gov.healthit.chpl.dto.scheduler.InheritanceErrorsReportDTO;
 import gov.healthit.chpl.util.EmailBuilder;
 
 /**
- * The InheritanceErrorsReportEmailJob implements a Quartz job and is available to ROLE_ADMIN and ROLE_ACB. When
- * invoked it emails relevant individuals with ICS error reports.
+ * The InheritanceErrorsReportEmailJob implements a Quartz job and is available to ROLE_ADMIN and ROLE_ACB. When invoked
+ * it emails relevant individuals with ICS error reports.
+ * 
  * @author alarned
  *
  */
 public class InheritanceErrorsReportEmailJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("inheritanceErrorsReportEmailJobLogger");
-    private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
-    private Properties props;
 
     @Autowired
     private InheritanceErrorsReportDAO inheritanceErrorsReportDAO;
 
     @Autowired
     private Environment env;
+
     /**
      * Constructor that initializes the InheritanceErrorsReportEmailJob object.
-     * @throws Exception if thrown
+     * 
+     * @throws Exception
+     *             if thrown
      */
     public InheritanceErrorsReportEmailJob() throws Exception {
         super();
-        loadProperties();
     }
 
     @Override
@@ -67,29 +65,29 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
             files.add(output);
         }
         String to = jobContext.getMergedJobDataMap().getString("email");
-        String subject = props.getProperty("inheritanceReportEmailWeeklySubject");
+        String subject = env.getProperty("inheritanceReportEmailWeeklySubject");
         String htmlMessage;
         if (jobContext.getMergedJobDataMap().getBoolean("acbSpecific")) {
             subject = jobContext.getMergedJobDataMap().getString("acb").replaceAll("\u263A", ", ") + " " + subject;
-            htmlMessage = props.getProperty("inheritanceReportEmailAcbWeeklyHtmlMessage");
+            htmlMessage = env.getProperty("inheritanceReportEmailAcbWeeklyHtmlMessage");
         } else {
-            htmlMessage = props.getProperty("inheritanceReportEmailWeeklyHtmlMessage");
+            htmlMessage = env.getProperty("inheritanceReportEmailWeeklyHtmlMessage");
         }
         LOGGER.info("Message to be sent: " + htmlMessage);
 
         try {
             htmlMessage += createHtmlEmailBody(errors.size(),
-                    props.getProperty("inheritanceReportEmailWeeklyNoContent"));
+                    env.getProperty("inheritanceReportEmailWeeklyNoContent"));
 
             List<String> addresses = new ArrayList<String>();
             addresses.add(to);
 
             EmailBuilder emailBuilder = new EmailBuilder(env);
             emailBuilder.recipients(addresses)
-            .subject(subject)
-            .htmlMessage(htmlMessage)
-            .fileAttachments(files)
-            .sendEmail();
+                    .subject(subject)
+                    .htmlMessage(htmlMessage)
+                    .fileAttachments(files)
+                    .sendEmail();
         } catch (IOException | MessagingException e) {
             LOGGER.error(e);
         }
@@ -112,7 +110,7 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
     }
 
     private File getOutputFile(final List<InheritanceErrorsReportDTO> errors) {
-        String reportFilename = props.getProperty("inheritanceReportEmailWeeklyFileName");
+        String reportFilename = env.getProperty("inheritanceReportEmailWeeklyFileName");
         File temp = null;
         try {
             temp = File.createTempFile(reportFilename, ".csv");
@@ -122,8 +120,9 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
         }
 
         if (temp != null) {
-        try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(temp), Charset.forName("UTF-8").newEncoder());
-                CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
+            try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(temp),
+                    Charset.forName("UTF-8").newEncoder());
+                    CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
                 csvPrinter.printRecord(getHeaderRow());
                 for (InheritanceErrorsReportDTO error : errors) {
                     List<String> rowValue = generateRowValue(error);
@@ -168,19 +167,5 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
             htmlMessage = "<p>" + numRecords + " inheritance error" + (numRecords > 1 ? "s were" : " was") + " found.";
         }
         return htmlMessage;
-    }
-
-    private Properties loadProperties() throws IOException {
-        InputStream in =
-                InheritanceErrorsReportEmailJob.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
-        if (in == null) {
-            props = null;
-            throw new FileNotFoundException("Environment Properties File not found in class path.");
-        } else {
-            props = new Properties();
-            props.load(in);
-            in.close();
-        }
-        return props;
     }
 }

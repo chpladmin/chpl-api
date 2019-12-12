@@ -9,7 +9,10 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.validation.listing.reviewer.CertificationDateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationStatusReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.ChplNumberComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ChplNumberReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.DeveloperBanComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DeveloperStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.FieldLengthReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
@@ -91,7 +94,16 @@ public abstract class Edition2014ListingValidator extends Validator {
     @Qualifier("urlReviewer")
     private UrlReviewer urlReviewer;
 
+    @Autowired
+    @Qualifier("chplNumberComparisonReviewer")
+    private ChplNumberComparisonReviewer chplNumberComparisonReviewer;
+
+    @Autowired
+    @Qualifier("developerBanComparisonReviewer")
+    private DeveloperBanComparisonReviewer devBanComparisonReviewer;
+
     private List<Reviewer> reviewers;
+    private List<ComparisonReviewer> comparisonReviewers;
 
     @Override
     public List<Reviewer> getReviewers() {
@@ -114,5 +126,15 @@ public abstract class Edition2014ListingValidator extends Validator {
             reviewers.add(urlReviewer);
         }
         return reviewers;
+    }
+
+    @Override
+    public List<ComparisonReviewer> getComparisonReviewers() {
+        if (comparisonReviewers == null) {
+            comparisonReviewers = new ArrayList<ComparisonReviewer>();
+            comparisonReviewers.add(chplNumberComparisonReviewer);
+            comparisonReviewers.add(devBanComparisonReviewer);
+        }
+        return comparisonReviewers;
     }
 }

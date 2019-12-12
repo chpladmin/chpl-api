@@ -51,7 +51,6 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertificationResultManager;
-import gov.healthit.chpl.manager.impl.CertificationResultManagerImpl;
 
 /**
  * Tests of the Certified Product validator.
@@ -93,7 +92,7 @@ class CertifiedProductValidationTestConfig {
     }
 }
 
-class MyCertificationResultManager extends CertificationResultManagerImpl {
+class MyCertificationResultManager extends CertificationResultManager {
     @Override
     public boolean getCertifiedProductHasAdditionalSoftware(Long certifiedProductId) {
         return false;
@@ -1207,7 +1206,7 @@ public class CertifiedProductValidationTest {
         PendingCertificationResultMacraMeasureDTO crmm = new PendingCertificationResultMacraMeasureDTO();
         crmm.setEnteredValue("EH/CAH Stage 3");
         crmm.setMacraMeasureId(macraMeasureId);
-        MacraMeasureDTO mmDto = mmDao.getByCriteriaNumberAndValue(pendingCertResult2.getNumber(),
+        MacraMeasureDTO mmDto = mmDao.getByCriteriaNumberAndValue(pendingCertResult2.getCriterion().getNumber(),
                 crmm.getEnteredValue());
         crmm.setMacraMeasure(mmDto);
         pendingCertResult2.getG1MacraMeasures().add(crmm);
@@ -1239,7 +1238,7 @@ public class CertifiedProductValidationTest {
         PendingCertificationResultMacraMeasureDTO crmm = new PendingCertificationResultMacraMeasureDTO();
         crmm.setEnteredValue("EH/CAH Stage 3");
         crmm.setMacraMeasureId(macraMeasureId);
-        MacraMeasureDTO mmDto = mmDao.getByCriteriaNumberAndValue(pendingCertResult2.getNumber(),
+        MacraMeasureDTO mmDto = mmDao.getByCriteriaNumberAndValue(pendingCertResult2.getCriterion().getNumber(),
                 crmm.getEnteredValue());
         crmm.setMacraMeasure(mmDto);
         pendingCertResult2.getG2MacraMeasures().add(crmm);

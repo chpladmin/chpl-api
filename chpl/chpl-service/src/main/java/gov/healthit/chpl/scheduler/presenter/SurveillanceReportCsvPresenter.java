@@ -7,7 +7,8 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
+
+import org.springframework.core.env.Environment;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
@@ -22,10 +23,12 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 
     /**
      * Constructor with properties.
-     * @param props the properties
+     * 
+     * @param props
+     *            the properties
      */
-    public SurveillanceReportCsvPresenter(final Properties props) {
-        super(props);
+    public SurveillanceReportCsvPresenter(final Environment env) {
+        super(env);
     }
 
     protected List<String> generateHeaderValues() {
@@ -104,7 +107,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
         survFields.add(data.getProduct().getName());
         survFields.add(data.getVersion().getVersion());
         survFields.add(data.getChplProductNumber());
-        String productDetailsUrl = getProps().getProperty("chplUrlBegin").trim();
+        String productDetailsUrl = getEnv().getProperty("chplUrlBegin").trim();
         if (!productDetailsUrl.endsWith("/")) {
             productDetailsUrl += "/";
         }

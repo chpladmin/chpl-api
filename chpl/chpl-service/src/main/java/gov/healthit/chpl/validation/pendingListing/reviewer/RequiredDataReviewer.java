@@ -17,9 +17,6 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("pendingRequiredDataReviewer")
 public class RequiredDataReviewer implements Reviewer {
-    private static final String G3_2014 = "170.314 (g)(3)";
-    private static final String G3_2015 = "170.315 (g)(3)";
-
     protected ErrorMessageUtil msgUtil;
     protected CertificationResultRules certRules;
 
@@ -94,23 +91,27 @@ public class RequiredDataReviewer implements Reviewer {
 
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
             if (cert.getMeetsCriteria() == null) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.metInvalid", cert.getNumber()));
+                listing.getErrorMessages().add(
+                        msgUtil.getMessage("listing.criteria.metInvalid", cert.getCriterion().getNumber()));
             } else if (cert.getMeetsCriteria().booleanValue()) {
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) && cert.getGap() == null) {
-                    listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingGap", cert.getNumber()));
+                if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.GAP)
+                        && cert.getGap() == null) {
+                    listing.getErrorMessages().add(
+                            msgUtil.getMessage("listing.criteria.missingGap", cert.getCriterion().getNumber()));
                 }
 
                 boolean gapEligibleAndTrue = false;
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) && cert.getGap() != null
+                if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.GAP)
+                        && cert.getGap() != null
                         && cert.getGap().booleanValue()) {
                     gapEligibleAndTrue = true;
                 }
 
                 if (!gapEligibleAndTrue
-                        && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE)
+                        && certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.TEST_PROCEDURE)
                         && (cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
                     listing.getErrorMessages()
-                            .add(msgUtil.getMessage("listing.criteria.missingTestProcedure", cert.getNumber()));
+                            .add(msgUtil.getMessage("listing.criteria.missingTestProcedure", cert.getCriterion().getNumber()));
                 }
             }
 
@@ -118,7 +119,8 @@ public class RequiredDataReviewer implements Reviewer {
             //so check for duplicates no matter what
             if (cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 1) {
                 List<String> g1Warnings =
-                        validateMacraMeasuresAreUniqueForCertificationResult(cert.getG1MacraMeasures(), cert.getNumber(), "listing.criteria.duplicateG1MacraMeasure");
+                        validateMacraMeasuresAreUniqueForCertificationResult(
+                                cert.getG1MacraMeasures(), cert.getCriterion().getNumber(), "listing.criteria.duplicateG1MacraMeasure");
                 if (g1Warnings.size() > 0) {
                     listing.getWarningMessages().addAll(g1Warnings);
                     cert.setG1MacraMeasures(removeDuplicateMacraMeasures(cert.getG1MacraMeasures()));
@@ -127,7 +129,8 @@ public class RequiredDataReviewer implements Reviewer {
 
             if (cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 1) {
                 List<String> g2Warnings =
-                        validateMacraMeasuresAreUniqueForCertificationResult(cert.getG2MacraMeasures(), cert.getNumber(), "listing.criteria.duplicateG2MacraMeasure");
+                        validateMacraMeasuresAreUniqueForCertificationResult(
+                                cert.getG2MacraMeasures(), cert.getCriterion().getNumber(), "listing.criteria.duplicateG2MacraMeasure");
                 if (g2Warnings.size() > 0) {
                     listing.getWarningMessages().addAll(g2Warnings);
                     cert.setG2MacraMeasures(removeDuplicateMacraMeasures(cert.getG2MacraMeasures()));

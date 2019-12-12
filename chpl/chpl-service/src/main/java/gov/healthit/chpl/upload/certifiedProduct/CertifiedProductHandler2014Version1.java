@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -34,6 +35,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap2014Version1;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("certifiedProductHandler2014Version1")
 public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler {
@@ -55,7 +57,9 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
             "170.314 (g)(4)", "170.314 (h)(1)",  "170.314 (h)(2)", "170.314 (h)(3)"
     };
 
-    public CertifiedProductHandler2014Version1() {
+    @Autowired
+    public CertifiedProductHandler2014Version1(final ErrorMessageUtil msgUtil) {
+        super(msgUtil);
         templateColumnIndexMap = new TemplateColumnIndexMap2014Version1();
     }
 

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultAdditionalSoftwareEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultG1MacraMeasureEntity;
@@ -19,9 +20,6 @@ import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultUcdPro
 public class PendingCertificationResultDTO implements Serializable {
     private static final long serialVersionUID = -1026669045107851464L;
     private Long id;
-    private String number;
-    private String title;
-    private Long certificationCriterionId;
     private Long pendingCertifiedProductId;
     private Boolean meetsCriteria;
     private Boolean gap;
@@ -30,6 +28,7 @@ public class PendingCertificationResultDTO implements Serializable {
     private Boolean g2Success;
     private String apiDocumentation;
     private String privacySecurityFramework;
+    private CertificationCriterionDTO criterion;
 
     private List<PendingCertificationResultUcdProcessDTO> ucdProcesses;
     private List<PendingCertificationResultAdditionalSoftwareDTO> additionalSoftware;
@@ -43,6 +42,7 @@ public class PendingCertificationResultDTO implements Serializable {
     private List<PendingCertificationResultTestTaskDTO> testTasks;
 
     public PendingCertificationResultDTO() {
+        criterion = new CertificationCriterionDTO();
         ucdProcesses = new ArrayList<PendingCertificationResultUcdProcessDTO>();
         additionalSoftware = new ArrayList<PendingCertificationResultAdditionalSoftwareDTO>();
         testData = new ArrayList<PendingCertificationResultTestDataDTO>();
@@ -55,14 +55,12 @@ public class PendingCertificationResultDTO implements Serializable {
         testTasks = new ArrayList<PendingCertificationResultTestTaskDTO>();
     }
 
-    public PendingCertificationResultDTO(PendingCertificationResultEntity entity) {
+    public PendingCertificationResultDTO(final PendingCertificationResultEntity entity) {
         this();
         this.setId(entity.getId());
 
         if (entity.getMappedCriterion() != null) {
-            this.setCertificationCriterionId(entity.getMappedCriterion().getId());
-            this.setNumber(entity.getMappedCriterion().getNumber());
-            this.setTitle(entity.getMappedCriterion().getTitle());
+            this.criterion = new CertificationCriterionDTO(entity.getMappedCriterion());
         }
 
         this.setPendingCertifiedProductId(entity.getPendingCertifiedProductId());
@@ -139,14 +137,6 @@ public class PendingCertificationResultDTO implements Serializable {
         this.id = id;
     }
 
-    public Long getCertificationCriterionId() {
-        return certificationCriterionId;
-    }
-
-    public void setCertificationCriterionId(final Long certificationCriterionId) {
-        this.certificationCriterionId = certificationCriterionId;
-    }
-
     public Long getPendingCertifiedProductId() {
         return pendingCertifiedProductId;
     }
@@ -161,22 +151,6 @@ public class PendingCertificationResultDTO implements Serializable {
 
     public void setMeetsCriteria(final Boolean meetsCriteria) {
         this.meetsCriteria = meetsCriteria;
-    }
-
-    public String getNumber() {
-        return number;
-    }
-
-    public void setNumber(final String number) {
-        this.number = number;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(final String title) {
-        this.title = title;
     }
 
     public Boolean getGap() {
@@ -305,6 +279,14 @@ public class PendingCertificationResultDTO implements Serializable {
 
     public void setG2MacraMeasures(final List<PendingCertificationResultMacraMeasureDTO> g2Measures) {
         this.g2MacraMeasures = g2Measures;
+    }
+
+    public CertificationCriterionDTO getCriterion() {
+        return criterion;
+    }
+
+    public void setCriterion(final CertificationCriterionDTO criterion) {
+        this.criterion = criterion;
     }
 
 }

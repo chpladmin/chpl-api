@@ -35,7 +35,11 @@ public class CertificationResultDetailsDAOImpl extends BaseDAOImpl implements Ce
         CertificationResultDetailsEntity entity = null;
 
         Query query = entityManager.createQuery(
-                "from CertificationResultDetailsEntity where (NOT deleted = true) AND (certified_product_id = :entityid) ",
+                "SELECT crd FROM CertificationResultDetailsEntity crd "
+                + "JOIN FETCH crd.certificationCriterion cc "
+                + "JOIN FETCH cc.certificationEdition "
+                + "WHERE crd.deleted = false "
+                + "AND crd.certifiedProductId = :entityid ",
                 CertificationResultDetailsEntity.class);
         query.setParameter("entityid", productId);
         List<CertificationResultDetailsEntity> result = query.getResultList();
@@ -61,7 +65,13 @@ public class CertificationResultDetailsDAOImpl extends BaseDAOImpl implements Ce
         CertificationResultDetailsEntity entity = null;
 
         Query query = entityManager.createQuery(
-                "from CertificationResultDetailsEntity where (NOT deleted = true) AND (certified_product_id = :entityid) AND (success = true) AND (sed = true) ",
+                "SELECT crd FROM CertificationResultDetailsEntity crd "
+                        + "JOIN FETCH crd.certificationCriterion cc "
+                        + "JOIN FETCH cc.certificationEdition "
+                        + "WHERE crd.deleted = false "
+                        + "AND crd.certifiedProductId = :entityid "
+                        + "AND crd.success = true "
+                        + "AND crd.sed = true ",
                 CertificationResultDetailsEntity.class);
         query.setParameter("entityid", productId);
         List<CertificationResultDetailsEntity> result = query.getResultList();
@@ -72,10 +82,12 @@ public class CertificationResultDetailsDAOImpl extends BaseDAOImpl implements Ce
     @Override
     @Transactional(readOnly = true)
     public List<CertificationResultDetailsDTO> getByUrl(final String url) {
-        String queryStr = "SELECT cr "
-                + "FROM CertificationResultDetailsEntity cr "
-                + "WHERE cr.deleted = false "
-                + "AND cr.apiDocumentation = :url";
+        String queryStr = "SELECT crd "
+                + "FROM CertificationResultDetailsEntity crd "
+                + "JOIN FETCH crd.certificationCriterion cc "
+                + "JOIN FETCH cc.certificationEdition "
+                + "WHERE crd.deleted = false "
+                + "AND crd.apiDocumentation = :url";
 
         Query query = entityManager.createQuery(queryStr, CertificationResultDetailsEntity.class);
         query.setParameter("url", url);
