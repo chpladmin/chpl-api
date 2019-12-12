@@ -65,7 +65,7 @@ public class QuestionableActivityListener implements EnvironmentAware {
     public void checkQuestionableActivity(ActivityConcept concept, Long objectId, String activityDescription,
             Object originalData, Object newData, String reason) {
 
-        if (originalData instanceof CertifiedProductSearchDetails) {
+        if (newData instanceof CertifiedProductSearchDetails) {
             if (isListingMode((CertifiedProductSearchDetails) originalData) == ListingMode.ADD) {
                 checkQuestionableActivityForListingAdd(concept, objectId, activityDescription,
                         (CertifiedProductSearchDetails) newData);

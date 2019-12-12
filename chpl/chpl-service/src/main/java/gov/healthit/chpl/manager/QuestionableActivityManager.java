@@ -205,7 +205,7 @@ public class QuestionableActivityManager implements EnvironmentAware {
             activity = listingQuestionableActivityProvider.checkCriteriaB3ChangedOnEdit(origListing, newListing);
             if (activity != null) {
                 createListingActivity(activity, origListing.getId(), activityDate, activityUser,
-                        QuestionableActivityTriggerConcept.CRITERIA_B3_ADDED, activityReason);
+                        QuestionableActivityTriggerConcept.CRITERIA_B3_ADDED_TO_EXISTING_LISTING, activityReason);
             }
 
             // finally check for other changes that are only questionable
@@ -271,6 +271,11 @@ public class QuestionableActivityManager implements EnvironmentAware {
     public void checkListingQuestionableActivityOnAdd(CertifiedProductSearchDetails newListing, Date activityDate,
             Long activityUser) {
 
+        QuestionableActivityListingDTO activity = listingQuestionableActivityProvider.checkCriteriaB3SuccessOnCreate(newListing);
+        if (activity != null) {
+            createListingActivity(activity, newListing.getId(), activityDate, activityUser,
+                    QuestionableActivityTriggerConcept.CRITERIA_B3_ADDED_TO_NEW_LISTING, null);
+        }
     }
 
     public void checkCertificationResultQuestionableActivity(CertificationResult origCertResult,
