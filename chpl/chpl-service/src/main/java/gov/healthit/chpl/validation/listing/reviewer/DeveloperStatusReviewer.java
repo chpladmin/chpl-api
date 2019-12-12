@@ -65,12 +65,12 @@ public class DeveloperStatusReviewer implements Reviewer {
 
     private boolean checkAcbAllowedToEdit(DeveloperDTO developer) {
         DeveloperStatusEventDTO mostRecentStatus = developer.getStatus();
-        return mostRecentStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString());
+        return mostRecentStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.getName());
     }
 
     private boolean checkAdminOrOncAllowedToEdit(DeveloperDTO developer) {
         DeveloperStatusEventDTO mostRecentStatus = developer.getStatus();
-        return mostRecentStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
-                || mostRecentStatus.getStatus().getStatusName().equals(DeveloperStatusType.UnderCertificationBanByOnc.toString());
+        return mostRecentStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.getName())
+                || mostRecentStatus.getStatus().getStatusName().equals(DeveloperStatusType.UnderCertificationBanByOnc.getName());
     }
 }
