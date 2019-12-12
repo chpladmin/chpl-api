@@ -21,11 +21,14 @@ public enum QuestionableActivityTriggerConcept implements Serializable {
     CQM_REMOVED(
             "CQM Removed"
     ),
-    CRITERIA_B3_ADDED_TO_EXISTING_LISTING(
-            "Measure successfully tested for 170.315 (b)(3) without ICS"
+    CRITERIA_B3_ADDED_TO_EXISTING_LISTING_WITH_ICS(
+            "Certification Criteria 170.315 (b)(3) added with ICS for current listing"
+    ),
+    CRITERIA_B3_ADDED_TO_EXISTING_LISTING_WITHOUT_ICS(
+            "Certification Criteria 170.315 (b)(3) added without ICS for current listing"
     ),
     CRITERIA_B3_ADDED_TO_NEW_LISTING(
-            "Measure successfully tested for 170.315 (b)(3) without ICS for new listing"
+            "Certification Criteria 170.315 (b)(3) added without ICS for new listing"
     ),
     G1_SUCCESS_EDITED(
             "Measure Successfully Tested for 170.314 (g)(1) Edited"
