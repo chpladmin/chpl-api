@@ -150,14 +150,7 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
     public DeveloperDTO getById(final Long id, final boolean allowDeleted)
             throws EntityRetrievalException {
         DeveloperDTO developer = developerDao.getById(id, allowDeleted);
-        List<CertificationBodyDTO> availableAcbs = resourcePermissions.getAllAcbsForCurrentUser();
-        if (availableAcbs == null || availableAcbs.size() == 0) {
-            availableAcbs = acbManager.getAll();
-        }
-        // someone will see either the transparencies that apply to the ACBs to
-        // which they have access
-        // or they will see the transparencies for all ACBs if they are an admin
-        // or not logged in
+        List<CertificationBodyDTO> availableAcbs = acbManager.getAll();
         for (CertificationBodyDTO acb : availableAcbs) {
             DeveloperACBMapDTO map = developerDao.getTransparencyMapping(developer.getId(), acb.getId());
             if (map == null) {
@@ -644,21 +637,41 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
     }
 
     private List<DeveloperDTO> addTransparencyMappings(final List<DeveloperDTO> developers) {
+        List<CertificationBodyDTO> availableAcbs = acbManager.getAll();
         List<DeveloperACBMapDTO> transparencyMaps = developerDao.getAllTransparencyMappings();
         Map<Long, DeveloperDTO> mappedDevelopers = new HashMap<Long, DeveloperDTO>();
         for (DeveloperDTO dev : developers) {
+            //initialize each developer object with null transparency attestation mappings
+            //for every ACB
+            for (CertificationBodyDTO acb : availableAcbs) {
+                DeveloperACBMapDTO mapToAdd = new DeveloperACBMapDTO();
+                mapToAdd.setAcbId(acb.getId());
+                mapToAdd.setAcbName(acb.getName());
+                mapToAdd.setDeveloperId(dev.getId());
+                mapToAdd.setTransparencyAttestation(null);
+                dev.getTransparencyAttestationMappings().add(mapToAdd);
+            }
             mappedDevelopers.put(dev.getId(), dev);
         }
-        for (DeveloperACBMapDTO map : transparencyMaps) {
-            if (map.getAcbId() != null) {
-                mappedDevelopers.get(map.getDeveloperId()).getTransparencyAttestationMappings().add(map);
+
+        //fill in existing values for transparency Maps for acb+developer
+        for (DeveloperACBMapDTO transparencyMap : transparencyMaps) {
+            if (transparencyMap.getAcbId() != null) {
+                DeveloperDTO dev = mappedDevelopers.get(transparencyMap.getDeveloperId());
+                List<DeveloperACBMapDTO> devTransparencyMap = dev.getTransparencyAttestationMappings();
+                for (DeveloperACBMapDTO acbMapping : devTransparencyMap) {
+                    if (acbMapping.getAcbId().equals(transparencyMap.getAcbId())) {
+                        acbMapping.setTransparencyAttestation(transparencyMap.getTransparencyAttestation());
+                    }
+                }
             }
         }
-        List<DeveloperDTO> ret = new ArrayList<DeveloperDTO>();
+
+        List<DeveloperDTO> developersWithTransparency = new ArrayList<DeveloperDTO>();
         for (DeveloperDTO dev : mappedDevelopers.values()) {
-            ret.add(dev);
+            developersWithTransparency.add(dev);
         }
-        return ret;
+        return developersWithTransparency;
     }
 
     private class DuplicateChplProdNumber {

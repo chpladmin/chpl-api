@@ -1,7 +1,8 @@
 package gov.healthit.chpl.manager.rules.developer;
 
-import java.util.Objects;
+import java.util.Optional;
 
+import org.apache.commons.lang.StringUtils;
 import org.ff4j.FF4j;
 
 import gov.healthit.chpl.FeatureList;
@@ -36,7 +37,7 @@ public class DeveloperEditTransparencyAttestationValidation extends ValidationRu
         return true;
     }
 
-    private static boolean isTransparencyAttestationUpdated(final DeveloperDTO original, final DeveloperDTO changed) {
+    private boolean isTransparencyAttestationUpdated(final DeveloperDTO original, final DeveloperDTO changed) {
         if ((original.getTransparencyAttestationMappings() != null
                 && changed.getTransparencyAttestationMappings() == null)
                 || (original.getTransparencyAttestationMappings() == null
@@ -46,12 +47,14 @@ public class DeveloperEditTransparencyAttestationValidation extends ValidationRu
             return true;
         } else {
             for (DeveloperACBMapDTO originalMapping : original.getTransparencyAttestationMappings()) {
-                for (DeveloperACBMapDTO changedMapping : changed.getTransparencyAttestationMappings()) {
-                    if (!Objects.equals(originalMapping.getAcbName(), changedMapping.getAcbName())
-                            || !Objects.equals(originalMapping.getTransparencyAttestation(),
-                                    changedMapping.getTransparencyAttestation())) {
-                        return true;
-                    }
+                Optional<DeveloperACBMapDTO> matchingMapping =
+                        changed.getTransparencyAttestationMappings().stream()
+                    .filter(changedMapping -> StringUtils.equals(originalMapping.getAcbName(), changedMapping.getAcbName()))
+                    .findFirst();
+                if (!matchingMapping.isPresent()
+                        || !StringUtils.equals(originalMapping.getTransparencyAttestation(),
+                                matchingMapping.get().getTransparencyAttestation())) {
+                    return true;
                 }
             }
         }
