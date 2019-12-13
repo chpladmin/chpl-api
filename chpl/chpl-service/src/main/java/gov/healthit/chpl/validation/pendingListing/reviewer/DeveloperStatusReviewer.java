@@ -41,16 +41,18 @@ public class DeveloperStatusReviewer implements Reviewer {
                         listing.getErrorMessages().add(msgUtil.getMessage(
                                 "listing.developer.noStatusFound.noCreate", developer.getName()));
                     } else {
-                        if ((resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc())
-                                && !checkAdminOrOncAllowedToCreate(developer)) {
-                            listing.getErrorMessages().add(msgUtil.getMessage(
+                        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
+                            if (!checkAdminOrOncAllowedToCreate(developer)) {
+                                listing.getErrorMessages().add(msgUtil.getMessage(
                                     "listing.developer.notActiveOrBanned.noCreate",
                                     developer.getName(), mostRecentStatus.getStatus().getStatusName(),
                                     DeveloperStatusType.Active.getName(),
                                     DeveloperStatusType.UnderCertificationBanByOnc.getName()));
+                            }
                         } else if (!checkAcbAllowedToCreate(developer)) {
                             listing.getErrorMessages().add(msgUtil.getMessage(
-                                    "listing.developer.notActive.noCreate", developer.getName(), mostRecentStatus.getStatus().getStatusName()));
+                                    "listing.developer.notActive.noCreate",
+                                    developer.getName(), mostRecentStatus.getStatus().getStatusName()));
                         }
                     }
                 } else {
@@ -66,12 +68,12 @@ public class DeveloperStatusReviewer implements Reviewer {
 
     private boolean checkAcbAllowedToCreate(DeveloperDTO developer) {
         DeveloperStatusEventDTO mostRecentStatus = developer.getStatus();
-        return mostRecentStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString());
+        return mostRecentStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.getName());
     }
 
     private boolean checkAdminOrOncAllowedToCreate(DeveloperDTO developer) {
         DeveloperStatusEventDTO mostRecentStatus = developer.getStatus();
-        return mostRecentStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
-                || mostRecentStatus.getStatus().getStatusName().equals(DeveloperStatusType.UnderCertificationBanByOnc.toString());
+        return mostRecentStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.getName())
+                || mostRecentStatus.getStatus().getStatusName().equals(DeveloperStatusType.UnderCertificationBanByOnc.getName());
     }
 }

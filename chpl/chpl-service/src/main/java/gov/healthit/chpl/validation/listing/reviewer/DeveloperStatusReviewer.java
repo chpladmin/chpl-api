@@ -41,16 +41,18 @@ public class DeveloperStatusReviewer implements Reviewer {
                         listing.getErrorMessages().add(msgUtil.getMessage(
                                 "listing.developer.noStatusFound.noUpdate", developer.getName()));
                     } else {
-                        if ((resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc())
-                                && !checkAdminOrOncAllowedToEdit(developer)) {
-                            listing.getErrorMessages().add(msgUtil.getMessage(
+                        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
+                            if (!checkAdminOrOncAllowedToEdit(developer)) {
+                                listing.getErrorMessages().add(msgUtil.getMessage(
                                     "listing.developer.notActiveOrBanned.noUpdate",
                                     developer.getName(), mostRecentStatus.getStatus().getStatusName(),
                                     DeveloperStatusType.Active.getName(),
                                     DeveloperStatusType.UnderCertificationBanByOnc.getName()));
+                            }
                         } else if (!checkAcbAllowedToEdit(developer)) {
                             listing.getErrorMessages().add(msgUtil.getMessage(
-                                    "listing.developer.notActive.noUpdate", developer.getName(), mostRecentStatus.getStatus().getStatusName()));
+                                    "listing.developer.notActive.noUpdate",
+                                    developer.getName(), mostRecentStatus.getStatus().getStatusName()));
                         }
                     }
                 } else {
