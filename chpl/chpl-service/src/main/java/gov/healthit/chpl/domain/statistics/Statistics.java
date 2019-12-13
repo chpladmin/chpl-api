@@ -7,6 +7,7 @@ import gov.healthit.chpl.domain.DateRange;
 
 /**
  * Class to hold all of the statistics needed for summary data of CHPL.
+ * 
  * @author alarned
  *
  */
@@ -44,6 +45,10 @@ public class Statistics implements Serializable {
     private Long totalClosedSurveillanceActivities;
     private Long totalNonConformities;
     private Long totalOpenNonconformities;
+
+    private Long averageTimeToAssessConformity;
+    private Long averageTimeToApproveCAP;
+
     private List<CertifiedBodyStatistics> totalOpenNonconformitiesByAcb;
     private Long totalClosedNonconformities;
     private Long totalListingsWithAlternativeTestMethods;
@@ -137,8 +142,7 @@ public class Statistics implements Serializable {
         return totalActiveListingsByCertifiedBody;
     }
 
-    public void setTotalActiveListingsByCertifiedBody(final
-            List<CertifiedBodyStatistics> totalActiveListingsByCertifiedBody) {
+    public void setTotalActiveListingsByCertifiedBody(final List<CertifiedBodyStatistics> totalActiveListingsByCertifiedBody) {
         this.totalActiveListingsByCertifiedBody = totalActiveListingsByCertifiedBody;
     }
 
@@ -234,8 +238,8 @@ public class Statistics implements Serializable {
         return totalDevelopersByCertifiedBodyWithListingsEachYear;
     }
 
-    public void setTotalDevelopersByCertifiedBodyWithListingsEachYear(final
-            List<CertifiedBodyStatistics> totalDevelopersByCertifiedBodyWithListingsEachYear) {
+    public void setTotalDevelopersByCertifiedBodyWithListingsEachYear(
+            final List<CertifiedBodyStatistics> totalDevelopersByCertifiedBodyWithListingsEachYear) {
         this.totalDevelopersByCertifiedBodyWithListingsEachYear = totalDevelopersByCertifiedBodyWithListingsEachYear;
     }
 
@@ -243,10 +247,9 @@ public class Statistics implements Serializable {
         return totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear;
     }
 
-    public void setTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(final
-            List<CertifiedBodyStatistics> totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear) {
-        this.totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear =
-                totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear;
+    public void setTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(
+            final List<CertifiedBodyStatistics> totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear) {
+        this.totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear = totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear;
     }
 
     public Long getTotalDevelopersWithActive2014Listings() {
@@ -301,8 +304,8 @@ public class Statistics implements Serializable {
         return totalCPListingsEachYearByCertifiedBody;
     }
 
-    public void setTotalCPListingsEachYearByCertifiedBody(final
-            List<CertifiedBodyStatistics> totalCPListingsEachYearByCertifiedBody) {
+    public void setTotalCPListingsEachYearByCertifiedBody(
+            final List<CertifiedBodyStatistics> totalCPListingsEachYearByCertifiedBody) {
         this.totalCPListingsEachYearByCertifiedBody = totalCPListingsEachYearByCertifiedBody;
     }
 
@@ -310,10 +313,9 @@ public class Statistics implements Serializable {
         return totalCPListingsEachYearByCertifiedBodyAndCertificationStatus;
     }
 
-    public void setTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(final
-            List<CertifiedBodyStatistics> totalCPListingsEachYearByCertifiedBodyAndCertificationStatus) {
-        this.totalCPListingsEachYearByCertifiedBodyAndCertificationStatus =
-                totalCPListingsEachYearByCertifiedBodyAndCertificationStatus;
+    public void setTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(
+            final List<CertifiedBodyStatistics> totalCPListingsEachYearByCertifiedBodyAndCertificationStatus) {
+        this.totalCPListingsEachYearByCertifiedBodyAndCertificationStatus = totalCPListingsEachYearByCertifiedBodyAndCertificationStatus;
     }
 
     public Long getTotalListingsWithAlternativeTestMethods() {
@@ -330,8 +332,7 @@ public class Statistics implements Serializable {
 
     public void setTotalListingsWithCertifiedBodyAndAlternativeTestMethods(
             final List<CertifiedBodyAltTestStatistics> totalListingsWithCertifiedBodyAndAlternativeTestMethods) {
-        this.totalListingsWithCertifiedBodyAndAlternativeTestMethods
-        = totalListingsWithCertifiedBodyAndAlternativeTestMethods;
+        this.totalListingsWithCertifiedBodyAndAlternativeTestMethods = totalListingsWithCertifiedBodyAndAlternativeTestMethods;
     }
 
     public List<CertifiedBodyStatistics> getTotalOpenNonconformitiesByAcb() {
@@ -349,5 +350,21 @@ public class Statistics implements Serializable {
     public void setTotalOpenSurveillanceActivitiesByAcb(
             final List<CertifiedBodyStatistics> totalOpenSurveillanceActivitiesByAcb) {
         this.totalOpenSurveillanceActivitiesByAcb = totalOpenSurveillanceActivitiesByAcb;
+    }
+
+    public Long getAverageTimeToAssessConformity() {
+        return averageTimeToAssessConformity;
+    }
+
+    public void setAverageTimeToAssessConformity(Long averageTimeToAssessConformity) {
+        this.averageTimeToAssessConformity = averageTimeToAssessConformity;
+    }
+
+    public Long getAverageTimeToApproveCAP() {
+        return averageTimeToApproveCAP;
+    }
+
+    public void setAverageTimeToApproveCAP(Long averageTimeToApproveCAP) {
+        this.averageTimeToApproveCAP = averageTimeToApproveCAP;
     }
 }
