@@ -23,7 +23,6 @@ import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
-import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementEntity;
 
 /**
  * Component that handles getting statistics data and return Futures of that data.
@@ -694,7 +693,8 @@ public class AsynchronousSummaryStatistics {
                 .collect(Collectors.toList());
 
         Long totalDaysToApproveCap = nonconformities.stream()
-                .map(nc -> ChronoUnit.DAYS.between(nc.getDateOfDetermination().toInstant(), nc.getCapApproval().toInstant()))
+                .map(nc -> Math
+                        .abs(ChronoUnit.DAYS.between(nc.getDateOfDetermination().toInstant(), nc.getCapApproval().toInstant())))
                 .peek(System.out::println)
                 .collect(Collectors.summingLong(n -> n.longValue()));
 
@@ -703,19 +703,18 @@ public class AsynchronousSummaryStatistics {
 
     private SurveillanceEntity findSurveillanceForNonconformity(SurveillanceNonconformityEntity nonconformity,
             List<SurveillanceEntity> surveillances) {
-        for (SurveillanceEntity surveillance : surveillances) {
-            for (SurveillanceRequirementEntity requirement : surveillance.getSurveilledRequirements()) {
-                if (requirement.getId().equals(nonconformity.getSurveillanceRequirementId())) {
-                    return surveillance;
-                }
-            }
-        }
-        return null;
+
+        return surveillances.stream()
+                .filter(surv -> surv.getSurveilledRequirements().stream()
+                        .anyMatch(req -> req.getNonconformities().stream()
+                                .anyMatch(nc -> nc.getId().equals(nonconformity.getId()))))
+                .findFirst()
+                .orElse(null);
     }
 
     private Long getDaysToAssessNonconformtity(SurveillanceEntity surveillance, SurveillanceNonconformityEntity nonconformity) {
-        return ChronoUnit.DAYS.between(surveillance.getStartDate().toInstant(),
-                nonconformity.getDateOfDetermination().toInstant());
+        return Math.abs(ChronoUnit.DAYS.between(surveillance.getStartDate().toInstant(),
+                nonconformity.getDateOfDetermination().toInstant()));
     }
 
     public void setLogger(Logger logger) {
