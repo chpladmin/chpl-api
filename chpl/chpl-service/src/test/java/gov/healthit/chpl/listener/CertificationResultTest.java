@@ -113,9 +113,7 @@ public class CertificationResultTest extends TestCase {
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(listing);
         updateRequest.setReason("test reason");
-        cpManager.update(
-                Long.parseLong(updateRequest.getListing().getCertifyingBody().get("id").toString()),
-                updateRequest);
+        cpManager.update(updateRequest);
         Date afterActivity = new Date();
 
         List<QuestionableActivityCertificationResultDTO> activities = qaDao
@@ -152,9 +150,7 @@ public class CertificationResultTest extends TestCase {
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(listing);
         updateRequest.setReason("test reason");
-        cpManager.update(
-                Long.parseLong(updateRequest.getListing().getCertifyingBody().get("id").toString()),
-                updateRequest);
+        cpManager.update(updateRequest);
         Date afterActivity = new Date();
 
         List<QuestionableActivityCertificationResultDTO> activities = qaDao
@@ -191,9 +187,7 @@ public class CertificationResultTest extends TestCase {
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setListing(listing);
         updateRequest.setReason("test reason");
-        cpManager.update(
-                Long.parseLong(updateRequest.getListing().getCertifyingBody().get("id").toString()),
-                updateRequest);
+        cpManager.update(updateRequest);
         Date afterActivity = new Date();
 
         List<QuestionableActivityCertificationResultDTO> activities = qaDao

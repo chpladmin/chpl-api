@@ -27,7 +27,7 @@ public class TestTool2015Reviewer implements Reviewer {
                     if (!StringUtils.isEmpty(testTool.getName()) && StringUtils.isEmpty(testTool.getVersion())) {
                         listing.getErrorMessages()
                         .add(msgUtil.getMessage("listing.criteria.missingTestToolVersion",
-                                testTool.getName(), cert.getNumber()));
+                                testTool.getName(), cert.getCriterion().getNumber()));
                 }
             }
         }

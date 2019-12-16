@@ -87,7 +87,7 @@ public abstract class ActionPermissions {
                 .getCertificationBodiesForDeveloper(developerId);
         List<CertificationBody> userAcbs = resourcePermissions.getAllAcbsForCurrentUser().stream()
                 .map(acb -> new CertificationBody(acb))
-                .collect(Collectors.<CertificationBody> toList());
+                .collect(Collectors.<CertificationBody>toList());
 
         return developerAcbs.stream()
                 .anyMatch(developerAcb -> userAcbs.stream()

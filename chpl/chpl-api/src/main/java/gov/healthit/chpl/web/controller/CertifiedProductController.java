@@ -1,6 +1,5 @@
 package gov.healthit.chpl.web.controller;
 
-import gov.healthit.chpl.domain.CertifiedProductSearchBasicDetails;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -13,8 +12,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import java.util.function.Function;
+
 import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletResponse;
@@ -45,6 +44,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.CertifiedProductSearchBasicDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.IdListContainer;
@@ -439,7 +439,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/certification_results", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody CertificationResults getCertificationResultssByCertifiedProductId(
+    public @ResponseBody CertificationResults getCertificationResultsByCertifiedProductId(
             @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
 
         CertificationResults results =
@@ -456,7 +456,7 @@ public class CertifiedProductController {
      */
     @ApiOperation(value = "Get all of the certification results for a specified certified "
             + "product based on a CHPL Product Number.",
-            notes = "Returns all of the certifiection results in the CHPL related to the specified certified product.  "
+            notes = "Returns all of the certification results in the CHPL related to the specified certified product.  "
                     + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
                     + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number. "
                     + "A valid call to this service would look like "
@@ -465,7 +465,7 @@ public class CertifiedProductController {
             + ".{certDateCode}/certification_results", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody CertificationResults getCertificationResultssByCertifiedProductId(
+    public @ResponseBody CertificationResults getCertificationResultsByCertifiedProductId(
             @PathVariable("year") final String year,
             @PathVariable("testingLab") final String testingLab,
             @PathVariable("certBody") final String certBody,
@@ -488,13 +488,13 @@ public class CertifiedProductController {
 
     @ApiOperation(value = "Get all of the certification results for a specified certified product based on a legacy "
             + "CHPL Product Number.",
-            notes = "Returns all of the certifiection results in the CHPL related to the specified certified product.  "
+            notes = "Returns all of the certification results in the CHPL related to the specified certified product.  "
                     + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call to this "
                     + "service would look like /certified_products/CHP-999999/certification_results.")
     @RequestMapping(value = "/{chplPrefix}-{identifier}/certification_results", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody CertificationResults getCertificationResultssByCertifiedProductId(
+    public @ResponseBody CertificationResults getCertificationResultsByCertifiedProductId(
             @PathVariable("chplPrefix") final String chplPrefix,
             @PathVariable("identifier") final String identifier) throws EntityRetrievalException  {
 
@@ -528,7 +528,7 @@ public class CertifiedProductController {
      * @throws EntityRetrievalException if cannot retrieve entity
      */
     @ApiOperation(value = "Get the ICS family tree for the specified certified product.",
-            notes = "Returns all member of the family tree conected to the specified certified product.")
+            notes = "Returns all member of the family tree connected to the specified certified product.")
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/ics_relationships", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -606,7 +606,7 @@ public class CertifiedProductController {
             JsonProcessingException, IOException, ValidationException, MissingReasonException {
 
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
-        
+
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(updatedListing.getId());
         Long acbId = Long.parseLong(existingListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
 
@@ -617,16 +617,16 @@ public class CertifiedProductController {
             cpManager.changeOwnership(updatedListing.getId(), newAcbId);
             CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());
             activityManager.addActivity(
-                    ActivityConcept.CERTIFIED_PRODUCT, 
+                    ActivityConcept.CERTIFIED_PRODUCT,
                     existingListing.getId(),
-                    "Changed ACB ownership.", 
-                    existingListing, 
+                    "Changed ACB ownership.",
+                    existingListing,
                     changedProduct);
             existingListing = changedProduct;
         }
 
-        cpManager.update(newAcbId, updateRequest);
-        
+        cpManager.update(updateRequest);
+
         CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
@@ -810,7 +810,7 @@ public class CertifiedProductController {
 
             developerManager.validateDeveloperInSystemIfExists(pendingCp);
 
-            CertifiedProductDTO createdProduct = cpManager.createFromPending(acbId, pcpDto);
+            CertifiedProductDTO createdProduct = cpManager.createFromPending(pcpDto);
             pcpManager.confirm(acbId, pendingCp.getId());
             CertifiedProductSearchDetails result = cpdManager.getCertifiedProductDetails(createdProduct.getId());
             activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, result.getId(),

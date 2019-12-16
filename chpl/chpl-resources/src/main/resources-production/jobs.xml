@@ -12,12 +12,12 @@
     </pre-processing-commands>
     <schedule>
         <!-- Delete from here to "DELETE END MARKER" after PROD push -->
-        <!-- Pending Change Request data emailer -->
+        <!-- Questionable Activity data emailer -->
         <job>
-            <name>Pending Change Request Report</name>
+            <name>Questionable Activity Report</name>
             <group>chplJobs</group>
-            <description>Sends a report of all pending change requests</description>
-            <job-class>gov.healthit.chpl.scheduler.job.PendingChangeRequestEmailJob</job-class>
+            <description>Sends a report of questionable activity within a user defined range of days</description>
+            <job-class>gov.healthit.chpl.scheduler.job.QuestionableActivityEmailJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>
@@ -29,22 +29,28 @@
                     <key>frequency</key>
                     <value>WEEKLY</value>
                 </entry>
+                <entry>
+                    <key>range</key>
+                    <value>7</value>
+                </entry>
+                <entry>
+                    <key>parameters</key>
+                    <value>[{"label": "Range (in days)", "key": "range", "type": "int", "min": "1", "max": "365"} ]</value>
+                </entry>
             </job-data-map>
         </job>
-        <!-- Questionable URL Data Collector -->
-        <!-- URL Status Data Collector -->
-        <!-- Job used to change status of a set listings -->
+        <!-- Job used to mark RT 13 EC macra measure as removed -->
         <job>
-            <name>updateListingStatusJob</name>
+            <name>removeRT13ECMacraMeasureJob</name>
             <group>systemJobs</group>
-            <description>Updates the status for a set of listings</description>
-            <job-class>gov.healthit.chpl.scheduler.job.UpdateListingStatusJob</job-class>
+            <description>Sets the removed flag to 'true' for RT13 EC macra measure</description>
+            <job-class>gov.healthit.chpl.scheduler.job.RemoveRT13ECMacraMeasureJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>
                 <entry>
-                    <key>parameters</key>
-                    <value>[{"label": "Listings [Comma Delimited]", "key": "listings", "type": "textarea"}, {"label": "ListingStatus", "key": "certificationStatus", "type": "select", "items": [{"id": 1, "name": "Active"}, {"id": 2, "name": "Retired"}, {"id": 3, "name": "Withdrawn by Developer"}, {"id": 4, "name": "Withdrawn by ONC-ACB"}, {"id": 5, "name": "Pending"}, {"id": 6, "name": "Suspended by ONC-ACB"}, {"id": 7, "name": "Suspended by ONC"}, {"id": 8, "name": "Terminated by ONC"}, {"id": 9, "name": "Withdrawn by Developer Under Surveillance/Review"}] }, {"label": "Effective Date", "key": "effectiveDate", "type": "date"}]</value>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
                 </entry>
             </job-data-map>
         </job>

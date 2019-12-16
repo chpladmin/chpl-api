@@ -10,12 +10,12 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.core.env.Environment;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
@@ -30,24 +30,29 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
  */
 public class SurveillanceCsvPresenter {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceCsvPresenter.class);
-    private Properties props;
+    private Environment env;
     private DateTimeFormatter dateFormatter;
     private DateTimeFormatter dateTimeFormatter;
 
     /**
      * Constructor with properties.
-     * @param props the properties
+     * 
+     * @param props
+     *            the properties
      */
-    public SurveillanceCsvPresenter(final Properties props) {
+    public SurveillanceCsvPresenter(final Environment env) {
         dateFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd");
         dateTimeFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm Z");
-        this.props = props;
+        this.env = env;
     }
 
     /**
      * Write out surveillance details to CSV file.
-     * @param file the output file
-     * @param cpList list of Certified Products
+     * 
+     * @param file
+     *            the output file
+     * @param cpList
+     *            list of Certified Products
      */
     public void presentAsFile(final File file, final List<CertifiedProductSearchDetails> cpList) {
         try (FileWriter writer = new FileWriter(file);
@@ -163,7 +168,7 @@ public class SurveillanceCsvPresenter {
             final Surveillance surv) {
         List<String> result = new ArrayList<String>();
         result.add(listing.getChplProductNumber());
-        result.add(props.getProperty("chplUrlBegin") + "#/product/" + listing.getId());
+        result.add(env.getProperty("chplUrlBegin") + "#/product/" + listing.getId());
         result.add(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
         result.add(listing.getCurrentStatus().getStatus().getName());
         result.add(listing.getDeveloper().getName());
@@ -296,8 +301,8 @@ public class SurveillanceCsvPresenter {
         return ncRow;
     }
 
-    public final Properties getProps() {
-        return props;
+    public final Environment getEnv() {
+        return env;
     }
 
     public final DateTimeFormatter getDateFormatter() {

@@ -33,7 +33,7 @@ public class NonconformityTypeChartCalculator {
 
     public void logCounts(List<NonconformityTypeStatisticsDTO> dtos) {
         for (NonconformityTypeStatisticsDTO dto : dtos) {
-            LOGGER.info("Crtieria: " + dto.getNonconformityType() + " Number of NCs: " + dto.getNonconformityCount());
+            LOGGER.info("Criteria: " + dto.getNonconformityType() + " Number of NCs: " + dto.getNonconformityCount());
         }
     }
 
