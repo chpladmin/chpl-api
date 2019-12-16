@@ -785,5 +785,20 @@
                 </entry>
             </job-data-map>
         </job>
+        <!-- Job used to mark RT 13 EC macra measure as removed -->
+        <job>
+            <name>removeRT13ECMacraMeasureJob</name>
+            <group>systemJobs</group>
+            <description>Sets the removed flag to 'true' for RT13 EC macra measure</description>
+            <job-class>gov.healthit.chpl.scheduler.job.RemoveRT13ECMacraMeasureJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+            </job-data-map>
+        </job>
     </schedule>
 </job-scheduling-data>
