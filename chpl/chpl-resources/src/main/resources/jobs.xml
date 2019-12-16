@@ -376,12 +376,11 @@
                 </entry>
             </job-data-map>
         </job>
-
         <!-- Questionable Activity data emailer -->
         <job>
             <name>Questionable Activity Report</name>
             <group>chplJobs</group>
-            <description>Sends a report of questionable activity within the last week</description>
+            <description>Sends a report of questionable activity within a user defined range of days</description>
             <job-class>gov.healthit.chpl.scheduler.job.QuestionableActivityEmailJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
@@ -394,9 +393,16 @@
                     <key>frequency</key>
                     <value>WEEKLY</value>
                 </entry>
+                <entry>
+                    <key>range</key>
+                    <value>7</value>
+                </entry>
+                <entry>
+                    <key>parameters</key>
+                    <value>[{"label": "Range (in days)", "key": "range", "type": "int", "min": "1", "max": "365"} ]</value>
+                </entry>
             </job-data-map>
         </job>
-
         <!-- Chart data creator -->
         <job>
             <name>chartDataCreator</name>
