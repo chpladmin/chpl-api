@@ -52,14 +52,6 @@
                     <key>authorities</key>
                     <value>ROLE_ADMIN;ROLE_ONC</value>
                 </entry>
-                <entry>
-                    <key>frequency</key>
-                    <value>WEEKLY</value>
-                </entry>
-                <entry>
-                    <key>range</key>
-                    <value>7</value>
-                </entry>
             </job-data-map>
         </job>
         <!-- DELETE END MARKER -->
