@@ -29,11 +29,11 @@ public class TestTool2014Reviewer implements Reviewer {
                         if (listing.getIcs() != null && listing.getIcs().booleanValue()) {
                             listing.getWarningMessages()
                             .add(msgUtil.getMessage("listing.criteria.missingTestToolVersion",
-                                    testTool.getName(), cert.getNumber()));
+                                    testTool.getName(), cert.getCriterion().getNumber()));
                         } else {
                             listing.getErrorMessages()
                             .add(msgUtil.getMessage("listing.criteria.missingTestToolVersion",
-                                    testTool.getName(), cert.getNumber()));
+                                    testTool.getName(), cert.getCriterion().getNumber()));
                         }
                     }
                 }

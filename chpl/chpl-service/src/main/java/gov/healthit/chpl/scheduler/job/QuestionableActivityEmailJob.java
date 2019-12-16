@@ -1,10 +1,8 @@
 package gov.healthit.chpl.scheduler.job;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -13,7 +11,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import javax.mail.MessagingException;
@@ -46,8 +43,6 @@ import gov.healthit.chpl.util.Util;
 
 public class QuestionableActivityEmailJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("questionableActivityEmailJobLogger");
-    private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
-    private Properties props;
 
     @Autowired
     private QuestionableActivityDAO questionableActivityDao;
@@ -83,7 +78,6 @@ public class QuestionableActivityEmailJob extends QuartzJob {
      */
     public QuestionableActivityEmailJob() throws Exception {
         super();
-        loadProperties();
     }
 
     @Override
@@ -109,13 +103,14 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         start.add(Calendar.DAY_OF_MONTH, range * -1);
         List<List<String>> csvRows = getAppropriateActivities(jobContext, start.getTime(), end.getTime());
         String to = jobContext.getMergedJobDataMap().getString("email");
-        String subject = props.getProperty("questionableActivityEmailSubject");
+        String subject = env.getProperty("questionableActivityEmailSubject");
         String htmlMessage = null;
         List<File> files = null;
         if (csvRows != null && csvRows.size() > 0) {
-            htmlMessage = String.format(props.getProperty("questionableActivityHasDataEmailBody"), Util
-                    .getDateFormatter().format(start.getTime()), Util.getDateFormatter().format(end.getTime()));
-            String filename = props.getProperty("questionableActivityReportFilename");
+            htmlMessage = String.format(env.getProperty("questionableActivityHasDataEmailBody"),
+                    Util.getDateFormatter().format(start.getTime()),
+                    Util.getDateFormatter().format(end.getTime()));
+            String filename = env.getProperty("questionableActivityReportFilename");
             File output = null;
             files = new ArrayList<File>();
             if (csvRows.size() > 0) {
@@ -123,13 +118,9 @@ public class QuestionableActivityEmailJob extends QuartzJob {
                 files.add(output);
             }
         } else {
-            htmlMessage = String.format(props.getProperty("questionableActivityNoDataEmailBody"), Util
-                    .getDateFormatter().format(start.getTime()), Util.getDateFormatter().format(end.getTime()));
-        }
-
-        // Add line in email if we had to use to default range value.
-        if (errors != "") {
-            htmlMessage = errors + "<br />" + htmlMessage;
+            htmlMessage = String.format(env.getProperty("questionableActivityNoDataEmailBody"),
+                    Util.getDateFormatter().format(start.getTime()),
+                    Util.getDateFormatter().format(end.getTime()));
         }
 
         LOGGER.info("Sending email to {} with contents {} and a total of {} questionable activities", to, htmlMessage,
@@ -140,7 +131,10 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             recipients.add(to);
 
             EmailBuilder emailBuilder = new EmailBuilder(env);
-            emailBuilder.recipients(recipients).subject(subject).htmlMessage(htmlMessage).fileAttachments(files)
+            emailBuilder.recipients(recipients)
+                    .subject(subject)
+                    .htmlMessage(htmlMessage)
+                    .fileAttachments(files)
                     .sendEmail();
 
         } catch (MessagingException e) {
@@ -178,8 +172,9 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             temp = File.createTempFile(reportFilename, ".csv");
             temp.deleteOnExit();
 
-            try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(temp), Charset.forName("UTF-8")
-                    .newEncoder()); CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
+            try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(temp),
+                    Charset.forName("UTF-8").newEncoder());
+                    CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
                 csvPrinter.printRecord(getHeaderRow());
                 for (List<String> rowValue : rows) {
                     csvPrinter.printRecord(rowValue);
@@ -228,8 +223,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
                 activitiesForGroup.add(activity);
                 activityByGroup.put(groupKey, activitiesForGroup);
             } else {
-                List<QuestionableActivityCertificationResultDTO> existingActivitiesForGroup = activityByGroup.get(
-                        groupKey);
+                List<QuestionableActivityCertificationResultDTO> existingActivitiesForGroup = activityByGroup
+                        .get(groupKey);
                 existingActivitiesForGroup.add(activity);
             }
         }
@@ -416,7 +411,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         currRow.set(VERSION_COL, activity.getListing().getVersion().getVersion());
         currRow.set(LISTING_COL, activity.getListing().getChplProductNumber());
         currRow.set(STATUS_COL, activity.getListing().getCertificationStatusName());
-        currRow.set(LINK_COL, props.getProperty("chplUrlBegin") + "/#/admin/reports/" + activity.getListing().getId());
+        currRow.set(LINK_COL, env.getProperty(
+                "chplUrlBegin") + "/#/admin/reports/" + activity.getListing().getId());
         currRow.set(ACTIVITY_USER_COL, activity.getUser().getSubjectName());
 
         if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.CRITERIA_ADDED.getName())) {
@@ -484,7 +480,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         currRow.set(VERSION_COL, activity.getListing().getVersion().getVersion());
         currRow.set(LISTING_COL, activity.getListing().getChplProductNumber());
         currRow.set(STATUS_COL, activity.getListing().getCertificationStatusName());
-        currRow.set(LINK_COL, props.getProperty("chplUrlBegin") + "/#/admin/reports/" + activity.getListing().getId());
+        currRow.set(LINK_COL, env.getProperty(
+                "chplUrlBegin") + "/#/admin/reports/" + activity.getListing().getId());
         currRow.set(ACTIVITY_USER_COL, activity.getUser().getSubjectName());
 
         if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G1_SUCCESS_EDITED.getName())) {
@@ -590,8 +587,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             if (!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; ";
             }
-            currActivityRowValue += "Changed status from " + developerActivity.getBefore() + " to " + developerActivity
-                    .getAfter();
+            currActivityRowValue += "Changed status from " + developerActivity.getBefore()
+                    + " to " + developerActivity.getAfter();
             activityRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
         }
     }
@@ -659,20 +656,6 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         return row;
     }
 
-    private Properties loadProperties() throws IOException {
-        InputStream in = QuestionableActivityEmailJob.class.getClassLoader().getResourceAsStream(
-                DEFAULT_PROPERTIES_FILE);
-        if (in == null) {
-            props = null;
-            throw new FileNotFoundException("Environment Properties File not found in class path.");
-        } else {
-            props = new Properties();
-            props.load(in);
-            in.close();
-        }
-        return props;
-    }
-
     private void populateRangeDefaultsFromJobData(final JobExecutionContext context) {
         ObjectMapper mapper = new ObjectMapper();
         String parametersJson = context.getMergedJobDataMap().getString("parameters");
@@ -722,9 +705,9 @@ public class QuestionableActivityEmailJob extends QuartzJob {
                     || anotherGroup.trigger == null) {
                 return false;
             }
-            if (this.activityDate.getTime() == anotherGroup.activityDate.getTime() && (this.trigger.getId()
-                    .longValue() == anotherGroup.trigger.getId().longValue() || this.trigger.getName().equals(
-                            anotherGroup.trigger.getName()))) {
+            if (this.activityDate.getTime() == anotherGroup.activityDate.getTime()
+                    && (this.trigger.getId().longValue() == anotherGroup.trigger.getId().longValue()
+                            || this.trigger.getName().equals(anotherGroup.trigger.getName()))) {
                 return true;
             }
             return false;
