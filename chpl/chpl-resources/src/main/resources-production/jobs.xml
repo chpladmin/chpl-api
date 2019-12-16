@@ -60,10 +60,6 @@
                     <key>range</key>
                     <value>7</value>
                 </entry>
-                <entry>
-                    <key>parameters</key>
-                    <value>[{"label": "Range (in days)", "key": "range", "type": "int", "min": "1", "max": "365"} ]</value>
-                </entry>
             </job-data-map>
         </job>
         <!-- DELETE END MARKER -->
