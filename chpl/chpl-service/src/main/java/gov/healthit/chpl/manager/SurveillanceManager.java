@@ -154,9 +154,9 @@ public class SurveillanceManager extends SecuredManager {
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
-            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).ADD_DOCUMENT, #acbId)")
-    public Long addDocumentToNonconformity(final Long acbId, final Long nonconformityId,
-            final SurveillanceNonconformityDocument doc) throws EntityRetrievalException {
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).ADD_DOCUMENT, #nonconformityId)")
+    public Long addDocumentToNonconformity(Long nonconformityId, SurveillanceNonconformityDocument doc)
+            throws EntityRetrievalException {
         Long insertedId = null;
         insertedId = survDao.insertNonconformityDocument(nonconformityId, doc);
         return insertedId;
@@ -210,8 +210,8 @@ public class SurveillanceManager extends SecuredManager {
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
-            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).DELETE_DOCUMENT, #acbId)")
-    public void deleteNonconformityDocument(final Long acbId, final Long documentId) throws EntityRetrievalException {
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).DELETE_DOCUMENT, #documentId)")
+    public void deleteNonconformityDocument(Long documentId) throws EntityRetrievalException {
         survDao.deleteNonconformityDocument(documentId);
     }
 

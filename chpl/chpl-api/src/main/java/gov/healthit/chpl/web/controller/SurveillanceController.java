@@ -207,16 +207,7 @@ public class SurveillanceController implements MessageSourceAware {
         toInsert.setFileName(file.getOriginalFilename());
         toInsert.setFileType(file.getContentType());
 
-        CertificationBodyDTO owningAcb = null;
-        try {
-            owningAcb = resourcePermissions.getAcbIfPermissionById(
-                    Long.valueOf(beforeCp.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()));
-        } catch (Exception ex) {
-            LOGGER.error("Error looking up ACB associated with surveillance.", ex);
-            throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
-        }
-
-        Long insertedDocId = survManager.addDocumentToNonconformity(owningAcb.getId(), nonconformityId, toInsert);
+        Long insertedDocId = survManager.addDocumentToNonconformity(nonconformityId, toInsert);
         if (insertedDocId == null) {
             throw new EntityCreationException("Error adding a document to nonconformity with id " + nonconformityId);
         }
@@ -344,17 +335,8 @@ public class SurveillanceController implements MessageSourceAware {
 
         CertifiedProductSearchDetails beforeCp = cpdetailsManager
                 .getCertifiedProductDetails(surv.getCertifiedProduct().getId());
-        CertificationBodyDTO owningAcb = null;
         try {
-            owningAcb = resourcePermissions.getAcbIfPermissionById(
-                    Long.valueOf(beforeCp.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()));
-        } catch (Exception ex) {
-            LOGGER.error("Error looking up ACB associated with surveillance.", ex);
-            throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
-        }
-
-        try {
-            survManager.deleteNonconformityDocument(owningAcb.getId(), docId);
+            survManager.deleteNonconformityDocument(docId);
         } catch (Exception ex) {
             throw ex;
         }
