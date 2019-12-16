@@ -30,5 +30,4 @@ public class DomainPermissions {
         this.actionPermissions = actionPermissions;
     }
 
-
 }

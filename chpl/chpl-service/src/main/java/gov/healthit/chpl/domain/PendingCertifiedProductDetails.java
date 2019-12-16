@@ -238,11 +238,10 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
         List<CertificationResult> certList = new ArrayList<CertificationResult>();
         for (PendingCertificationResultDTO certCriterion : dto.getCertificationCriterion()) {
             CertificationCriterion criterion = new CertificationCriterion(certCriterion.getCriterion());
-
             CertificationResult cert = new CertificationResult();
             cert.setCriterion(criterion);
-            cert.setNumber(certCriterion.getNumber());
-            cert.setTitle(certCriterion.getTitle());
+            cert.setNumber(criterion.getNumber());
+            cert.setTitle(criterion.getTitle());
             cert.setSuccess(certCriterion.getMeetsCriteria());
             cert.setGap(certCriterion.getGap());
             cert.setSed(certCriterion.getSed());

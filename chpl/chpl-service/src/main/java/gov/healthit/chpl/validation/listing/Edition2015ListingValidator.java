@@ -24,6 +24,9 @@ import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewe
 import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ValidDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.MacraMeasureComparisonReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaComparisonReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaTestTaskComparisonReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaUcdComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestFunctionality2015Reviewer;
@@ -112,6 +115,18 @@ public class Edition2015ListingValidator extends Validator {
     @Qualifier("macraMeasureComparisonReviewer")
     private MacraMeasureComparisonReviewer macraComparisonReviewer;
 
+    @Autowired
+    @Qualifier("removedCriteriaComparisonReviewer")
+    private RemovedCriteriaComparisonReviewer criteriaComparisonReviewer;
+
+    @Autowired
+    @Qualifier("removedCriteriaTestTaskComparisonReviewer")
+    private RemovedCriteriaTestTaskComparisonReviewer testTaskCriteriaComparisonReviewer;
+
+    @Autowired
+    @Qualifier("removedCriteriaUcdComparisonReviewer")
+    private RemovedCriteriaUcdComparisonReviewer ucdCriteriaComparisonReviewer;
+
     private List<Reviewer> reviewers;
     private List<ComparisonReviewer> comparisonReviewers;
 
@@ -146,6 +161,9 @@ public class Edition2015ListingValidator extends Validator {
             comparisonReviewers.add(chplNumberComparisonReviewer);
             comparisonReviewers.add(devBanComparisonReviewer);
             comparisonReviewers.add(macraComparisonReviewer);
+            comparisonReviewers.add(criteriaComparisonReviewer);
+            comparisonReviewers.add(testTaskCriteriaComparisonReviewer);
+            comparisonReviewers.add(ucdCriteriaComparisonReviewer);
         }
         return comparisonReviewers;
     }

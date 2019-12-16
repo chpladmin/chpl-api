@@ -35,7 +35,8 @@ public class AdditionalSoftware2014DuplicateReviewer {
 
         if (addtlSoftwareDuplicateResults.duplicatesExist()) {
             listing.getWarningMessages().addAll(
-                    getWarnings(addtlSoftwareDuplicateResults.getDuplicateList(), certificationResult.getNumber()));
+                    getWarnings(addtlSoftwareDuplicateResults.getDuplicateList(),
+                            certificationResult.getCriterion().getNumber()));
             certificationResult.setAdditionalSoftware(addtlSoftwareDuplicateResults.getUniqueList());
         }
     }

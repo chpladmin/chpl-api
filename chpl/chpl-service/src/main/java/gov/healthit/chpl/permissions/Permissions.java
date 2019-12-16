@@ -124,5 +124,4 @@ public class Permissions {
             return false;
         }
     }
-
 }
