@@ -1,5 +1,14 @@
 # Release Notes
 
+## Version 21.15.0
+_16 December 2019_
+
+### Features
+* Update Questionable Activity Report to support a user defined range of days
+* Add job to remove RT13 EC Macra Measure
+
+---
+
 ## Version 21.14.0
 _2 December 2019_
 
