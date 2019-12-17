@@ -48,6 +48,8 @@ public class Statistics implements Serializable {
 
     private Long averageTimeToAssessConformity;
     private Long averageTimeToApproveCAP;
+    private Long averageDurationOfCAP;
+    private Long averageTimeFromCAPApprovalToSurveillanceEnd;
 
     private List<CertifiedBodyStatistics> totalOpenNonconformitiesByAcb;
     private Long totalClosedNonconformities;
@@ -366,5 +368,21 @@ public class Statistics implements Serializable {
 
     public void setAverageTimeToApproveCAP(Long averageTimeToApproveCAP) {
         this.averageTimeToApproveCAP = averageTimeToApproveCAP;
+    }
+
+    public Long getAverageDurationOfCAP() {
+        return averageDurationOfCAP;
+    }
+
+    public void setAverageDurationOfCAP(Long averageDurationOfCAP) {
+        this.averageDurationOfCAP = averageDurationOfCAP;
+    }
+
+    public Long getAverageTimeFromCAPApprovalToSurveillanceEnd() {
+        return averageTimeFromCAPApprovalToSurveillanceEnd;
+    }
+
+    public void setAverageTimeFromCAPApprovalToSurveillanceEnd(Long averageTimeFromCAPApprovalToSurveillanceEnd) {
+        this.averageTimeFromCAPApprovalToSurveillanceEnd = averageTimeFromCAPApprovalToSurveillanceEnd;
     }
 }

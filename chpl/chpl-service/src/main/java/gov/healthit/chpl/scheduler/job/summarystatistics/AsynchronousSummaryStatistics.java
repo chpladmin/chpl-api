@@ -1,5 +1,6 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics;
 
+import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -674,7 +675,7 @@ public class AsynchronousSummaryStatistics {
 
         Long totalOpenDays = nonconformitiesWithDeterminationDate.stream()
                 .map(nc -> getDaysToAssessNonconformtity(findSurveillanceForNonconformity(nc, surveillances), nc))
-                .peek(System.out::println)
+                // .peek(System.out::println)
                 .collect(Collectors.summingLong(n -> n.longValue()));
 
         return new AsyncResult<Long>(totalOpenDays / nonconformitiesWithDeterminationDate.size());
@@ -695,10 +696,55 @@ public class AsynchronousSummaryStatistics {
         Long totalDaysToApproveCap = nonconformities.stream()
                 .map(nc -> Math
                         .abs(ChronoUnit.DAYS.between(nc.getDateOfDetermination().toInstant(), nc.getCapApproval().toInstant())))
-                .peek(System.out::println)
+                // .peek(System.out::println)
                 .collect(Collectors.summingLong(n -> n.longValue()));
 
         return new AsyncResult<Long>(totalDaysToApproveCap / nonconformities.size());
+    }
+
+    @Async("jobAsyncDataExecutor")
+    @Transactional
+    public Future<Long> getAverageDurationOfCAP(SurveillanceStatisticsDAO surveillanceStatisticsDAO) {
+        List<SurveillanceEntity> surveillances = surveillanceStatisticsDAO.getAllSurveillances();
+
+        List<SurveillanceNonconformityEntity> nonconformities = surveillances.stream()
+                .flatMap(surv -> surv.getSurveilledRequirements().stream())
+                .flatMap(req -> req.getNonconformities().stream())
+                .filter(nc -> nc.getCapApproval() != null)
+                .distinct() // Want to figure out how to get rid of this
+                .collect(Collectors.toList());
+
+        Long totalDaysOfCapDuration = nonconformities.stream()
+                .map(nc -> Math
+                        .abs(ChronoUnit.DAYS.between(
+                                nc.getCapApproval().toInstant(),
+                                nc.getCapEndDate() != null ? nc.getCapEndDate().toInstant() : Instant.now())))
+                // .peek(System.out::println)
+                .collect(Collectors.summingLong(n -> n.longValue()));
+
+        return new AsyncResult<Long>(totalDaysOfCapDuration / nonconformities.size());
+    }
+
+    @Async("jobAsyncDataExecutor")
+    @Transactional
+    public Future<Long> getAverageTimeFromCAPApprovalToSurveillanceClose(SurveillanceStatisticsDAO surveillanceStatisticsDAO) {
+
+        List<SurveillanceEntity> surveillances = surveillanceStatisticsDAO.getAllSurveillances();
+
+        List<SurveillanceNonconformityEntity> nonconformitiesWithDeterminationDate = surveillances.stream()
+                .filter(surv -> surv.getEndDate() != null)
+                .flatMap(surv -> surv.getSurveilledRequirements().stream())
+                .flatMap(req -> req.getNonconformities().stream())
+                .filter(nc -> nc.getCapApproval() != null)
+                .distinct()
+                .collect(Collectors.toList());
+
+        Long totalOpenDays = nonconformitiesWithDeterminationDate.stream()
+                .map(nc -> getDaysFromCAPApprovalToSurveillanceClose(findSurveillanceForNonconformity(nc, surveillances), nc))
+                // .peek(System.out::println)
+                .collect(Collectors.summingLong(n -> n.longValue()));
+
+        return new AsyncResult<Long>(totalOpenDays / nonconformitiesWithDeterminationDate.size());
     }
 
     private SurveillanceEntity findSurveillanceForNonconformity(SurveillanceNonconformityEntity nonconformity,
@@ -715,6 +761,13 @@ public class AsynchronousSummaryStatistics {
     private Long getDaysToAssessNonconformtity(SurveillanceEntity surveillance, SurveillanceNonconformityEntity nonconformity) {
         return Math.abs(ChronoUnit.DAYS.between(surveillance.getStartDate().toInstant(),
                 nonconformity.getDateOfDetermination().toInstant()));
+    }
+
+    private Long getDaysFromCAPApprovalToSurveillanceClose(SurveillanceEntity surveillance,
+            SurveillanceNonconformityEntity nonconformity) {
+        return Math.abs(ChronoUnit.DAYS.between(
+                nonconformity.getCapApproval().toInstant(),
+                surveillance.getEndDate().toInstant()));
     }
 
     public void setLogger(Logger logger) {

@@ -86,6 +86,8 @@ public class AsynchronousSummaryStatisticsInitializor {
 
         Future<Long> averageTimeToAssessConformity = null;
         Future<Long> averageTimeToApproveCAP = null;
+        Future<Long> averageDurationOfCAP = null;
+        Future<Long> averageTimeFromCAPApprovalToSurveillanceEnd = null;
 
         if (dateRange == null) {
             totalActive2014Listings = asyncStats.getTotalActive2014Listings(listingStatisticsDAO, dateRange);
@@ -110,6 +112,9 @@ public class AsynchronousSummaryStatisticsInitializor {
 
             averageTimeToAssessConformity = asyncStats.getAverageTimeToAssessConformity(surveillanceStatisticsDAO);
             averageTimeToApproveCAP = asyncStats.getAverageTimeToApproveCAP(surveillanceStatisticsDAO);
+            averageDurationOfCAP = asyncStats.getAverageDurationOfCAP(surveillanceStatisticsDAO);
+            averageTimeFromCAPApprovalToSurveillanceEnd = asyncStats
+                    .getAverageTimeFromCAPApprovalToSurveillanceClose(surveillanceStatisticsDAO);
         }
 
         // developers
@@ -172,6 +177,8 @@ public class AsynchronousSummaryStatisticsInitializor {
 
             stats.setAverageTimeToAssessConformity(averageTimeToAssessConformity.get());
             stats.setAverageTimeToApproveCAP(averageTimeToApproveCAP.get());
+            stats.setAverageDurationOfCAP(averageDurationOfCAP.get());
+            stats.setAverageTimeFromCAPApprovalToSurveillanceEnd(averageTimeFromCAPApprovalToSurveillanceEnd.get());
         }
 
         // developers
