@@ -588,6 +588,30 @@ public class ListingQuestionableActivityProvider {
         return activity;
     }
 
+    public QuestionableActivityListingDTO checkIcsChangedWithCriteriaB3OnEdit(
+            CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
+        QuestionableActivityListingDTO activity = null;
+        CertificationResult newB3 = getB3Criteria(newListing);
+        Date b3ChangeDate = null;
+        Date currentDate = new Date();
+        try {
+            b3ChangeDate = getB3ChangeDate();
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            return null;
+        }
+
+        if (currentDate.after(b3ChangeDate)
+                && hasICS(newListing)
+                && !hasICS(origListing)
+                && newB3.isSuccess()) {
+            activity = new QuestionableActivityListingDTO();
+            activity.setAfter("ics=1");
+            activity.setBefore("ics=0");
+        }
+        return activity;
+    }
+
     public QuestionableActivityListingDTO checkCriteriaB3SuccessOnCreate(CertifiedProductSearchDetails newListing) {
         QuestionableActivityListingDTO activity = null;
         CertificationResult newB3 = getB3Criteria(newListing);
