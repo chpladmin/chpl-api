@@ -158,8 +158,6 @@ public class ChplProductNumberUtil {
     private ChplProductNumberDAO chplProductNumberDAO;
     private CertifiedProductDAO cpDao;
 
-    public ChplProductNumberUtil() {}
-
     @Autowired
     public ChplProductNumberUtil(final TestingLabDAO testingLabDAO,
             final CertificationBodyDAO certBodyDAO,
