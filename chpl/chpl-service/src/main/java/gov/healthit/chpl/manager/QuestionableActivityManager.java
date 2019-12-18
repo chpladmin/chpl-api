@@ -215,7 +215,7 @@ public class QuestionableActivityManager implements EnvironmentAware {
             activity = listingQuestionableActivityProvider.checkIcsChangedWithCriteriaB3OnEdit(origListing, newListing);
             if (activity != null) {
                 createListingActivity(activity, origListing.getId(), activityDate, activityUser,
-                        QuestionableActivityTriggerConcept.CRITERIA_B3_ADDED_TO_EXISTING_LISTING_WITH_ICS, activityReason);
+                        QuestionableActivityTriggerConcept.ICS_ADDED_TO_EXISTING_LISTING_WITH_CRITERIA_B3, activityReason);
             }
 
             // finally check for other changes that are only questionable
