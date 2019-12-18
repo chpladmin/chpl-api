@@ -16,4 +16,6 @@ public final class FeatureList {
     public static final String EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK = "effective-rule-date-plus-one-week";
     /** Ability to have Developers as User. */
     public static final String ROLE_DEVELOPER = "role-developer";
+    /** Add paging to activity reports API. */
+    public static final String ENHANCED_REPORTS = "enhanced-reports";
 }

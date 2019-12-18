@@ -36,6 +36,7 @@ import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
+import gov.healthit.chpl.domain.activity.ActivityMetadataPage;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
@@ -45,6 +46,7 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.ActivityMetadataManager;
+import gov.healthit.chpl.manager.ActivityPagedMetadataManager;
 import gov.healthit.chpl.manager.AnnouncementManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
@@ -70,6 +72,7 @@ public class ActivityController {
 
     private ActivityManager activityManager;
     private ActivityMetadataManager activityMetadataManager;
+    private ActivityPagedMetadataManager pagedMetadataManager;
     private AnnouncementManager announcementManager;
     private TestingLabManager atlManager;
     private CertifiedProductManager cpManager;
@@ -84,22 +87,21 @@ public class ActivityController {
     private ResourcePermissions resourcePermissions;
     private FF4j ff4j;
 
-    @Value("{maxActivityRangeInDays}")
+    @Value("${maxActivityRangeInDays}")
     private Integer maxActivityRangeInDays;
 
-    @Value("{maxActivityPageSize}")
-    private Integer maxActivityPageSize;
 
     @Autowired
     public ActivityController(ActivityManager activityManager, ActivityMetadataManager activityMetadataManager,
-            AnnouncementManager announcementManager, TestingLabManager atlManager,
-            CertifiedProductManager cpManager, PendingCertifiedProductManager pcpManager,
+            ActivityPagedMetadataManager pagedMetadataManager, AnnouncementManager announcementManager,
+            TestingLabManager atlManager, CertifiedProductManager cpManager, PendingCertifiedProductManager pcpManager,
             DeveloperManager developerManager, ProductManager productManager,
             ProductVersionManager versionManager, UserManager userManager,
             ChplProductNumberUtil chplProductNumberUtil, CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
             ResourcePermissions resourcePermissions, ErrorMessageUtil msgUtil, FF4j ff4j) {
         this.activityManager = activityManager;
         this.activityMetadataManager = activityMetadataManager;
+        this.pagedMetadataManager = pagedMetadataManager;
         this.announcementManager = announcementManager;
         this.atlManager = atlManager;
         this.cpManager = cpManager;
@@ -116,9 +118,6 @@ public class ActivityController {
         if (maxActivityRangeInDays == null) {
             maxActivityRangeInDays = DEFAULT_MAX_ACTIVITY_RANGE_DAYS;
         }
-        if (maxActivityPageSize == null) {
-            maxActivityPageSize = DEFAULT_MAX_ACTIVITY_PAGE_SIZE;
-        }
     }
 
     @ApiOperation(value = "Get detailed audit data for a specific activity event.",
@@ -132,11 +131,27 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get metadata about auditable records in the system for listings.",
+            notes = "All parameters are optional and will default to the first page of listing activity"
+                    + "from the beginning of CHPL with a page size of the maximum allowed. Page number is 0-based.")
+    @RequestMapping(value = "/metadata/listings", method = RequestMethod.GET,
+    consumes="application/vnd.chpl.v2+json", produces = "application/json; charset=utf-8")
+    public ActivityMetadataPage metadataForListings(@RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+        if (!ff4j.check(FeatureList.ENHANCED_REPORTS)) {
+            throw new NotImplementedException();
+        }
+        return pagedMetadataManager.getActivityMetadataByConcept(
+                ActivityConcept.CERTIFIED_PRODUCT, start, end, pageNum, pageSize);
+    }
+
+    @Deprecated
+    @ApiOperation(value = "Get metadata about auditable records in the system for listings.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
     @RequestMapping(value = "/metadata/listings", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
-    public List<ActivityMetadata> metadataForListings(@RequestParam(required = false) Long start,
-            @RequestParam(required = false) Long end) throws JsonParseException, IOException, ValidationException {
+    public List<ActivityMetadata> metadataForListings(@RequestParam Long start,
+            @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDatesAndDateRange(start, end);
@@ -1407,7 +1422,7 @@ public class ActivityController {
                 Instant.ofEpochMilli(endDate).atZone(ZoneId.of("UTC")).toLocalDate();
 
         if (startDateUtc.isAfter(endDateUtc)) {
-            throw new IllegalArgumentException("Cannot search for activity with the start date after the end date");
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.startDateAfterEndDate"));
         }
     }
 
@@ -1425,7 +1440,7 @@ public class ActivityController {
                 Instant.ofEpochMilli(endDate).atZone(ZoneId.of("UTC")).toLocalDate();
 
         if (startDateUtc.isAfter(endDateUtc)) {
-            throw new IllegalArgumentException("Cannot search for activity with the start date after the end date");
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.startDateAfterEndDate"));
         }
 
         endDateUtc = endDateUtc.minusDays(maxActivityRangeInDays);
