@@ -88,6 +88,8 @@ public class AsynchronousSummaryStatisticsInitializor {
         Future<Long> averageTimeToApproveCAP = null;
         Future<Long> averageDurationOfCAP = null;
         Future<Long> averageTimeFromCAPApprovalToSurveillanceEnd = null;
+        Future<Long> averageTimeFromCAPEndToSurveillanceEnd = null;
+        Future<Long> averageTimeFromSurveillanceOpenToSurveillanceClose = null;
 
         if (dateRange == null) {
             totalActive2014Listings = asyncStats.getTotalActive2014Listings(listingStatisticsDAO, dateRange);
@@ -115,6 +117,10 @@ public class AsynchronousSummaryStatisticsInitializor {
             averageDurationOfCAP = asyncStats.getAverageDurationOfCAP(surveillanceStatisticsDAO);
             averageTimeFromCAPApprovalToSurveillanceEnd = asyncStats
                     .getAverageTimeFromCAPApprovalToSurveillanceClose(surveillanceStatisticsDAO);
+            averageTimeFromCAPEndToSurveillanceEnd = asyncStats
+                    .getAverageTimeFromCAPEndToSurveillanceClose(surveillanceStatisticsDAO);
+            averageTimeFromSurveillanceOpenToSurveillanceClose = asyncStats
+                    .getAverageTimeFromSurveillanceOpenToSurveillanceClose(surveillanceStatisticsDAO);
         }
 
         // developers
@@ -179,6 +185,8 @@ public class AsynchronousSummaryStatisticsInitializor {
             stats.setAverageTimeToApproveCAP(averageTimeToApproveCAP.get());
             stats.setAverageDurationOfCAP(averageDurationOfCAP.get());
             stats.setAverageTimeFromCAPApprovalToSurveillanceEnd(averageTimeFromCAPApprovalToSurveillanceEnd.get());
+            stats.setAverageTimeFromCAPEndToSurveillanceEnd(averageTimeFromCAPEndToSurveillanceEnd.get());
+            stats.setAverageTimeFromSurveillanceOpenToSurveillanceClose(averageTimeFromSurveillanceOpenToSurveillanceClose.get());
         }
 
         // developers

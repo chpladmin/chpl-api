@@ -245,7 +245,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         return dtos;
     }
 
-    public List<SurveillanceEntity> getAllSurveillances() {
+    public List<SurveillanceEntity> getAllSurveillancesWithNonconformities() {
         String hql = "FROM SurveillanceEntity se "
                 + "JOIN FETCH se.surveilledRequirements sre "
                 + "JOIN FETCH sre.nonconformities nc "
