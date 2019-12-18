@@ -19,6 +19,7 @@ import gov.healthit.chpl.dao.statistics.DeveloperStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.ListingStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
 import gov.healthit.chpl.domain.DateRange;
+import gov.healthit.chpl.domain.concept.NonconformityStatusConcept;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyAltTestStatistics;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import gov.healthit.chpl.entity.CertificationStatusType;
@@ -735,7 +736,8 @@ public class AsynchronousSummaryStatistics {
                 .filter(surv -> surv.getEndDate() != null)
                 .flatMap(surv -> surv.getSurveilledRequirements().stream())
                 .flatMap(req -> req.getNonconformities().stream())
-                .filter(nc -> nc.getCapApproval() != null)
+                .filter(nc -> nc.getCapApproval() != null
+                        && nc.getNonconformityStatus().getName().equals(NonconformityStatusConcept.CLOSED.getName()))
                 .distinct()
                 .collect(Collectors.toList());
 
