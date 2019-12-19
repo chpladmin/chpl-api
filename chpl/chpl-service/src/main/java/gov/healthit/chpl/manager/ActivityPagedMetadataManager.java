@@ -35,7 +35,6 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 @Service("activityPagedMetadataManager")
 public class ActivityPagedMetadataManager extends SecuredManager {
     private static final Logger LOGGER = LogManager.getLogger(ActivityPagedMetadataManager.class);
-    private static final int DEFAULT_MAX_ACTIVITY_PAGE_SIZE = 100;
 
     private ActivityDAO activityDao;
     private ActivityMetadataBuilderFactory metadataBuilderFactory;
@@ -44,16 +43,15 @@ public class ActivityPagedMetadataManager extends SecuredManager {
     @Value("${maxActivityPageSize}")
     private Integer maxActivityPageSize;
 
+    @Value("${defaultActivityPageSize}")
+    private Integer defaultActivityPageSize;
+
     @Autowired
     public ActivityPagedMetadataManager(ActivityDAO activityDao, ActivityMetadataBuilderFactory metadataBuilderFactory,
             ErrorMessageUtil msgUtil) {
         this.activityDao = activityDao;
         this.metadataBuilderFactory = metadataBuilderFactory;
         this.msgUtil = msgUtil;
-
-        if (maxActivityPageSize == null) {
-            maxActivityPageSize = DEFAULT_MAX_ACTIVITY_PAGE_SIZE;
-        }
     }
 
 
@@ -93,7 +91,7 @@ public class ActivityPagedMetadataManager extends SecuredManager {
         if (pageNumParam != null) {
             pageNum = pageNumParam;
         }
-        Integer pageSize = maxActivityPageSize;
+        Integer pageSize = defaultActivityPageSize;
         if (pageSizeParam != null) {
             pageSize = pageSizeParam;
         }

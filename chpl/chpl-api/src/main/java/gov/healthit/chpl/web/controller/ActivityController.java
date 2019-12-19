@@ -146,7 +146,7 @@ public class ActivityController {
     }
 
     @Deprecated
-    @ApiOperation(value = "Get metadata about auditable records in the system for listings.",
+    @ApiOperation(value = "DEPRECATED. Get metadata about auditable records in the system for listings.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
     @RequestMapping(value = "/metadata/listings", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
