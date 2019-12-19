@@ -134,7 +134,7 @@ public class ActivityController {
             notes = "All parameters are optional and will default to the first page of listing activity"
                     + "from the beginning of CHPL with a page size of the maximum allowed. Page number is 0-based.")
     @RequestMapping(value = "/metadata/listings", method = RequestMethod.GET,
-    consumes="application/vnd.chpl.v2+json", produces = "application/json; charset=utf-8")
+    consumes = "application/vnd.chpl.v2+json", produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForListings(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {

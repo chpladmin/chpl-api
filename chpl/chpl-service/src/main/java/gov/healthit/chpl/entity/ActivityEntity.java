@@ -30,7 +30,7 @@ import gov.healthit.chpl.util.Util;
     @NamedNativeQuery(
             name = "getPageOfActivity",
             query = "SELECT * FROM ( "
-                    + "SELECT row_number() OVER(ORDER BY a.activity_date ASC) as \"record_num\", * "
+                    + "SELECT row_number() OVER(ORDER BY a.activity_date DESC) as \"record_num\", * "
                     + "FROM " + BaseDAOImpl.SCHEMA_NAME + ".activity a "
                     + "JOIN " + BaseDAOImpl.SCHEMA_NAME + ".activity_concept ac "
                             + " ON a.activity_object_concept_id = ac.activity_concept_id "
@@ -40,7 +40,7 @@ import gov.healthit.chpl.util.Util;
                     + "WHERE a.deleted = false "
                     + "AND (a.activity_date >= :startDate) "
                     + "AND (a.activity_date <= :endDate) "
-                    + "ORDER BY a.activity_date ASC "
+                    + "ORDER BY a.activity_date DESC "
                     + ") as \"results\" "
                 + "WHERE record_num >= :firstRecord and record_num < :lastRecord",
                 resultClass = ActivityEntity.class
