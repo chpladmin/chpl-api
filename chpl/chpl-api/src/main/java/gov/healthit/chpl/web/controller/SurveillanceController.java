@@ -162,8 +162,6 @@ public class SurveillanceController implements MessageSourceAware {
             throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to create surveillance");
         } catch (ValidationException ex) {
             throw ex;
-        } catch (Exception ex) {
-            throw new EntityCreationException("Error creating new surveillance.");
         }
 
         // query the inserted surveillance
@@ -237,13 +235,14 @@ public class SurveillanceController implements MessageSourceAware {
         try {
             survManager.updateSurveillance(survToUpdate);
             responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
-        } catch (final SurveillanceAuthorityAccessDeniedException ex) {
+        } catch (SurveillanceAuthorityAccessDeniedException ex) {
             LOGGER.error("User lacks authority to update surveillance");
             throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to update surveillance");
+        } catch (UserPermissionRetrievalException ex) {
+            String error = "Cannot find user permission for the surveillance.";
+            throw new EntityRetrievalException(error);
         } catch (ValidationException ex) {
             throw ex;
-        } catch (Exception ex) {
-            LOGGER.error("Error updating surveillance with id " + survToUpdate.getId());
         }
 
         // query the inserted surveillance
