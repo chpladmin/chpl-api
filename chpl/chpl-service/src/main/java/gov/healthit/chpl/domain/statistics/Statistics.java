@@ -2,6 +2,7 @@ package gov.healthit.chpl.domain.statistics;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import gov.healthit.chpl.domain.DateRange;
 
@@ -52,6 +53,9 @@ public class Statistics implements Serializable {
     private Long averageTimeFromCAPApprovalToSurveillanceEnd;
     private Long averageTimeFromCAPEndToSurveillanceEnd;
     private Long averageTimeFromSurveillanceOpenToSurveillanceClose;
+    private Map<Long, Long> openCAPCountByAcb;
+    private Map<Long, Long> closedCAPCountByAcb;
+    private Long averageTimeToCloseSurveillance;
 
     private List<CertifiedBodyStatistics> totalOpenNonconformitiesByAcb;
     private Long totalClosedNonconformities;
@@ -403,5 +407,29 @@ public class Statistics implements Serializable {
     public void setAverageTimeFromSurveillanceOpenToSurveillanceClose(
             Long averageTimeFromSurveillanceOpenToSurveillanceClose) {
         this.averageTimeFromSurveillanceOpenToSurveillanceClose = averageTimeFromSurveillanceOpenToSurveillanceClose;
+    }
+
+    public Map<Long, Long> getOpenCAPCountByAcb() {
+        return openCAPCountByAcb;
+    }
+
+    public void setOpenCAPCountByAcb(Map<Long, Long> openCAPCountByAcb) {
+        this.openCAPCountByAcb = openCAPCountByAcb;
+    }
+
+    public Map<Long, Long> getClosedCAPCountByAcb() {
+        return closedCAPCountByAcb;
+    }
+
+    public void setClosedCAPCountByAcb(Map<Long, Long> closedCAPCountByAcb) {
+        this.closedCAPCountByAcb = closedCAPCountByAcb;
+    }
+
+    public Long getAverageTimeToCloseSurveillance() {
+        return averageTimeToCloseSurveillance;
+    }
+
+    public void setAverageTimeToCloseSurveillance(Long averageTimeToCloseSurveillance) {
+        this.averageTimeToCloseSurveillance = averageTimeToCloseSurveillance;
     }
 }

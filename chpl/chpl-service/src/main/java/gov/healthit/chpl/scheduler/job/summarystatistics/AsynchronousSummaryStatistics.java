@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
@@ -574,6 +575,23 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
+    @Async("jobAsyncDataExecutor")
+    @Transactional
+    public Future<Long> getAverageTimeToCloseSurveillance(
+            SurveillanceStatisticsDAO surveillanceStatisticsDAO) {
+
+        List<SurveillanceEntity> surveillances = surveillanceStatisticsDAO.getAllSurveillancesWithNonconformities().stream()
+                .filter(surv -> surv.getStartDate() != null
+                        && surv.getEndDate() != null)
+                .collect(Collectors.toList());
+
+        Long totalDuration = surveillances.stream()
+                .map(surv -> Math.abs(ChronoUnit.DAYS.between(surv.getStartDate().toInstant(), surv.getEndDate().toInstant())))
+                .collect(Collectors.summingLong(n -> n.longValue()));
+
+        return new AsyncResult<Long>(totalDuration / surveillances.size());
+    }
+
     /**
      * Total # of NCs.
      * 
@@ -781,6 +799,64 @@ public class AsynchronousSummaryStatistics {
                 .collect(Collectors.summingLong(n -> n.longValue()));
 
         return new AsyncResult<Long>(totalDuration / surveillances.size());
+    }
+
+    @Async("jobAsyncDataExecutor")
+    @Transactional
+    public Future<Map<Long, Long>> getOpenCAPCountByAcb(
+            SurveillanceStatisticsDAO surveillanceStatisticsDAO) {
+
+        List<SurveillanceEntity> surveillances = surveillanceStatisticsDAO.getAllSurveillancesWithNonconformities();
+
+        Map<Long, Long> openCAPCountByAcb = surveillances.stream()
+                .flatMap(surv -> surv.getSurveilledRequirements().stream())
+                .flatMap(req -> req.getNonconformities().stream())
+                .filter(nc -> nc.getCapApproval() != null
+                        && nc.getCapEndDate() == null)
+                .distinct()
+                .map(nc -> new NonconformanceStatistic(
+                        findSurveillanceForNonconformity(nc, surveillances).getCertifiedProduct().getCertificationBodyId(), nc))
+                .collect(Collectors.groupingBy(stat -> stat.getCertificationBodyId(), Collectors.counting()));
+
+        return new AsyncResult<Map<Long, Long>>(openCAPCountByAcb);
+    }
+
+    @Async("jobAsyncDataExecutor")
+    @Transactional
+    public Future<Map<Long, Long>> getClosedCAPCountByAcb(
+            SurveillanceStatisticsDAO surveillanceStatisticsDAO) {
+
+        List<SurveillanceEntity> surveillances = surveillanceStatisticsDAO.getAllSurveillancesWithNonconformities();
+
+        Map<Long, Long> openCAPCountByAcb = surveillances.stream()
+                .flatMap(surv -> surv.getSurveilledRequirements().stream())
+                .flatMap(req -> req.getNonconformities().stream())
+                .filter(nc -> nc.getCapApproval() != null
+                        && nc.getCapEndDate() != null)
+                .distinct()
+                .map(nc -> new NonconformanceStatistic(
+                        findSurveillanceForNonconformity(nc, surveillances).getCertifiedProduct().getCertificationBodyId(), nc))
+                .collect(Collectors.groupingBy(stat -> stat.getCertificationBodyId(), Collectors.counting()));
+
+        return new AsyncResult<Map<Long, Long>>(openCAPCountByAcb);
+    }
+
+    class NonconformanceStatistic {
+        private Long certificationBodyId;
+        private SurveillanceNonconformityEntity nonconformity;
+
+        public NonconformanceStatistic(Long certificationBodyId, SurveillanceNonconformityEntity nonconformity) {
+            this.certificationBodyId = certificationBodyId;
+            this.nonconformity = nonconformity;
+        }
+
+        public Long getCertificationBodyId() {
+            return certificationBodyId;
+        }
+
+        public SurveillanceNonconformityEntity getNonconformity() {
+            return nonconformity;
+        }
     }
 
     private SurveillanceEntity findSurveillanceForNonconformity(SurveillanceNonconformityEntity nonconformity,

@@ -1,6 +1,7 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -90,6 +91,9 @@ public class AsynchronousSummaryStatisticsInitializor {
         Future<Long> averageTimeFromCAPApprovalToSurveillanceEnd = null;
         Future<Long> averageTimeFromCAPEndToSurveillanceEnd = null;
         Future<Long> averageTimeFromSurveillanceOpenToSurveillanceClose = null;
+        Future<Map<Long, Long>> openCAPCountByAcb = null;
+        Future<Map<Long, Long>> closedCAPCountByAcb = null;
+        Future<Long> averageTimeToCloseSurveillance = null;
 
         if (dateRange == null) {
             totalActive2014Listings = asyncStats.getTotalActive2014Listings(listingStatisticsDAO, dateRange);
@@ -121,6 +125,9 @@ public class AsynchronousSummaryStatisticsInitializor {
                     .getAverageTimeFromCAPEndToSurveillanceClose(surveillanceStatisticsDAO);
             averageTimeFromSurveillanceOpenToSurveillanceClose = asyncStats
                     .getAverageTimeFromSurveillanceOpenToSurveillanceClose(surveillanceStatisticsDAO);
+            openCAPCountByAcb = asyncStats.getOpenCAPCountByAcb(surveillanceStatisticsDAO);
+            closedCAPCountByAcb = asyncStats.getClosedCAPCountByAcb(surveillanceStatisticsDAO);
+            averageTimeToCloseSurveillance = asyncStats.getAverageTimeToCloseSurveillance(surveillanceStatisticsDAO);
         }
 
         // developers
@@ -187,6 +194,9 @@ public class AsynchronousSummaryStatisticsInitializor {
             stats.setAverageTimeFromCAPApprovalToSurveillanceEnd(averageTimeFromCAPApprovalToSurveillanceEnd.get());
             stats.setAverageTimeFromCAPEndToSurveillanceEnd(averageTimeFromCAPEndToSurveillanceEnd.get());
             stats.setAverageTimeFromSurveillanceOpenToSurveillanceClose(averageTimeFromSurveillanceOpenToSurveillanceClose.get());
+            stats.setOpenCAPCountByAcb(openCAPCountByAcb.get());
+            stats.setClosedCAPCountByAcb(closedCAPCountByAcb.get());
+            stats.setAverageTimeToCloseSurveillance(averageTimeToCloseSurveillance.get());
         }
 
         // developers
