@@ -31,7 +31,7 @@ public enum QuestionableActivityTriggerConcept implements Serializable {
             "Certification Criteria 170.315 (b)(3) added without ICS for new listing"
     ),
     ICS_ADDED_TO_EXISTING_LISTING_WITH_CRITERIA_B3(
-            "ICS added when certification criteria 170.315(b)(3) is on a current listing"
+            "ICS added when Certification Criteria 170.315(b)(3) is on a current listing"
     ),
     G1_SUCCESS_EDITED(
             "Measure Successfully Tested for 170.314 (g)(1) Edited"
