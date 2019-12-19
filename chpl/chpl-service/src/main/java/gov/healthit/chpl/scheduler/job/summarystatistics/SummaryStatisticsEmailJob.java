@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import javax.mail.MessagingException;
@@ -33,6 +34,7 @@ import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import gov.healthit.chpl.domain.statistics.Statistics;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.entity.SummaryStatisticsEntity;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.util.EmailBuilder;
 
@@ -115,45 +117,16 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         return mapper.readValue(summaryStatistics.getSummaryStatistics(), Statistics.class);
     }
 
-    private String createHtmlMessage(final Statistics stats, final Date endDate) {
+    private String createHtmlMessage(final Statistics stats, final Date endDate) throws EntityRetrievalException {
         StringBuilder emailMessage = new StringBuilder();
 
         emailMessage.append(createMessageHeader(endDate));
         emailMessage.append(createUniqueDeveloperSection(stats));
         emailMessage.append(createUniqueProductSection(stats));
         emailMessage.append(createListingSection(stats));
+        emailMessage.append(createSurveillanceSection(stats));
+        emailMessage.append(createNonconformitySection(stats));
 
-        emailMessage.append(
-                "<h4>Total # of Surveillance Activities -  " + stats.getTotalSurveillanceActivities() + "</h4>");
-        emailMessage.append(
-                "<ul><li>Open Surveillance Activities - " + stats.getTotalOpenSurveillanceActivities() + "</li>");
-
-        emailMessage.append("<ul>");
-        for (CertifiedBodyStatistics stat : getStatistics(stats.getTotalOpenSurveillanceActivitiesByAcb())) {
-            emailMessage.append("<li>Certified by ");
-            emailMessage.append(stat.getName());
-            emailMessage.append(" - ");
-            emailMessage.append(stat.getTotalListings().toString());
-            emailMessage.append("</li>");
-        }
-        emailMessage.append("</ul>");
-
-        emailMessage.append(
-                "<li>Closed Surveillance Activities - " + stats.getTotalClosedSurveillanceActivities() + "</li></ul>");
-        emailMessage.append("<h4>Total # of NCs -  " + stats.getTotalNonConformities() + "</h4>");
-        emailMessage.append("<ul><li>Open NCs - " + stats.getTotalOpenNonconformities() + "</li>");
-
-        emailMessage.append("<ul>");
-        for (CertifiedBodyStatistics stat : getStatistics(stats.getTotalOpenNonconformitiesByAcb())) {
-            emailMessage.append("<li>Certified by ");
-            emailMessage.append(stat.getName());
-            emailMessage.append(" - ");
-            emailMessage.append(stat.getTotalListings().toString());
-            emailMessage.append("</li>");
-        }
-        emailMessage.append("</ul>");
-
-        emailMessage.append("<li>Closed NCs - " + stats.getTotalClosedNonconformities() + "</li></ul>");
         return emailMessage.toString();
     }
 
@@ -427,6 +400,87 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
                 "<li>Total # of 2011 Listings (Regardless of Status) - " + stats.getTotal2011Listings() + "</li></ul>");
         return ret.toString();
 
+    }
+
+    private String createSurveillanceSection(final Statistics stats) {
+        StringBuilder emailMessage = new StringBuilder();
+        emailMessage.append(
+                "<h4>Total # of Surveillance Activities -  " + stats.getTotalSurveillanceActivities() + "</h4>");
+        emailMessage.append(
+                "<ul><li>Open Surveillance Activities - " + stats.getTotalOpenSurveillanceActivities() + "</li>");
+
+        emailMessage.append("<ul>");
+        for (CertifiedBodyStatistics stat : getStatistics(stats.getTotalOpenSurveillanceActivitiesByAcb())) {
+            emailMessage.append("<li>Certified by ");
+            emailMessage.append(stat.getName());
+            emailMessage.append(" - ");
+            emailMessage.append(stat.getTotalListings().toString());
+            emailMessage.append("</li>");
+        }
+        emailMessage.append("</ul>");
+
+        emailMessage.append(
+                "<li>Closed Surveillance Activities - " + stats.getTotalClosedSurveillanceActivities() + "</li>");
+
+        emailMessage.append(
+                "<li>Average Duration of Closed Surveillance (in days) - " + stats.getAverageTimeToCloseSurveillance() + "</li>");
+        emailMessage.append("</ul>");
+
+        return emailMessage.toString();
+    }
+
+    private String createNonconformitySection(final Statistics stats) throws EntityRetrievalException {
+        StringBuilder emailMessage = new StringBuilder();
+        emailMessage.append("<h4>Total # of NCs -  " + stats.getTotalNonConformities() + "</h4>");
+        emailMessage.append("<ul><li>Open NCs - " + stats.getTotalOpenNonconformities() + "</li>");
+
+        emailMessage.append("<ul>");
+        for (CertifiedBodyStatistics stat : getStatistics(stats.getTotalOpenNonconformitiesByAcb())) {
+            emailMessage.append("<li>Certified by ");
+            emailMessage.append(stat.getName());
+            emailMessage.append(" - ");
+            emailMessage.append(stat.getTotalListings().toString());
+            emailMessage.append("</li>");
+        }
+        emailMessage.append("</ul>");
+        emailMessage.append("<li>Closed NCs - " + stats.getTotalClosedNonconformities() + "</li>");
+        emailMessage.append(
+                "<li>Average Time to Assess Conformity (in days) - " + stats.getAverageTimeToAssessConformity() + "</li>");
+        emailMessage.append("<li>Average Time to Approve CAP (in days) - " + stats.getAverageTimeToApproveCAP() + "</li>");
+        emailMessage.append("<li>Average Duration of CAP (in days) (includes closed and ongoing CAPs) - "
+                + stats.getAverageDurationOfCAP() + "</li>");
+        emailMessage.append("<li>Average Time from CAP Approval to Surveillance Close (in days) - "
+                + stats.getAverageTimeFromCAPApprovalToSurveillanceEnd() + "</li>");
+        emailMessage.append("<li>Average Time from CAP Close to Surveillance Close (in days) - "
+                + stats.getAverageTimeFromCAPEndToSurveillanceEnd() + "</li>");
+        emailMessage.append("<li>Average Duration of Closed Non-Conformities (in days) - "
+                + stats.getAverageTimeFromCAPEndToSurveillanceEnd() + "</li>");
+
+        emailMessage.append("<li>Number of Open CAPs</li>");
+        emailMessage.append("<ul>");
+        for (Entry<Long, Long> entry : stats.getOpenCAPCountByAcb().entrySet()) {
+            CertificationBodyDTO acb = certificationBodyDAO.getById(entry.getKey());
+            emailMessage.append("<li>Certified by ");
+            emailMessage.append(acb.getName());
+            emailMessage.append(" - ");
+            emailMessage.append(entry.getValue());
+            emailMessage.append("</li>");
+        }
+        emailMessage.append("</ul>");
+
+        emailMessage.append("<li>Number of Closed CAPs</li>");
+        emailMessage.append("<ul>");
+        for (Entry<Long, Long> entry : stats.getClosedCAPCountByAcb().entrySet()) {
+            CertificationBodyDTO acb = certificationBodyDAO.getById(entry.getKey());
+            emailMessage.append("<li>Certified by ");
+            emailMessage.append(acb.getName());
+            emailMessage.append(" - ");
+            emailMessage.append(entry.getValue());
+            emailMessage.append("</li>");
+        }
+        emailMessage.append("</ul>");
+
+        return emailMessage.toString();
     }
 
     private List<CertifiedBodyStatistics> getStatistics(final List<CertifiedBodyStatistics> stats) {
