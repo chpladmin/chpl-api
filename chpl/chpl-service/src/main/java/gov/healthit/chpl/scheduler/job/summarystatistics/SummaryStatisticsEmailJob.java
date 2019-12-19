@@ -46,9 +46,9 @@ import gov.healthit.chpl.util.EmailBuilder;
  *
  */
 public class SummaryStatisticsEmailJob extends QuartzJob {
-    private static final Logger LOGGER = LogManager.getLogger("summaryStatisticsEmailJobLogger");
-    private static final int EDITION2014 = 2014;
-    private static final int EDITION2015 = 2015;
+    private static Logger LOGGER = LogManager.getLogger("summaryStatisticsEmailJobLogger");
+    private static int EDITION2014 = 2014;
+    private static int EDITION2015 = 2015;
 
     @Autowired
     private SummaryStatisticsDAO summaryStatisticsDAO;
@@ -72,7 +72,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
     }
 
     @Override
-    public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+    public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         try {
             SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
             LOGGER.info("********* Starting the Summary Statistics Email job. *********");
@@ -92,7 +92,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         }
     }
 
-    private void sendEmail(final String message, final String address) throws AddressException, MessagingException {
+    private void sendEmail(String message, String address) throws AddressException, MessagingException {
         String subject = env.getProperty("summaryEmailSubject").toString();
 
         List<String> addresses = new ArrayList<String>();
@@ -111,13 +111,13 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         return files;
     }
 
-    private Statistics getStatistics(final SummaryStatisticsEntity summaryStatistics)
+    private Statistics getStatistics(SummaryStatisticsEntity summaryStatistics)
             throws JsonParseException, JsonMappingException, IOException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue(summaryStatistics.getSummaryStatistics(), Statistics.class);
     }
 
-    private String createHtmlMessage(final Statistics stats, final Date endDate) throws EntityRetrievalException {
+    private String createHtmlMessage(Statistics stats, Date endDate) throws EntityRetrievalException {
         StringBuilder emailMessage = new StringBuilder();
 
         emailMessage.append(createMessageHeader(endDate));
@@ -130,7 +130,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         return emailMessage.toString();
     }
 
-    private String createMessageHeader(final Date endDate) {
+    private String createMessageHeader(Date endDate) {
         Calendar currDateCal = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
         Calendar endDateCal = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
         endDateCal.setTime(endDate);
@@ -141,7 +141,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         return ret.toString();
     }
 
-    private String createUniqueDeveloperSection(final Statistics stats) {
+    private String createUniqueDeveloperSection(Statistics stats) {
         StringBuilder ret = new StringBuilder();
 
         ret.append(
@@ -249,7 +249,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         return ret.toString();
     }
 
-    private String createUniqueProductSection(final Statistics stats) {
+    private String createUniqueProductSection(Statistics stats) {
         StringBuilder ret = new StringBuilder();
 
         ret.append("<h4>Total # of Certified Unique Products Regardless of Status or Edition - Including 2011) - ");
@@ -345,7 +345,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         return ret.toString();
     }
 
-    private String createListingSection(final Statistics stats) {
+    private String createListingSection(Statistics stats) {
         StringBuilder ret = new StringBuilder();
 
         ret.append("<h4>Total # of Listings (Regardless of Status or Edition) -  ");
@@ -402,7 +402,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
 
     }
 
-    private String createSurveillanceSection(final Statistics stats) {
+    private String createSurveillanceSection(Statistics stats) {
         StringBuilder emailMessage = new StringBuilder();
         emailMessage.append(
                 "<h4>Total # of Surveillance Activities -  " + stats.getTotalSurveillanceActivities() + "</h4>");
@@ -429,7 +429,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         return emailMessage.toString();
     }
 
-    private String createNonconformitySection(final Statistics stats) throws EntityRetrievalException {
+    private String createNonconformitySection(Statistics stats) throws EntityRetrievalException {
         StringBuilder emailMessage = new StringBuilder();
         emailMessage.append("<h4>Total # of NCs -  " + stats.getTotalNonConformities() + "</h4>");
         emailMessage.append("<ul><li>Open NCs - " + stats.getTotalOpenNonconformities() + "</li>");
@@ -483,7 +483,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         return emailMessage.toString();
     }
 
-    private List<CertifiedBodyStatistics> getStatistics(final List<CertifiedBodyStatistics> stats) {
+    private List<CertifiedBodyStatistics> getStatistics(List<CertifiedBodyStatistics> stats) {
         List<CertifiedBodyStatistics> acbStats = new ArrayList<CertifiedBodyStatistics>();
         // All the existing stats
         for (CertifiedBodyStatistics cbStat : stats) {
@@ -493,8 +493,8 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         return acbStats;
     }
 
-    private List<CertifiedBodyStatistics> getStatisticsByStatusAndEdition(final List<CertifiedBodyStatistics> stats,
-            final String statusName, final Integer edition) {
+    private List<CertifiedBodyStatistics> getStatisticsByStatusAndEdition(List<CertifiedBodyStatistics> stats,
+            String statusName, Integer edition) {
 
         List<CertifiedBodyStatistics> acbStats = new ArrayList<CertifiedBodyStatistics>();
         // Filter the existing stats
@@ -508,8 +508,8 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         return acbStats;
     }
 
-    private List<CertifiedBodyStatistics> getStatisticsByEdition(final List<CertifiedBodyStatistics> stats,
-            final Integer edition) {
+    private List<CertifiedBodyStatistics> getStatisticsByEdition(List<CertifiedBodyStatistics> stats,
+            Integer edition) {
 
         List<CertifiedBodyStatistics> acbStats = new ArrayList<CertifiedBodyStatistics>();
         // Filter the existing stats
@@ -524,19 +524,19 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
 
     // Parameter intentionally not 'final'. This way we don;t have to copy the values passed in to a
     // new list.
-    private void addMissingAcbStatistics(List<CertifiedBodyStatistics> acbStats, final Integer edition) {
+    private void addMissingAcbStatistics(List<CertifiedBodyStatistics> acbStats, Integer edition) {
         // Add statistics for missing active ACBs
         acbStats.addAll(getMissingAcbStats(acbStats, edition));
 
         Collections.sort(acbStats, new Comparator<CertifiedBodyStatistics>() {
-            public int compare(final CertifiedBodyStatistics obj1, final CertifiedBodyStatistics obj2) {
+            public int compare(CertifiedBodyStatistics obj1, CertifiedBodyStatistics obj2) {
                 return obj1.getName().compareTo(obj2.getName());
             }
         });
     }
 
-    private List<CertifiedBodyStatistics> getMissingAcbStats(final List<CertifiedBodyStatistics> statistics,
-            final Integer edition) {
+    private List<CertifiedBodyStatistics> getMissingAcbStats(List<CertifiedBodyStatistics> statistics,
+            Integer edition) {
 
         List<CertifiedBodyStatistics> updatedStats = new ArrayList<CertifiedBodyStatistics>();
         // Make sure all active ACBs are in the resultset
@@ -548,7 +548,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         return updatedStats;
     }
 
-    private Boolean isAcbInStatistics(final CertificationBodyDTO acb, final List<CertifiedBodyStatistics> stats) {
+    private Boolean isAcbInStatistics(CertificationBodyDTO acb, List<CertifiedBodyStatistics> stats) {
         for (CertifiedBodyStatistics stat : stats) {
             if (stat.getName().equals(acb.getName())) {
                 return true;
@@ -557,7 +557,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         return false;
     }
 
-    private CertifiedBodyStatistics getNewCertifiedBodyStatistic(final String acbName, final Integer year) {
+    private CertifiedBodyStatistics getNewCertifiedBodyStatistic(String acbName, Integer year) {
         CertifiedBodyStatistics stat = new CertifiedBodyStatistics();
         stat.setName(acbName);
         stat.setTotalDevelopersWithListings(0L);
@@ -566,7 +566,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         return stat;
     }
 
-    private List<CertifiedBodyAltTestStatistics> getStatisticsWithAltTestMethods(final Statistics stats) {
+    private List<CertifiedBodyAltTestStatistics> getStatisticsWithAltTestMethods(Statistics stats) {
         List<CertifiedBodyAltTestStatistics> acbStats = new ArrayList<CertifiedBodyAltTestStatistics>();
         // Filter the existing stats
         for (CertifiedBodyAltTestStatistics cbStat : stats
@@ -578,7 +578,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         acbStats.addAll(getMissingAcbWithAltTestMethodsStats(acbStats));
 
         Collections.sort(acbStats, new Comparator<CertifiedBodyAltTestStatistics>() {
-            public int compare(final CertifiedBodyAltTestStatistics obj1, final CertifiedBodyAltTestStatistics obj2) {
+            public int compare(CertifiedBodyAltTestStatistics obj1, CertifiedBodyAltTestStatistics obj2) {
                 return obj1.getName().compareTo(obj2.getName());
             }
         });
@@ -587,7 +587,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
     }
 
     private List<CertifiedBodyAltTestStatistics> getMissingAcbWithAltTestMethodsStats(
-            final List<CertifiedBodyAltTestStatistics> statistics) {
+            List<CertifiedBodyAltTestStatistics> statistics) {
 
         List<CertifiedBodyAltTestStatistics> updatedStats = new ArrayList<CertifiedBodyAltTestStatistics>();
         // Make sure all active ACBs are in the resultset
@@ -599,7 +599,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         return updatedStats;
     }
 
-    private CertifiedBodyAltTestStatistics getNewCertifiedBodyWithAltTestMethodsStatistic(final String acbName) {
+    private CertifiedBodyAltTestStatistics getNewCertifiedBodyWithAltTestMethodsStatistic(String acbName) {
         CertifiedBodyAltTestStatistics stat = new CertifiedBodyAltTestStatistics();
         stat.setName(acbName);
         stat.setTotalDevelopersWithListings(0L);
@@ -607,8 +607,8 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         return stat;
     }
 
-    private Boolean isAcbWithAltTestMethodsInStatistics(final CertificationBodyDTO acb,
-            final List<CertifiedBodyAltTestStatistics> stats) {
+    private Boolean isAcbWithAltTestMethodsInStatistics(CertificationBodyDTO acb,
+            List<CertifiedBodyAltTestStatistics> stats) {
 
         for (CertifiedBodyAltTestStatistics stat : stats) {
             if (stat.getName().equals(acb.getName())) {

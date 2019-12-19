@@ -58,7 +58,7 @@ public class AsynchronousSummaryStatisticsInitializor {
      */
     @Transactional
     @Async
-    public Future<Statistics> getStatistics(final DateRange dateRange)
+    public Future<Statistics> getStatistics(DateRange dateRange)
             throws InterruptedException, ExecutionException {
         asyncStats.setLogger(getLogger());
 
@@ -232,7 +232,7 @@ public class AsynchronousSummaryStatisticsInitializor {
         return new AsyncResult<>(stats);
     }
 
-    public void setLogger(final Logger logger) {
+    public void setLogger(Logger logger) {
         this.logger = logger;
     }
 
