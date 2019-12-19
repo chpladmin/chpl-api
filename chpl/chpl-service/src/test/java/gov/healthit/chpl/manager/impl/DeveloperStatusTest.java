@@ -14,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -83,20 +82,20 @@ public class DeveloperStatusTest {
     @Autowired
     private DeveloperValidationFactory developerValidationFactory;
 
-    @Autowired
+    @Mock
     private FF4j ff4j;
 
-    @Spy
+    @Mock
     private DeveloperDAO devDao;
-    @Spy
+    @Mock
     private CertificationBodyManager acbManager;
-    @Spy
+    @Mock
     private CertifiedProductManager cpManager;
-    @Spy
+    @Mock
     private CertifiedProductDetailsManager cpdManager;
-    @Spy
+    @Mock
     private ActivityManager activityManager;
-    @Spy
+    @Mock
     private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
 
     @Mock
@@ -115,9 +114,9 @@ public class DeveloperStatusTest {
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 
         MockitoAnnotations.initMocks(this);
-        developerManager = new DeveloperManagerImpl(devDao, productManager, acbManager, cpManager, cpdManager,
-                certificationBodyDao, certifiedProductDao, chplProductNumberUtil, activityManager, msgUtil,
-                permissionChecker, developerValidationFactory);
+        // developerManager = new DeveloperManagerImpl(devDao, productManager, acbManager, cpManager, cpdManager,
+        // certificationBodyDao, certifiedProductDao, chplProductNumberUtil, activityManager, msgUtil,
+        // permissionChecker, developerValidationFactory);
 
         Mockito.when(permissionChecker.getAllAcbsForCurrentUser()).thenReturn(new ArrayList<CertificationBodyDTO>());
         Mockito.when(acbManager.getAll()).thenReturn(new ArrayList<CertificationBodyDTO>());
@@ -125,14 +124,14 @@ public class DeveloperStatusTest {
         Mockito.doReturn(MISSING_REASON_ERROR).when(msgUtil)
                 .getMessage(ArgumentMatchers.eq("developer.missingReasonForBan"), ArgumentMatchers.anyString());
         Mockito.doReturn(NO_ADMIN_NO_STATUS_CHANGE_ERROR).when(msgUtil)
-            .getMessage(ArgumentMatchers.eq("developer.statusChangeNotAllowedWithoutAdmin"),
-                    ArgumentMatchers.eq(DeveloperStatusType.UnderCertificationBanByOnc.toString()));
+                .getMessage(ArgumentMatchers.eq("developer.statusChangeNotAllowedWithoutAdmin"),
+                        ArgumentMatchers.eq(DeveloperStatusType.UnderCertificationBanByOnc.toString()));
     }
 
     @Test
     public void testDeveloperStatusChange_ActiveToSuspended_NoReasonRequired()
             throws EntityCreationException, EntityRetrievalException,
-        JsonProcessingException, MissingReasonException, ValidationException {
+            JsonProcessingException, MissingReasonException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         DeveloperDTO activeDeveloper = createDeveloper(1L, "0001", "Test Developer");
         try {
@@ -141,7 +140,7 @@ public class DeveloperStatusTest {
         }
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
-            .thenReturn(activeDeveloper);
+                    .thenReturn(activeDeveloper);
         } catch (EntityRetrievalException ex) {
         }
 
@@ -149,9 +148,8 @@ public class DeveloperStatusTest {
         activeToSuspendedDeveloper.getStatusEvents().add(createStatusEvent(2L, activeToSuspendedDeveloper.getId(),
                 DeveloperStatusType.SuspendedByOnc, new Date(), null));
 
-        DeveloperDTO updatedDeveloper =
-                developerManager.update(activeToSuspendedDeveloper, false);
-        //the update was allowed
+        DeveloperDTO updatedDeveloper = developerManager.update(activeToSuspendedDeveloper, false);
+        // the update was allowed
         assertNotNull(updatedDeveloper);
     }
 
@@ -167,7 +165,7 @@ public class DeveloperStatusTest {
         }
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
-            .thenReturn(activeDeveloper);
+                    .thenReturn(activeDeveloper);
         } catch (EntityRetrievalException ex) {
         }
 
@@ -197,7 +195,7 @@ public class DeveloperStatusTest {
         }
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
-            .thenReturn(activeDeveloperWithStatusHistory);
+                    .thenReturn(activeDeveloperWithStatusHistory);
         } catch (EntityRetrievalException ex) {
         }
 
@@ -218,7 +216,7 @@ public class DeveloperStatusTest {
 
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
-            .thenReturn(activeDeveloper);
+                    .thenReturn(activeDeveloper);
         } catch (EntityRetrievalException ex) {
         }
 
@@ -231,8 +229,8 @@ public class DeveloperStatusTest {
 
     @Test
     public void testDeveloperStatusChange_ActiveToSuspendedWithReason_Allowed()
-        throws EntityCreationException, EntityRetrievalException,
-        JsonProcessingException, MissingReasonException, ValidationException {
+            throws EntityCreationException, EntityRetrievalException,
+            JsonProcessingException, MissingReasonException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         DeveloperDTO activeDeveloper = createDeveloper(1L, "0001", "Test Developer");
         try {
@@ -242,7 +240,7 @@ public class DeveloperStatusTest {
 
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
-            .thenReturn(activeDeveloper);
+                    .thenReturn(activeDeveloper);
         } catch (EntityRetrievalException ex) {
         }
 
@@ -250,9 +248,8 @@ public class DeveloperStatusTest {
         activeToSuspendedDeveloper.getStatusEvents().add(createStatusEvent(2L, activeToSuspendedDeveloper.getId(),
                 DeveloperStatusType.UnderCertificationBanByOnc, new Date(), "A Reason"));
 
-        DeveloperDTO updatedDeveloper =
-                developerManager.update(activeToSuspendedDeveloper, false);
-        //the update was allowed
+        DeveloperDTO updatedDeveloper = developerManager.update(activeToSuspendedDeveloper, false);
+        // the update was allowed
         assertNotNull(updatedDeveloper);
     }
 
