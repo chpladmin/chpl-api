@@ -7,6 +7,7 @@ public class DeveloperValidationContext {
     private DeveloperDTO DeveloperDTO;
     private ErrorMessageUtil errorMessageUtil;
     private final String pendingAcbName;
+    private final DeveloperDTO beforeDev;
 
     public DeveloperValidationContext(final DeveloperDTO DeveloperDTO, final ErrorMessageUtil errorMessageUtil) {
         this(DeveloperDTO, errorMessageUtil, null);
@@ -14,9 +15,15 @@ public class DeveloperValidationContext {
 
     public DeveloperValidationContext(final DeveloperDTO DeveloperDTO, final ErrorMessageUtil errorMessageUtil,
             final String pendingAcbName) {
+        this(DeveloperDTO, errorMessageUtil, pendingAcbName, null);
+    }
+
+    public DeveloperValidationContext(final DeveloperDTO DeveloperDTO, final ErrorMessageUtil errorMessageUtil,
+            final String pendingAcbName, final DeveloperDTO beforeDev) {
         this.DeveloperDTO = DeveloperDTO;
         this.errorMessageUtil = errorMessageUtil;
         this.pendingAcbName = pendingAcbName;
+        this.beforeDev = beforeDev;
     }
 
     public DeveloperDTO getDeveloperDTO() {
@@ -37,5 +44,9 @@ public class DeveloperValidationContext {
 
     public String getPendingAcbName() {
         return pendingAcbName;
+    }
+
+    public final DeveloperDTO getBeforeDev() {
+        return beforeDev;
     }
 }
