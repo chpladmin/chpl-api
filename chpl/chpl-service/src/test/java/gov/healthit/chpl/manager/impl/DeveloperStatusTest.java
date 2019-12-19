@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,11 +17,13 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
@@ -47,9 +50,13 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
+@ActiveProfiles({
+        "Ff4jMock"
+})
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        gov.healthit.chpl.CHPLTestConfig.class
+        gov.healthit.chpl.CHPLTestConfig.class,
+        gov.healthit.chpl.Ff4jTestConfiguration.class
 })
 public class DeveloperStatusTest {
     private static final String MISSING_REASON_ERROR = "A reason must be given for marking this developer as banned on %s.";
@@ -74,6 +81,9 @@ public class DeveloperStatusTest {
 
     @Autowired
     private DeveloperValidationFactory developerValidationFactory;
+
+    @Mock
+    private FF4j ff4j;
 
     @Mock
     private DeveloperDAO devDao;
@@ -110,6 +120,7 @@ public class DeveloperStatusTest {
 
         Mockito.when(permissionChecker.getAllAcbsForCurrentUser()).thenReturn(new ArrayList<CertificationBodyDTO>());
         Mockito.when(acbManager.getAll()).thenReturn(new ArrayList<CertificationBodyDTO>());
+        Mockito.when(ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)).thenReturn(false);
         Mockito.doReturn(MISSING_REASON_ERROR).when(msgUtil)
                 .getMessage(ArgumentMatchers.eq("developer.missingReasonForBan"), ArgumentMatchers.anyString());
         Mockito.doReturn(NO_ADMIN_NO_STATUS_CHANGE_ERROR).when(msgUtil)
@@ -142,7 +153,7 @@ public class DeveloperStatusTest {
         assertNotNull(updatedDeveloper);
     }
 
-    @Test(expected = MissingReasonException.class)
+    @Test(expected = ValidationException.class)
     public void testDeveloperStatusChange_ActiveToBannedNullReason_ThrowsException()
             throws EntityCreationException, EntityRetrievalException,
             JsonProcessingException, MissingReasonException, ValidationException {
@@ -165,7 +176,7 @@ public class DeveloperStatusTest {
         developerManager.update(activeToBannedDeveloper, false);
     }
 
-    @Test(expected = MissingReasonException.class)
+    @Test(expected = ValidationException.class)
     public void testDeveloperWithHistoryChange_ActiveToBannedNullReason_ThrowsException()
             throws EntityCreationException, EntityRetrievalException,
             JsonProcessingException, MissingReasonException, ValidationException {
@@ -192,7 +203,7 @@ public class DeveloperStatusTest {
         developerManager.update(activeDeveloperWithStatusHistory, false);
     }
 
-    @Test(expected = MissingReasonException.class)
+    @Test(expected = ValidationException.class)
     public void testDeveloperStatusChange_ActiveToBannedEmptyReason_ThrowsException()
             throws EntityCreationException, EntityRetrievalException,
             JsonProcessingException, MissingReasonException, ValidationException {
