@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version 21.16.0
+_20 December 2019_
+
+### Features
+* Add questionable activity when b3 is added to listing after 1/1/2020
+
+---
+
 ## Version 21.15.0
 _16 December 2019_
 
