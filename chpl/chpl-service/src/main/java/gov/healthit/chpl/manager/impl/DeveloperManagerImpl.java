@@ -46,10 +46,8 @@ import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.AttestationType;
-import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
@@ -61,7 +59,6 @@ import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.manager.rules.developer.DeveloperValidationContext;
 import gov.healthit.chpl.manager.rules.developer.DeveloperValidationFactory;
 import gov.healthit.chpl.permissions.ResourcePermissions;
-import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -153,14 +150,7 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
     public DeveloperDTO getById(final Long id, final boolean allowDeleted)
             throws EntityRetrievalException {
         DeveloperDTO developer = developerDao.getById(id, allowDeleted);
-        List<CertificationBodyDTO> availableAcbs = resourcePermissions.getAllAcbsForCurrentUser();
-        if (availableAcbs == null || availableAcbs.size() == 0) {
-            availableAcbs = acbManager.getAll();
-        }
-        // someone will see either the transparencies that apply to the ACBs to
-        // which they have access
-        // or they will see the transparencies for all ACBs if they are an admin
-        // or not logged in
+        List<CertificationBodyDTO> availableAcbs = acbManager.getAll();
         for (CertificationBodyDTO acb : availableAcbs) {
             DeveloperACBMapDTO map = developerDao.getTransparencyMapping(developer.getId(), acb.getId());
             if (map == null) {
@@ -208,96 +198,31 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
-    public DeveloperDTO update(final DeveloperDTO updatedDev, final boolean doValidation)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, MissingReasonException,
-            ValidationException {
-        if (doValidation) {
-            // validation is not done during listing update -> developer ban
-            // but should be done at other times
-            Set<String> errors = runUpdateValidations(updatedDev);
-            if (errors != null && errors.size() > 0) {
-                throw new ValidationException(errors);
-            }
-        }
-
+    public DeveloperDTO update(final DeveloperDTO updatedDev, final boolean doUpdateValidations)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
         DeveloperDTO beforeDev = getById(updatedDev.getId());
-        DeveloperStatusEventDTO newDevStatus = updatedDev.getStatus();
-        DeveloperStatusEventDTO currDevStatus = beforeDev.getStatus();
-        if (currDevStatus == null || currDevStatus.getStatus() == null) {
-            String msg = msgUtil.getMessage("developer.noStatusFound", beforeDev.getName());
-            LOGGER.error(msg);
-            throw new EntityCreationException(msg);
+
+        Set<String> errors = null;
+        if (doUpdateValidations) {
+            // update validations are not done during listing update -> developer ban
+            // but should be done at other times, with some possible exceptions
+            errors = runUpdateValidations(updatedDev);
+        }
+        if (errors == null) {
+            errors = new HashSet<String>();
+        }
+        errors.addAll(runChangeValidations(updatedDev, beforeDev));
+        if (errors.size() > 0) {
+            throw new ValidationException(errors);
         }
 
-        // if any of the statuses (new, old, or any other status in the history)
-        // is Under Certification Ban by ONC make sure there is a reason given
-        for (DeveloperStatusEventDTO statusEvent : updatedDev.getStatusEvents()) {
-            if (statusEvent.getStatus().getStatusName()
-                    .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
-                    && StringUtils.isEmpty(statusEvent.getReason())) {
-                throw new MissingReasonException(msgUtil.getMessage("developer.missingReasonForBan",
-                        DeveloperStatusType.UnderCertificationBanByOnc.toString()));
-            }
+        if (beforeDev.getContact() != null && beforeDev.getContact().getId() != null) {
+            updatedDev.getContact().setId(beforeDev.getContact().getId());
         }
+        developerDao.update(updatedDev);
+        updateStatusHistory(beforeDev, updatedDev);
+        createOrUpdateTransparencyMappings(updatedDev);
 
-        // if the before status is not Active and the user is not ROLE_ADMIN
-        // then nothing can be changed
-        if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
-                && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
-            String msg = msgUtil.getMessage("developer.notActiveNotAdminCantChangeStatus", AuthUtil.getUsername(),
-                    beforeDev.getName());
-            LOGGER.error(msg);
-            throw new EntityCreationException(msg);
-        }
-
-        // if the status history has been modified, the user must be role admin
-        // except that an acb admin can change to UnderCertificationBanByOnc
-        // triggered by listing status update
-        boolean devStatusHistoryUpdated = isStatusHistoryUpdated(beforeDev, updatedDev);
-        if (devStatusHistoryUpdated
-                && newDevStatus.getStatus().getStatusName()
-                        .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
-                && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
-            String msg = msgUtil.getMessage("developer.statusChangeNotAllowedWithoutAdmin",
-                    DeveloperStatusType.UnderCertificationBanByOnc.toString());
-            throw new EntityCreationException(msg);
-        } else if (devStatusHistoryUpdated
-                && !newDevStatus.getStatus().getStatusName()
-                        .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
-                && resourcePermissions.isUserRoleAdmin() && resourcePermissions.isUserRoleOnc()) {
-            String msg = msgUtil.getMessage("developer.statusHistoryChangeNotAllowedWithoutAdmin");
-            throw new EntityCreationException(msg);
-        }
-
-        // determine if the status has been changed in most cases only allowed by ROLE_ADMIN but ROLE_ACB
-        // can change it to UnderCertificationBanByOnc
-        boolean currentStatusChanged = !currDevStatus.getStatus().getStatusName()
-                .equals(newDevStatus.getStatus().getStatusName());
-        if (currentStatusChanged
-                && !newDevStatus.getStatus().getStatusName()
-                        .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
-                && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
-            String msg = msgUtil.getMessage("developer.statusChangeNotAllowedWithoutAdmin");
-            throw new EntityCreationException(msg);
-        } else {
-            /*
-             * Check to see that the Developer's website is valid.
-             */
-            if (!StringUtils.isEmpty(updatedDev.getWebsite())) {
-                if (!ValidationUtils.isWellFormedUrl(updatedDev.getWebsite())) {
-                    String msg = msgUtil.getMessage("developer.websiteIsInvalid");
-                    throw new EntityCreationException(msg);
-                }
-            }
-
-            if (beforeDev.getContact() != null && beforeDev.getContact().getId() != null) {
-                updatedDev.getContact().setId(beforeDev.getContact().getId());
-            }
-
-            developerDao.update(updatedDev);
-            updateStatusHistory(beforeDev, updatedDev);
-            createOrUpdateTransparencyMappings(updatedDev);
-        }
         DeveloperDTO after = getById(updatedDev.getId());
         activityManager.addActivity(ActivityConcept.DEVELOPER, after.getId(),
                 "Developer " + updatedDev.getName() + " was updated.", beforeDev, after);
@@ -711,48 +636,42 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
         return decertifiedDeveloperResults;
     }
 
-    private boolean isStatusHistoryUpdated(final DeveloperDTO original, final DeveloperDTO changed) {
-        boolean hasChanged = false;
-        if ((original.getStatusEvents() != null && changed.getStatusEvents() == null)
-                || (original.getStatusEvents() == null && changed.getStatusEvents() != null)
-                || (original.getStatusEvents().size() != changed.getStatusEvents().size())) {
-            hasChanged = true;
-        } else {
-            // neither status history is null and they have the same size history arrays
-            // so now check for any differences in the values of each
-            for (DeveloperStatusEventDTO origStatusHistory : original.getStatusEvents()) {
-                boolean foundMatchInChanged = false;
-                for (DeveloperStatusEventDTO changedStatusHistory : changed.getStatusEvents()) {
-                    if (origStatusHistory.getStatus().getId() != null
-                            && changedStatusHistory.getStatus().getId() != null
-                            && origStatusHistory.getStatus().getId().equals(changedStatusHistory.getStatus().getId())
-                            && origStatusHistory.getStatusDate().getTime() == changedStatusHistory.getStatusDate()
-                                    .getTime()) {
-                        foundMatchInChanged = true;
-                    }
-                }
-                hasChanged = hasChanged || !foundMatchInChanged;
-            }
-        }
-        return hasChanged;
-    }
-
     private List<DeveloperDTO> addTransparencyMappings(final List<DeveloperDTO> developers) {
+        List<CertificationBodyDTO> availableAcbs = acbManager.getAll();
         List<DeveloperACBMapDTO> transparencyMaps = developerDao.getAllTransparencyMappings();
         Map<Long, DeveloperDTO> mappedDevelopers = new HashMap<Long, DeveloperDTO>();
         for (DeveloperDTO dev : developers) {
+            //initialize each developer object with null transparency attestation mappings
+            //for every ACB
+            for (CertificationBodyDTO acb : availableAcbs) {
+                DeveloperACBMapDTO mapToAdd = new DeveloperACBMapDTO();
+                mapToAdd.setAcbId(acb.getId());
+                mapToAdd.setAcbName(acb.getName());
+                mapToAdd.setDeveloperId(dev.getId());
+                mapToAdd.setTransparencyAttestation(null);
+                dev.getTransparencyAttestationMappings().add(mapToAdd);
+            }
             mappedDevelopers.put(dev.getId(), dev);
         }
-        for (DeveloperACBMapDTO map : transparencyMaps) {
-            if (map.getAcbId() != null) {
-                mappedDevelopers.get(map.getDeveloperId()).getTransparencyAttestationMappings().add(map);
+
+        //fill in existing values for transparency Maps for acb+developer
+        for (DeveloperACBMapDTO transparencyMap : transparencyMaps) {
+            if (transparencyMap.getAcbId() != null) {
+                DeveloperDTO dev = mappedDevelopers.get(transparencyMap.getDeveloperId());
+                List<DeveloperACBMapDTO> devTransparencyMap = dev.getTransparencyAttestationMappings();
+                for (DeveloperACBMapDTO acbMapping : devTransparencyMap) {
+                    if (acbMapping.getAcbId().equals(transparencyMap.getAcbId())) {
+                        acbMapping.setTransparencyAttestation(transparencyMap.getTransparencyAttestation());
+                    }
+                }
             }
         }
-        List<DeveloperDTO> ret = new ArrayList<DeveloperDTO>();
+
+        List<DeveloperDTO> developersWithTransparency = new ArrayList<DeveloperDTO>();
         for (DeveloperDTO dev : mappedDevelopers.values()) {
-            ret.add(dev);
+            developersWithTransparency.add(dev);
         }
-        return ret;
+        return developersWithTransparency;
     }
 
     private class DuplicateChplProdNumber {
@@ -824,6 +743,17 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
         return runValidations(rules, dto);
     }
 
+    private Set<String> runChangeValidations(final DeveloperDTO dto, final DeveloperDTO beforeDev) {
+        List<ValidationRule<DeveloperValidationContext>> rules = new ArrayList<ValidationRule<DeveloperValidationContext>>();
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.EDIT_TRANSPARENCY_ATTESTATION));
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.HAS_STATUS));
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.STATUS_MISSING_BAN_REASON));
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.PRIOR_STATUS_ACTIVE));
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.EDIT_STATUS_HISTORY));
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.STATUS_CHANGED));
+        return runValidations(rules, dto, null, beforeDev);
+    }
+
     private Set<String> runCreateValidations(final DeveloperDTO dto) {
         List<ValidationRule<DeveloperValidationContext>> rules = new ArrayList<ValidationRule<DeveloperValidationContext>>();
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.NAME));
@@ -850,8 +780,13 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
 
     private Set<String> runValidations(final List<ValidationRule<DeveloperValidationContext>> rules,
             final DeveloperDTO dto, final String pendingAcbName) {
+        return runValidations(rules, dto, pendingAcbName, null);
+    }
+
+    private Set<String> runValidations(final List<ValidationRule<DeveloperValidationContext>> rules,
+            final DeveloperDTO dto, final String pendingAcbName, final DeveloperDTO beforeDev) {
         Set<String> errorMessages = new HashSet<String>();
-        DeveloperValidationContext context = new DeveloperValidationContext(dto, msgUtil, pendingAcbName);
+        DeveloperValidationContext context = new DeveloperValidationContext(dto, msgUtil, pendingAcbName, beforeDev);
 
         for (ValidationRule<DeveloperValidationContext> rule : rules) {
             if (!rule.isValid(context)) {

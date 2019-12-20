@@ -786,7 +786,7 @@ public class ListingMockUtil {
             final Boolean success) {
         PendingCertificationResultDTO certResult = new PendingCertificationResultDTO();
         certResult.setId(id);
-        certResult.setNumber(number);
+        certResult.getCriterion().setNumber(number);
         certResult.setMeetsCriteria(success);
 
         if (!certRules.hasCertOption(number, CertificationResultRules.ADDITIONAL_SOFTWARE)) {
@@ -846,7 +846,7 @@ public class ListingMockUtil {
             final Boolean success) {
         PendingCertificationResultDTO certResult = new PendingCertificationResultDTO();
         certResult.setId(id);
-        certResult.setNumber(number);
+        certResult.getCriterion().setNumber(number);
         certResult.setMeetsCriteria(success);
 
         if (!certRules.hasCertOption(number, CertificationResultRules.ADDITIONAL_SOFTWARE)) {

@@ -129,6 +129,7 @@ public class CertifiedProductControllerTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         Mockito.doReturn(true).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE);
+        Mockito.doReturn(true).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK);
     }
 
     /**
@@ -410,7 +411,7 @@ public class CertifiedProductControllerTest {
         pcpCertResultDTO1.setG1Success(false);
         pcpCertResultDTO1.setG2Success(false);
         pcpCertResultDTO1.setGap(null);
-        pcpCertResultDTO1.setNumber("170.315 (b)(6)");
+        pcpCertResultDTO1.getCriterion().setNumber("170.315 (b)(6)");
         pcpCertResultDTO1.setPrivacySecurityFramework(null);
         pcpCertResultDTO1.setSed(null);
         pcpCertResultDTO1.setG1Success(false);
@@ -438,7 +439,7 @@ public class CertifiedProductControllerTest {
         pcpCertResultDTO2.setG1Success(false);
         pcpCertResultDTO2.setG2Success(false);
         pcpCertResultDTO2.setGap(null);
-        pcpCertResultDTO2.setNumber("170.315 (b)(6)");
+        pcpCertResultDTO2.getCriterion().setNumber("170.315 (b)(6)");
         pcpCertResultDTO2.setPrivacySecurityFramework(null);
         pcpCertResultDTO2.setSed(null);
         pcpCertResultDTO2.setG1Success(false);
@@ -796,7 +797,7 @@ public class CertifiedProductControllerTest {
         pcpCertResultDTO1.setG1Success(false);
         pcpCertResultDTO1.setG2Success(false);
         pcpCertResultDTO1.setGap(null);
-        pcpCertResultDTO1.setNumber("170.314 (g)(4)");
+        pcpCertResultDTO1.getCriterion().setNumber("170.314 (g)(4)");
         pcpCertResultDTO1.setPrivacySecurityFramework("Approach 1 Approach 2");
         pcpCertResultDTO1.setSed(null);
         pcpCertResultDTO1.setG1Success(false);
@@ -895,7 +896,7 @@ public class CertifiedProductControllerTest {
         pcpCertResultDTO1.setG1Success(false);
         pcpCertResultDTO1.setG2Success(false);
         pcpCertResultDTO1.setGap(null);
-        pcpCertResultDTO1.setNumber("170.314 (g)(4)");
+        pcpCertResultDTO1.getCriterion().setNumber("170.314 (g)(4)");
         pcpCertResultDTO1.setPrivacySecurityFramework("Approach 1, Approach 2");
         pcpCertResultDTO1.setSed(null);
         pcpCertResultDTO1.setG1Success(false);
@@ -994,7 +995,7 @@ public class CertifiedProductControllerTest {
         pcpCertResultDTO1.setG1Success(false);
         pcpCertResultDTO1.setG2Success(false);
         pcpCertResultDTO1.setGap(null);
-        pcpCertResultDTO1.setNumber("170.314 (g)(4)");
+        pcpCertResultDTO1.getCriterion().setNumber("170.314 (g)(4)");
         pcpCertResultDTO1.setPrivacySecurityFramework(" Approach 1 ,  Approach 2 ");
         pcpCertResultDTO1.setSed(null);
         pcpCertResultDTO1.setG1Success(false);

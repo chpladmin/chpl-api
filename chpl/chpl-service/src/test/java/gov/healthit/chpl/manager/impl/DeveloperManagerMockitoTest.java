@@ -3,6 +3,7 @@ package gov.healthit.chpl.manager.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.ff4j.FF4j;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,6 +55,9 @@ public class DeveloperManagerMockitoTest {
     private ResourcePermissions resourcePermissions;
 
     @Mock
+    private FF4j ff4j;
+
+    @Mock
     private CertificationBodyManager acbManager;
 
     @Spy
@@ -79,6 +83,7 @@ public class DeveloperManagerMockitoTest {
     @Before
     public void setup() {
         msgUtil = Mockito.spy((new ErrorMessageUtil(CHPLTestDeveloperValidationConfig.messageSource())));
+        developerValidationFactory = Mockito.spy(new DeveloperValidationFactory(ff4j, resourcePermissions));
         MockitoAnnotations.initMocks(this);
 
         sysDev = getPopulatedDeveloperDTO();

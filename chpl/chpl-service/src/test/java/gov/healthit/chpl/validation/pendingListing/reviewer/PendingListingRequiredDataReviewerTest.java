@@ -225,7 +225,7 @@ public class PendingListingRequiredDataReviewerTest {
 
     private PendingCertificationResultDTO findPendingCertification(PendingCertifiedProductDTO listing, String certNumber) {
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
-            if (cert.getNumber().equals(certNumber)) {
+            if (cert.getCriterion().getNumber().equals(certNumber)) {
                 return cert;
             }
         }

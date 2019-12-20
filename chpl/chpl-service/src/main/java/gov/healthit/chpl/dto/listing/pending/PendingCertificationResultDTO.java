@@ -20,9 +20,6 @@ import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultUcdPro
 public class PendingCertificationResultDTO implements Serializable {
     private static final long serialVersionUID = -1026669045107851464L;
     private Long id;
-    private String number;
-    private String title;
-    private Long certificationCriterionId;
     private Long pendingCertifiedProductId;
     private Boolean meetsCriteria;
     private Boolean gap;
@@ -45,6 +42,7 @@ public class PendingCertificationResultDTO implements Serializable {
     private List<PendingCertificationResultTestTaskDTO> testTasks;
 
     public PendingCertificationResultDTO() {
+        criterion = new CertificationCriterionDTO();
         ucdProcesses = new ArrayList<PendingCertificationResultUcdProcessDTO>();
         additionalSoftware = new ArrayList<PendingCertificationResultAdditionalSoftwareDTO>();
         testData = new ArrayList<PendingCertificationResultTestDataDTO>();
@@ -62,9 +60,6 @@ public class PendingCertificationResultDTO implements Serializable {
         this.setId(entity.getId());
 
         if (entity.getMappedCriterion() != null) {
-            this.setCertificationCriterionId(entity.getMappedCriterion().getId());
-            this.setNumber(entity.getMappedCriterion().getNumber());
-            this.setTitle(entity.getMappedCriterion().getTitle());
             this.criterion = new CertificationCriterionDTO(entity.getMappedCriterion());
         }
 
@@ -142,14 +137,6 @@ public class PendingCertificationResultDTO implements Serializable {
         this.id = id;
     }
 
-    public Long getCertificationCriterionId() {
-        return certificationCriterionId;
-    }
-
-    public void setCertificationCriterionId(final Long certificationCriterionId) {
-        this.certificationCriterionId = certificationCriterionId;
-    }
-
     public Long getPendingCertifiedProductId() {
         return pendingCertifiedProductId;
     }
@@ -164,22 +151,6 @@ public class PendingCertificationResultDTO implements Serializable {
 
     public void setMeetsCriteria(final Boolean meetsCriteria) {
         this.meetsCriteria = meetsCriteria;
-    }
-
-    public String getNumber() {
-        return number;
-    }
-
-    public void setNumber(final String number) {
-        this.number = number;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(final String title) {
-        this.title = title;
     }
 
     public Boolean getGap() {

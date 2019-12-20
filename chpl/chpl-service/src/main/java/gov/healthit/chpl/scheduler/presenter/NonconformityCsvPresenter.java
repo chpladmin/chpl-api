@@ -5,12 +5,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.core.env.Environment;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
@@ -27,10 +27,12 @@ public class NonconformityCsvPresenter extends SurveillanceCsvPresenter {
 
     /**
      * Constructor with properties.
-     * @param props the properties file
+     * 
+     * @param props
+     *            the properties file
      */
-    public NonconformityCsvPresenter(final Properties props) {
-        super(props);
+    public NonconformityCsvPresenter(final Environment env) {
+        super(env);
     }
 
     @Override

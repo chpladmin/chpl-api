@@ -428,12 +428,11 @@
                 </entry>
             </job-data-map>
         </job>
-
         <!-- Questionable Activity data emailer -->
         <job>
             <name>Questionable Activity Report</name>
             <group>chplJobs</group>
-            <description>Sends a report of questionable activity within the last week</description>
+            <description>Sends a report of questionable activity within a user defined range of days</description>
             <job-class>gov.healthit.chpl.scheduler.job.QuestionableActivityEmailJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
@@ -445,6 +444,14 @@
                 <entry>
                     <key>frequency</key>
                     <value>WEEKLY</value>
+                </entry>
+                <entry>
+                    <key>range</key>
+                    <value>7</value>
+                </entry>
+                <entry>
+                    <key>parameters</key>
+                    <value>[{"label": "Range (in days)", "key": "range", "type": "int", "min": "1", "max": "365"} ]</value>
                 </entry>
             </job-data-map>
         </job>
@@ -769,6 +776,21 @@
             <group>systemJobs</group>
             <description>Sets the removed flag to 'true' for specific 2015 criteria</description>
             <job-class>gov.healthit.chpl.scheduler.job.RemoveCriteriaJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+            </job-data-map>
+        </job>
+        <!-- Job used to mark RT 13 EC macra measure as removed -->
+        <job>
+            <name>removeRT13ECMacraMeasureJob</name>
+            <group>systemJobs</group>
+            <description>Sets the removed flag to 'true' for RT13 EC macra measure</description>
+            <job-class>gov.healthit.chpl.scheduler.job.RemoveRT13ECMacraMeasureJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>

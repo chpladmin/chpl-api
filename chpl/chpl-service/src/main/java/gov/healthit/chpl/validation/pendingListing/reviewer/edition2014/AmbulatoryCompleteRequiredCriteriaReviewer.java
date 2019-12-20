@@ -29,7 +29,7 @@ public class AmbulatoryCompleteRequiredCriteriaReviewer implements Reviewer {
         for (int i = 0; i < REQUIRED_CRITERIA.length; i++) {
             boolean hasCert = false;
             for (PendingCertificationResultDTO certCriteria : certificationCriterion) {
-                if (certCriteria.getNumber().equals(REQUIRED_CRITERIA[i]) && certCriteria.getMeetsCriteria()) {
+                if (certCriteria.getCriterion().getNumber().equals(REQUIRED_CRITERIA[i]) && certCriteria.getMeetsCriteria()) {
                     hasCert = true;
                 }
             }
@@ -46,16 +46,16 @@ public class AmbulatoryCompleteRequiredCriteriaReviewer implements Reviewer {
         boolean hasA19 = false;
         boolean hasA20 = false;
         for (PendingCertificationResultDTO certCriteria : listing.getCertificationCriterion()) {
-            if (certCriteria.getNumber().equals("170.314 (a)(1)") && certCriteria.getMeetsCriteria()) {
+            if (certCriteria.getCriterion().getNumber().equals("170.314 (a)(1)") && certCriteria.getMeetsCriteria()) {
                 hasA1 = true;
             }
-            if (certCriteria.getNumber().equals("170.314 (a)(18)") && certCriteria.getMeetsCriteria()) {
+            if (certCriteria.getCriterion().getNumber().equals("170.314 (a)(18)") && certCriteria.getMeetsCriteria()) {
                 hasA18 = true;
             }
-            if (certCriteria.getNumber().equals("170.314 (a)(19)") && certCriteria.getMeetsCriteria()) {
+            if (certCriteria.getCriterion().getNumber().equals("170.314 (a)(19)") && certCriteria.getMeetsCriteria()) {
                 hasA19 = true;
             }
-            if (certCriteria.getNumber().equals("170.314 (a)(20)") && certCriteria.getMeetsCriteria()) {
+            if (certCriteria.getCriterion().getNumber().equals("170.314 (a)(20)") && certCriteria.getMeetsCriteria()) {
                 hasA20 = true;
             }
         }
@@ -82,16 +82,16 @@ public class AmbulatoryCompleteRequiredCriteriaReviewer implements Reviewer {
         boolean hasB8 = false;
         boolean hasH1 = false;
         for (PendingCertificationResultDTO certCriteria : listing.getCertificationCriterion()) {
-            if (certCriteria.getNumber().equals("170.314 (b)(1)") && certCriteria.getMeetsCriteria()) {
+            if (certCriteria.getCriterion().getNumber().equals("170.314 (b)(1)") && certCriteria.getMeetsCriteria()) {
                 hasB1 = true;
             }
-            if (certCriteria.getNumber().equals("170.314 (b)(2)") && certCriteria.getMeetsCriteria()) {
+            if (certCriteria.getCriterion().getNumber().equals("170.314 (b)(2)") && certCriteria.getMeetsCriteria()) {
                 hasB2 = true;
             }
-            if (certCriteria.getNumber().equals("170.314 (b)(8)") && certCriteria.getMeetsCriteria()) {
+            if (certCriteria.getCriterion().getNumber().equals("170.314 (b)(8)") && certCriteria.getMeetsCriteria()) {
                 hasB8 = true;
             }
-            if (certCriteria.getNumber().equals("170.314 (h)(1)") && certCriteria.getMeetsCriteria()) {
+            if (certCriteria.getCriterion().getNumber().equals("170.314 (h)(1)") && certCriteria.getMeetsCriteria()) {
                 hasH1 = true;
             }
         }

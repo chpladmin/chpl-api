@@ -73,7 +73,7 @@ public class TestFunctionality2015Reviewer implements Reviewer {//, ApplicationL
                         if (tf == null) {
                             listing.getErrorMessages().add(
                                     msgUtil.getMessage("listing.criteria.testFunctionalityNotFoundAndRemoved",
-                                            cr.getNumber(), crtf.getNumber()));
+                                            cr.getCriterion().getNumber(), crtf.getNumber()));
                             crtfIter.remove();
                         } else {
                             Set<String> warnings = getTestingFunctionalityWarningMessages(crtf, cr, listing);
@@ -97,7 +97,7 @@ public class TestFunctionality2015Reviewer implements Reviewer {//, ApplicationL
         CertificationEditionDTO edition = getEditionDTO(getEditionFromListing(listing));
         TestFunctionalityDTO tf = getTestFunctionality(crtf.getNumber(), edition.getId());
 
-        String criterionNumber = cr.getNumber();
+        String criterionNumber = cr.getCriterion().getNumber();
         if (!isTestFunctionalityCritierionValid(criterionNumber, tf, edition.getYear())) {
             warnings.add(getTestFunctionalityCriterionMessage(crtf, cr, listing, edition));
         }
@@ -124,10 +124,10 @@ public class TestFunctionality2015Reviewer implements Reviewer {//, ApplicationL
 
         TestFunctionalityDTO tf = getTestFunctionality(crtf.getNumber(), edition.getId());
         return getMessage(
-                cr.getNumber(),
+                cr.getCriterion().getNumber(),
                 crtf.getNumber(),
                 getDelimitedListOfValidCriteriaNumbers(tf, edition),
-                cr.getNumber());
+                cr.getCriterion().getNumber());
     }
 
     private String getMessage(final String criteriaNumber,

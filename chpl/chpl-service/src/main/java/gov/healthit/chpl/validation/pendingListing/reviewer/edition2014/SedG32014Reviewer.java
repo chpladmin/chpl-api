@@ -28,7 +28,7 @@ public class SedG32014Reviewer implements Reviewer {
                 if (cert.getSed() != null && cert.getSed().booleanValue()) {
                     foundSedCriteria = true;
                 }
-                if (cert.getNumber().equalsIgnoreCase(G3_2014)) {
+                if (cert.getCriterion().getNumber().equalsIgnoreCase(G3_2014)) {
                     attestsToSed = true;
                 }
             }

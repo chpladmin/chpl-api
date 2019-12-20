@@ -2,9 +2,9 @@ package gov.healthit.chpl.scheduler.surveillance.rules;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -14,8 +14,6 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 
 @Component("ruleComplianceCalculator")
 public class RuleComplianceCalculator {
-    private Properties props;
-
     @Autowired
     private LongSuspensionComplianceChecker lsc;
     @Autowired
@@ -28,12 +26,16 @@ public class RuleComplianceCalculator {
     private CapClosedComplianceChecker capClosed;
     @Autowired
     private NonconformityOpenCapCompleteComplianceChecker ncOpenCapClosed;
+    @Autowired
+    private Environment env;
 
     public RuleComplianceCalculator() {
     }
 
     public List<OversightRuleResult> calculateCompliance(CertifiedProductSearchDetails cp, Surveillance surv,
             SurveillanceNonconformity nc) {
+        setProps();
+
         List<OversightRuleResult> survRuleResults = new ArrayList<OversightRuleResult>();
 
         OversightRuleResult lscResult = new OversightRuleResult();
@@ -70,16 +72,11 @@ public class RuleComplianceCalculator {
         return survRuleResults;
     }
 
-    public Properties getProps() {
-        return props;
-    }
-
-    public void setProps(final Properties props) {
-        this.props = props;
-        lsc.setNumDaysAllowed(Integer.parseInt(props.getProperty("suspendedDaysAllowed")));
-        capApproval.setNumDaysAllowed(Integer.parseInt(props.getProperty("capApprovalDaysAllowed")));
-        capStarted.setNumDaysAllowed(Integer.parseInt(props.getProperty("capStartDaysAllowed")));
-        ncOpenCapClosed.setNumDaysAllowed(Integer.parseInt(props.getProperty("ncOpenCapClosedDaysAllowed")));
+    private void setProps() {
+        lsc.setNumDaysAllowed(Integer.parseInt(env.getProperty("suspendedDaysAllowed")));
+        capApproval.setNumDaysAllowed(Integer.parseInt(env.getProperty("capApprovalDaysAllowed")));
+        capStarted.setNumDaysAllowed(Integer.parseInt(env.getProperty("capStartDaysAllowed")));
+        ncOpenCapClosed.setNumDaysAllowed(Integer.parseInt(env.getProperty("ncOpenCapClosedDaysAllowed")));
     }
 
     public LongSuspensionComplianceChecker getLsc() {
