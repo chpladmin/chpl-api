@@ -73,7 +73,7 @@ public class CertifiedProduct implements Serializable {
         this.setLastModifiedDate(dto.getLastModifiedDate() != null ? dto.getLastModifiedDate().getTime() + "" : "");
         this.edition = dto.getYear();
         this.certificationDate = (dto.getCertificationDate() != null ? dto.getCertificationDate().getTime() : -1);
-        this.certificationStatus = dto.getCertificationStatusName();
+        this.certificationStatus = (dto.getCertificationStatusName() != null ? dto.getCertificationStatusName() : "");
     }
 
     /**
