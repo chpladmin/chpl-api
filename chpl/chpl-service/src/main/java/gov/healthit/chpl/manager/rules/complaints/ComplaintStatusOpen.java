@@ -3,7 +3,6 @@ package gov.healthit.chpl.manager.rules.complaints;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import gov.healthit.chpl.dto.ComplaintStatusTypeDTO;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
 public class ComplaintStatusOpen extends ValidationRule<ComplaintValidationContext> {
@@ -20,8 +19,7 @@ public class ComplaintStatusOpen extends ValidationRule<ComplaintValidationConte
             this.context = context;
 
             // Is the complaint status Open?
-            if (context.getComplaintDTO().getComplaintStatusType().getId()
-                    .equals(getComplaintStatusType("Open").getId())) {
+            if (context.getComplaintDTO().getClosedDate() == null) {
                 return true;
             } else {
                 getMessages().add(getErrorMessage("complaints.create.statusOpen"));
@@ -34,14 +32,5 @@ public class ComplaintStatusOpen extends ValidationRule<ComplaintValidationConte
             getMessages().add(error);
             return false;
         }
-    }
-
-    private ComplaintStatusTypeDTO getComplaintStatusType(String name) {
-        for (ComplaintStatusTypeDTO dto : context.getComplaintDAO().getComplaintStatusTypes()) {
-            if (dto.getName().equals(name)) {
-                return dto;
-            }
-        }
-        return null;
     }
 }

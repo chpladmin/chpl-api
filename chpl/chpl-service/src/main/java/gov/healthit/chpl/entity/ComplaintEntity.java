@@ -45,13 +45,6 @@ public class ComplaintEntity {
     @Column(name = "complainant_type_id", nullable = false)
     private Long complainantTypeId;
 
-    @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "complaint_status_type_id", insertable = false, updatable = false)
-    private ComplaintStatusTypeEntity complaintStatusType;
-
-    @Column(name = "complaint_status_type_id", nullable = false)
-    private Long complaintStatusTypeId;
-
     @Column(name = "onc_complaint_id", nullable = true)
     private String oncComplaintId;
 
@@ -142,14 +135,6 @@ public class ComplaintEntity {
 
     public void setComplainantTypeOther(final String complainantTypeOther) {
         this.complainantTypeOther = complainantTypeOther;
-    }
-
-    public ComplaintStatusTypeEntity getComplaintStatusType() {
-        return complaintStatusType;
-    }
-
-    public void setComplaintStatusType(final ComplaintStatusTypeEntity complaintStatusType) {
-        this.complaintStatusType = complaintStatusType;
     }
 
     public String getOncComplaintId() {
@@ -280,14 +265,6 @@ public class ComplaintEntity {
         this.complainantTypeId = complainantTypeId;
     }
 
-    public Long getComplaintStatusTypeId() {
-        return complaintStatusTypeId;
-    }
-
-    public void setComplaintStatusTypeId(Long complaintStatusTypeId) {
-        this.complaintStatusTypeId = complaintStatusTypeId;
-    }
-
     public Set<ComplaintListingMapEntity> getListings() {
         return listings;
     }
@@ -316,8 +293,7 @@ public class ComplaintEntity {
     public String toString() {
         return "ComplaintEntity [id=" + id + ", certificationBody=" + certificationBody + ", certificationBodyId="
                 + certificationBodyId + ", complainantType=" + complainantType + ", complainantTypeOther="
-                + complainantTypeOther + ", complainantTypeId=" + complainantTypeId + ", complaintStatusType="
-                + complaintStatusType + ", complaintStatusTypeId=" + complaintStatusTypeId + ", oncComplaintId="
+                + complainantTypeOther + ", complainantTypeId=" + complainantTypeId + ", oncComplaintId="
                 + oncComplaintId + ", acbComplaintId=" + acbComplaintId + ", receivedDate=" + receivedDate
                 + ", summary=" + summary + ", actions=" + actions + ", complainantContacted=" + complainantContacted
                 + ", developerContacted=" + developerContacted + ", oncAtlContacted=" + oncAtlContacted

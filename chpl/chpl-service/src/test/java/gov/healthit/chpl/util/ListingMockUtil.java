@@ -1,4 +1,4 @@
-package gov.healthit.chpl.listing;
+package gov.healthit.chpl.util;
 
 import static org.junit.Assert.fail;
 
@@ -19,6 +19,7 @@ import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -33,6 +34,7 @@ import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.TestData;
 import gov.healthit.chpl.domain.TestProcedure;
 import gov.healthit.chpl.dto.AddressDTO;
+import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
@@ -60,6 +62,16 @@ public class ListingMockUtil {
     private static final Long EDITION_2015_ID = 3L;
     private static final Long EDITION_2014_ID = 2L;
     @Autowired private CertificationResultRules certRules;
+
+    public CertifiedProduct createSimpleCertifiedProduct(Long id, String chplProductNumber,
+            String edition, Date certificationDate) {
+        CertifiedProduct listing = new CertifiedProduct();
+        listing.setId(id);
+        listing.setCertificationDate(certificationDate.getTime());
+        listing.setChplProductNumber(chplProductNumber);
+        listing.setEdition(edition);
+        return listing;
+    }
 
     public PendingCertifiedProductDTO createPending2014Listing() {
         PendingCertifiedProductDTO listing = createPendingListing("2014");
@@ -778,6 +790,40 @@ public class ListingMockUtil {
         }
         if (!certRules.hasCertOption(number, CertificationResultRules.TEST_TOOLS_USED)) {
             certResult.setTestToolsUsed(null);
+        }
+        return certResult;
+    }
+
+    public CertificationResultDetailsDTO create2015CertResultDetails(
+            final Long id, final String number, final Boolean success) {
+        CertificationResultDetailsDTO certResult = new CertificationResultDetailsDTO();
+        certResult.setId(id);
+        certResult.setNumber(number);
+        certResult.setSuccess(success);
+
+        if (!certRules.hasCertOption(number, CertificationResultRules.API_DOCUMENTATION)) {
+            certResult.setApiDocumentation(null);
+        }
+        if (!certRules.hasCertOption(number, CertificationResultRules.G1_SUCCESS)) {
+            certResult.setG1Success(null);
+        }
+        if (!certRules.hasCertOption(number, CertificationResultRules.G2_SUCCESS)) {
+            certResult.setG2Success(null);
+        }
+        if (!certRules.hasCertOption(number, CertificationResultRules.GAP)) {
+            certResult.setGap(null);
+        } else {
+            certResult.setGap(Boolean.FALSE);
+        }
+
+        if (!certRules.hasCertOption(number, CertificationResultRules.PRIVACY_SECURITY)) {
+            certResult.setPrivacySecurityFramework(null);
+        }
+
+        if (!certRules.hasCertOption(number, CertificationResultRules.SED)) {
+            certResult.setSed(null);
+        } else {
+            certResult.setSed(Boolean.FALSE);
         }
         return certResult;
     }

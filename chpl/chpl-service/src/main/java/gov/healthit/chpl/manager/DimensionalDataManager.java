@@ -50,6 +50,7 @@ import gov.healthit.chpl.domain.UploadTemplateVersion;
 import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptions;
+import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptionsDeprecated;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
@@ -302,10 +303,11 @@ public class DimensionalDataManager {
         return results;
     }
 
-    public SurveillanceRequirementOptions getSurveillanceRequirementOptions() {
+    @Deprecated
+    public SurveillanceRequirementOptionsDeprecated getSurveillanceRequirementOptionsDeprecated() {
         LOGGER.debug("Getting all surveillance requirements from the database (not cached).");
 
-        SurveillanceRequirementOptions result = new SurveillanceRequirementOptions();
+        SurveillanceRequirementOptionsDeprecated result = new SurveillanceRequirementOptionsDeprecated();
 
         List<CertificationCriterionDTO> criteria2014 = certificationCriterionDao.findByCertificationEditionYear("2014");
         for (CertificationCriterionDTO crit : criteria2014) {
@@ -325,7 +327,8 @@ public class DimensionalDataManager {
         return result;
     }
 
-    public Set<KeyValueModel> getNonconformityTypeOptions() {
+    @Deprecated
+    public Set<KeyValueModel> getNonconformityTypeOptionsDeprecated() {
         LOGGER.debug("Getting all nonconformity types from the database (not cached).");
 
         Set<KeyValueModel> result = new HashSet<KeyValueModel>();
@@ -345,6 +348,57 @@ public class DimensionalDataManager {
         result.add(new KeyValueModel(null, NonconformityType.K2.getName()));
         result.add(new KeyValueModel(null, NonconformityType.L.getName()));
         result.add(new KeyValueModel(null, NonconformityType.OTHER.getName()));
+        return result;
+    }
+
+    public SurveillanceRequirementOptions getSurveillanceRequirementOptions() {
+        LOGGER.debug("Getting all surveillance requirements from the database (not cached).");
+
+        SurveillanceRequirementOptions result = new SurveillanceRequirementOptions();
+
+        List<CertificationCriterionDTO> criteria2014 = certificationCriterionDao.findByCertificationEditionYear("2014");
+        for (CertificationCriterionDTO crit : criteria2014) {
+            result.getCriteriaOptions2014().add(new CertificationCriterion(crit));
+        }
+        List<CertificationCriterionDTO> criteria2015 = certificationCriterionDao.findByCertificationEditionYear("2015");
+        for (CertificationCriterionDTO crit : criteria2015) {
+            result.getCriteriaOptions2015().add(new CertificationCriterion(crit));
+        }
+
+        result.getTransparencyOptions().add(RequirementTypeEnum.K1.getName());
+        result.getTransparencyOptions().add(RequirementTypeEnum.K2.getName());
+        return result;
+    }
+
+    public Set<CertificationCriterion> getNonconformityTypeOptions() {
+        LOGGER.debug("Getting all nonconformity types from the database (not cached).");
+
+        Set<CertificationCriterion> result = new HashSet<CertificationCriterion>();
+
+        List<CertificationCriterionDTO> criteria2014 = certificationCriterionDao.findByCertificationEditionYear("2014");
+        for (CertificationCriterionDTO crit : criteria2014) {
+            result.add(new CertificationCriterion(crit));
+        }
+        List<CertificationCriterionDTO> criteria2015 = certificationCriterionDao.findByCertificationEditionYear("2015");
+        for (CertificationCriterionDTO crit : criteria2015) {
+            result.add(new CertificationCriterion(crit));
+        }
+
+        CertificationCriterion k1Type = new CertificationCriterion();
+        k1Type.setNumber(NonconformityType.K1.getName());
+        result.add(k1Type);
+
+        CertificationCriterion k2Type = new CertificationCriterion();
+        k2Type.setNumber(NonconformityType.K2.getName());
+        result.add(k2Type);
+
+        CertificationCriterion lType = new CertificationCriterion();
+        lType.setNumber(NonconformityType.L.getName());
+        result.add(lType);
+
+        CertificationCriterion otherType = new CertificationCriterion();
+        otherType.setNumber(NonconformityType.OTHER.getName());
+        result.add(otherType);
         return result;
     }
 

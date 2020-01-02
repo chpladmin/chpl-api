@@ -1,11 +1,8 @@
 package gov.healthit.chpl.manager.impl;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.BeforeClass;
@@ -46,19 +43,18 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
-import gov.healthit.chpl.domain.surveillance.report.RelevantListing;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.ComplaintCriterionMapDTO;
 import gov.healthit.chpl.dto.ComplaintDTO;
 import gov.healthit.chpl.dto.ComplaintListingMapDTO;
 import gov.healthit.chpl.dto.ComplaintSurveillanceMapDTO;
+import gov.healthit.chpl.dto.surveillance.SurveillanceBasicDTO;
+import gov.healthit.chpl.dto.surveillance.report.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportExclusionDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
-import gov.healthit.chpl.dto.surveillance.SurveillanceBasicDTO;
-import gov.healthit.chpl.dto.surveillance.report.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -849,7 +845,7 @@ public class QuarterlyReportManagerTest extends TestCase {
         Surveillance created = null;
         Long insertedId;
         try {
-            insertedId = survManager.createSurveillance(-1L, surv);
+            insertedId = survManager.createSurveillance(surv);
             assertNotNull(insertedId);
             created = survManager.getById(insertedId);
             assertNotNull(created);
@@ -863,7 +859,7 @@ public class QuarterlyReportManagerTest extends TestCase {
         return created;
     }
 
-    private ComplaintDTO createComplaint(final Long acbId, final String summary, final Date receivedDate) 
+    private ComplaintDTO createComplaint(final Long acbId, final String summary, final Date receivedDate)
     throws EntityRetrievalException {
         CertificationBodyDTO acb = new CertificationBodyDTO();
         acb.setId(acbId);
@@ -875,7 +871,6 @@ public class QuarterlyReportManagerTest extends TestCase {
         complaint.setCertificationBody(acb);
         complaint.setComplainantContacted(true);
         complaint.setComplainantType(complaintDao.getComplainantTypes().get(0));
-        complaint.setComplaintStatusType(complaintDao.getComplaintStatusTypes().get(0));
         complaint.setDeveloperContacted(false);
         complaint.setFlagForOncReview(true);
         complaint.setOncAtlContacted(false);
