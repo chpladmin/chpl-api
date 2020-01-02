@@ -9,12 +9,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.context.annotation.PropertySources;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.oxm.Marshaller;
@@ -32,8 +34,8 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
-import gov.healthit.chpl.manager.ApiKeyManager;
 import gov.healthit.chpl.filter.APIKeyAuthenticationFilter;
+import gov.healthit.chpl.manager.ApiKeyManager;
 import gov.healthit.chpl.registration.RateLimitingInterceptor;
 import gov.healthit.chpl.web.controller.annotation.CacheControlHandlerInterceptor;
 
@@ -49,7 +51,14 @@ import gov.healthit.chpl.web.controller.annotation.CacheControlHandlerIntercepto
 @EnableAsync
 @EnableAspectJAutoProxy
 @EnableScheduling
-@PropertySource("classpath:/environment.properties")
+@PropertySources({
+    @PropertySource("classpath:/environment.properties"),
+    @PropertySource(value = "classpath:/environment-override.properties", ignoreResourceNotFound = true),
+    @PropertySource("classpath:/lookup.properties"),
+    @PropertySource(value = "classpath:/lookup-override.properties", ignoreResourceNotFound = true),
+    @PropertySource("classpath:/email.properties"),
+    @PropertySource(value = "classpath:/email-override.properties", ignoreResourceNotFound = true),
+})
 @ComponentScan(basePackages = {
         "gov.healthit.chpl.**"
 })
@@ -96,13 +105,18 @@ public class CHPLConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public ReloadableResourceBundleMessageSource messageSource() {
-        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasename("classpath:/errors");
+    public MessageSource messageSource() {
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasename("errors-override");
+
+        ResourceBundleMessageSource parentMessageSource = new ResourceBundleMessageSource();
+        parentMessageSource.setBasename("errors");
+
+        messageSource.setParentMessageSource(parentMessageSource);
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
     }
-
+    
     @Bean
     public CookieLocaleResolver localeResolver() {
         CookieLocaleResolver localeResolver = new CookieLocaleResolver();

@@ -67,7 +67,7 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
                         if (tf == null) {
                             listing.getErrorMessages().add(
                                     msgUtil.getMessage("listing.criteria.testFunctionalityNotFoundAndRemoved",
-                                            cr.getNumber(), crtf.getNumber()));
+                                            cr.getCriterion().getNumber(), crtf.getNumber()));
                             crtfIter.remove();
                         } else {
                             listing.getErrorMessages().addAll(
@@ -107,7 +107,7 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
         CertificationEditionDTO edition = getEditionDTO(getEditionFromListing(listing));
         TestFunctionalityDTO tf = getTestFunctionality(crtf.getNumber(), edition.getId());
 
-        String criterionNumber = cr.getNumber();
+        String criterionNumber = cr.getCriterion().getNumber();
         if (!isTestFunctionalityCritierionValid(criterionNumber, tf, edition.getYear())) {
             warnings.add(getTestFunctionalityCriterionErrorMessage(crtf, cr, listing, edition));
         }
@@ -141,7 +141,7 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
         TestFunctionalityDTO tf = getTestFunctionality(crtf.getNumber(), editionDTO.getId());
 
         return getTestFunctionalityPracticeTypeErrorMessage(
-                cr.getNumber(),
+                cr.getCriterion().getNumber(),
                 crtf.getNumber(),
                 tf.getPracticeType().getName(),
                 cp.getPracticeType());
@@ -161,10 +161,10 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
 
         TestFunctionalityDTO tf = getTestFunctionality(crtf.getNumber(), edition.getId());
         return getTestFunctionalityCriterionErrorMessage(
-                cr.getNumber(),
+                cr.getCriterion().getNumber(),
                 crtf.getNumber(),
                 getDelimitedListOfValidCriteriaNumbers(tf, edition),
-                cr.getNumber());
+                cr.getCriterion().getNumber());
     }
 
     private String getTestFunctionalityCriterionErrorMessage(final String criteriaNumber,

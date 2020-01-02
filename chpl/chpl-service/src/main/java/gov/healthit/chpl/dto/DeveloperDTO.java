@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
+import gov.healthit.chpl.entity.developer.DeveloperEntitySimple;
 import gov.healthit.chpl.entity.developer.DeveloperStatusEventEntity;
 import gov.healthit.chpl.util.Util;
 
@@ -32,6 +33,18 @@ public class DeveloperDTO implements Serializable {
     public DeveloperDTO() {
         this.transparencyAttestationMappings = new ArrayList<DeveloperACBMapDTO>();
         this.statusEvents = new ArrayList<DeveloperStatusEventDTO>();
+    }
+
+    public DeveloperDTO(DeveloperEntitySimple entity) {
+        this();
+        this.id = entity.getId();
+        this.developerCode = entity.getDeveloperCode();
+        this.creationDate = entity.getCreationDate();
+        this.deleted = entity.isDeleted();
+        this.lastModifiedDate = entity.getLastModifiedDate();
+        this.lastModifiedUser = entity.getLastModifiedUser();
+        this.name = entity.getName();
+        this.website = entity.getWebsite();
     }
 
     public DeveloperDTO(DeveloperEntity entity) {

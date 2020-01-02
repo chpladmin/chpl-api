@@ -70,7 +70,7 @@ public final class CertifiedProductValidationTestHelper {
         pendingCertResult.setG1Success(false);
         pendingCertResult.setG2Success(false);
         pendingCertResult.setGap(null);
-        pendingCertResult.setNumber(number);
+        pendingCertResult.getCriterion().setNumber(number);
         pendingCertResult.setPrivacySecurityFramework("Approach 1 Approach 2");
         pendingCertResult.setSed(null);
         pendingCertResult.setG1Success(false);

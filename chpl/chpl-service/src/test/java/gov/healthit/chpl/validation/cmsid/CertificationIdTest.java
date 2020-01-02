@@ -3,9 +3,14 @@ package gov.healthit.chpl.validation.cmsid;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ff4j.FF4j;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -17,15 +22,19 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationId.Validator;
 import gov.healthit.chpl.certificationId.ValidatorFactory;
 import gov.healthit.chpl.dto.CQMMetDTO;
 import gov.healthit.chpl.manager.CertificationIdManager;
 import junit.framework.TestCase;
 
+@ActiveProfiles({
+    "Ff4jMock"
+})
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-    gov.healthit.chpl.CHPLTestConfig.class
+    gov.healthit.chpl.CHPLTestConfig.class, gov.healthit.chpl.Ff4jTestConfiguration.class
 })
 @TestExecutionListeners({
         DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
@@ -38,6 +47,15 @@ public class CertificationIdTest extends TestCase {
 
     @Autowired
     private ValidatorFactory validatorFactory;
+
+    @Autowired
+    private FF4j ff4j;
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+        Mockito.doReturn(true).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE);
+    }
 
     @Test
     @Transactional

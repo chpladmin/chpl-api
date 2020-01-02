@@ -21,7 +21,7 @@ public class ValidDataReviewer implements Reviewer {
                 PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept
                         .getValue(formattedPrivacyAndSecurityFramework);
                 if (foundPrivacyAndSecurityFramework == null) {
-                    listing.getErrorMessages().add("Certification " + cert.getNumber()
+                    listing.getErrorMessages().add("Certification " + cert.getCriterion().getNumber()
                     + " contains Privacy and Security Framework value '" + formattedPrivacyAndSecurityFramework
                     + "' which must match one of " + PrivacyAndSecurityFrameworkConcept.getFormattedValues());
                 }
@@ -30,7 +30,7 @@ public class ValidDataReviewer implements Reviewer {
                 for (PendingCertificationResultAdditionalSoftwareDTO asDto : cert.getAdditionalSoftware()) {
                     if (!StringUtils.isEmpty(asDto.getChplId()) && asDto.getCertifiedProductId() == null) {
                         listing.getErrorMessages().add("No CHPL product was found matching additional software "
-                                + asDto.getChplId() + " for " + cert.getNumber());
+                                + asDto.getChplId() + " for " + cert.getCriterion().getNumber());
                     }
                 }
             }

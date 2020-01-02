@@ -1,9 +1,7 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -11,7 +9,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 import java.util.TimeZone;
 
 import javax.mail.MessagingException;
@@ -40,14 +37,14 @@ import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.util.EmailBuilder;
 
 /**
- * The SummaryStatisticsEmailJob implements a Quartz job and is schedulable by ADMINs.  When the job is triggered,
- * it will send the recipient an email with summary statistics of the CHPL data.
+ * The SummaryStatisticsEmailJob implements a Quartz job and is schedulable by ADMINs. When the job is triggered, it
+ * will send the recipient an email with summary statistics of the CHPL data.
+ * 
  * @author TYoung
  *
  */
 public class SummaryStatisticsEmailJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("summaryStatisticsEmailJobLogger");
-    private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
     private static final int EDITION2014 = 2014;
     private static final int EDITION2015 = 2015;
 
@@ -60,17 +57,16 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
     @Autowired
     private Environment env;
 
-    private Properties props;
-
     private List<CertificationBodyDTO> activeAcbs;
 
     /**
      * Constructor that initializes the SummaryStatisticsEmailJob object.
-     * @throws Exception if thrown
+     * 
+     * @throws Exception
+     *             if thrown
      */
     public SummaryStatisticsEmailJob() throws Exception {
         super();
-        loadProperties();
     }
 
     @Override
@@ -95,7 +91,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
     }
 
     private void sendEmail(final String message, final String address) throws AddressException, MessagingException {
-        String subject = props.getProperty("summaryEmailSubject").toString();
+        String subject = env.getProperty("summaryEmailSubject").toString();
 
         List<String> addresses = new ArrayList<String>();
         addresses.add(address);
@@ -107,8 +103,8 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
 
     private List<File> getSummaryStatisticsFile() {
         List<File> files = new ArrayList<File>();
-        File file = new File(System.getenv("downloadFolderPath") + File.separator
-                + props.getProperty("summaryEmailName", "summaryStatistics.csv"));
+        File file = new File(env.getProperty("downloadFolderPath") + File.separator
+                + env.getProperty("summaryEmailName", "summaryStatistics.csv"));
         files.add(file);
         return files;
     }
@@ -566,19 +562,5 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
             }
         }
         return false;
-    }
-
-    private Properties loadProperties() throws IOException {
-        InputStream in = SummaryStatisticsCreatorJob.class.getClassLoader()
-                .getResourceAsStream(DEFAULT_PROPERTIES_FILE);
-        if (in == null) {
-            props = null;
-            throw new FileNotFoundException("Environment Properties File not found in class path.");
-        } else {
-            props = new Properties();
-            props.load(in);
-            in.close();
-        }
-        return props;
     }
 }

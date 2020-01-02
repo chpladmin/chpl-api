@@ -35,7 +35,7 @@ public class TestToolDuplicateReviewer {
 
         if (testToolDuplicateResults.duplicatesExist()) {
             listing.getWarningMessages().addAll(
-                    getWarnings(testToolDuplicateResults.getDuplicateList(), certificationResult.getNumber()));
+                    getWarnings(testToolDuplicateResults.getDuplicateList(), certificationResult.getCriterion().getNumber()));
             certificationResult.setTestTools(testToolDuplicateResults.getUniqueList());
         }
     }

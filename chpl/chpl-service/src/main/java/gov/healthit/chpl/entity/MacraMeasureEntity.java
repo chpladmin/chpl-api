@@ -39,6 +39,9 @@ public class MacraMeasureEntity {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "removed")
+    private Boolean removed;
+
     @Column(name = "creation_date", nullable = false, updatable = false, insertable = false)
     protected Date creationDate;
 
@@ -129,5 +132,13 @@ public class MacraMeasureEntity {
 
     public void setDescription(final String description) {
         this.description = description;
+    }
+
+    public Boolean getRemoved() {
+        return removed;
+    }
+
+    public void setRemoved(final Boolean removed) {
+        this.removed = removed;
     }
 }

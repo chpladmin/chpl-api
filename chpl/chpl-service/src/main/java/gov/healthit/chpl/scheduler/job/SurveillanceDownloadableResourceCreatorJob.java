@@ -12,6 +12,8 @@ import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -23,6 +25,7 @@ import gov.healthit.chpl.scheduler.presenter.SurveillanceReportCsvPresenter;
 
 /**
  * Quartz job to generate downloadable files for surveillance reports.
+ * 
  * @author kekey
  *
  */
@@ -30,9 +33,14 @@ import gov.healthit.chpl.scheduler.presenter.SurveillanceReportCsvPresenter;
 public class SurveillanceDownloadableResourceCreatorJob extends DownloadableResourceCreatorJob {
     private static final Logger LOGGER = LogManager.getLogger("surveillanceDownloadableResourceCreatorJobLogger");
 
+    @Autowired
+    private Environment env;
+
     /**
      * Default constructor.
-     * @throws Exception if issue with context
+     * 
+     * @throws Exception
+     *             if issue with context
      */
     public SurveillanceDownloadableResourceCreatorJob() throws Exception {
         super(LOGGER);
@@ -48,8 +56,7 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
 
             List<Future<CertifiedProductSearchDetails>> futures = getCertifiedProductSearchDetailsFutures(listings);
             Map<Long, CertifiedProductSearchDetails> cpMap = getMapFromFutures(futures);
-            List<CertifiedProductSearchDetails> orderedListings =
-                    createOrderedListOfCertifiedProducts(cpMap, listings);
+            List<CertifiedProductSearchDetails> orderedListings = createOrderedListOfCertifiedProducts(cpMap, listings);
 
             File downloadFolder = getDownloadFolder();
             writeSurveillanceAllFile(downloadFolder, orderedListings);
@@ -63,6 +70,7 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
 
     /**
      * Gets all listings that have surveillance
+     * 
      * @return
      * @throws EntityRetrievalException
      */
@@ -77,11 +85,11 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
             throws IOException {
         String csvFilename = downloadFolder.getAbsolutePath()
                 + File.separator
-                + getProperties().getProperty("surveillanceAllReportName") + "-"
+                + env.getProperty("surveillanceAllReportName") + "-"
                 + getFilenameTimestampFormat().format(new Date())
                 + ".csv";
         File csvFile = getFile(csvFilename);
-        SurveillanceCsvPresenter csvPresenter = new SurveillanceCsvPresenter(getProperties());
+        SurveillanceCsvPresenter csvPresenter = new SurveillanceCsvPresenter(env);
         csvPresenter.presentAsFile(csvFile, results);
         LOGGER.info("Wrote Surveillance-All CSV file.");
     }
@@ -90,11 +98,11 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
             final List<CertifiedProductSearchDetails> results) throws IOException {
         String csvFilename = downloadFolder.getAbsolutePath()
                 + File.separator
-                + getProperties().getProperty("surveillanceNonconformitiesReportName") + "-"
+                + env.getProperty("surveillanceNonconformitiesReportName") + "-"
                 + getFilenameTimestampFormat().format(new Date())
                 + ".csv";
         File csvFile = getFile(csvFilename);
-        NonconformityCsvPresenter csvPresenter = new NonconformityCsvPresenter(getProperties());
+        NonconformityCsvPresenter csvPresenter = new NonconformityCsvPresenter(env);
         csvPresenter.presentAsFile(csvFile, results);
         LOGGER.info("Wrote Surveillance With Nonconformities CSV file.");
     }
@@ -103,11 +111,11 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
             final List<CertifiedProductSearchDetails> results) throws IOException {
         String csvFilename = downloadFolder.getAbsolutePath()
                 + File.separator
-                + getProperties().getProperty("surveillanceBasicReportName") + "-"
+                + env.getProperty("surveillanceBasicReportName") + "-"
                 + getFilenameTimestampFormat().format(new Date())
                 + ".csv";
         File csvFile = getFile(csvFilename);
-        SurveillanceReportCsvPresenter csvPresenter = new SurveillanceReportCsvPresenter(getProperties());
+        SurveillanceReportCsvPresenter csvPresenter = new SurveillanceReportCsvPresenter(env);
         csvPresenter.presentAsFile(csvFile, results);
         LOGGER.info("Wrote Surveillance Basic Report CSV file.");
     }

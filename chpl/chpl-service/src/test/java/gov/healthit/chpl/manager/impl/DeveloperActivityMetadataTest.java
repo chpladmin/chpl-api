@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -43,9 +44,13 @@ import gov.healthit.chpl.manager.ActivityMetadataManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import junit.framework.TestCase;
 
+@ActiveProfiles({
+    "ListingValidatorMock", "Ff4jMock"
+})
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        gov.healthit.chpl.CHPLTestConfig.class
+        gov.healthit.chpl.CHPLTestConfig.class,
+        gov.healthit.chpl.Ff4jTestConfiguration.class
 })
 @TestExecutionListeners({
         DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
@@ -82,8 +87,7 @@ public class DeveloperActivityMetadataTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void testModifyDeveloperStatusAndActivityHasStatusCategory()
-        throws EntityRetrievalException, ValidationException, IOException,
-        InvalidArgumentsException, EntityCreationException {
+            throws EntityRetrievalException, IOException, InvalidArgumentsException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         Long developerId = -1L;
         DeveloperDTO developer = devManager.getById(developerId);
@@ -98,7 +102,7 @@ public class DeveloperActivityMetadataTest extends TestCase {
         boolean failed = false;
         try {
             developer = devManager.update(developer, false);
-        } catch (MissingReasonException | EntityCreationException ex) {
+        } catch (MissingReasonException | ValidationException | EntityCreationException ex) {
             System.out.println(ex.getMessage());
             failed = true;
         }
@@ -119,8 +123,7 @@ public class DeveloperActivityMetadataTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void testModifyDeveloperNameAndActivityHasStatusCategory()
-        throws EntityRetrievalException, ValidationException, IOException,
-        InvalidArgumentsException, EntityCreationException {
+            throws EntityRetrievalException, IOException, InvalidArgumentsException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         Long developerId = -1L;
         DeveloperDTO developer = devManager.getById(developerId);
@@ -130,7 +133,7 @@ public class DeveloperActivityMetadataTest extends TestCase {
         boolean failed = false;
         try {
             developer = devManager.update(developer, false);
-        } catch (MissingReasonException | EntityCreationException ex) {
+        } catch (MissingReasonException | ValidationException | EntityCreationException ex) {
             System.out.println(ex.getMessage());
             failed = true;
         }

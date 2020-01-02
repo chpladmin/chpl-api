@@ -1,5 +1,45 @@
 # Release Notes
 
+## Version 22.0.0
+_2 January 2020_
+
+### Features
+* Allow Admin/ONC users to edit listing if developer is banned
+* Prevent ONC-ACBs from adding/editing surveillance referencing removed criteria
+* Remove "Complaint Status Type" as distinct concept
+
+---
+
+## Version 21.16.0
+_20 December 2019_
+
+### Features
+* Add questionable activity when b3 is added to listing after 1/1/2020
+
+---
+
+## Version 21.15.0
+_16 December 2019_
+
+### Features
+* Update Questionable Activity Report to support a user defined range of days
+* Add job to remove RT13 EC Macra Measure
+
+---
+
+## Version 21.14.0
+_2 December 2019_
+
+### Features
+* Add scheduled job to update 2014 listing status
+* Add a scheduled job that will remove 2014 upload templates
+* Stop displaying "removed" criteria in download files or on Charts
+  * Add new (flagged) CSV definition file to be used when criteria are removed
+* Add a 'removed' field to macra measures
+* Add job to mark specific 2015 criteria as removed
+
+---
+
 ## Version 21.13.0
 _18 November 2019_
 

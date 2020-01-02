@@ -1,6 +1,5 @@
 package gov.healthit.chpl.web.controller;
 
-import gov.healthit.chpl.domain.CertifiedProductSearchBasicDetails;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -13,8 +12,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import java.util.function.Function;
+
 import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletResponse;
@@ -45,6 +44,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.CertifiedProductSearchBasicDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.IdListContainer;
@@ -606,7 +606,7 @@ public class CertifiedProductController {
             JsonProcessingException, IOException, ValidationException, MissingReasonException {
 
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
-        
+
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(updatedListing.getId());
         Long acbId = Long.parseLong(existingListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
 
@@ -617,16 +617,16 @@ public class CertifiedProductController {
             cpManager.changeOwnership(updatedListing.getId(), newAcbId);
             CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());
             activityManager.addActivity(
-                    ActivityConcept.CERTIFIED_PRODUCT, 
+                    ActivityConcept.CERTIFIED_PRODUCT,
                     existingListing.getId(),
-                    "Changed ACB ownership.", 
-                    existingListing, 
+                    "Changed ACB ownership.",
+                    existingListing,
                     changedProduct);
             existingListing = changedProduct;
         }
 
-        cpManager.update(newAcbId, updateRequest);
-        
+        cpManager.update(updateRequest);
+
         CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
@@ -666,9 +666,9 @@ public class CertifiedProductController {
      */
     @Deprecated
     @ApiOperation(value = "DEPRECATED. List pending certified products.",
-            notes = "Pending certified products are created via CSV file upload and are left in the 'pending' state "
-                    + " until validated and approved.  Security Restrictions: ROLE_ADMIN, ROLE_ACB and have "
-                    + "administrative authority on the ACB that uploaded the product.")
+    notes = "Pending certified products are created via CSV file upload and are left in the 'pending' state "
+            + " until validated and approved.  Security Restrictions: ROLE_ADMIN, ROLE_ACB and have "
+            + "administrative authority on the ACB that uploaded the product.")
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody PendingCertifiedProductResults getPendingCertifiedProducts()
             throws EntityRetrievalException, AccessDeniedException {
@@ -810,7 +810,7 @@ public class CertifiedProductController {
 
             developerManager.validateDeveloperInSystemIfExists(pendingCp);
 
-            CertifiedProductDTO createdProduct = cpManager.createFromPending(acbId, pcpDto);
+            CertifiedProductDTO createdProduct = cpManager.createFromPending(pcpDto);
             pcpManager.confirm(acbId, pendingCp.getId());
             CertifiedProductSearchDetails result = cpdManager.getCertifiedProductDetails(createdProduct.getId());
             activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, result.getId(),

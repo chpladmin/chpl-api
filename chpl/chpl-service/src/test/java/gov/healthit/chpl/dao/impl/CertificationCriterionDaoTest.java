@@ -88,6 +88,7 @@ public class CertificationCriterionDaoTest extends TestCase {
         // dto.setParentCriterionId(null);
         dto.setRequiresSed(false);
         dto.setTitle("Test Cert Criterion");
+        dto.setRemoved(false);
 
         CertificationCriterionDTO result = create(dto);
         CertificationCriterionDTO check = certificationCriterionDAO.getById(result.getId());
@@ -133,6 +134,7 @@ public class CertificationCriterionDaoTest extends TestCase {
         // dto.setParentCriterionId(null);
         dto.setRequiresSed(false);
         dto.setTitle("Test Cert Criterion");
+        dto.setRemoved(false);
 
         CertificationCriterionDTO result = certificationCriterionDAO.create(dto);
 
@@ -194,6 +196,7 @@ public class CertificationCriterionDaoTest extends TestCase {
         // dto.setParentCriterionId(null);
         dto.setRequiresSed(false);
         dto.setTitle("Test Cert Criterion");
+        dto.setRemoved(false);
 
         CertificationCriterionDTO result = certificationCriterionDAO.create(dto);
         CertificationCriterionDTO check = certificationCriterionDAO.getById(result.getId());
@@ -261,6 +264,7 @@ public class CertificationCriterionDaoTest extends TestCase {
         // dto.setParentCriterionId(null);
         dto.setRequiresSed(false);
         dto.setTitle("Test Cert Criterion");
+        dto.setRemoved(false);
 
         CertificationCriterionDTO result = certificationCriterionDAO.create(dto);
         CertificationCriterionDTO check = certificationCriterionDAO.getById(result.getId());

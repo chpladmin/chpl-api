@@ -22,12 +22,14 @@ import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
+import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
-import gov.healthit.chpl.listing.ListingMockUtil;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ListingMockUtil;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.RequiredData2015Reviewer;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -224,6 +226,18 @@ public class PendingListingRequiredData2015ReviewerTest {
         }).when(msgUtil).getMessage(
                 ArgumentMatchers.eq("listing.criteria.badTestTaskRatingStddev"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
+        Mockito.doAnswer(new Answer<String>() {
+            @Override
+            public String answer(final InvocationOnMock invocation) throws Throwable {
+                String g1MacraNotAllowed =
+                        "Certification %s may not reference the G1 Macra Measure: '%s' "
+                        + "since this listing does not have ICS. The measure has been removed.";
+                Object[] args = invocation.getArguments();
+                return formatMessage(g1MacraNotAllowed, (String) args[1], (String) args[2]);
+            }
+        }).when(msgUtil).getMessage(
+                ArgumentMatchers.eq("listing.criteria.removedG1MacraMeasureNoIcs"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
     }
 
     @Test
@@ -328,6 +342,63 @@ public class PendingListingRequiredData2015ReviewerTest {
         assertTrue(hasRoundedTestTaskWarningMessage(listing, "Task ID", "Task Time Standard Deviation", "8.0", "8"));
     }
 
+    @Test
+    public void testRemovedMacraMeasureNotAllowedNoIcs() {
+        PendingCertifiedProductDTO listing = mockUtil.createPending2015Listing();
+        listing.setIcs(Boolean.FALSE);
+
+        PendingCertificationResultDTO cert = findPendingCertification(listing, "170.315 (a)(10)");
+        PendingCertificationResultMacraMeasureDTO crMacra = new PendingCertificationResultMacraMeasureDTO();
+        crMacra.setEnteredValue("My Macra");
+        crMacra.setMacraMeasureId(-1L);
+        MacraMeasureDTO mm = new MacraMeasureDTO();
+        mm.setId(-1L);
+        mm.setName("A long description of my macra measure");
+        mm.setValue("My Macra");
+        mm.setRemoved(Boolean.TRUE);
+        crMacra.setMacraMeasure(mm);
+        cert.getG1MacraMeasures().add(crMacra);
+
+        reviewer.review(listing);
+
+        assertTrue(hasRemovedG1MacraMeasureErrorMessage(listing, cert, mm));
+    }
+
+    @Test
+    public void testRemovedMacraMeasureAllowedWithIcs() {
+        PendingCertifiedProductDTO listing = mockUtil.createPending2015Listing();
+        listing.setIcs(Boolean.TRUE);
+
+        PendingCertificationResultDTO cert = findPendingCertification(listing, "170.315 (a)(10)");
+        PendingCertificationResultMacraMeasureDTO crMacra = new PendingCertificationResultMacraMeasureDTO();
+        crMacra.setEnteredValue("My Macra");
+        crMacra.setMacraMeasureId(-1L);
+        MacraMeasureDTO mm = new MacraMeasureDTO();
+        mm.setId(-1L);
+        mm.setName("A long description of my macra measure");
+        mm.setValue("My Macra");
+        mm.setRemoved(Boolean.TRUE);
+        crMacra.setMacraMeasure(mm);
+        cert.getG1MacraMeasures().add(crMacra);
+
+        reviewer.review(listing);
+
+        assertFalse(hasRemovedG1MacraMeasureErrorMessage(listing, cert, mm));
+    }
+
+    private Boolean hasRemovedG1MacraMeasureErrorMessage(final PendingCertifiedProductDTO listing,
+            final PendingCertificationResultDTO cert,
+            final MacraMeasureDTO measure) {
+        for (String message : listing.getErrorMessages()) {
+            if (StringUtils.contains(message, "Certification "
+                    + cert.getCriterion().getNumber() + " may not reference the G1 Macra Measure: '"
+                    + measure.getValue() + "' since this listing does not have ICS. The measure has been removed.")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private Boolean hasTestTaskNumberErrorMessage(final PendingCertifiedProductDTO listing,
             final String taskId, final String valueName, final String badValue) {
         for (String message : listing.getErrorMessages()) {
@@ -378,7 +449,7 @@ public class PendingListingRequiredData2015ReviewerTest {
     private PendingCertificationResultDTO findPendingCertification(final PendingCertifiedProductDTO listing,
             final String certNumber) {
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
-            if (cert.getNumber().equals(certNumber)) {
+            if (cert.getCriterion().getNumber().equals(certNumber)) {
                 return cert;
             }
         }
