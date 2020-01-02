@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,15 +14,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
@@ -48,9 +50,13 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
+@ActiveProfiles({
+        "Ff4jMock"
+})
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        gov.healthit.chpl.CHPLTestConfig.class
+        gov.healthit.chpl.CHPLTestConfig.class,
+        gov.healthit.chpl.Ff4jTestConfiguration.class
 })
 public class DeveloperStatusTest {
     private static final String MISSING_REASON_ERROR = "A reason must be given for marking this developer as banned on %s.";
@@ -76,17 +82,20 @@ public class DeveloperStatusTest {
     @Autowired
     private DeveloperValidationFactory developerValidationFactory;
 
-    @Spy
+    @Mock
+    private FF4j ff4j;
+
+    @Mock
     private DeveloperDAO devDao;
-    @Spy
+    @Mock
     private CertificationBodyManager acbManager;
-    @Spy
+    @Mock
     private CertifiedProductManager cpManager;
-    @Spy
+    @Mock
     private CertifiedProductDetailsManager cpdManager;
-    @Spy
+    @Mock
     private ActivityManager activityManager;
-    @Spy
+    @Mock
     private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
 
     @Mock
@@ -105,23 +114,24 @@ public class DeveloperStatusTest {
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 
         MockitoAnnotations.initMocks(this);
-        developerManager = new DeveloperManagerImpl(devDao, productManager, acbManager, cpManager, cpdManager,
-                certificationBodyDao, certifiedProductDao, chplProductNumberUtil, activityManager, msgUtil,
-                permissionChecker, developerValidationFactory);
+        // developerManager = new DeveloperManagerImpl(devDao, productManager, acbManager, cpManager, cpdManager,
+        // certificationBodyDao, certifiedProductDao, chplProductNumberUtil, activityManager, msgUtil,
+        // permissionChecker, developerValidationFactory);
 
         Mockito.when(permissionChecker.getAllAcbsForCurrentUser()).thenReturn(new ArrayList<CertificationBodyDTO>());
         Mockito.when(acbManager.getAll()).thenReturn(new ArrayList<CertificationBodyDTO>());
+        Mockito.when(ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)).thenReturn(false);
         Mockito.doReturn(MISSING_REASON_ERROR).when(msgUtil)
                 .getMessage(ArgumentMatchers.eq("developer.missingReasonForBan"), ArgumentMatchers.anyString());
         Mockito.doReturn(NO_ADMIN_NO_STATUS_CHANGE_ERROR).when(msgUtil)
-            .getMessage(ArgumentMatchers.eq("developer.statusChangeNotAllowedWithoutAdmin"),
-                    ArgumentMatchers.eq(DeveloperStatusType.UnderCertificationBanByOnc.toString()));
+                .getMessage(ArgumentMatchers.eq("developer.statusChangeNotAllowedWithoutAdmin"),
+                        ArgumentMatchers.eq(DeveloperStatusType.UnderCertificationBanByOnc.toString()));
     }
 
     @Test
     public void testDeveloperStatusChange_ActiveToSuspended_NoReasonRequired()
             throws EntityCreationException, EntityRetrievalException,
-        JsonProcessingException, MissingReasonException, ValidationException {
+            JsonProcessingException, MissingReasonException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         DeveloperDTO activeDeveloper = createDeveloper(1L, "0001", "Test Developer");
         try {
@@ -130,7 +140,7 @@ public class DeveloperStatusTest {
         }
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
-            .thenReturn(activeDeveloper);
+                    .thenReturn(activeDeveloper);
         } catch (EntityRetrievalException ex) {
         }
 
@@ -138,13 +148,12 @@ public class DeveloperStatusTest {
         activeToSuspendedDeveloper.getStatusEvents().add(createStatusEvent(2L, activeToSuspendedDeveloper.getId(),
                 DeveloperStatusType.SuspendedByOnc, new Date(), null));
 
-        DeveloperDTO updatedDeveloper =
-                developerManager.update(activeToSuspendedDeveloper, false);
-        //the update was allowed
+        DeveloperDTO updatedDeveloper = developerManager.update(activeToSuspendedDeveloper, false);
+        // the update was allowed
         assertNotNull(updatedDeveloper);
     }
 
-    @Test(expected = MissingReasonException.class)
+    @Test(expected = ValidationException.class)
     public void testDeveloperStatusChange_ActiveToBannedNullReason_ThrowsException()
             throws EntityCreationException, EntityRetrievalException,
             JsonProcessingException, MissingReasonException, ValidationException {
@@ -156,7 +165,7 @@ public class DeveloperStatusTest {
         }
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
-            .thenReturn(activeDeveloper);
+                    .thenReturn(activeDeveloper);
         } catch (EntityRetrievalException ex) {
         }
 
@@ -167,7 +176,7 @@ public class DeveloperStatusTest {
         developerManager.update(activeToBannedDeveloper, false);
     }
 
-    @Test(expected = MissingReasonException.class)
+    @Test(expected = ValidationException.class)
     public void testDeveloperWithHistoryChange_ActiveToBannedNullReason_ThrowsException()
             throws EntityCreationException, EntityRetrievalException,
             JsonProcessingException, MissingReasonException, ValidationException {
@@ -186,7 +195,7 @@ public class DeveloperStatusTest {
         }
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
-            .thenReturn(activeDeveloperWithStatusHistory);
+                    .thenReturn(activeDeveloperWithStatusHistory);
         } catch (EntityRetrievalException ex) {
         }
 
@@ -194,7 +203,7 @@ public class DeveloperStatusTest {
         developerManager.update(activeDeveloperWithStatusHistory, false);
     }
 
-    @Test(expected = MissingReasonException.class)
+    @Test(expected = ValidationException.class)
     public void testDeveloperStatusChange_ActiveToBannedEmptyReason_ThrowsException()
             throws EntityCreationException, EntityRetrievalException,
             JsonProcessingException, MissingReasonException, ValidationException {
@@ -207,7 +216,7 @@ public class DeveloperStatusTest {
 
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
-            .thenReturn(activeDeveloper);
+                    .thenReturn(activeDeveloper);
         } catch (EntityRetrievalException ex) {
         }
 
@@ -220,8 +229,8 @@ public class DeveloperStatusTest {
 
     @Test
     public void testDeveloperStatusChange_ActiveToSuspendedWithReason_Allowed()
-        throws EntityCreationException, EntityRetrievalException,
-        JsonProcessingException, MissingReasonException, ValidationException {
+            throws EntityCreationException, EntityRetrievalException,
+            JsonProcessingException, MissingReasonException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         DeveloperDTO activeDeveloper = createDeveloper(1L, "0001", "Test Developer");
         try {
@@ -231,7 +240,7 @@ public class DeveloperStatusTest {
 
         try {
             Mockito.when(devDao.getById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
-            .thenReturn(activeDeveloper);
+                    .thenReturn(activeDeveloper);
         } catch (EntityRetrievalException ex) {
         }
 
@@ -239,9 +248,8 @@ public class DeveloperStatusTest {
         activeToSuspendedDeveloper.getStatusEvents().add(createStatusEvent(2L, activeToSuspendedDeveloper.getId(),
                 DeveloperStatusType.UnderCertificationBanByOnc, new Date(), "A Reason"));
 
-        DeveloperDTO updatedDeveloper =
-                developerManager.update(activeToSuspendedDeveloper, false);
-        //the update was allowed
+        DeveloperDTO updatedDeveloper = developerManager.update(activeToSuspendedDeveloper, false);
+        // the update was allowed
         assertNotNull(updatedDeveloper);
     }
 

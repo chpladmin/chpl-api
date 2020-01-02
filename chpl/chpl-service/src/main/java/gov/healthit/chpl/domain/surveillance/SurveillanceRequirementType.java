@@ -13,6 +13,9 @@ import org.apache.commons.lang3.StringUtils;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SurveillanceRequirementType implements Serializable {
     private static final long serialVersionUID = -5865384642096284604L;
+    public static final String CERTIFIED_CAPABILITY = "Certified Capability";
+    public static final String TRANS_DISCLOSURE_REQ = "Transparency or Disclosure Requirement";
+    public static final String OTHER = "Other Requirement";
 
     /**
      * Surveillance requirement type internal ID

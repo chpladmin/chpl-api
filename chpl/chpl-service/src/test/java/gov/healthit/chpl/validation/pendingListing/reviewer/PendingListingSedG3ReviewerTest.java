@@ -17,8 +17,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
-import gov.healthit.chpl.listing.ListingMockUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ListingMockUtil;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.SedG32014Reviewer;
 
 @RunWith(SpringJUnit4ClassRunner.class)

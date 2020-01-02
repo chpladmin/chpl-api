@@ -666,9 +666,9 @@ public class CertifiedProductController {
      */
     @Deprecated
     @ApiOperation(value = "DEPRECATED. List pending certified products.",
-            notes = "Pending certified products are created via CSV file upload and are left in the 'pending' state "
-                    + " until validated and approved.  Security Restrictions: ROLE_ADMIN, ROLE_ACB and have "
-                    + "administrative authority on the ACB that uploaded the product.")
+    notes = "Pending certified products are created via CSV file upload and are left in the 'pending' state "
+            + " until validated and approved.  Security Restrictions: ROLE_ADMIN, ROLE_ACB and have "
+            + "administrative authority on the ACB that uploaded the product.")
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody PendingCertifiedProductResults getPendingCertifiedProducts()
             throws EntityRetrievalException, AccessDeniedException {
