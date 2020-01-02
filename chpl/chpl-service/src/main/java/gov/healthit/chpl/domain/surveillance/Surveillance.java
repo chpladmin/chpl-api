@@ -16,6 +16,7 @@ import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.util.Util;
 

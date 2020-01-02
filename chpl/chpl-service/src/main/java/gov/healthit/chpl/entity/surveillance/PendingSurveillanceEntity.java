@@ -16,7 +16,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
+import gov.healthit.chpl.entity.listing.CertifiedProductSummaryEntity;
 import gov.healthit.chpl.util.Util;
 
 @Entity
@@ -39,7 +39,7 @@ public class PendingSurveillanceEntity {
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "certified_product_id", insertable = false, updatable = false)
-    private CertifiedProductEntity certifiedProduct;
+    private CertifiedProductSummaryEntity certifiedProduct;
 
     @Column(name = "start_date")
     private Date startDate;
@@ -175,11 +175,11 @@ public class PendingSurveillanceEntity {
         this.surveilledRequirements = surveilledRequirements;
     }
 
-    public CertifiedProductEntity getCertifiedProduct() {
+    public CertifiedProductSummaryEntity getCertifiedProduct() {
         return certifiedProduct;
     }
 
-    public void setCertifiedProduct(final CertifiedProductEntity certifiedProduct) {
+    public void setCertifiedProduct(final CertifiedProductSummaryEntity certifiedProduct) {
         this.certifiedProduct = certifiedProduct;
     }
 
