@@ -871,7 +871,6 @@ public class QuarterlyReportManagerTest extends TestCase {
         complaint.setCertificationBody(acb);
         complaint.setComplainantContacted(true);
         complaint.setComplainantType(complaintDao.getComplainantTypes().get(0));
-        complaint.setComplaintStatusType(complaintDao.getComplaintStatusTypes().get(0));
         complaint.setDeveloperContacted(false);
         complaint.setFlagForOncReview(true);
         complaint.setOncAtlContacted(false);

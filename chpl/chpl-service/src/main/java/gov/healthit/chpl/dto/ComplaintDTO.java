@@ -23,7 +23,6 @@ public class ComplaintDTO implements Serializable {
     private CertificationBodyDTO certificationBody;
     private ComplainantTypeDTO complainantType;
     private String complainantTypeOther;
-    private ComplaintStatusTypeDTO complaintStatusType;
     private String oncComplaintId;
     private String acbComplaintId;
     private Date receivedDate;
@@ -70,9 +69,6 @@ public class ComplaintDTO implements Serializable {
         if (entity.getComplainantType() != null) {
             this.complainantType = new ComplainantTypeDTO(entity.getComplainantType());
         }
-        if (entity.getComplaintStatusType() != null) {
-            this.complaintStatusType = new ComplaintStatusTypeDTO(entity.getComplaintStatusType());
-        }
     }
 
     public ComplaintDTO(Complaint domain) {
@@ -98,9 +94,6 @@ public class ComplaintDTO implements Serializable {
         }
         if (domain.getComplainantType() != null) {
             this.complainantType = new ComplainantTypeDTO(domain.getComplainantType());
-        }
-        if (domain.getComplaintStatusType() != null) {
-            this.complaintStatusType = new ComplaintStatusTypeDTO(domain.getComplaintStatusType());
         }
     }
 
@@ -134,14 +127,6 @@ public class ComplaintDTO implements Serializable {
 
     public void setComplainantTypeOther(String complainantTypeOther) {
         this.complainantTypeOther = complainantTypeOther;
-    }
-
-    public ComplaintStatusTypeDTO getComplaintStatusType() {
-        return complaintStatusType;
-    }
-
-    public void setComplaintStatusType(final ComplaintStatusTypeDTO complaintStatusType) {
-        this.complaintStatusType = complaintStatusType;
     }
 
     public String getOncComplaintId() {
@@ -283,8 +268,8 @@ public class ComplaintDTO implements Serializable {
     @Override
     public String toString() {
         return "ComplaintDTO [id=" + id + ", certificationBody=" + certificationBody + ", complainantType="
-                + complainantType + ", complainantTypeOther=" + complainantTypeOther + ", complaintStatusType="
-                + complaintStatusType + ", oncComplaintId=" + oncComplaintId + ", acbComplaintId=" + acbComplaintId
+                + complainantType + ", complainantTypeOther=" + complainantTypeOther + oncComplaintId
+                + ", acbComplaintId=" + acbComplaintId
                 + ", receivedDate=" + receivedDate + ", summary=" + summary + ", actions=" + actions
                 + ", complainantContacted=" + complainantContacted + ", developerContacted=" + developerContacted
                 + ", oncAtlContacted=" + oncAtlContacted + ", flagForOncReview=" + flagForOncReview + ", closedDate="
