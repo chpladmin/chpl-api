@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.ComplaintDAO;
 import gov.healthit.chpl.dao.surveillance.report.PrivilegedSurveillanceDAO;
+import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.dto.ComplainantTypeDTO;
-import gov.healthit.chpl.dto.ComplaintStatusTypeDTO;
 import gov.healthit.chpl.dto.surveillance.report.SurveillanceOutcomeDTO;
 import gov.healthit.chpl.dto.surveillance.report.SurveillanceProcessTypeDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
@@ -119,12 +119,12 @@ public class ListWorksheetBuilder {
 
         int complaintStatusTypeCol = 5;
         int complaintStatusTypeRow = 0;
-        List<ComplaintStatusTypeDTO> complaintStatusTypes = complaintDao.getComplaintStatusTypes();
-        for (ComplaintStatusTypeDTO complaintStatusType : complaintStatusTypes) {
-            choicesRow = workbook.getRow(sheet, complaintStatusTypeRow++);
-            choicesCell = choicesRow.createCell(complaintStatusTypeCol);
-            choicesCell.setCellValue(complaintStatusType.getName());
-        }
+        choicesRow = workbook.getRow(sheet, complaintStatusTypeRow++);
+        choicesCell = choicesRow.createCell(complaintStatusTypeCol);
+        choicesCell.setCellValue(Complaint.COMPLAINT_OPEN);
+        choicesRow = workbook.getRow(sheet, complaintStatusTypeRow++);
+        choicesCell = choicesRow.createCell(complaintStatusTypeCol);
+        choicesCell.setCellValue(Complaint.COMPLAINT_CLOSED);
 
         // unselect that sheet because we will hide it later
         sheet.setSelected(false);

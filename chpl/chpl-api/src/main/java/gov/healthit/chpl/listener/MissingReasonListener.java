@@ -6,11 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.SimpleExplainableAction;
 import gov.healthit.chpl.exception.MissingReasonException;
-import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
-import gov.healthit.chpl.questionableactivity.ListingQuestionableActivityProvider;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 /**
@@ -23,24 +20,10 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 @Aspect
 public class MissingReasonListener {
     private ErrorMessageUtil errorMessageUtil;
-    private CertifiedProductDetailsManager cpdManager;
-    private ListingQuestionableActivityProvider listingQuestionableActivityProvider;
 
-    /**
-     * Autowired constructor for dependency injection.
-     * @param errorMessageUtil - Error message utility class
-     * @param cpdManager - CertifiedProductDetailsManager
-     * @param listingDao - CertifiedProductDAO
-     * @param listingQuestionableActivityProvider - ListingQuestionableActivityProvider
-     */
     @Autowired
-    public MissingReasonListener(final ErrorMessageUtil errorMessageUtil,
-            final CertifiedProductDetailsManager cpdManager, final CertifiedProductDAO listingDao,
-            final ListingQuestionableActivityProvider listingQuestionableActivityProvider) {
-
+    public MissingReasonListener(final ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
-        this.cpdManager = cpdManager;
-        this.listingQuestionableActivityProvider = listingQuestionableActivityProvider;
     }
 
     /**

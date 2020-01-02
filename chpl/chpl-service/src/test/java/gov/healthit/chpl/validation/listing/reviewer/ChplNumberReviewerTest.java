@@ -15,17 +15,14 @@ import org.springframework.context.MessageSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.listing.ListingMockUtil;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ListingMockUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -65,9 +62,6 @@ public class ChplNumberReviewerTest {
 
     @Spy
     private ChplProductNumberUtil chplProductNumberUtil;
-
-    @Spy
-    private CertificationResultManager certResultManager;
 
     @Spy
     private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
@@ -110,9 +104,6 @@ public class ChplNumberReviewerTest {
 
         Mockito.doReturn(true).when(chplProductNumberUtil).isUnique(ArgumentMatchers.anyString());
         Mockito.doReturn(false).when(certificationResultManager).getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong());
-        Mockito.when(
-                certResultManager.getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong()))
-        .thenReturn(Boolean.FALSE);
     }
 
     @Test
@@ -364,10 +355,6 @@ public class ChplNumberReviewerTest {
 
         Mockito.doReturn(true)
         .when(certificationResultManager).getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong());
-
-        Mockito.when(
-                certResultManager.getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong()))
-        .thenReturn(Boolean.TRUE);
 
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         //the mock listing does not have additional software;

@@ -1,16 +1,22 @@
 package gov.healthit.chpl.questionableactivity;
 
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -28,22 +34,30 @@ import gov.healthit.chpl.entity.CertificationStatusType;
  */
 @Component
 public class ListingQuestionableActivityProvider {
+    private static Logger LOGGER = LogManager.getLogger(ListingQuestionableActivityProvider.class);
+    private static String B3_CHANGE_DATE = "questionableActivity.b3ChangeDate";
+    private static String B3_CRITERIA_NUMER = "170.315 (b)(3)";
 
     private FF4j ff4j;
+    private Environment env;
 
     @Autowired
-    public ListingQuestionableActivityProvider(final FF4j ff4j) {
+    public ListingQuestionableActivityProvider(FF4j ff4j, Environment env) {
         this.ff4j = ff4j;
+        this.env = env;
     }
 
     /**
      * Create questionable activity if the listing was a 2011 listing.
-     * @param origListing original listing
-     * @param newListing new listing
+     * 
+     * @param origListing
+     *            original listing
+     * @param newListing
+     *            new listing
      * @return questionable activity, if it exists
      */
     public QuestionableActivityListingDTO check2011EditionUpdated(
-            final CertifiedProductSearchDetails origListing, final CertifiedProductSearchDetails newListing) {
+            CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
         QuestionableActivityListingDTO activity = null;
         if (origListing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).equals("2011")) {
@@ -57,12 +71,15 @@ public class ListingQuestionableActivityProvider {
 
     /**
      * Create questionable activity if the listing was a 2014 listing.
-     * @param origListing original listing
-     * @param newListing new listing
+     * 
+     * @param origListing
+     *            original listing
+     * @param newListing
+     *            new listing
      * @return questionable activity, if it exists
      */
     public QuestionableActivityListingDTO check2014EditionUpdated(
-            final CertifiedProductSearchDetails origListing, final CertifiedProductSearchDetails newListing) {
+            CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         if (!ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
             return null;
         }
@@ -79,12 +96,15 @@ public class ListingQuestionableActivityProvider {
 
     /**
      * Create questionable activity if the current certification status was updated.
-     * @param origListing original listing
-     * @param newListing new listing
+     * 
+     * @param origListing
+     *            original listing
+     * @param newListing
+     *            new listing
      * @return questionable activity if it exists
      */
     public QuestionableActivityListingDTO checkCertificationStatusUpdated(
-            final CertifiedProductSearchDetails origListing, final CertifiedProductSearchDetails newListing) {
+            CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
         QuestionableActivityListingDTO activity = null;
         CertificationStatusEvent prev = origListing.getCurrentStatus();
@@ -100,16 +120,19 @@ public class ListingQuestionableActivityProvider {
     }
 
     /**
-     * Create questionable activity if the historical certification statuses or dates were updated.
-     * Sorts certification status events by date, earliest first, then compares them, incrementing
-     * through them with the "earlier" date getting moved up. If both are equal both move.
-     * Does not compare "latest" events, as those are the "current" values, and compared in other functions.
-     * @param origListing original listing
-     * @param newListing new listing
+     * Create questionable activity if the historical certification statuses or dates were updated. Sorts certification
+     * status events by date, earliest first, then compares them, incrementing through them with the "earlier" date
+     * getting moved up. If both are equal both move. Does not compare "latest" events, as those are the "current"
+     * values, and compared in other functions.
+     * 
+     * @param origListing
+     *            original listing
+     * @param newListing
+     *            new listing
      * @return questionable activity if it exists
      */
     public QuestionableActivityListingDTO checkCertificationStatusHistoryUpdated(
-            final CertifiedProductSearchDetails origListing, final CertifiedProductSearchDetails newListing) {
+            CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
         QuestionableActivityListingDTO activity = null;
         List<CertificationStatusEvent> prevEvents = origListing.getCertificationEvents();
@@ -205,15 +228,17 @@ public class ListingQuestionableActivityProvider {
         return activity;
     }
 
-
     /**
      * Create questionable activity if the current certification status event date was updated.
-     * @param origListing original listing
-     * @param newListing new listing
+     * 
+     * @param origListing
+     *            original listing
+     * @param newListing
+     *            new listing
      * @return questionable activity if it exists
      */
     public QuestionableActivityListingDTO checkCertificationStatusDateUpdated(
-            final CertifiedProductSearchDetails origListing, final CertifiedProductSearchDetails newListing) {
+            CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
         QuestionableActivityListingDTO activity = null;
         CertificationStatusEvent prev = origListing.getCurrentStatus();
@@ -232,16 +257,19 @@ public class ListingQuestionableActivityProvider {
     }
 
     /**
-     * questionable only if the certification status has updated
-     * to the supplied updateTo value.
-     * @param updateTo status to check against
-     * @param origListing original listing
-     * @param newListing new listing
+     * questionable only if the certification status has updated to the supplied updateTo value.
+     * 
+     * @param updateTo
+     *            status to check against
+     * @param origListing
+     *            original listing
+     * @param newListing
+     *            new listing
      * @return activity if it is questionable
      */
     public QuestionableActivityListingDTO checkCertificationStatusUpdated(
-            final CertificationStatusType updateTo, final CertifiedProductSearchDetails origListing,
-            final CertifiedProductSearchDetails newListing) {
+            CertificationStatusType updateTo, CertifiedProductSearchDetails origListing,
+            CertifiedProductSearchDetails newListing) {
 
         QuestionableActivityListingDTO activity = null;
         if (!origListing.getCurrentStatus().getStatus().getName().equals(updateTo.getName())
@@ -257,18 +285,21 @@ public class ListingQuestionableActivityProvider {
 
     /**
      * Create questionable activity if CQMs were added.
-     * @param origListing original listing
-     * @param newListing new listing
+     * 
+     * @param origListing
+     *            original listing
+     * @param newListing
+     *            new listing
      * @return questionable activity, if it exists
      */
     public List<QuestionableActivityListingDTO> checkCqmsAdded(
-            final CertifiedProductSearchDetails origListing, final CertifiedProductSearchDetails newListing) {
+            CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
         List<QuestionableActivityListingDTO> cqmAddedActivities = new ArrayList<QuestionableActivityListingDTO>();
         if (origListing.getCqmResults() != null && origListing.getCqmResults().size() > 0
                 && newListing.getCqmResults() != null && newListing.getCqmResults().size() > 0) {
-            //all cqms are in the details so find the same one in the orig and new objects
-            //based on cms id and compare the success boolean to see if one was added
+            // all cqms are in the details so find the same one in the orig and new objects
+            // based on cms id and compare the success boolean to see if one was added
             for (CQMResultDetails origCqm : origListing.getCqmResults()) {
                 for (CQMResultDetails newCqm : newListing.getCqmResults()) {
                     if (StringUtils.isEmpty(newCqm.getCmsId())
@@ -279,7 +310,7 @@ public class ListingQuestionableActivityProvider {
                             && newCqm.getNqfNumber().equals(origCqm.getNqfNumber())) {
                         // NQF is the same if the NQF numbers are equal
                         if (!origCqm.isSuccess() && newCqm.isSuccess()) {
-                            //orig did not have this cqm but new does so it was added
+                            // orig did not have this cqm but new does so it was added
                             QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
                             activity.setBefore(null);
                             activity.setAfter(newCqm.getCmsId() != null ? newCqm.getCmsId() : newCqm.getNqfNumber());
@@ -290,7 +321,7 @@ public class ListingQuestionableActivityProvider {
                             && newCqm.getCmsId().equals(origCqm.getCmsId())) {
                         // CMS is the same if the CMS ID and version is equal
                         if (!origCqm.isSuccess() && newCqm.isSuccess()) {
-                            //orig did not have this cqm but new does so it was added
+                            // orig did not have this cqm but new does so it was added
                             QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
                             activity.setBefore(null);
                             activity.setAfter(newCqm.getCmsId() != null ? newCqm.getCmsId() : newCqm.getNqfNumber());
@@ -306,18 +337,21 @@ public class ListingQuestionableActivityProvider {
 
     /**
      * Create questionable activity if CQMs were removed.
-     * @param origListing original listing
-     * @param newListing new listing
+     * 
+     * @param origListing
+     *            original listing
+     * @param newListing
+     *            new listing
      * @return questionable activity, if it exists
      */
     public List<QuestionableActivityListingDTO> checkCqmsRemoved(
-            final CertifiedProductSearchDetails origListing, final CertifiedProductSearchDetails newListing) {
+            CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
         List<QuestionableActivityListingDTO> cqmRemovedActivities = new ArrayList<QuestionableActivityListingDTO>();
         if (origListing.getCqmResults() != null && origListing.getCqmResults().size() > 0
                 && newListing.getCqmResults() != null && newListing.getCqmResults().size() > 0) {
-            //all cqms are in the details so find the same one in the orig and new objects
-            //based on cms id and compare the success boolean to see if one was removed
+            // all cqms are in the details so find the same one in the orig and new objects
+            // based on cms id and compare the success boolean to see if one was removed
             for (CQMResultDetails origCqm : origListing.getCqmResults()) {
                 for (CQMResultDetails newCqm : newListing.getCqmResults()) {
                     if (StringUtils.isEmpty(newCqm.getCmsId())
@@ -328,7 +362,7 @@ public class ListingQuestionableActivityProvider {
                             && newCqm.getNqfNumber().equals(origCqm.getNqfNumber())) {
                         // NQF is the same if the NQF numbers are equal
                         if (origCqm.isSuccess() && !newCqm.isSuccess()) {
-                            //orig did have this cqm but new does not so it was removed
+                            // orig did have this cqm but new does not so it was removed
                             QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
                             activity.setBefore(
                                     origCqm.getCmsId() != null ? origCqm.getCmsId() : origCqm.getNqfNumber());
@@ -340,7 +374,7 @@ public class ListingQuestionableActivityProvider {
                             && newCqm.getCmsId().equals(origCqm.getCmsId())) {
                         // CMS is the same if the CMS ID and version is equal
                         if (origCqm.isSuccess() && !newCqm.isSuccess()) {
-                            //orig did not have this cqm but new does so it was added
+                            // orig did not have this cqm but new does so it was added
                             QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
                             activity.setBefore(
                                     origCqm.getCmsId() != null ? origCqm.getCmsId() : origCqm.getNqfNumber());
@@ -364,23 +398,26 @@ public class ListingQuestionableActivityProvider {
 
     /**
      * Create questionable activity if certification criteria were added.
-     * @param origListing original listing
-     * @param newListing new listing
+     * 
+     * @param origListing
+     *            original listing
+     * @param newListing
+     *            new listing
      * @return questionable activity, if it exists
      */
     public List<QuestionableActivityListingDTO> checkCertificationsAdded(
-            final CertifiedProductSearchDetails origListing, final CertifiedProductSearchDetails newListing) {
+            CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
         List<QuestionableActivityListingDTO> certAddedActivities = new ArrayList<QuestionableActivityListingDTO>();
         if (origListing.getCertificationResults() != null && origListing.getCertificationResults().size() > 0
                 && newListing.getCertificationResults() != null && newListing.getCertificationResults().size() > 0) {
-            //all cert results are in the details so find the same one in the orig and new objects
-            //based on number and compare the success boolean to see if one was added
+            // all cert results are in the details so find the same one in the orig and new objects
+            // based on number and compare the success boolean to see if one was added
             for (CertificationResult origCertResult : origListing.getCertificationResults()) {
                 for (CertificationResult newCertResult : newListing.getCertificationResults()) {
                     if (origCertResult.getNumber().equals(newCertResult.getNumber())) {
                         if (!origCertResult.isSuccess() && newCertResult.isSuccess()) {
-                            //orig did not have this cert result but new does so it was added
+                            // orig did not have this cert result but new does so it was added
                             QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
                             activity.setBefore(null);
                             activity.setAfter(newCertResult.getNumber());
@@ -397,23 +434,26 @@ public class ListingQuestionableActivityProvider {
 
     /**
      * Create questionable activity if it has removal of certification criteria.
-     * @param origListing original listing
-     * @param newListing new listing
+     * 
+     * @param origListing
+     *            original listing
+     * @param newListing
+     *            new listing
      * @return questionable activity, if it is
      */
     public List<QuestionableActivityListingDTO> checkCertificationsRemoved(
-            final CertifiedProductSearchDetails origListing, final CertifiedProductSearchDetails newListing) {
+            CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
         List<QuestionableActivityListingDTO> certRemovedActivities = new ArrayList<QuestionableActivityListingDTO>();
         if (origListing.getCertificationResults() != null && origListing.getCertificationResults().size() > 0
                 && newListing.getCertificationResults() != null && newListing.getCertificationResults().size() > 0) {
-            //all cert results are in the details so find the same one in the orig and new objects
-            //based on number and compare the success boolean to see if one was removed
+            // all cert results are in the details so find the same one in the orig and new objects
+            // based on number and compare the success boolean to see if one was removed
             for (CertificationResult origCertResult : origListing.getCertificationResults()) {
                 for (CertificationResult newCertResult : newListing.getCertificationResults()) {
                     if (origCertResult.getNumber().equals(newCertResult.getNumber())) {
                         if (origCertResult.isSuccess() && !newCertResult.isSuccess()) {
-                            //orig did have this cert result but new does not so it was removed
+                            // orig did have this cert result but new does not so it was removed
                             QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
                             activity.setBefore(origCertResult.getNumber());
                             activity.setAfter(null);
@@ -429,17 +469,20 @@ public class ListingQuestionableActivityProvider {
 
     /**
      * Check to see if activity has has deletion of surveillance.
-     * @param origListing original listing
-     * @param newListing new listing
+     * 
+     * @param origListing
+     *            original listing
+     * @param newListing
+     *            new listing
      * @return activity if it is questionable
      */
     public QuestionableActivityListingDTO checkSurveillanceDeleted(
-            final CertifiedProductSearchDetails origListing, final CertifiedProductSearchDetails newListing) {
+            CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
         QuestionableActivityListingDTO activity = null;
         if (origListing.getSurveillance() != null && origListing.getSurveillance().size() > 0
                 && (newListing.getSurveillance() == null
-                || newListing.getSurveillance().size() < origListing.getSurveillance().size())) {
+                        || newListing.getSurveillance().size() < origListing.getSurveillance().size())) {
 
             activity = new QuestionableActivityListingDTO();
             activity.setBefore(null);
@@ -450,12 +493,15 @@ public class ListingQuestionableActivityProvider {
 
     /**
      * Check to see if activity has any changes in ATLs.
-     * @param origListing original listing
-     * @param newListing new listing
+     * 
+     * @param origListing
+     *            original listing
+     * @param newListing
+     *            new listing
      * @return activity if it is questionable
      */
     public QuestionableActivityListingDTO checkTestingLabChanged(
-            final CertifiedProductSearchDetails origListing, final CertifiedProductSearchDetails newListing) {
+            CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         QuestionableActivityListingDTO activity = null;
         List<CertifiedProductTestingLab> origAtls = origListing.getTestingLabs();
         List<CertifiedProductTestingLab> newAtls = newListing.getTestingLabs();
@@ -496,13 +542,126 @@ public class ListingQuestionableActivityProvider {
         return activity;
     }
 
+    public QuestionableActivityListingDTO checkCriteriaB3WithoutIcsChangedOnEdit(
+            CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
+        QuestionableActivityListingDTO activity = null;
+        CertificationResult originalB3 = getB3Criteria(origListing);
+        CertificationResult newB3 = getB3Criteria(newListing);
+        Date b3ChangeDate = null;
+        Date currentDate = new Date();
+        try {
+            b3ChangeDate = getB3ChangeDate();
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            return null;
+        }
+
+        if (currentDate.after(b3ChangeDate)
+                && isB3CriteriaNew(originalB3, newB3)
+                && !hasICS(newListing)) {
+            activity = new QuestionableActivityListingDTO();
+            activity.setAfter(B3_CRITERIA_NUMER);
+        }
+        return activity;
+    }
+
+    public QuestionableActivityListingDTO checkCriteriaB3WithIcsChangedOnEdit(
+            CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
+        QuestionableActivityListingDTO activity = null;
+        CertificationResult originalB3 = getB3Criteria(origListing);
+        CertificationResult newB3 = getB3Criteria(newListing);
+        Date b3ChangeDate = null;
+        Date currentDate = new Date();
+        try {
+            b3ChangeDate = getB3ChangeDate();
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            return null;
+        }
+
+        if (currentDate.after(b3ChangeDate)
+                && isB3CriteriaNew(originalB3, newB3)
+                && hasICS(newListing)) {
+            activity = new QuestionableActivityListingDTO();
+            activity.setAfter(B3_CRITERIA_NUMER);
+        }
+        return activity;
+    }
+
+    public QuestionableActivityListingDTO checkIcsChangedWithCriteriaB3OnEdit(
+            CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
+        QuestionableActivityListingDTO activity = null;
+        CertificationResult newB3 = getB3Criteria(newListing);
+        Date b3ChangeDate = null;
+        Date currentDate = new Date();
+        try {
+            b3ChangeDate = getB3ChangeDate();
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            return null;
+        }
+
+        if (currentDate.after(b3ChangeDate)
+                && hasICS(newListing)
+                && !hasICS(origListing)
+                && newB3.isSuccess()) {
+            activity = new QuestionableActivityListingDTO();
+            activity.setAfter("ics=1");
+            activity.setBefore("ics=0");
+        }
+        return activity;
+    }
+
+    public QuestionableActivityListingDTO checkCriteriaB3SuccessOnCreate(CertifiedProductSearchDetails newListing) {
+        QuestionableActivityListingDTO activity = null;
+        CertificationResult newB3 = getB3Criteria(newListing);
+        Date b3ChangeDate = null;
+        Date currentDate = new Date();
+        try {
+            b3ChangeDate = getB3ChangeDate();
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            return null;
+        }
+
+        if (currentDate.after(b3ChangeDate)
+                && newB3.isSuccess()
+                && !hasICS(newListing)) {
+            activity = new QuestionableActivityListingDTO();
+            activity.setAfter(B3_CRITERIA_NUMER);
+        }
+        return activity;
+    }
+
+    private Date getB3ChangeDate() throws ParseException {
+        String dateAsString = env.getProperty(B3_CHANGE_DATE);
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+        return sdf.parse(dateAsString);
+    }
+
+    private CertificationResult getB3Criteria(CertifiedProductSearchDetails listing) {
+        return listing.getCertificationResults().stream()
+                .filter(result -> result.getNumber().equals(B3_CRITERIA_NUMER))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private boolean isB3CriteriaNew(CertificationResult origB3, CertificationResult newB3) {
+        return origB3 != null && newB3 != null && !origB3.isSuccess() && newB3.isSuccess();
+    }
+
+    private boolean hasICS(CertifiedProductSearchDetails listing) {
+        return listing.getIcs().getInherits();
+    }
+
     static class CertificationStatusEventComparator implements Comparator<CertificationStatusEvent>, Serializable {
-        private static final long serialVersionUID = 1315674742856524797L;
+        private static long serialVersionUID = 1315674742856524797L;
 
         @Override
-        public int compare(final CertificationStatusEvent a, final CertificationStatusEvent b) {
+        public int compare(CertificationStatusEvent a, CertificationStatusEvent b) {
             return a.getEventDate().longValue() < b.getEventDate().longValue()
-                    ? -1 : a.getEventDate().longValue() == b.getEventDate().longValue() ? 0 : 1;
+                    ? -1
+                    : a.getEventDate().longValue() == b.getEventDate().longValue() ? 0 : 1;
         }
     }
 }

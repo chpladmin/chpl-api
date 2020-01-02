@@ -46,6 +46,9 @@ public class ComplaintsWorksheetBuilder {
     private static final Logger LOGGER = LogManager.getLogger(ComplaintsWorksheetBuilder.class);
     private static final int LAST_DATA_COLUMN = 21;
 
+    private static final String BOOLEAN_YES = "Yes";
+    private static final String BOOLEAN_NO = "No";
+
     private static final int COL_COMPLAINT_DATE = 1;
     private static final int COL_ACB_COMPLAINT_ID = 2;
     private static final int COL_ONC_COMPLAINT_ID = 3;
@@ -154,7 +157,7 @@ public class ComplaintsWorksheetBuilder {
 
         Name complaintStatusTypeNamedCell = workbook.getWorkbook().createName();
         complaintStatusTypeNamedCell.setNameName("ComplaintStatusTypeList");
-        reference = "Lists!$F$1:$F$" + getNumberOfComplaintStatusTypes();
+        reference = "Lists!$F$1:$F$" + Complaint.NUMBER_OF_STATES;
         complaintStatusTypeNamedCell.setRefersToFormula(reference);
 
         Name booleanNamedCell = workbook.getWorkbook().createName();
@@ -163,8 +166,10 @@ public class ComplaintsWorksheetBuilder {
         booleanNamedCell.setRefersToFormula(reference);
 
         //complainant type is a dropdown list of choices
-        CellRangeAddressList addressList = new CellRangeAddressList(2, getLastDataRow(), COL_COMPLAINANT_TYPE, COL_COMPLAINANT_TYPE);
-        XSSFDataValidationConstraint dvConstraint = (XSSFDataValidationConstraint) dvHelper.createFormulaListConstraint("ComplainantTypeList");
+        CellRangeAddressList addressList = new CellRangeAddressList(2, getLastDataRow(),
+                COL_COMPLAINANT_TYPE, COL_COMPLAINANT_TYPE);
+        XSSFDataValidationConstraint dvConstraint = (XSSFDataValidationConstraint)
+                dvHelper.createFormulaListConstraint("ComplainantTypeList");
         XSSFDataValidation validation = (XSSFDataValidation) dvHelper.createValidation(dvConstraint, addressList);
         validation.setSuppressDropDownArrow(true);
         validation.setShowErrorBox(false);
@@ -316,7 +321,8 @@ public class ComplaintsWorksheetBuilder {
             for (ComplaintListingMap listingMap : complaint.getListings()) {
                 try {
                     CertifiedProductSearchDetails cpd =
-                            cpdManager.getCertifiedProductDetailsBasicByChplProductNumber(listingMap.getChplProductNumber(), false);
+                            cpdManager.getCertifiedProductDetailsBasicByChplProductNumber(
+                                    listingMap.getChplProductNumber(), false);
                     listingDetailsCache.put(cpd.getId(), cpd);
                     orderedListings.add(cpd);
                 } catch (EntityRetrievalException ex) {
@@ -466,14 +472,14 @@ public class ComplaintsWorksheetBuilder {
         addDataCell(workbook, row, COL_ONC_COMPLAINT_ID, complaint.getOncComplaintId());
         addDataCell(workbook, row, COL_SUMMARY, complaint.getSummary());
         addDataCell(workbook, row, COL_ACTIONS_RESPONSE, complaint.getActions());
-        addDataCell(workbook, row, COL_COMPLAINANT_TYPE, 
+        addDataCell(workbook, row, COL_COMPLAINANT_TYPE,
                 complaint.getComplainantType() != null ? complaint.getComplainantType().getName() : "");
         addDataCell(workbook, row, COL_COMPLAINANT_TYPE_OTHER, complaint.getComplainantTypeOther());
-        addDataCell(workbook, row, COL_COMPLAINANT_CONTACTED, complaint.isComplainantContacted() ? "Yes" : "No");
-        addDataCell(workbook, row, COL_DEVELOPER_CONTACTED, complaint.isDeveloperContacted() ? "Yes" : "No");
-        addDataCell(workbook, row, COL_ATL_CONTACTED, complaint.isOncAtlContacted() ? "Yes" : "No");
-        addDataCell(workbook, row, COL_COMPLAINT_STATUS, complaint.getComplaintStatusType().getName());
-        addDataCell(workbook, row, COL_FLAGGED_FOR_ONC, complaint.isFlagForOncReview() ? "Yes" : "No");
+        addDataCell(workbook, row, COL_COMPLAINANT_CONTACTED, complaint.isComplainantContacted() ? BOOLEAN_YES : BOOLEAN_NO);
+        addDataCell(workbook, row, COL_DEVELOPER_CONTACTED, complaint.isDeveloperContacted() ? BOOLEAN_YES : BOOLEAN_NO);
+        addDataCell(workbook, row, COL_ATL_CONTACTED, complaint.isOncAtlContacted() ? BOOLEAN_YES : BOOLEAN_NO);
+        addDataCell(workbook, row, COL_COMPLAINT_STATUS, complaint.getClosedDate() == null ? Complaint.COMPLAINT_OPEN : Complaint.COMPLAINT_CLOSED);
+        addDataCell(workbook, row, COL_FLAGGED_FOR_ONC, complaint.isFlagForOncReview() ? BOOLEAN_YES : BOOLEAN_NO);
     }
 
     private Cell addHeadingCell(final SurveillanceReportWorkbookWrapper workbook,
@@ -492,9 +498,5 @@ public class ComplaintsWorksheetBuilder {
 
     private int getNumberOfComplainantTypes() {
         return complaintManager.getComplainantTypes().size();
-    }
-
-    private int getNumberOfComplaintStatusTypes() {
-        return complaintManager.getComplaintStatusTypes().size();
     }
 }
