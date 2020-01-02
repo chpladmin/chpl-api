@@ -27,27 +27,11 @@ import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
 
-/**
- * Component that handles getting statistics data and return Futures of that data.
- * 
- * @author alarned
- *
- */
 @Component
 @EnableAsync
 public class AsynchronousSummaryStatistics {
-    // private static Logger LOGGER = LogManager.getLogger(AsynchronousSummaryStatistics.class);
     private Logger logger;
 
-    /**
-     * Total # of Unique Developers (Regardless of Edition).
-     * 
-     * @param developerStatisticsDAO
-     *            DAO that provides access to developer statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Transactional
     @Async("jobAsyncDataExecutor")
     public Future<Long> getTotalDevelopers(DeveloperStatisticsDAO developerStatisticsDAO,
@@ -56,15 +40,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
-    /**
-     * Total # of Developers with 2014 Listings.
-     * 
-     * @param developerStatisticsDAO
-     *            DAO that provides access to developer statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Transactional
     @Async("jobAsyncDataExecutor")
     public Future<Long> getTotalDevelopersWith2014Listings(DeveloperStatisticsDAO developerStatisticsDAO,
@@ -73,15 +48,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
-    /**
-     * Total # of Developers with Active 2014 Listings.
-     * 
-     * @param developerStatisticsDAO
-     *            DAO that provides access to developer statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Transactional
     @Async("jobAsyncDataExecutor")
     public Future<Long> getTotalDevelopersWithActive2014Listings(DeveloperStatisticsDAO developerStatisticsDAO,
@@ -95,15 +61,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
-    /**
-     * Total # of Developers by certified body with listings for each year.
-     * 
-     * @param developerStatisticsDAO
-     *            DAO that provides access to developer statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Transactional
     @Async("jobAsyncDataExecutor")
     public Future<List<CertifiedBodyStatistics>> getTotalDevelopersByCertifiedBodyWithListingsEachYear(
@@ -113,15 +70,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<List<CertifiedBodyStatistics>>(total);
     }
 
-    /**
-     * Total # of Developers by certified body with listings in each certification status and year.
-     * 
-     * @param developerStatisticsDAO
-     *            DAO that provides access to developer statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Transactional
     @Async("jobAsyncDataExecutor")
     public Future<List<CertifiedBodyStatistics>> getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(
@@ -131,15 +79,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<>(total);
     }
 
-    /**
-     * Total # of Developers with 2015 Listings.
-     * 
-     * @param developerStatisticsDAO
-     *            DAO that provides access to developer statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Transactional
     @Async("jobAsyncDataExecutor")
     public Future<Long> getTotalDevelopersWith2015Listings(
@@ -149,15 +88,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<>(total);
     }
 
-    /**
-     * Total # of Developers with Active 2015 Listings.
-     * 
-     * @param developerStatisticsDAO
-     *            DAO that provides access to developer statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Transactional
     @Async("jobAsyncDataExecutor")
     public Future<Long> getTotalDevelopersWithActive2015Listings(
@@ -171,15 +101,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
-    /**
-     * Total # of Certified Unique Products (Regardless of Status or Edition - Including 2011).
-     * 
-     * @param listingStatisticsDAO
-     *            DAO that provides access to listing statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<Long> getTotalCertifiedProducts(ListingStatisticsDAO listingStatisticsDAO,
@@ -188,15 +109,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
-    /**
-     * Total # of Certified Unique Products each year by certified body.
-     * 
-     * @param listingStatisticsDAO
-     *            DAO that provides access to listing statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<List<CertifiedBodyStatistics>> getTotalCPListingsEachYearByCertifiedBody(
@@ -205,15 +117,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<List<CertifiedBodyStatistics>>(totals);
     }
 
-    /**
-     * Total # of Certified Unique Products each year by certified body and certification status.
-     * 
-     * @param listingStatisticsDAO
-     *            DAO that provides access to listing statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<List<CertifiedBodyStatistics>> getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(
@@ -223,15 +126,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<List<CertifiedBodyStatistics>>(totals);
     }
 
-    /**
-     * Total # of unique Products with 2014 Listings.
-     * 
-     * @param listingStatisticsDAO
-     *            DAO that provides access to listing statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<Long> getTotalCPs2014Listings(ListingStatisticsDAO listingStatisticsDAO,
@@ -241,15 +135,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
-    /**
-     * Total # of unique Products with Active 2014 Listings.
-     * 
-     * @param listingStatisticsDAO
-     *            DAO that provides access to listing statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<Long> getTotalCPsActive2014Listings(ListingStatisticsDAO listingStatisticsDAO,
@@ -261,15 +146,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
-    /**
-     * Total # of unique Products with Suspended (by ONC and ONC-ACB) 2014 Listings.
-     * 
-     * @param listingStatisticsDAO
-     *            DAO that provides access to listing statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<Long> getTotalCPsSuspended2014Listings(ListingStatisticsDAO listingStatisticsDAO,
@@ -282,15 +158,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
-    /**
-     * Total # of unique Products with 2015 Listings.
-     * 
-     * @param listingStatisticsDAO
-     *            DAO that provides access to listing statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<Long> getTotalCPs2015Listings(ListingStatisticsDAO listingStatisticsDAO,
@@ -300,15 +167,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
-    /**
-     * Total # of unique Products with Active 2015 Listings.
-     * 
-     * @param listingStatisticsDAO
-     *            DAO that provides access to listing statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<Long> getTotalCPsActive2015Listings(ListingStatisticsDAO listingStatisticsDAO,
@@ -320,15 +178,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
-    /**
-     * Total # of unique Products with Suspended (by ONC and ONC-ACB) 2015 Listings.
-     * 
-     * @param listingStatisticsDAO
-     *            DAO that provides access to listing statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<Long> getTotalCPsSuspended2015Listings(ListingStatisticsDAO listingStatisticsDAO,
@@ -341,15 +190,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
-    /**
-     * Total # of unique Products with Active Listings (Regardless of Edition).
-     * 
-     * @param listingStatisticsDAO
-     *            DAO that provides access to listing statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<Long> getTotalCPsActiveListings(ListingStatisticsDAO listingStatisticsDAO,
@@ -361,15 +201,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
-    /**
-     * Total # of Listings (Regardless of Status or Edition).
-     * 
-     * @param listingStatisticsDAO
-     *            DAO that provides access to listing statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<Long> getTotalListings(ListingStatisticsDAO listingStatisticsDAO,
@@ -379,15 +210,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
-    /**
-     * Total # of Active 2014 Listings.
-     * 
-     * @param listingStatisticsDAO
-     *            DAO that provides access to listing statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<Long> getTotalActive2014Listings(ListingStatisticsDAO listingStatisticsDAO,
@@ -401,15 +223,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
-    /**
-     * Total # of Active 2015 Listings.
-     * 
-     * @param listingStatisticsDAO
-     *            DAO that provides access to listing statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<Long> getTotalActive2015Listings(ListingStatisticsDAO listingStatisticsDAO,
@@ -423,13 +236,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
-    /**
-     * Return the total number of listings that have Alternate Test Methods.
-     * 
-     * @param listingStatisticsDAO
-     *            DAO that provides access to listing statistics
-     * @return a number
-     */
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<Long> getTotalListingsWithAlternateTestMethods(ListingStatisticsDAO listingStatisticsDAO) {
@@ -437,13 +243,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
-    /**
-     * Return the total number of listings with Alternate Test Methods by ACB.
-     * 
-     * @param listingStatisticsDAO
-     *            DAO that provides access to listing statistics
-     * @return a list of Statistic objects
-     */
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<List<CertifiedBodyAltTestStatistics>> getTotalListingsWithCertifiedBodyAndAlternativeTestMethods(
@@ -453,15 +252,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<List<CertifiedBodyAltTestStatistics>>(totals);
     }
 
-    /**
-     * Total # of Active Listings by Certified Body.
-     * 
-     * @param listingStatisticsDAO
-     *            DAO that provides access to listing statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<List<CertifiedBodyStatistics>> getTotalActiveListingsByCertifiedBody(
@@ -470,15 +260,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<List<CertifiedBodyStatistics>>(totals);
     }
 
-    /**
-     * Total # of 2014 Listings (Regardless of Status).
-     * 
-     * @param listingStatisticsDAO
-     *            DAO that provides access to listing statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<Long> getTotal2014Listings(ListingStatisticsDAO listingStatisticsDAO,
@@ -488,15 +269,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
-    /**
-     * Total # of 2015 Listings (Regardless of Status).
-     * 
-     * @param listingStatisticsDAO
-     *            DAO that provides access to listing statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<Long> getTotal2015Listings(ListingStatisticsDAO listingStatisticsDAO,
@@ -506,15 +278,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
-    /**
-     * Total # of 2011 Listings (Will not be active).
-     * 
-     * @param listingStatisticsDAO
-     *            DAO that provides access to listing statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<Long> getTotal2011Listings(ListingStatisticsDAO listingStatisticsDAO,
@@ -524,15 +287,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
-    /**
-     * Total # of Surveillance Activities*.
-     * 
-     * @param surveillanceStatisticsDAO
-     *            DAO that provides access to surveillance statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<Long> getTotalSurveillanceActivities(SurveillanceStatisticsDAO surveillanceStatisticsDAO,
@@ -541,15 +295,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
-    /**
-     * Open Surveillance Activities.
-     * 
-     * @param surveillanceStatisticsDAO
-     *            DAO that provides access to surveillance statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<Long> getTotalOpenSurveillanceActivities(SurveillanceStatisticsDAO surveillanceStatisticsDAO,
@@ -558,15 +303,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
-    /**
-     * Closed Surveillance Activities.
-     * 
-     * @param surveillanceStatisticsDAO
-     *            DAO that provides access to surveillance statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<Long> getTotalClosedSurveillanceActivities(SurveillanceStatisticsDAO surveillanceStatisticsDAO,
@@ -592,15 +328,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(totalDuration / surveillances.size());
     }
 
-    /**
-     * Total # of NCs.
-     * 
-     * @param surveillanceStatisticsDAO
-     *            DAO that provides access to surveillance statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<Long> getTotalNonConformities(SurveillanceStatisticsDAO surveillanceStatisticsDAO,
@@ -609,15 +336,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
-    /**
-     * Open NCs.
-     * 
-     * @param surveillanceStatisticsDAO
-     *            DAO that provides access to surveillance statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<Long> getTotalOpenNonconformities(SurveillanceStatisticsDAO surveillanceStatisticsDAO,
@@ -626,15 +344,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
-    /**
-     * Closed NCs.
-     * 
-     * @param surveillanceStatisticsDAO
-     *            DAO that provides access to surveillance statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<Long> getTotalClosedNonconformities(SurveillanceStatisticsDAO surveillanceStatisticsDAO,
@@ -643,15 +352,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
-    /**
-     * Open NCs by ACB.
-     * 
-     * @param surveillanceStatisticsDAO
-     *            DAO that provides access to surveillance statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<List<CertifiedBodyStatistics>> getTotalOpenNonconformitiesByAcb(
@@ -661,15 +361,6 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<List<CertifiedBodyStatistics>>(totals);
     }
 
-    /**
-     * Open NCs by ACB.
-     * 
-     * @param surveillanceStatisticsDAO
-     *            DAO that provides access to surveillance statistics
-     * @param dateRange
-     *            the range of time to get statistics from
-     * @return the statistic
-     */
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<List<CertifiedBodyStatistics>> getTotalOpenSurveillancesByAcb(
