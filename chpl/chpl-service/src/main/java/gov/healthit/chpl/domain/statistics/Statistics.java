@@ -13,7 +13,7 @@ import gov.healthit.chpl.domain.DateRange;
  *
  */
 public class Statistics implements Serializable {
-    private static long serialVersionUID = 6977674702447513779L;
+    private static final long serialVersionUID = 6977674702447513779L;
     private DateRange dateRange;
     private Long totalDevelopers;
     private Long totalDevelopersWith2014Listings;
