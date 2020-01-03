@@ -131,8 +131,9 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get metadata about auditable records in the system for listings.",
-            notes = "All parameters are optional and will default to the first page of listing activity"
-                    + "from the beginning of CHPL with a page size of the maximum allowed. Page number is 0-based.")
+            notes = "All parameters are optional and will default to the first page of listing activity "
+                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
+                    + "with the most recent activity first.")
     @RequestMapping(value = "/metadata/beta/listings", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForListings(@RequestParam(required = false) Long start,
