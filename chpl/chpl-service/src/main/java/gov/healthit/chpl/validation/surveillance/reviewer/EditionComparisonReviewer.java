@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
@@ -19,8 +20,6 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("survEditionComparisonReviewer")
 public class EditionComparisonReviewer implements ComparisonReviewer {
-    private static final String EDITION_2014 = "2014";
-
     private CertifiedProductDAO listingDao;
     private ErrorMessageUtil msgUtil;
     private ResourcePermissions resourcePermissions;
@@ -53,9 +52,9 @@ public class EditionComparisonReviewer implements ComparisonReviewer {
             if (StringUtils.isEmpty(edition)) {
                 updatedSurveillance.getErrorMessages().add(msgUtil.getMessage("surveillance.noEditNoEdition"));
             }
-        } else if (edition.equals(EDITION_2014)) {
+        } else if (edition.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2014.getYear())) {
             //look for any changes to the surveillance data
-            if (!existingSurveillance.matches(updatedSurveillance)) {
+            if (!existingSurveillance.propertiesMatch(updatedSurveillance)) {
                 updatedSurveillance.getErrorMessages().add(msgUtil.getMessage("surveillance.noEdit2014"));
             }
 
@@ -72,12 +71,12 @@ public class EditionComparisonReviewer implements ComparisonReviewer {
                     updatedSurveillance.getErrorMessages().add(
                             msgUtil.getMessage("surveillance.requirementNotAddedFor2014Edition",
                                     updatedReq.getRequirement()));
-                } else if (existingReq.isPresent() && !updatedReq.matches(existingReq.get())) {
+                } else if (existingReq.isPresent() && !updatedReq.propertiesMatch(existingReq.get())) {
                         //an existing requirement that was edited = not allowed
                         updatedSurveillance.getErrorMessages().add(
                                 msgUtil.getMessage("surveillance.requirementNotEditedFor2014Edition",
                                         updatedReq.getRequirement()));
-                } else if (existingReq.isPresent() && updatedReq.matches(existingReq.get())) {
+                } else if (existingReq.isPresent() && updatedReq.propertiesMatch(existingReq.get())) {
                     //look at the nonconformities for this existing requirement - were any added or edited?
                     for (SurveillanceNonconformity updatedNc : updatedReq.getNonconformities()) {
                         Optional<SurveillanceNonconformity> existingNc
@@ -90,7 +89,7 @@ public class EditionComparisonReviewer implements ComparisonReviewer {
                             updatedSurveillance.getErrorMessages().add(
                                     msgUtil.getMessage("surveillance.nonconformityNotAddedFor2014Edition",
                                             updatedNc.getNonconformityType(), updatedReq.getRequirement()));
-                        } else if (existingNc.isPresent() && !updatedNc.matches(existingNc.get())) {
+                        } else if (existingNc.isPresent() && !updatedNc.propertiesMatch(existingNc.get())) {
                             updatedSurveillance.getErrorMessages().add(
                                     //edited a nonconformity - not allowed
                                     msgUtil.getMessage("surveillance.nonconformityNotEditedFor2014Edition",

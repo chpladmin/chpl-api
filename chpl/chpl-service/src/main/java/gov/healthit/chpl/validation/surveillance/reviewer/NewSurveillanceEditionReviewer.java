@@ -7,6 +7,7 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -15,8 +16,6 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class NewSurveillanceEditionReviewer implements Reviewer {
-    private static final String EDITION_2014 = "2014";
-
     private CertifiedProductDAO listingDao;
     private ErrorMessageUtil msgUtil;
     private ResourcePermissions resourcePermissions;
@@ -48,7 +47,7 @@ public class NewSurveillanceEditionReviewer implements Reviewer {
             if (StringUtils.isEmpty(edition)) {
                 surv.getErrorMessages().add(msgUtil.getMessage("surveillance.noCreateNoEdition"));
             }
-        } else if (edition.equals(EDITION_2014)) {
+        } else if (edition.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2014.getYear())) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.noCreate2014"));
         }
     }
