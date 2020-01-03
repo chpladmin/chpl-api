@@ -662,5 +662,21 @@
                 </entry>
             </job-data-map>
         </job>
+
+        <!-- Job used to create new criteria-->
+        <job>
+            <name>createCriteriaJob</name>
+            <group>systemJobs</group>
+            <description>Creates new criteria</description>
+            <job-class>gov.healthit.chpl.scheduler.job.CreateCriteriaJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+            </job-data-map>
+        </job>
     </schedule>
 </job-scheduling-data>

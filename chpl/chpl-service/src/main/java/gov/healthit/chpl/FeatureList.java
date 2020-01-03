@@ -1,10 +1,5 @@
 package gov.healthit.chpl;
 
-/**
- * All relevant FF4J feature flags.
- * @author alarned
- *
- */
 public final class FeatureList {
     private FeatureList() {}
 
