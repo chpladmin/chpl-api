@@ -82,8 +82,12 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
             entity.setSed(result.getSed());
             entity.setG1Success(result.getG1Success());
             entity.setG2Success(result.getG2Success());
+            entity.setAttestationAnswer(result.getAttestationAnswer());
             entity.setSuccess(result.getSuccessful());
             entity.setApiDocumentation(result.getApiDocumentation());
+            entity.setExportDocumentation(result.getExportDocumentation());
+            entity.setDocumentationUrl(result.getDocumentationUrl());
+            entity.setUseCases(result.getUseCases());
             entity.setPrivacySecurityFramework(result.getPrivacySecurityFramework());
             entity.setLastModifiedUser(AuthUtil.getAuditId());
 
@@ -112,8 +116,12 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         entity.setSed(toUpdate.getSed());
         entity.setG1Success(toUpdate.getG1Success());
         entity.setG2Success(toUpdate.getG2Success());
+        entity.setAttestationAnswer(toUpdate.getAttestationAnswer());
         entity.setSuccess(toUpdate.getSuccessful());
         entity.setApiDocumentation(toUpdate.getApiDocumentation());
+        entity.setExportDocumentation(toUpdate.getExportDocumentation());
+        entity.setDocumentationUrl(toUpdate.getDocumentationUrl());
+        entity.setUseCases(toUpdate.getUseCases());
         entity.setPrivacySecurityFramework(toUpdate.getPrivacySecurityFramework());
         entity.setLastModifiedUser(AuthUtil.getAuditId());
 
