@@ -169,7 +169,8 @@ public class DeveloperDAO extends BaseDAOImpl {
         DeveloperACBMapEntity mapping = new DeveloperACBMapEntity();
         mapping.getDeveloperId(dto.getDeveloperId());
         mapping.setCertificationBodyId(dto.getAcbId());
-        mapping.setTransparencyAttestation(AttestationType.getValue(dto.getTransparencyAttestation()));
+        mapping.setTransparencyAttestation(
+                AttestationType.getValue(dto.getTransparencyAttestation().getTransparencyAttestation()));
         mapping.setCreationDate(new Date());
         mapping.setDeleted(false);
         mapping.setLastModifiedDate(new Date());
@@ -317,7 +318,8 @@ public class DeveloperDAO extends BaseDAOImpl {
             return null;
         }
 
-        mapping.setTransparencyAttestation(AttestationType.getValue(dto.getTransparencyAttestation()));
+        mapping.setTransparencyAttestation(
+                AttestationType.getValue(dto.getTransparencyAttestation().getTransparencyAttestation()));
         mapping.setLastModifiedDate(new Date());
         mapping.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.persist(mapping);

@@ -40,6 +40,7 @@ import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
+import gov.healthit.chpl.dto.TransparencyAttestationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -181,7 +182,7 @@ public class DeveloperController {
             DeveloperACBMapDTO devMap = new DeveloperACBMapDTO();
             devMap.setAcbId(attMap.getAcbId());
             devMap.setAcbName(attMap.getAcbName());
-            devMap.setTransparencyAttestation(attMap.getAttestation());
+            devMap.setTransparencyAttestation(new TransparencyAttestationDTO(attMap.getAttestation()));
             newDeveloper.getTransparencyAttestationMappings().add(devMap);
         }
         if (splitRequest.getNewDeveloper().getAddress() != null) {
@@ -243,7 +244,7 @@ public class DeveloperController {
     produces = "application/json; charset=utf-8")
     public PermissionDeletedResponse deleteUserFromDeveloper(
             @PathVariable final Long developerId, @PathVariable final Long userId)
-        throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+                    throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         if (!ff4j.check(FeatureList.ROLE_DEVELOPER)) {
             throw new NotImplementedException();
         }
@@ -344,7 +345,7 @@ public class DeveloperController {
                 DeveloperACBMapDTO devMap = new DeveloperACBMapDTO();
                 devMap.setAcbId(attMap.getAcbId());
                 devMap.setAcbName(attMap.getAcbName());
-                devMap.setTransparencyAttestation(attMap.getAttestation());
+                devMap.setTransparencyAttestation(new TransparencyAttestationDTO( attMap.getAttestation()));
                 toUpdate.getTransparencyAttestationMappings().add(devMap);
             }
 

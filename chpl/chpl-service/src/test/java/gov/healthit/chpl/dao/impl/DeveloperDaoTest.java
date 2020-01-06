@@ -29,11 +29,11 @@ import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.AddressDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dto.AddressDTO;
-import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTODeprecated;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
+import gov.healthit.chpl.dto.TransparencyAttestationDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import junit.framework.TestCase;
@@ -271,7 +271,7 @@ public class DeveloperDaoTest extends TestCase {
         DeveloperACBMapDTO dto = new DeveloperACBMapDTO();
         dto.setAcbId(-8L);
         dto.setDeveloperId(developer.getId());
-        dto.setTransparencyAttestation("N/A");
+        dto.setTransparencyAttestation(new TransparencyAttestationDTO("N/A"));
         DeveloperACBMapDTO createdMapping = developerDao.createTransparencyMapping(dto);
 
         assertNotNull(createdMapping);
@@ -283,12 +283,10 @@ public class DeveloperDaoTest extends TestCase {
     }
 
     /**
-     * Given the CHPL is accepting search requests When I call the REST API's
-     * /decertified/developers Then DeveloperDAOImpl.getCertifiedDevelopers()
-     * returns List<DeveloperDecertifiedDTO> Then the returned list contains no
-     * duplicates (unique developerName for each row) Then the returned list
-     * contains the proper array of ONC_ACBs Then the returned list contains the
-     * sum of all of the developer's CP.numMeaningfulUse
+     * Given the CHPL is accepting search requests When I call the REST API's /decertified/developers Then
+     * DeveloperDAOImpl.getCertifiedDevelopers() returns List<DeveloperDecertifiedDTO> Then the returned list contains
+     * no duplicates (unique developerName for each row) Then the returned list contains the proper array of ONC_ACBs
+     * Then the returned list contains the sum of all of the developer's CP.numMeaningfulUse
      */
     @Test
     @Transactional

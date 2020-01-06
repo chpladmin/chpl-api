@@ -44,6 +44,7 @@ import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventPair;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
+import gov.healthit.chpl.dto.TransparencyAttestationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -230,9 +231,9 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
     }
 
     /**
-     * Add or edit a transparency mapping between ACB and Developer.
-     * If the current user does not have access to an ACB the mapping
-     * will be ignored.
+     * Add or edit a transparency mapping between ACB and Developer. If the current user does not have access to an ACB
+     * the mapping will be ignored.
+     * 
      * @param developer
      */
     private void createOrUpdateTransparencyMappings(final DeveloperDTO developer) {
@@ -368,8 +369,9 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
             AttestationType transparencyAttestation = null;
             for (DeveloperDTO dev : beforeDevelopers) {
                 DeveloperACBMapDTO taMap = developerDao.getTransparencyMapping(dev.getId(), acb.getId());
-                if (taMap != null && !StringUtils.isEmpty(taMap.getTransparencyAttestation())) {
-                    AttestationType currAtt = AttestationType.getValue(taMap.getTransparencyAttestation());
+                if (taMap != null && !StringUtils.isEmpty(taMap.getTransparencyAttestation().getTransparencyAttestation())) {
+                    AttestationType currAtt = AttestationType
+                            .getValue(taMap.getTransparencyAttestation().getTransparencyAttestation());
                     if (transparencyAttestation == null) {
                         transparencyAttestation = currAtt;
                     } else if (currAtt != transparencyAttestation) {
@@ -383,7 +385,7 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
                 DeveloperACBMapDTO devMap = new DeveloperACBMapDTO();
                 devMap.setAcbId(acb.getId());
                 devMap.setAcbName(acb.getName());
-                devMap.setTransparencyAttestation(transparencyAttestation.name());
+                devMap.setTransparencyAttestation(new TransparencyAttestationDTO(transparencyAttestation.name()));
                 developerToCreate.getTransparencyAttestationMappings().add(devMap);
             }
         }
@@ -425,13 +427,11 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
     }
 
     /**
-     * Splits a developer into two. The new developer will have at least one product assigned to it
-     * that used to be assigned to the original developer along with the versions and listings
-     * associated with those products. At least one product along with its versions and listings
-     * will remain assigned to the original developer.
-     * Since the developer code is auto-generated in the database, any listing that gets
-     * transferred to the new developer will automatically have a unique ID (no other developer
-     * can have the same developer code).
+     * Splits a developer into two. The new developer will have at least one product assigned to it that used to be
+     * assigned to the original developer along with the versions and listings associated with those products. At least
+     * one product along with its versions and listings will remain assigned to the original developer. Since the
+     * developer code is auto-generated in the database, any listing that gets transferred to the new developer will
+     * automatically have a unique ID (no other developer can have the same developer code).
      */
     @Override
     @Transactional(rollbackFor = {
@@ -509,8 +509,8 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
         }
 
         DeveloperDTO afterDeveloper = null;
-        //the split is complete - log split activity
-        //get the original developer object from the db to make sure it's all filled in
+        // the split is complete - log split activity
+        // get the original developer object from the db to make sure it's all filled in
         DeveloperDTO origDeveloper = getById(oldDeveloper.getId());
         afterDeveloper = getById(createdDeveloper.getId());
         List<DeveloperDTO> splitDevelopers = new ArrayList<DeveloperDTO>();
@@ -518,13 +518,14 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
         splitDevelopers.add(afterDeveloper);
         activityManager.addActivity(ActivityConcept.DEVELOPER, afterDeveloper.getId(),
                 "Split developer " + origDeveloper.getName() + " into " + origDeveloper.getName()
-                + " and " + afterDeveloper.getName(),
+                        + " and " + afterDeveloper.getName(),
                 origDeveloper, splitDevelopers);
         return afterDeveloper;
     }
 
     /**
      * Clones a list of DeveloperStatusEventDTO.
+     * 
      * @param original
      *            - List<DeveloperStatusEventDTO>
      * @return List<DeveloperStatusEventDTO>
@@ -641,8 +642,8 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
         List<DeveloperACBMapDTO> transparencyMaps = developerDao.getAllTransparencyMappings();
         Map<Long, DeveloperDTO> mappedDevelopers = new HashMap<Long, DeveloperDTO>();
         for (DeveloperDTO dev : developers) {
-            //initialize each developer object with null transparency attestation mappings
-            //for every ACB
+            // initialize each developer object with null transparency attestation mappings
+            // for every ACB
             for (CertificationBodyDTO acb : availableAcbs) {
                 DeveloperACBMapDTO mapToAdd = new DeveloperACBMapDTO();
                 mapToAdd.setAcbId(acb.getId());
@@ -654,7 +655,7 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
             mappedDevelopers.put(dev.getId(), dev);
         }
 
-        //fill in existing values for transparency Maps for acb+developer
+        // fill in existing values for transparency Maps for acb+developer
         for (DeveloperACBMapDTO transparencyMap : transparencyMaps) {
             if (transparencyMap.getAcbId() != null) {
                 DeveloperDTO dev = mappedDevelopers.get(transparencyMap.getDeveloperId());

@@ -24,10 +24,11 @@ import gov.healthit.chpl.util.ValidationUtils;
 @Component("pendingUnsupportedCharacterReviewer")
 public class UnsupportedCharacterReviewer implements Reviewer {
 
-    @Autowired ErrorMessageUtil msgUtil;
+    @Autowired
+    ErrorMessageUtil msgUtil;
 
     public void review(PendingCertifiedProductDTO listing) {
-      //check all string fields at the listing level
+        // check all string fields at the listing level
         addListingWarningIfNotValid(listing, listing.getAcbCertificationId(),
                 "ACB Certification ID '" + listing.getAcbCertificationId() + "'");
         addListingWarningIfNotValid(listing, listing.getCertificationBodyName(),
@@ -79,29 +80,29 @@ public class UnsupportedCharacterReviewer implements Reviewer {
                 "SED Intended User Description '" + listing.getSedIntendedUserDescription() + "'");
         addListingWarningIfNotValid(listing, listing.getSedReportFileLocation(),
                 "SED Report File Location '" + listing.getSedReportFileLocation() + "'");
-        addListingWarningIfNotValid(listing, listing.getTransparencyAttestation(),
-                "Transparency Attestation '" + listing.getTransparencyAttestation() + "'");
+        addListingWarningIfNotValid(listing, listing.getTransparencyAttestation().getTransparencyAttestation(),
+                "Transparency Attestation '" + listing.getTransparencyAttestation().getTransparencyAttestation() + "'");
         addListingWarningIfNotValid(listing, listing.getTransparencyAttestationUrl(),
                 "Transparency Attestation URL '" + listing.getTransparencyAttestationUrl() + "'");
 
-        //users can add to accessibility standards so check these
+        // users can add to accessibility standards so check these
         for (PendingCertifiedProductAccessibilityStandardDTO accStd : listing.getAccessibilityStandards()) {
             addListingWarningIfNotValid(listing, accStd.getName(), "Accessibility Standard '" + accStd.getName() + "'");
         }
 
-        //users can add to qms standards so check these
+        // users can add to qms standards so check these
         for (PendingCertifiedProductQmsStandardDTO qmsStd : listing.getQmsStandards()) {
             addListingWarningIfNotValid(listing, qmsStd.getName(), "QMS Standard '" + qmsStd.getName() + "'");
             addListingWarningIfNotValid(listing, qmsStd.getModification(),
                     "QMS Modification '" + qmsStd.getModification() + "'");
         }
 
-        //users can add to targeted users so check these
+        // users can add to targeted users so check these
         for (PendingCertifiedProductTargetedUserDTO tu : listing.getTargetedUsers()) {
             addListingWarningIfNotValid(listing, tu.getName(), "Targeted User '" + tu.getName() + "'");
         }
 
-        //check all criteria fields
+        // check all criteria fields
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
             if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria().booleanValue()) {
                 addCriteriaWarningIfNotValid(listing, cert, cert.getApiDocumentation(), "API Documentation");
@@ -118,7 +119,7 @@ public class UnsupportedCharacterReviewer implements Reviewer {
                 }
                 if (cert.getTestData() != null) {
                     for (PendingCertificationResultTestDataDTO testData : cert.getTestData()) {
-                        //not checking test data name because it has to match one of the existing names
+                        // not checking test data name because it has to match one of the existing names
                         addCriteriaWarningIfNotValid(listing, cert,
                                 testData.getVersion(), "Test Data Version '" + testData.getVersion() + "'");
                         addCriteriaWarningIfNotValid(listing, cert,
@@ -126,11 +127,11 @@ public class UnsupportedCharacterReviewer implements Reviewer {
                     }
                 }
 
-                //not checking test functionality name because it has to match one of the existing options
+                // not checking test functionality name because it has to match one of the existing options
 
                 if (cert.getTestProcedures() != null) {
                     for (PendingCertificationResultTestProcedureDTO testProc : cert.getTestProcedures()) {
-                        //not checking name because it has to match one of the existing options
+                        // not checking name because it has to match one of the existing options
                         addCriteriaWarningIfNotValid(listing, cert,
                                 testProc.getVersion(), "Test Procedure Version '" + testProc.getVersion() + "'");
                     }
@@ -143,7 +144,7 @@ public class UnsupportedCharacterReviewer implements Reviewer {
                 }
                 if (cert.getTestTools() != null) {
                     for (PendingCertificationResultTestToolDTO testTool : cert.getTestTools()) {
-                        //not checking name because it has to match one of the existing options
+                        // not checking name because it has to match one of the existing options
                         addCriteriaWarningIfNotValid(listing, cert,
                                 testTool.getVersion(), "Test Tool Version '" + testTool.getVersion() + "'");
                     }
@@ -152,7 +153,7 @@ public class UnsupportedCharacterReviewer implements Reviewer {
                     for (PendingCertificationResultTestTaskDTO crTestTask : cert.getTestTasks()) {
                         PendingTestTaskDTO testTask = crTestTask.getPendingTestTask();
                         if (testTask != null) {
-                            //not checking anything converted to a number
+                            // not checking anything converted to a number
                             addCriteriaWarningIfNotValid(listing, cert,
                                     testTask.getDescription(),
                                     "Test Task Description '" + testTask.getDescription() + "'");
@@ -161,12 +162,11 @@ public class UnsupportedCharacterReviewer implements Reviewer {
                                     "Test Task Rating Scale '" + testTask.getTaskRatingScale() + "'");
                         }
                         if (crTestTask.getTaskParticipants() != null) {
-                            for (PendingCertificationResultTestTaskParticipantDTO crPart
-                                    : crTestTask.getTaskParticipants()) {
+                            for (PendingCertificationResultTestTaskParticipantDTO crPart : crTestTask.getTaskParticipants()) {
                                 PendingTestParticipantDTO part = crPart.getTestParticipant();
                                 if (part != null) {
-                                    //not checking age range or education level because they have to map
-                                    //to existing values. also not checking anything converted to a number
+                                    // not checking age range or education level because they have to map
+                                    // to existing values. also not checking anything converted to a number
                                     addCriteriaWarningIfNotValid(listing, cert,
                                             part.getAssistiveTechnologyNeeds(),
                                             "Participant Assistive Technology Needs '"

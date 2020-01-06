@@ -33,11 +33,13 @@ import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.TestData;
 import gov.healthit.chpl.domain.TestProcedure;
+import gov.healthit.chpl.domain.TransparencyAttestation;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
+import gov.healthit.chpl.dto.TransparencyAttestationDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestDataDTO;
@@ -53,7 +55,6 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductQmsStandardD
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTestingLabDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingTestParticipantDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingTestTaskDTO;
-import gov.healthit.chpl.util.CertificationResultRules;
 
 @Component
 public class ListingMockUtil {
@@ -61,7 +62,8 @@ public class ListingMockUtil {
     public static final String CHPL_ID_2015 = "15.02.02.3007.A056.01.00.0.180214";
     private static final Long EDITION_2015_ID = 3L;
     private static final Long EDITION_2014_ID = 2L;
-    @Autowired private CertificationResultRules certRules;
+    @Autowired
+    private CertificationResultRules certRules;
 
     public CertifiedProduct createSimpleCertifiedProduct(Long id, String chplProductNumber,
             String edition, Date certificationDate) {
@@ -102,10 +104,10 @@ public class ListingMockUtil {
         listing.setProductVersionId(1L);
         listing.getQmsStandards().add(createPendingQmsStandard());
         listing.getTestingLabs().add(createPendingTestingLab());
-        listing.setTransparencyAttestation("Affirmative");
+        listing.setTransparencyAttestation(new TransparencyAttestationDTO("Affirmative"));
         listing.setTransparencyAttestationUrl("http://www.healthmetricssystems.com/index.php/certifications/");
 
-        //certification results
+        // certification results
         PendingCertificationResultDTO a1 = create2014PendingCertResult(1L, "170.314 (a)(1)", true);
         a1.setG1Success(Boolean.TRUE);
         a1.setG2Success(Boolean.TRUE);
@@ -277,7 +279,7 @@ public class ListingMockUtil {
         f3.getTestData().add(createPendingTestData(1L, null, "1.6"));
         listing.getCertificationCriterion().add(f3);
 
-        //TODO: cqms
+        // TODO: cqms
         return listing;
     }
 
@@ -310,10 +312,10 @@ public class ListingMockUtil {
         listing.setProductVersionId(1L);
         listing.getQmsStandards().add(createPendingQmsStandard());
         listing.getTestingLabs().add(createPendingTestingLab());
-        listing.setTransparencyAttestation("Affirmative");
+        listing.setTransparencyAttestation(new TransparencyAttestationDTO("Affirmative"));
         listing.setTransparencyAttestationUrl("http://www.healthmetricssystems.com/index.php/certifications/");
 
-        //certification results
+        // certification results
         PendingCertificationResultDTO a1 = create2015PendingCertResult(1L, "170.315 (a)(1)", true);
         a1.setG1Success(Boolean.TRUE);
         a1.setG2Success(Boolean.TRUE);
@@ -438,7 +440,7 @@ public class ListingMockUtil {
         f3.getTestProcedures().add(createPendingTestProcedure(1L, null, "1.8"));
         listing.getCertificationCriterion().add(f3);
 
-        //TODO: cqms
+        // TODO: cqms
         return listing;
     }
 
@@ -468,11 +470,11 @@ public class ListingMockUtil {
         listing.setProduct(createProduct());
         listing.getQmsStandards().add(createQmsStandard());
         listing.getTestingLabs().add(createTestingLab());
-        listing.setTransparencyAttestation("Affirmative");
+        listing.setTransparencyAttestation(new TransparencyAttestation("Affirmative"));
         listing.setTransparencyAttestationUrl("http://www.healthmetricssystems.com/index.php/certifications/");
         listing.setVersion(createVersion());
 
-        //certification results
+        // certification results
         listing.getCertificationResults().add(create2015CertResult(1L, "170.315 (a)(1)", false));
         listing.getCertificationResults().add(create2015CertResult(2L, "170.315 (a)(2)", false));
         listing.getCertificationResults().add(create2015CertResult(3L, "170.315 (a)(3)", false));
@@ -573,13 +575,15 @@ public class ListingMockUtil {
         listing.getCertificationResults().add(create2015CertResult(58L, "170.315 (h)(1)", false));
         listing.getCertificationResults().add(create2015CertResult(59L, "170.315 (h)(2)", false));
 
-        //TODO: cqms
+        // TODO: cqms
         return listing;
     }
 
     /**
      * Create a pending Listing.
-     * @param year the edition of the listing
+     * 
+     * @param year
+     *            the edition of the listing
      * @return a valid pending listing
      */
     public PendingCertifiedProductDTO createPendingListing(final String year) {
@@ -608,8 +612,7 @@ public class ListingMockUtil {
     }
 
     private CertifiedProductAccessibilityStandard createAccessibilityStandard() {
-        CertifiedProductAccessibilityStandard accessibilityStandard =
-                new CertifiedProductAccessibilityStandard();
+        CertifiedProductAccessibilityStandard accessibilityStandard = new CertifiedProductAccessibilityStandard();
         accessibilityStandard.setId(330L);
         accessibilityStandard.setAccessibilityStandardId(8L);
         accessibilityStandard.setAccessibilityStandardName("None");

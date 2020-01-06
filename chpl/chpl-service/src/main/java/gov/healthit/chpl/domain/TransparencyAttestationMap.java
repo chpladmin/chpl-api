@@ -12,23 +12,14 @@ import javax.xml.bind.annotation.XmlType;
 public class TransparencyAttestationMap implements Serializable {
     private static final long serialVersionUID = 584097086020777727L;
 
-    /**
-     * Certification body internal ID
-     */
     @XmlElement(required = true)
     private Long acbId;
 
-    /**
-     * Certification body name
-     */
     @XmlElement(required = false, nillable = true)
     private String acbName;
 
-    /**
-     * Affirmative, Negative, or N/A
-     */
     @XmlElement(required = true)
-    private String attestation;
+    private TransparencyAttestation attestation;
 
     public TransparencyAttestationMap() {
     }
@@ -37,7 +28,7 @@ public class TransparencyAttestationMap implements Serializable {
         return acbId;
     }
 
-    public void setAcbId(final Long acbId) {
+    public void setAcbId(Long acbId) {
         this.acbId = acbId;
     }
 
@@ -45,15 +36,15 @@ public class TransparencyAttestationMap implements Serializable {
         return acbName;
     }
 
-    public void setAcbName(final String acbName) {
+    public void setAcbName(String acbName) {
         this.acbName = acbName;
     }
 
-    public String getAttestation() {
+    public TransparencyAttestation getAttestation() {
         return attestation;
     }
 
-    public void setAttestation(final String attestation) {
+    public void setAttestation(TransparencyAttestation attestation) {
         this.attestation = attestation;
     }
 

@@ -7,6 +7,7 @@ import java.util.Date;
 import org.springframework.core.env.Environment;
 
 import gov.healthit.chpl.SpringContext;
+import gov.healthit.chpl.domain.TransparencyAttestation;
 
 public class TransparencyAttestationDTO {
     private String transparencyAttestation;
@@ -29,6 +30,11 @@ public class TransparencyAttestationDTO {
     public TransparencyAttestationDTO(String attestation) {
         this();
         this.transparencyAttestation = attestation;
+    }
+
+    public TransparencyAttestationDTO(TransparencyAttestation domain) {
+        this.transparencyAttestation = domain.getTransparencyAttestation();
+        this.removed = domain.getRemoved();
     }
 
     public String getTransparencyAttestation() {

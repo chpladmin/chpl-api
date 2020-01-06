@@ -54,6 +54,7 @@ import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestTask;
+import gov.healthit.chpl.domain.TransparencyAttestation;
 import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
@@ -742,7 +743,9 @@ public class CertifiedProductDetailsManager {
         searchDetails.setVersion(new ProductVersion(dto.getVersion()));
         searchDetails.setProductAdditionalSoftware(dto.getProductAdditionalSoftware());
         searchDetails.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
-        searchDetails.setTransparencyAttestation(dto.getTransparencyAttestation());
+        if (dto.getTransparencyAttestation() != null) {
+            searchDetails.setTransparencyAttestation(new TransparencyAttestation(dto.getTransparencyAttestation()));
+        }
         searchDetails.setLastModifiedDate(dto.getLastModifiedDate().getTime());
         searchDetails.setCountCerts(dto.getCountCertifications());
         searchDetails.setCountCqms(dto.getCountCqms());

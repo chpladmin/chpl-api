@@ -47,13 +47,12 @@ public class DeveloperEditTransparencyAttestationValidation extends ValidationRu
             return true;
         } else {
             for (DeveloperACBMapDTO originalMapping : original.getTransparencyAttestationMappings()) {
-                Optional<DeveloperACBMapDTO> matchingMapping =
-                        changed.getTransparencyAttestationMappings().stream()
-                    .filter(changedMapping -> StringUtils.equals(originalMapping.getAcbName(), changedMapping.getAcbName()))
-                    .findFirst();
+                Optional<DeveloperACBMapDTO> matchingMapping = changed.getTransparencyAttestationMappings().stream()
+                        .filter(changedMapping -> StringUtils.equals(originalMapping.getAcbName(), changedMapping.getAcbName()))
+                        .findFirst();
                 if (!matchingMapping.isPresent()
-                        || !StringUtils.equals(originalMapping.getTransparencyAttestation(),
-                                matchingMapping.get().getTransparencyAttestation())) {
+                        || !StringUtils.equals(originalMapping.getTransparencyAttestation().getTransparencyAttestation(),
+                                matchingMapping.get().getTransparencyAttestation().getTransparencyAttestation())) {
                     return true;
                 }
             }

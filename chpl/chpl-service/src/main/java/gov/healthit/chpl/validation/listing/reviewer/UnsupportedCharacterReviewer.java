@@ -25,10 +25,11 @@ import gov.healthit.chpl.util.ValidationUtils;
 @Component("unsupportedCharacterReviewer")
 public class UnsupportedCharacterReviewer implements Reviewer {
 
-    @Autowired ErrorMessageUtil msgUtil;
+    @Autowired
+    ErrorMessageUtil msgUtil;
 
     public void review(CertifiedProductSearchDetails listing) {
-        //check all string fields at the listing level
+        // check all string fields at the listing level
         addListingWarningIfNotValid(listing, listing.getAcbCertificationId(),
                 "ACB Certification ID '" + listing.getAcbCertificationId() + "'");
         if (listing.getCertifyingBody() != null
@@ -42,7 +43,8 @@ public class UnsupportedCharacterReviewer implements Reviewer {
             addListingWarningIfNotValid(listing,
                     listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString(),
                     "Certification Edition '"
-                    + listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString() + "'");
+                            + listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString()
+                            + "'");
         }
         addListingWarningIfNotValid(listing, listing.getProductAdditionalSoftware(),
                 "Listing-level Additional Software '" + listing.getProductAdditionalSoftware() + "'");
@@ -97,25 +99,24 @@ public class UnsupportedCharacterReviewer implements Reviewer {
                     "Version Name '" + listing.getVersion().getVersion() + "'");
         }
 
-
         addListingWarningIfNotValid(listing, listing.getReportFileLocation(),
                 "Report File Location '" + listing.getReportFileLocation() + "'");
         addListingWarningIfNotValid(listing, listing.getSedIntendedUserDescription(),
                 "SED Intended User Description '" + listing.getSedIntendedUserDescription() + "'");
         addListingWarningIfNotValid(listing, listing.getSedReportFileLocation(),
                 "SED Report File Location '" + listing.getSedReportFileLocation() + "'");
-        addListingWarningIfNotValid(listing, listing.getTransparencyAttestation(),
-                "Transparency Attestation '" + listing.getTransparencyAttestation() + "'");
+        addListingWarningIfNotValid(listing, listing.getTransparencyAttestation().getTransparencyAttestation(),
+                "Transparency Attestation '" + listing.getTransparencyAttestation().getTransparencyAttestation() + "'");
         addListingWarningIfNotValid(listing, listing.getTransparencyAttestationUrl(),
                 "Transparency Attestation URL '" + listing.getTransparencyAttestationUrl() + "'");
 
-        //users can add to accessibility standards so check these
+        // users can add to accessibility standards so check these
         for (CertifiedProductAccessibilityStandard accStd : listing.getAccessibilityStandards()) {
             addListingWarningIfNotValid(listing, accStd.getAccessibilityStandardName(),
                     "Accessibility Standard '" + accStd.getAccessibilityStandardName() + "'");
         }
 
-        //users can add to qms standards so check these
+        // users can add to qms standards so check these
         for (CertifiedProductQmsStandard qmsStd : listing.getQmsStandards()) {
             addListingWarningIfNotValid(listing, qmsStd.getQmsStandardName(),
                     "QMS Standard '" + qmsStd.getQmsStandardName() + "'");
@@ -123,13 +124,13 @@ public class UnsupportedCharacterReviewer implements Reviewer {
                     "QMS Modification '" + qmsStd.getQmsModification() + "'");
         }
 
-        //users can add to targeted users so check these
+        // users can add to targeted users so check these
         for (CertifiedProductTargetedUser tu : listing.getTargetedUsers()) {
             addListingWarningIfNotValid(listing, tu.getTargetedUserName(),
                     "Targeted User '" + tu.getTargetedUserName() + "'");
         }
 
-        //check all criteria fields
+        // check all criteria fields
         for (CertificationResult cert : listing.getCertificationResults()) {
             if (cert.isSuccess() != null && cert.isSuccess().booleanValue()) {
                 addCriteriaWarningIfNotValid(listing, cert, cert.getApiDocumentation(), "API Documentation");
@@ -146,7 +147,7 @@ public class UnsupportedCharacterReviewer implements Reviewer {
                 }
                 if (cert.getTestDataUsed() != null) {
                     for (CertificationResultTestData testData : cert.getTestDataUsed()) {
-                        //not checking test data name because it has to match one of the existing names
+                        // not checking test data name because it has to match one of the existing names
                         addCriteriaWarningIfNotValid(listing, cert,
                                 testData.getVersion(), "Test Data Version '" + testData.getVersion() + "'");
                         addCriteriaWarningIfNotValid(listing, cert,
@@ -154,11 +155,11 @@ public class UnsupportedCharacterReviewer implements Reviewer {
                     }
                 }
 
-                //not checking test functionality name because it has to match one of the existing options
+                // not checking test functionality name because it has to match one of the existing options
 
                 if (cert.getTestProcedures() != null) {
                     for (CertificationResultTestProcedure testProc : cert.getTestProcedures()) {
-                        //not checking name because it has to match one of the existing options
+                        // not checking name because it has to match one of the existing options
                         addCriteriaWarningIfNotValid(listing, cert, testProc.getTestProcedureVersion(),
                                 "Test Procedure Version '" + testProc.getTestProcedureVersion() + "'");
                     }
@@ -172,7 +173,7 @@ public class UnsupportedCharacterReviewer implements Reviewer {
                 }
                 if (cert.getTestToolsUsed() != null) {
                     for (CertificationResultTestTool testTool : cert.getTestToolsUsed()) {
-                        //not checking name because it has to match one of the existing options
+                        // not checking name because it has to match one of the existing options
                         addCriteriaWarningIfNotValid(listing, cert, testTool.getTestToolVersion(),
                                 "Test Tool Version '" + testTool.getTestToolVersion() + "'");
                     }
@@ -184,7 +185,7 @@ public class UnsupportedCharacterReviewer implements Reviewer {
             if (sed.getTestTasks() != null) {
                 for (TestTask task : sed.getTestTasks()) {
                     if (task != null) {
-                        //not checking anything converted to a number
+                        // not checking anything converted to a number
                         addListingWarningIfNotValid(listing, task.getDescription(),
                                 "Test Task Description '" + task.getDescription() + "'");
                         addListingWarningIfNotValid(listing, task.getTaskRatingScale(),
@@ -193,8 +194,8 @@ public class UnsupportedCharacterReviewer implements Reviewer {
                         if (task.getTestParticipants() != null) {
                             for (TestParticipant participant : task.getTestParticipants()) {
                                 if (participant != null) {
-                                    //not checking age range or education level because they have to map
-                                    //to existing values. also not checking anything converted to a number
+                                    // not checking age range or education level because they have to map
+                                    // to existing values. also not checking anything converted to a number
                                     addListingWarningIfNotValid(listing, participant.getAssistiveTechnologyNeeds(),
                                             "Participant Assistive Technology Needs '"
                                                     + participant.getAssistiveTechnologyNeeds() + "'");
