@@ -87,6 +87,8 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     private List<String> g7g8g9Criterion = new ArrayList<String>();
     private List<String> d2d10Criterion = new ArrayList<String>();
 
+    private static final int MINIMUM_TEST_PARTICIPANT_COUNT = 10;
+
     private MacraMeasureDAO macraDao;
     private TestFunctionalityDAO testFuncDao;
     private TestProcedureDAO testProcDao;
@@ -306,7 +308,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                             for (TestTask task : listing.getSed().getTestTasks()) {
                                 String description = StringUtils.isEmpty(task.getDescription()) ? "unknown"
                                         : task.getDescription();
-                                if (task.getTestParticipants() == null || task.getTestParticipants().size() < 10) {
+                                if (task.getTestParticipants() == null || task.getTestParticipants().size() < MINIMUM_TEST_PARTICIPANT_COUNT) {
                                     listing.getErrorMessages().add(
                                             msgUtil.getMessage("listing.sed.badTestTaskParticipantsSize", description));
                                 }
@@ -488,6 +490,12 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                     gapEligibleAndTrue = true;
                 }
 
+                if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.ATTESTATION_ANSWER)
+                        && cert.getAttestationAnswer() == null) {
+                    listing.getErrorMessages()
+                    .add("Attestation Answer is required for certification " + cert.getCriterion().getNumber() + ".");
+                }
+
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.PRIVACY_SECURITY)
                         && StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
                     listing.getErrorMessages().add(
@@ -497,6 +505,24 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                         && StringUtils.isEmpty(cert.getApiDocumentation())) {
                     listing.getErrorMessages()
                     .add("API Documentation is required for certification " + cert.getNumber() + ".");
+                }
+                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.EXPORT_DOCUMENTATION)
+                        && StringUtils.isEmpty(cert.getExportDocumentation())) {
+                    listing.getErrorMessages()
+                    .add("Export Documentation is required for certification " + cert.getNumber() + ".");
+                }
+                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.DOCUMENTATION_URL)
+                        && StringUtils.isEmpty(cert.getDocumentationUrl())
+                        && !cert.getAttestationAnswer()) {
+                    listing.getErrorMessages()
+                    .add("Documentation Url is required for certification " + cert.getNumber()
+                    + " when Attestation Answer is \"No\".");
+                }
+                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.USE_CASES)
+                        && StringUtils.isEmpty(cert.getUseCases())
+                        && cert.getAttestationAnswer()) {
+                    listing.getErrorMessages()
+                    .add("Use Cases is required for certification " + cert.getNumber() + " when Attestation Answer is \"Yes\".");
                 }
 
                 if (!gapEligibleAndTrue

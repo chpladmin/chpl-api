@@ -723,6 +723,12 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                     gapEligibleAndTrue = true;
                 }
 
+                if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.ATTESTATION_ANSWER)
+                        && cert.getAttestationAnswer() == null) {
+                    listing.getErrorMessages()
+                    .add("Attestation Answer is required for certification " + cert.getCriterion().getNumber() + ".");
+                }
+
                 if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.PRIVACY_SECURITY)
                         && StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
                     listing.getErrorMessages().add(
@@ -732,6 +738,24 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                         && StringUtils.isEmpty(cert.getApiDocumentation())) {
                     listing.getErrorMessages()
                     .add("API Documentation is required for certification " + cert.getCriterion().getNumber() + ".");
+                }
+                if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.EXPORT_DOCUMENTATION)
+                        && StringUtils.isEmpty(cert.getExportDocumentation())) {
+                    listing.getErrorMessages()
+                    .add("Export Documentation is required for certification " + cert.getCriterion().getNumber() + ".");
+                }
+                if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.DOCUMENTATION_URL)
+                        && StringUtils.isEmpty(cert.getDocumentationUrl())
+                        && !cert.getAttestationAnswer()) {
+                    listing.getErrorMessages()
+                    .add("Documentation Url is required for certification " + cert.getCriterion().getNumber()
+                    + " when Attestation Answer is \"No\".");
+                }
+                if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.USE_CASES)
+                        && StringUtils.isEmpty(cert.getUseCases())
+                        && cert.getAttestationAnswer()) {
+                    listing.getErrorMessages()
+                    .add("Use Cases is required for certification " + cert.getCriterion().getNumber() + " when Attestation Answer is \"Yes\".");
                 }
                 // jennifer asked to not make functionality tested be a required
                 // field
