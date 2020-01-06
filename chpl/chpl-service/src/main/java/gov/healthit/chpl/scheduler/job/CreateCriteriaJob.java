@@ -41,7 +41,7 @@ public class CreateCriteriaJob extends QuartzJob {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Create Criteria job. *********");
         for (String number : criteriaToAdd.keySet()) {
-            CertificationCriterionDTO existingCert = certCriteriaDao.getByNumberAndTitle(number, criteriaToAdd.get(number));
+            CertificationCriterionDTO existingCert = certCriteriaDao.getByName(number);
             if (existingCert == null) {
                 CertificationCriterionDTO toCreate = new CertificationCriterionDTO();
                 toCreate.setNumber(number);
@@ -59,6 +59,8 @@ public class CreateCriteriaJob extends QuartzJob {
                 LOGGER.error("Exception creating criteria " + number + "; already exists");
             }
         }
+        //TODO: figure out how to add g1/g2 mappings for new criteria
+        //TODO: Loop through all 2015 existing Listings and add these new criteria as success=false
         CacheManager.getInstance().clearAll();
         LOGGER.info("********* Completed the Create Criteria job. *********");
     }

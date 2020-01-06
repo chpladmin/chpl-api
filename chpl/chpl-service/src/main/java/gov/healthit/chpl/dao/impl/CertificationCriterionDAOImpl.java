@@ -167,29 +167,6 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
         return result;
     }
 
-    @Override
-    public CertificationCriterionDTO getByNumberAndTitle(String number, String title) {
-        Query query = entityManager
-                .createQuery(
-                        "SELECT cce " + "FROM CertificationCriterionEntity cce "
-                                + "WHERE (NOT cce.deleted = true) "
-                                + "AND (cce.number = :number) "
-                                + "AND (cce.title = :title) ",
-                                CertificationCriterionEntity.class);
-        query.setParameter("number", number);
-        query.setParameter("title", title);
-        List<CertificationCriterionEntity> results = query.getResultList();
-
-        CertificationCriterionEntity entity = null;
-        if (results.size() > 0) {
-            entity = results.get(0);
-        }
-        CertificationCriterionDTO result = null;
-        if (entity != null) {
-            result = new CertificationCriterionDTO(entity);
-        }
-        return result;
-    }
     @Transactional
     private void create(final CertificationCriterionEntity entity) {
 
