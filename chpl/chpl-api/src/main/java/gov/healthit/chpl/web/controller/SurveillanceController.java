@@ -284,14 +284,11 @@ public class SurveillanceController implements MessageSourceAware {
 
         CertifiedProductSearchDetails beforeCp = cpdetailsManager
                 .getCertifiedProductDetails(survToDelete.getCertifiedProduct().getId());
-        CertificationBodyDTO owningAcb =
-                resourcePermissions.getAcbIfPermissionById(
-                        Long.valueOf(beforeCp.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()));
 
         HttpHeaders responseHeaders = new HttpHeaders();
         // delete it
         try {
-            survManager.deleteSurveillance(owningAcb.getId(), survToDelete);
+            survManager.deleteSurveillance(survToDelete);
             responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
         } catch (final SurveillanceAuthorityAccessDeniedException ex) {
             LOGGER.error("User lacks authority to delete surveillance");

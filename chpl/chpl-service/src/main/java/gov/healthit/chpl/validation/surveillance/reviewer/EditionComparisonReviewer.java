@@ -96,6 +96,35 @@ public class EditionComparisonReviewer implements ComparisonReviewer {
                                             updatedNc.getNonconformityType(), updatedReq.getRequirement()));
                         }
                     }
+
+                    //look for existing nonconformities that are no longer present in the updated requirement
+                    for (SurveillanceNonconformity existingNc : existingReq.get().getNonconformities()) {
+                        Optional<SurveillanceNonconformity> updatedNc
+                        = updatedReq.getNonconformities().stream()
+                            .filter(updatedSurvNc ->
+                                doNonconformitiesMatch(existingNc, updatedSurvNc))
+                            .findFirst();
+                        if (!updatedNc.isPresent()) {
+                            updatedSurveillance.getErrorMessages().add(
+                                //edited a nonconformity - not allowed
+                                msgUtil.getMessage("surveillance.nonconformityNotEditedFor2014Edition",
+                                        existingNc.getNonconformityType(), updatedReq.getRequirement()));
+                        }
+                    }
+                }
+            }
+
+            //look for any existing reqs that could have been removed in the updated surv
+            for (SurveillanceRequirement existingReq : existingSurveillance.getRequirements()) {
+                Optional<SurveillanceRequirement> updatedReq
+                    = updatedSurveillance.getRequirements().stream()
+                        .filter(updatedSurvReq ->
+                            doRequirementsMatch(existingReq, updatedSurvReq))
+                        .findFirst();
+                if (!updatedReq.isPresent()) {
+                    updatedSurveillance.getErrorMessages().add(
+                            msgUtil.getMessage("surveillance.requirementNotEditedFor2014Edition",
+                                    existingReq.getRequirement()));
                 }
             }
         }
