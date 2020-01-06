@@ -290,11 +290,9 @@ public class SurveillanceController implements MessageSourceAware {
         try {
             survManager.deleteSurveillance(survToDelete);
             responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
-        } catch (final SurveillanceAuthorityAccessDeniedException ex) {
+        } catch (SurveillanceAuthorityAccessDeniedException ex) {
             LOGGER.error("User lacks authority to delete surveillance");
             throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to delete surveillance");
-        } catch (Exception ex) {
-            LOGGER.error("Error deleting surveillance with id " + survToDelete.getId() + " during an update.");
         }
 
         CertifiedProductSearchDetails afterCp = cpdetailsManager
