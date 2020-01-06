@@ -2120,9 +2120,9 @@
             <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
+            <testTool>true</testTool>
             <testProcedure>true</testProcedure>
-            <testData>false</testData>
+            <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
             <task>false</task>
