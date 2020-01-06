@@ -286,9 +286,9 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
-        <RollingFile name="createCriteriaJob"
-            fileName="${logDir}/scheduler/createCriteriaJob.log"
-            filePattern="${logDir}/scheduler/history/createCriteriaJob-%d{yyyy-MM-dd}.log">
+        <RollingFile name="addCriteriaToListingsJob"
+            fileName="${logDir}/scheduler/addCriteriaToListingsJob.log"
+            filePattern="${logDir}/scheduler/history/addCriteriaToListingsJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
                 <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
             </PatternLayout>
@@ -413,9 +413,9 @@
             additivity="false">
             <AppenderRef ref="removeRT13ECMacraMeasureJob" />
         </Logger>
-        <Logger name="createCriteriaJobLogger" level="INFO"
+        <Logger name="addCriteriaToListingsJobLogger" level="INFO"
             additivity="false">
-            <AppenderRef ref="createCriteriaJob" />
+            <AppenderRef ref="addCriteriaToListingsJob" />
         </Logger>
     </Loggers>
 </Configuration>

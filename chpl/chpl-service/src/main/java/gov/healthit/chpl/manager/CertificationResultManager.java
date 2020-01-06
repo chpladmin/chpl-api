@@ -149,7 +149,11 @@ public class CertificationResultManager extends SecuredManager {
                 toUpdate.setSed(null);
             }
 
-            certResultDAO.update(toUpdate);
+            if (toUpdate.getId() != null) {
+                certResultDAO.update(toUpdate);
+            } else {
+                certResultDAO.create(toUpdate);
+            }
             numChanges++;
         }
 
