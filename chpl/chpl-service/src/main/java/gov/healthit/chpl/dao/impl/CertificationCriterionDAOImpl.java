@@ -8,9 +8,12 @@ import javax.persistence.Query;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.ff4j.FF4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
@@ -21,6 +24,11 @@ import gov.healthit.chpl.util.AuthUtil;
 @Repository("certificationCriterionDAO")
 public class CertificationCriterionDAOImpl extends BaseDAOImpl implements CertificationCriterionDAO {
     private static final Logger LOGGER = LogManager.getLogger(CertificationCriterionDAOImpl.class);
+
+    @Autowired
+    private FF4j ff4j;
+    private static final String CRITERIA_NOT_SHOWN_UNTIL_PUBLISH_PLUS_THIRTY
+    = "170.315 (b)(10);170.315 (d)(12);170.315 (d)(13);170.315 (g)(10)";
 
     @Override
     @Transactional
@@ -103,7 +111,10 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 
         for (CertificationCriterionEntity entity : entities) {
             CertificationCriterionDTO dto = new CertificationCriterionDTO(entity);
-            dtos.add(dto);
+            if (ff4j.check(FeatureList.RULE_PUBLISH_DATE_PLUS_THIRTY_DAYS)
+                    || !CRITERIA_NOT_SHOWN_UNTIL_PUBLISH_PLUS_THIRTY.contains(entity.getNumber())) {
+                dtos.add(dto);
+            }
         }
         return dtos;
     }
@@ -116,7 +127,10 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 
         for (CertificationCriterionEntity entity : entities) {
             CertificationCriterionDTO dto = new CertificationCriterionDTO(entity);
-            dtos.add(dto);
+            if (ff4j.check(FeatureList.RULE_PUBLISH_DATE_PLUS_THIRTY_DAYS)
+                    || !CRITERIA_NOT_SHOWN_UNTIL_PUBLISH_PLUS_THIRTY.contains(entity.getNumber())) {
+                dtos.add(dto);
+            }
         }
         return dtos;
     }
