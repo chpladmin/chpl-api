@@ -328,16 +328,21 @@ public class CertificationResultManager extends SecuredManager {
     })
     public void create(CertifiedProductSearchDetails listing, CertificationResult certificationResult)
             throws EntityCreationException, EntityRetrievalException, IOException {
-        CertificationResultDTO toCreate = new CertificationResultDTO();
-        toCreate.setId(certificationResult.getId());
-        toCreate.setCertifiedProductId(listing.getId());
         CertificationCriterionDTO criteria = criteriaDao.getByName(certificationResult.getNumber());
         if (criteria == null || criteria.getId() == null) {
             throw new EntityCreationException(
                     "Cannot create certification result mapping for unknown criteria " + certificationResult.getNumber());
-        } else {
-            toCreate.setCertificationCriterionId(criteria.getId());
         }
+        List<CertificationResult> existingCriteria = listing.getCertificationResults();
+        for (CertificationResult crit : existingCriteria) {
+            if (crit.getNumber().equalsIgnoreCase(certificationResult.getNumber())) {
+                throw new EntityCreationException(
+                        "Cannot create duplicate certification result mapping for criteria " + certificationResult.getNumber());
+            }
+        }
+        CertificationResultDTO toCreate = new CertificationResultDTO();
+        toCreate.setCertificationCriterionId(criteria.getId());
+        toCreate.setCertifiedProductId(listing.getId());
         toCreate.setSuccessful(certificationResult.isSuccess());
 
         certResultDAO.create(toCreate);
