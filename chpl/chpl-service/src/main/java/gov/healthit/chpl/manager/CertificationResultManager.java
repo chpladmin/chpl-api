@@ -322,7 +322,7 @@ public class CertificationResultManager extends SecuredManager {
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_RESULTS, "
-            + "T(gov.healthit.chpl.permissions.domains.CertificationResultsDomainPermissions).CREATE, #existingListing)")
+            + "T(gov.healthit.chpl.permissions.domains.CertificationResultsDomainPermissions).CREATE, #listing)")
     @Transactional(rollbackFor = {
             EntityRetrievalException.class, EntityCreationException.class
     })
