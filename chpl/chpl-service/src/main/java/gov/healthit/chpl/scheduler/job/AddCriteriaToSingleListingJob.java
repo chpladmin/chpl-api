@@ -65,8 +65,8 @@ public class AddCriteriaToSingleListingJob extends QuartzJob {
             response = new JobResponse(cpsd.getChplProductNumber(), true, msg);
 
         } catch (Exception e) {
-            String msg = "Unsuccessful Update certified product {" + cpsd.getId() + "}: " + "-" + criteria.toString()
-                    + e.getMessage();
+            String msg = "Unsuccessful Update certified product {" + cpsd.getId() + "} " + criteria.toString()
+                    + ':' + e.getMessage();
             response =  new JobResponse(cpsd.getChplProductNumber(), false, msg);
         }
 
