@@ -480,11 +480,12 @@ public class AsynchronousSummaryStatistics {
     public Future<Long> getAverageTimeFromSurveillanceOpenToSurveillanceClose(
             SurveillanceStatisticsDAO surveillanceStatisticsDAO) {
 
-        List<SurveillanceEntity> surveillances = surveillanceStatisticsDAO.getAllSurveillancesWithNonconformities();
-
-        Long totalDuration = surveillances.stream()
+        List<SurveillanceEntity> surveillances = surveillanceStatisticsDAO.getAllSurveillances().stream()
                 .filter(surv -> surv.getStartDate() != null
                         && surv.getEndDate() != null)
+                .collect(Collectors.toList());
+
+        Long totalDuration = surveillances.stream()
                 .map(surv -> Math.abs(ChronoUnit.DAYS.between(surv.getStartDate().toInstant(),
                         surv.getEndDate().toInstant())))
                 .collect(Collectors.summingLong(n -> n.longValue()));

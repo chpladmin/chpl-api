@@ -255,4 +255,11 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         return entityManager.createQuery(hql, SurveillanceEntity.class)
                 .getResultList();
     }
+
+    public List<SurveillanceEntity> getAllSurveillances() {
+        String hql = "FROM SurveillanceEntity se "
+                + "WHERE se.deleted = false ";
+        return entityManager.createQuery(hql, SurveillanceEntity.class)
+                .getResultList();
+    }
 }
