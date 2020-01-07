@@ -262,15 +262,6 @@ public class SurveillanceController implements MessageSourceAware {
     InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
     JsonProcessingException, AccessDeniedException, SurveillanceAuthorityAccessDeniedException,
     MissingReasonException {
-
-        return delete(surveillanceId, requestBody);
-    }
-
-    private synchronized ResponseEntity<String> delete(final Long surveillanceId,
-            final SimpleExplainableAction requestBody) throws
-    InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
-    JsonProcessingException, AccessDeniedException, SurveillanceAuthorityAccessDeniedException,
-    MissingReasonException {
         Surveillance survToDelete = survManager.getById(surveillanceId);
 
         if (survToDelete == null) {
