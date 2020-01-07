@@ -54,15 +54,11 @@ public class AddCriteriaToSingleListingJob extends QuartzJob {
         try {
             for (String criterion : criteria) {
                 CertificationCriterion crit = new CertificationCriterion(certificationCriterionDao.getByName(criterion));
-                CertificationResult toCert = new CertificationResult();
-                CertificationResult fromCert = new CertificationResult();
-                toCert.setCriterion(crit);
-                toCert.setNumber(criterion);
-                toCert.setSuccess(false);
-                fromCert.setCriterion(crit);
-                fromCert.setNumber(criterion);
-                fromCert.setSuccess(true);
-                certificationResultManager.update(cpsd, cpsd, fromCert, toCert);
+                CertificationResult cert = new CertificationResult();
+                cert.setCriterion(crit);
+                cert.setNumber(criterion);
+                cert.setSuccess(false);
+                certificationResultManager.create(cpsd, cert);
             }
             String msg = "Completed Updating certified product {" + cpsd.getId() + "}: "
                     + cpsd.getChplProductNumber() + "-" + criteria.toString();
