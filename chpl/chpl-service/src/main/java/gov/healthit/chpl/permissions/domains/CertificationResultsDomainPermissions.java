@@ -15,7 +15,7 @@ public class CertificationResultsDomainPermissions extends DomainPermissions {
     @Autowired
     public CertificationResultsDomainPermissions(
             @Qualifier("certificationResultsUpdatePermissions") UpdatePermissions updatePermissions,
-            @Qualifier("certificationResultCreatePermissions") CreatePermissions createPermissions) {
+            @Qualifier("certificationResultsCreatePermissions") CreatePermissions createPermissions) {
         getActionPermissions().put(UPDATE, updatePermissions);
         getActionPermissions().put(CREATE, createPermissions);
     }
