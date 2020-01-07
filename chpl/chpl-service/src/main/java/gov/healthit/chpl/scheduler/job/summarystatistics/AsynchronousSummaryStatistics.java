@@ -30,6 +30,10 @@ import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
 @Component
 @EnableAsync
 public class AsynchronousSummaryStatistics {
+    private static final Long CLOSED_NONCONFORMITY = 2l;
+    private static final Long OPEN_NONCONFORMITY = 1l;
+    private static final Long NONCONFORMITY_SURVEILLANCE_RESULT = 1l;
+
     private Logger logger;
 
     @Transactional
@@ -480,14 +484,19 @@ public class AsynchronousSummaryStatistics {
     public Future<Long> getAverageTimeFromSurveillanceOpenToSurveillanceClose(
             SurveillanceStatisticsDAO surveillanceStatisticsDAO) {
 
-        List<SurveillanceEntity> surveillances = surveillanceStatisticsDAO.getAllSurveillances().stream()
+        List<SurveillanceEntity> surveillances = surveillanceStatisticsDAO.getAllSurveillances();
+
+        List<SurveillanceNonconformityEntity> nonconformities = surveillances.stream()
                 .filter(surv -> surv.getStartDate() != null
                         && surv.getEndDate() != null)
+                .flatMap(surv -> surv.getSurveilledRequirements().stream())
+                .filter(req -> req.getSurveillanceResultTypeId().equals(NONCONFORMITY_SURVEILLANCE_RESULT))
+                .flatMap(req -> req.getNonconformities().stream())
+                .distinct()
                 .collect(Collectors.toList());
 
-        Long totalDuration = surveillances.stream()
-                .map(surv -> Math.abs(ChronoUnit.DAYS.between(surv.getStartDate().toInstant(),
-                        surv.getEndDate().toInstant())))
+        Long totalDuration = nonconformities.stream()
+                .map(nc -> getDaysFromSurveillanceOpenToSurveillanceClose(findSurveillanceForNonconformity(nc, surveillances)))
                 .collect(Collectors.summingLong(n -> n.longValue()));
 
         return new AsyncResult<Long>(totalDuration / surveillances.size());
@@ -503,8 +512,7 @@ public class AsynchronousSummaryStatistics {
         Map<Long, Long> openCAPCountByAcb = surveillances.stream()
                 .flatMap(surv -> surv.getSurveilledRequirements().stream())
                 .flatMap(req -> req.getNonconformities().stream())
-                .filter(nc -> nc.getCapApproval() != null
-                        && nc.getCapEndDate() == null)
+                .filter(nc -> nc.getNonconformityStatusId().equals(OPEN_NONCONFORMITY))
                 .distinct()
                 .map(nc -> new NonconformanceStatistic(
                         findSurveillanceForNonconformity(nc, surveillances).getCertifiedProduct().getCertificationBodyId(), nc))
@@ -523,8 +531,7 @@ public class AsynchronousSummaryStatistics {
         Map<Long, Long> openCAPCountByAcb = surveillances.stream()
                 .flatMap(surv -> surv.getSurveilledRequirements().stream())
                 .flatMap(req -> req.getNonconformities().stream())
-                .filter(nc -> nc.getCapApproval() != null
-                        && nc.getCapEndDate() != null)
+                .filter(nc -> nc.getNonconformityStatusId().equals(CLOSED_NONCONFORMITY))
                 .distinct()
                 .map(nc -> new NonconformanceStatistic(
                         findSurveillanceForNonconformity(nc, surveillances).getCertifiedProduct().getCertificationBodyId(), nc))
@@ -578,6 +585,12 @@ public class AsynchronousSummaryStatistics {
             SurveillanceNonconformityEntity nonconformity) {
         return Math.abs(ChronoUnit.DAYS.between(
                 nonconformity.getCapEndDate().toInstant(),
+                surveillance.getEndDate().toInstant()));
+    }
+
+    private Long getDaysFromSurveillanceOpenToSurveillanceClose(SurveillanceEntity surveillance) {
+        return Math.abs(ChronoUnit.DAYS.between(
+                surveillance.getStartDate().toInstant(),
                 surveillance.getEndDate().toInstant()));
     }
 
