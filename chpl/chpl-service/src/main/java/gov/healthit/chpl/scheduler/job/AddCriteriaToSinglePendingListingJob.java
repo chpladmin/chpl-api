@@ -1,9 +1,7 @@
 package gov.healthit.chpl.scheduler.job;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,31 +14,24 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
-import gov.healthit.chpl.dao.CertificationResultDAO;
-import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
-import gov.healthit.chpl.dto.CertificationResultDTO;
-import gov.healthit.chpl.exception.EntityCreationException;
-import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.CertificationResultManager;
-import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
+import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.scheduler.job.extra.JobResponse;
 
-public class AddCriteriaToSingleListingJob extends QuartzJob {
+public class AddCriteriaToSinglePendingListingJob extends QuartzJob {
 
     // Default logger
     private Logger logger = LogManager.getLogger("addCriteriaToListingsJobLogger");
 
     @Autowired
-    private CertifiedProductDetailsManager certifiedProductDetailsManager;
+    private PendingCertifiedProductManager pendingCertifiedProductManager;
+
+    @Autowired
+    private PendingCertifiedProductDAO pendingCertifiedProductDAO;
 
     @Autowired
     private CertificationCriterionDAO certCritDAO;
-
-    @Autowired
-    private CertificationResultDAO certResultDAO;
 
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
@@ -53,29 +44,31 @@ public class AddCriteriaToSingleListingJob extends QuartzJob {
         ArrayList<String> criteria = new ArrayList<String>(Arrays.asList(jobContext.getMergedJobDataMap()
                 .get("criteria").toString().split(";")));
 
-        logger.info("********* Starting the Add Criteria to Single Listing job. [" + listing + "] *********");
+        logger.info("********* Starting the Add Criteria to Single Pending Listing job. [" + listing + "] *********");
 
-        CertifiedProductSearchDetails cpsd = getListing(listing);
+        PendingCertifiedProductDTO pcp = getListing(listing);
         JobResponse response;
 
         try {
             for (String criterion : criteria) {
-                create(cpsd, criterion);
+                pcp = addCertToPendingListing(pcp, criterion);
             }
-            String msg = "Completed Updating certified product {" + cpsd.getId() + "}: "
-                    + cpsd.getChplProductNumber() + "-" + criteria.toString();
-            response = new JobResponse(cpsd.getChplProductNumber(), true, msg);
+            updatePendingListing(pcp);
+            //TODO: figure out what a chpl product number is for a pending listing
+            String msg = "Completed Updating certified product {" + pcp.getId() + "}: "
+                    + /*pcp.getChplProductNumber() +*/ "-" + criteria.toString();
+            response = new JobResponse(pcp.getId().toString()/*pcp.getChplProductNumber()*/, true, msg);
 
         } catch (Exception e) {
-            String msg = "Unsuccessful Update certified product {" + cpsd.getId() + "} " + criteria.toString()
-                    + ':' + e.getMessage();
-            response =  new JobResponse(cpsd.getChplProductNumber(), false, msg);
+            String msg = "Unsuccessful Update certified product {" + pcp.getId() + "} " + criteria.toString()
+            + ':' + e.getMessage();
+            response =  new JobResponse(pcp.getId().toString()/*pcp.getChplProductNumber()*/, false, msg);
         }
 
         jobContext.setResult(response);
 
         logger.info(response.toString());
-        logger.info("********* Completed the Add Criteria to Single Listing job. [" + listing + "] *********");
+        logger.info("********* Completed the Add Criteria to Single Pending Listing job. [" + listing + "] *********");
     }
 
     private void setLogger(JobExecutionContext jobContext) {
@@ -86,36 +79,46 @@ public class AddCriteriaToSingleListingJob extends QuartzJob {
         }
     }
 
-    private CertifiedProductSearchDetails getListing(Long cpId) {
+    private PendingCertifiedProductDTO getListing(Long cpId) {
+        //TODO: figure out what object getListing should return
+        // maybe PendingCertifiedProductDTO
+        // maybe PendingCertifiedProduct
+        PendingCertifiedProductDTO pcp;
         try {
-            CertifiedProductSearchDetails cpsd = certifiedProductDetailsManager.getCertifiedProductDetails(cpId);
-            return cpsd;
+            pcp = pendingCertifiedProductDAO.findById(cpId, false);
         } catch (Exception e) {
             logger.error(e);
             return null;
         }
+        return pcp; 
     }
 
-    private void create(CertifiedProductSearchDetails listing, String criterionNumber)
-            throws EntityCreationException, EntityRetrievalException, IOException {
+    private PendingCertifiedProductDTO addCertToPendingListing(PendingCertifiedProductDTO pcp, String criterionNumber) {
+        //TODO: add a new certification criterion to the passed in listing, return that new listing
+        /*
         CertificationCriterionDTO criterion = certCritDAO.getByName(criterionNumber);
         if (criterion == null || criterion.getId() == null) {
             throw new EntityCreationException(
                     "Cannot create certification result mapping for unknown criteria " + criterionNumber);
         }
-        List<CertificationResult> criteria = listing.getCertificationResults();
+        List<CertificationResult> criteria = pcp.getCertificationResults();
         for (CertificationResult crit : criteria) {
             if (crit.getNumber().equalsIgnoreCase(criterionNumber)) {
                 throw new EntityCreationException(
                         "Cannot create duplicate certification result mapping for criteria " + criterionNumber);
             }
         }
-        CertificationResultDTO toCreate = new CertificationResultDTO();
-        toCreate.setCertificationCriterionId(criterion.getId());
-        toCreate.setCertifiedProductId(listing.getId());
-        toCreate.setSuccessful(false);
+        PendingCertificationResultDTO toCreate = new PendingCertificationResultDTO();
+        toCreate.setPendingCertifiedProductId(pcp.getId());
+        toCreate.setCriterion(criterion);
+        toCreate.setMeetsCriteria(false);
+        */
+        return pcp;
+    }
 
-        certResultDAO.create(toCreate);
+    private void updatePendingListing (PendingCertifiedProductDTO pcp) {
+        //TODO: take "createOrReplace" logic from PendingCertifiedProductManagerImpl class and do that here, minus the activity
+
     }
 
     private void setSecurityContext() {

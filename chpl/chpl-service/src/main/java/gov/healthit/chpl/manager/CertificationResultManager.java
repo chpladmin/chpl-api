@@ -321,33 +321,6 @@ public class CertificationResultManager extends SecuredManager {
         return numChanges;
     }
 
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_RESULTS, "
-            + "T(gov.healthit.chpl.permissions.domains.CertificationResultsDomainPermissions).CREATE, #listing)")
-    @Transactional(rollbackFor = {
-            EntityRetrievalException.class, EntityCreationException.class
-    })
-    public void create(CertifiedProductSearchDetails listing, CertificationResult certificationResult)
-            throws EntityCreationException, EntityRetrievalException, IOException {
-        CertificationCriterionDTO criteria = criteriaDao.getByName(certificationResult.getNumber());
-        if (criteria == null || criteria.getId() == null) {
-            throw new EntityCreationException(
-                    "Cannot create certification result mapping for unknown criteria " + certificationResult.getNumber());
-        }
-        List<CertificationResult> existingCriteria = listing.getCertificationResults();
-        for (CertificationResult crit : existingCriteria) {
-            if (crit.getNumber().equalsIgnoreCase(certificationResult.getNumber())) {
-                throw new EntityCreationException(
-                        "Cannot create duplicate certification result mapping for criteria " + certificationResult.getNumber());
-            }
-        }
-        CertificationResultDTO toCreate = new CertificationResultDTO();
-        toCreate.setCertificationCriterionId(criteria.getId());
-        toCreate.setCertifiedProductId(listing.getId());
-        toCreate.setSuccessful(certificationResult.isSuccess());
-
-        certResultDAO.create(toCreate);
-    }
-
     private Boolean haveMacraMeasuresChanged(List<MacraMeasure> orig, List<MacraMeasure> updated) {
         if (orig != null && updated != null) {
             return !orig.equals(updated);

@@ -23,18 +23,24 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 import gov.healthit.chpl.scheduler.job.extra.JobResponseTriggerListener;
 import gov.healthit.chpl.scheduler.job.extra.JobResponseTriggerWrapper;
 
 public class AddCriteriaTo2015ListingsJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("addCriteriaToListingsJobLogger");
-    private static final String JOB_NAME = "addCriteriaToSingleListingJob";
-    private static final String JOB_GROUP = "subordinateJobs";
+    private static final String JOB_NAME_FOR_EXISTING_LISTINGS = "addCriteriaToSingleListingJob";
+    private static final String JOB_NAME_FOR_PENDING_LISTINGS = "addCriteriaToSinglePendingListingJob";
+        private static final String JOB_GROUP = "subordinateJobs";
 
     @Autowired
     private CertifiedProductDAO certifiedProductDAO;
+
+    @Autowired
+    private PendingCertifiedProductDAO pendingCertifiedProductDAO;
 
     @Autowired
     private ChplSchedulerReference chplScheduler;
@@ -50,17 +56,14 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
 
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         setSecurityContext();
-
-        List<Long> listings = getListingIds();
+        LOGGER.info("statusInterval = " + jobContext.getMergedJobDataMap().getInt("statusInterval"));
         List<JobResponseTriggerWrapper> wrappers = new ArrayList<JobResponseTriggerWrapper>();
+        wrappers.addAll(getExistingListingWrappers(jobContext));
+        wrappers.addAll(getPendingListingWrappers(jobContext));
 
-        for (Long cpId : listings) {
-            wrappers.add(buildTriggerWrapper(cpId, jobContext));
-        }
+        LOGGER.info("Total number of listings to update: " + wrappers.size());
 
         try {
-            LOGGER.info("statusInterval = " + jobContext.getMergedJobDataMap().getInt("statusInterval"));
-
             JobResponseTriggerListener listener = new JobResponseTriggerListener(
                     wrappers,
                     jobContext.getMergedJobDataMap().getString("email"),
@@ -81,11 +84,32 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         } catch (SchedulerException e) {
             LOGGER.error("Scheduler Error: " + e.getMessage(), e);
         }
-
         LOGGER.info("********* Completed the Update 2014 Listings Status job. *********");
     }
 
-    private JobResponseTriggerWrapper buildTriggerWrapper(final Long cpId, final JobExecutionContext jobContext) {
+    private List<JobResponseTriggerWrapper> getExistingListingWrappers(JobExecutionContext jobContext) {
+        List<Long> listings = getListingIds();
+        List<JobResponseTriggerWrapper> wrappers = new ArrayList<JobResponseTriggerWrapper>();
+
+        for (Long cpId : listings) {
+            wrappers.add(buildTriggerWrapper(cpId, jobContext, JOB_NAME_FOR_EXISTING_LISTINGS));
+        }
+        LOGGER.info("Total number of existing listings to update: " + listings.size());
+        return wrappers;
+    }
+
+    private List<JobResponseTriggerWrapper> getPendingListingWrappers(JobExecutionContext jobContext) {
+        List<Long> listings = getPendingListingIds();
+        List<JobResponseTriggerWrapper> wrappers = new ArrayList<JobResponseTriggerWrapper>();
+
+        for (Long cpId : listings) {
+            wrappers.add(buildTriggerWrapper(cpId, jobContext, JOB_NAME_FOR_PENDING_LISTINGS));
+        }
+        LOGGER.info("Total number of pending listings to update: " + listings.size());
+        return wrappers;
+    }
+
+    private JobResponseTriggerWrapper buildTriggerWrapper(final Long cpId, final JobExecutionContext jobContext, String jobName) {
         JobDataMap dataMap = new JobDataMap();
         dataMap.put("listing", cpId);
         dataMap.put("criteria", CRITERIA_TO_ADD);
@@ -93,7 +117,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
 
         return new JobResponseTriggerWrapper(
                 TriggerBuilder.newTrigger()
-                        .forJob(JOB_NAME, JOB_GROUP)
+                        .forJob(jobName, JOB_GROUP)
                         .usingJobData(dataMap)
                         .build());
     }
@@ -118,6 +142,15 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         return cps.stream()
                 .map(cp -> cp.getId())
                 .filter(cp -> cp >= 10000L) //for testing purposes
+                .collect(Collectors.toList());
+    }
+
+    private List<Long> getPendingListingIds() {
+        List<PendingCertifiedProductDTO> cps = pendingCertifiedProductDAO.findAll();
+
+        return cps.stream()
+                .filter(cp -> cp.getCertificationEdition().equalsIgnoreCase("2015"))
+                .map(cp -> cp.getId())
                 .collect(Collectors.toList());
     }
 

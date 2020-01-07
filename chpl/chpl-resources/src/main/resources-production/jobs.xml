@@ -55,6 +55,21 @@
                 </entry>
             </job-data-map>
         </job>
+        <!-- Job used to add criteria to a single Pending Listing-->
+        <job>
+            <name>addCriteriaToSingleListingJob</name>
+            <group>subordinateJobs</group>
+            <description>Add certification criteria to a single Pending Listing</description>
+            <job-class>gov.healthit.chpl.scheduler.job.AddCriteriaToSinglePendingListingJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+            </job-data-map>
+        </job>
         <!-- DELETE END MARKER -->
     </schedule>
 </job-scheduling-data>
