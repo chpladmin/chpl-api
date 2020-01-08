@@ -318,7 +318,7 @@ public class AsynchronousSummaryStatistics {
     public Future<Long> getAverageTimeToCloseSurveillance(
             SurveillanceStatisticsDAO surveillanceStatisticsDAO) {
 
-        List<SurveillanceEntity> surveillances = surveillanceStatisticsDAO.getAllSurveillancesWithNonconformities().stream()
+        List<SurveillanceEntity> surveillances = surveillanceStatisticsDAO.getAllSurveillances().stream()
                 .filter(surv -> surv.getStartDate() != null
                         && surv.getEndDate() != null)
                 .collect(Collectors.toList());
