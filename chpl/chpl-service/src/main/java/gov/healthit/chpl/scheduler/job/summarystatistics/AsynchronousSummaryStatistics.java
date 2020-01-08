@@ -30,8 +30,6 @@ import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
 @Component
 @EnableAsync
 public class AsynchronousSummaryStatistics {
-    private static final Long CLOSED_NONCONFORMITY = 2l;
-    private static final Long OPEN_NONCONFORMITY = 1l;
     private static final Long NONCONFORMITY_SURVEILLANCE_RESULT = 1l;
 
     private Logger logger;
@@ -512,7 +510,8 @@ public class AsynchronousSummaryStatistics {
         Map<Long, Long> openCAPCountByAcb = surveillances.stream()
                 .flatMap(surv -> surv.getSurveilledRequirements().stream())
                 .flatMap(req -> req.getNonconformities().stream())
-                .filter(nc -> nc.getNonconformityStatusId().equals(OPEN_NONCONFORMITY))
+                .filter(nc -> nc.getCapApproval() != null
+                        && nc.getCapEndDate() == null)
                 .distinct()
                 .map(nc -> new NonconformanceStatistic(
                         findSurveillanceForNonconformity(nc, surveillances).getCertifiedProduct().getCertificationBodyId(), nc))
@@ -531,7 +530,8 @@ public class AsynchronousSummaryStatistics {
         Map<Long, Long> openCAPCountByAcb = surveillances.stream()
                 .flatMap(surv -> surv.getSurveilledRequirements().stream())
                 .flatMap(req -> req.getNonconformities().stream())
-                .filter(nc -> nc.getNonconformityStatusId().equals(CLOSED_NONCONFORMITY))
+                .filter(nc -> nc.getCapApproval() != null
+                        && nc.getCapEndDate() != null)
                 .distinct()
                 .map(nc -> new NonconformanceStatistic(
                         findSurveillanceForNonconformity(nc, surveillances).getCertifiedProduct().getCertificationBodyId(), nc))
