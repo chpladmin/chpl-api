@@ -222,6 +222,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
             }
             if (testData != null && criterion != null) {
                 insertableTestDataDao.create(testData, criterion);
+                LOGGER.info("Added test data mapping from " + criterionNumber + " to " + testDataName);
             }
         } else {
             LOGGER.info("Test data mapping from " + criterionNumber + " to " + testDataName + " already exists.");
@@ -236,7 +237,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
     private void addTestProcedureMaps() {
         addTestProcedureMap("170.315 (b)(10)", "ONC Test Method");
         addTestProcedureMap("170.315 (d)(12)", "ONC Test Method");
-        addTestProcedureMap("170.315 (2)(13)", "ONC Test Method");
+        addTestProcedureMap("170.315 (d)(13)", "ONC Test Method");
         addTestProcedureMap("170.315 (g)(10)", "ONC Test Method");
     }
 
@@ -252,6 +253,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
             }
             if (testProcedureName != null && criterion != null) {
                 insertableTestProcDao.create(testProc, criterion);
+                LOGGER.info("Added test procedure mapping from " + criterionNumber + " to " + testProcedureName);
             }
         } else {
             LOGGER.info("Test procedure mapping from " + criterionNumber + " to " + testProcedureName + " already exists.");
@@ -316,7 +318,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
 
         return cps.stream()
                 .map(cp -> cp.getId())
-                .filter(cp -> cp >= 10150L) //for testing purposes
+                .filter(cp -> cp >= 10200L) //for testing purposes
                 .collect(Collectors.toList());
     }
 
@@ -373,6 +375,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
                     + "WHERE td.name = :name "
                     + "AND deleted = false";
             Query query = entityManager.createQuery(hql);
+            query.setParameter("name", name);
             List<TestDataEntity> tdEntities = query.getResultList();
             TestDataDTO result = null;
             if (tdEntities != null && tdEntities.size() > 0) {
@@ -408,6 +411,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
                     + "WHERE tp.name = :name "
                     + "AND deleted = false";
             Query query = entityManager.createQuery(hql);
+            query.setParameter("name", name);
             List<TestProcedureEntity> tpEntities = query.getResultList();
             TestProcedureDTO result = null;
             if (tpEntities != null && tpEntities.size() > 0) {
