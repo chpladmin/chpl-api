@@ -369,7 +369,8 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
             AttestationType transparencyAttestation = null;
             for (DeveloperDTO dev : beforeDevelopers) {
                 DeveloperACBMapDTO taMap = developerDao.getTransparencyMapping(dev.getId(), acb.getId());
-                if (taMap != null && !StringUtils.isEmpty(taMap.getTransparencyAttestation().getTransparencyAttestation())) {
+                if (taMap != null && taMap.getTransparencyAttestation() != null
+                        && !StringUtils.isEmpty(taMap.getTransparencyAttestation().getTransparencyAttestation())) {
                     AttestationType currAtt = AttestationType
                             .getValue(taMap.getTransparencyAttestation().getTransparencyAttestation());
                     if (transparencyAttestation == null) {

@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -9,7 +10,9 @@ import org.springframework.core.env.Environment;
 import gov.healthit.chpl.SpringContext;
 import gov.healthit.chpl.domain.TransparencyAttestation;
 
-public class TransparencyAttestationDTO {
+public class TransparencyAttestationDTO implements Serializable {
+    private static final long serialVersionUID = 3828311869155691347L;
+
     private String transparencyAttestation;
     private Boolean removed;
 
