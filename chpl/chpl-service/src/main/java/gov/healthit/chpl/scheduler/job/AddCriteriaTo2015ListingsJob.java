@@ -51,6 +51,7 @@ import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 import gov.healthit.chpl.scheduler.job.extra.JobResponseTriggerListener;
 import gov.healthit.chpl.scheduler.job.extra.JobResponseTriggerWrapper;
 import gov.healthit.chpl.util.AuthUtil;
+import net.sf.ehcache.CacheManager;
 
 public class AddCriteriaTo2015ListingsJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("addCriteriaToListingsJobLogger");
@@ -101,7 +102,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         setSecurityContext();
         LOGGER.info("statusInterval = " + jobContext.getMergedJobDataMap().getInt("statusInterval"));
         addCriteria();
-        addTestDataMap();
+        addTestDataMaps();
         addTestProcedureMaps();
         addMacraMeasureMaps();
 
@@ -131,6 +132,9 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
 
         } catch (SchedulerException e) {
             LOGGER.error("Scheduler Error: " + e.getMessage(), e);
+        } finally {
+            //search options-related calls may have changed data now
+            CacheManager.getInstance().clearAll();
         }
         LOGGER.info("********* Completed the Add Criteria To 2015 Listings job. *********");
     }
@@ -208,9 +212,12 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         return mm != null;
     }
 
-    private void addTestDataMap() {
-        String criterionNumber = "170.315 (g)(10)";
-        String testDataName = "ONC Test Method";
+    private void addTestDataMaps() {
+        addTestDataMap("170.315 (b)(10)", "ONC Test Method");
+        addTestDataMap("170.315 (g)(10)", "ONC Test Method");
+    }
+
+    private void addTestDataMap(String criterionNumber, String testDataName) {
         if (!testDataMapExists(criterionNumber, testDataName)) {
             TestDataDTO testData = insertableTestDataDao.getTestDataByName(testDataName);
             CertificationCriterionDTO criterion = criterionDAO.getByName(criterionNumber);
