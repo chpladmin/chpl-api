@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -182,7 +183,9 @@ public class DeveloperController {
             DeveloperACBMapDTO devMap = new DeveloperACBMapDTO();
             devMap.setAcbId(attMap.getAcbId());
             devMap.setAcbName(attMap.getAcbName());
-            devMap.setTransparencyAttestation(new TransparencyAttestationDTO(attMap.getAttestation()));
+            if (attMap.getAttestation() != null && !StringUtils.isEmpty(attMap.getAttestation().getTransparencyAttestation())) {
+                devMap.setTransparencyAttestation(new TransparencyAttestationDTO(attMap.getAttestation().getTransparencyAttestation()));
+            }
             newDeveloper.getTransparencyAttestationMappings().add(devMap);
         }
         if (splitRequest.getNewDeveloper().getAddress() != null) {
