@@ -31,15 +31,19 @@ import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.TestDataDAO;
+import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
+import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.entity.MacraMeasureEntity;
 import gov.healthit.chpl.entity.TestDataCriteriaMapEntity;
 import gov.healthit.chpl.entity.TestDataEntity;
+import gov.healthit.chpl.entity.TestProcedureCriteriaMapEntity;
+import gov.healthit.chpl.entity.TestProcedureEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -70,6 +74,12 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
     private TestDataDAO testDataDao;
 
     @Autowired
+    private TestProcedureDAO testProcDao;
+
+    @Autowired
+    private InsertableTestProcedureDao insertableTestProcDao;
+
+    @Autowired
     private CertifiedProductDAO certifiedProductDAO;
 
     @Autowired
@@ -92,6 +102,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         LOGGER.info("statusInterval = " + jobContext.getMergedJobDataMap().getInt("statusInterval"));
         addCriteria();
         addTestDataMap();
+        addTestProcedureMaps();
         addMacraMeasureMaps();
 
         List<JobResponseTriggerWrapper> wrappers = new ArrayList<JobResponseTriggerWrapper>();
@@ -161,16 +172,16 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
     private void addMacraMeasureMaps() {
         addMacraMeasureMap("170.315 (g)(10)", "RT2a EP Stage 3", "Patient Electronic Access: Eligible Professional", "Required Test 2: Stage 3 Objective 5 Measure 1");
         addMacraMeasureMap("170.315 (g)(10)", "RT2a EH/CAH Stage 3", "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital", "Required Test 2: Stage 3 Objective 5 Measure 1");
-        addMacraMeasureMap("170.315 (g)(10)", "RT2a EC PI", "", "");
+        addMacraMeasureMap("170.315 (g)(10)", "RT2a EC PI", "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Clinician", "Required Test 2: Promoting Interoperability Objective 3 Measure 1");
         addMacraMeasureMap("170.315 (g)(10)", "RT2c EP Stage 3", "Patient Electronic Access: Eligible Professional", "Required Test 2: Stage 3 Objective 5 Measure 1");
         addMacraMeasureMap("170.315 (g)(10)", "RT2c EH/CAH Stage 3", "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital", "Required Test 2: Stage 3 Objective 5 Measure 1");
-        addMacraMeasureMap("170.315 (g)(10)", "RT2c EC PI", "", "");
+        addMacraMeasureMap("170.315 (g)(10)", "RT2c EC PI", "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Clinician", "Required Test 2: Promoting Interoperability Objective 3 Measure 1");
         addMacraMeasureMap("170.315 (g)(10)", "RT4a EP Stage 3", "View, Download, or Transmit (VDT): Eligible Professional", "Required Test 4: Stage 3 Objective 6 Measure 1");
         addMacraMeasureMap("170.315 (g)(10)", "RT4a EH/CAH Stage 3", "View, Download, or Transmit (VDT): Eligible Hospital/Critical Access Hospital", "Required Test 4: Stage 3 Objective 6 Measure 1");
-        addMacraMeasureMap("170.315 (g)(10)", "RT4a EC PI ", "", "");
+        addMacraMeasureMap("170.315 (g)(10)", "RT4a EC PI ", "View, Download, or Transmit (VDT):  Eligible Clinician", "Required Test 4: Promoting Interoperability Objective 4 Measure 1");
         addMacraMeasureMap("170.315 (g)(10)", "RT4c EP Stage 3", "View, Download, or Transmit (VDT): Eligible Professional", "Required Test 4: Stage 3 Objective 6 Measure 1");
         addMacraMeasureMap("170.315 (g)(10)", "RT4c EH/CAH Stage 3", "View, Download, or Transmit (VDT): Eligible Hospital/Critical Access Hospital", "Required Test 4: Stage 3 Objective 6 Measure 1");
-        addMacraMeasureMap("170.315 (g)(10)", "RT4c EC PI", "", "");
+        addMacraMeasureMap("170.315 (g)(10)", "RT4c EC PI", "View, Download, or Transmit (VDT):  Eligible Clinician", "Required Test 4: Promoting Interoperability Objective 4 Measure 1");
     }
 
     private void addMacraMeasureMap(String criterionNumber, String value, String name, String description) {
@@ -222,6 +233,35 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         return td != null;
     }
 
+    private void addTestProcedureMaps() {
+        addTestProcedureMap("170.315 (b)(10)", "ONC Test Method");
+        addTestProcedureMap("170.315 (d)(12)", "ONC Test Method");
+        addTestProcedureMap("170.315 (2)(13)", "ONC Test Method");
+        addTestProcedureMap("170.315 (g)(10)", "ONC Test Method");
+    }
+
+    private void addTestProcedureMap(String criterionNumber, String testProcedureName) {
+        if (!testProcedureMapExists(criterionNumber, testProcedureName)) {
+            TestProcedureDTO testProc = insertableTestProcDao.getTestProcedureByName(testProcedureName);
+            CertificationCriterionDTO criterion = criterionDAO.getByName(criterionNumber);
+            if (testProc == null) {
+                LOGGER.error("Could not find test procedure " + testProcedureName);
+            }
+            if (criterion == null) {
+                LOGGER.error("Could not find criterion " + criterionNumber);
+            }
+            if (testProcedureName != null && criterion != null) {
+                insertableTestProcDao.create(testProc, criterion);
+            }
+        } else {
+            LOGGER.info("Test procedure mapping from " + criterionNumber + " to " + testProcedureName + " already exists.");
+        }
+    }
+
+    private boolean testProcedureMapExists(String criterionNumber, String testProcedureName) {
+        TestProcedureDTO tp = testProcDao.getByCriteriaNumberAndValue(criterionNumber, testProcedureName);
+        return tp != null;
+    }
     private List<JobResponseTriggerWrapper> getExistingListingWrappers(JobExecutionContext jobContext) {
         List<Long> listings = getListingIds();
         List<JobResponseTriggerWrapper> wrappers = new ArrayList<JobResponseTriggerWrapper>();
@@ -350,6 +390,41 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
             toInsert.setLastModifiedDate(new Date());
             toInsert.setLastModifiedUser(AuthUtil.getAuditId());
             toInsert.setTestDataId(testDataDto.getId());
+            super.create(toInsert);
+        }
+    }
+
+    @Component("insertableTestProcedureDao")
+    private static class InsertableTestProcedureDao extends BaseDAOImpl {
+
+        public InsertableTestProcedureDao() {
+            super();
+        }
+
+        @Transactional
+        public TestProcedureDTO getTestProcedureByName(String name) {
+            String hql = "SELECT tp "
+                    + "FROM TestProcedureEntity tp "
+                    + "WHERE tp.name = :name "
+                    + "AND deleted = false";
+            Query query = entityManager.createQuery(hql);
+            List<TestProcedureEntity> tpEntities = query.getResultList();
+            TestProcedureDTO result = null;
+            if (tpEntities != null && tpEntities.size() > 0) {
+                result = new TestProcedureDTO(tpEntities.get(0));
+            }
+            return result;
+        }
+
+        @Transactional
+        public void create(TestProcedureDTO testProcDto, CertificationCriterionDTO criterion) {
+            TestProcedureCriteriaMapEntity toInsert = new TestProcedureCriteriaMapEntity();
+            toInsert.setCertificationCriterionId(criterion.getId());
+            toInsert.setCreationDate(new Date());
+            toInsert.setDeleted(false);
+            toInsert.setLastModifiedDate(new Date());
+            toInsert.setLastModifiedUser(AuthUtil.getAuditId());
+            toInsert.setTestProcedureId(testProcDto.getId());
             super.create(toInsert);
         }
     }
