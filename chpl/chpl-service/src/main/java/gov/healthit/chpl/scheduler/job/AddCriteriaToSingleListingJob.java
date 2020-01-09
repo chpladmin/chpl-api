@@ -125,7 +125,7 @@ public class AddCriteriaToSingleListingJob extends QuartzJob {
                     try {
                         certResultDAO.create(toCreate);
                     } catch (Exception e) {
-                        logger.error("Error saving ParticipantAgeStatistics.", e);
+                        logger.error("Error saving certification result mapping.", e);
                         status.setRollbackOnly();
                     }
                 } else {
