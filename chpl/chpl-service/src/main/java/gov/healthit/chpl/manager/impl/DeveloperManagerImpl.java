@@ -246,7 +246,7 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
                     developerMappingToCreate.setAcbId(acb.getId());
                     developerMappingToCreate.setDeveloperId(developer.getId());
                     for (DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
-                        if (attMap.getAcbName().equals(acb.getName())) {
+                        if (attMap.getAcbName().equals(acb.getName()) && attMap.getTransparencyAttestation() != null) {
                             developerMappingToCreate.setTransparencyAttestation(attMap.getTransparencyAttestation());
                             developerDao.createTransparencyMapping(developerMappingToCreate);
                         }
