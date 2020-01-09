@@ -252,7 +252,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
 
         return cps.stream()
                 .map(cp -> cp.getId())
-                .filter(cp -> cp >= 10000L) //for testing purposes
+                .filter(cp -> cp >= 10150L) //for testing purposes
                 .collect(Collectors.toList());
     }
 

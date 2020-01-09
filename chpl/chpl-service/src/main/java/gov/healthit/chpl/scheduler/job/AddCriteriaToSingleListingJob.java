@@ -10,7 +10,12 @@ import org.apache.logging.log4j.Logger;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
@@ -39,6 +44,9 @@ public class AddCriteriaToSingleListingJob extends QuartzJob {
 
     @Autowired
     private CertificationResultDAO certResultDAO;
+
+    @Autowired
+    private JpaTransactionManager txManager;
 
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
@@ -96,24 +104,47 @@ public class AddCriteriaToSingleListingJob extends QuartzJob {
 
     private void create(CertifiedProductSearchDetails listing, String criterionNumber)
             throws EntityCreationException, EntityRetrievalException, IOException {
-        CertificationCriterionDTO criterion = certCritDAO.getByName(criterionNumber);
-        if (criterion == null || criterion.getId() == null) {
-            throw new EntityCreationException(
-                    "Cannot create certification result mapping for unknown criteria " + criterionNumber);
-        }
+            TransactionTemplate txTemplate = new TransactionTemplate(txManager);
+            txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+            txTemplate.execute(new TransactionCallbackWithoutResult() {
+
+            @Override
+            //can't use the manager method because we don't want to record activity
+            //so wrapping the dao call in a transaction
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                CertificationCriterionDTO criterion = certCritDAO.getByName(criterionNumber);
+                if (criterion == null || criterion.getId() == null) {
+                    logger.error(
+                            "Cannot create certification result mapping for unknown criteria " + criterionNumber);
+                } else if (!certResultExists(listing, criterionNumber)) {
+                    CertificationResultDTO toCreate = new CertificationResultDTO();
+                    toCreate.setCertificationCriterionId(criterion.getId());
+                    toCreate.setCertifiedProductId(listing.getId());
+                    toCreate.setSuccessful(false);
+
+                    try {
+                        certResultDAO.create(toCreate);
+                    } catch (Exception e) {
+                        logger.error("Error saving ParticipantAgeStatistics.", e);
+                        status.setRollbackOnly();
+                    }
+                } else {
+                    logger.info("Certification result mapping already exists for " + listing.getChplProductNumber()
+                        + " and " + criterionNumber);
+                }
+            }
+        });
+    }
+
+    private boolean certResultExists(CertifiedProductSearchDetails listing, String criterionNumber) {
+        boolean result = false;
         List<CertificationResult> criteria = listing.getCertificationResults();
         for (CertificationResult crit : criteria) {
             if (crit.getNumber().equalsIgnoreCase(criterionNumber)) {
-                throw new EntityCreationException(
-                        "Cannot create duplicate certification result mapping for criteria " + criterionNumber);
+                result = true;
             }
         }
-        CertificationResultDTO toCreate = new CertificationResultDTO();
-        toCreate.setCertificationCriterionId(criterion.getId());
-        toCreate.setCertifiedProductId(listing.getId());
-        toCreate.setSuccessful(false);
-
-        certResultDAO.create(toCreate);
+        return result;
     }
 
     private void setSecurityContext() {

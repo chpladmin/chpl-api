@@ -35,7 +35,7 @@ public class CertificationResultRules {
     public static final String G2_SUCCESS = "g2Success";
     public static final String G1_MACRA = "g1Macra";
     public static final String G2_MACRA = "g2Macra";
-    public static final String ATTESTATION_ANSWER = "attestationAndwer";
+    public static final String ATTESTATION_ANSWER = "attestationAnswer";
     public static final String ADDITIONAL_SOFTWARE = "additionalSoftware";
     public static final String TEST_TOOLS_USED = "testTool";
     public static final String TEST_PROCEDURE = "testProcedure";
