@@ -253,7 +253,8 @@ public class DeveloperManagerImpl extends SecuredManager implements DeveloperMan
                     }
                 } else {
                     for (DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
-                        if (attMap.getAcbName().equals(acb.getName())) {
+                        if (attMap.getAcbName().equals(acb.getName()) && attMap.getTransparencyAttestation() != null
+                                && !StringUtils.isEmpty(attMap.getTransparencyAttestation().getTransparencyAttestation())) {
                             existingMap.setTransparencyAttestation(attMap.getTransparencyAttestation());
                             developerDao.updateTransparencyMapping(existingMap);
                         }
