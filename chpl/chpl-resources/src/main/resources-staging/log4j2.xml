@@ -280,6 +280,17 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <RollingFile name="modifyTestFunctionalityJob"
+            fileName="${logDir}/scheduler/modifyTestFunctionalityJob.log"
+            filePattern="${logDir}/scheduler/history/modifyTestFunctionalityJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
         <RollingFile name="removeRT13ECMacraMeasureJob"
             fileName="${logDir}/scheduler/RemoveRT13ECMacraMeasureJob.log"
             filePattern="${logDir}/scheduler/history/RemoveRT13ECMacraMeasureJob-%d{yyyy-MM-dd}.log">
@@ -402,6 +413,10 @@
         <Logger name="removeCriteriaJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="removeCriteriaJob" />
+        </Logger>
+        <Logger name="modifyTestFunctionalityJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="modifyTestFunctionalityJob" />
         </Logger>
         <Logger name="removeRT13ECMacraMeasureJobLogger" level="INFO"
             additivity="false">
