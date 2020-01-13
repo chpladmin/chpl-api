@@ -753,7 +753,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 }
                 if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.USE_CASES)
                         && StringUtils.isEmpty(cert.getUseCases())
-                        && cert.getAttestationAnswer()) {
+                        && cert.getAttestationAnswer() != null && cert.getAttestationAnswer().equals(Boolean.TRUE)) {
                     listing.getErrorMessages()
                     .add("Use Cases is required for certification " + cert.getCriterion().getNumber() + " when Attestation Answer is \"Yes\".");
                 }
