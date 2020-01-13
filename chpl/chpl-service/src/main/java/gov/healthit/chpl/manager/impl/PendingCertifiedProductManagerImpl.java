@@ -287,13 +287,22 @@ public class PendingCertifiedProductManagerImpl extends SecuredManager implement
             for (PendingCertificationResultDTO certResult : product.getCertificationCriterion()) {
                 if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.GAP)) {
                     certResult.setGap(null);
+                } else if (certResult.getGap() == null) {
+                    certResult.setGap(Boolean.FALSE);
                 }
+
                 if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.G1_SUCCESS)) {
                     certResult.setG1Success(null);
+                } else if (certResult.getG1Success() == null) {
+                    certResult.setG1Success(Boolean.FALSE);
                 }
+
                 if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.G2_SUCCESS)) {
                     certResult.setG2Success(null);
+                } else if (certResult.getG2Success() == null) {
+                    certResult.setG2Success(Boolean.FALSE);
                 }
+
                 if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.G1_MACRA)) {
                     certResult.setG1MacraMeasures(null);
                 }
@@ -302,13 +311,46 @@ public class PendingCertifiedProductManagerImpl extends SecuredManager implement
                 }
                 if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
                     certResult.setApiDocumentation(null);
+                } else if (certResult.getApiDocumentation() == null) {
+                    certResult.setApiDocumentation("");
                 }
+
+                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.EXPORT_DOCUMENTATION)) {
+                    certResult.setExportDocumentation(null);
+                } else if (certResult.getExportDocumentation() == null) {
+                    certResult.setExportDocumentation("");
+                }
+
+                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.DOCUMENTATION_URL)) {
+                    certResult.setDocumentationUrl(null);
+                } else if (certResult.getDocumentationUrl() == null) {
+                    certResult.setDocumentationUrl("");
+                }
+
+                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.USE_CASES)) {
+                    certResult.setUseCases(null);
+                } else if (certResult.getUseCases() == null) {
+                    certResult.setUseCases("");
+                }
+
                 if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.PRIVACY_SECURITY)) {
                     certResult.setPrivacySecurityFramework(null);
+                } else if (certResult.getPrivacySecurityFramework() == null) {
+                    certResult.setPrivacySecurityFramework("");
                 }
+
+                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.ATTESTATION_ANSWER)) {
+                    certResult.setAttestationAnswer(null);
+                } else if (certResult.getAttestationAnswer() == null) {
+                    certResult.setAttestationAnswer(Boolean.FALSE);
+                }
+
                 if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.SED)) {
                     certResult.setSed(null);
+                } else if (certResult.getSed() == null) {
+                    certResult.setSed(Boolean.FALSE);
                 }
+
                 if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.UCD_FIELDS)) {
                     certResult.setUcdProcesses(null);
                 }

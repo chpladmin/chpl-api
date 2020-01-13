@@ -645,6 +645,10 @@ public class CertifiedProductManager extends SecuredManager {
                 certResultToCreate.setApiDocumentation(isCertified ? certResult.getApiDocumentation() : null);
                 certResultToCreate
                         .setPrivacySecurityFramework(isCertified ? certResult.getPrivacySecurityFramework() : null);
+                certResultToCreate.setAttestationAnswer(isCertified ? certResult.getAttestationAnswer() : null);
+                certResultToCreate.setDocumentationUrl(isCertified ? certResult.getDocumentationUrl() : null);
+                certResultToCreate.setExportDocumentation(isCertified ? certResult.getExportDocumentation() : null);
+                certResultToCreate.setUseCases(isCertified ? certResult.getUseCases() : null);
                 CertificationResultDTO createdCert = certDao.create(certResultToCreate);
 
                 createdCert = addG1G2MacraMeasures(certResult, createdCert);

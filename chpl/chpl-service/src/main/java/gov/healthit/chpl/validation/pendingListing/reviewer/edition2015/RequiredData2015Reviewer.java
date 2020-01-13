@@ -746,7 +746,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 }
                 if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.DOCUMENTATION_URL)
                         && StringUtils.isEmpty(cert.getDocumentationUrl())
-                        && !cert.getAttestationAnswer()) {
+                        && cert.getAttestationAnswer() != null && cert.getAttestationAnswer().equals(Boolean.FALSE)) {
                     listing.getErrorMessages()
                     .add("Documentation Url is required for certification " + cert.getCriterion().getNumber()
                     + " when Attestation Answer is \"No\".");
