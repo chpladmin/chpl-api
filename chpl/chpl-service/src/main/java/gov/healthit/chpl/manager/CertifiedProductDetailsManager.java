@@ -543,17 +543,17 @@ public class CertifiedProductDetailsManager {
         }
         if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.EXPORT_DOCUMENTATION)) {
             result.setExportDocumentation(null);
-        } else if (result.getApiDocumentation() == null) {
+        } else if (result.getExportDocumentation() == null) {
             result.setExportDocumentation("");
         }
         if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.DOCUMENTATION_URL)) {
             result.setDocumentationUrl(null);
-        } else if (result.getApiDocumentation() == null) {
+        } else if (result.getDocumentationUrl() == null) {
             result.setDocumentationUrl("");
         }
         if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.USE_CASES)) {
             result.setUseCases(null);
-        } else if (result.getApiDocumentation() == null) {
+        } else if (result.getUseCases() == null) {
             result.setUseCases("");
         }
         if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.PRIVACY_SECURITY)) {
@@ -563,7 +563,7 @@ public class CertifiedProductDetailsManager {
         }
         if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.ATTESTATION_ANSWER)) {
             result.setAttestationAnswer(null);
-        } else if (result.getApiDocumentation() == null) {
+        } else if (result.getAttestationAnswer() == null) {
             result.setAttestationAnswer(false);
         }
         // add all the other data
