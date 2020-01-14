@@ -52,7 +52,8 @@ public class SchedulerManager extends SecuredManager {
 
     private static final String AUTHORITY_DELIMITER = ";";
     private static final String DATA_DELIMITER = "\u263A";
-    private static final String CHPL_JOBS_KEY = "chplJobs";
+    public static final String CHPL_JOBS_KEY = "chplJobs";
+    public static final String SYSTEM_JOBS_KEY = "systemJobs";
 
     private ChplSchedulerReference chplScheduler;
     private ResourcePermissions resourcePermissions;
