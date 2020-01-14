@@ -16,6 +16,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.app.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domains.certificationresults.UpdatePermissions;
 
@@ -49,7 +50,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         // Since it is admin it has access to all - parm value does not matter.
-        assertTrue(permissions.hasAccess(1L));
+        assertTrue(permissions.hasAccess(new CertifiedProductSearchDetails()));
     }
 
     @Override
@@ -61,7 +62,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         // Since it is ONC it has access to all - parm value does not matter.
-        assertTrue(permissions.hasAccess(1L));
+        assertTrue(permissions.hasAccess(new CertifiedProductSearchDetails()));
     }
 
     @Override
@@ -72,9 +73,11 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         // This should always be false
         assertFalse(permissions.hasAccess());
 
-        assertFalse(permissions.hasAccess(1L));
-
-        assertTrue(permissions.hasAccess(2L));
+        CertifiedProductSearchDetails obj = new CertifiedProductSearchDetails();
+        obj.getCertifyingBody().put(CertifiedProductSearchDetails.ACB_ID_KEY, 1L);
+        assertFalse(permissions.hasAccess(obj));
+        obj.getCertifyingBody().put(CertifiedProductSearchDetails.ACB_ID_KEY, 2L);
+        assertTrue(permissions.hasAccess(obj));
     }
 
     @Override
@@ -86,7 +89,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         // Atl has no access - the param shouldn't even matter
-        assertFalse(permissions.hasAccess(1L));
+        assertFalse(permissions.hasAccess(new CertifiedProductSearchDetails()));
     }
 
     @Override
@@ -98,7 +101,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         // Cms has no access - the param shouldn't even matter
-        assertFalse(permissions.hasAccess(1L));
+        assertFalse(permissions.hasAccess(new CertifiedProductSearchDetails()));
     }
 
     @Override
@@ -110,7 +113,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         // Anon has no access - the param shouldn't even matter
-        assertFalse(permissions.hasAccess(1L));
+        assertFalse(permissions.hasAccess(new CertifiedProductSearchDetails()));
     }
 
 }
