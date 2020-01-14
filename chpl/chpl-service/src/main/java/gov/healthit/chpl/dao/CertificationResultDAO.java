@@ -10,9 +10,6 @@ import javax.persistence.Query;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -46,18 +43,23 @@ import gov.healthit.chpl.entity.listing.TestTaskParticipantMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Repository(value = "certificationResultDAO")
 public class CertificationResultDAO extends BaseDAOImpl {
     private static final Logger LOGGER = LogManager.getLogger(CertificationResultDAO.class);
 
-    @Autowired
-    TestParticipantDAO participantDao;
-    @Autowired
-    TestTaskDAO testTaskDao;
-    @Autowired
-    MessageSource messageSource;
+    private TestParticipantDAO participantDao;
+    private TestTaskDAO testTaskDao;
+    private ErrorMessageUtil msgUtil;
 
+    @Autowired
+    public CertificationResultDAO(TestParticipantDAO participantDao, TestTaskDAO testTaskDao,
+            ErrorMessageUtil msgUtil) {
+        this.participantDao = participantDao;
+        this.testTaskDao = testTaskDao;
+        this.msgUtil = msgUtil;
+    }
 
     public CertificationResultDTO create(CertificationResultDTO result) throws EntityCreationException {
         CertificationResultEntity entity = null;
@@ -92,9 +94,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
             try {
                 create(entity);
             } catch (Exception ex) {
-                String msg = String.format(
-                        messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badCriteriaData"),
-                                LocaleContextHolder.getLocale()),
+                String msg = msgUtil.getMessage("listing.badCriteriaData",
                         result.getCertificationCriterionId(), ex.getMessage());
                 LOGGER.error(msg, ex);
                 throw new EntityCreationException(msg);
@@ -126,9 +126,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
             entityManager.merge(entity);
             entityManager.flush();
         } catch (Exception ex) {
-            String msg = String
-                    .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badCriteriaData"),
-                            LocaleContextHolder.getLocale()), toUpdate.getCertificationCriterionId(), ex.getMessage());
+            String msg = msgUtil.getMessage("listing.badCriteriaData", toUpdate.getCertificationCriterionId(), ex.getMessage());
             LOGGER.error(msg, ex);
             throw new EntityRetrievalException(msg);
         }
@@ -282,10 +280,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
             entityManager.persist(mapping);
             entityManager.flush();
         } catch (Exception ex) {
-            String msg = String.format(
-                    messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badUcdProcess"),
-                            LocaleContextHolder.getLocale()),
-                    dto.getUcdProcessName());
+            String msg = msgUtil.getMessage("listing.criteria.badUcdProcess", dto.getUcdProcessName());
             LOGGER.error(msg, ex);
             throw new EntityCreationException(msg);
         }
@@ -318,10 +313,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
             entityManager.persist(toUpdate);
             entityManager.flush();
         } catch (Exception ex) {
-            String msg = String.format(
-                    messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badUcdProcess"),
-                            LocaleContextHolder.getLocale()),
-                    dto.getUcdProcessName());
+            String msg = msgUtil.getMessage("listing.criteria.badUcdProcess", dto.getUcdProcessName());
             LOGGER.error(msg, ex);
             throw new EntityRetrievalException(msg);
         }
@@ -395,10 +387,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
             entityManager.persist(mapping);
             entityManager.flush();
         } catch (Exception ex) {
-            String msg = String.format(
-                    messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("listing.criteria.badAdditionalSoftware"),
-                            LocaleContextHolder.getLocale()),
+            String msg = msgUtil.getMessage("listing.criteria.badAdditionalSoftware",
                     (StringUtils.isEmpty(dto.getName()) ? dto.getCertifiedProductNumber() : dto.getName()));
             LOGGER.error(msg, ex);
             throw new EntityCreationException(msg);
@@ -439,10 +428,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
             entityManager.merge(curr);
             entityManager.flush();
         } catch (Exception ex) {
-            String msg = String.format(
-                    messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("listing.criteria.badAdditionalSoftware"),
-                            LocaleContextHolder.getLocale()),
+            String msg = msgUtil.getMessage("listing.criteria.badAdditionalSoftware",
                     (StringUtils.isEmpty(toUpdate.getName()) ? toUpdate.getCertifiedProductNumber()
                             : toUpdate.getName()));
             LOGGER.error(msg, ex);
@@ -629,9 +615,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
             entityManager.persist(mapping);
             entityManager.flush();
         } catch (Exception ex) {
-            String msg = String
-                    .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestTool"),
-                            LocaleContextHolder.getLocale()), dto.getTestToolName());
+            String msg = msgUtil.getMessage("listing.criteria.badTestTool", dto.getTestToolName());
             LOGGER.error(msg, ex);
             throw new EntityCreationException(msg);
         }
@@ -888,9 +872,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
             entityManager.persist(mapping);
             entityManager.flush();
         } catch (Exception ex) {
-            String msg = String
-                    .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestData"),
-                            LocaleContextHolder.getLocale()), dto.getVersion());
+            String msg = msgUtil.getMessage("listing.criteria.badTestData", dto.getVersion());
             LOGGER.error(msg, ex);
             throw new EntityCreationException(msg);
         }
@@ -923,9 +905,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
             entityManager.persist(toUpdate);
             entityManager.flush();
         } catch (Exception ex) {
-            String msg = String
-                    .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestData"),
-                            LocaleContextHolder.getLocale()), dto.getVersion());
+            String msg = msgUtil.getMessage("listing.criteria.badTestData", dto.getVersion());
             LOGGER.error(msg, ex);
             throw new EntityRetrievalException(msg);
         }

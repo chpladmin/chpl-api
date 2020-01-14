@@ -9,9 +9,6 @@ import javax.persistence.Query;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -45,6 +42,7 @@ import gov.healthit.chpl.entity.listing.pending.PendingTestTaskEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 /**
  * Data Access Object for Pending Certified Products.
@@ -54,9 +52,12 @@ import gov.healthit.chpl.util.AuthUtil;
 @Repository(value = "pendingCertifiedProductDAO")
 public class PendingCertifiedProductDAO extends BaseDAOImpl {
     private static final Logger LOGGER = LogManager.getLogger(PendingCertifiedProductDAO.class);
-    @Autowired
-    private MessageSource messageSource;
+    private ErrorMessageUtil msgUtil;
 
+    @Autowired
+    public PendingCertifiedProductDAO(ErrorMessageUtil msgUtil) {
+        this.msgUtil = msgUtil;
+    }
 
     @Transactional
     public PendingCertifiedProductDTO create(final PendingCertifiedProductEntity toCreate)
@@ -69,9 +70,7 @@ throws EntityCreationException {
         try {
             entityManager.persist(toCreate);
         } catch (Exception ex) {
-            String msg = String
-                    .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badListingData"),
-                            LocaleContextHolder.getLocale()), toCreate.getUniqueId(), ex.getMessage());
+            String msg = msgUtil.getMessage("listing.badListingData", toCreate.getUniqueId(), ex.getMessage());
             LOGGER.error(msg, ex);
             throw new EntityCreationException(msg);
         }
@@ -85,9 +84,7 @@ throws EntityCreationException {
             try {
                 entityManager.persist(testingLab);
             } catch (Exception ex) {
-                String msg = String
-                        .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badTestingLab"),
-                                LocaleContextHolder.getLocale()), testingLab.getTestingLabName());
+                String msg = msgUtil.getMessage("listing.badTestingLab", testingLab.getTestingLabName());
                 LOGGER.error(msg, ex);
                 throw new EntityCreationException(msg);
             }
@@ -102,9 +99,7 @@ throws EntityCreationException {
             try {
                 entityManager.persist(qmsStandard);
             } catch (Exception ex) {
-                String msg = String
-                        .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badQmsStandard"),
-                                LocaleContextHolder.getLocale()), qmsStandard.getName());
+                String msg = msgUtil.getMessage("listing.badQmsStandard", qmsStandard.getName());
                 LOGGER.error(msg, ex);
                 throw new EntityCreationException(msg);
             }
@@ -119,10 +114,7 @@ throws EntityCreationException {
             try {
                 entityManager.persist(accStandard);
             } catch (Exception ex) {
-                String msg = String.format(
-                        messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badAccessibilityStandard"),
-                                LocaleContextHolder.getLocale()),
-                        accStandard.getName());
+                String msg = msgUtil.getMessage("listing.badAccessibilityStandard", accStandard.getName());
                 LOGGER.error(msg, ex);
                 throw new EntityCreationException(msg);
             }
@@ -137,9 +129,7 @@ throws EntityCreationException {
             try {
                 entityManager.persist(targetedUser);
             } catch (Exception ex) {
-                String msg = String
-                        .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badTargetedUser"),
-                                LocaleContextHolder.getLocale()), targetedUser.getName());
+                String msg = msgUtil.getMessage("listing.badTargetedUser", targetedUser.getName());
                 LOGGER.error(msg, ex);
                 throw new EntityCreationException(msg);
             }
@@ -154,9 +144,7 @@ throws EntityCreationException {
             try {
                 entityManager.persist(parentListing);
             } catch (Exception ex) {
-                String msg = String
-                        .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badIcsParentSave"),
-                                LocaleContextHolder.getLocale()), parentListing.getParentListingUniqueId());
+                String msg = msgUtil.getMessage("listing.badIcsParentSave", parentListing.getParentListingUniqueId());
                 LOGGER.error(msg, ex);
                 throw new EntityCreationException(msg);
             }
@@ -183,9 +171,7 @@ throws EntityCreationException {
         try {
             entityManager.persist(pendingCertResult);
         } catch (Exception ex) {
-            String msg = String.format(
-                    messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badCriteriaData"),
-                            LocaleContextHolder.getLocale()),
+            String msg = msgUtil.getMessage("listing.badCriteriaData",
                     pendingCertResult.getMappedCriterion().getNumber(), ex.getMessage());
             LOGGER.error(msg, ex);
             throw new EntityCreationException(msg);
@@ -201,9 +187,7 @@ throws EntityCreationException {
                 try {
                     entityManager.persist(ucd);
                 } catch (Exception ex) {
-                    String msg = String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("listing.criteria.badUcdProcess"),
-                            LocaleContextHolder.getLocale()), ucd.getUcdProcessName());
+                    String msg = msgUtil.getMessage("listing.criteria.badUcdProcess", ucd.getUcdProcessName());
                     LOGGER.error(msg, ex);
                     throw new EntityCreationException(msg);
                 }
@@ -220,9 +204,7 @@ throws EntityCreationException {
                 try {
                     entityManager.persist(tsEntity);
                 } catch (Exception ex) {
-                    String msg = String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("listing.criteria.badTestStandard"),
-                            LocaleContextHolder.getLocale()), tsEntity.getTestStandardName());
+                    String msg = msgUtil.getMessage("listing.criteria.badTestStandard", tsEntity.getTestStandardName());
                     LOGGER.error(msg, ex);
                     throw new EntityCreationException(msg);
                 }
@@ -238,10 +220,7 @@ throws EntityCreationException {
                 try {
                     entityManager.persist(tfEntity);
                 } catch (Exception ex) {
-                    String msg = String.format(
-                            messageSource.getMessage(
-                                    new DefaultMessageSourceResolvable("listing.criteria.badTestFunctionality"),
-                                    LocaleContextHolder.getLocale()),
+                    String msg = msgUtil.getMessage("listing.criteria.badTestFunctionality",
                             tfEntity.getTestFunctionalityNumber());
                     LOGGER.error(msg, ex);
                     throw new EntityCreationException(msg);
@@ -259,10 +238,7 @@ throws EntityCreationException {
                 try {
                     entityManager.persist(asEntity);
                 } catch (Exception ex) {
-                    String msg = String.format(
-                            messageSource.getMessage(
-                                    new DefaultMessageSourceResolvable("listing.criteria.badAdditionalSoftware"),
-                                    LocaleContextHolder.getLocale()),
+                    String msg = msgUtil.getMessage("listing.criteria.badAdditionalSoftware",
                             (StringUtils.isEmpty(asEntity.getSoftwareName()) ? asEntity.getChplId()
                                     : asEntity.getSoftwareName()));
                     LOGGER.error(msg, ex);
@@ -281,9 +257,7 @@ throws EntityCreationException {
                 try {
                     entityManager.persist(tpEntity);
                 } catch (Exception ex) {
-                    String msg = String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("listing.criteria.badTestProcedure"),
-                            LocaleContextHolder.getLocale()), tpEntity.getVersion());
+                    String msg = msgUtil.getMessage("listing.criteria.badTestProcedure", tpEntity.getVersion());
                     LOGGER.error(msg, ex);
                     throw new EntityCreationException(msg);
                 }
@@ -300,9 +274,7 @@ throws EntityCreationException {
                 try {
                     entityManager.persist(tdEntity);
                 } catch (Exception ex) {
-                    String msg = String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("listing.criteria.badTestData"),
-                            LocaleContextHolder.getLocale()), tdEntity.getVersion());
+                    String msg = msgUtil.getMessage("listing.criteria.badTestData", tdEntity.getVersion());
                     LOGGER.error(msg, ex);
                     throw new EntityCreationException(msg);
                 }
@@ -319,9 +291,7 @@ throws EntityCreationException {
                 try {
                     entityManager.persist(ttEntity);
                 } catch (Exception ex) {
-                    String msg = String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("listing.criteria.badTestTool"),
-                            LocaleContextHolder.getLocale()), ttEntity.getTestToolName());
+                    String msg = msgUtil.getMessage("listing.criteria.badTestTool", ttEntity.getTestToolName());
                     LOGGER.error(msg, ex);
                     throw new EntityCreationException(msg);
                 }
@@ -338,9 +308,7 @@ throws EntityCreationException {
                 try {
                     entityManager.persist(mmEntity);
                 } catch (Exception ex) {
-                    String msg = String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("listing.criteria.badG1MacraMeasure"),
-                            LocaleContextHolder.getLocale()), mmEntity.getEnteredValue());
+                    String msg = msgUtil.getMessage("listing.criteria.badG1MacraMeasure", mmEntity.getEnteredValue());
                     LOGGER.error(msg, ex);
                     throw new EntityCreationException(msg);
                 }
@@ -357,9 +325,7 @@ throws EntityCreationException {
                 try {
                     entityManager.persist(mmEntity);
                 } catch (Exception ex) {
-                    String msg = String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("listing.criteria.badG2MacraMeasure"),
-                            LocaleContextHolder.getLocale()), mmEntity.getEnteredValue());
+                    String msg = msgUtil.getMessage("listing.criteria.badG2MacraMeasure", mmEntity.getEnteredValue());
                     LOGGER.error(msg, ex);
                     throw new EntityCreationException(msg);
                 }
@@ -378,9 +344,7 @@ throws EntityCreationException {
                         try {
                             entityManager.persist(testTask);
                         } catch (Exception ex) {
-                            String msg = String.format(messageSource.getMessage(
-                                    new DefaultMessageSourceResolvable("listing.criteria.badTestTask"),
-                                    LocaleContextHolder.getLocale()), testTask.getUniqueId());
+                            String msg = msgUtil.getMessage("listing.criteria.badTestTask", testTask.getUniqueId());
                             LOGGER.error(msg, ex);
                             throw new EntityCreationException(msg);
                         }
@@ -407,11 +371,7 @@ throws EntityCreationException {
                                 try {
                                     entityManager.persist(partEntity);
                                 } catch (Exception ex) {
-                                    String msg = String.format(
-                                            messageSource.getMessage(
-                                                    new DefaultMessageSourceResolvable(
-                                                            "listing.criteria.badTestParticipant"),
-                                                    LocaleContextHolder.getLocale()),
+                                    String msg = msgUtil.getMessage("listing.criteria.badTestParticipant",
                                             partEntity.getUniqueId());
                                     LOGGER.error(msg, ex);
                                     throw new EntityCreationException(msg);
@@ -564,16 +524,11 @@ throws EntityCreationException {
         return entity.getId();
     }
 
-//    private void update(final PendingCertifiedProductEntity product) {
-//
-//        entityManager.merge(product);
-//
-//    }
-
     private List<PendingCertifiedProductEntity> getAllEntities() {
 
         List<PendingCertifiedProductEntity> result = entityManager
-                .createQuery("SELECT pcp from PendingCertifiedProductEntity pcp " + "WHERE (not pcp.deleted = true)",
+                .createQuery("SELECT pcp from PendingCertifiedProductEntity pcp "
+                        + "WHERE (not pcp.deleted = true)",
                         PendingCertifiedProductEntity.class)
                 .getResultList();
         return result;
@@ -583,7 +538,8 @@ throws EntityCreationException {
     private PendingCertifiedProductEntity getEntityById(final Long entityId, final boolean includeDeleted)
             throws EntityRetrievalException {
         PendingCertifiedProductEntity entity = null;
-        String hql = "SELECT DISTINCT pcp from PendingCertifiedProductEntity pcp " + " where pcp.id = :entityid";
+        String hql = "SELECT DISTINCT pcp from PendingCertifiedProductEntity pcp "
+                + " where pcp.id = :entityid";
         if (!includeDeleted) {
             hql += " and pcp.deleted <> true";
         }
@@ -593,8 +549,7 @@ throws EntityCreationException {
         List<PendingCertifiedProductEntity> result = query.getResultList();
 
         if (result == null || result.size() == 0) {
-            String msg = String.format(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("pendingListing.notFound"), LocaleContextHolder.getLocale()));
+            String msg = msgUtil.getMessage("pendingListing.notFound");
             throw new EntityRetrievalException(msg);
         } else if (result.size() > 0) {
             entity = result.get(0);
@@ -608,7 +563,8 @@ throws EntityCreationException {
         PendingCertifiedProductEntity entity = null;
 
         Query query = entityManager.createQuery("SELECT pcp from PendingCertifiedProductEntity pcp "
-                + " where (unique_id = :id) " + " and (not pcp.deleted = true)", PendingCertifiedProductEntity.class);
+                + " where (unique_id = :id) "
+                + " and (not pcp.deleted = true)", PendingCertifiedProductEntity.class);
         query.setParameter("id", id);
         List<PendingCertifiedProductEntity> result = query.getResultList();
 
@@ -628,7 +584,8 @@ throws EntityCreationException {
         Query query = entityManager
                 .createQuery(
                         "SELECT pcp from PendingCertifiedProductEntity pcp "
-                                + " where (certification_body_id = :acbId) " + " and not (pcp.deleted = true)",
+                                + " where (certification_body_id = :acbId) "
+                                + " and not (pcp.deleted = true)",
                                 PendingCertifiedProductEntity.class);
         query.setParameter("acbId", acbId);
         List<PendingCertifiedProductEntity> result = query.getResultList();
