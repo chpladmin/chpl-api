@@ -62,8 +62,10 @@ public class DeveloperEditTransparencyAttestationValidation extends ValidationRu
     }
 
     private Boolean areTransparencyAttestationsEqual(TransparencyAttestationDTO a, TransparencyAttestationDTO b) {
-        if (a == null || b == null) {
+        if (a == null && b == null) {
             return true;
+        } else if (a == null || b == null) {
+            return false;
         } else {
             return StringUtils.equals(a.getTransparencyAttestation(), b.getTransparencyAttestation());
         }
