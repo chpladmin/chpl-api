@@ -269,6 +269,17 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <RollingFile name="createTestToolJob"
+            fileName="${logDir}/scheduler/createTestToolJob.log"
+            filePattern="${logDir}/scheduler/history/createTestToolJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
         <RollingFile name="removeCriteriaJob"
             fileName="${logDir}/scheduler/removeCriteriaJob.log"
             filePattern="${logDir}/scheduler/history/removeCriteriaJob-%d{yyyy-MM-dd}.log">
@@ -398,6 +409,10 @@
         <Logger name="remove2014UploadTemplateJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="remove2014UploadTemplateJob" />
+        </Logger>
+        <Logger name="createTestToolJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="createTestToolJob" />
         </Logger>
         <Logger name="removeCriteriaJobLogger" level="INFO"
             additivity="false">
