@@ -278,7 +278,7 @@ public class DeveloperDaoTest extends TestCase {
 
         dto = developerDao.getTransparencyMapping(developer.getId(), -8L);
         assertNotNull(dto);
-        assertEquals("N/A", dto.getTransparencyAttestation());
+        assertEquals("N/A", dto.getTransparencyAttestation().getTransparencyAttestation());
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 

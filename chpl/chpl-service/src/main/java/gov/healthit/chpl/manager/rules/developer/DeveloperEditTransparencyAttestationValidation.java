@@ -8,6 +8,7 @@ import org.ff4j.FF4j;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.TransparencyAttestationDTO;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -51,12 +52,20 @@ public class DeveloperEditTransparencyAttestationValidation extends ValidationRu
                         .filter(changedMapping -> StringUtils.equals(originalMapping.getAcbName(), changedMapping.getAcbName()))
                         .findFirst();
                 if (!matchingMapping.isPresent()
-                        || !StringUtils.equals(originalMapping.getTransparencyAttestation().getTransparencyAttestation(),
-                                matchingMapping.get().getTransparencyAttestation().getTransparencyAttestation())) {
+                        || !areTransparencyAttestationsEqual(originalMapping.getTransparencyAttestation(),
+                                matchingMapping.get().getTransparencyAttestation())) {
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    private Boolean areTransparencyAttestationsEqual(TransparencyAttestationDTO a, TransparencyAttestationDTO b) {
+        if (a == null || b == null) {
+            return true;
+        } else {
+            return StringUtils.equals(a.getTransparencyAttestation(), b.getTransparencyAttestation());
+        }
     }
 }

@@ -6,15 +6,19 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.app.permissions.domain.ActionPermissionsBaseTest;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.surveillance.Surveillance;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domains.surveillance.CreateActionPermissions;
 
@@ -25,6 +29,9 @@ import gov.healthit.chpl.permissions.domains.surveillance.CreateActionPermission
 public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
     private ResourcePermissions resourcePermissions;
+
+    @Mock
+    private CertifiedProductDAO certifiedProductDAO;
 
     @InjectMocks
     private CreateActionPermissions permissions;
@@ -45,7 +52,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         // Since it is admin it has access to all - param value does not matter.
-        assertTrue(permissions.hasAccess(1L));
+        assertTrue(permissions.hasAccess(new Surveillance()));
     }
 
     @Override
@@ -57,7 +64,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         // Since it is onc it has access to all - param value does not matter.
-        assertTrue(permissions.hasAccess(1L));
+        assertTrue(permissions.hasAccess(new Surveillance()));
     }
 
     @Override
@@ -68,9 +75,15 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         // This should always be false
         assertFalse(permissions.hasAccess());
 
-        assertFalse(permissions.hasAccess(1L));
+        Surveillance surv = new Surveillance();
+        surv.setCertifiedProduct(new CertifiedProduct());
+        surv.getCertifiedProduct().setId(1l);
 
-        assertTrue(permissions.hasAccess(2L));
+        Mockito.when(certifiedProductDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getListing(1l));
+        assertFalse(permissions.hasAccess(surv));
+
+        Mockito.when(certifiedProductDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getListing(2l));
+        assertTrue(permissions.hasAccess(surv));
     }
 
     @Override
@@ -107,5 +120,11 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
 
         // Anon has no access - the param shouldn't even matter
         assertFalse(permissions.hasAccess(1L));
+    }
+
+    private CertifiedProductDTO getListing(Long acbId) {
+        CertifiedProductDTO dto = new CertifiedProductDTO();
+        dto.setCertificationBodyId(acbId);
+        return dto;
     }
 }

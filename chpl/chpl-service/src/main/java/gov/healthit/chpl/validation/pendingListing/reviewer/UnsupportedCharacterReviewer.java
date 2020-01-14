@@ -80,8 +80,10 @@ public class UnsupportedCharacterReviewer implements Reviewer {
                 "SED Intended User Description '" + listing.getSedIntendedUserDescription() + "'");
         addListingWarningIfNotValid(listing, listing.getSedReportFileLocation(),
                 "SED Report File Location '" + listing.getSedReportFileLocation() + "'");
-        addListingWarningIfNotValid(listing, listing.getTransparencyAttestation().getTransparencyAttestation(),
-                "Transparency Attestation '" + listing.getTransparencyAttestation().getTransparencyAttestation() + "'");
+        if (listing.getTransparencyAttestation() != null) {
+            addListingWarningIfNotValid(listing, listing.getTransparencyAttestation().getTransparencyAttestation(),
+                    "Transparency Attestation '" + listing.getTransparencyAttestation().getTransparencyAttestation() + "'");
+        }
         addListingWarningIfNotValid(listing, listing.getTransparencyAttestationUrl(),
                 "Transparency Attestation URL '" + listing.getTransparencyAttestationUrl() + "'");
 

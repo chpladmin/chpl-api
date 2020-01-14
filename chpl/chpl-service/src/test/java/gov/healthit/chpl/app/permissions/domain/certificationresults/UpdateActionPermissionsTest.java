@@ -16,6 +16,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.app.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domains.certificationresults.UpdatePermissions;
 
@@ -49,7 +50,8 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         // Since it is admin it has access to all - parm value does not matter.
-        assertTrue(permissions.hasAccess(1L));
+        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
+        assertTrue(permissions.hasAccess(listing));
     }
 
     @Override
@@ -61,7 +63,8 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         // Since it is ONC it has access to all - parm value does not matter.
-        assertTrue(permissions.hasAccess(1L));
+        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
+        assertTrue(permissions.hasAccess(listing));
     }
 
     @Override
@@ -72,9 +75,14 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         // This should always be false
         assertFalse(permissions.hasAccess());
 
-        assertFalse(permissions.hasAccess(1L));
+        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
+        listing.getCertifyingBody().put(CertifiedProductSearchDetails.ACB_ID_KEY, 1l);
+        assertFalse(permissions.hasAccess(listing));
 
-        assertTrue(permissions.hasAccess(2L));
+        listing = new CertifiedProductSearchDetails();
+        listing.getCertifyingBody().put(CertifiedProductSearchDetails.ACB_ID_KEY, 2l);
+
+        assertTrue(permissions.hasAccess(listing));
     }
 
     @Override
