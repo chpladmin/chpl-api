@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.ff4j.FF4j;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +22,6 @@ public class RemoveV17UploadTemplate extends QuartzJob {
 
     @Autowired
     private UploadTemplateVersionDAO uploadTemplateDao;
-
-    @Autowired
-    private FF4j ff4j;
 
     public RemoveV17UploadTemplate() throws Exception {
         super();
