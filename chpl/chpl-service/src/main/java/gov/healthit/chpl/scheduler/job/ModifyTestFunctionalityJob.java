@@ -28,7 +28,7 @@ public class ModifyTestFunctionalityJob extends QuartzJob {
     private static final String TF_NEW_NAME = "Optional: 170.315(b)(3)(C) For each transaction listed in paragraph (b)(3)(A) of this section, the technology must be able to receive and transmit the reason for the prescription using the indication elements in the SIG Segment";
 
     @Autowired
-    private ModifyableTestFunctionalityDao modifyableTestFunctionalityDao;
+    private ModifiableTestFunctionalityDao modifiableTestFunctionalityDao;
 
     @Autowired
     private TestingFunctionalityManager testingFunctionalityManager;
@@ -51,7 +51,7 @@ public class ModifyTestFunctionalityJob extends QuartzJob {
     }
 
     private void modifyTestFunctionality() throws EntityRetrievalException {
-        modifyableTestFunctionalityDao.update(TF_OLD_NUMBER, TF_NEW_NUMBER, TF_NEW_NAME);
+        modifiableTestFunctionalityDao.update(TF_OLD_NUMBER, TF_NEW_NUMBER, TF_NEW_NAME);
     }
 
     private void setSecurityContext() {
@@ -66,10 +66,10 @@ public class ModifyTestFunctionalityJob extends QuartzJob {
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 
-    @Component("modifyableTestFunctionalityDao")
-    private static class ModifyableTestFunctionalityDao extends BaseDAOImpl {
+    @Component("modifiableTestFunctionalityDao")
+    private static class ModifiableTestFunctionalityDao extends BaseDAOImpl {
 
-        public ModifyableTestFunctionalityDao() {
+        public ModifiableTestFunctionalityDao() {
             super();
         }
 
