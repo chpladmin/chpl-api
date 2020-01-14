@@ -86,8 +86,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
             "170.315 (g)(9)"
     };
 
-    private static final String D_13_CERT = "170.315 (d)(13)";
-
     private static final String G1_CRITERIA_NUMBER = "170.315 (g)(1)";
     private static final String G2_CRITERIA_NUMBER = "170.315 (g)(2)";
     private static final int MINIMIMUM_PARTICIPANTS = 10;
@@ -746,14 +744,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                     listing.getErrorMessages()
                     .add("Export Documentation is required for certification " + cert.getCriterion().getNumber() + ".");
                 }
-                if (cert.getCriterion().getNumber().equals(D_13_CERT)
-                        && certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.DOCUMENTATION_URL)
-                        && StringUtils.isEmpty(cert.getDocumentationUrl())
-                        && cert.getAttestationAnswer() != null && cert.getAttestationAnswer().equals(Boolean.FALSE)) {
-                    listing.getErrorMessages()
-                    .add("Documentation Url is required for certification " + cert.getCriterion().getNumber()
-                    + " when Attestation Answer is \"No\".");
-                }
+
                 if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.USE_CASES)
                         && StringUtils.isEmpty(cert.getUseCases())
                         && cert.getAttestationAnswer() != null && cert.getAttestationAnswer().equals(Boolean.TRUE)) {
