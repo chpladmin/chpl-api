@@ -800,5 +800,20 @@
                 </entry>
             </job-data-map>
         </job>
+        <!-- Remove v17 Upload Template Job -->
+        <job>
+            <name>removeV17UploadTemplateJob</name>
+            <group>systemJobs</group>
+            <description>Marks v17 upload template as deleted</description>
+            <job-class>gov.healthit.chpl.scheduler.job.RemoveV17UploadTemplate</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+            </job-data-map>
+        </job>        
     </schedule>
 </job-scheduling-data>
