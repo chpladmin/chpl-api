@@ -13,7 +13,14 @@ import gov.healthit.chpl.dto.TransparencyAttestationDTO;
 public class TransparencyAttestation implements Serializable {
     private static final long serialVersionUID = 4734258569082877872L;
 
+    /**
+     * Affirmative, Negative, or N/A
+     */
     private String transparencyAttestation;
+
+    /**
+     * Indicates whether this data is still part of the CHPL
+     */
     private Boolean removed;
 
     public TransparencyAttestation() {
