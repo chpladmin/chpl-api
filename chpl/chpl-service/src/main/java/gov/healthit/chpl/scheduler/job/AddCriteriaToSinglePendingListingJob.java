@@ -62,18 +62,22 @@ public class AddCriteriaToSinglePendingListingJob extends QuartzJob {
         PendingCertifiedProductDetails pcp = getListing(listingId);
         JobResponse response;
 
-        try {
-            for (String criterion : criteria) {
-                addCertToPendingListing(pcp, criterion);
-            }
-            String msg = "Completed Updating pending certified product {" + pcp.getChplProductNumber() + "}: "
-                    + "-" + criteria.toString();
-            response = new JobResponse(pcp.getChplProductNumber(), true, msg);
+        if (pcp != null) {
+            try {
+                for (String criterion : criteria) {
+                    addCertToPendingListing(pcp, criterion);
+                }
+                String msg = "Completed Updating pending certified product {" + pcp.getChplProductNumber() + "}: "
+                        + "-" + criteria.toString();
+                response = new JobResponse(pcp.getChplProductNumber(), true, msg);
 
-        } catch (Exception e) {
-            String msg = "Unsuccessful Update pending certified product {" + pcp.getChplProductNumber() + "} " + criteria.toString()
-            + ':' + e.getMessage();
-            response =  new JobResponse(pcp.getChplProductNumber(), false, msg);
+            } catch (Exception e) {
+                String msg = "Unsuccessful Update pending certified product {" + pcp.getChplProductNumber() + "} " + criteria.toString()
+                + ':' + e.getMessage();
+                response =  new JobResponse(pcp.getChplProductNumber(), false, msg);
+            }
+        } else {
+            response = new JobResponse("No CHPL Product Number", false, "No pending listing with id " + listingId + " was found.");
         }
 
         jobContext.setResult(response);

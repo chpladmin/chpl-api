@@ -107,7 +107,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         addMacraMeasureMaps();
 
         List<JobResponseTriggerWrapper> wrappers = new ArrayList<JobResponseTriggerWrapper>();
-        wrappers.addAll(getExistingListingWrappers(jobContext));
+       // wrappers.addAll(getExistingListingWrappers(jobContext));
         wrappers.addAll(getPendingListingWrappers(jobContext));
 
         LOGGER.info("Total number of listings to update: " + wrappers.size());
@@ -450,7 +450,8 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         public List<Long> getAllIds() {
             List<PendingCertifiedProductEntity> entities = entityManager.createQuery(
                     "SELECT pcp from PendingCertifiedProductEntity pcp "
-                            + "WHERE (not pcp.deleted = true)",
+                            + "WHERE pcp.certificationEdition = '2015' "
+                            + "AND pcp.deleted = false",
                             PendingCertifiedProductEntity.class)
                     .getResultList();
             List<Long> allIds = new ArrayList<Long>();
