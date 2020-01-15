@@ -117,7 +117,9 @@ public class Developer implements Serializable {
                 TransparencyAttestationMap toAdd = new TransparencyAttestationMap();
                 toAdd.setAcbId(map.getAcbId());
                 toAdd.setAcbName(map.getAcbName());
-                toAdd.setAttestation(new TransparencyAttestation(map.getTransparencyAttestation()));
+                if (map.getTransparencyAttestation() != null) {
+                    toAdd.setAttestation(new TransparencyAttestation(map.getTransparencyAttestation()));
+                }
                 this.transparencyAttestations.add(toAdd);
             }
         }
