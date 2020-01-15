@@ -37,7 +37,7 @@ public final class FileUtils {
         this.msgUtil = msgUtil;
     }
 
-    public String readFileAsString(final MultipartFile file) throws ValidationException {
+    public String readFileAsString(MultipartFile file) throws ValidationException {
         // read the file into a string
         StringBuffer data = new StringBuffer();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
@@ -65,7 +65,7 @@ public final class FileUtils {
         return downloadFolder;
     }
 
-    public File createDownloadFile(final String filename) throws IOException {
+    public File createDownloadFile(String filename) throws IOException {
         File downloadFolder = getDownloadFolder();
         String absoluteFilename = downloadFolder.getAbsolutePath()
                 + File.separator + filename;
@@ -81,13 +81,13 @@ public final class FileUtils {
         return newDownloadFile;
     }
 
-    public byte[] readDownloadFile(final String filename) throws IOException {
+    public byte[] readDownloadFile(String filename) throws IOException {
         Path path = Paths.get(env.getProperty(DOWNLOAD_FOLDER_PROPERTY_NAME), filename);
         byte[] data = Files.readAllBytes(path);
         return data;
     }
 
-    public File getDownloadFile(final String filename) throws IOException {
+    public File getDownloadFile(String filename) throws IOException {
         File downloadFolder = getDownloadFolder();
         File downloadFile = new File(downloadFolder.getAbsolutePath() + File.separator + filename);
         if (!downloadFile.exists() || !downloadFile.canRead()) {
@@ -98,7 +98,7 @@ public final class FileUtils {
         return downloadFile;
     }
 
-    public File getNewestFileMatchingName(final String filenamePattern) throws IOException {
+    public File getNewestFileMatchingName(String filenamePattern) throws IOException {
         String downloadFolderPath = env.getProperty(DOWNLOAD_FOLDER_PROPERTY_NAME);
         File downloadFolder = new File(downloadFolderPath);
         if (!downloadFolder.exists() || !downloadFolder.canRead()) {
