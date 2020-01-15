@@ -1,54 +1,264 @@
 package gov.healthit.chpl.manager;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.fasterxml.jackson.core.JsonParseException;
 
+import gov.healthit.chpl.activity.ActivityMetadataBuilder;
+import gov.healthit.chpl.activity.ActivityMetadataBuilderFactory;
+import gov.healthit.chpl.dao.ActivityDAO;
+import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
+import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.manager.impl.SecuredManager;
 
-public interface ActivityMetadataManager {
-    List<ActivityMetadata> getCertificationBodyActivityMetadata(Date startDate, Date endDate)
-            throws JsonParseException, IOException;
+@Service("activityMetadataManager")
+public class ActivityMetadataManager extends SecuredManager {
+    private static final Logger LOGGER = LogManager.getLogger(ActivityMetadataManager.class);
 
-    List<ActivityMetadata> getCertificationBodyActivityMetadata(Long acbId, Date startDate, Date endDate)
-            throws EntityRetrievalException, JsonParseException, IOException;
+    private ActivityDAO activityDAO;
+    private CertificationBodyDAO acbDao;
+    private TestingLabDAO atlDao;
+    private ActivityMetadataBuilderFactory metadataBuilderFactory;
 
-    List<ActivityMetadata> getTestingLabActivityMetadata(Date startDate, Date endDate)
-            throws JsonParseException, IOException;
+    @Autowired
+    public ActivityMetadataManager(final ActivityDAO activityDAO, final CertificationBodyDAO acbDao,
+            final TestingLabDAO atlDao, final ActivityMetadataBuilderFactory metadataBuilderFactory) {
+        this.activityDAO = activityDAO;
+        this.acbDao = acbDao;
+        this.atlDao = atlDao;
+        this.metadataBuilderFactory = metadataBuilderFactory;
+    }
 
-    List<ActivityMetadata> getTestingLabActivityMetadata(Long atlId, Date startDate, Date endDate)
-            throws EntityRetrievalException, JsonParseException, IOException;
 
-    List<ActivityMetadata> getActivityMetadataByConcept(ActivityConcept concept, Date startDate, Date endDate)
-            throws JsonParseException, IOException;
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ACTIVITY_METADATA_BY_CONCEPT, #concept)")
+    public List<ActivityMetadata> getActivityMetadataByConcept(final ActivityConcept concept, final Date startDate,
+            final Date endDate) throws JsonParseException, IOException {
+        return getActivityMetadataByConceptWithoutSecurity(concept, startDate, endDate);
+    }
 
-    List<ActivityMetadata> getActivityMetadataByObject(Long objectId, ActivityConcept concept, Date startDate,
-            Date endDate) throws JsonParseException, IOException;
+    @Transactional
+    public List<ActivityMetadata> getActivityMetadataByObject(final Long objectId, final ActivityConcept concept,
+            final Date startDate, final Date endDate) throws JsonParseException, IOException {
 
-    List<ActivityMetadata> getUserMaintenanceActivityMetadata(Date startDate, Date endDate)
-            throws JsonParseException, IOException;
+        return getActivityMetadataByObjectWithoutSecurity(objectId, concept, startDate, endDate);
+    }
 
-    List<ActivityMetadata> getPendingListingActivityMetadata(Date startDate, Date endDate)
-            throws IOException;
 
-    List<ActivityMetadata> getPendingSurveillanceActivityMetadata(Date startDate, Date endDate)
-            throws IOException;
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ACB_METADATA)")
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ACB_METADATA, filterObject)")
+    @Transactional
+    public List<ActivityMetadata> getCertificationBodyActivityMetadata(final Date startDate, final Date endDate)
+            throws JsonParseException, IOException {
+        // there is very little ACB activity so just get it all for the date
+        // range
+        // and apply a post filter to remove whatever the current user should
+        // not see.
+        return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.CERTIFICATION_BODY, startDate, endDate);
+    }
 
-    List<ActivityMetadata> getAnnouncementActivityMetadata(Date startDate, Date endDate) throws IOException;
 
-    List<ActivityMetadata> getComplaintActivityMetadata(Date startDate, Date endDate) throws IOException;
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_METADATA_BY_ACB, #acbId)")
+    @Transactional
+    public List<ActivityMetadata> getCertificationBodyActivityMetadata(final Long acbId, final Date startDate,
+            final Date endDate) throws EntityRetrievalException, JsonParseException, IOException {
+        acbDao.getById(acbId); // throws not found exception for invalid id
+        return getActivityMetadataByObjectWithoutSecurity(acbId, ActivityConcept.CERTIFICATION_BODY, startDate,
+                endDate);
+    }
 
-    List<ActivityMetadata> getQuarterlyReportActivityMetadata(Date startDate, Date endDate) throws IOException;
 
-    List<ActivityMetadata> getQuarterlyReportListingActivityMetadata(Date startDate, Date endDate) throws IOException;
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ATL_METADATA)")
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ATL_METADATA, filterObject)")
+    @Transactional
+    public List<ActivityMetadata> getTestingLabActivityMetadata(final Date startDate, final Date endDate)
+            throws JsonParseException, IOException {
+        // there is very little ATL activity so just get it all for the date
+        // range
+        // and apply a post filter to remove whatever the current user should
+        // not see.
+        return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.TESTING_LAB, startDate, endDate);
+    }
 
-    List<ActivityMetadata> getAnnualReportActivityMetadata(Date startDate, Date endDate) throws IOException;
 
-    List<ActivityMetadata> getChangeRequestActivityMetadata(Date startDate, Date endDate) throws IOException;
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_METADATA_BY_ATL, #atlId)")
+    @Transactional
+    public List<ActivityMetadata> getTestingLabActivityMetadata(final Long atlId, final Date startDate,
+            final Date endDate) throws EntityRetrievalException, JsonParseException, IOException {
+        atlDao.getById(atlId); // throws not found exception for invalid id
+        return getActivityMetadataByObjectWithoutSecurity(atlId, ActivityConcept.TESTING_LAB, startDate, endDate);
+    }
 
-    List<ActivityMetadata> getApiKeyManagementMetadata(Date startDate, Date endDate) throws IOException;
+
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_USER_MAINTENANCE_METADATA)")
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_USER_MAINTENANCE_METADATA, filterObject)")
+    public List<ActivityMetadata> getUserMaintenanceActivityMetadata(final Date startDate, final Date endDate)
+            throws JsonParseException, IOException {
+        return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.USER, startDate, endDate);
+    }
+
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_PENDING_LISTING_METADATA)")
+    @Transactional
+    public List<ActivityMetadata> getPendingListingActivityMetadata(final Date startDate, final Date endDate)
+            throws IOException {
+        return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.PENDING_CERTIFIED_PRODUCT, startDate,
+                endDate);
+    }
+
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_PENDING_SURVEILLANCE_METADATA)")
+    @Transactional
+    public List<ActivityMetadata> getPendingSurveillanceActivityMetadata(final Date startDate, final Date endDate)
+            throws IOException {
+        return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.PENDING_SURVEILLANCE, startDate, endDate);
+    }
+
+
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ANNOUNCEMENT_METADATA, filterObject)")
+    @Transactional
+    public List<ActivityMetadata> getAnnouncementActivityMetadata(final Date startDate, final Date endDate)
+            throws IOException {
+        return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.ANNOUNCEMENT, startDate, endDate);
+    }
+
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_COMPLAINT_METADATA)")
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_COMPLAINT_METADATA, filterObject)")
+    @Transactional
+    public List<ActivityMetadata> getComplaintActivityMetadata(final Date startDate, final Date endDate)
+            throws IOException {
+        return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.COMPLAINT, startDate, endDate);
+    }
+
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_QUARTERLY_REPORT_METADATA)")
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_QUARTERLY_REPORT_METADATA, filterObject)")
+    @Transactional
+    public List<ActivityMetadata> getQuarterlyReportActivityMetadata(final Date startDate, final Date endDate)
+            throws IOException {
+        return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.QUARTERLY_REPORT, startDate, endDate);
+    }
+
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_QUARTERLY_REPORT_METADATA)")
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_QUARTERLY_REPORT_METADATA, filterObject)")
+    @Transactional
+    public List<ActivityMetadata> getQuarterlyReportListingActivityMetadata(final Date startDate, final Date endDate)
+            throws IOException {
+        return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.QUARTERLY_REPORT_LISTING, startDate,
+                endDate);
+    }
+
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ANNUAL_REPORT_METADATA)")
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ANNUAL_REPORT_METADATA, filterObject)")
+    @Transactional
+    public List<ActivityMetadata> getAnnualReportActivityMetadata(final Date startDate, final Date endDate)
+            throws IOException {
+        return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.ANNUAL_REPORT, startDate, endDate);
+    }
+
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_CHANGE_REQUEST_METADATA)")
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_CHANGE_REQUEST_METADATA, filterObject)")
+    @Transactional
+    public List<ActivityMetadata> getChangeRequestActivityMetadata(final Date startDate, final Date endDate)
+            throws IOException {
+        return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.CHANGE_REQUEST, startDate, endDate);
+    }
+
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+        + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_API_KEY_MANAGEMENT_METADATA)")
+    @Transactional
+    public List<ActivityMetadata> getApiKeyManagementMetadata(Date startDate, Date endDate)
+        throws IOException {
+        return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.API_KEY, startDate, endDate);
+    }
+
+    private List<ActivityMetadata> getActivityMetadataByConceptWithoutSecurity(final ActivityConcept concept,
+            final Date startDate, final Date endDate) throws JsonParseException, IOException {
+        LOGGER.info("Getting " + concept.name() + " activity from " + startDate + " through " + endDate);
+        // get the activity
+        List<ActivityDTO> activityDtos = activityDAO.findByConcept(concept, startDate, endDate);
+        List<ActivityMetadata> activityMetas = new ArrayList<>();
+        ActivityMetadataBuilder builder = null;
+        if (activityDtos != null && activityDtos.size() > 0) {
+            LOGGER.info("Found " + activityDtos.size() + " activity events");
+            // excpect all dtos to have the same
+            // since we've searched based on activity concept
+            builder = metadataBuilderFactory.getBuilder(activityDtos.get(0));
+            // convert to domain object
+            for (ActivityDTO dto : activityDtos) {
+                ActivityMetadata activityMeta = builder.build(dto);
+                activityMetas.add(activityMeta);
+            }
+        } else {
+            LOGGER.info("Found no activity events");
+        }
+        return activityMetas;
+    }
+
+    private List<ActivityMetadata> getActivityMetadataByObjectWithoutSecurity(final Long objectId,
+            final ActivityConcept concept, final Date startDate, final Date endDate)
+            throws JsonParseException, IOException {
+
+        LOGGER.info("Getting " + concept.name() + " activity for id " + objectId + " from " + startDate + " through "
+                + endDate);
+        // get the activity
+        List<ActivityDTO> activityDtos = activityDAO.findByObjectId(objectId, concept, startDate, endDate);
+        List<ActivityMetadata> activityMetas = new ArrayList<ActivityMetadata>();
+        ActivityMetadataBuilder builder = null;
+        if (activityDtos != null && activityDtos.size() > 0) {
+            // excpect all dtos to have the same
+            // since we've searched based on activity concept
+            builder = metadataBuilderFactory.getBuilder(activityDtos.get(0));
+            // convert to domain object
+            for (ActivityDTO dto : activityDtos) {
+                ActivityMetadata activityMeta = builder.build(dto);
+                activityMetas.add(activityMeta);
+            }
+        }
+        return activityMetas;
+    }
+
 }
