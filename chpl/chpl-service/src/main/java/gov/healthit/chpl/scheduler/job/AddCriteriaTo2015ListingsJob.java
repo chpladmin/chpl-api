@@ -107,7 +107,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         addMacraMeasureMaps();
 
         List<JobResponseTriggerWrapper> wrappers = new ArrayList<JobResponseTriggerWrapper>();
-       // wrappers.addAll(getExistingListingWrappers(jobContext));
+        wrappers.addAll(getExistingListingWrappers(jobContext));
         wrappers.addAll(getPendingListingWrappers(jobContext));
 
         LOGGER.info("Total number of listings to update: " + wrappers.size());
