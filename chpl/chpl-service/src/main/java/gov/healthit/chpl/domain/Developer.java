@@ -55,6 +55,12 @@ public class Developer implements Serializable {
     private String website;
 
     /**
+     * Indication of whether a health IT developer is a "self-developer" or not.
+     */
+    @XmlElement(required = true)
+    private Boolean selfDeveloper;
+
+    /**
      * Developer's physical address
      */
     @XmlElement(required = false, nillable = true)
@@ -105,6 +111,7 @@ public class Developer implements Serializable {
         this.name = dto.getName();
         this.website = dto.getWebsite();
         this.deleted = dto.getDeleted();
+        this.selfDeveloper = dto.getSelfDeveloper();
         if (dto.getAddress() != null) {
             this.address = new Address(dto.getAddress());
         }
@@ -158,6 +165,14 @@ public class Developer implements Serializable {
 
     public void setWebsite(final String website) {
         this.website = website;
+    }
+
+    public Boolean getSelfDeveloper() {
+        return selfDeveloper;
+    }
+
+    public void setSelfDeveloper(Boolean selfDeveloper) {
+        this.selfDeveloper = selfDeveloper;
     }
 
     public Address getAddress() {

@@ -47,6 +47,9 @@ public class DeveloperEntity implements Serializable {
     @Column(length = 300, nullable = true)
     private String website;
 
+    @Column(name="self_developer")
+    private Boolean selfDeveloper;
+
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id", unique = true, nullable = true)
@@ -273,6 +276,14 @@ public class DeveloperEntity implements Serializable {
      */
     public void setWebsite(final String website) {
         this.website = website;
+    }
+
+    public Boolean getSelfDeveloper() {
+        return selfDeveloper;
+    }
+
+    public void setSelfDeveloper(Boolean selfDeveloper) {
+        this.selfDeveloper = selfDeveloper;
     }
 
     public DeveloperCertificationStatusesEntity getDeveloperCertificationStatusesEntity() {

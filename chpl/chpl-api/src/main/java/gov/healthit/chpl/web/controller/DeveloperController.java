@@ -293,6 +293,7 @@ public class DeveloperController {
             toCreate.setDeveloperCode(developerInfo.getDeveloper().getDeveloperCode());
             toCreate.setName(developerInfo.getDeveloper().getName());
             toCreate.setWebsite(developerInfo.getDeveloper().getWebsite());
+            toCreate.setSelfDeveloper(developerInfo.getDeveloper().getSelfDeveloper());
             if (developerInfo.getDeveloper().getStatusEvents() != null
                     && developerInfo.getDeveloper().getStatusEvents().size() > 0) {
                 for (DeveloperStatusEvent providedStatusHistory : developerInfo.getDeveloper().getStatusEvents()) {
@@ -340,6 +341,7 @@ public class DeveloperController {
             toUpdate.setId(developerInfo.getDeveloperIds().get(0));
             toUpdate.setName(developerInfo.getDeveloper().getName());
             toUpdate.setWebsite(developerInfo.getDeveloper().getWebsite());
+            toUpdate.setSelfDeveloper(developerInfo.getDeveloper().getSelfDeveloper());
             for (TransparencyAttestationMap attMap : developerInfo.getDeveloper().getTransparencyAttestations()) {
                 DeveloperACBMapDTO devMap = new DeveloperACBMapDTO();
                 devMap.setAcbId(attMap.getAcbId());
