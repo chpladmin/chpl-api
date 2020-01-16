@@ -24,8 +24,10 @@ import gov.healthit.chpl.manager.TestingFunctionalityManager;
 public class ModifyTestFunctionalityJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("modifyTestFunctionalityJobLogger");
     private static final String TF_OLD_NUMBER = "(b)(3)(iii)";
-    private static final String TF_NEW_NUMBER = "(b)(3)(C)";
-    private static final String TF_NEW_NAME = "Optional: 170.315(b)(3)(C) For each transaction listed in paragraph (b)(3)(A) of this section, the technology must be able to receive and transmit the reason for the prescription using the indication elements in the SIG Segment";
+    private static final String TF_NEW_NUMBER = "(b)(3)(i)(C)";
+    private static final String TF_NEW_NAME = "Optional: 170.315(b)(3)(i)(C) For each transaction listed in paragraph "
+            + "(b)(3)(i)(A) of this section, the technology must be able to receive and transmit the reason for the prescription "
+            + "using the indication elements in the SIG Segment";
 
     @Autowired
     private ModifiableTestFunctionalityDao modifiableTestFunctionalityDao;
