@@ -1,12 +1,10 @@
 package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
-import org.springframework.core.env.Environment;
+import org.ff4j.FF4j;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.SpringContext;
 import gov.healthit.chpl.domain.TransparencyAttestation;
 
@@ -17,16 +15,11 @@ public class TransparencyAttestationDTO implements Serializable {
     private Boolean removed;
 
     public TransparencyAttestationDTO() {
-        // This is a temporary bad solution, can be removed after "cures implementation date"
-        // when the removed value will always be true
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-        try {
-            Date curesRuleEffectiveDate = sdf.parse(
-                    SpringContext.getBean(Environment.class).getProperty("cures.ruleEffectiveDate"));
-            this.removed = (new Date()).after(curesRuleEffectiveDate) || (new Date()).equals(curesRuleEffectiveDate);
-        } catch (ParseException e) {
-            // Not sure what to do here?? Runtime Exception?
-            throw new RuntimeException("Could not parse cures.ruleEffectiveDate");
+        // This is a temporary bad solution, will be removed when flag is removed
+        if (SpringContext.getBean(FF4j.class).check(FeatureList.EFFECTIVE_RULE_DATE)) {
+            this.removed = true;
+        } else {
+            this.removed = false;
         }
     }
 
