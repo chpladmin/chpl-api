@@ -177,6 +177,7 @@ public class DeveloperController {
         DeveloperDTO newDeveloper = new DeveloperDTO();
         newDeveloper.setName(splitRequest.getNewDeveloper().getName());
         newDeveloper.setWebsite(splitRequest.getNewDeveloper().getWebsite());
+        newDeveloper.setSelfDeveloper(splitRequest.getNewDeveloper().getSelfDeveloper());
         for (TransparencyAttestationMap attMap : splitRequest.getNewDeveloper().getTransparencyAttestations()) {
             DeveloperACBMapDTO devMap = new DeveloperACBMapDTO();
             devMap.setAcbId(attMap.getAcbId());
