@@ -46,10 +46,16 @@ public class CertifiedProduct implements Serializable {
     private String edition;
 
     /**
-     * The date the listing was certified given in milliseconds since epoch.
+     * The date the listing was certified given in milliseconds since epoch
      */
     @XmlElement(required = false, nillable = true)
     private long certificationDate;
+
+    /**
+     * The current certification status of the Listing
+     */
+    @XmlElement(required = false, nillable = true)
+    private String certificationStatus;
 
     public CertifiedProduct() {
     }
@@ -67,6 +73,7 @@ public class CertifiedProduct implements Serializable {
         this.setLastModifiedDate(dto.getLastModifiedDate() != null ? dto.getLastModifiedDate().getTime() + "" : "");
         this.edition = dto.getYear();
         this.certificationDate = (dto.getCertificationDate() != null ? dto.getCertificationDate().getTime() : -1);
+        this.certificationStatus = dto.getCertificationStatusName();
     }
 
     /**
@@ -125,5 +132,13 @@ public class CertifiedProduct implements Serializable {
 
     public void setCertificationDate(final long certificationDate) {
         this.certificationDate = certificationDate;
+    }
+
+    public String getCertificationStatus() {
+        return certificationStatus;
+    }
+
+    public void setCertificationStatus(String certificationStatus) {
+        this.certificationStatus = certificationStatus;
     }
 }
