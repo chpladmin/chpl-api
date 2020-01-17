@@ -12,6 +12,7 @@ VENDOR_CITY__C,Yes,<string>,The city of the health IT developer.
 VENDOR_STATE__C,Yes,<string>,The state of the health IT developer.
 VENDOR_ZIP__C,Yes,<string>,The zip code of the health IT developer.
 VENDOR_WEBSITE__C,Yes,<url>,The website of the health IT developer.
+SELF-DEVELOPER,Yes,<yes/no>,"Whether or not the developer is considered a self-developer. A self-developer has been defined as a Complete EHR or EHR Module that has been designed, modified, or created by, or under contract for, a person or entity that will assume the total costs for its testing and certification and will be a primary user of the Complete EHR or EHR Module"
 CONTACT_NAME__C,Yes,<string>,The contact name for the health IT developer.
 EMAIL__C,Yes,<email>,The email address of the health It developer contact.
 PHONE__C,Yes,<phone>,The phone number of the health IT developer contact.
