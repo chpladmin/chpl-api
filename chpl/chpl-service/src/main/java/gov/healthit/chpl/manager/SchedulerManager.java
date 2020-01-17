@@ -34,6 +34,8 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
+import gov.healthit.chpl.domain.schedule.ScheduledSystemJob;
+import gov.healthit.chpl.domain.schedule.TriggerSchedule;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
@@ -158,6 +160,35 @@ public class SchedulerManager extends SecuredManager {
             }
         }
         return triggers;
+    }
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).GET_ALL_TRIGGERS)")
+    public List<ScheduledSystemJob> getScheduledSystemJobsForUser() throws SchedulerException {
+        List<ScheduledSystemJob> ssJobs = new ArrayList<ScheduledSystemJob>();
+        Scheduler scheduler = getScheduler();
+        for (String group : scheduler.getTriggerGroupNames()) {
+            for (TriggerKey triggerKey : scheduler.getTriggerKeys(groupEquals(group))) {
+                if (scheduler.getTrigger(triggerKey).getJobKey().getGroup().equalsIgnoreCase(SYSTEM_JOBS_KEY)) {
+                    if (doesUserHavePermissionToTrigger(scheduler.getTrigger(triggerKey))) {
+                        Trigger curTrigger = getScheduler().getTrigger(triggerKey);
+                        String jobName = curTrigger.getKey().getName();
+                        JobDetail jobDetail = getScheduler().getJobDetail(getScheduler().getTrigger(triggerKey).getJobKey());
+                        String jobDescription = jobDetail.getDescription();
+                        Date nextRunDate = curTrigger.getNextFireTime();
+                        if (curTrigger instanceof CronTrigger) {
+                            ssJobs.add(new ScheduledSystemJob(jobName, jobDescription, nextRunDate,
+                                    TriggerSchedule.REPEATABLE));
+                        } else if (curTrigger instanceof SimpleTrigger) {
+                            jobName = curTrigger.getJobKey().getName();
+                            ssJobs.add(new ScheduledSystemJob(jobName, jobDescription, nextRunDate,
+                                    TriggerSchedule.ONE_TIME));
+                        }
+                    }
+                }
+            }
+        }
+        return ssJobs;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "

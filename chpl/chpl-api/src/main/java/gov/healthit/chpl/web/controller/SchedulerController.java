@@ -1,13 +1,9 @@
 package gov.healthit.chpl.web.controller;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import javax.servlet.http.HttpServletResponse;
 
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,11 +11,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sun.mail.iap.Response;
-
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
+import gov.healthit.chpl.domain.schedule.ScheduledSystemJob;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
@@ -28,6 +23,7 @@ import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.results.ChplJobsResults;
 import gov.healthit.chpl.web.controller.results.ScheduleOneTimeTriggersResults;
 import gov.healthit.chpl.web.controller.results.ScheduleTriggersResults;
+import gov.healthit.chpl.web.controller.results.SystemTriggerResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -109,7 +105,24 @@ public class SchedulerController {
         List<ChplRepeatableTrigger> triggers = schedulerManager.getAllTriggersForUser();
         ScheduleTriggersResults results = new ScheduleTriggersResults();
         results.setResults(triggers);
-        
+
+        return results;
+    }
+
+    /**
+     * Get the list of all scheduled system jobs that are applicable to the currently logged in user.
+     * @return current scheduled system jobs
+     * @throws SchedulerException if scheduler has an issue
+     */
+    @ApiOperation(value = "Get the list of all scheduled system jobs that are applicable to the currently logged in user. "
+            + "Scheduled system jobs are limited frontend representations of system triggers "
+            + "which can be either repeatable (cron) or one-time (simple) ",
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and have administrative "
+                    + "authority on the specified ACB.")
+    @RequestMapping(value = "/triggers/scheduled_system_jobs", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody SystemTriggerResults getScheduledSystemJobs() throws SchedulerException {
+        List<ScheduledSystemJob> scheduledSystemJobs = schedulerManager.getScheduledSystemJobsForUser();
+        SystemTriggerResults results = new SystemTriggerResults(scheduledSystemJobs);
         return results;
     }
 
