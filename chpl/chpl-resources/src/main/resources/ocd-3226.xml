@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<job-scheduling-data
+    xmlns="http://www.quartz-scheduler.org/xml/JobSchedulingData"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData http://www.quartz-scheduler.org/xml/job_scheduling_data_2_0.xsd"
+    version="2.0">
+    <schedule>
+        <!-- Job used to modify test functionalities-->
+        <job>
+            <name>modifyTestFunctionalityJob</name>
+            <group>systemJobs</group>
+            <description>Modifies a specific test functionality's number and name</description>
+            <job-class>gov.healthit.chpl.scheduler.job.ModifyTestFunctionalityJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+            </job-data-map>
+        </job>
+    </schedule>
+</job-scheduling-data>
