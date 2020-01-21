@@ -4,10 +4,13 @@ import java.util.List;
 
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -91,22 +94,29 @@ public class SchedulerController {
     }
 
     /**
-     * Get the list of all triggers and their associated scheduled jobs that are applicable to the
-     * currently logged in user.
-     * @return current scheduled jobs
+     * Get the list of all triggers of type 'user' or 'system' that are applicable to the currently logged in user.
+     * @param jobType The type of job we want to get triggers for. This can either be 'user' or 'system'
+     * @return SystemTriggerResults A results object which includes current triggers (scheduled jobs)
      * @throws SchedulerException if scheduler has an issue
      */
-    @ApiOperation(value = "Get the list of all triggers and their associated scheduled jobs "
-            + "that are applicable to the currently logged in user",
+    @ApiOperation(value = "Get the list of all triggers of type 'user' or 'system' "
+            + "that are applicable to the currently logged in user.",
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and have administrative "
                     + "authority on the specified ACB.")
     @RequestMapping(value = "/triggers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody ScheduleTriggersResults getAllTriggers() throws SchedulerException {
-        List<ChplRepeatableTrigger> triggers = schedulerManager.getAllTriggersForUser();
-        ScheduleTriggersResults results = new ScheduleTriggersResults();
-        results.setResults(triggers);
-
-        return results;
+    public @ResponseBody Object getAllTriggersByJobType(@RequestParam(defaultValue = "user") String jobType)
+            throws SchedulerException {
+        switch (jobType.toUpperCase()) {
+        case "USER":
+            List<ChplRepeatableTrigger> triggers = schedulerManager.getAllTriggersForUser();
+            return new ScheduleTriggersResults(triggers);
+        case "SYSTEM":
+            List<ScheduledSystemJob> scheduledSystemJobs = schedulerManager.getScheduledSystemJobsForUser();
+            return new SystemTriggerResults(scheduledSystemJobs);
+        default:
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Bad Request: Please specify a query parameter of either 'user' or 'system'");
+        }
     }
 
     /**
