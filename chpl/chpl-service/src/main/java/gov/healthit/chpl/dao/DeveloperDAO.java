@@ -89,7 +89,12 @@ public class DeveloperDAO extends BaseDAOImpl {
 
             entity.setName(dto.getName());
             entity.setWebsite(dto.getWebsite());
-            entity.setSelfDeveloper(dto.getSelfDeveloper());
+
+            if (dto.getSelfDeveloper() != null) {
+                entity.setSelfDeveloper(dto.getSelfDeveloper());
+            } else {
+                entity.setSelfDeveloper(false);
+            }
 
             if (dto.getDeleted() != null) {
                 entity.setDeleted(dto.getDeleted());
@@ -220,7 +225,11 @@ public class DeveloperDAO extends BaseDAOImpl {
         }
 
         entity.setWebsite(dto.getWebsite());
-        entity.setSelfDeveloper(dto.getSelfDeveloper());
+        if (dto.getSelfDeveloper() != null) {
+            entity.setSelfDeveloper(dto.getSelfDeveloper());
+        } else {
+            entity.setSelfDeveloper(false);
+        }
         if (dto.getName() != null) {
             entity.setName(dto.getName());
         }
