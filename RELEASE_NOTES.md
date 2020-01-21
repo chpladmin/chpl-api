@@ -1,5 +1,23 @@
 # Release Notes
 
+## Version 22.0.0
+_2 January 2020_
+
+### Features
+* Allow Admin/ONC users to edit listing if developer is banned
+* Prevent ONC-ACBs from adding/editing surveillance referencing removed criteria
+* Remove "Complaint Status Type" as distinct concept
+
+---
+
+## Version 21.16.0
+_20 December 2019_
+
+### Features
+* Add questionable activity when b3 is added to listing after 1/1/2020
+
+---
+
 ## Version 21.15.0
 _16 December 2019_
 

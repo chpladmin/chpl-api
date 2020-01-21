@@ -37,4 +37,8 @@ public enum DeveloperStatusType {
         }
         return result;
     }
+
+    public String getName() {
+        return name;
+    }
 }

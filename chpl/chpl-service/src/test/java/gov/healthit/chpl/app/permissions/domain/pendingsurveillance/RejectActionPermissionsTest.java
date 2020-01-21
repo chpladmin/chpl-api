@@ -19,7 +19,7 @@ import gov.healthit.chpl.app.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.dao.auth.UserPermissionDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.dto.auth.UserPermissionDTO;
-import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
+import gov.healthit.chpl.entity.listing.CertifiedProductSummaryEntity;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -193,7 +193,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
             Long userPermissionId) {
         PendingSurveillanceEntity entity = new PendingSurveillanceEntity();
         entity.setId(id);
-        entity.setCertifiedProduct(new CertifiedProductEntity());
+        entity.setCertifiedProduct(new CertifiedProductSummaryEntity());
         entity.getCertifiedProduct().setId(certifiedProductId);
         entity.getCertifiedProduct().setCertificationBodyId(acbId);
         entity.setUserPermissionId(userPermissionId);

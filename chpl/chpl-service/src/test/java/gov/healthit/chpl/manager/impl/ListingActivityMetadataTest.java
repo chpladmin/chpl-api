@@ -232,36 +232,7 @@ public class ListingActivityMetadataTest extends TestCase {
         Long listingId = 1L;
 
         SecurityContextHolder.getContext().setAuthentication(acbUser);
-        CertifiedProductSearchDetails beforeListing = cpdManager.getCertifiedProductDetails(listingId);
-        Surveillance surv = new Surveillance();
-        CertifiedProductDTO cpDto = cpDao.getById(listingId);
-        CertifiedProduct cp = new CertifiedProduct();
-        cp.setId(cpDto.getId());
-        cp.setChplProductNumber(cp.getChplProductNumber());
-        cp.setEdition(cp.getEdition());
-        surv.setCertifiedProduct(cp);
-        surv.setStartDate(new Date());
-        surv.setRandomizedSitesUsed(10);
-        SurveillanceType type = survDao.findSurveillanceType("Randomized");
-        surv.setType(type);
-        SurveillanceRequirement req = new SurveillanceRequirement();
-        req.setRequirement("170.314 (a)(1)");
-        SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
-        req.setType(reqType);
-        SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
-        req.setResult(resType);
-        surv.getRequirements().add(req);
-
-        try {
-            survManager.createSurveillance(-1L, surv);
-        } catch (Exception e) {
-            fail("Could not insert surveillance: " + e.getMessage());
-            e.printStackTrace();
-        }
-        CertifiedProductSearchDetails afterListing = cpdManager.getCertifiedProductDetails(listingId);
-        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, listingId, "Added surveillance", beforeListing,
-                afterListing);
-
+        addSurveillance(listingId);
         Calendar start = getBeginningOfToday();
         Calendar end = getEndOfToday();
         List<ActivityMetadata> metadatas = metadataManager
@@ -288,7 +259,7 @@ public class ListingActivityMetadataTest extends TestCase {
         assertNotNull(beforeListing.getSurveillance());
         assertEquals(1, beforeListing.getSurveillance().size());
         try {
-            survManager.deleteSurveillance(-1L, beforeListing.getSurveillance().get(0));
+            survManager.deleteSurveillance(beforeListing.getSurveillance().get(0));
         } catch (Exception e) {
             fail("Could not delete surveillance: " + e.getMessage());
             e.printStackTrace();
@@ -316,36 +287,67 @@ public class ListingActivityMetadataTest extends TestCase {
     @Transactional
     public void testModifySurveillanceEndDateAndActivityHasSurveillanceCategory()
             throws EntityRetrievalException, EntityCreationException, IOException {
-        Long listingId = 10L;
-
+        Long listingId = 1L;
         SecurityContextHolder.getContext().setAuthentication(acbUser);
-        CertifiedProductSearchDetails beforeListing = cpdManager.getCertifiedProductDetails(listingId);
-        assertNotNull(beforeListing.getSurveillance());
-        assertEquals(1, beforeListing.getSurveillance().size());
+        addSurveillance(listingId);
+        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(listingId);
+        assertNotNull(listing.getSurveillance());
+        assertEquals(1, listing.getSurveillance().size());
         try {
-            Surveillance surv = beforeListing.getSurveillance().get(0);
-            surv.setEndDate(new Date());
-            survManager.updateSurveillance(-1L, surv);
+            Surveillance surv = listing.getSurveillance().get(0);
+            Calendar updatedEndDate = Calendar.getInstance();
+            updatedEndDate.add(Calendar.DATE, 5);
+            surv.setEndDate(updatedEndDate.getTime());
+            survManager.updateSurveillance(surv);
         } catch (Exception e) {
             fail("Could not update surveillance: " + e.getMessage());
             e.printStackTrace();
         }
-        CertifiedProductSearchDetails afterListing = cpdManager.getCertifiedProductDetails(listingId);
-        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, listingId, "Updated surveillance", beforeListing,
-                afterListing);
 
         Calendar start = getBeginningOfToday();
         Calendar end = getEndOfToday();
         List<ActivityMetadata> metadatas = metadataManager
                 .getActivityMetadataByConcept(ActivityConcept.CERTIFIED_PRODUCT, start.getTime(), end.getTime());
-        assertEquals(1, metadatas.size());
-        ActivityMetadata metadata = metadatas.get(0);
-        assertEquals(listingId.longValue(), metadata.getObjectId().longValue());
-        assertTrue(metadata.getCategories().contains(ActivityCategory.LISTING));
-        assertTrue(metadata.getCategories().contains(ActivityCategory.SURVEILLANCE));
-        assertFalse(metadata.getCategories().contains(ActivityCategory.LISTING_STATUS_CHANGE));
-        assertFalse(metadata.getCategories().contains(ActivityCategory.LISTING_UPLOAD));
+        assertEquals(2, metadatas.size());
+        for (ActivityMetadata metadata : metadatas) {
+            assertEquals(listingId.longValue(), metadata.getObjectId().longValue());
+            assertTrue(metadata.getCategories().contains(ActivityCategory.LISTING));
+            assertTrue(metadata.getCategories().contains(ActivityCategory.SURVEILLANCE));
+            assertFalse(metadata.getCategories().contains(ActivityCategory.LISTING_STATUS_CHANGE));
+            assertFalse(metadata.getCategories().contains(ActivityCategory.LISTING_UPLOAD));
+        }
         SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    private Long addSurveillance(Long listingId) throws EntityRetrievalException {
+        Surveillance surv = new Surveillance();
+        CertifiedProductDTO cpDto = cpDao.getById(listingId);
+        CertifiedProduct cp = new CertifiedProduct();
+        cp.setId(cpDto.getId());
+        cp.setChplProductNumber(cp.getChplProductNumber());
+        cp.setEdition(cp.getEdition());
+        surv.setCertifiedProduct(cp);
+        surv.setStartDate(new Date());
+        surv.setEndDate(new Date(surv.getStartDate().getTime() + 1000));
+        surv.setRandomizedSitesUsed(10);
+        SurveillanceType type = survDao.findSurveillanceType("Randomized");
+        surv.setType(type);
+        SurveillanceRequirement req = new SurveillanceRequirement();
+        req.setRequirement("170.314 (a)(1)");
+        SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+        req.setType(reqType);
+        SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
+        req.setResult(resType);
+        surv.getRequirements().add(req);
+
+        Long addedId = null;
+        try {
+            addedId = survManager.createSurveillance(surv);
+        } catch (Exception e) {
+            fail("Could not insert surveillance: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return addedId;
     }
 
     private Calendar getBeginningOfToday() {
