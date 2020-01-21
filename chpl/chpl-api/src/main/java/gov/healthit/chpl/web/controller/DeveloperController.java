@@ -128,7 +128,7 @@ public class DeveloperController {
                     + "developers into one.   A user of this service should pass in a single developerId to update "
                     + "just that developer.  If multiple developer IDs are passed in, the service performs a merge "
                     + "meaning that a new developer is created with all of the information provided (name, address, "
-                    + "etc.) and all of the prodcuts previously assigned to the developerId's specified are "
+                    + "etc.) and all of the products previously assigned to the developerId's specified are "
                     + "reassigned to the newly created developer. The old developers are then deleted. "
                     + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB")
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -243,7 +243,7 @@ public class DeveloperController {
     produces = "application/json; charset=utf-8")
     public PermissionDeletedResponse deleteUserFromDeveloper(
             @PathVariable final Long developerId, @PathVariable final Long userId)
-        throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+                    throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         if (!ff4j.check(FeatureList.ROLE_DEVELOPER)) {
             throw new NotImplementedException();
         }

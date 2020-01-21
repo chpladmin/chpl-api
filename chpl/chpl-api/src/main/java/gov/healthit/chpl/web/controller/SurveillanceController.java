@@ -262,15 +262,6 @@ public class SurveillanceController implements MessageSourceAware {
     InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
     JsonProcessingException, AccessDeniedException, SurveillanceAuthorityAccessDeniedException,
     MissingReasonException {
-
-        return delete(surveillanceId, requestBody);
-    }
-
-    private synchronized ResponseEntity<String> delete(final Long surveillanceId,
-            final SimpleExplainableAction requestBody) throws
-    InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
-    JsonProcessingException, AccessDeniedException, SurveillanceAuthorityAccessDeniedException,
-    MissingReasonException {
         Surveillance survToDelete = survManager.getById(surveillanceId);
 
         if (survToDelete == null) {
@@ -284,20 +275,15 @@ public class SurveillanceController implements MessageSourceAware {
 
         CertifiedProductSearchDetails beforeCp = cpdetailsManager
                 .getCertifiedProductDetails(survToDelete.getCertifiedProduct().getId());
-        CertificationBodyDTO owningAcb =
-                resourcePermissions.getAcbIfPermissionById(
-                        Long.valueOf(beforeCp.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()));
 
         HttpHeaders responseHeaders = new HttpHeaders();
         // delete it
         try {
-            survManager.deleteSurveillance(owningAcb.getId(), survToDelete);
+            survManager.deleteSurveillance(survToDelete);
             responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
-        } catch (final SurveillanceAuthorityAccessDeniedException ex) {
+        } catch (SurveillanceAuthorityAccessDeniedException ex) {
             LOGGER.error("User lacks authority to delete surveillance");
             throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to delete surveillance");
-        } catch (Exception ex) {
-            LOGGER.error("Error deleting surveillance with id " + survToDelete.getId() + " during an update.");
         }
 
         CertifiedProductSearchDetails afterCp = cpdetailsManager

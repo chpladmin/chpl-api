@@ -201,8 +201,8 @@ public class SurveillanceManager extends SecuredManager {
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
-            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).DELETE, #acbId)")
-    public void deleteSurveillance(final Long acbId, final Surveillance surv)
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).DELETE, #surv)")
+    public void deleteSurveillance(Surveillance surv)
             throws EntityRetrievalException, SurveillanceAuthorityAccessDeniedException {
         checkSurveillanceAuthority(surv);
         survDao.deleteSurveillance(surv);

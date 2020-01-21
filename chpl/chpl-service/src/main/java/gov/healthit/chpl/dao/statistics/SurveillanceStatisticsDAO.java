@@ -11,6 +11,7 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.DateRange;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
+import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 
 @Repository("surveillanceStatisticsDAO")
 public class SurveillanceStatisticsDAO extends BaseDAOImpl {
@@ -175,7 +176,6 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         return (Long) query.getSingleResult();
     }
 
-
     /**
      * Open Surveillance Activities By ACB.
      */
@@ -220,6 +220,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
 
     /**
      * Examine nonconformities to get a count of how many of each type of NC there are.
+     * 
      * @return a list of the DTOs that hold the counts
      */
     public List<NonconformityTypeStatisticsDTO> getAllNonconformitiesByCriterion() {
@@ -242,5 +243,23 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         }
 
         return dtos;
+    }
+
+    public List<SurveillanceEntity> getAllSurveillancesWithNonconformities() {
+        String hql = "FROM SurveillanceEntity se "
+                + "JOIN FETCH se.surveilledRequirements sre "
+                + "JOIN FETCH sre.nonconformities nc "
+                + "WHERE se.deleted = false "
+                + "AND sre.deleted = false "
+                + "AND nc.deleted = false ";
+        return entityManager.createQuery(hql, SurveillanceEntity.class)
+                .getResultList();
+    }
+
+    public List<SurveillanceEntity> getAllSurveillances() {
+        String hql = "FROM SurveillanceEntity se "
+                + "WHERE se.deleted = false ";
+        return entityManager.createQuery(hql, SurveillanceEntity.class)
+                .getResultList();
     }
 }

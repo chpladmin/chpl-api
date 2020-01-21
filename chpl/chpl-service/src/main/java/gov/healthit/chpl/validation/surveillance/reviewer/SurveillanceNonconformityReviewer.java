@@ -202,7 +202,8 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
                                 req.getRequirement(), nc.getNonconformityType()));
             }
 
-            if (nc.getSitesPassed() > nc.getTotalSites()) {
+            if (nc.getSitesPassed() != null && nc.getTotalSites() != null
+                    && nc.getSitesPassed() > nc.getTotalSites()) {
                 surv.getErrorMessages().add(msgUtil.getMessage("surveillance.tooManySitesPassed",
                         req.getRequirement(), nc.getNonconformityType()));
             }
