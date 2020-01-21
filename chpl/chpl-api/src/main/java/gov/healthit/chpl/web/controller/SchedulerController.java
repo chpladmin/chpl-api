@@ -120,23 +120,6 @@ public class SchedulerController {
     }
 
     /**
-     * Get the list of all scheduled system jobs that are applicable to the currently logged in user.
-     * @return current scheduled system jobs
-     * @throws SchedulerException if scheduler has an issue
-     */
-    @ApiOperation(value = "Get the list of all scheduled system jobs that are applicable to the currently logged in user. "
-            + "Scheduled system jobs are limited frontend representations of system triggers "
-            + "which can be either repeatable (cron) or one-time (simple) ",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and have administrative "
-                    + "authority on the specified ACB.")
-    @RequestMapping(value = "/triggers/scheduled_system_jobs", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody SystemTriggerResults getScheduledSystemJobs() throws SchedulerException {
-        List<ScheduledSystemJob> scheduledSystemJobs = schedulerManager.getScheduledSystemJobsForUser();
-        SystemTriggerResults results = new SystemTriggerResults(scheduledSystemJobs);
-        return results;
-    }
-
-    /**
      * Update an existing Trigger based on passed information.
      * @param trigger input trigger
      * @return the updated trigger
