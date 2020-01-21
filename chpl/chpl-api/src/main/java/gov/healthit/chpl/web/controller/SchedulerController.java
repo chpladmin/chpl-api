@@ -39,6 +39,8 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/schedules")
 public class SchedulerController {
+    private static final String USER_JOB_TYPE = "user";
+    private static final String SYSTEM_JOB_TYPE = "system";
 
     @Autowired
     private SchedulerManager schedulerManager;
@@ -94,28 +96,31 @@ public class SchedulerController {
     }
 
     /**
-     * Get the list of all triggers of type 'user' or 'system' that are applicable to the currently logged in user.
-     * @param jobType The type of job we want to get triggers for. This can either be 'user' or 'system'
-     * @return SystemTriggerResults A results object which includes current triggers (scheduled jobs)
+     * Get the list of all triggers of type '{@value SchedulerController#USER_JOB_TYPE}' or
+     * '{@value SchedulerController#SYSTEM_JOB_TYPE}' that are applicable to the currently logged in user.
+     * @param jobType The type of job we want to get triggers for.
+     * This can either be '{@value SchedulerController#USER_JOB_TYPE}' or '{@value SchedulerController#SYSTEM_JOB_TYPE}'
+     * @return Object Results object which includes current triggers (scheduled jobs)
      * @throws SchedulerException if scheduler has an issue
      */
-    @ApiOperation(value = "Get the list of all triggers of type 'user' or 'system' "
-            + "that are applicable to the currently logged in user.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and have administrative "
-                    + "authority on the specified ACB.")
+    @ApiOperation(value = "Get the list of all triggers of type '" + USER_JOB_TYPE + "' or '" + SYSTEM_JOB_TYPE + "' "
+            + "that are applicable to the currently logged in user",
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB for '" + USER_JOB_TYPE + "' jobs "
+                    + "and have administrative authority on the specified ACB. "
+                    + "ROLE_ADMIN or ROLE_ONC for '" + SYSTEM_JOB_TYPE + "' jobs.")
     @RequestMapping(value = "/triggers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody Object getAllTriggersByJobType(@RequestParam(defaultValue = "user") String jobType)
+    public @ResponseBody Object getAllTriggersByJobType(@RequestParam(defaultValue = USER_JOB_TYPE) String jobType)
             throws SchedulerException {
-        switch (jobType.toUpperCase()) {
-        case "USER":
+        switch (jobType.toLowerCase()) {
+        case USER_JOB_TYPE:
             List<ChplRepeatableTrigger> triggers = schedulerManager.getAllTriggersForUser();
             return new ScheduleTriggersResults(triggers);
-        case "SYSTEM":
+        case SYSTEM_JOB_TYPE:
             List<ScheduledSystemJob> scheduledSystemJobs = schedulerManager.getScheduledSystemJobsForUser();
             return new SystemTriggerResults(scheduledSystemJobs);
         default:
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Bad Request: Please specify a query parameter of either 'user' or 'system'");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bad Request: "
+                    + "Please specify a query parameter of either '" + USER_JOB_TYPE + "' or '" + SYSTEM_JOB_TYPE + "'");
         }
     }
 

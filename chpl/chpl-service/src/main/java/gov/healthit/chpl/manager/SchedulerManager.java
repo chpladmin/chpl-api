@@ -163,7 +163,7 @@ public class SchedulerManager extends SecuredManager {
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
-            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).GET_ALL_TRIGGERS)")
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).GET_ALL_SYSTEM_TRIGGERS)")
     public List<ScheduledSystemJob> getScheduledSystemJobsForUser() throws SchedulerException {
         List<ScheduledSystemJob> ssJobs = new ArrayList<ScheduledSystemJob>();
         Scheduler scheduler = getScheduler();

@@ -1,9 +1,6 @@
 package gov.healthit.chpl.domain.schedule;
 
-import java.text.DateFormat;
 import java.util.Date;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ScheduledSystemJob {
     private String name;
@@ -36,15 +33,5 @@ public class ScheduledSystemJob {
 
     public TriggerSchedule getTriggerScheduleType() {
         return triggerScheduleType;
-    }
-
-    @JsonIgnore
-    public String getNextRunDatePretty() {
-        return DateFormat.getDateInstance().format(nextRunDate) ;
-    }
-
-    @JsonIgnore
-    public String getTriggerScheduleTypePretty() {
-        return triggerScheduleType.getPrettyName();
     }
 }
