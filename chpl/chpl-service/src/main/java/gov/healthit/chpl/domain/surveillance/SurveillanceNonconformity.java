@@ -128,6 +128,60 @@ public class SurveillanceNonconformity implements Serializable {
      * @return whether the two nonconformity objects are the same
      */
     public boolean matches(final SurveillanceNonconformity anotherNonconformity) {
+        if (!propertiesMatch(anotherNonconformity)) {
+            return false;
+        }
+
+        //check documents
+        if (this.documents == null && anotherNonconformity.documents != null
+                || this.documents != null && anotherNonconformity.documents == null) {
+            return false;
+        } else if (this.documents != null && anotherNonconformity.documents != null
+                && this.documents.size() != anotherNonconformity.documents.size()) {
+            //easy check if the sizes are different
+            return false;
+        } else {
+            //documents - were any removed?
+            for (SurveillanceNonconformityDocument thisDoc : this.documents) {
+                boolean foundInOtherNonconformity = false;
+                for (SurveillanceNonconformityDocument otherDoc : anotherNonconformity.documents) {
+                    if (thisDoc.getId().longValue() == otherDoc.getId().longValue()) {
+                        foundInOtherNonconformity = true;
+                    }
+                }
+                if (!foundInOtherNonconformity) {
+                    return false;
+                }
+            }
+            //documents - were any added?
+            for (SurveillanceNonconformityDocument otherDoc : anotherNonconformity.documents) {
+                boolean foundInThisNonconformity = false;
+                for (SurveillanceNonconformityDocument thisDoc : this.documents) {
+                    if (thisDoc.getId().longValue() == otherDoc.getId().longValue()) {
+                        foundInThisNonconformity = true;
+                    }
+                }
+                if (!foundInThisNonconformity) {
+                    return false;
+                }
+            }
+            //documents - were any changed?
+            for (SurveillanceNonconformityDocument otherDoc : anotherNonconformity.documents) {
+                for (SurveillanceNonconformityDocument thisDoc : this.documents) {
+                    if (thisDoc.getId().longValue() == otherDoc.getId().longValue()) {
+                        if (!thisDoc.matches(otherDoc)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        //all checks passed and turned out to be matching
+        //so the two nonconformities must be identical
+        return true;
+    }
+
+    public boolean propertiesMatch(SurveillanceNonconformity anotherNonconformity) {
         if (this.id == null && anotherNonconformity.id != null
                 || this.id != null && anotherNonconformity.id == null) {
             return false;
@@ -233,53 +287,6 @@ public class SurveillanceNonconformity implements Serializable {
                 && this.lastModifiedDate.getTime() != anotherNonconformity.lastModifiedDate.getTime()) {
             return false;
         }
-
-        //check documents
-        if (this.documents == null && anotherNonconformity.documents != null
-                || this.documents != null && anotherNonconformity.documents == null) {
-            return false;
-        } else if (this.documents != null && anotherNonconformity.documents != null
-                && this.documents.size() != anotherNonconformity.documents.size()) {
-            //easy check if the sizes are different
-            return false;
-        } else {
-            //documents - were any removed?
-            for (SurveillanceNonconformityDocument thisDoc : this.documents) {
-                boolean foundInOtherNonconformity = false;
-                for (SurveillanceNonconformityDocument otherDoc : anotherNonconformity.documents) {
-                    if (thisDoc.getId().longValue() == otherDoc.getId().longValue()) {
-                        foundInOtherNonconformity = true;
-                    }
-                }
-                if (!foundInOtherNonconformity) {
-                    return false;
-                }
-            }
-            //documents - were any added?
-            for (SurveillanceNonconformityDocument otherDoc : anotherNonconformity.documents) {
-                boolean foundInThisNonconformity = false;
-                for (SurveillanceNonconformityDocument thisDoc : this.documents) {
-                    if (thisDoc.getId().longValue() == otherDoc.getId().longValue()) {
-                        foundInThisNonconformity = true;
-                    }
-                }
-                if (!foundInThisNonconformity) {
-                    return false;
-                }
-            }
-            //documents - were any changed?
-            for (SurveillanceNonconformityDocument otherDoc : anotherNonconformity.documents) {
-                for (SurveillanceNonconformityDocument thisDoc : this.documents) {
-                    if (thisDoc.getId().longValue() == otherDoc.getId().longValue()) {
-                        if (!thisDoc.matches(otherDoc)) {
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-        //all checks passed and turned out to be matching
-        //so the two nonconformities must be identical
         return true;
     }
 

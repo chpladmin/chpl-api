@@ -1,6 +1,7 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -23,6 +24,7 @@ import gov.healthit.chpl.domain.statistics.Statistics;
 
 /**
  * Initializes statistics retrieval.
+ * 
  * @author alarned
  *
  */
@@ -45,14 +47,18 @@ public class AsynchronousSummaryStatisticsInitializor {
 
     /**
      * Actual call to get the statistics.
-     * @param dateRange range to find statistics in
+     * 
+     * @param dateRange
+     *            range to find statistics in
      * @return a Future of type Statistics
-     * @throws InterruptedException if retrieval is interrupted
-     * @throws ExecutionException if execution fails
+     * @throws InterruptedException
+     *             if retrieval is interrupted
+     * @throws ExecutionException
+     *             if execution fails
      */
     @Transactional
     @Async
-    public Future<Statistics> getStatistics(final DateRange dateRange)
+    public Future<Statistics> getStatistics(DateRange dateRange)
             throws InterruptedException, ExecutionException {
         asyncStats.setLogger(getLogger());
 
@@ -79,52 +85,70 @@ public class AsynchronousSummaryStatisticsInitializor {
         Future<Long> totalListingsWithAlternateTestMethods = null;
         Future<List<CertifiedBodyAltTestStatistics>> totalListingsWithCertifiedBodyAndAlternativeTestMethods = null;
 
+        Future<Long> averageTimeToAssessConformity = null;
+        Future<Long> averageTimeToApproveCAP = null;
+        Future<Long> averageDurationOfCAP = null;
+        Future<Long> averageTimeFromCAPApprovalToSurveillanceEnd = null;
+        Future<Long> averageTimeFromCAPEndToSurveillanceEnd = null;
+        Future<Long> averageTimeFromSurveillanceOpenToSurveillanceClose = null;
+        Future<Map<Long, Long>> openCAPCountByAcb = null;
+        Future<Map<Long, Long>> closedCAPCountByAcb = null;
+        Future<Long> averageTimeToCloseSurveillance = null;
+
         if (dateRange == null) {
             totalActive2014Listings = asyncStats.getTotalActive2014Listings(listingStatisticsDAO, dateRange);
             totalActive2015Listings = asyncStats.getTotalActive2015Listings(listingStatisticsDAO, dateRange);
-            totalActiveListingsByCertifiedBody =
-                    asyncStats.getTotalActiveListingsByCertifiedBody(listingStatisticsDAO, dateRange);
-            totalDevelopersWithActive2014Listings =
-                    asyncStats.getTotalDevelopersWithActive2014Listings(developerStatisticsDAO, dateRange);
-            totalDevelopersWithActive2015Listings =
-                    asyncStats.getTotalDevelopersWithActive2015Listings(developerStatisticsDAO, dateRange);
-            totalCPListingsEachYearByCertifiedBody =
-                    asyncStats.getTotalCPListingsEachYearByCertifiedBody(listingStatisticsDAO, dateRange);
+            totalActiveListingsByCertifiedBody = asyncStats.getTotalActiveListingsByCertifiedBody(listingStatisticsDAO,
+                    dateRange);
+            totalDevelopersWithActive2014Listings = asyncStats.getTotalDevelopersWithActive2014Listings(developerStatisticsDAO,
+                    dateRange);
+            totalDevelopersWithActive2015Listings = asyncStats.getTotalDevelopersWithActive2015Listings(developerStatisticsDAO,
+                    dateRange);
+            totalCPListingsEachYearByCertifiedBody = asyncStats.getTotalCPListingsEachYearByCertifiedBody(listingStatisticsDAO,
+                    dateRange);
             totalCPListingsEachYearByCertifiedBodyAndCertificationStatus = asyncStats
                     .getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(listingStatisticsDAO, dateRange);
             totalCPs2014Listings = asyncStats.getTotalCPs2014Listings(listingStatisticsDAO, dateRange);
             totalCPs2015Listings = asyncStats.getTotalCPs2015Listings(listingStatisticsDAO, dateRange);
-            totalCPsSuspended2014Listings =
-                    asyncStats.getTotalCPsSuspended2014Listings(listingStatisticsDAO, dateRange);
-            totalCPsSuspended2015Listings =
-                    asyncStats.getTotalCPsSuspended2015Listings(listingStatisticsDAO, dateRange);
-            totalListingsWithAlternateTestMethods =
-                    asyncStats.getTotalListingsWithAlternateTestMethods(listingStatisticsDAO);
-            totalListingsWithCertifiedBodyAndAlternativeTestMethods =
-                    asyncStats.getTotalListingsWithCertifiedBodyAndAlternativeTestMethods(listingStatisticsDAO);
+            totalCPsSuspended2014Listings = asyncStats.getTotalCPsSuspended2014Listings(listingStatisticsDAO, dateRange);
+            totalCPsSuspended2015Listings = asyncStats.getTotalCPsSuspended2015Listings(listingStatisticsDAO, dateRange);
+            totalListingsWithAlternateTestMethods = asyncStats.getTotalListingsWithAlternateTestMethods(listingStatisticsDAO);
+            totalListingsWithCertifiedBodyAndAlternativeTestMethods = asyncStats
+                    .getTotalListingsWithCertifiedBodyAndAlternativeTestMethods(listingStatisticsDAO);
+
+            averageTimeToAssessConformity = asyncStats.getAverageTimeToAssessConformity(surveillanceStatisticsDAO);
+            averageTimeToApproveCAP = asyncStats.getAverageTimeToApproveCAP(surveillanceStatisticsDAO);
+            averageDurationOfCAP = asyncStats.getAverageDurationOfCAP(surveillanceStatisticsDAO);
+            averageTimeFromCAPApprovalToSurveillanceEnd = asyncStats
+                    .getAverageTimeFromCAPApprovalToSurveillanceClose(surveillanceStatisticsDAO);
+            averageTimeFromCAPEndToSurveillanceEnd = asyncStats
+                    .getAverageTimeFromCAPEndToSurveillanceClose(surveillanceStatisticsDAO);
+            averageTimeFromSurveillanceOpenToSurveillanceClose = asyncStats
+                    .getAverageTimeFromSurveillanceOpenToSurveillanceClose(surveillanceStatisticsDAO);
+            openCAPCountByAcb = asyncStats.getOpenCAPCountByAcb(surveillanceStatisticsDAO);
+            closedCAPCountByAcb = asyncStats.getClosedCAPCountByAcb(surveillanceStatisticsDAO);
+            averageTimeToCloseSurveillance = asyncStats.getAverageTimeToCloseSurveillance(surveillanceStatisticsDAO);
         }
 
         // developers
         Future<Long> totalDevelopers = asyncStats.getTotalDevelopers(developerStatisticsDAO, dateRange);
-        Future<Long> totalDevelopersWith2014Listings =
-                asyncStats.getTotalDevelopersWith2014Listings(developerStatisticsDAO, dateRange);
+        Future<Long> totalDevelopersWith2014Listings = asyncStats.getTotalDevelopersWith2014Listings(developerStatisticsDAO,
+                dateRange);
 
         Future<List<CertifiedBodyStatistics>> totalDevelopersByCertifiedBodyWithListingsEachYear = asyncStats
                 .getTotalDevelopersByCertifiedBodyWithListingsEachYear(developerStatisticsDAO, dateRange);
-        Future<List<CertifiedBodyStatistics>> totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear
-            = asyncStats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(
-                    developerStatisticsDAO, dateRange);
-        Future<Long> totalDeveloperswith2015Listings =
-                asyncStats.getTotalDevelopersWith2015Listings(developerStatisticsDAO, dateRange);
+        Future<List<CertifiedBodyStatistics>> totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear = asyncStats
+                .getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(
+                        developerStatisticsDAO, dateRange);
+        Future<Long> totalDeveloperswith2015Listings = asyncStats.getTotalDevelopersWith2015Listings(developerStatisticsDAO,
+                dateRange);
 
         // listings
         Future<Long> totalCertifiedProducts = asyncStats.getTotalCertifiedProducts(listingStatisticsDAO, dateRange);
 
-        Future<Long> totalCPsActive2014Listings =
-                asyncStats.getTotalCPsActive2014Listings(listingStatisticsDAO, dateRange);
+        Future<Long> totalCPsActive2014Listings = asyncStats.getTotalCPsActive2014Listings(listingStatisticsDAO, dateRange);
 
-        Future<Long> totalCPsActive2015Listings =
-                asyncStats.getTotalCPsActive2015Listings(listingStatisticsDAO, dateRange);
+        Future<Long> totalCPsActive2015Listings = asyncStats.getTotalCPsActive2015Listings(listingStatisticsDAO, dateRange);
 
         Future<Long> totalCPsActiveListings = asyncStats.getTotalCPsActiveListings(listingStatisticsDAO, dateRange);
         Future<Long> totalListings = asyncStats.getTotalListings(listingStatisticsDAO, dateRange);
@@ -132,22 +156,20 @@ public class AsynchronousSummaryStatisticsInitializor {
         Future<Long> total2015Listings = asyncStats.getTotal2015Listings(listingStatisticsDAO, dateRange);
         Future<Long> total2011Listings = asyncStats.getTotal2011Listings(listingStatisticsDAO, dateRange);
         // surveillance
-        Future<Long> totalSurveillanceActivities =
-                asyncStats.getTotalSurveillanceActivities(surveillanceStatisticsDAO, dateRange);
-        Future<Long> totalOpenSurveillanceActivities =
-                asyncStats.getTotalOpenSurveillanceActivities(surveillanceStatisticsDAO, dateRange);
-        Future<Long> totalClosedSurveillanceActivities =
-                asyncStats.getTotalClosedSurveillanceActivities(surveillanceStatisticsDAO, dateRange);
+        Future<Long> totalSurveillanceActivities = asyncStats.getTotalSurveillanceActivities(surveillanceStatisticsDAO,
+                dateRange);
+        Future<Long> totalOpenSurveillanceActivities = asyncStats.getTotalOpenSurveillanceActivities(surveillanceStatisticsDAO,
+                dateRange);
+        Future<Long> totalClosedSurveillanceActivities = asyncStats
+                .getTotalClosedSurveillanceActivities(surveillanceStatisticsDAO, dateRange);
         Future<Long> totalNonConformities = asyncStats.getTotalNonConformities(surveillanceStatisticsDAO, dateRange);
-        Future<Long> totalOpenNonConformities =
-                asyncStats.getTotalOpenNonconformities(surveillanceStatisticsDAO, dateRange);
-        Future<Long> totalClosedNonConformities =
-                asyncStats.getTotalClosedNonconformities(surveillanceStatisticsDAO, dateRange);
+        Future<Long> totalOpenNonConformities = asyncStats.getTotalOpenNonconformities(surveillanceStatisticsDAO, dateRange);
+        Future<Long> totalClosedNonConformities = asyncStats.getTotalClosedNonconformities(surveillanceStatisticsDAO, dateRange);
 
-        Future<List<CertifiedBodyStatistics>> totalOpenNonConformitiesByAcb =
-                asyncStats.getTotalOpenNonconformitiesByAcb(surveillanceStatisticsDAO, dateRange);
-        Future<List<CertifiedBodyStatistics>> totalOpenNonSurveillancesByAcb =
-                asyncStats.getTotalOpenSurveillancesByAcb(surveillanceStatisticsDAO, dateRange);
+        Future<List<CertifiedBodyStatistics>> totalOpenNonConformitiesByAcb = asyncStats
+                .getTotalOpenNonconformitiesByAcb(surveillanceStatisticsDAO, dateRange);
+        Future<List<CertifiedBodyStatistics>> totalOpenNonSurveillancesByAcb = asyncStats
+                .getTotalOpenSurveillancesByAcb(surveillanceStatisticsDAO, dateRange);
 
         if (dateRange == null) {
             stats.setTotalActive2014Listings(totalActive2014Listings.get());
@@ -165,6 +187,16 @@ public class AsynchronousSummaryStatisticsInitializor {
             stats.setTotalListingsWithAlternativeTestMethods(totalListingsWithAlternateTestMethods.get());
             stats.setTotalListingsWithCertifiedBodyAndAlternativeTestMethods(
                     totalListingsWithCertifiedBodyAndAlternativeTestMethods.get());
+
+            stats.setAverageTimeToAssessConformity(averageTimeToAssessConformity.get());
+            stats.setAverageTimeToApproveCAP(averageTimeToApproveCAP.get());
+            stats.setAverageDurationOfCAP(averageDurationOfCAP.get());
+            stats.setAverageTimeFromCAPApprovalToSurveillanceEnd(averageTimeFromCAPApprovalToSurveillanceEnd.get());
+            stats.setAverageTimeFromCAPEndToSurveillanceEnd(averageTimeFromCAPEndToSurveillanceEnd.get());
+            stats.setAverageTimeFromSurveillanceOpenToSurveillanceClose(averageTimeFromSurveillanceOpenToSurveillanceClose.get());
+            stats.setOpenCAPCountByAcb(openCAPCountByAcb.get());
+            stats.setClosedCAPCountByAcb(closedCAPCountByAcb.get());
+            stats.setAverageTimeToCloseSurveillance(averageTimeToCloseSurveillance.get());
         }
 
         // developers
@@ -200,7 +232,7 @@ public class AsynchronousSummaryStatisticsInitializor {
         return new AsyncResult<>(stats);
     }
 
-    public void setLogger(final Logger logger) {
+    public void setLogger(Logger logger) {
         this.logger = logger;
     }
 
