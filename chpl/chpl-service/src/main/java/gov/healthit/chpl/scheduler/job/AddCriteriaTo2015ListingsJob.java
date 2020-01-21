@@ -48,6 +48,7 @@ import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
+import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 import gov.healthit.chpl.scheduler.job.extra.JobResponseTriggerListener;
 import gov.healthit.chpl.scheduler.job.extra.JobResponseTriggerWrapper;
@@ -92,6 +93,9 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
 
     @Autowired
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
+
+    @Autowired
+    private PendingCertifiedProductManager pcpManager;
 
     @Autowired
     private Environment env;
@@ -141,6 +145,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
             CacheManager.getInstance().clearAll();
             // Need to "refresh" the data in CertifiedProductDetailsManager since it is stored within the bean.
             certifiedProductDetailsManager.refreshData();
+            pcpManager.refreshData();
         }
         LOGGER.info("********* Completed the Add Criteria To 2015 Listings job. *********");
     }
