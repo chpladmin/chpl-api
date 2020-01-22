@@ -21,13 +21,14 @@ public class TestTool2015Reviewer implements Reviewer {
 
     public void review(final PendingCertifiedProductDTO listing) {
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
-            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria()
+            if (cert.isReviewable()
                     && cert.getTestTools() != null && cert.getTestTools().size() > 0) {
-                for (PendingCertificationResultTestToolDTO testTool : cert.getTestTools())
-                    if (!StringUtils.isEmpty(testTool.getName()) && StringUtils.isEmpty(testTool.getVersion())) {
-                        listing.getErrorMessages()
-                        .add(msgUtil.getMessage("listing.criteria.missingTestToolVersion",
+                for (PendingCertificationResultTestToolDTO testTool : cert.getTestTools()) {
+                        if (!StringUtils.isEmpty(testTool.getName()) && StringUtils.isEmpty(testTool.getVersion())) {
+                            listing.getErrorMessages()
+                            .add(msgUtil.getMessage("listing.criteria.missingTestToolVersion",
                                 testTool.getName(), cert.getCriterion().getNumber()));
+                    }
                 }
             }
         }

@@ -63,7 +63,7 @@ public class TestFunctionality2015Reviewer implements Reviewer {//, ApplicationL
     public void review(final PendingCertifiedProductDTO listing) {
         if (listing.getCertificationCriterion() != null) {
             for (PendingCertificationResultDTO cr : listing.getCertificationCriterion()) {
-                if (cr.getTestFunctionality() != null) {
+                if (cr.isReviewable() && cr.getTestFunctionality() != null) {
                     Iterator<PendingCertificationResultTestFunctionalityDTO> crtfIter =
                             cr.getTestFunctionality().iterator();
                     while (crtfIter.hasNext()) {

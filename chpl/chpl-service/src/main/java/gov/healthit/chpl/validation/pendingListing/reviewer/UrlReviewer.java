@@ -35,7 +35,7 @@ public class UrlReviewer implements Reviewer {
 
         //check all criteria fields
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
-            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria().booleanValue()) {
+            if (cert.isReviewable()) {
                 addCriteriaErrorIfNotValid(listing, cert, cert.getApiDocumentation(), "API Documentation");
             }
         }

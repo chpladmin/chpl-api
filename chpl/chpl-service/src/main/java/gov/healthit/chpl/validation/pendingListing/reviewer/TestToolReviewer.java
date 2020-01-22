@@ -40,7 +40,7 @@ public class TestToolReviewer implements Reviewer {
     @Override
     public void review(final PendingCertifiedProductDTO listing) {
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
-            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria()) {
+            if (cert.isReviewable()) {
                 if (cert.getTestTools() != null && cert.getTestTools().size() > 0) {
                     Iterator<PendingCertificationResultTestToolDTO> testToolIter = cert.getTestTools().iterator();
                     while (testToolIter.hasNext()) {

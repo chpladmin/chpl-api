@@ -46,11 +46,11 @@ public class RequiredDataReviewer implements Reviewer {
         }
 
         for (CertificationResult cert : listing.getCertificationResults()) {
-            if (cert.isSuccess() != null && cert.isSuccess().booleanValue()) {
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) && cert.isGap() == null) {
+            if (cert.isReviewable()
+                    && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
+                    && cert.isGap() == null) {
                     listing.getErrorMessages().add(
                             msgUtil.getMessage("listing.criteria.missingGap", cert.getNumber()));
-                }
             }
         }
     }

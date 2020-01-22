@@ -122,7 +122,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
         List<String> allMetCerts = new ArrayList<String>();
         for (CertificationResult certCriteria : listing.getCertificationResults()) {
-            if (certCriteria.isSuccess()) {
+            if (certCriteria.isReviewable()) {
                 allMetCerts.add(certCriteria.getNumber());
             }
         }

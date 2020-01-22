@@ -60,7 +60,7 @@ public class TestFunctionality2015Reviewer implements Reviewer {
     public void review(final CertifiedProductSearchDetails listing) {
         if (listing.getCertificationResults() != null) {
             for (CertificationResult cr : listing.getCertificationResults()) {
-                if (cr.getTestFunctionality() != null) {
+                if (cr.isReviewable() && cr.getTestFunctionality() != null) {
                     for (CertificationResultTestFunctionality crtf : cr.getTestFunctionality()) {
                         listing.getErrorMessages().addAll(
                                 getTestingFunctionalityErrorMessages(crtf, cr, listing));

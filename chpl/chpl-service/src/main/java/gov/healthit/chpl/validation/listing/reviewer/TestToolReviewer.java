@@ -11,7 +11,6 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.TestToolDTO;
-import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 /**
@@ -26,20 +25,17 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class TestToolReviewer implements Reviewer {
     private TestToolDAO testToolDao;
     private ErrorMessageUtil msgUtil;
-    private ChplProductNumberUtil productNumUtil;
 
     @Autowired
-    public TestToolReviewer(TestToolDAO testToolDAO, ErrorMessageUtil msgUtil,
-            ChplProductNumberUtil chplProductNumberUtil) {
+    public TestToolReviewer(TestToolDAO testToolDAO, ErrorMessageUtil msgUtil) {
         this.testToolDao = testToolDAO;
         this.msgUtil = msgUtil;
-        this.productNumUtil = chplProductNumberUtil;
     }
 
     @Override
     public void review(final CertifiedProductSearchDetails listing) {
         for (CertificationResult cert : listing.getCertificationResults()) {
-            if (cert.isSuccess()) {
+            if (cert.isReviewable()) {
                 if (cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0) {
                     Iterator<CertificationResultTestTool> testToolIter = cert.getTestToolsUsed().iterator();
                     while (testToolIter.hasNext()) {

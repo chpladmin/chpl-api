@@ -403,6 +403,18 @@ public class CertificationResult implements Serializable {
         this.criterion = criterion;
     }
 
+    /**
+     * A certification result is reviewable if it has been attested to
+     * and if the criteria to which it is attesting is not marked as removed.
+     * @return
+     */
+    public boolean isReviewable() {
+        return this.isSuccess() != null && this.isSuccess().equals(Boolean.TRUE)
+                && this.getCriterion() != null
+                && this.getCriterion().getRemoved() != null
+                && this.getCriterion().getRemoved().equals(Boolean.FALSE);
+    }
+
     public static String formatPrivacyAndSecurityFramework(final String privacyAndSecurityFramework) {
         if (StringUtils.isEmpty(privacyAndSecurityFramework)) {
             return privacyAndSecurityFramework;

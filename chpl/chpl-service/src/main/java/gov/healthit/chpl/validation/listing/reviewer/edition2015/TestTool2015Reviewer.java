@@ -28,7 +28,7 @@ public class TestTool2015Reviewer implements Reviewer {
     @Override
     public void review(final CertifiedProductSearchDetails listing) {
         for (CertificationResult cert : listing.getCertificationResults()) {
-            if (cert.isSuccess() && cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0) {
+            if (cert.isReviewable() && cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0) {
                 for (CertificationResultTestTool testTool : cert.getTestToolsUsed()) {
                     if (!StringUtils.isEmpty(testTool.getTestToolName())
                             && StringUtils.isEmpty(testTool.getTestToolVersion())) {

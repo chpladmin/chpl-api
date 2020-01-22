@@ -93,7 +93,7 @@ public class RequiredDataReviewer implements Reviewer {
             if (cert.getMeetsCriteria() == null) {
                 listing.getErrorMessages().add(
                         msgUtil.getMessage("listing.criteria.metInvalid", cert.getCriterion().getNumber()));
-            } else if (cert.getMeetsCriteria().booleanValue()) {
+            } else if (cert.isReviewable()) {
                 if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.GAP)
                         && cert.getGap() == null) {
                     listing.getErrorMessages().add(

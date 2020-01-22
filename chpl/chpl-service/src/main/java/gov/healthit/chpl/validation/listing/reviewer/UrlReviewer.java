@@ -31,7 +31,7 @@ public class UrlReviewer implements Reviewer {
 
         //check all criteria fields
         for (CertificationResult cert : listing.getCertificationResults()) {
-            if (cert.isSuccess() != null && cert.isSuccess().booleanValue()) {
+            if (cert.isReviewable()) {
                 addCriteriaErrorIfNotValid(listing, cert, cert.getApiDocumentation(), "API Documentation");
             }
         }

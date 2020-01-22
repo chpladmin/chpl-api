@@ -25,29 +25,31 @@ public class ValidDataReviewer implements Reviewer {
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         for (CertificationResult cert : listing.getCertificationResults()) {
-            if (!StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
-                String formattedPrivacyAndSecurityFramework = CertificationResult
-                        .formatPrivacyAndSecurityFramework(cert.getPrivacySecurityFramework());
-                PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept
-                        .getValue(formattedPrivacyAndSecurityFramework);
-                if (foundPrivacyAndSecurityFramework == null) {
-                    listing.getErrorMessages().add("Certification " + cert.getNumber()
-                            + " contains Privacy and Security Framework value '" + formattedPrivacyAndSecurityFramework
-                            + "' which must match one of " + PrivacyAndSecurityFrameworkConcept.getFormattedValues());
+            if (cert.isReviewable()) {
+                if (!StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
+                    String formattedPrivacyAndSecurityFramework = CertificationResult
+                            .formatPrivacyAndSecurityFramework(cert.getPrivacySecurityFramework());
+                    PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept
+                            .getValue(formattedPrivacyAndSecurityFramework);
+                    if (foundPrivacyAndSecurityFramework == null) {
+                        listing.getErrorMessages().add("Certification " + cert.getNumber()
+                                + " contains Privacy and Security Framework value '" + formattedPrivacyAndSecurityFramework
+                                + "' which must match one of " + PrivacyAndSecurityFrameworkConcept.getFormattedValues());
+                    }
                 }
-            }
 
-            if (cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
-                for (CertificationResultAdditionalSoftware asDto : cert.getAdditionalSoftware()) {
-                    if (asDto.getCertifiedProductId() == null
-                            && !StringUtils.isEmpty(asDto.getCertifiedProductNumber())) {
-                        try {
-                            boolean exists = chplNumberUtil.chplIdExists(asDto.getCertifiedProductNumber());
-                            if (!exists) {
-                                listing.getErrorMessages().add("No CHPL product was found matching additional software "
-                                        + asDto.getCertifiedProductNumber() + " for " + cert.getNumber());
+                if (cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
+                    for (CertificationResultAdditionalSoftware asDto : cert.getAdditionalSoftware()) {
+                        if (asDto.getCertifiedProductId() == null
+                                && !StringUtils.isEmpty(asDto.getCertifiedProductNumber())) {
+                            try {
+                                boolean exists = chplNumberUtil.chplIdExists(asDto.getCertifiedProductNumber());
+                                if (!exists) {
+                                    listing.getErrorMessages().add("No CHPL product was found matching additional software "
+                                            + asDto.getCertifiedProductNumber() + " for " + cert.getNumber());
+                                }
+                            } catch (EntityRetrievalException e) {
                             }
-                        } catch (EntityRetrievalException e) {
                         }
                     }
                 }

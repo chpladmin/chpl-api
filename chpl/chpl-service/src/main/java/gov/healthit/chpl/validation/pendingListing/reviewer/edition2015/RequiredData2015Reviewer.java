@@ -125,7 +125,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         super.review(listing);
         List<String> allMetCerts = new ArrayList<String>();
         for (PendingCertificationResultDTO certCriteria : listing.getCertificationCriterion()) {
-            if (certCriteria.getMeetsCriteria()) {
+            if (certCriteria.isReviewable()) {
                 allMetCerts.add(certCriteria.getCriterion().getNumber());
             }
         }
