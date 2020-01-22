@@ -170,20 +170,18 @@ public class SchedulerManager extends SecuredManager {
         for (String group : scheduler.getTriggerGroupNames()) {
             for (TriggerKey triggerKey : scheduler.getTriggerKeys(groupEquals(group))) {
                 if (scheduler.getTrigger(triggerKey).getJobKey().getGroup().equalsIgnoreCase(SYSTEM_JOBS_KEY)) {
-                    if (doesUserHavePermissionToTrigger(scheduler.getTrigger(triggerKey))) {
-                        Trigger curTrigger = getScheduler().getTrigger(triggerKey);
-                        String jobName = curTrigger.getKey().getName();
-                        JobDetail jobDetail = getScheduler().getJobDetail(getScheduler().getTrigger(triggerKey).getJobKey());
-                        String jobDescription = jobDetail.getDescription();
-                        Date nextRunDate = curTrigger.getNextFireTime();
-                        if (curTrigger instanceof CronTrigger) {
-                            ssJobs.add(new ScheduledSystemJob(jobName, jobDescription, nextRunDate,
-                                    TriggerSchedule.REPEATABLE));
-                        } else if (curTrigger instanceof SimpleTrigger) {
-                            jobName = curTrigger.getJobKey().getName();
-                            ssJobs.add(new ScheduledSystemJob(jobName, jobDescription, nextRunDate,
-                                    TriggerSchedule.ONE_TIME));
-                        }
+                    Trigger curTrigger = getScheduler().getTrigger(triggerKey);
+                    String jobName = curTrigger.getKey().getName();
+                    JobDetail jobDetail = getScheduler().getJobDetail(getScheduler().getTrigger(triggerKey).getJobKey());
+                    String jobDescription = jobDetail.getDescription();
+                    Date nextRunDate = curTrigger.getNextFireTime();
+                    if (curTrigger instanceof CronTrigger) {
+                        ssJobs.add(new ScheduledSystemJob(jobName, jobDescription, nextRunDate,
+                                TriggerSchedule.REPEATABLE));
+                    } else if (curTrigger instanceof SimpleTrigger) {
+                        jobName = curTrigger.getJobKey().getName();
+                        ssJobs.add(new ScheduledSystemJob(jobName, jobDescription, nextRunDate,
+                                TriggerSchedule.ONE_TIME));
                     }
                 }
             }
