@@ -66,7 +66,7 @@ public class AddCriteriaToSinglePendingListingJob extends QuartzJob {
         if (pcp != null) {
             try {
                 for (String criterion : criteria) {
-                    String[] criterionValues = criterion.split("-");
+                    String[] criterionValues = criterion.split(":");
                     addCertToPendingListing(pcp, criterionValues[0], criterionValues[1]);
                 }
                 String msg = "Completed Updating pending certified product {" + pcp.getChplProductNumber() + "}: "

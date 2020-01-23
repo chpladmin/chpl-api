@@ -67,7 +67,7 @@ public class AddCriteriaToSingleListingJob extends QuartzJob {
 
         try {
             for (String criterion : criteria) {
-                String[] criterionValues = criterion.split("-");
+                String[] criterionValues = criterion.split(":");
                 create(cpsd, criterionValues[0], criterionValues[1]);
             }
             String msg = "Completed Updating certified product {" + cpsd.getId() + "}: "

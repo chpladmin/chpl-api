@@ -29,9 +29,6 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.MacraMeasureDAO;
-import gov.healthit.chpl.dao.TestDataDAO;
-import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
@@ -39,6 +36,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
+import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.MacraMeasureEntity;
 import gov.healthit.chpl.entity.TestDataCriteriaMapEntity;
 import gov.healthit.chpl.entity.TestDataEntity;
@@ -66,19 +64,13 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
     private CertificationCriterionDAO criterionDAO;
 
     @Autowired
+    private ExtendedCertificationCriterionDao extendedCriterionDAO;
+
+    @Autowired
     private InsertableMacraMeasureDao insertableMmDao;
 
     @Autowired
-    private MacraMeasureDAO mmDao;
-
-    @Autowired
     private InsertableTestDataDao insertableTestDataDao;
-
-    @Autowired
-    private TestDataDAO testDataDao;
-
-    @Autowired
-    private TestProcedureDAO testProcDao;
 
     @Autowired
     private InsertableTestProcedureDao insertableTestProcDao;
@@ -101,10 +93,10 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
     @Autowired
     private Environment env;
 
-    private static final String CRITERIA_TO_ADD = "170.315 (b)(10)-Clinical Information Export;"
-            + "170.315 (d)(12)-Encrypt Authentication Credentials;"
-            + "170.315 (d)(13)-Multi-Factor Authentication;"
-            + "170.315 (g)(10)-Standardized API for Patient and Population Services";
+    private static final String CRITERIA_TO_ADD = "170.315 (b)(10):Clinical Information Export;"
+            + "170.315 (d)(12):Encrypt Authentication Credentials;"
+            + "170.315 (d)(13):Multi-Factor Authentication;"
+            + "170.315 (g)(10):Standardized API for Patient and Population Services";
 
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
@@ -168,46 +160,46 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         criterion.setNumber(number);
         criterion.setTitle(title);
         criterion.setRemoved(false);
-        if (!criterionExists(criterion.getNumber())) {
+        if (!criterionExists(criterion.getNumber(), criterion.getTitle())) {
             try {
                 criterionDAO.create(criterion);
-                LOGGER.info("Inserted criterion " + criterion.getNumber());
+                LOGGER.info("Inserted criterion " + criterion.getNumber() + ":" + criterion.getTitle());
             } catch (EntityRetrievalException ex) {
-                LOGGER.error("Error creating new 2015 criterion " + number, ex);
+                LOGGER.error("Error creating new 2015 criterion " + number + ":" + title, ex);
             } catch (EntityCreationException ex) {
-                LOGGER.error("Error creating new 2015 criterion " + number, ex);
+                LOGGER.error("Error creating new 2015 criterion " + number + ":" + title, ex);
             }
         } else {
-            LOGGER.info("Criterion " + number + " already exists.");
+            LOGGER.info("Criterion " + number + ":" + title + " already exists.");
         }
     }
 
-    private boolean criterionExists(String number) {
+    private boolean criterionExists(String number, String title) {
         CertificationCriterionDTO criterion =
-                criterionDAO.getByNameAndYear(number, CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
+                extendedCriterionDAO.getByNumberAndTitle(number, title);
         return criterion != null;
     }
 
     @SuppressWarnings({"checkstyle:linelength"})
     private void addMacraMeasureMaps() {
-        addMacraMeasureMap("170.315 (g)(10)", "RT2a EP Stage 3", "Patient Electronic Access: Eligible Professional", "Required Test 2: Stage 3 Objective 5 Measure 1");
-        addMacraMeasureMap("170.315 (g)(10)", "RT2a EH/CAH Stage 3", "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital", "Required Test 2: Stage 3 Objective 5 Measure 1");
-        addMacraMeasureMap("170.315 (g)(10)", "RT2a EC PI", "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Clinician", "Required Test 2: Promoting Interoperability Objective 3 Measure 1");
-        addMacraMeasureMap("170.315 (g)(10)", "RT2c EP Stage 3", "Patient Electronic Access: Eligible Professional", "Required Test 2: Stage 3 Objective 5 Measure 1");
-        addMacraMeasureMap("170.315 (g)(10)", "RT2c EH/CAH Stage 3", "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital", "Required Test 2: Stage 3 Objective 5 Measure 1");
-        addMacraMeasureMap("170.315 (g)(10)", "RT2c EC PI", "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Clinician", "Required Test 2: Promoting Interoperability Objective 3 Measure 1");
-        addMacraMeasureMap("170.315 (g)(10)", "RT4a EP Stage 3", "View, Download, or Transmit (VDT): Eligible Professional", "Required Test 4: Stage 3 Objective 6 Measure 1");
-        addMacraMeasureMap("170.315 (g)(10)", "RT4a EH/CAH Stage 3", "View, Download, or Transmit (VDT): Eligible Hospital/Critical Access Hospital", "Required Test 4: Stage 3 Objective 6 Measure 1");
-        addMacraMeasureMap("170.315 (g)(10)", "RT4a EC PI", "View, Download, or Transmit (VDT):  Eligible Clinician", "Required Test 4: Promoting Interoperability Objective 4 Measure 1");
-        addMacraMeasureMap("170.315 (g)(10)", "RT4c EP Stage 3", "View, Download, or Transmit (VDT): Eligible Professional", "Required Test 4: Stage 3 Objective 6 Measure 1");
-        addMacraMeasureMap("170.315 (g)(10)", "RT4c EH/CAH Stage 3", "View, Download, or Transmit (VDT): Eligible Hospital/Critical Access Hospital", "Required Test 4: Stage 3 Objective 6 Measure 1");
-        addMacraMeasureMap("170.315 (g)(10)", "RT4c EC PI", "View, Download, or Transmit (VDT):  Eligible Clinician", "Required Test 4: Promoting Interoperability Objective 4 Measure 1");
+        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT2a EP Stage 3", "Patient Electronic Access: Eligible Professional", "Required Test 2: Stage 3 Objective 5 Measure 1");
+        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT2a EH/CAH Stage 3", "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital", "Required Test 2: Stage 3 Objective 5 Measure 1");
+        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT2a EC PI", "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Clinician", "Required Test 2: Promoting Interoperability Objective 3 Measure 1");
+        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT2c EP Stage 3", "Patient Electronic Access: Eligible Professional", "Required Test 2: Stage 3 Objective 5 Measure 1");
+        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT2c EH/CAH Stage 3", "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital", "Required Test 2: Stage 3 Objective 5 Measure 1");
+        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT2c EC PI", "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Clinician", "Required Test 2: Promoting Interoperability Objective 3 Measure 1");
+        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT4a EP Stage 3", "View, Download, or Transmit (VDT): Eligible Professional", "Required Test 4: Stage 3 Objective 6 Measure 1");
+        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT4a EH/CAH Stage 3", "View, Download, or Transmit (VDT): Eligible Hospital/Critical Access Hospital", "Required Test 4: Stage 3 Objective 6 Measure 1");
+        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT4a EC PI", "View, Download, or Transmit (VDT):  Eligible Clinician", "Required Test 4: Promoting Interoperability Objective 4 Measure 1");
+        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT4c EP Stage 3", "View, Download, or Transmit (VDT): Eligible Professional", "Required Test 4: Stage 3 Objective 6 Measure 1");
+        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT4c EH/CAH Stage 3", "View, Download, or Transmit (VDT): Eligible Hospital/Critical Access Hospital", "Required Test 4: Stage 3 Objective 6 Measure 1");
+        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT4c EC PI", "View, Download, or Transmit (VDT):  Eligible Clinician", "Required Test 4: Promoting Interoperability Objective 4 Measure 1");
     }
 
-    private void addMacraMeasureMap(String criterionNumber, String value, String name, String description) {
-        if (!macraMeasureCriteriaMapExists(criterionNumber, value)) {
+    private void addMacraMeasureMap(String criterionNumber, String criterionTitle, String value, String name, String description) {
+        if (!macraMeasureCriteriaMapExists(criterionNumber, criterionTitle, value)) {
             MacraMeasureDTO mm = new MacraMeasureDTO();
-            CertificationCriterionDTO criterion = criterionDAO.getByNameAndYear(criterionNumber, "2015");
+            CertificationCriterionDTO criterion = extendedCriterionDAO.getByNumberAndTitle(criterionNumber, criterionTitle);
             if (criterion == null) {
                 LOGGER.error("Cannot insert macra measure for criteria that is not found: " + criterionNumber);
             } else {
@@ -223,20 +215,20 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         }
     }
 
-    private boolean macraMeasureCriteriaMapExists(String criterionNumber, String value) {
-        MacraMeasureDTO mm = mmDao.getByCriteriaNumberAndValue(criterionNumber, value);
+    private boolean macraMeasureCriteriaMapExists(String criterionNumber, String criterionTitle, String value) {
+        MacraMeasureDTO mm = insertableMmDao.getByCriteriaNumberTitleAndValue(criterionNumber, criterionTitle, value);
         return mm != null;
     }
 
     private void addTestDataMaps() {
-        addTestDataMap("170.315 (b)(10)", "ONC Test Method");
-        addTestDataMap("170.315 (g)(10)", "ONC Test Method");
+        addTestDataMap("170.315 (b)(10)", "Clinical Information Export", "ONC Test Method");
+        addTestDataMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "ONC Test Method");
     }
 
-    private void addTestDataMap(String criterionNumber, String testDataName) {
-        if (!testDataMapExists(criterionNumber, testDataName)) {
+    private void addTestDataMap(String criterionNumber, String criterionTitle, String testDataName) {
+        if (!testDataMapExists(criterionNumber, criterionTitle, testDataName)) {
             TestDataDTO testData = insertableTestDataDao.getTestDataByName(testDataName);
-            CertificationCriterionDTO criterion = criterionDAO.getByName(criterionNumber);
+            CertificationCriterionDTO criterion = extendedCriterionDAO.getByNumberAndTitle(criterionNumber, criterionTitle);
             if (testData == null) {
                 LOGGER.error("Could not find test data " + testDataName);
             }
@@ -252,22 +244,22 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         }
     }
 
-    private boolean testDataMapExists(String criterionNumber, String testDataName) {
-        TestDataDTO td = testDataDao.getByCriteriaNumberAndValue(criterionNumber, testDataName);
+    private boolean testDataMapExists(String criterionNumber, String criterionTitle, String testDataName) {
+        TestDataDTO td = insertableTestDataDao.getByCriteriaNumberTitleAndValue(criterionNumber, criterionTitle, testDataName);
         return td != null;
     }
 
     private void addTestProcedureMaps() {
-        addTestProcedureMap("170.315 (b)(10)", "ONC Test Method");
-        addTestProcedureMap("170.315 (d)(12)", "ONC Test Method");
-        addTestProcedureMap("170.315 (d)(13)", "ONC Test Method");
-        addTestProcedureMap("170.315 (g)(10)", "ONC Test Method");
+        addTestProcedureMap("170.315 (b)(10)", "Clinical Information Export", "ONC Test Method");
+        addTestProcedureMap("170.315 (d)(12)", "Encrypt Authentication Credentials", "ONC Test Method");
+        addTestProcedureMap("170.315 (d)(13)", "Multi-Factor Authentication", "ONC Test Method");
+        addTestProcedureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "ONC Test Method");
     }
 
-    private void addTestProcedureMap(String criterionNumber, String testProcedureName) {
-        if (!testProcedureMapExists(criterionNumber, testProcedureName)) {
+    private void addTestProcedureMap(String criterionNumber, String criterionTitle, String testProcedureName) {
+        if (!testProcedureMapExists(criterionNumber, criterionTitle, testProcedureName)) {
             TestProcedureDTO testProc = insertableTestProcDao.getTestProcedureByName(testProcedureName);
-            CertificationCriterionDTO criterion = criterionDAO.getByName(criterionNumber);
+            CertificationCriterionDTO criterion = extendedCriterionDAO.getByNumberAndTitle(criterionNumber, criterionTitle);
             if (testProc == null) {
                 LOGGER.error("Could not find test procedure " + testProcedureName);
             }
@@ -283,10 +275,12 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         }
     }
 
-    private boolean testProcedureMapExists(String criterionNumber, String testProcedureName) {
-        TestProcedureDTO tp = testProcDao.getByCriteriaNumberAndValue(criterionNumber, testProcedureName);
+    private boolean testProcedureMapExists(String criterionNumber, String criterionTitle, String testProcedureName) {
+        TestProcedureDTO tp = insertableTestProcDao.getByCriteriaNumberTitleAndValue(
+                criterionNumber, criterionTitle, testProcedureName);
         return tp != null;
     }
+
     private List<JobResponseTriggerWrapper> getExistingListingWrappers(JobExecutionContext jobContext) {
         List<Long> listings = getListingIds();
         List<JobResponseTriggerWrapper> wrappers = new ArrayList<JobResponseTriggerWrapper>();
@@ -341,6 +335,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
 
         return cps.stream()
                 .map(cp -> cp.getId())
+                .filter(cp -> cp > 1200) // testing code
                 .collect(Collectors.toList());
     }
 
@@ -362,12 +357,65 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 
+    @Component("extendedCertificationCriterionDao")
+    private static class ExtendedCertificationCriterionDao extends BaseDAOImpl {
+
+        @SuppressWarnings("unused")
+        ExtendedCertificationCriterionDao() {
+            super();
+        }
+
+        @Transactional
+        public CertificationCriterionDTO getByNumberAndTitle(final String criterionNumber, final String criterionTitle) {
+            Query query = entityManager
+                    .createQuery(
+                            "SELECT cce " + "FROM CertificationCriterionEntity cce "
+                                    + "WHERE (NOT cce.deleted = true) "
+                                    + "AND (cce.number = :number) "
+                                    + "AND (cce.title = :title) ",
+                                    CertificationCriterionEntity.class);
+            query.setParameter("number", criterionNumber);
+            query.setParameter("title", criterionTitle);
+            @SuppressWarnings("unchecked") List<CertificationCriterionEntity> results = query.getResultList();
+
+            CertificationCriterionEntity entity = null;
+            if (results.size() > 0) {
+                entity = results.get(0);
+            }
+            CertificationCriterionDTO result = null;
+            if (entity != null) {
+                result = new CertificationCriterionDTO(entity);
+            }
+            return result;
+        }
+    }
     @Component("insertableMacraMeasureDao")
     private static class InsertableMacraMeasureDao extends BaseDAOImpl {
 
         @SuppressWarnings("unused")
         InsertableMacraMeasureDao() {
             super();
+        }
+
+        @Transactional
+        public MacraMeasureDTO getByCriteriaNumberTitleAndValue(String criteriaNumber, String criteriaTitle, String value) {
+            Query query = entityManager.createQuery(
+                    "FROM MacraMeasureEntity mme "
+                            + "LEFT OUTER JOIN FETCH mme.certificationCriterion cce "
+                            + "LEFT OUTER JOIN FETCH cce.certificationEdition "
+                            + "WHERE (NOT mme.deleted = true) "
+                            + "AND (UPPER(cce.number) = :criteriaNumber) "
+                            + "AND cce.title = :criteriaTitle "
+                            + "AND (UPPER(mme.value) = :value)",
+                    MacraMeasureEntity.class);
+            query.setParameter("criteriaNumber", criteriaNumber.trim().toUpperCase());
+            query.setParameter("criteriaTitle", criteriaTitle);
+            query.setParameter("value", value.trim().toUpperCase());
+            @SuppressWarnings("unchecked") List<MacraMeasureEntity> result = query.getResultList();
+            if (result == null || result.size() == 0) {
+                return null;
+            }
+            return new MacraMeasureDTO(result.get(0));
         }
 
         @Transactional
@@ -394,6 +442,34 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         }
 
         @Transactional
+        public TestDataDTO getByCriteriaNumberTitleAndValue(String criteriaNumber, String criteriaTitle, String value) {
+            Query query = entityManager.createQuery("SELECT tdMap "
+                    + "FROM TestDataCriteriaMapEntity tdMap "
+                    + "JOIN FETCH tdMap.testData td "
+                    + "JOIN FETCH tdMap.certificationCriterion cce "
+                    + "JOIN FETCH cce.certificationEdition "
+                    + "WHERE tdMap.deleted <> true "
+                    + "AND td.deleted <> true "
+                    + "AND (UPPER(cce.number) = :criteriaNumber) "
+                    + "AND cce.title = :criteriaTitle "
+                    + "AND (UPPER(td.name) = :value)",
+                    TestDataCriteriaMapEntity.class);
+            query.setParameter("criteriaNumber", criteriaNumber.trim().toUpperCase());
+            query.setParameter("criteriaTitle", criteriaTitle);
+            query.setParameter("value", value.trim().toUpperCase());
+
+            @SuppressWarnings("unchecked") List<TestDataCriteriaMapEntity> results = query.getResultList();
+            if (results == null || results.size() == 0) {
+                return null;
+            }
+            List<TestDataEntity> tds = new ArrayList<TestDataEntity>();
+            for (TestDataCriteriaMapEntity result : results) {
+                tds.add(result.getTestData());
+            }
+            return new TestDataDTO(tds.get(0));
+        }
+
+        @Transactional
         public TestDataDTO getTestDataByName(String name) {
             String hql = "SELECT td "
                     + "FROM TestDataEntity td "
@@ -401,7 +477,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
                     + "AND deleted = false";
             Query query = entityManager.createQuery(hql);
             query.setParameter("name", name);
-            List<TestDataEntity> tdEntities = query.getResultList();
+            @SuppressWarnings("unchecked") List<TestDataEntity> tdEntities = query.getResultList();
             TestDataDTO result = null;
             if (tdEntities != null && tdEntities.size() > 0) {
                 result = new TestDataDTO(tdEntities.get(0));
@@ -431,6 +507,34 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         }
 
         @Transactional
+        public TestProcedureDTO getByCriteriaNumberTitleAndValue(String criteriaNumber, String criteriaTitle, String value) {
+            Query query = entityManager.createQuery("SELECT tpMap "
+                    + "FROM TestProcedureCriteriaMapEntity tpMap "
+                    + "JOIN FETCH tpMap.testProcedure tp "
+                    + "JOIN FETCH tpMap.certificationCriterion cce "
+                    + "JOIN FETCH cce.certificationEdition "
+                    + "WHERE tpMap.deleted <> true "
+                    + "AND tp.deleted <> true "
+                    + "AND (UPPER(cce.number) = :criteriaNumber) "
+                    + "AND cce.title = :criteriaTitle "
+                    + "AND (UPPER(tp.name) = :value)",
+                    TestProcedureCriteriaMapEntity.class);
+            query.setParameter("criteriaNumber", criteriaNumber.trim().toUpperCase());
+            query.setParameter("criteriaTitle", criteriaTitle);
+            query.setParameter("value", value.trim().toUpperCase());
+
+            @SuppressWarnings("unchecked") List<TestProcedureCriteriaMapEntity> results = query.getResultList();
+            if (results == null || results.size() == 0) {
+                return null;
+            }
+            List<TestProcedureEntity> tps = new ArrayList<TestProcedureEntity>();
+            for (TestProcedureCriteriaMapEntity result : results) {
+                tps.add(result.getTestProcedure());
+            }
+            return new TestProcedureDTO(tps.get(0));
+        }
+
+        @Transactional
         public TestProcedureDTO getTestProcedureByName(String name) {
             String hql = "SELECT tp "
                     + "FROM TestProcedureEntity tp "
@@ -438,7 +542,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
                     + "AND deleted = false";
             Query query = entityManager.createQuery(hql);
             query.setParameter("name", name);
-            List<TestProcedureEntity> tpEntities = query.getResultList();
+            @SuppressWarnings("unchecked") List<TestProcedureEntity> tpEntities = query.getResultList();
             TestProcedureDTO result = null;
             if (tpEntities != null && tpEntities.size() > 0) {
                 result = new TestProcedureDTO(tpEntities.get(0));
