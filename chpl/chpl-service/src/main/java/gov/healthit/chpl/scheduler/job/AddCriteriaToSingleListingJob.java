@@ -32,6 +32,7 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.scheduler.job.extra.JobResponse;
 
 public class AddCriteriaToSingleListingJob extends QuartzJob {
+    private static final long ADMIN_ID = -2L;
 
     // Default logger
     private Logger logger = LogManager.getLogger("addCriteriaToListingsJobLogger");
@@ -66,7 +67,8 @@ public class AddCriteriaToSingleListingJob extends QuartzJob {
 
         try {
             for (String criterion : criteria) {
-                create(cpsd, criterion);
+                String[] criterionValues = criterion.split("-");
+                create(cpsd, criterionValues[0], criterionValues[1]);
             }
             String msg = "Completed Updating certified product {" + cpsd.getId() + "}: "
                     + cpsd.getChplProductNumber() + "-" + criteria.toString();
@@ -102,7 +104,7 @@ public class AddCriteriaToSingleListingJob extends QuartzJob {
         }
     }
 
-    private void create(CertifiedProductSearchDetails listing, String criterionNumber)
+    private void create(CertifiedProductSearchDetails listing, String criterionNumber, String criterionTitle)
             throws EntityCreationException, EntityRetrievalException, IOException {
             TransactionTemplate txTemplate = new TransactionTemplate(txManager);
             txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
@@ -116,7 +118,7 @@ public class AddCriteriaToSingleListingJob extends QuartzJob {
                 if (criterion == null || criterion.getId() == null) {
                     logger.error(
                             "Cannot create certification result mapping for unknown criteria " + criterionNumber);
-                } else if (!certResultExists(listing, criterionNumber)) {
+                } else if (!certResultExists(listing, criterionNumber, criterionTitle)) {
                     CertificationResultDTO toCreate = new CertificationResultDTO();
                     toCreate.setCertificationCriterionId(criterion.getId());
                     toCreate.setCertifiedProductId(listing.getId());
@@ -136,11 +138,12 @@ public class AddCriteriaToSingleListingJob extends QuartzJob {
         });
     }
 
-    private boolean certResultExists(CertifiedProductSearchDetails listing, String criterionNumber) {
+    private boolean certResultExists(CertifiedProductSearchDetails listing, String criterionNumber, String criterionTitle) {
         boolean result = false;
         List<CertificationResult> criteria = listing.getCertificationResults();
         for (CertificationResult crit : criteria) {
-            if (crit.getNumber().equalsIgnoreCase(criterionNumber)) {
+            if (crit.getNumber().equalsIgnoreCase(criterionNumber)
+                    && crit.getTitle().equalsIgnoreCase(criterionTitle)) {
                 result = true;
             }
         }
@@ -150,7 +153,7 @@ public class AddCriteriaToSingleListingJob extends QuartzJob {
     private void setSecurityContext() {
         JWTAuthenticatedUser adminUser = new JWTAuthenticatedUser();
         adminUser.setFullName("Administrator");
-        adminUser.setId(-2L);
+        adminUser.setId(ADMIN_ID);
         adminUser.setFriendlyName("Admin");
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));

@@ -101,7 +101,10 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
     @Autowired
     private Environment env;
 
-    private static final String CRITERIA_TO_ADD = "170.315 (b)(10);170.315 (d)(12);170.315 (d)(13);170.315 (g)(10)";
+    private static final String CRITERIA_TO_ADD = "170.315 (b)(10)-Clinical Information Export;"
+            + "170.315 (d)(12)-Encrypt Authentication Credentials;"
+            + "170.315 (d)(13)-Multi-Factor Authentication;"
+            + "170.315 (g)(10)-Standardized API for Patient and Population Services";
 
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
