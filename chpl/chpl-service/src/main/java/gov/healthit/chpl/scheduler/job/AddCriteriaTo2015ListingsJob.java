@@ -60,6 +60,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
     private static final String JOB_NAME_FOR_EXISTING_LISTINGS = "addCriteriaToSingleListingJob";
     private static final String JOB_NAME_FOR_PENDING_LISTINGS = "addCriteriaToSinglePendingListingJob";
     private static final String JOB_GROUP = "subordinateJobs";
+    private static final long ADMIN_ID = -2L;
 
     @Autowired
     private CertificationCriterionDAO criterionDAO;
@@ -184,6 +185,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         return criterion != null;
     }
 
+    @SuppressWarnings({"checkstyle:linelength"})
     private void addMacraMeasureMaps() {
         addMacraMeasureMap("170.315 (g)(10)", "RT2a EP Stage 3", "Patient Electronic Access: Eligible Professional", "Required Test 2: Stage 3 Objective 5 Measure 1");
         addMacraMeasureMap("170.315 (g)(10)", "RT2a EH/CAH Stage 3", "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital", "Required Test 2: Stage 3 Objective 5 Measure 1");
@@ -345,9 +347,10 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
     }
 
     private void setSecurityContext() {
+
         JWTAuthenticatedUser adminUser = new JWTAuthenticatedUser();
         adminUser.setFullName("Administrator");
-        adminUser.setId(-2L);
+        adminUser.setId(ADMIN_ID);
         adminUser.setFriendlyName("Admin");
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
@@ -359,7 +362,8 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
     @Component("insertableMacraMeasureDao")
     private static class InsertableMacraMeasureDao extends BaseDAOImpl {
 
-        public InsertableMacraMeasureDao() {
+        @SuppressWarnings("unused")
+        InsertableMacraMeasureDao() {
             super();
         }
 
@@ -381,7 +385,8 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
     @Component("insertableTestDataDao")
     private static class InsertableTestDataDao extends BaseDAOImpl {
 
-        public InsertableTestDataDao() {
+        @SuppressWarnings("unused")
+        InsertableTestDataDao() {
             super();
         }
 
@@ -417,7 +422,8 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
     @Component("insertableTestProcedureDao")
     private static class InsertableTestProcedureDao extends BaseDAOImpl {
 
-        public InsertableTestProcedureDao() {
+        @SuppressWarnings("unused")
+        InsertableTestProcedureDao() {
             super();
         }
 
@@ -453,7 +459,8 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
     @Component("pendingCertifiedProductDaoIdsOnly")
     private static class PendingCertifiedProductDaoIdsOnly extends BaseDAOImpl {
 
-        public PendingCertifiedProductDaoIdsOnly() {
+        @SuppressWarnings("unused")
+        PendingCertifiedProductDaoIdsOnly() {
             super();
         }
 
