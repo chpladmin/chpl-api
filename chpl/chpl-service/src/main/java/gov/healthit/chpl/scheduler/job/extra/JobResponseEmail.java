@@ -42,10 +42,10 @@ public class JobResponseEmail {
         sb.append("Total number of listings to update: ");
         sb.append(total);
         sb.append("<br />");
-        sb.append("Total number of listings to successfully updated: ");
+        sb.append("Total number of listings successfully updated: ");
         sb.append(success);
         sb.append("<br />");
-        sb.append("Total number of listings that failed update: ");
+        sb.append("Total number of listings that failed to update: ");
         sb.append(failed);
         sb.append("<br />");
         return sb.toString();

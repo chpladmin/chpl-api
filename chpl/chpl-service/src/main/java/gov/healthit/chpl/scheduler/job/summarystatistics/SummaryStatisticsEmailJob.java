@@ -424,7 +424,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
 
         emailMessage.append(
                 "<li>Average Duration of Closed Surveillance (in days) - "
-                        + stats.getAverageTimeFromSurveillanceOpenToSurveillanceClose() + "</li>");
+                        + stats.getAverageTimeToCloseSurveillance() + "</li>");
         emailMessage.append("</ul>");
 
         return emailMessage.toString();
@@ -455,7 +455,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         emailMessage.append("<li>Average Time from CAP Close to Surveillance Close (in days) - "
                 + stats.getAverageTimeFromCAPEndToSurveillanceEnd() + "</li>");
         emailMessage.append("<li>Average Duration of Closed Non-Conformities (in days) - "
-                + stats.getAverageTimeToCloseSurveillance() + "</li>");
+                + stats.getAverageTimeFromSurveillanceOpenToSurveillanceClose() + "</li>");
 
         emailMessage.append("<li>Number of Open CAPs</li>");
         emailMessage.append("<ul>");

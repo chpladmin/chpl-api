@@ -26,7 +26,28 @@ public class UnattestedCriteriaWithDataReviewer implements Reviewer {
                 }
                 if (!StringUtils.isEmpty(cert.getApiDocumentation())) {
                     listing.getWarningMessages().add(
-                            msgUtil.getMessage("listing.criteria.falseCriteriaHasData", cert.getCriterion().getNumber(), "API Documentation"));
+                            msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
+                                    cert.getCriterion().getNumber(), "API Documentation"));
+                }
+                if (!StringUtils.isEmpty(cert.getExportDocumentation())) {
+                    listing.getWarningMessages().add(
+                            msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
+                                    cert.getCriterion().getNumber(), "Export Documentation"));
+                }
+                if (!StringUtils.isEmpty(cert.getDocumentationUrl())) {
+                    listing.getWarningMessages().add(
+                            msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
+                                    cert.getCriterion().getNumber(), "Documentation URL"));
+                }
+                if (!StringUtils.isEmpty(cert.getUseCases())) {
+                    listing.getWarningMessages().add(
+                            msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
+                                    cert.getCriterion().getNumber(), "Use Cases"));
+                }
+                if (cert.getAttestationAnswer() != null && cert.getAttestationAnswer().booleanValue()) {
+                    listing.getWarningMessages().add(
+                            msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
+                                    cert.getCriterion().getNumber(), "Attestation Answer"));
                 }
                 if (!StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
                     listing.getWarningMessages().add(
@@ -35,15 +56,18 @@ public class UnattestedCriteriaWithDataReviewer implements Reviewer {
                 }
                 if (cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
                     listing.getWarningMessages().add(
-                            msgUtil.getMessage("listing.criteria.falseCriteriaHasData", cert.getCriterion().getNumber(), "Additional Software"));
+                            msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
+                                    cert.getCriterion().getNumber(), "Additional Software"));
                 }
                 if (cert.getTestData() != null && cert.getTestData().size() > 0) {
                     listing.getWarningMessages().add(
-                            msgUtil.getMessage("listing.criteria.falseCriteriaHasData", cert.getCriterion().getNumber(), "Test Data"));
+                            msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
+                                    cert.getCriterion().getNumber(), "Test Data"));
                 }
                 if (cert.getTestFunctionality() != null && cert.getTestFunctionality().size() > 0) {
                     listing.getWarningMessages().add(
-                            msgUtil.getMessage("listing.criteria.falseCriteriaHasData", cert.getCriterion().getNumber(), "Test Functionality"));
+                            msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
+                                    cert.getCriterion().getNumber(), "Test Functionality"));
                 }
                 if (cert.getTestProcedures() != null && cert.getTestProcedures().size() > 0) {
                     listing.getWarningMessages().add(
