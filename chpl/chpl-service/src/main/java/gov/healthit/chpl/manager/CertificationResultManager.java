@@ -119,7 +119,11 @@ public class CertificationResultManager extends SecuredManager {
                 || !ObjectUtils.equals(orig.isG2Success(), updated.isG2Success())
                 || !ObjectUtils.equals(orig.isGap(), updated.isGap())
                 || !ObjectUtils.equals(orig.isSed(), updated.isSed())
-                || !ObjectUtils.equals(orig.isSuccess(), updated.isSuccess())) {
+                || !ObjectUtils.equals(orig.isSuccess(), updated.isSuccess())
+                || !ObjectUtils.equals(orig.getAttestationAnswer(), updated.getAttestationAnswer())
+                || !ObjectUtils.equals(orig.getDocumentationUrl(), updated.getDocumentationUrl())
+                || !ObjectUtils.equals(orig.getExportDocumentation(), updated.getExportDocumentation())
+                || !ObjectUtils.equals(orig.getUseCases(), updated.getUseCases())) {
             hasChanged = true;
         }
         if (hasChanged) {
@@ -142,11 +146,19 @@ public class CertificationResultManager extends SecuredManager {
                 toUpdate.setPrivacySecurityFramework(updated.getPrivacySecurityFramework());
                 toUpdate.setGap(updated.isGap());
                 toUpdate.setSed(updated.isSed());
+                toUpdate.setAttestationAnswer(updated.getAttestationAnswer());
+                toUpdate.setDocumentationUrl(updated.getDocumentationUrl());
+                toUpdate.setExportDocumentation(updated.getExportDocumentation());
+                toUpdate.setUseCases(updated.getUseCases());
             } else {
                 toUpdate.setApiDocumentation(null);
                 toUpdate.setPrivacySecurityFramework(null);
                 toUpdate.setGap(null);
                 toUpdate.setSed(null);
+                toUpdate.setAttestationAnswer(null);
+                toUpdate.setDocumentationUrl(null);
+                toUpdate.setExportDocumentation(null);
+                toUpdate.setUseCases(null);
             }
 
             certResultDAO.update(toUpdate);

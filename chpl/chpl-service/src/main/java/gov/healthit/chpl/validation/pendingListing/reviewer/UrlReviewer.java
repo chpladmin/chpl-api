@@ -37,6 +37,9 @@ public class UrlReviewer implements Reviewer {
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
             if (cert.isReviewable()) {
                 addCriteriaErrorIfNotValid(listing, cert, cert.getApiDocumentation(), "API Documentation");
+                addCriteriaErrorIfNotValid(listing, cert, cert.getExportDocumentation(), "ExportDocumentation");
+                addCriteriaErrorIfNotValid(listing, cert, cert.getDocumentationUrl(), "Documentation Url");
+                addCriteriaErrorIfNotValid(listing, cert, cert.getUseCases(), "Use Cases");
             }
         }
     }

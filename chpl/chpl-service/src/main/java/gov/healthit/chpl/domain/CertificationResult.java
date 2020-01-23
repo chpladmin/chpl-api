@@ -90,6 +90,14 @@ public class CertificationResult implements Serializable {
     private Boolean g2Success;
 
     /**
+     * This variable indicates if the corresponding certification criteria has
+     * an attestation answer. It is a binary value that takes either true or false,
+     * and is applicable to 2015 Edition.
+     */
+    @XmlElement(required = false, nillable = true)
+    private Boolean attestationAnswer;
+
+    /**
      * The hyperlink to access an application programming interface (API)'s
      * documentation and terms of use. This variable is applicable for only 2015
      * Edition. It is fully qualified URL which is reachable via web browser
@@ -97,6 +105,30 @@ public class CertificationResult implements Serializable {
      */
     @XmlElement(required = false, nillable = true)
     private String apiDocumentation;
+
+    /**
+     * The hyperlink to access export documentation. This variable is applicable
+     * for only 2015 Edition. It is fully qualified URL which is reachable via
+     * web browser validation and verification.
+     */
+    @XmlElement(required = false, nillable = true)
+    private String exportDocumentation;
+
+    /**
+     * The hyperlink to access a documentation URL. This variable is applicable
+     * for only 2015 Edition. It is fully qualified URL which is reachable via
+     * web browser validation and verification.
+     */
+    @XmlElement(required = false, nillable = true)
+    private String documentationUrl;
+
+    /**
+     * The hyperlink to access Use Case(s). This variable is applicable for only
+     * 2015 Edition. It is fully qualified URL which is reachable via web browser
+     * validation and verification.
+     */
+    @XmlElement(required = false, nillable = true)
+    private String useCases;
 
     /**
      * This variable explains the way in which each privacy and security
@@ -228,7 +260,11 @@ public class CertificationResult implements Serializable {
         this.setSed(certResult.getSed() == null ? Boolean.FALSE : certResult.getSed());
         this.setG1Success(certResult.getG1Success() == null ? Boolean.FALSE : certResult.getG1Success());
         this.setG2Success(certResult.getG2Success() == null ? Boolean.FALSE : certResult.getG2Success());
+        this.setAttestationAnswer(certResult.getAttestationAnswer() == null ? Boolean.FALSE : certResult.getAttestationAnswer());
         this.setApiDocumentation(certResult.getApiDocumentation());
+        this.setExportDocumentation(certResult.getExportDocumentation());
+        this.setDocumentationUrl(certResult.getDocumentationUrl());
+        this.setUseCases(certResult.getUseCases());
         this.setPrivacySecurityFramework(certResult.getPrivacySecurityFramework());
         if (certResult.getCriterion() != null) {
             this.criterion = new CertificationCriterion(certResult.getCriterion());
@@ -361,6 +397,38 @@ public class CertificationResult implements Serializable {
 
     public void setApiDocumentation(final String apiDocumentation) {
         this.apiDocumentation = apiDocumentation;
+    }
+
+    public Boolean getAttestationAnswer() {
+        return attestationAnswer;
+    }
+
+    public void setAttestationAnswer(Boolean attestationAnswer) {
+        this.attestationAnswer = attestationAnswer;
+    }
+
+    public String getExportDocumentation() {
+        return exportDocumentation;
+    }
+
+    public void setExportDocumentation(String exportDocumentation) {
+        this.exportDocumentation = exportDocumentation;
+    }
+
+    public String getDocumentationUrl() {
+        return documentationUrl;
+    }
+
+    public void setDocumentationUrl(String documentationUrl) {
+        this.documentationUrl = documentationUrl;
+    }
+
+    public String getUseCases() {
+        return useCases;
+    }
+
+    public void setUseCases(String useCases) {
+        this.useCases = useCases;
     }
 
     public String getPrivacySecurityFramework() {

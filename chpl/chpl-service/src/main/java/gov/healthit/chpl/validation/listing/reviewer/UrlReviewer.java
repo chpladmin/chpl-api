@@ -33,6 +33,9 @@ public class UrlReviewer implements Reviewer {
         for (CertificationResult cert : listing.getCertificationResults()) {
             if (cert.isReviewable()) {
                 addCriteriaErrorIfNotValid(listing, cert, cert.getApiDocumentation(), "API Documentation");
+                addCriteriaErrorIfNotValid(listing, cert, cert.getExportDocumentation(), "ExportDocumentation");
+                addCriteriaErrorIfNotValid(listing, cert, cert.getDocumentationUrl(), "Documentation Url");
+                addCriteriaErrorIfNotValid(listing, cert, cert.getUseCases(), "Use Cases");
             }
         }
     }

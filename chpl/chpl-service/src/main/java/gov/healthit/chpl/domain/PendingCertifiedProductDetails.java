@@ -249,6 +249,10 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
             cert.setG2Success(certCriterion.getG2Success());
             cert.setApiDocumentation(certCriterion.getApiDocumentation());
             cert.setPrivacySecurityFramework(certCriterion.getPrivacySecurityFramework());
+            cert.setAttestationAnswer(certCriterion.getAttestationAnswer());
+            cert.setDocumentationUrl(certCriterion.getDocumentationUrl());
+            cert.setExportDocumentation(certCriterion.getExportDocumentation());
+            cert.setUseCases(certCriterion.getUseCases());
 
             if (certCriterion.getAdditionalSoftware() != null) {
                 for (PendingCertificationResultAdditionalSoftwareDTO as : certCriterion.getAdditionalSoftware()) {
