@@ -291,6 +291,17 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <RollingFile name="addCriteriaToListingsJob"
+            fileName="${logDir}/scheduler/addCriteriaToListingsJob.log"
+            filePattern="${logDir}/scheduler/history/addCriteriaToListingsJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
     </Appenders>
     <Loggers>
         <Logger name="org.jose4j" level="ERROR" additivity="false">
@@ -406,6 +417,10 @@
         <Logger name="removeRT13ECMacraMeasureJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="removeRT13ECMacraMeasureJob" />
+        </Logger>
+        <Logger name="addCriteriaToListingsJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="addCriteriaToListingsJob" />
         </Logger>
     </Loggers>
 </Configuration>

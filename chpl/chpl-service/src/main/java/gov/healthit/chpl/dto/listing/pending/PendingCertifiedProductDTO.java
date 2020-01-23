@@ -300,6 +300,10 @@ public class PendingCertifiedProductDTO implements Serializable {
             certDto.setSed(crResult.isSed());
             certDto.setApiDocumentation(crResult.getApiDocumentation());
             certDto.setPrivacySecurityFramework(crResult.getPrivacySecurityFramework());
+            certDto.setAttestationAnswer(crResult.getAttestationAnswer());
+            certDto.setDocumentationUrl(crResult.getDocumentationUrl());
+            certDto.setExportDocumentation(crResult.getExportDocumentation());
+            certDto.setUseCases(crResult.getUseCases());
 
             if (crResult.getAdditionalSoftware() != null && crResult.getAdditionalSoftware().size() > 0) {
                 for (CertificationResultAdditionalSoftware software : crResult.getAdditionalSoftware()) {

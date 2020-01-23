@@ -115,6 +115,7 @@ public class SurveillanceManagerTest extends TestCase {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         Mockito.doReturn(true).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK);
+        Mockito.doReturn(true).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE);
     }
 
     @Test

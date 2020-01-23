@@ -3,7 +3,9 @@ package gov.healthit.chpl.upload.certifiedProduct;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AgeRangeDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
@@ -201,13 +204,32 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
             }
         }
         if (firstRow != null) {
+            //get all 2015 criteria and track whether they were added to the listing via the upload parsing
+            //add them after all the parsing is done if they were not present in the upload
+            List<CertificationCriterionDTO> all2015Criteria = certDao.findByCertificationEditionYear(
+                    CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
+            Map<String, Boolean> allCriteriaMap = new LinkedHashMap<String, Boolean>();
+            for (CertificationCriterionDTO criterion : all2015Criteria) {
+                allCriteriaMap.put(criterion.getNumber(), Boolean.FALSE);
+            }
+
             int criteriaBeginIndex = getColumnIndexMap().getCriteriaStartIndex();
             for (int i = 0; i < getCriteriaNames().length; i++) {
                 String criteriaName = getCriteriaNames()[i];
+                allCriteriaMap.put(criteriaName, Boolean.TRUE);
                 int criteriaEndIndex = getColumnIndexMap().getLastIndexForCriteria(getHeading(), criteriaBeginIndex);
                 pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
                         criteriaName, firstRow, criteriaBeginIndex, criteriaEndIndex));
                 criteriaBeginIndex = criteriaEndIndex + 1;
+            }
+
+            //add certification results for any criteria that are part of the edition but that
+            //weren't in the upload file
+            for (String criterionNumber : allCriteriaMap.keySet()) {
+                if (allCriteriaMap.get(criterionNumber).equals(Boolean.FALSE)) {
+                    pendingCertifiedProduct.getCertificationCriterion().add(
+                            getCertificationResult(criterionNumber, ""));
+                }
             }
         }
 
@@ -406,7 +428,6 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
         PendingCertificationResultEntity cert = null;
         try {
             cert = getCertificationResult(criteriaNumber, firstRow.get(currIndex++).toString());
-
             while (currIndex <= endIndex) {
                 String colTitle = getHeading().get(currIndex).trim();
                 if (!StringUtils.isEmpty(colTitle)) {
