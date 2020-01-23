@@ -358,15 +358,19 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
     }
 
     @Component("extendedCertificationCriterionDao")
-    private static class ExtendedCertificationCriterionDao extends BaseDAOImpl {
-
-        @SuppressWarnings("unused")
+    public static class ExtendedCertificationCriterionDao extends BaseDAOImpl {
         ExtendedCertificationCriterionDao() {
             super();
         }
 
         @Transactional
-        public CertificationCriterionDTO getByNumberAndTitle(final String criterionNumber, final String criterionTitle) {
+        public CertificationCriterionDTO getByNumberAndTitle(String criterionNumber, String criterionTitle) {
+            CertificationCriterionDTO result = new CertificationCriterionDTO(getEntityByNumberAndTitle(criterionNumber, criterionTitle));
+            return result;
+        }
+
+        @Transactional
+        public CertificationCriterionEntity getEntityByNumberAndTitle(String criterionNumber, String criterionTitle) {
             Query query = entityManager
                     .createQuery(
                             "SELECT cce " + "FROM CertificationCriterionEntity cce "
@@ -382,13 +386,10 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
             if (results.size() > 0) {
                 entity = results.get(0);
             }
-            CertificationCriterionDTO result = null;
-            if (entity != null) {
-                result = new CertificationCriterionDTO(entity);
-            }
-            return result;
+            return entity;
         }
     }
+
     @Component("insertableMacraMeasureDao")
     private static class InsertableMacraMeasureDao extends BaseDAOImpl {
 
