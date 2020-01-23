@@ -288,11 +288,4 @@ public class PendingCertificationResultDTO implements Serializable {
     public void setCriterion(final CertificationCriterionDTO criterion) {
         this.criterion = criterion;
     }
-
-    public boolean isReviewable() {
-        return getMeetsCriteria() != null && getMeetsCriteria().equals(Boolean.TRUE)
-                && getCriterion() != null && getCriterion().getRemoved() != null
-                && getCriterion().getRemoved().equals(Boolean.FALSE);
-    }
-
 }

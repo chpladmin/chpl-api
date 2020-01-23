@@ -12,17 +12,18 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("pendingRequiredDataReviewer")
-public class RequiredDataReviewer implements Reviewer {
-    protected ErrorMessageUtil msgUtil;
+public class RequiredDataReviewer extends PermissionBasedReviewer {
     protected CertificationResultRules certRules;
 
     @Autowired
-    public RequiredDataReviewer(final ErrorMessageUtil msgUtil, final CertificationResultRules certRules) {
-        this.msgUtil = msgUtil;
+    public RequiredDataReviewer(ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
+            CertificationResultRules certRules) {
+        super(msgUtil, resourcePermissions);
         this.certRules = certRules;
     }
 
@@ -93,11 +94,11 @@ public class RequiredDataReviewer implements Reviewer {
             if (cert.getMeetsCriteria() == null) {
                 listing.getErrorMessages().add(
                         msgUtil.getMessage("listing.criteria.metInvalid", cert.getCriterion().getNumber()));
-            } else if (cert.isReviewable()) {
+            } else if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria().equals(Boolean.TRUE)) {
                 if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.GAP)
                         && cert.getGap() == null) {
-                    listing.getErrorMessages().add(
-                            msgUtil.getMessage("listing.criteria.missingGap", cert.getCriterion().getNumber()));
+                    addRemovedCriteriaWarningByPermission(listing, cert,
+                            "listing.criteria.missingGap", cert.getCriterion().getNumber());
                 }
 
                 boolean gapEligibleAndTrue = false;
