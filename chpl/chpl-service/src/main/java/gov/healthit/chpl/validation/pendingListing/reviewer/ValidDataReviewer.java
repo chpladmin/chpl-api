@@ -1,5 +1,6 @@
 package gov.healthit.chpl.validation.pendingListing.reviewer;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -8,30 +9,38 @@ import gov.healthit.chpl.domain.concept.PrivacyAndSecurityFrameworkConcept;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("pendingValidDataReviewer")
-public class ValidDataReviewer implements Reviewer {
+public class ValidDataReviewer extends PermissionBasedReviewer {
+
+    @Autowired
+    public ValidDataReviewer(ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
+        super(msgUtil, resourcePermissions);
+    }
 
     @Override
     public void review(PendingCertifiedProductDTO listing) {
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
-            if (cert.isReviewable()) {
+            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria().equals(Boolean.TRUE)) {
                 if (!StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
                     String formattedPrivacyAndSecurityFramework = CertificationResult
                             .formatPrivacyAndSecurityFramework(cert.getPrivacySecurityFramework());
                     PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept
                             .getValue(formattedPrivacyAndSecurityFramework);
                     if (foundPrivacyAndSecurityFramework == null) {
-                        listing.getErrorMessages().add("Certification " + cert.getCriterion().getNumber()
-                        + " contains Privacy and Security Framework value '" + formattedPrivacyAndSecurityFramework
-                        + "' which must match one of " + PrivacyAndSecurityFrameworkConcept.getFormattedValues());
+                        addErrorOrWarningByPermission(listing, cert,
+                                "listing.criteria.invalidPrivacySecurityFramework", cert.getCriterion().getNumber(),
+                                formattedPrivacyAndSecurityFramework, PrivacyAndSecurityFrameworkConcept.getFormattedValues());
                     }
                 }
                 if (cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
                     for (PendingCertificationResultAdditionalSoftwareDTO asDto : cert.getAdditionalSoftware()) {
                         if (!StringUtils.isEmpty(asDto.getChplId()) && asDto.getCertifiedProductId() == null) {
-                            listing.getErrorMessages().add("No CHPL product was found matching additional software "
-                                    + asDto.getChplId() + " for " + cert.getCriterion().getNumber());
+                            addErrorOrWarningByPermission(listing, cert,
+                                    "listing.criteria.invalidAdditionalSoftware", asDto.getChplId(),
+                                    cert.getCriterion().getNumber());
                         }
                     }
                 }

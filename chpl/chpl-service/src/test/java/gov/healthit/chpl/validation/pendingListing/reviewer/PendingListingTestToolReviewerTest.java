@@ -20,6 +20,7 @@ import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -59,6 +60,8 @@ public class PendingListingTestToolReviewerTest {
     private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
     @Spy
     private CertificationResultRules certRules;
+    @Spy
+    private ResourcePermissions resourcePermissions;
 
     private TestToolReviewer testToolReviewer;
     private TestTool2015Reviewer testTool2015Reviewer;
@@ -68,8 +71,8 @@ public class PendingListingTestToolReviewerTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        testToolReviewer = new TestToolReviewer(testToolDao, msgUtil, productNumberUtil);
-        testTool2015Reviewer= new TestTool2015Reviewer(msgUtil);
+        testToolReviewer = new TestToolReviewer(testToolDao, msgUtil, productNumberUtil, resourcePermissions);
+        testTool2015Reviewer= new TestTool2015Reviewer(msgUtil, resourcePermissions);
         ambulatoryTestToolReviewier = new AmbulatoryRequiredTestToolReviewer(msgUtil, certRules);
 
         Mockito.doReturn(NO_TEST_TOOL_ERROR).when(msgUtil)

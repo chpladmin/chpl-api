@@ -23,8 +23,9 @@ import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.TestFunctionalityCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.manager.TestingFunctionalityManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 
 /**
  * Makes sure test functionality is valid given criteria it is applied to.
@@ -34,21 +35,20 @@ import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 @Component("testFunctionality2015Reviewer")
 @Transactional
 @DependsOn("certificationEditionDAO")
-public class TestFunctionality2015Reviewer implements Reviewer {
+public class TestFunctionality2015Reviewer extends PermissionBasedReviewer {
     private TestFunctionalityDAO testFunctionalityDAO;
     private TestingFunctionalityManager testFunctionalityManager;
-    private ErrorMessageUtil msgUtil;
     private CertificationEditionDAO editionDAO;
     private List<CertificationEditionDTO> editionDTOs;
 
     @Autowired
     public TestFunctionality2015Reviewer(TestFunctionalityDAO testFunctionalityDAO,
             TestingFunctionalityManager testFunctionalityManager, CertificationEditionDAO editionDAO,
-            ErrorMessageUtil msgUtil) {
+            ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
+        super(msgUtil, resourcePermissions);
         this.testFunctionalityDAO = testFunctionalityDAO;
         this.testFunctionalityManager = testFunctionalityManager;
         this.editionDAO = editionDAO;
-        this.msgUtil = msgUtil;
     }
 
     @PostConstruct
@@ -60,10 +60,13 @@ public class TestFunctionality2015Reviewer implements Reviewer {
     public void review(final CertifiedProductSearchDetails listing) {
         if (listing.getCertificationResults() != null) {
             for (CertificationResult cr : listing.getCertificationResults()) {
-                if (cr.isReviewable() && cr.getTestFunctionality() != null) {
+                if (cr.isSuccess() != null && cr.isSuccess().equals(Boolean.TRUE)
+                        && cr.getTestFunctionality() != null) {
                     for (CertificationResultTestFunctionality crtf : cr.getTestFunctionality()) {
-                        listing.getErrorMessages().addAll(
-                                getTestingFunctionalityErrorMessages(crtf, cr, listing));
+                        Set<String> messages = getTestingFunctionalityErrorMessages(crtf, cr, listing);
+                        for (String message : messages) {
+                            addErrorOrWarningByPermission(listing, cr, message);
+                        }
                     }
                 }
             }

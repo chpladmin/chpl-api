@@ -22,8 +22,9 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.manager.TestingFunctionalityManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.PermissionBasedReviewer;
 
 /**
  * Confirms that the test functionality is valid for the criteria that is applying it.
@@ -32,27 +33,21 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
  */
 @Component("pendingTestFunctionality2015Reviewer")
 @DependsOn("certificationEditionDAO")
-public class TestFunctionality2015Reviewer implements Reviewer {//, ApplicationListener<ContextRefreshedEvent> {
+public class TestFunctionality2015Reviewer extends PermissionBasedReviewer {
     private TestFunctionalityDAO testFunctionalityDAO;
     private TestingFunctionalityManager testFunctionalityManager;
-    private ErrorMessageUtil msgUtil;
     private CertificationEditionDAO editionDAO;
     private List<CertificationEditionDTO> editionDTOs;
 
     @Autowired
     public TestFunctionality2015Reviewer(TestFunctionalityDAO testFunctionalityDAO,
             TestingFunctionalityManager testFunctionalityManager, CertificationEditionDAO editionDAO,
-            ErrorMessageUtil msgUtil) {
+            ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
+        super(msgUtil, resourcePermissions);
         this.testFunctionalityDAO = testFunctionalityDAO;
         this.testFunctionalityManager = testFunctionalityManager;
         this.editionDAO = editionDAO;
-        this.msgUtil = msgUtil;
     }
-
-    //    @Override
-    //    public void onApplicationEvent(ContextRefreshedEvent event) {
-    //        editionDTOs = editionDAO.findAll();
-    //    }
 
     @PostConstruct
     public void init() {
@@ -63,7 +58,8 @@ public class TestFunctionality2015Reviewer implements Reviewer {//, ApplicationL
     public void review(final PendingCertifiedProductDTO listing) {
         if (listing.getCertificationCriterion() != null) {
             for (PendingCertificationResultDTO cr : listing.getCertificationCriterion()) {
-                if (cr.isReviewable() && cr.getTestFunctionality() != null) {
+                if (cr.getMeetsCriteria() != null && cr.getMeetsCriteria().equals(Boolean.TRUE)
+                        && cr.getTestFunctionality() != null) {
                     Iterator<PendingCertificationResultTestFunctionalityDTO> crtfIter =
                             cr.getTestFunctionality().iterator();
                     while (crtfIter.hasNext()) {
@@ -71,9 +67,8 @@ public class TestFunctionality2015Reviewer implements Reviewer {//, ApplicationL
                         TestFunctionalityDTO tf =
                                 getTestFunctionality(crtf.getNumber(), getEditionDTO(listing.getCertificationEdition()));
                         if (tf == null) {
-                            listing.getErrorMessages().add(
-                                    msgUtil.getMessage("listing.criteria.testFunctionalityNotFoundAndRemoved",
-                                            cr.getCriterion().getNumber(), crtf.getNumber()));
+                            addErrorOrWarningByPermission(listing, cr, "listing.criteria.testFunctionalityNotFoundAndRemoved",
+                                            cr.getCriterion().getNumber(), crtf.getNumber());
                             crtfIter.remove();
                         } else {
                             Set<String> warnings = getTestingFunctionalityWarningMessages(crtf, cr, listing);

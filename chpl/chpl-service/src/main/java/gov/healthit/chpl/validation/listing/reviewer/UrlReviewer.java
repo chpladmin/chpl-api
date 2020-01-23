@@ -6,6 +6,7 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
@@ -15,9 +16,12 @@ import gov.healthit.chpl.util.ValidationUtils;
  *
  */
 @Component("urlReviewer")
-public class UrlReviewer implements Reviewer {
+public class UrlReviewer extends PermissionBasedReviewer {
 
-    @Autowired private ErrorMessageUtil msgUtil;
+    @Autowired
+    public UrlReviewer(ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
+        super(msgUtil, resourcePermissions);
+    }
 
     @Override
     public void review(final CertifiedProductSearchDetails listing) {
@@ -31,9 +35,9 @@ public class UrlReviewer implements Reviewer {
 
         //check all criteria fields
         for (CertificationResult cert : listing.getCertificationResults()) {
-            if (cert.isReviewable()) {
+            if (cert.isSuccess() != null && cert.isSuccess().equals(Boolean.TRUE)) {
                 addCriteriaErrorIfNotValid(listing, cert, cert.getApiDocumentation(), "API Documentation");
-                addCriteriaErrorIfNotValid(listing, cert, cert.getExportDocumentation(), "ExportDocumentation");
+                addCriteriaErrorIfNotValid(listing, cert, cert.getExportDocumentation(), "Export Documentation");
                 addCriteriaErrorIfNotValid(listing, cert, cert.getDocumentationUrl(), "Documentation Url");
                 addCriteriaErrorIfNotValid(listing, cert, cert.getUseCases(), "Use Cases");
             }
@@ -54,14 +58,11 @@ public class UrlReviewer implements Reviewer {
     }
 
     private void addCriteriaErrorIfNotValid(final CertifiedProductSearchDetails listing,
-            final CertificationResult criteria, final String input, final String fieldName) {
+            final CertificationResult cert, final String input, final String fieldName) {
         if (!StringUtils.isEmpty(input)) {
-            if (ValidationUtils.hasNewline(input)) {
-                listing.getErrorMessages().add(
-                        msgUtil.getMessage("listing.criteria.invalidUrlFound", fieldName, criteria.getNumber()));
-            } else if (!ValidationUtils.isWellFormedUrl(input)) {
-                listing.getErrorMessages().add(
-                        msgUtil.getMessage("listing.criteria.invalidUrlFound", fieldName, criteria.getNumber()));
+            if (ValidationUtils.hasNewline(input) || !ValidationUtils.isWellFormedUrl(input)) {
+                addErrorOrWarningByPermission(listing, cert,
+                        "listing.criteria.invalidUrlFound", fieldName, cert.getNumber());
             }
         }
     }

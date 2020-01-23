@@ -17,6 +17,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ListingMockUtil;
@@ -49,13 +50,16 @@ public class RequiredDataReviewerTest {
     @Spy
     private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
 
+    @Spy
+    private ResourcePermissions resourcePermissions;
+
     private RequiredDataReviewer requiredDataReivewer;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        requiredDataReivewer = new RequiredDataReviewer(certResultRules, msgUtil);
+        requiredDataReivewer = new RequiredDataReviewer(certResultRules, msgUtil, resourcePermissions);
 
         Mockito.doReturn(CRITERIA_MISSING_GAP_ERROR_START)
         .when(msgUtil).getMessage(

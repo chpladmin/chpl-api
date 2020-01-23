@@ -19,7 +19,7 @@ public class SedG32015Reviewer implements Reviewer {
         boolean attestsToSed = false;
 
         for (CertificationResult cert : listing.getCertificationResults()) {
-            if (cert.isReviewable()) {
+            if (cert.isSuccess() != null && cert.isSuccess().equals(Boolean.TRUE)) {
                 if (cert.isSed() != null && cert.isSed()) {
                     foundSedCriteria = true;
                 }

@@ -1,10 +1,10 @@
-package gov.healthit.chpl.validation.pendingListing.reviewer;
+package gov.healthit.chpl.validation.listing.reviewer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -20,19 +20,26 @@ public abstract class PermissionBasedReviewer implements Reviewer {
     }
 
     public void addErrorOrWarningByPermission(
-            PendingCertifiedProductDTO listing, PendingCertificationResultDTO certResult,
+            CertifiedProductSearchDetails listing, CertificationResult certResult,
             String errorMessageName, Object... errorMessageArgs) {
+        String message = msgUtil.getMessage(errorMessageName, errorMessageArgs);
+        addErrorOrWarningByPermission(listing, certResult, message);
+    }
+
+    public void addErrorOrWarningByPermission(
+            CertifiedProductSearchDetails listing, CertificationResult certResult,
+            String message) {
         if (certResult.getCriterion() != null && certResult.getCriterion().getRemoved() != null
                 && certResult.getCriterion().getRemoved().equals(Boolean.TRUE)
                 && (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc())) {
-                listing.getWarningMessages().add(msgUtil.getMessage(errorMessageName, errorMessageArgs));
+                listing.getWarningMessages().add(message);
                 //ACBs do not get any error or warning about removed criteria validation issues
         } else if (certResult.getCriterion() != null && (certResult.getCriterion().getRemoved() == null
                 || certResult.getCriterion().getRemoved().equals(Boolean.FALSE))) {
-            listing.getErrorMessages().add(msgUtil.getMessage(errorMessageName, errorMessageArgs));
+            listing.getErrorMessages().add(message);
         }
     }
 
     @Override
-    public abstract void review(PendingCertifiedProductDTO listing);
+    public abstract void review(CertifiedProductSearchDetails listing);
 }

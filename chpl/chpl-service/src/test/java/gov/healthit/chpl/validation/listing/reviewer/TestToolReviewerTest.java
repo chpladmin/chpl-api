@@ -20,6 +20,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.TestToolDTO;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ListingMockUtil;
@@ -55,6 +56,9 @@ public class TestToolReviewerTest {
     @Spy
     private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
 
+    @Spy
+    private ResourcePermissions resourcePermissions;
+
     private TestToolReviewer testToolReviewer;
     private TestTool2015Reviewer testTool2015Reviewer;
 
@@ -62,8 +66,8 @@ public class TestToolReviewerTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        testToolReviewer = new TestToolReviewer(testToolDao, msgUtil, productNumberUtil);
-        testTool2015Reviewer = new TestTool2015Reviewer(msgUtil);
+        testToolReviewer = new TestToolReviewer(testToolDao, msgUtil, resourcePermissions);
+        testTool2015Reviewer = new TestTool2015Reviewer(msgUtil, resourcePermissions);
 
         Mockito.doReturn(NO_TEST_TOOL_NAME_ERROR).when(msgUtil)
                 .getMessage(ArgumentMatchers.eq("listing.criteria.missingTestToolName"), ArgumentMatchers.anyString());

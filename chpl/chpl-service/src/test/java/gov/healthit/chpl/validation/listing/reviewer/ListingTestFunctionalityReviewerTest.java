@@ -44,6 +44,7 @@ import gov.healthit.chpl.dto.TestFunctionalityCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.manager.TestingFunctionalityManager;
 import gov.healthit.chpl.manager.impl.TestingFunctionalityManagerImpl;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ListingMockUtil;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.TestFunctionality2014Reviewer;
@@ -70,6 +71,9 @@ public class ListingTestFunctionalityReviewerTest {
     @Mock
     private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
 
+    @Mock
+    private ResourcePermissions resourcePermissions;
+
     @Spy
     private CertificationEditionDAO certificationEditionDAO;
 
@@ -89,7 +93,7 @@ public class ListingTestFunctionalityReviewerTest {
                 certificationEditionDAO, msgUtil);
 
         tfReviewer2015 = new TestFunctionality2015Reviewer(testFunctionalityDAO, testFunctionalityManager,
-                certificationEditionDAO, msgUtil);
+                certificationEditionDAO, msgUtil, resourcePermissions);
 
         Mockito.doReturn("In Criteria 170.314 (a)(6), Test Functionality (a)(6)(11) is for "
                 + "other Settings and is not valid for Practice Type Ambulatory.")

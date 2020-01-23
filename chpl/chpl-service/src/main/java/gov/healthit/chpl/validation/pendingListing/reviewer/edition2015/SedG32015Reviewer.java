@@ -11,7 +11,12 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
 @Component("pendingSedG32015Reviewer")
 public class SedG32015Reviewer implements Reviewer {
     private static final String G3_2015 = "170.315 (g)(3)";
-    @Autowired private ErrorMessageUtil msgUtil;
+    private ErrorMessageUtil msgUtil;
+
+    @Autowired
+    public SedG32015Reviewer(ErrorMessageUtil msgUtil) {
+        this.msgUtil = msgUtil;
+    }
 
     @Override
     public void review(PendingCertifiedProductDTO listing) {
@@ -19,7 +24,7 @@ public class SedG32015Reviewer implements Reviewer {
         boolean attestsToSed = false;
 
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
-            if (cert.isReviewable()) {
+            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria().equals(Boolean.TRUE)) {
                 if (cert.getSed() != null && cert.getSed().booleanValue()) {
                     foundSedCriteria = true;
                 }

@@ -24,6 +24,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ListingMockUtil;
@@ -43,6 +44,9 @@ public class PendingListingRequiredDataReviewerTest {
     private CertificationResultRules certRules;
 
     @Spy
+    private ResourcePermissions resourcePermissions;
+
+    @Spy
     private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
 
     private RequiredDataReviewer reviewer;
@@ -50,7 +54,7 @@ public class PendingListingRequiredDataReviewerTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        reviewer = new RequiredDataReviewer(msgUtil, certRules);
+        reviewer = new RequiredDataReviewer(msgUtil, resourcePermissions, certRules);
 
         //TODO - Can this be extracted as some sort of generic method, so it can be used all error messages??
         Mockito.doAnswer(new Answer<String>() {

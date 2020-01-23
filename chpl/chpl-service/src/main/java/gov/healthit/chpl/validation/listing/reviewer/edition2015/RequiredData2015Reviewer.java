@@ -30,6 +30,7 @@ import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -96,8 +97,9 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
     @Autowired
     public RequiredData2015Reviewer(CertificationResultRules certRules, ErrorMessageUtil msgUtil, MacraMeasureDAO macraDao,
-            TestFunctionalityDAO testFuncDao, TestProcedureDAO testProcDao, TestDataDAO testDataDao) {
-        super(certRules, msgUtil);
+            TestFunctionalityDAO testFuncDao, TestProcedureDAO testProcDao, TestDataDAO testDataDao,
+            ResourcePermissions resourcePermissions) {
+        super(certRules, msgUtil, resourcePermissions);
         this.macraDao = macraDao;
         this.testFuncDao = testFuncDao;
         this.testProcDao = testProcDao;
@@ -124,7 +126,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
         List<String> allMetCerts = new ArrayList<String>();
         for (CertificationResult certCriteria : listing.getCertificationResults()) {
-            if (certCriteria.isReviewable()) {
+            if (certCriteria.isSuccess() != null && certCriteria.isSuccess().equals(Boolean.TRUE)) {
                 allMetCerts.add(certCriteria.getNumber());
             }
         }
@@ -257,49 +259,49 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 needsG3 = true;
 
                 // check for full set of UCD data
-                for (CertificationResult certCriteria : listing.getCertificationResults()) {
-                    if (certCriteria.getNumber().equals(UCD_RELATED_CERTS[i])) {
+                for (CertificationResult cert : listing.getCertificationResults()) {
+                    if (cert.getNumber().equals(UCD_RELATED_CERTS[i])) {
                         // make sure at least one UCD process has this criteria
                         // number
-                        if (certCriteria.isSed()) {
+                        if (cert.isSed()) {
                             if (listing.getSed() == null || listing.getSed().getUcdProcesses() == null
                                     || listing.getSed().getUcdProcesses().size() == 0) {
-                                listing.getErrorMessages().add("Certification " + certCriteria.getNumber()
-                                + " requires at least one UCD process.");
+                                addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingUcdProcess",
+                                        cert.getNumber());
                             } else {
 
                                 boolean foundCriteria = false;
                                 for (UcdProcess ucd : listing.getSed().getUcdProcesses()) {
                                     for (CertificationCriterion criteria : ucd.getCriteria()) {
-                                        if (criteria.getNumber().equalsIgnoreCase(certCriteria.getNumber())) {
+                                        if (criteria.getNumber().equalsIgnoreCase(cert.getNumber())) {
                                             foundCriteria = true;
                                         }
                                     }
                                 }
                                 if (!foundCriteria) {
-                                    listing.getErrorMessages().add("Certification " + certCriteria.getNumber()
-                                    + " requires at least one UCD process.");
+                                    addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingUcdProcess",
+                                            cert.getNumber());
                                 }
                             }
                         }
-                        if (certCriteria.isSed()) {
+                        if (cert.isSed()) {
                             if (listing.getSed() == null || listing.getSed().getTestTasks() == null
                                     || listing.getSed().getTestTasks().size() == 0) {
-                                listing.getErrorMessages().add("Certification " + certCriteria.getNumber()
-                                + " requires at least one test task.");
+                                addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestTask",
+                                        cert.getNumber());
                             } else {
 
                                 boolean foundCriteria = false;
                                 for (TestTask tt : listing.getSed().getTestTasks()) {
                                     for (CertificationCriterion criteria : tt.getCriteria()) {
-                                        if (criteria.getNumber().equalsIgnoreCase(certCriteria.getNumber())) {
+                                        if (criteria.getNumber().equalsIgnoreCase(cert.getNumber())) {
                                             foundCriteria = true;
                                         }
                                     }
                                 }
                                 if (!foundCriteria) {
-                                    listing.getErrorMessages().add("Certification " + certCriteria.getNumber()
-                                    + " requires at least one test task.");
+                                    addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestTask",
+                                            cert.getNumber());
                                 }
                             }
                         }

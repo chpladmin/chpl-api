@@ -97,7 +97,7 @@ public class RequiredDataReviewer extends PermissionBasedReviewer {
             } else if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria().equals(Boolean.TRUE)) {
                 if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.GAP)
                         && cert.getGap() == null) {
-                    addRemovedCriteriaWarningByPermission(listing, cert,
+                    addErrorOrWarningByPermission(listing, cert,
                             "listing.criteria.missingGap", cert.getCriterion().getNumber());
                 }
 
@@ -111,8 +111,7 @@ public class RequiredDataReviewer extends PermissionBasedReviewer {
                 if (!gapEligibleAndTrue
                         && certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.TEST_PROCEDURE)
                         && (cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
-                    listing.getErrorMessages()
-                            .add(msgUtil.getMessage("listing.criteria.missingTestProcedure", cert.getCriterion().getNumber()));
+                    addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestProcedure", cert.getCriterion().getNumber());
                 }
             }
 

@@ -11,6 +11,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.TestToolDTO;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 /**
@@ -22,27 +23,26 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
  *
  */
 @Component("testToolReviewer")
-public class TestToolReviewer implements Reviewer {
+public class TestToolReviewer extends PermissionBasedReviewer {
     private TestToolDAO testToolDao;
-    private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public TestToolReviewer(TestToolDAO testToolDAO, ErrorMessageUtil msgUtil) {
+    public TestToolReviewer(TestToolDAO testToolDAO, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
+        super(msgUtil, resourcePermissions);
         this.testToolDao = testToolDAO;
-        this.msgUtil = msgUtil;
     }
 
     @Override
     public void review(final CertifiedProductSearchDetails listing) {
         for (CertificationResult cert : listing.getCertificationResults()) {
-            if (cert.isReviewable()) {
+            if (cert.isSuccess() != null && cert.isSuccess().equals(Boolean.TRUE)) {
                 if (cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0) {
                     Iterator<CertificationResultTestTool> testToolIter = cert.getTestToolsUsed().iterator();
                     while (testToolIter.hasNext()) {
                         CertificationResultTestTool testTool = testToolIter.next();
                         if (StringUtils.isEmpty(testTool.getTestToolName())) {
-                            listing.getErrorMessages()
-                                    .add(msgUtil.getMessage("listing.criteria.missingTestToolName", cert.getNumber()));
+                            addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestToolName",
+                                    cert.getNumber());
                         } else {
                             TestToolDTO tt = testToolDao.getByName(testTool.getTestToolName());
                             if (tt != null && tt.isRetired()) {
@@ -50,8 +50,8 @@ public class TestToolReviewer implements Reviewer {
                                         .add(msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed",
                                                 testTool.getTestToolName(), cert.getNumber()));
                             } else if (tt == null) {
-                                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.testToolNotFound",
-                                        cert.getNumber(), testTool.getTestToolName()));
+                                addErrorOrWarningByPermission(listing, cert, "listing.criteria.testToolNotFound",
+                                        cert.getNumber(), testTool.getTestToolName());
                             }
                         }
                     }
