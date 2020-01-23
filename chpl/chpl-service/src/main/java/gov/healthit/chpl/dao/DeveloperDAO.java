@@ -316,7 +316,7 @@ public class DeveloperDAO extends BaseDAOImpl {
 
     public DeveloperACBMapDTO updateTransparencyMapping(DeveloperACBMapDTO dto) {
         DeveloperACBMapEntity mapping = getTransparencyMappingEntity(dto.getDeveloperId(), dto.getAcbId());
-        if (mapping == null) {
+        if (mapping == null || mapping.getTransparencyAttestation() == null) {
             return null;
         }
 
