@@ -8,9 +8,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +18,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import gov.healthit.chpl.TestingUsers;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
@@ -35,7 +36,7 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.Required
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-public class PendingListingRequiredData2015ReviewerTest {
+public class PendingListingRequiredData2015ReviewerTest extends TestingUsers {
 
     @Autowired
     private MacraMeasureDAO macraMeasureDAO;
@@ -58,17 +59,19 @@ public class PendingListingRequiredData2015ReviewerTest {
     @Autowired
     private CertificationResultRules certRules;
 
-    @Spy
+    @Mock
     private ResourcePermissions resourcePermissions;
 
-    @Spy
-    private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
+    @Mock
+    private ErrorMessageUtil msgUtil;
 
     private RequiredData2015Reviewer reviewer;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        setupForAcbUser(resourcePermissions);
+
         reviewer = new RequiredData2015Reviewer(macraMeasureDAO, testFuncDao, testProcDao,
                 testDataDao, msgUtil, resourcePermissions, certRules);
 

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.Address;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
@@ -34,6 +35,7 @@ import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.TestData;
 import gov.healthit.chpl.domain.TestProcedure;
 import gov.healthit.chpl.dto.AddressDTO;
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
@@ -53,7 +55,6 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductQmsStandardD
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTestingLabDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingTestParticipantDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingTestTaskDTO;
-import gov.healthit.chpl.util.CertificationResultRules;
 
 @Component
 public class ListingMockUtil {
@@ -741,6 +742,11 @@ public class ListingMockUtil {
         certResult.setNumber(number);
         certResult.setSuccess(success);
 
+        CertificationCriterion criterion = new CertificationCriterion();
+        criterion.setNumber(number);
+        criterion.setRemoved(Boolean.FALSE);
+        certResult.setCriterion(criterion);
+
         if (!certRules.hasCertOption(number, CertificationResultRules.ADDITIONAL_SOFTWARE)) {
             certResult.setAdditionalSoftware(null);
         }
@@ -894,6 +900,11 @@ public class ListingMockUtil {
         certResult.setId(id);
         certResult.getCriterion().setNumber(number);
         certResult.setMeetsCriteria(success);
+
+        CertificationCriterionDTO criterion = new CertificationCriterionDTO();
+        criterion.setNumber(number);
+        criterion.setRemoved(Boolean.FALSE);
+        certResult.setCriterion(criterion);
 
         if (!certRules.hasCertOption(number, CertificationResultRules.ADDITIONAL_SOFTWARE)) {
             certResult.setAdditionalSoftware(null);

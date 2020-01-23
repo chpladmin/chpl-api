@@ -33,6 +33,7 @@ import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -62,7 +63,7 @@ public class ListingTestFunctionalityReviewerTest {
     @Spy
     private TestFunctionalityDAO testFunctionalityDAO;
 
-    @Spy
+    @Mock
     private CertificationCriterionDAO certificationCriterionDAO;
 
     @Spy
@@ -333,6 +334,10 @@ public class ListingTestFunctionalityReviewerTest {
         certResult.setTestProcedures(null);
         certResult.setTestStandards(null);
         certResult.setSuccess(true);
+        CertificationCriterion crit = new CertificationCriterion();
+        crit.setNumber(number);
+        crit.setRemoved(Boolean.FALSE);
+        certResult.setCriterion(crit);
         return certResult;
     }
 

@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -15,6 +16,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import gov.healthit.chpl.TestingUsers;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -24,7 +26,7 @@ import gov.healthit.chpl.util.ListingMockUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-public class RequiredDataReviewerTest {
+public class RequiredDataReviewerTest extends TestingUsers {
     private static final String D_1 = "170.315 (d)(1)";
     private static final String CERT_EDITION_NOT_FOUND_ERROR =
             "Certification edition is required but was not found.";
@@ -50,7 +52,7 @@ public class RequiredDataReviewerTest {
     @Spy
     private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
 
-    @Spy
+    @Mock
     private ResourcePermissions resourcePermissions;
 
     private RequiredDataReviewer requiredDataReivewer;
@@ -58,6 +60,7 @@ public class RequiredDataReviewerTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        setupForAcbUser(resourcePermissions);
 
         requiredDataReivewer = new RequiredDataReviewer(certResultRules, msgUtil, resourcePermissions);
 

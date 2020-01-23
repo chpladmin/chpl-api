@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -15,6 +16,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import gov.healthit.chpl.TestingUsers;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
@@ -30,7 +32,7 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestTool2015Rev
 @ContextConfiguration(classes = {
         gov.healthit.chpl.CHPLTestConfig.class
 })
-public class TestToolReviewerTest {
+public class TestToolReviewerTest extends TestingUsers {
     private static final String C_3 = "170.315 (c)(3)";
     private static final String NO_TEST_TOOL_NAME_ERROR = "There was no test tool name found for certification " + C_3
             + ".";
@@ -56,7 +58,7 @@ public class TestToolReviewerTest {
     @Spy
     private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
 
-    @Spy
+    @Mock
     private ResourcePermissions resourcePermissions;
 
     private TestToolReviewer testToolReviewer;
@@ -65,6 +67,7 @@ public class TestToolReviewerTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        setupForAcbUser(resourcePermissions);
 
         testToolReviewer = new TestToolReviewer(testToolDao, msgUtil, resourcePermissions);
         testTool2015Reviewer = new TestTool2015Reviewer(msgUtil, resourcePermissions);

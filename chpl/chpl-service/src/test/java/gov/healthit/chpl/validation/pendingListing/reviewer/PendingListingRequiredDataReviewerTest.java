@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -21,6 +22,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import gov.healthit.chpl.TestingUsers;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
@@ -31,7 +33,7 @@ import gov.healthit.chpl.util.ListingMockUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-public class PendingListingRequiredDataReviewerTest {
+public class PendingListingRequiredDataReviewerTest extends TestingUsers {
     private static final String B_1 = "170.314 (b)(1)";
 
     @Autowired
@@ -43,7 +45,7 @@ public class PendingListingRequiredDataReviewerTest {
     @Autowired
     private CertificationResultRules certRules;
 
-    @Spy
+    @Mock
     private ResourcePermissions resourcePermissions;
 
     @Spy
@@ -54,6 +56,7 @@ public class PendingListingRequiredDataReviewerTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        setupForAcbUser(resourcePermissions);
         reviewer = new RequiredDataReviewer(msgUtil, resourcePermissions, certRules);
 
         //TODO - Can this be extracted as some sort of generic method, so it can be used all error messages??

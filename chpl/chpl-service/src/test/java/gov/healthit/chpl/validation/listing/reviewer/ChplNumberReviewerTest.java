@@ -49,7 +49,7 @@ public class ChplNumberReviewerTest {
             "The unique id indicates the product does not have ICS but the value for Inherited Certification Status is true.";
     private static final String ICS_CODE_TRUE_NO_ICS_ERROR =
             "The unique id indicates the product does have ICS but the value for Inherited Certification Status is false.";
-    private static final String DUPLICATE_CHPLID_ERROR_END = "one already exists with this ID.";
+    private static final String DUPLICATE_CHPLID_ERROR_END = "one already exists with this value.";
 
     @Autowired
     private ListingMockUtil mockUtil;
@@ -101,6 +101,10 @@ public class ChplNumberReviewerTest {
         Mockito.doReturn(ICS_CODE_TRUE_NO_ICS_ERROR)
         .when(msgUtil).getMessage(
                 ArgumentMatchers.eq("listing.icsCodeTrueValueFalse"));
+        Mockito.doReturn(DUPLICATE_CHPLID_ERROR_END)
+        .when(msgUtil).getMessage(
+                ArgumentMatchers.eq("listing.chplProductNumber.systemChangedNotUnique"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
 
         Mockito.doReturn(true).when(chplProductNumberUtil).isUnique(ArgumentMatchers.anyString());
         Mockito.doReturn(false).when(certificationResultManager).getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong());
@@ -418,8 +422,8 @@ public class ChplNumberReviewerTest {
     }
 
     private boolean hasDuplicateIdError(CertifiedProductSearchDetails listing) {
-        for(String error : listing.getErrorMessages()) {
-            if(error.endsWith(DUPLICATE_CHPLID_ERROR_END)) {
+        for (String error : listing.getErrorMessages()) {
+            if (error.endsWith(DUPLICATE_CHPLID_ERROR_END)) {
                 return true;
             }
         }
