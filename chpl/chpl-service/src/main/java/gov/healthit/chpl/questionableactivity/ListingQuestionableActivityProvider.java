@@ -592,6 +592,10 @@ public class ListingQuestionableActivityProvider {
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         QuestionableActivityListingDTO activity = null;
         CertificationResult newB3 = getB3Criteria(newListing);
+        if (newB3 == null) {
+            // Can't check anything regarding B3, since it does not exist
+            return null;
+        }
         Date b3ChangeDate = null;
         Date currentDate = new Date();
         try {
@@ -651,7 +655,11 @@ public class ListingQuestionableActivityProvider {
     }
 
     private boolean hasICS(CertifiedProductSearchDetails listing) {
-        return listing.getIcs().getInherits();
+        if (listing != null && listing.getIcs() != null && listing.getIcs().getInherits() != null) {
+            return listing.getIcs().getInherits();
+        } else {
+            return false;
+        }
     }
 
     static class CertificationStatusEventComparator implements Comparator<CertificationStatusEvent>, Serializable {

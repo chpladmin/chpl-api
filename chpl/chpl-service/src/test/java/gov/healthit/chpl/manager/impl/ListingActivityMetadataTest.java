@@ -263,7 +263,7 @@ public class ListingActivityMetadataTest extends TestCase {
         assertNotNull(beforeListing.getSurveillance());
         assertEquals(1, beforeListing.getSurveillance().size());
         try {
-            survManager.deleteSurveillance(-1L, beforeListing.getSurveillance().get(0));
+            survManager.deleteSurveillance(beforeListing.getSurveillance().get(0));
         } catch (Exception e) {
             fail("Could not delete surveillance: " + e.getMessage());
             e.printStackTrace();

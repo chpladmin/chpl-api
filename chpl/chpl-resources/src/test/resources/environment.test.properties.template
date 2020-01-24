@@ -7,6 +7,9 @@ jwtNotBeforeMinutesInThePast=4
 keyLocation=C:\\CHPL\\keys\\JSONRsaJoseJWebKeyTest.txt
 jobThresholdDays=7
 maxActivityRangeInDays=500
+maxActivityPageSize=500
+defaultActivityPageSize=50
+
 resetLinkExpirationTimeInHours=24
 authMaximumLoginAttempts=3
 

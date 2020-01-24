@@ -94,7 +94,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         // Atl has no access - the param shouldn't even matter
-        assertFalse(permissions.hasAccess(1L));
+        assertFalse(permissions.hasAccess(new CertifiedProductSearchDetails()));
     }
 
     @Override
@@ -106,7 +106,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         // Cms has no access - the param shouldn't even matter
-        assertFalse(permissions.hasAccess(1L));
+        assertFalse(permissions.hasAccess(new CertifiedProductSearchDetails()));
     }
 
     @Override
@@ -118,7 +118,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         // Anon has no access - the param shouldn't even matter
-        assertFalse(permissions.hasAccess(1L));
+        assertFalse(permissions.hasAccess(new CertifiedProductSearchDetails()));
     }
 
 }

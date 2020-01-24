@@ -2,6 +2,7 @@ package gov.healthit.chpl.app.permissions.domain.surveillance;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -39,8 +40,17 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-
-        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
+        try {
+            CertifiedProductDTO listingNoAccess = new CertifiedProductDTO();
+            listingNoAccess.setCertificationBodyId(1L);
+            Mockito.when(certifiedProductDAO.getById(ArgumentMatchers.eq(1L))).thenReturn(listingNoAccess);
+            CertifiedProductDTO listingWithAccess = new CertifiedProductDTO();
+            listingWithAccess.setCertificationBodyId(2L);
+            Mockito.when(certifiedProductDAO.getById(ArgumentMatchers.eq(2L))).thenReturn(listingWithAccess);
+        } catch (Exception ex) {
+            fail(ex.getMessage());
+        }
     }
 
     @Override
@@ -95,7 +105,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         // Atl has no access - the param shouldn't even matter
-        assertFalse(permissions.hasAccess(1L));
+        assertFalse(permissions.hasAccess(new Surveillance()));
     }
 
     @Override
@@ -107,7 +117,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         // Cms has no access - the param shouldn't even matter
-        assertFalse(permissions.hasAccess(1L));
+        assertFalse(permissions.hasAccess(new Surveillance()));
     }
 
     @Override
@@ -119,7 +129,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         // Anon has no access - the param shouldn't even matter
-        assertFalse(permissions.hasAccess(1L));
+        assertFalse(permissions.hasAccess(new Surveillance()));
     }
 
     private CertifiedProductDTO getListing(Long acbId) {

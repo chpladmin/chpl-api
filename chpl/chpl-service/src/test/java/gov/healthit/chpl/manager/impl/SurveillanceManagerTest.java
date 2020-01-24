@@ -362,7 +362,7 @@ public class SurveillanceManagerTest extends TestCase {
             insertedId = survManager.createSurveillance(surv);
             Surveillance insertedSurv = survManager.getById(insertedId);
             assertNotNull(insertedId);
-            survManager.deleteSurveillance(-1L, insertedSurv);
+            survManager.deleteSurveillance(insertedSurv);
             boolean failed = false;
             try {
                 survManager.getById(insertedId);
