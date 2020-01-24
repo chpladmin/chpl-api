@@ -107,7 +107,8 @@ public class SchedulerController {
             + "that are applicable to the currently logged in user",
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB for '" + USER_JOB_TYPE + "' jobs "
                     + "and have administrative authority on the specified ACB. "
-                    + "ROLE_ADMIN or ROLE_ONC for '" + SYSTEM_JOB_TYPE + "' jobs.")
+                    + "ROLE_ADMIN or ROLE_ONC for '" + SYSTEM_JOB_TYPE + "' jobs. "
+                    + "Note: The default jobType query parameter is set to '" + USER_JOB_TYPE + "'.")
     @RequestMapping(value = "/triggers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody Object getAllTriggersByJobType(@RequestParam(defaultValue = USER_JOB_TYPE) String jobType)
             throws SchedulerException {
