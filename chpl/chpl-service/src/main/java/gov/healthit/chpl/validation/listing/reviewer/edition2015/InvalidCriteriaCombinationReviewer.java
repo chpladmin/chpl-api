@@ -44,7 +44,8 @@ public class InvalidCriteriaCombinationReviewer implements Reviewer {
         Optional<CertificationResult> certResultB = findCerificationResult(listing, certificationNumberB);
 
         if (certResultA.isPresent() && certResultB.isPresent()) {
-            listing.getErrorMessages().add("NEED TO UPDATE MESSAGE");
+            listing.getErrorMessages()
+                    .add(msgUtil.getMessage("listing.criteria.invalidCombination", certificationNumberA, certificationNumberB));
         }
     }
 
