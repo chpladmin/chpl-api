@@ -138,7 +138,7 @@ public class AddCriteriaToSinglePendingListingJob extends QuartzJob {
                     }
                 } else {
                     logger.info("Certification result mapping already exists for " + pcp.getChplProductNumber()
-                        + " and " + criterionNumber);
+                        + " and " + criterionNumber + ":" + criterionTitle);
                 }
             }
         });

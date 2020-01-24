@@ -132,7 +132,7 @@ public class AddCriteriaToSingleListingJob extends QuartzJob {
                     }
                 } else {
                     logger.info("Certification result mapping already exists for " + listing.getChplProductNumber()
-                        + " and " + criterionNumber);
+                        + " and " + criterionNumber + ":" + criterionTitle);
                 }
             }
         });
