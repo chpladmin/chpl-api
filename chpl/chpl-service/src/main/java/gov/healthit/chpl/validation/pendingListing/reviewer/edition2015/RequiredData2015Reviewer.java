@@ -726,31 +726,31 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
                 if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.ATTESTATION_ANSWER)
                         && cert.getAttestationAnswer() == null) {
-                    listing.getErrorMessages()
-                    .add("Attestation Answer is required for certification " + cert.getCriterion().getNumber() + ".");
+                    addErrorOrWarningByPermission(listing, cert,
+                            "listing.criteria.missingAttestationAnswer", cert.getCriterion().getNumber());
                 }
 
                 if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.PRIVACY_SECURITY)
                         && StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
-                    listing.getErrorMessages().add(
-                            "Privacy and Security Framework is required for certification " + cert.getCriterion().getNumber() + ".");
+                    addErrorOrWarningByPermission(listing, cert,
+                            "listing.criteria.missingPrivacySecurityFramework", cert.getCriterion().getNumber());
                 }
                 if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.API_DOCUMENTATION)
                         && StringUtils.isEmpty(cert.getApiDocumentation())) {
-                    listing.getErrorMessages()
-                    .add("API Documentation is required for certification " + cert.getCriterion().getNumber() + ".");
+                    addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingApiDocumentation",
+                            cert.getCriterion().getNumber());
                 }
                 if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.EXPORT_DOCUMENTATION)
                         && StringUtils.isEmpty(cert.getExportDocumentation())) {
-                    listing.getErrorMessages()
-                    .add("Export Documentation is required for certification " + cert.getCriterion().getNumber() + ".");
+                    addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingExportDocumentation",
+                            cert.getCriterion().getNumber());
                 }
 
                 if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.USE_CASES)
                         && StringUtils.isEmpty(cert.getUseCases())
                         && cert.getAttestationAnswer() != null && cert.getAttestationAnswer().equals(Boolean.TRUE)) {
-                    listing.getErrorMessages()
-                    .add("Use Cases is required for certification " + cert.getCriterion().getNumber() + " when Attestation Answer is \"Yes\".");
+                    addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingUseCases",
+                            cert.getCriterion().getNumber());
                 }
                 // jennifer asked to not make functionality tested be a required
                 // field
@@ -766,8 +766,8 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 if (!gapEligibleAndTrue
                         && certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.TEST_TOOLS_USED)
                         && (cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
-                    listing.getErrorMessages().add(
-                            msgUtil.getMessage("listing.criteria.missingTestTool", cert.getCriterion().getNumber()));
+                    addErrorOrWarningByPermission(listing, cert,
+                            "listing.criteria.missingTestTool", cert.getCriterion().getNumber());
                 }
 
                 if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)
@@ -780,9 +780,9 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                             TestFunctionalityDTO foundTestFunc = testFuncDao.getByNumberAndEdition(
                                     crtf.getNumber(), listing.getCertificationEditionId());
                             if (foundTestFunc == null || foundTestFunc.getId() == null) {
-                                listing.getErrorMessages()
-                                .add(msgUtil.getMessage("listing.criteria.testFunctionalityNotFoundAndRemoved",
-                                        cert.getCriterion().getNumber(), crtf.getNumber()));
+                                addErrorOrWarningByPermission(listing, cert,
+                                        "listing.criteria.testFunctionalityNotFoundAndRemoved",
+                                        cert.getCriterion().getNumber(), crtf.getNumber());
                                 crtfIter.remove();
                             }
                         }
@@ -793,25 +793,23 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                         && cert.getTestProcedures() != null && cert.getTestProcedures().size() > 0) {
                     for (PendingCertificationResultTestProcedureDTO crTestProc : cert.getTestProcedures()) {
                         if (crTestProc.getTestProcedure() == null && crTestProc.getTestProcedureId() == null) {
-                            listing.getErrorMessages().add(
-                                    msgUtil.getMessage("listing.criteria.badTestProcedureName",
-                                            cert.getCriterion().getNumber(), crTestProc.getEnteredName()));
+                            addErrorOrWarningByPermission(listing, cert, "listing.criteria.badTestProcedureName",
+                                    cert.getCriterion().getNumber(), crTestProc.getEnteredName());
                         } else if (crTestProc.getTestProcedure() != null && crTestProc.getTestProcedure().getId() == null) {
                             TestProcedureDTO foundTestProc =
                                     testProcDao.getByCriteriaNumberAndValue(cert.getCriterion().getNumber(),
                                             crTestProc.getTestProcedure().getName());
                             if (foundTestProc == null || foundTestProc.getId() == null) {
-                                listing.getErrorMessages().add(
-                                        msgUtil.getMessage("listing.criteria.badTestProcedureName",
-                                                cert.getCriterion().getNumber(), crTestProc.getTestProcedure().getName()));
+                                addErrorOrWarningByPermission(listing, cert, "listing.criteria.badTestProcedureName",
+                                        cert.getCriterion().getNumber(), crTestProc.getTestProcedure().getName());
                             } else {
                                 crTestProc.getTestProcedure().setId(foundTestProc.getId());
                             }
                         }
 
                         if (!StringUtils.isEmpty(crTestProc.getEnteredName()) && StringUtils.isEmpty(crTestProc.getVersion())) {
-                            listing.getErrorMessages().add(
-                                    msgUtil.getMessage("listing.criteria.missingTestProcedureVersion", cert.getCriterion().getNumber()));
+                            addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestProcedureVersion",
+                                    cert.getCriterion().getNumber());
                         }
                     }
                 }
@@ -843,8 +841,8 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                         }
 
                         if (!StringUtils.isEmpty(crTestData.getEnteredName()) && StringUtils.isEmpty(crTestData.getVersion())) {
-                            listing.getErrorMessages().add(
-                                    msgUtil.getMessage("listing.criteria.missingTestDataVersion", cert.getCriterion().getNumber()));
+                            addErrorOrWarningByPermission(listing, cert,
+                                    "listing.criteria.missingTestDataVersion", cert.getCriterion().getNumber());
                         }
                     }
                 }
