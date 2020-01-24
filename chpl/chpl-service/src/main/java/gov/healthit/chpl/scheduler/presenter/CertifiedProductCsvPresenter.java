@@ -99,7 +99,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
 
         if (applicableCriteria != null) {
             for (CertificationCriterionDTO criteria : applicableCriteria) {
-                result.add(criteria.getNumber());
+                result.add(criteria.getNumber() + ": " + criteria.getTitle());
             }
         }
         return result;
@@ -176,7 +176,8 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
             boolean criteriaMatch = false;
             for (int i = 0; i < data.getCertificationResults().size() && !criteriaMatch; i++) {
                 CertificationResult currCriteria = data.getCertificationResults().get(i);
-                if (currCriteria.getNumber().equals(criteria.getNumber())) {
+                if (currCriteria.getNumber().equals(criteria.getNumber())
+                        && currCriteria.getTitle().equalsIgnoreCase(criteria.getTitle())) {
                     criteriaMatch = true;
                     result.add(currCriteria.isSuccess().toString());
                 }

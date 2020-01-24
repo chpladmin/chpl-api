@@ -125,12 +125,16 @@ public final class Util {
         if (c1Number.compareTo(c2Number) != 0) {
             return c1Number.compareTo(c2Number);
         }
-        c1String = c1.getNumber().split(" ")[1].split("\\)\\(")[2];
-        c1Number = Integer.parseInt(c1String.substring(0, c1String.indexOf(")")));
-        c2String = c2.getNumber().split(" ")[1].split("\\)\\(")[2];
-        c2Number = Integer.parseInt(c2String.substring(0, c2String.indexOf(")")));
-        if (c1Number.compareTo(c2Number) != 0) {
-            return c1Number.compareTo(c2Number);
+        try {
+            c1String = c1.getNumber().split(" ")[1].split("\\)\\(")[2];
+            c1Number = Integer.parseInt(c1String.substring(0, c1String.indexOf(")")));
+            c2String = c2.getNumber().split(" ")[1].split("\\)\\(")[2];
+            c2Number = Integer.parseInt(c2String.substring(0, c2String.indexOf(")")));
+            if (c1Number.compareTo(c2Number) != 0) {
+                return c1Number.compareTo(c2Number);
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            LOGGER.info("Criteria doesn't have extra paragraph; discarding");
         }
         return c1.getTitle().compareTo(c2.getTitle());
     }
