@@ -133,7 +133,8 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
             if (req.getType().getName().equalsIgnoreCase(SurveillanceRequirementType.CERTIFIED_CAPABILITY)) {
                 String requirementCriteria =
                         gov.healthit.chpl.util.Util.coerceToCriterionNumberFormat(req.getRequirement());
-                CertificationCriterionDTO criterion = criterionDao.getByName(requirementCriteria);
+                CertificationCriterionDTO criterion = criterionDao.getAllByNumber(requirementCriteria).get(0);
+                //TODO Fix this as part of OCD-3220
                 if (criterion != null && criterion.getRemoved() != null
                         && criterion.getRemoved().booleanValue()) {
                     return true;
@@ -150,7 +151,8 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
         if (!StringUtils.isEmpty(nonconformity.getNonconformityType())) {
             String nonconformityType =
                     gov.healthit.chpl.util.Util.coerceToCriterionNumberFormat(nonconformity.getNonconformityType());
-            CertificationCriterionDTO criterion = criterionDao.getByName(nonconformityType);
+            CertificationCriterionDTO criterion = criterionDao.getAllByNumber(nonconformityType).get(0);
+            //TODO Fix this as part of OCD-3220
             if (criterion != null && criterion.getRemoved() != null
                     && criterion.getRemoved().booleanValue()) {
                 return true;
