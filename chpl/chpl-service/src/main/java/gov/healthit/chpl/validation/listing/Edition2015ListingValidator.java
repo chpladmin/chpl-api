@@ -124,6 +124,7 @@ public class Edition2015ListingValidator extends Validator {
     private RemovedCriteriaUcdComparisonReviewer ucdCriteriaComparisonReviewer;
 
     @Autowired
+    @Qualifier("invalidCriteriaCombinationReviewer")
     private InvalidCriteriaCombinationReviewer invalidCriteriaCombinationReviewer;
 
     private List<Reviewer> reviewers;

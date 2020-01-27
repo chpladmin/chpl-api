@@ -13,7 +13,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
-@Component
+@Component("invalidCriteriaCombinationReviewer")
 public class InvalidCriteriaCombinationReviewer implements Reviewer {
 
     @Value("${criterion.170_315_b_6}")
