@@ -101,7 +101,8 @@ public class PendingListingTestFunctionalityReviewerTest {
 
         Mockito.when(certificationEditionDAO.findAll()).thenReturn(getEditions());
 
-        Mockito.when(testFunctionalityManager.getTestFunctionalityCriteriaMap2014()).thenReturn(getTestFunctionalityCriteriaMap2014());
+        Mockito.when(testFunctionalityManager.getTestFunctionalityCriteriaMap2014())
+        .thenReturn(getTestFunctionalityCriteriaMap2014());
     }
 
     //Case 1: A valid test functionality
@@ -110,7 +111,7 @@ public class PendingListingTestFunctionalityReviewerTest {
         Mockito.when(testFunctionalityDAO.getByNumberAndEdition(ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyLong()))
         .thenReturn(getTestFunctionalityId_7());
-        Mockito.when(certificationCriterionDAO.getByNameAndYear(ArgumentMatchers.anyString(),
+        Mockito.when(certificationCriterionDAO.getByNumberAndTitle(ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString()))
         .thenReturn(getCertificationCriterion_a6());
         Mockito.when(practiceTypeDAO.getByName(ArgumentMatchers.anyString()))
@@ -139,7 +140,7 @@ public class PendingListingTestFunctionalityReviewerTest {
         Mockito.when(testFunctionalityDAO.getByNumberAndEdition(ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyLong()))
         .thenReturn(getTestFunctionalityId_18());
-        Mockito.when(certificationCriterionDAO.getByNameAndYear(ArgumentMatchers.anyString(),
+        Mockito.when(certificationCriterionDAO.getByNumberAndTitle(ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString()))
         .thenReturn(getCertificationCriterion_a6());
         Mockito.when(practiceTypeDAO.getByName(ArgumentMatchers.anyString()))
@@ -168,7 +169,7 @@ public class PendingListingTestFunctionalityReviewerTest {
         Mockito.when(testFunctionalityDAO.getByNumberAndEdition(ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyLong()))
         .thenReturn(getTestFunctionalityId_27());
-        Mockito.when(certificationCriterionDAO.getByNameAndYear(ArgumentMatchers.anyString(),
+        Mockito.when(certificationCriterionDAO.getByNumberAndTitle(ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString()))
         .thenReturn(getCertificationCriterion_a7());
         Mockito.when(practiceTypeDAO.getByName(ArgumentMatchers.anyString()))
@@ -197,7 +198,7 @@ public class PendingListingTestFunctionalityReviewerTest {
         Mockito.when(testFunctionalityDAO.getByNumberAndEdition(ArgumentMatchers.eq(invalidTestFuncName),
                 ArgumentMatchers.anyLong()))
         .thenReturn(null);
-        Mockito.when(certificationCriterionDAO.getByNameAndYear(ArgumentMatchers.anyString(),
+        Mockito.when(certificationCriterionDAO.getByNumberAndTitle(ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString()))
         .thenReturn(getCertificationCriterion_a6());
         Mockito.when(practiceTypeDAO.getByName(ArgumentMatchers.anyString()))
@@ -406,14 +407,14 @@ public class PendingListingTestFunctionalityReviewerTest {
         return editions;
     }
 
-    private Map<String, List<TestFunctionalityDTO>> getTestFunctionalityCriteriaMap2014() {
-        Map<String, List<TestFunctionalityDTO>> map = new HashMap<String, List<TestFunctionalityDTO>>();
+    private Map<Long, List<TestFunctionalityDTO>> getTestFunctionalityCriteriaMap2014() {
+        Map<Long, List<TestFunctionalityDTO>> map = new HashMap<Long, List<TestFunctionalityDTO>>();
 
         List<TestFunctionalityDTO> tfs = new ArrayList<TestFunctionalityDTO>();
         tfs.add(getTestFunctionalityId_18());
         tfs.add(getTestFunctionalityId_7());
 
-        map.put("170.314 (a)(6)", tfs);
+        map.put(66L, tfs);
 
         return map;
     }
