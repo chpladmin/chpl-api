@@ -50,6 +50,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
+import gov.healthit.chpl.manager.TestingFunctionalityManager;
 import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 import gov.healthit.chpl.scheduler.job.extra.JobResponseTriggerListener;
 import gov.healthit.chpl.scheduler.job.extra.JobResponseTriggerWrapper;
@@ -110,6 +111,9 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
     private PendingCertifiedProductManager pcpManager;
 
     @Autowired
+    private TestingFunctionalityManager testFuncManager;
+
+    @Autowired
     private Environment env;
 
     @Override
@@ -157,6 +161,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
             // Need to "refresh" the data in CertifiedProductDetailsManager since it is stored within the bean.
             certifiedProductDetailsManager.refreshData();
             pcpManager.refreshData();
+            testFuncManager.onApplicationEvent(null);
         }
         LOGGER.info("********* Completed the Add Criteria To 2015 Listings job. *********");
     }
@@ -460,7 +465,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         if (!testFunctionalityMapExists(criterionNumber, criterionTitle, testFuncNumber)) {
             TestFunctionalityDTO testFunc = insertableTestFuncDao.getTestFunctionalityByNumberAndEdition(testFuncNumber,
                     CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
-            CertificationCriterionDTO criterion = extendedCriterionDAO.getByNumberAndTitle(criterionNumber, criterionTitle);
+            CertificationCriterionDTO criterion = criterionDAO.getByNumberAndTitle(criterionNumber, criterionTitle);
             if (testFunc == null) {
                 LOGGER.error("Could not find test functionality " + testFuncNumber);
             }
@@ -746,14 +751,14 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
             Query query = entityManager.createQuery("SELECT tfMap "
                     + "FROM TestFunctionalityCriteriaMapEntity tfMap "
                     + "JOIN FETCH tfMap.testFunctionality tf "
-                    + "JOIN FETCH tfMap.certificationCriterion cce "
+                    + "JOIN FETCH tfMap.criteria cce "
                     + "JOIN FETCH cce.certificationEdition "
                     + "WHERE tfMap.deleted <> true "
                     + "AND tf.deleted <> true "
                     + "AND (UPPER(cce.number) = :criteriaNumber) "
                     + "AND cce.title = :criteriaTitle "
                     + "AND (UPPER(tf.number) = :value)",
-                    TestProcedureCriteriaMapEntity.class);
+                    TestFunctionalityCriteriaMapEntity.class);
             query.setParameter("criteriaNumber", criteriaNumber.trim().toUpperCase());
             query.setParameter("criteriaTitle", criteriaTitle);
             query.setParameter("value", value.trim().toUpperCase());
