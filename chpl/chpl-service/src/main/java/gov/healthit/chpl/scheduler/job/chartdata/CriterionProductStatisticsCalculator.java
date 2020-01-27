@@ -72,25 +72,13 @@ public class CriterionProductStatisticsCalculator {
         return criterionMap;
     }
 
-    /**
-     * Log count data to LOGGER.
-     *
-     * @param productCounts
-     *            count data
-     */
     public void logCounts(final Map<String, Long> productCounts) {
         for (Entry<String, Long> entry : productCounts.entrySet()) {
             LOGGER.info("Certification Criteria count: [" + entry.getKey() + " : " + entry.getValue() + "]");
         }
     }
 
-    /**
-     * Save count data to system.
-     *
-     * @param productCounts
-     *            count data
-     */
-    public void save(final Map<String, Long> productCounts) {
+    public void save(final Map<String, Long> productCounts) throws NumberFormatException, EntityRetrievalException {
         List<CriterionProductStatisticsEntity> entities =
         convertProductCountMapToListOfCriterionProductStatistics(productCounts);
         try {
@@ -106,10 +94,10 @@ public class CriterionProductStatisticsCalculator {
     }
 
     private List<CriterionProductStatisticsEntity> convertProductCountMapToListOfCriterionProductStatistics(
-            final Map<String, Long> productCounts) {
+            final Map<String, Long> productCounts) throws NumberFormatException, EntityRetrievalException {
         List<CriterionProductStatisticsEntity> entities = new ArrayList<CriterionProductStatisticsEntity>();
         for (Entry<String, Long> entry : productCounts.entrySet()) {
-            CertificationCriterionDTO criterion = certificationCriterionDAO.getByName(entry.getKey());
+            CertificationCriterionDTO criterion = certificationCriterionDAO.getById(Long.valueOf(entry.getKey()));
             if (!criterion.getRemoved()) {
                 CriterionProductStatisticsEntity entity = new CriterionProductStatisticsEntity();
                 entity.setProductCount(entry.getValue());

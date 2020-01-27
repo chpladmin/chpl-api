@@ -130,7 +130,7 @@ public class CertificationResultManager extends SecuredManager {
             CertificationResultDTO toUpdate = new CertificationResultDTO();
             toUpdate.setId(orig.getId());
             toUpdate.setCertifiedProductId(updatedListing.getId());
-            CertificationCriterionDTO criteria = criteriaDao.getByName(orig.getNumber());
+            CertificationCriterionDTO criteria = criteriaDao.getByNumberAndTitle(orig.getNumber(), orig.getTitle());
             if (criteria == null || criteria.getId() == null) {
                 throw new EntityCreationException(
                         "Cannot add certification result mapping for unknown criteria " + orig.getNumber());

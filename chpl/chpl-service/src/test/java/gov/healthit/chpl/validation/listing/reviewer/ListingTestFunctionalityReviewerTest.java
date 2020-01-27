@@ -126,7 +126,7 @@ public class ListingTestFunctionalityReviewerTest {
     public void validateCertifiedProductTestFunctionality() {
         Mockito.when(testFunctionalityDAO.getByNumberAndEdition(ArgumentMatchers.anyString(), ArgumentMatchers.anyLong()))
                 .thenReturn(getTestFunctionalityId_7());
-        Mockito.when(certificationCriterionDAO.getByNameAndYear(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+        Mockito.when(certificationCriterionDAO.getByNumberAndYear(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenReturn(getCertificationCriterion_a6());
 
         CertifiedProductSearchDetails listing = createListing("2014");
@@ -155,7 +155,7 @@ public class ListingTestFunctionalityReviewerTest {
     public void validateCertifiedProductTestFunctionalityPracticeTypeMismatch() throws Exception {
         Mockito.when(testFunctionalityDAO.getByNumberAndEdition(ArgumentMatchers.anyString(), ArgumentMatchers.anyLong()))
                 .thenReturn(getTestFunctionalityId_18());
-        Mockito.when(certificationCriterionDAO.getByNameAndYear(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+        Mockito.when(certificationCriterionDAO.getByNumberAndYear(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenReturn(getCertificationCriterion_a6());
 
         CertifiedProductSearchDetails listing = createListing("2014");
@@ -184,7 +184,7 @@ public class ListingTestFunctionalityReviewerTest {
         Mockito.when(testFunctionalityDAO.getByNumberAndEdition(ArgumentMatchers.anyString(), ArgumentMatchers.anyLong()))
                 .thenReturn(getTestFunctionalityId_7());
 
-        Mockito.when(certificationCriterionDAO.getByNameAndYear(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+        Mockito.when(certificationCriterionDAO.getByNumberAndYear(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenReturn(getCertificationCriterion_a6());
 
         CertifiedProductSearchDetails listing = createListing("2014");

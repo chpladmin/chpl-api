@@ -19,6 +19,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
@@ -26,7 +27,6 @@ import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
-import gov.healthit.chpl.scheduler.job.AddCriteriaTo2015ListingsJob.ExtendedCertificationCriterionDao;
 import gov.healthit.chpl.scheduler.job.extra.JobResponse;
 
 public class AddCriteriaToSinglePendingListingJob extends QuartzJob {
@@ -42,7 +42,7 @@ public class AddCriteriaToSinglePendingListingJob extends QuartzJob {
     private PendingCertifiedProductManager pcpManager;
 
     @Autowired
-    private ExtendedCertificationCriterionDao certCritDAO;
+    private CertificationCriterionDAO criterionDAO;
 
     @Autowired
     private JpaTransactionManager txManager;
@@ -120,7 +120,7 @@ public class AddCriteriaToSinglePendingListingJob extends QuartzJob {
             //can't use the manager method because we don't want to record activity
             //so wrapping the DAO call in a transaction
             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                CertificationCriterionEntity criterion = certCritDAO.getEntityByNumberAndTitle(criterionNumber, criterionTitle);
+                CertificationCriterionEntity criterion = criterionDAO.getEntityByNumberAndTitle(criterionNumber, criterionTitle);
                 if (criterion == null || criterion.getId() == null) {
                     logger.error(
                             "Cannot create certification result mapping for unknown criteria " + criterionNumber);

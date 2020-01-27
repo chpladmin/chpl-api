@@ -19,9 +19,8 @@ import gov.healthit.chpl.util.AuthUtil;
 @Repository("certificationCriterionDAO")
 public class CertificationCriterionDAO extends BaseDAOImpl {
 
-
     @Transactional
-    public CertificationCriterionDTO create(final CertificationCriterionDTO dto)
+    public CertificationCriterionDTO create(CertificationCriterionDTO dto)
             throws EntityCreationException, EntityRetrievalException {
 
         CertificationCriterionEntity entity = null;
@@ -56,9 +55,8 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
         return new CertificationCriterionDTO(entity);
     }
 
-
     @Transactional
-    public CertificationCriterionDTO update(final CertificationCriterionDTO dto)
+    public CertificationCriterionDTO update(CertificationCriterionDTO dto)
             throws EntityRetrievalException, EntityCreationException {
 
         CertificationCriterionEntity entity = this.getEntityById(dto.getId());
@@ -78,9 +76,7 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
         update(entity);
 
         return new CertificationCriterionDTO(entity);
-
     }
-
 
     @Transactional
     public void delete(final Long criterionId) {
@@ -91,7 +87,6 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
         query.executeUpdate();
 
     }
-
 
     public List<CertificationCriterionDTO> findAll() {
 
@@ -105,8 +100,7 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
         return dtos;
     }
 
-
-    public List<CertificationCriterionDTO> findByCertificationEditionYear(final String year) {
+    public List<CertificationCriterionDTO> findByCertificationEditionYear(String year) {
 
         List<CertificationCriterionEntity> entities = getEntitiesByCertificationEditionYear(year);
         List<CertificationCriterionDTO> dtos = new ArrayList<>();
@@ -118,8 +112,18 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
         return dtos;
     }
 
+    public List<CertificationCriterionDTO> getAllByNumber(String criterionName) {
+        List<CertificationCriterionEntity> entities = getEntitiesByNumber(criterionName);
+        List<CertificationCriterionDTO> dtos = new ArrayList<>();
 
-    public CertificationCriterionDTO getById(final Long criterionId) throws EntityRetrievalException {
+        for (CertificationCriterionEntity entity : entities) {
+            CertificationCriterionDTO dto = new CertificationCriterionDTO(entity);
+            dtos.add(dto);
+        }
+        return dtos;
+    }
+
+        public CertificationCriterionDTO getById(Long criterionId) throws EntityRetrievalException {
 
         CertificationCriterionDTO dto = null;
         CertificationCriterionEntity entity = getEntityById(criterionId);
@@ -130,34 +134,9 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
         return dto;
     }
 
-
-    public CertificationCriterionDTO getByName(final String criterionName) {
-        CertificationCriterionEntity entity = getEntityByName(criterionName);
-        if (entity == null) {
-            return null;
-        }
-        return new CertificationCriterionDTO(entity);
-    }
-
-
-    public CertificationCriterionDTO getByNameAndYear(final String criterionName, final String year) {
-        Query query = entityManager
-                .createQuery(
-                        "SELECT cce " + "FROM CertificationCriterionEntity cce "
-                                + "LEFT JOIN FETCH cce.certificationEdition "
-                                + "WHERE (NOT cce.deleted = true) "
-                                + "AND (cce.number = :number) "
-                                + "AND (cce.certificationEdition.year = :year) ",
-                                CertificationCriterionEntity.class);
-        query.setParameter("year", year);
-        query.setParameter("number", criterionName);
-        List<CertificationCriterionEntity> results = query.getResultList();
-
-        CertificationCriterionEntity entity = null;
-        if (results.size() > 0) {
-            entity = results.get(0);
-        }
+    public CertificationCriterionDTO getByNumberAndTitle(String criterionNumber, String criterionTitle) {
         CertificationCriterionDTO result = null;
+        CertificationCriterionEntity entity = getEntityByNumberAndTitle(criterionNumber, criterionTitle);
         if (entity != null) {
             result = new CertificationCriterionDTO(entity);
         }
@@ -188,12 +167,13 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
                                 + "LEFT JOIN FETCH cce.certificationEdition "
                                 + "WHERE cce.deleted = false",
                                 CertificationCriterionEntity.class);
-        List<CertificationCriterionEntity> result = query.getResultList();
+        @SuppressWarnings("unchecked") List<CertificationCriterionEntity> result = query.getResultList();
 
         return result;
     }
 
-    private List<CertificationCriterionEntity> getEntitiesByCertificationEditionYear(final String year) {
+    @SuppressWarnings("unchecked")
+    private List<CertificationCriterionEntity> getEntitiesByCertificationEditionYear(String year) {
         Query query = entityManager.createQuery("SELECT cce "
                 + "FROM CertificationCriterionEntity cce "
                 + "LEFT JOIN FETCH cce.certificationEdition "
@@ -204,12 +184,21 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
         return query.getResultList();
     }
 
-    public CertificationCriterionEntity getEntityById(final Long id) throws EntityRetrievalException {
+    @SuppressWarnings("unchecked")
+    public List<CertificationCriterionEntity> getEntitiesByNumber(String number) {
+        Query query = entityManager.createQuery("SELECT cce "
+                + "FROM CertificationCriterionEntity cce "
+                + "LEFT JOIN FETCH cce.certificationEdition "
+                + "WHERE (NOT cce.deleted = true) "
+                + "AND (cce.certificationEditionId = cce.certificationEdition.id) "
+                + "AND (cce.certificationEdition.number = :number)", CertificationCriterionEntity.class);
+        query.setParameter("number", number);
+        return query.getResultList();
+    }
 
+    public CertificationCriterionEntity getEntityById(Long id) throws EntityRetrievalException {
         CertificationCriterionEntity entity = null;
-
         if (id != null) {
-
             Query query = entityManager.createQuery(
                     "SELECT cce "
                             + "FROM CertificationCriterionEntity cce "
@@ -217,7 +206,7 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
                             + "WHERE (cce.deleted <> true) AND (cce.id = :entityid) ",
                             CertificationCriterionEntity.class);
             query.setParameter("entityid", id);
-            List<CertificationCriterionEntity> result = query.getResultList();
+            @SuppressWarnings("unchecked") List<CertificationCriterionEntity> result = query.getResultList();
 
             if (result.size() > 1) {
                 throw new EntityRetrievalException("Data error. Duplicate criterion id in database.");
@@ -231,23 +220,22 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
         return entity;
     }
 
-    public CertificationCriterionEntity getEntityByName(final String name) {
+    public CertificationCriterionEntity getEntityByNumberAndTitle(String criterionNumber, String criterionTitle) {
+        Query query = entityManager
+                .createQuery(
+                        "SELECT cce " + "FROM CertificationCriterionEntity cce "
+                                + "WHERE (NOT cce.deleted = true) "
+                                + "AND (cce.number = :number) "
+                                + "AND (cce.title = :title) ",
+                                CertificationCriterionEntity.class);
+        query.setParameter("number", criterionNumber);
+        query.setParameter("title", criterionTitle);
+        @SuppressWarnings("unchecked") List<CertificationCriterionEntity> results = query.getResultList();
 
         CertificationCriterionEntity entity = null;
-
-        Query query = entityManager.createQuery(
-                "SELECT cce "
-                        + "FROM CertificationCriterionEntity cce "
-                        + "LEFT JOIN FETCH cce.certificationEdition "
-                        + "where (NOT cce.deleted = true) AND (cce.number = :name) ",
-                        CertificationCriterionEntity.class);
-        query.setParameter("name", name);
-        List<CertificationCriterionEntity> result = query.getResultList();
-
-        if (result.size() > 0) {
-            entity = result.get(0);
+        if (results.size() > 0) {
+            entity = results.get(0);
         }
-
         return entity;
     }
 }

@@ -20,6 +20,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -28,7 +29,6 @@ import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
-import gov.healthit.chpl.scheduler.job.AddCriteriaTo2015ListingsJob.ExtendedCertificationCriterionDao;
 import gov.healthit.chpl.scheduler.job.extra.JobResponse;
 
 public class AddCriteriaToSingleListingJob extends QuartzJob {
@@ -41,7 +41,7 @@ public class AddCriteriaToSingleListingJob extends QuartzJob {
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
     @Autowired
-    private ExtendedCertificationCriterionDao certCritDAO;
+    private CertificationCriterionDAO criterionDAO;
 
     @Autowired
     private CertificationResultDAO certResultDAO;
@@ -114,7 +114,7 @@ public class AddCriteriaToSingleListingJob extends QuartzJob {
             //can't use the manager method because we don't want to record activity
             //so wrapping the dao call in a transaction
             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                CertificationCriterionDTO criterion = certCritDAO.getByNumberAndTitle(criterionNumber, criterionTitle);
+                CertificationCriterionDTO criterion = criterionDAO.getByNumberAndTitle(criterionNumber, criterionTitle);
                 if (criterion == null || criterion.getId() == null) {
                     logger.error(
                             "Cannot create certification result mapping for unknown criteria " + criterionNumber);

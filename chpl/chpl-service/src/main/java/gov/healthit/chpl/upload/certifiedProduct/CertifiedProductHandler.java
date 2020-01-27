@@ -277,7 +277,8 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
      */
     protected PendingCertificationResultEntity getCertificationResult(final String criterionName,
             final String columnValue) throws InvalidArgumentsException {
-        CertificationCriterionEntity certEntity = certDao.getEntityByName(criterionName);
+        CertificationCriterionEntity certEntity = certDao.getEntitiesByNumber(criterionName).get(0);
+        //TODO: Update to use criterion title as well, as part of OCD-3149 and/or OCD-2947
         if (certEntity == null) {
             throw new InvalidArgumentsException("Could not find a certification criterion matching " + criterionName);
         }

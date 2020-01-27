@@ -36,7 +36,6 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
-import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.MacraMeasureEntity;
 import gov.healthit.chpl.entity.TestDataCriteriaMapEntity;
 import gov.healthit.chpl.entity.TestDataEntity;
@@ -79,9 +78,6 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
 
     @Autowired
     private CertificationCriterionDAO criterionDAO;
-
-    @Autowired
-    private ExtendedCertificationCriterionDao extendedCriterionDAO;
 
     @Autowired
     private InsertableMacraMeasureDao insertableMmDao;
@@ -200,7 +196,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
 
     private boolean criterionExists(String number, String title) {
         CertificationCriterionDTO criterion =
-                extendedCriterionDAO.getByNumberAndTitle(number, title);
+                criterionDAO.getByNumberAndTitle(number, title);
         return criterion != null;
     }
 
@@ -300,7 +296,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
     private void addMacraMeasureMap(String criterionNumber, String criterionTitle, String value, String name, String description) {
         if (!macraMeasureCriteriaMapExists(criterionNumber, criterionTitle, value)) {
             MacraMeasureDTO mm = new MacraMeasureDTO();
-            CertificationCriterionDTO criterion = extendedCriterionDAO.getByNumberAndTitle(criterionNumber, criterionTitle);
+            CertificationCriterionDTO criterion = criterionDAO.getByNumberAndTitle(criterionNumber, criterionTitle);
             if (criterion == null) {
                 LOGGER.error("Cannot insert macra measure for criteria that is not found: " + criterionNumber);
             } else {
@@ -344,7 +340,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
     private void addTestDataMap(String criterionNumber, String criterionTitle, String testDataName) {
         if (!testDataMapExists(criterionNumber, criterionTitle, testDataName)) {
             TestDataDTO testData = insertableTestDataDao.getTestDataByName(testDataName);
-            CertificationCriterionDTO criterion = extendedCriterionDAO.getByNumberAndTitle(criterionNumber, criterionTitle);
+            CertificationCriterionDTO criterion = criterionDAO.getByNumberAndTitle(criterionNumber, criterionTitle);
             if (testData == null) {
                 LOGGER.error("Could not find test data " + testDataName);
             }
@@ -391,7 +387,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
     private void addTestProcedureMap(String criterionNumber, String criterionTitle, String testProcedureName) {
         if (!testProcedureMapExists(criterionNumber, criterionTitle, testProcedureName)) {
             TestProcedureDTO testProc = insertableTestProcDao.getTestProcedureByName(testProcedureName);
-            CertificationCriterionDTO criterion = extendedCriterionDAO.getByNumberAndTitle(criterionNumber, criterionTitle);
+            CertificationCriterionDTO criterion = criterionDAO.getByNumberAndTitle(criterionNumber, criterionTitle);
             if (testProc == null) {
                 LOGGER.error("Could not find test procedure " + testProcedureName);
             }
@@ -488,43 +484,6 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
 
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
-    }
-
-    @Component("extendedCertificationCriterionDao")
-    public static class ExtendedCertificationCriterionDao extends BaseDAOImpl {
-        ExtendedCertificationCriterionDao() {
-            super();
-        }
-
-        @Transactional
-        public CertificationCriterionDTO getByNumberAndTitle(String criterionNumber, String criterionTitle) {
-            CertificationCriterionDTO result = null;
-            CertificationCriterionEntity entity = getEntityByNumberAndTitle(criterionNumber, criterionTitle);
-            if (entity != null) {
-                result = new CertificationCriterionDTO(entity);
-            }
-            return result;
-        }
-
-        @Transactional
-        public CertificationCriterionEntity getEntityByNumberAndTitle(String criterionNumber, String criterionTitle) {
-            Query query = entityManager
-                    .createQuery(
-                            "SELECT cce " + "FROM CertificationCriterionEntity cce "
-                                    + "WHERE (NOT cce.deleted = true) "
-                                    + "AND (cce.number = :number) "
-                                    + "AND (cce.title = :title) ",
-                                    CertificationCriterionEntity.class);
-            query.setParameter("number", criterionNumber);
-            query.setParameter("title", criterionTitle);
-            @SuppressWarnings("unchecked") List<CertificationCriterionEntity> results = query.getResultList();
-
-            CertificationCriterionEntity entity = null;
-            if (results.size() > 0) {
-                entity = results.get(0);
-            }
-            return entity;
-        }
     }
 
     @Component("insertableMacraMeasureDao")

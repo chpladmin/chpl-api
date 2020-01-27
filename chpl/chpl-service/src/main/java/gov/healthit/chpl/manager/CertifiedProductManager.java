@@ -618,7 +618,8 @@ public class CertifiedProductManager extends SecuredManager {
             List<TestTaskDTO> testTasksAdded = new ArrayList<TestTaskDTO>();
 
             for (PendingCertificationResultDTO certResult : pendingCp.getCertificationCriterion()) {
-                CertificationCriterionDTO criterion = certCriterionDao.getByName(certResult.getCriterion().getNumber());
+                CertificationCriterionDTO criterion = certCriterionDao.getByNumberAndTitle(
+                        certResult.getCriterion().getNumber(), certResult.getCriterion().getTitle());
                 if (criterion == null) {
                     throw new EntityCreationException(
                             "Could not find certification criterion with number " + certResult.getCriterion().getNumber());
@@ -959,7 +960,7 @@ public class CertifiedProductManager extends SecuredManager {
                                     cqmResultToCreate.getCriteria().add(certDto);
                                 } else if (!StringUtils.isEmpty(cert.getCertificationCriteriaNumber())) {
                                     CertificationCriterionDTO critDto = certCriterionDao
-                                            .getByName(cert.getCertificationCriteriaNumber());
+                                            .getById(cert.getCertificationId());
                                     if (critDto != null) {
                                         certDto.setCriterionId(critDto.getId());
                                         cqmResultToCreate.getCriteria().add(certDto);
@@ -2162,7 +2163,8 @@ public class CertifiedProductManager extends SecuredManager {
             return cqm.getCriterionId();
         }
         if (cqm.getCriterion() != null && !StringUtils.isEmpty(cqm.getCriterion().getNumber())) {
-            CertificationCriterionDTO cert = certCriterionDao.getByName(cqm.getCriterion().getNumber());
+            CertificationCriterionDTO cert = certCriterionDao.getByNumberAndTitle(
+                    cqm.getCriterion().getNumber(), cqm.getCriterion().getTitle());
             if (cert != null) {
                 return cert.getId();
             } else {
