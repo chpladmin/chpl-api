@@ -123,7 +123,7 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
         return dtos;
     }
 
-        public CertificationCriterionDTO getById(Long criterionId) throws EntityRetrievalException {
+    public CertificationCriterionDTO getById(Long criterionId) throws EntityRetrievalException {
 
         CertificationCriterionDTO dto = null;
         CertificationCriterionEntity entity = getEntityById(criterionId);
@@ -134,6 +134,7 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
         return dto;
     }
 
+    @Transactional
     public CertificationCriterionDTO getByNumberAndTitle(String criterionNumber, String criterionTitle) {
         CertificationCriterionDTO result = null;
         CertificationCriterionEntity entity = getEntityByNumberAndTitle(criterionNumber, criterionTitle);
