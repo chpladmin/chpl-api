@@ -44,6 +44,7 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.rules.developer.DeveloperValidationFactory;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -102,7 +103,7 @@ public class DeveloperStatusTest {
     private ResourcePermissions permissionChecker;
 
     @InjectMocks
-    private DeveloperManagerImpl developerManager;
+    private DeveloperManager developerManager;
 
     @Before
     public void setup() {

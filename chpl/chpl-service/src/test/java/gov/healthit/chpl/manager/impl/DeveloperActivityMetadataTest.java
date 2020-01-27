@@ -38,14 +38,13 @@ import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
-import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityMetadataManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import junit.framework.TestCase;
 
 @ActiveProfiles({
-    "ListingValidatorMock", "Ff4jMock"
+        "ListingValidatorMock", "Ff4jMock"
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
@@ -102,7 +101,7 @@ public class DeveloperActivityMetadataTest extends TestCase {
         boolean failed = false;
         try {
             developer = devManager.update(developer, false);
-        } catch (MissingReasonException | ValidationException | EntityCreationException ex) {
+        } catch (ValidationException | EntityCreationException ex) {
             System.out.println(ex.getMessage());
             failed = true;
         }
@@ -133,7 +132,7 @@ public class DeveloperActivityMetadataTest extends TestCase {
         boolean failed = false;
         try {
             developer = devManager.update(developer, false);
-        } catch (MissingReasonException | ValidationException | EntityCreationException ex) {
+        } catch (ValidationException | EntityCreationException ex) {
             System.out.println(ex.getMessage());
             failed = true;
         }

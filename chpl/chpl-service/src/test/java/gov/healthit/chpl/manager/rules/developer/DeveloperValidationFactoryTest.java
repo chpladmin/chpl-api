@@ -31,6 +31,7 @@ import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
+import gov.healthit.chpl.dto.TransparencyAttestationDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.impl.DeveloperStatusTest;
 import gov.healthit.chpl.manager.rules.ValidationRule;
@@ -386,7 +387,8 @@ public class DeveloperValidationFactoryTest {
         testAllValidationsAndAssertEditTransparencyAttestation(devDto, beforeDev, errorMessages, isFlagOnAndRoleAcbAdmin);
         // No null mappings, TransparencyAttestation is different, expect edit error
         resetDeveloperDTOs(devDto, beforeDev);
-        devDto.getTransparencyAttestationMappings().get(0).setTransparencyAttestation("changedAttestation");
+        devDto.getTransparencyAttestationMappings().get(0)
+                .setTransparencyAttestation(new TransparencyAttestationDTO("changedAttestation"));
         testAllValidationsAndAssertEditTransparencyAttestation(devDto, beforeDev, errorMessages, isFlagOnAndRoleAcbAdmin);
         // No null mappings, AcbName is null (was not) - expect edit error
         resetDeveloperDTOs(devDto, beforeDev);
@@ -462,7 +464,7 @@ public class DeveloperValidationFactoryTest {
         List<DeveloperACBMapDTO> mappings = new ArrayList<DeveloperACBMapDTO>();
         DeveloperACBMapDTO attestation = new DeveloperACBMapDTO();
         attestation.setAcbName(DEFAULT_PENDING_ACB_NAME);
-        attestation.setTransparencyAttestation(DEFAULT_ATTESTATION);
+        attestation.setTransparencyAttestation(new TransparencyAttestationDTO(DEFAULT_ATTESTATION));
         mappings.add(attestation);
         return mappings;
     }

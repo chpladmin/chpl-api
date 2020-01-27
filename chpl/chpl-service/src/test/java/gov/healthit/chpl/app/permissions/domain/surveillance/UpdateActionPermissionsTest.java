@@ -2,7 +2,6 @@ package gov.healthit.chpl.app.permissions.domain.surveillance;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +31,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     private ResourcePermissions resourcePermissions;
 
     @Mock
-    private CertifiedProductDAO cpDao;
+    private CertifiedProductDAO cpDAO;
 
     @InjectMocks
     private UpdateActionPermissions permissions;
@@ -40,17 +39,9 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
-        try {
-            CertifiedProductDTO listingNoAccess = new CertifiedProductDTO();
-            listingNoAccess.setCertificationBodyId(1L);
-            Mockito.when(cpDao.getById(ArgumentMatchers.eq(1L))).thenReturn(listingNoAccess);
-            CertifiedProductDTO listingWithAccess = new CertifiedProductDTO();
-            listingWithAccess.setCertificationBodyId(2L);
-            Mockito.when(cpDao.getById(ArgumentMatchers.eq(2L))).thenReturn(listingWithAccess);
-        } catch (Exception ex) {
-            fail(ex.getMessage());
-        }
+
+        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
+
     }
 
     @Override
@@ -62,7 +53,8 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         // Since it is admin it has access to all - param value does not matter.
-        assertTrue(permissions.hasAccess(new Surveillance()));
+        Surveillance surv = new Surveillance();
+        assertTrue(permissions.hasAccess(surv));
     }
 
     @Override
@@ -74,7 +66,8 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         // Since it is onc it has access to all - param value does not matter.
-        assertTrue(permissions.hasAccess(new Surveillance()));
+        Surveillance surv = new Surveillance();
+        assertTrue(permissions.hasAccess(surv));
     }
 
     @Override
@@ -85,19 +78,18 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         // This should always be false
         assertFalse(permissions.hasAccess());
 
-        Surveillance noAccess = new Surveillance();
-        CertifiedProduct noAccessCp = new CertifiedProduct();
-        noAccessCp.setId(1L);
-        noAccess.setId(1L);
-        noAccess.setCertifiedProduct(noAccessCp);
-        assertFalse(permissions.hasAccess(noAccess));
+        Surveillance surv = new Surveillance();
+        surv.setCertifiedProduct(new CertifiedProduct());
+        surv.getCertifiedProduct().setId(1l);
 
-        Surveillance hasAccess = new Surveillance();
-        CertifiedProduct hasAccessCp = new CertifiedProduct();
-        hasAccessCp.setId(2L);
-        hasAccess.setId(2L);
-        hasAccess.setCertifiedProduct(hasAccessCp);
-        assertTrue(permissions.hasAccess(hasAccess));
+        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
+                .thenReturn(getCertifiedProduct(1l));
+        assertFalse(permissions.hasAccess(surv));
+
+        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
+                .thenReturn(getCertifiedProduct(2l));
+
+        assertTrue(permissions.hasAccess(surv));
     }
 
     @Override
@@ -134,5 +126,11 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
         // Anon has no access - the param shouldn't even matter
         assertFalse(permissions.hasAccess(new Surveillance()));
+    }
+
+    private CertifiedProductDTO getCertifiedProduct(Long acbId) {
+        CertifiedProductDTO dto = new CertifiedProductDTO();
+        dto.setCertificationBodyId(acbId);
+        return dto;
     }
 }

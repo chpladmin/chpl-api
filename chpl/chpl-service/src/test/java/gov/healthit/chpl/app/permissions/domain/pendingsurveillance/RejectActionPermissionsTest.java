@@ -11,7 +11,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -34,10 +33,10 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
     private ResourcePermissions resourcePermissions;
 
-    @Spy
+    @Mock
     private SurveillanceDAO survDAO;
 
-    @Spy
+    @Mock
     private UserPermissionDAO userPermissionDAO;
 
     @InjectMocks
@@ -124,16 +123,16 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
 
         Long id = 1L;
 
-        //The user does not have access to this acb
+        // The user does not have access to this acb
         Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
-        .thenReturn(getPendingSurveillanceEntity(1L, 1L, 3L, ROLE_ACB_ID));
+                .thenReturn(getPendingSurveillanceEntity(1L, 1L, 3L, ROLE_ACB_ID));
 
         Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
                 .thenReturn(getUserPermissionDTO("ROLE_ACB", "", ""));
 
         assertFalse(permissions.hasAccess(id));
 
-       //Should work...
+        // Should work...
         Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
                 .thenReturn(getPendingSurveillanceEntity(1L, 1L, 4L, ROLE_ACB_ID));
 
@@ -142,7 +141,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
 
         assertTrue(permissions.hasAccess(id));
 
-        //This one belongs to the wrong authority....
+        // This one belongs to the wrong authority....
         Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
                 .thenReturn(getPendingSurveillanceEntity(1L, 1L, 4L, ROLE_ONC_ID));
 
