@@ -35,11 +35,15 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
+import gov.healthit.chpl.dto.TestFunctionalityCriteriaMapDTO;
+import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.MacraMeasureEntity;
 import gov.healthit.chpl.entity.TestDataCriteriaMapEntity;
 import gov.healthit.chpl.entity.TestDataEntity;
+import gov.healthit.chpl.entity.TestFunctionalityCriteriaMapEntity;
+import gov.healthit.chpl.entity.TestFunctionalityEntity;
 import gov.healthit.chpl.entity.TestProcedureCriteriaMapEntity;
 import gov.healthit.chpl.entity.TestProcedureEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
@@ -93,6 +97,9 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
     private InsertableTestProcedureDao insertableTestProcDao;
 
     @Autowired
+    private InsertableTestFunctionalityDao insertableTestFuncDao;
+
+    @Autowired
     private CertifiedProductDAO certifiedProductDAO;
 
     @Autowired
@@ -120,6 +127,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         addCriteria();
         addTestDataMaps();
         addTestProcedureMaps();
+        addTestFunctionalityMaps();
         addMacraMeasureMaps();
 
         List<JobResponseTriggerWrapper> wrappers = new ArrayList<JobResponseTriggerWrapper>();
@@ -398,7 +406,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
             if (criterion == null) {
                 LOGGER.error("Could not find criterion " + criterionNumber + ":" + criterionTitle);
             }
-            if (testProcedureName != null && criterion != null) {
+            if (testProc != null && criterion != null) {
                 insertableTestProcDao.create(testProc, criterion);
                 LOGGER.info("Added test procedure mapping from " + criterionNumber
                         + ":" + criterionTitle + " to " + testProcedureName);
@@ -413,6 +421,72 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         TestProcedureDTO tp = insertableTestProcDao.getByCriteriaNumberTitleAndValue(
                 criterionNumber, criterionTitle, testProcedureName);
         return tp != null;
+    }
+
+    @SuppressWarnings({"checkstyle:linelength"})
+    private void addTestFunctionalityMaps() {
+        addTestFunctionalityMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "(b)(1)(ii)(A)(5)(i)");
+        addTestFunctionalityMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "(b)(1)(ii)(A)(5)(ii)");
+        addTestFunctionalityMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "(b)(1)(iii)(E)");
+        addTestFunctionalityMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "(b)(1)(iii)(F)");
+        addTestFunctionalityMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "(b)(1)(iii)(G)(1)(ii)");
+        addTestFunctionalityMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "170.102(13)(ii)(C)");
+        addTestFunctionalityMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "170.102(19)(i)");
+        addTestFunctionalityMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "170.102(19)(ii)");
+
+        addTestFunctionalityMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "(b)(3)(iii)");
+
+        addTestFunctionalityMap("170.315 (c)(3)", "Clinical Quality Measures - Report (Cures Update)", "(c)(3)(ii)");
+
+        addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "(e)(1)(i)(A)(2)");
+        addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "(e)(1)(i)(A)(3)");
+        addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "(e)(1)(i)(B)(2)(i)");
+        addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "(e)(1)(i)(B)(2)(ii)");
+        addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "(e)(1)(i)(B)(3)");
+        addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "(e)(1)(i)(C)(2)");
+        addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "170.102(13)(ii)(C)");
+        addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "170.102(19)(i)");
+        addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "170.102(19)(ii)");
+
+        addTestFunctionalityMap("170.315 (f)(5)", "Transmission to Public Health Agencies - Electronic Case Reporting (Cures Update)", "170.102(13)(ii)(C)");
+        addTestFunctionalityMap("170.315 (f)(5)", "Transmission to Public Health Agencies - Electronic Case Reporting (Cures Update)", "170.102(19)(i)");
+        addTestFunctionalityMap("170.315 (f)(5)", "Transmission to Public Health Agencies - Electronic Case Reporting (Cures Update)", "170.102(19)(ii)");
+
+        addTestFunctionalityMap("170.315 (g)(6)", "Consolidated CDA Creation (Cures Update)", "170.102(13)(ii)(C)");
+        addTestFunctionalityMap("170.315 (g)(6)", "Consolidated CDA Creation (Cures Update)", "170.102(19)(i)");
+        addTestFunctionalityMap("170.315 (g)(6)", "Consolidated CDA Creation (Cures Update)", "170.102(19)(ii)");
+
+        addTestFunctionalityMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "170.102(13)(ii)(C)");
+        addTestFunctionalityMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "170.102(19)(i)");
+        addTestFunctionalityMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "170.102(19)(ii)");
+    }
+
+    private void addTestFunctionalityMap(String criterionNumber, String criterionTitle, String testFuncNumber) {
+        if (!testFunctionalityMapExists(criterionNumber, criterionTitle, testFuncNumber)) {
+            TestFunctionalityDTO testFunc = insertableTestFuncDao.getTestFunctionalityByNumberAndEdition(testFuncNumber,
+                    CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
+            CertificationCriterionDTO criterion = extendedCriterionDAO.getByNumberAndTitle(criterionNumber, criterionTitle);
+            if (testFunc == null) {
+                LOGGER.error("Could not find test functionality " + testFuncNumber);
+            }
+            if (criterion == null) {
+                LOGGER.error("Could not find criterion " + criterionNumber + ":" + criterionTitle);
+            }
+            if (testFunc != null && criterion != null) {
+                insertableTestFuncDao.create(testFunc, criterion);
+                LOGGER.info("Added test functionality mapping from " + criterionNumber
+                        + ":" + criterionTitle + " to " + testFunc.getNumber());
+            }
+        } else {
+            LOGGER.info("Test functionality mapping from " + criterionNumber
+                    + ":" + criterionTitle + " to " + testFuncNumber + " already exists.");
+        }
+    }
+
+    private boolean testFunctionalityMapExists(String criterionNumber, String criterionTitle, String testFuncNumber) {
+        TestFunctionalityCriteriaMapDTO tfMap = insertableTestFuncDao.
+                getByCriteriaNumberTitleAndValue(criterionNumber, criterionTitle, testFuncNumber);
+        return tfMap != null;
     }
 
     private List<JobResponseTriggerWrapper> getExistingListingWrappers(JobExecutionContext jobContext) {
@@ -697,6 +771,74 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
             toInsert.setLastModifiedDate(new Date());
             toInsert.setLastModifiedUser(AuthUtil.getAuditId());
             toInsert.setTestProcedureId(testProcDto.getId());
+            super.create(toInsert);
+        }
+    }
+
+    @Component("insertableTestFunctionalityDao")
+    private static class InsertableTestFunctionalityDao extends BaseDAOImpl {
+
+        @SuppressWarnings("unused")
+        InsertableTestFunctionalityDao() {
+            super();
+        }
+
+        @Transactional
+        public TestFunctionalityCriteriaMapDTO getByCriteriaNumberTitleAndValue(String criteriaNumber, String criteriaTitle, String value) {
+            Query query = entityManager.createQuery("SELECT tfMap "
+                    + "FROM TestFunctionalityCriteriaMapEntity tfMap "
+                    + "JOIN FETCH tfMap.testFunctionality tf "
+                    + "JOIN FETCH tfMap.certificationCriterion cce "
+                    + "JOIN FETCH cce.certificationEdition "
+                    + "WHERE tfMap.deleted <> true "
+                    + "AND tf.deleted <> true "
+                    + "AND (UPPER(cce.number) = :criteriaNumber) "
+                    + "AND cce.title = :criteriaTitle "
+                    + "AND (UPPER(tf.number) = :value)",
+                    TestProcedureCriteriaMapEntity.class);
+            query.setParameter("criteriaNumber", criteriaNumber.trim().toUpperCase());
+            query.setParameter("criteriaTitle", criteriaTitle);
+            query.setParameter("value", value.trim().toUpperCase());
+
+            @SuppressWarnings("unchecked") List<TestFunctionalityCriteriaMapEntity> results = query.getResultList();
+            if (results == null || results.size() == 0) {
+                return null;
+            }
+            List<TestFunctionalityCriteriaMapDTO> existingDtos = new ArrayList<TestFunctionalityCriteriaMapDTO>();
+            for (TestFunctionalityCriteriaMapEntity result : results) {
+                existingDtos.add(new TestFunctionalityCriteriaMapDTO(result));
+            }
+            return existingDtos.get(0);
+        }
+
+        @Transactional
+        public TestFunctionalityDTO getTestFunctionalityByNumberAndEdition(String number, String year) {
+            String hql = "SELECT tf "
+                    + "FROM TestFunctionalityEntity tf "
+                    + "JOIN FETCH tf.certificationEdition ce "
+                    + "WHERE tf.number = :number "
+                    + "AND ce.year = :year "
+                    + "AND tf.deleted = false";
+            Query query = entityManager.createQuery(hql);
+            query.setParameter("number", number);
+            query.setParameter("year", year);
+            @SuppressWarnings("unchecked") List<TestFunctionalityEntity> tfEntities = query.getResultList();
+            TestFunctionalityDTO result = null;
+            if (tfEntities != null && tfEntities.size() > 0) {
+                result = new TestFunctionalityDTO(tfEntities.get(0));
+            }
+            return result;
+        }
+
+        @Transactional
+        public void create(TestFunctionalityDTO testFuncDto, CertificationCriterionDTO criterion) {
+            TestFunctionalityCriteriaMapEntity toInsert = new TestFunctionalityCriteriaMapEntity();
+            toInsert.setCertificationCriterionId(criterion.getId());
+            toInsert.setCreationDate(new Date());
+            toInsert.setDeleted(false);
+            toInsert.setLastModifiedDate(new Date());
+            toInsert.setLastModifiedUser(AuthUtil.getAuditId());
+            toInsert.setTestFunctionalityId(testFuncDto.getId());
             super.create(toInsert);
         }
     }
