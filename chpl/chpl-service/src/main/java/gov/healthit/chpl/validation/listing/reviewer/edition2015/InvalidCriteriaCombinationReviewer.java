@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.FeatureList;
@@ -14,11 +15,18 @@ import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
 @Component
 public class InvalidCriteriaCombinationReviewer implements Reviewer {
-    private static final String B6 = "170.315 (b)(6)";
-    private static final String B10 = "170.315 (b)(10)";
 
-    private static final String G8 = "170.315 (g)(8)";
-    private static final String G10 = "170.315 (g)(10)";
+    @Value("${criterion.170_315_b_6}")
+    private Integer criteriaB6Id;
+
+    @Value("${criterion.170_315_b_10}")
+    private Integer criteriaB10Id;
+
+    @Value("${criterion.170_315_g_8}")
+    private Integer criteriaG8Id;
+
+    @Value("${criterion.170_315_g_10}")
+    private Integer criteriaG10Id;
 
     private ErrorMessageUtil msgUtil;
     private FF4j ff4j;
@@ -32,27 +40,29 @@ public class InvalidCriteriaCombinationReviewer implements Reviewer {
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
-            checkForInvalidCriteriaCombination(listing, B6, B10);
-            checkForInvalidCriteriaCombination(listing, G8, G10);
+            checkForInvalidCriteriaCombination(listing, criteriaB6Id, criteriaB10Id);
+            checkForInvalidCriteriaCombination(listing, criteriaG8Id, criteriaG10Id);
         }
     }
 
-    private void checkForInvalidCriteriaCombination(CertifiedProductSearchDetails listing, String certificationNumberA,
-            String certificationNumberB) {
+    private void checkForInvalidCriteriaCombination(CertifiedProductSearchDetails listing, Integer criteriaIdA,
+            Integer criteriaIdB) {
 
-        Optional<CertificationResult> certResultA = findCerificationResult(listing, certificationNumberA);
-        Optional<CertificationResult> certResultB = findCerificationResult(listing, certificationNumberB);
+        Optional<CertificationResult> certResultA = findCerificationResult(listing, criteriaIdA);
+        Optional<CertificationResult> certResultB = findCerificationResult(listing, criteriaIdB);
 
         if (certResultA.isPresent() && certResultB.isPresent()) {
             listing.getErrorMessages()
-                    .add(msgUtil.getMessage("listing.criteria.invalidCombination", certificationNumberA, certificationNumberB));
+                    .add(msgUtil.getMessage("listing.criteria.invalidCombination",
+                            certResultA.get().getCriterion().getNumber(),
+                            certResultB.get().getCriterion().getNumber()));
         }
     }
 
     private Optional<CertificationResult> findCerificationResult(CertifiedProductSearchDetails listing,
-            String certificationNumber) {
+            Integer criteriaId) {
         return listing.getCertificationResults().stream()
-                .filter(cr -> cr.getNumber().equals(certificationNumber) && cr.isSuccess())
+                .filter(cr -> cr.getCriterion().getId().equals(Long.valueOf(criteriaId)) && cr.isSuccess())
                 .findFirst();
     }
 }
