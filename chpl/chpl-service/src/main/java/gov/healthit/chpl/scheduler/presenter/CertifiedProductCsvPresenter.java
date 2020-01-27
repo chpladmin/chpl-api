@@ -176,8 +176,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
             boolean criteriaMatch = false;
             for (int i = 0; i < data.getCertificationResults().size() && !criteriaMatch; i++) {
                 CertificationResult currCriteria = data.getCertificationResults().get(i);
-                if (currCriteria.getNumber().equals(criteria.getNumber())
-                        && currCriteria.getTitle().equalsIgnoreCase(criteria.getTitle())) {
+                if (currCriteria.getCriterion().getId().equals(criteria.getId())) {
                     criteriaMatch = true;
                     result.add(currCriteria.isSuccess().toString());
                 }

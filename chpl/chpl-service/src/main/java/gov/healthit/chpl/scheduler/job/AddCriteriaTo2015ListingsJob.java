@@ -75,7 +75,6 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
             + "170.315 (g)(9):Application Access - All Data Request (Cures Update);"
             + "170.315 (g)(10):Standardized API for Patient and Population Services;";
 
-
     @Autowired
     private CertificationCriterionDAO criterionDAO;
 

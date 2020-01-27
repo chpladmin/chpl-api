@@ -407,14 +407,14 @@ public class PendingListingTestFunctionalityReviewerTest {
         return editions;
     }
 
-    private Map<String, List<TestFunctionalityDTO>> getTestFunctionalityCriteriaMap2014() {
-        Map<String, List<TestFunctionalityDTO>> map = new HashMap<String, List<TestFunctionalityDTO>>();
+    private Map<Long, List<TestFunctionalityDTO>> getTestFunctionalityCriteriaMap2014() {
+        Map<Long, List<TestFunctionalityDTO>> map = new HashMap<Long, List<TestFunctionalityDTO>>();
 
         List<TestFunctionalityDTO> tfs = new ArrayList<TestFunctionalityDTO>();
         tfs.add(getTestFunctionalityId_18());
         tfs.add(getTestFunctionalityId_7());
 
-        map.put("170.314 (a)(6)", tfs);
+        map.put(66L, tfs);
 
         return map;
     }

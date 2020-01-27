@@ -43,7 +43,6 @@ import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.TestFunctionalityCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.manager.TestingFunctionalityManager;
-import gov.healthit.chpl.manager.impl.TestingFunctionalityManagerImpl;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ListingMockUtil;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.TestFunctionality2014Reviewer;
@@ -82,7 +81,7 @@ public class ListingTestFunctionalityReviewerTest {
 
     @Before
     public void setup() {
-        testFunctionalityManager = new TestingFunctionalityManagerImpl(testFunctionalityDAO);
+        testFunctionalityManager = new TestingFunctionalityManager(testFunctionalityDAO);
         MockitoAnnotations.initMocks(this);
 
         tfReviewer = new TestFunctionality2014Reviewer(testFunctionalityDAO, testFunctionalityManager,
@@ -126,7 +125,7 @@ public class ListingTestFunctionalityReviewerTest {
     public void validateCertifiedProductTestFunctionality() {
         Mockito.when(testFunctionalityDAO.getByNumberAndEdition(ArgumentMatchers.anyString(), ArgumentMatchers.anyLong()))
                 .thenReturn(getTestFunctionalityId_7());
-        Mockito.when(certificationCriterionDAO.getByNumberAndYear(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+        Mockito.when(certificationCriterionDAO.getByNumberAndTitle(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenReturn(getCertificationCriterion_a6());
 
         CertifiedProductSearchDetails listing = createListing("2014");
@@ -155,7 +154,7 @@ public class ListingTestFunctionalityReviewerTest {
     public void validateCertifiedProductTestFunctionalityPracticeTypeMismatch() throws Exception {
         Mockito.when(testFunctionalityDAO.getByNumberAndEdition(ArgumentMatchers.anyString(), ArgumentMatchers.anyLong()))
                 .thenReturn(getTestFunctionalityId_18());
-        Mockito.when(certificationCriterionDAO.getByNumberAndYear(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+        Mockito.when(certificationCriterionDAO.getByNumberAndTitle(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenReturn(getCertificationCriterion_a6());
 
         CertifiedProductSearchDetails listing = createListing("2014");
@@ -184,7 +183,7 @@ public class ListingTestFunctionalityReviewerTest {
         Mockito.when(testFunctionalityDAO.getByNumberAndEdition(ArgumentMatchers.anyString(), ArgumentMatchers.anyLong()))
                 .thenReturn(getTestFunctionalityId_7());
 
-        Mockito.when(certificationCriterionDAO.getByNumberAndYear(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+        Mockito.when(certificationCriterionDAO.getByNumberAndTitle(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenReturn(getCertificationCriterion_a6());
 
         CertifiedProductSearchDetails listing = createListing("2014");
@@ -419,20 +418,20 @@ public class ListingTestFunctionalityReviewerTest {
         return editions;
      }
 
-    private Map<String, List<TestFunctionalityDTO>> getTestFunctionalityCriteriaMap2014() {
-        Map<String, List<TestFunctionalityDTO>> map = new HashMap<String, List<TestFunctionalityDTO>>();
+    private Map<Long, List<TestFunctionalityDTO>> getTestFunctionalityCriteriaMap2014() {
+        Map<Long, List<TestFunctionalityDTO>> map = new HashMap<Long, List<TestFunctionalityDTO>>();
 
         List<TestFunctionalityDTO> tfs = new ArrayList<TestFunctionalityDTO>();
         tfs.add(getTestFunctionalityId_18());
         tfs.add(getTestFunctionalityId_7());
 
-        map.put("170.314 (a)(6)", tfs);
+        map.put(66L, tfs);
 
         return map;
     }
 
-    private Map<String, List<TestFunctionalityDTO>> getTestFunctionalityCriteriaMap2015() {
-        Map<String, List<TestFunctionalityDTO>> map = new HashMap<String, List<TestFunctionalityDTO>>();
+    private Map<Long, List<TestFunctionalityDTO>> getTestFunctionalityCriteriaMap2015() {
+        Map<Long, List<TestFunctionalityDTO>> map = new HashMap<Long, List<TestFunctionalityDTO>>();
 
         List<TestFunctionalityDTO> tfs = new ArrayList<TestFunctionalityDTO>();
         tfs.add(getTestFunctionality(34L, "(b)(1)(ii)(A)(5)(i)", "2015"));
@@ -444,7 +443,7 @@ public class ListingTestFunctionalityReviewerTest {
         tfs.add(getTestFunctionality(58L, "170.102(19)(i)", "2015"));
         tfs.add(getTestFunctionality(58L, "170.102(19)(ii)", "2015"));
 
-        map.put("170.315 (b)(1)", tfs);
+        map.put(16L, tfs);
 
         return map;
     }
