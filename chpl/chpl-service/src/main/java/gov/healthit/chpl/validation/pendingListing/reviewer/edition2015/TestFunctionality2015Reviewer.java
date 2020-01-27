@@ -97,18 +97,16 @@ public class TestFunctionality2015Reviewer implements Reviewer {//, ApplicationL
         CertificationEditionDTO edition = getEditionDTO(getEditionFromListing(listing));
         TestFunctionalityDTO tf = getTestFunctionality(crtf.getNumber(), edition.getId());
 
-        String criterionNumber = cr.getCriterion().getNumber();
-        if (!isTestFunctionalityCritierionValid(criterionNumber, tf, edition.getYear())) {
+        if (!isTestFunctionalityCritierionValid(cr.getCriterion().getId(), tf, edition.getYear())) {
             warnings.add(getTestFunctionalityCriterionMessage(crtf, cr, listing, edition));
         }
         return warnings;
     }
 
-    private Boolean isTestFunctionalityCritierionValid(final String criteriaNumber,
-            final TestFunctionalityDTO tf, final String year) {
+    private Boolean isTestFunctionalityCritierionValid(Long criteriaId, TestFunctionalityDTO tf, String year) {
 
         List<TestFunctionalityDTO> validTestFunctionalityForCriteria =
-                testFunctionalityManager.getTestFunctionalityCriteriaMap2015().get(criteriaNumber);
+                testFunctionalityManager.getTestFunctionalityCriteriaMap2015().get(criteriaId);
 
         if (validTestFunctionalityForCriteria == null) {
             return false;
