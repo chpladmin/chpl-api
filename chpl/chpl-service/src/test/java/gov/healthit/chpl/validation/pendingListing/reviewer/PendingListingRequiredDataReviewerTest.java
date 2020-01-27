@@ -24,9 +24,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
-import gov.healthit.chpl.listing.ListingMockUtil;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ListingMockUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })

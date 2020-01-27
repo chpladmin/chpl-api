@@ -1,5 +1,29 @@
 # Release Notes
 
+## Version 22.1.0
+_27 January 2020_
+
+### Features
+* Add job to create four new criteria b10, d12, d13 and g10
+* Add endpoint to get listing activity metadata with paging
+* Add Certification Status to Listing object; updates XML structure
+* Add some more statistics to the Weekly Summary Statistics report
+
+### Bug Fixes
+* Allow ONC and ONC-ACB to split Developers again
+
+---
+
+## Version 22.0.0
+_2 January 2020_
+
+### Features
+* Allow Admin/ONC users to edit listing if developer is banned
+* Prevent ONC-ACBs from adding/editing surveillance referencing removed criteria
+* Remove "Complaint Status Type" as distinct concept
+
+---
+
 ## Version 21.16.0
 _20 December 2019_
 

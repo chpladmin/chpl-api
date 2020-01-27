@@ -15,6 +15,7 @@ import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.ChplProductNumberDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -262,6 +263,33 @@ public class ChplProductNumberUtil {
             }
         }
         return exists;
+    }
+
+    public CertifiedProduct getListing(String chplProductNumber) {
+        CertifiedProduct listing = null;
+        if (chplProductNumber.startsWith("CHP-")) {
+            try {
+                CertifiedProductDTO chplProduct = cpDao.getByChplNumber(chplProductNumber);
+                if (chplProduct != null) {
+                    CertifiedProductDetailsDTO cpDetails = cpDao.getDetailsById(chplProduct.getId());
+                    if (cpDetails != null) {
+                        listing = new CertifiedProduct(cpDetails);
+                    }
+                }
+            } catch (final EntityRetrievalException ex) {
+                LOGGER.error("Could not look up " + chplProductNumber, ex);
+            }
+        } else {
+            try {
+                CertifiedProductDetailsDTO cpDetails = cpDao.getByChplUniqueId(chplProductNumber);
+                if (cpDetails != null) {
+                    listing = new CertifiedProduct(cpDetails);
+                }
+            } catch (final EntityRetrievalException ex) {
+                LOGGER.error("Could not look up " + chplProductNumber, ex);
+            }
+        }
+        return listing;
     }
 
     /**

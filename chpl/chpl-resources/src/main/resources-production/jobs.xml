@@ -12,12 +12,13 @@
     </pre-processing-commands>
     <schedule>
         <!-- Delete from here to "DELETE END MARKER" after PROD push -->
-        <!-- Questionable Activity data emailer -->
+
+        <!-- Job used to add criteria to 2015 Listings-->
         <job>
-            <name>Questionable Activity Report</name>
-            <group>chplJobs</group>
-            <description>Sends a report of questionable activity within a user defined range of days</description>
-            <job-class>gov.healthit.chpl.scheduler.job.QuestionableActivityEmailJob</job-class>
+            <name>addCriteriaTo2015ListingsJob</name>
+            <group>systemJobs</group>
+            <description>Add criteria to all 2015 Listings</description>
+            <job-class>gov.healthit.chpl.scheduler.job.AddCriteriaTo2015ListingsJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>
@@ -26,25 +27,40 @@
                     <value>ROLE_ADMIN;ROLE_ONC</value>
                 </entry>
                 <entry>
-                    <key>frequency</key>
-                    <value>WEEKLY</value>
+                    <key>emailCsvFileName</key>
+                    <value>2015CriteriaAddResults.csv</value>
                 </entry>
                 <entry>
-                    <key>range</key>
-                    <value>7</value>
+                    <key>emailSubject</key>
+                    <value>2015 Listing Criteria Add Results</value>
                 </entry>
                 <entry>
                     <key>parameters</key>
-                    <value>[{"label": "Range (in days)", "key": "range", "type": "int", "min": "1", "max": "365"} ]</value>
+                    <value>[{"label": "Email Report To", "key": "email", "type": "text"}, {"label": "Send Update Every (x) Listings", "key": "statusInterval", "type": "text"} ]</value>
                 </entry>
             </job-data-map>
         </job>
-        <!-- Job used to mark RT 13 EC macra measure as removed -->
+        <!-- Job used to add criteria to a single Listing-->
         <job>
-            <name>removeRT13ECMacraMeasureJob</name>
-            <group>systemJobs</group>
-            <description>Sets the removed flag to 'true' for RT13 EC macra measure</description>
-            <job-class>gov.healthit.chpl.scheduler.job.RemoveRT13ECMacraMeasureJob</job-class>
+            <name>addCriteriaToSingleListingJob</name>
+            <group>subordinateJobs</group>
+            <description>Add certification criteria to a single Listing</description>
+            <job-class>gov.healthit.chpl.scheduler.job.AddCriteriaToSingleListingJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+            </job-data-map>
+        </job>
+        <!-- Job used to add criteria to a single Pending Listing-->
+        <job>
+            <name>addCriteriaToSinglePendingListingJob</name>
+            <group>subordinateJobs</group>
+            <description>Add certification criteria to a single Pending Listing</description>
+            <job-class>gov.healthit.chpl.scheduler.job.AddCriteriaToSinglePendingListingJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>

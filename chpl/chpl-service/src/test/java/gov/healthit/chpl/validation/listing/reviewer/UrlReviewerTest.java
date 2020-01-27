@@ -17,8 +17,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.listing.ListingMockUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ListingMockUtil;
 
 /**
  * Tests URLs to ensure the URLs have no new lines and look like an URL.
