@@ -27,6 +27,7 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.MacraMeasureCom
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaTestTaskComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaUcdComparisonReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredCriteriaValidator;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestFunctionality2015Reviewer;
@@ -34,6 +35,7 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestTool2015Rev
 
 /**
  * Validation interface for any listing that is already uploaded and confirmed on the CHPL.
+ * 
  * @author kekey
  *
  */
@@ -127,6 +129,9 @@ public class Edition2015ListingValidator extends Validator {
     @Qualifier("removedCriteriaUcdComparisonReviewer")
     private RemovedCriteriaUcdComparisonReviewer ucdCriteriaComparisonReviewer;
 
+    @Autowired
+    private RequiredCriteriaValidator requiredCriteriaValidator;
+
     private List<Reviewer> reviewers;
     private List<ComparisonReviewer> comparisonReviewers;
 
@@ -150,6 +155,7 @@ public class Edition2015ListingValidator extends Validator {
             reviewers.add(tt2015Reviewer);
             reviewers.add(urlReviewer);
             reviewers.add(testFunctionalityReviewer);
+            reviewers.add(requiredCriteriaValidator);
         }
         return reviewers;
     }
