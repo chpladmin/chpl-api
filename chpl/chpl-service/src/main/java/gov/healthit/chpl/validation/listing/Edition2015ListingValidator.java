@@ -130,6 +130,7 @@ public class Edition2015ListingValidator extends Validator {
     private RemovedCriteriaUcdComparisonReviewer ucdCriteriaComparisonReviewer;
 
     @Autowired
+    @Qualifier("requiredCriteriaValidator")
     private RequiredCriteriaValidator requiredCriteriaValidator;
 
     private List<Reviewer> reviewers;
