@@ -81,7 +81,8 @@ public class SedDataCollector {
         boolean result = false;
         String[] certIdStrings = listing.getCriteriaMet().split(CertifiedProductFlatSearchResult.CERTS_SPLIT_CHAR);
         for (CertificationCriterionDTO criterion : criteria) {
-            for (String certIdStr : certIdStrings) {
+            for (int i = 0; i < certIdStrings.length && !result; i++) {
+                String certIdStr = certIdStrings[i];
                 Long certId = Long.parseLong(certIdStr);
                 if (criterion.getId().equals(certId)) {
                     result = true;
