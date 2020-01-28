@@ -56,32 +56,7 @@ public class SurveillanceRequirement implements Serializable {
     }
 
     public boolean matches(SurveillanceRequirement anotherRequirement) {
-        if (this.id == null && anotherRequirement.id != null
-                || this.id != null && anotherRequirement.id == null) {
-            return false;
-        } else if (this.id != null && anotherRequirement.id != null
-                && this.id.longValue() != anotherRequirement.id.longValue()) {
-            return false;
-        }
-        if (StringUtils.isEmpty(this.requirement) && !StringUtils.isEmpty(anotherRequirement.requirement)
-                || !StringUtils.isEmpty(this.requirement) && StringUtils.isEmpty(anotherRequirement.requirement)) {
-            return false;
-        } else if (!StringUtils.isEmpty(this.requirement) && !StringUtils.isEmpty(anotherRequirement.requirement)
-                && !this.requirement.equalsIgnoreCase(anotherRequirement.requirement)) {
-            return false;
-        }
-        if (this.type == null && anotherRequirement.type != null
-                || this.type != null && anotherRequirement.type == null) {
-            return false;
-        } else if (this.type != null && anotherRequirement.type != null
-                && !this.type.matches(anotherRequirement.type)) {
-            return false;
-        }
-        if (this.result == null && anotherRequirement.result != null
-                || this.result != null && anotherRequirement.result == null) {
-            return false;
-        } else if (this.result != null && anotherRequirement.result != null
-                && !this.result.matches(anotherRequirement.result)) {
+        if (!propertiesMatch(anotherRequirement)) {
             return false;
         }
 
@@ -127,6 +102,38 @@ public class SurveillanceRequirement implements Serializable {
                     }
                 }
             }
+        }
+        return true;
+    }
+
+    public boolean propertiesMatch(SurveillanceRequirement anotherRequirement) {
+        if (this.id == null && anotherRequirement.id != null
+                || this.id != null && anotherRequirement.id == null) {
+            return false;
+        } else if (this.id != null && anotherRequirement.id != null
+                && this.id.longValue() != anotherRequirement.id.longValue()) {
+            return false;
+        }
+        if (StringUtils.isEmpty(this.requirement) && !StringUtils.isEmpty(anotherRequirement.requirement)
+                || !StringUtils.isEmpty(this.requirement) && StringUtils.isEmpty(anotherRequirement.requirement)) {
+            return false;
+        } else if (!StringUtils.isEmpty(this.requirement) && !StringUtils.isEmpty(anotherRequirement.requirement)
+                && !this.requirement.equalsIgnoreCase(anotherRequirement.requirement)) {
+            return false;
+        }
+        if (this.type == null && anotherRequirement.type != null
+                || this.type != null && anotherRequirement.type == null) {
+            return false;
+        } else if (this.type != null && anotherRequirement.type != null
+                && !this.type.matches(anotherRequirement.type)) {
+            return false;
+        }
+        if (this.result == null && anotherRequirement.result != null
+                || this.result != null && anotherRequirement.result == null) {
+            return false;
+        } else if (this.result != null && anotherRequirement.result != null
+                && !this.result.matches(anotherRequirement.result)) {
+            return false;
         }
         return true;
     }

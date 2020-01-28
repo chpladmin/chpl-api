@@ -30,8 +30,17 @@ public class UnattestedCriteriaWithDataReviewer implements Reviewer {
                 if (!StringUtils.isEmpty(cert.getApiDocumentation())) {
                     cert.setApiDocumentation(null);
                 }
-                if (!StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
-                    cert.setPrivacySecurityFramework(null);
+                if (!StringUtils.isEmpty(cert.getExportDocumentation())) {
+                    cert.setExportDocumentation(null);
+                }
+                if (!StringUtils.isEmpty(cert.getDocumentationUrl())) {
+                    cert.setDocumentationUrl(null);
+                }
+                if (!StringUtils.isEmpty(cert.getUseCases())) {
+                    cert.setUseCases(null);
+                }
+                if (cert.getAttestationAnswer() != null && cert.getAttestationAnswer().booleanValue()) {
+                    cert.setAttestationAnswer(null);
                 }
                 if (cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
                     cert.getAdditionalSoftware().clear();
