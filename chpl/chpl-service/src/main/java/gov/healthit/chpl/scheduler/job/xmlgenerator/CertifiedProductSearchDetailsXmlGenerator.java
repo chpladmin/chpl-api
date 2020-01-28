@@ -14,7 +14,8 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductSearchDetailsXmlGenerator.class);
 
-    public static void add(List<CertifiedProductSearchDetails> cps, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
+    public static void add(List<CertifiedProductSearchDetails> cps, String rootNodeName, XMLStreamWriter sw)
+            throws XMLStreamException {
         if (cps != null) {
             sw.writeStartElement(rootNodeName);
 
@@ -30,7 +31,8 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
             sw.writeStartElement(rootNodeName);
             createSimpleElement(cp.getAcbCertificationId(), "acbCertificationId", sw);
             createSimpleElement(cp.getAccessibilityCertified(), "accessibilityCertified", sw);
-            CertifiedProductAccessibilityStandardXmlGenerator.addAccessibilityStandards(cp.getAccessibilityStandards(), "accessibilityStandards", sw);
+            CertifiedProductAccessibilityStandardXmlGenerator.addAccessibilityStandards(cp.getAccessibilityStandards(),
+                    "accessibilityStandards", sw);
             createSimpleElement(cp.getCertificationDate(), "certificationDate", sw);
             if (cp.getCertificationEdition() != null && cp.getCertificationEdition().size() > 0) {
                 sw.writeStartElement("certificationEdition");
@@ -117,7 +119,7 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
             SurveillanceXmlGenerator.add(cp.getSurveillance(), "surveillanceList", sw);
             CertifiedProductTargetedUserXmlGenerator.add(cp.getTargetedUsers(), "targetedUsers", sw);
             CertifiedProductTestingLabXmlGenerator.addTestingLabs(cp.getTestingLabs(), "testingLabs", sw);
-            createSimpleElement(cp.getTransparencyAttestation(), "transparencyAttestation", sw);
+            TransparencyAttestationXmlGenerator.add(cp.getTransparencyAttestation(), "transparencyAttestation", sw);
             createSimpleElement(cp.getTransparencyAttestationUrl(), "transparencyAttestationUrl", sw);
             ProductVersionXmlGenerator.addProductVersion(cp.getVersion(), "version", sw);
             sw.writeEndElement();

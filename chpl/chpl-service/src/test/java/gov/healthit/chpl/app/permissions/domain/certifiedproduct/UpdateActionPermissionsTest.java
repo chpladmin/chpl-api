@@ -17,6 +17,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.app.permissions.domain.ActionPermissionsBaseTest;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domains.certifiedproduct.UpdateActionPermissions;
 
@@ -52,7 +54,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         // Since it is admin it has access to all - parm value does not matter.
-        assertTrue(permissions.hasAccess(1L));
+        assertTrue(permissions.hasAccess(new ListingUpdateRequest()));
     }
 
     @Override
@@ -64,7 +66,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         // Since it is ONC it has access to all - parm value does not matter.
-        assertTrue(permissions.hasAccess(1L));
+        assertTrue(permissions.hasAccess(new ListingUpdateRequest()));
     }
 
     @Override
@@ -75,9 +77,15 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         // This should always be false
         assertFalse(permissions.hasAccess());
 
-        assertFalse(permissions.hasAccess(1L));
+        ListingUpdateRequest request = new ListingUpdateRequest();
+        request.setListing(new CertifiedProductSearchDetails());
+        request.getListing().getCertifyingBody().put(CertifiedProductSearchDetails.ACB_ID_KEY, 1l);
+        assertFalse(permissions.hasAccess(request));
 
-        assertTrue(permissions.hasAccess(2L));
+        request = new ListingUpdateRequest();
+        request.setListing(new CertifiedProductSearchDetails());
+        request.getListing().getCertifyingBody().put(CertifiedProductSearchDetails.ACB_ID_KEY, 2l);
+        assertTrue(permissions.hasAccess(request));
     }
 
     @Override
