@@ -165,7 +165,7 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
                 .createQuery(
                         "SELECT cce "
                                 + "FROM CertificationCriterionEntity cce "
-                                + "LEFT JOIN FETCH cce.certificationEdition "
+                                + "JOIN FETCH cce.certificationEdition "
                                 + "WHERE cce.deleted = false",
                                 CertificationCriterionEntity.class);
         @SuppressWarnings("unchecked") List<CertificationCriterionEntity> result = query.getResultList();
@@ -177,10 +177,9 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
     private List<CertificationCriterionEntity> getEntitiesByCertificationEditionYear(String year) {
         Query query = entityManager.createQuery("SELECT cce "
                 + "FROM CertificationCriterionEntity cce "
-                + "LEFT JOIN FETCH cce.certificationEdition "
+                + "JOIN FETCH cce.certificationEdition edition "
                 + "WHERE (NOT cce.deleted = true) "
-                + "AND (cce.certificationEditionId = cce.certificationEdition.id) "
-                + "AND (cce.certificationEdition.year = :year)", CertificationCriterionEntity.class);
+                + "AND (edition.year = :year)", CertificationCriterionEntity.class);
         query.setParameter("year", year);
         return query.getResultList();
     }
@@ -189,10 +188,9 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
     public List<CertificationCriterionEntity> getEntitiesByNumber(String number) {
         Query query = entityManager.createQuery("SELECT cce "
                 + "FROM CertificationCriterionEntity cce "
-                + "LEFT JOIN FETCH cce.certificationEdition "
+                + "JOIN FETCH cce.certificationEdition "
                 + "WHERE (NOT cce.deleted = true) "
-                + "AND (cce.certificationEditionId = cce.certificationEdition.id) "
-                + "AND (cce.certificationEdition.number = :number)", CertificationCriterionEntity.class);
+                + "AND (cce.number = :number)", CertificationCriterionEntity.class);
         query.setParameter("number", number);
         return query.getResultList();
     }
@@ -203,7 +201,7 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
             Query query = entityManager.createQuery(
                     "SELECT cce "
                             + "FROM CertificationCriterionEntity cce "
-                            + "LEFT JOIN FETCH cce.certificationEdition "
+                            + "JOIN FETCH cce.certificationEdition "
                             + "WHERE (cce.deleted <> true) AND (cce.id = :entityid) ",
                             CertificationCriterionEntity.class);
             query.setParameter("entityid", id);
@@ -225,6 +223,7 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
         Query query = entityManager
                 .createQuery(
                         "SELECT cce " + "FROM CertificationCriterionEntity cce "
+                                + "JOIN FETCH cce.certificationEdition "
                                 + "WHERE (NOT cce.deleted = true) "
                                 + "AND (cce.number = :number) "
                                 + "AND (cce.title = :title) ",
