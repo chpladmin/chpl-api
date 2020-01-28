@@ -41,11 +41,11 @@ public class CriterionProductStatisticsCalculator {
     }
 
     /**
-     * criterionMap maps the certification criterion to the count of unique
+     * criterionMap maps the certification criterion id to the count of unique
      * Products that certify to that criterion.
      *
      * uniqueProductSet contains strings of the form
-     * "<CriterionNumber>-<DeveloperName>-<ProductName>" iff that combination of
+     * "<CriterionId>-<DeveloperName>-<ProductName>" iff that combination of
      * criterion and product have already been counted in the criterion map
      *
      * @param listings
@@ -57,13 +57,13 @@ public class CriterionProductStatisticsCalculator {
         HashSet<String> uniqueProductSet = new HashSet<String>();
         for (CertifiedProductFlatSearchResult listing : listings) {
             if (listing.getCriteriaMet() != null && !listing.getCriteriaMet().isEmpty()) {
-                for (String cert : listing.getCriteriaMet().split("\u263A")) {
-                    String key = cert + "-" + listing.getDeveloper() + '-' + listing.getProduct();
+                for (String certId : listing.getCriteriaMet().split(CertifiedProductFlatSearchResult.CERTS_SPLIT_CHAR)) {
+                    String key = certId + "-" + listing.getDeveloper() + '-' + listing.getProduct();
                     if (!uniqueProductSet.contains(key)) {
-                        if (!criterionMap.containsKey(cert)) {
-                            criterionMap.put(cert, 0L);
+                        if (!criterionMap.containsKey(certId)) {
+                            criterionMap.put(certId, 0L);
                         }
-                        criterionMap.put(cert, criterionMap.get(cert) + 1);
+                        criterionMap.put(certId, criterionMap.get(certId) + 1);
                         uniqueProductSet.add(key);
                     }
                 }
