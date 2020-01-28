@@ -271,7 +271,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                 boolean foundCriteria = false;
                                 for (UcdProcess ucd : listing.getSed().getUcdProcesses()) {
                                     for (CertificationCriterion criteria : ucd.getCriteria()) {
-                                        if (criteria.getNumber().equalsIgnoreCase(certCriteria.getNumber())) {
+                                        if (criteria.getId().equals(certCriteria.getCriterion().getId())) {
                                             foundCriteria = true;
                                         }
                                     }
@@ -292,7 +292,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                 boolean foundCriteria = false;
                                 for (TestTask tt : listing.getSed().getTestTasks()) {
                                     for (CertificationCriterion criteria : tt.getCriteria()) {
-                                        if (criteria.getNumber().equalsIgnoreCase(certCriteria.getNumber())) {
+                                        if (criteria.getId().equals(certCriteria.getCriterion().getId())) {
                                             foundCriteria = true;
                                         }
                                     }

@@ -130,7 +130,7 @@ public class CertificationResultManager extends SecuredManager {
             CertificationResultDTO toUpdate = new CertificationResultDTO();
             toUpdate.setId(orig.getId());
             toUpdate.setCertifiedProductId(updatedListing.getId());
-            CertificationCriterionDTO criteria = criteriaDao.getByNumberAndTitle(orig.getNumber(), orig.getTitle());
+            CertificationCriterionDTO criteria = criteriaDao.getById(orig.getCriterion().getId());
             if (criteria == null || criteria.getId() == null) {
                 throw new EntityCreationException(
                         "Cannot add certification result mapping for unknown criteria " + orig.getNumber());
@@ -188,7 +188,7 @@ public class CertificationResultManager extends SecuredManager {
                 for (UcdProcess existingUcd : existingListing.getSed().getUcdProcesses()) {
                     boolean ucdMeetsCriteria = false;
                     for (CertificationCriterion ucdCriteria : existingUcd.getCriteria()) {
-                        if (ucdCriteria.getNumber().equalsIgnoreCase(updated.getNumber())) {
+                        if (ucdCriteria.getId().equals(updated.getCriterion().getId())) {
                             ucdMeetsCriteria = true;
                         }
                     }
@@ -205,7 +205,7 @@ public class CertificationResultManager extends SecuredManager {
                 for (TestTask existingTestTask : existingListing.getSed().getTestTasks()) {
                     boolean taskMeetsCriteria = false;
                     for (CertificationCriterion taskCriteria : existingTestTask.getCriteria()) {
-                        if (taskCriteria.getNumber().equalsIgnoreCase(updated.getNumber())) {
+                        if (taskCriteria.getId().equals(updated.getCriterion().getId())) {
                             taskMeetsCriteria = true;
                         }
                     }
@@ -238,7 +238,7 @@ public class CertificationResultManager extends SecuredManager {
                 for (UcdProcess existingUcd : existingListing.getSed().getUcdProcesses()) {
                     boolean ucdMeetsCriteria = false;
                     for (CertificationCriterion ucdCriteria : existingUcd.getCriteria()) {
-                        if (ucdCriteria.getNumber().equalsIgnoreCase(updated.getNumber())) {
+                        if (ucdCriteria.getId().equals(updated.getCriterion().getId())) {
                             ucdMeetsCriteria = true;
                         }
                     }
@@ -252,7 +252,7 @@ public class CertificationResultManager extends SecuredManager {
                 for (UcdProcess updatedUcd : updatedListing.getSed().getUcdProcesses()) {
                     boolean ucdMeetsCriteria = false;
                     for (CertificationCriterion ucdCriteria : updatedUcd.getCriteria()) {
-                        if (ucdCriteria.getNumber().equalsIgnoreCase(updated.getNumber())) {
+                        if (ucdCriteria.getId().equals(updated.getCriterion().getId())) {
                             ucdMeetsCriteria = true;
                         }
                     }
@@ -270,7 +270,7 @@ public class CertificationResultManager extends SecuredManager {
                 for (TestTask existingTask : existingListing.getSed().getTestTasks()) {
                     boolean taskMeetsCriteria = false;
                     for (CertificationCriterion taskCriteria : existingTask.getCriteria()) {
-                        if (taskCriteria.getNumber().equalsIgnoreCase(updated.getNumber())) {
+                        if (taskCriteria.getId().equals(updated.getCriterion().getId())) {
                             taskMeetsCriteria = true;
                         }
                     }
@@ -318,7 +318,7 @@ public class CertificationResultManager extends SecuredManager {
                 for (TestTask updatedTask : updatedListing.getSed().getTestTasks()) {
                     boolean taskMeetsCriteria = false;
                     for (CertificationCriterion taskCriteria : updatedTask.getCriteria()) {
-                        if (taskCriteria.getNumber().equalsIgnoreCase(updated.getNumber())) {
+                        if (taskCriteria.getId().equals(updated.getCriterion().getId())) {
                             taskMeetsCriteria = true;
                         }
                     }

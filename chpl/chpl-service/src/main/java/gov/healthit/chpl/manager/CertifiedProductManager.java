@@ -1966,8 +1966,8 @@ public class CertifiedProductManager extends SecuredManager {
 
         for (CertificationResult updatedItem : updatedCertifications) {
             for (CertificationResult existingItem : existingCertifications) {
-                if (!StringUtils.isEmpty(updatedItem.getNumber()) && !StringUtils.isEmpty(existingItem.getNumber())
-                        && updatedItem.getNumber().equals(existingItem.getNumber())) {
+                if (updatedItem.getCriterion() != null && existingItem.getCriterion() != null
+                        && updatedItem.getCriterion().getId().equals(existingItem.getCriterion().getId())) {
                     numChanges += certResultManager.update(existingListing, updatedListing, existingItem,
                             updatedItem);
                 }
