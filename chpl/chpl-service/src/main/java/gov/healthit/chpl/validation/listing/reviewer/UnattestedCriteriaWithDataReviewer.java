@@ -66,7 +66,7 @@ public class UnattestedCriteriaWithDataReviewer implements Reviewer {
                     for (TestTask tt : listing.getSed().getTestTasks()) {
                         ArrayList<CertificationCriterion> remove = new ArrayList<CertificationCriterion>();
                         for (CertificationCriterion ttCriteria : tt.getCriteria()) {
-                            if (ttCriteria.getNumber() != null && ttCriteria.getNumber().equals(cert.getNumber())) {
+                            if (ttCriteria.getId() != null && ttCriteria.getId().equals(cert.getCriterion().getId())) {
                                 remove.add(ttCriteria);
                             }
                         }
@@ -78,7 +78,7 @@ public class UnattestedCriteriaWithDataReviewer implements Reviewer {
                     for (UcdProcess ucd : listing.getSed().getUcdProcesses()) {
                         ArrayList<CertificationCriterion> remove = new ArrayList<CertificationCriterion>();
                         for (CertificationCriterion ucdCriteria : ucd.getCriteria()) {
-                            if (ucdCriteria.getNumber() != null && ucdCriteria.getNumber().equals(cert.getNumber())) {
+                            if (ucdCriteria.getId() != null && ucdCriteria.getId().equals(cert.getCriterion().getId())) {
                                 remove.add(ucdCriteria);
                             }
                         }
