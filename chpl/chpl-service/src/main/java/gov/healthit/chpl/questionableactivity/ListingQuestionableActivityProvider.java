@@ -451,7 +451,7 @@ public class ListingQuestionableActivityProvider {
             // based on number and compare the success boolean to see if one was removed
             for (CertificationResult origCertResult : origListing.getCertificationResults()) {
                 for (CertificationResult newCertResult : newListing.getCertificationResults()) {
-                    if (origCertResult.getNumber().equals(newCertResult.getNumber())) {
+                    if (origCertResult.getCriterion().getId().equals(newCertResult.getCriterion().getId())) {
                         if (origCertResult.isSuccess() && !newCertResult.isSuccess()) {
                             // orig did have this cert result but new does not so it was removed
                             QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
