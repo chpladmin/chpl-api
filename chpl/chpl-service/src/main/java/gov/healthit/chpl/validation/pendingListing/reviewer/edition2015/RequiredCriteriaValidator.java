@@ -1,6 +1,5 @@
 package gov.healthit.chpl.validation.pendingListing.reviewer.edition2015;
 
-import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +20,6 @@ public class RequiredCriteriaValidator implements Reviewer {
     @Value("${criterion.170_315_d_13}")
     private Integer criteriaD13Id;
 
-    @Value("#{new java.text.SimpleDateFormat(\"MM/dd/yyyy\").parse(\"${cures.ruleEffectiveDate}\")}")
-    private Date ruleEffectiveDate;
-
     private ErrorMessageUtil msgUtil;
 
     @Autowired
@@ -33,11 +29,8 @@ public class RequiredCriteriaValidator implements Reviewer {
 
     @Override
     public void review(PendingCertifiedProductDTO listing) {
-        // These criterion are only required after effective rule date
-        if (listing.getCertificationDate().after(ruleEffectiveDate)) {
-            checkRequiredCriterionExist(listing, criteriaD12Id);
-            checkRequiredCriterionExist(listing, criteriaD13Id);
-        }
+        checkRequiredCriterionExist(listing, criteriaD12Id);
+        checkRequiredCriterionExist(listing, criteriaD13Id);
     }
 
     private void checkRequiredCriterionExist(PendingCertifiedProductDTO listing, Integer criterionId) {
