@@ -1,5 +1,6 @@
 package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
+import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
-@Component("requiredCriteriaValidator")
+@Component
 public class RequiredCriteriaValidator implements Reviewer {
 
     @Value("${criterion.170_315_d_12}")
@@ -19,6 +20,9 @@ public class RequiredCriteriaValidator implements Reviewer {
 
     @Value("${criterion.170_315_d_13}")
     private Integer criteriaD13Id;
+
+    @Value("#{new java.text.SimpleDateFormat(\"MM/dd/yyyy\").parse(\"${cures.ruleEffectiveDate}\")}")
+    private Date ruleEffectiveDate;
 
     private ErrorMessageUtil msgUtil;
 
@@ -29,8 +33,13 @@ public class RequiredCriteriaValidator implements Reviewer {
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
-        checkRequiredCriterionExist(listing, criteriaD12Id);
-        checkRequiredCriterionExist(listing, criteriaD13Id);
+        // These criterion are only required after effective rule date
+        if ((new Date(listing.getCertificationDate())).after(ruleEffectiveDate)
+                || (new Date(listing.getCertificationDate())).equals(ruleEffectiveDate)) {
+            checkRequiredCriterionExist(listing, criteriaD12Id);
+            checkRequiredCriterionExist(listing, criteriaD13Id);
+        }
+
     }
 
     private void checkRequiredCriterionExist(CertifiedProductSearchDetails listing, Integer criterionId) {
