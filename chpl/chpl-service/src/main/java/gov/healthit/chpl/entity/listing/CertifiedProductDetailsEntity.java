@@ -156,6 +156,9 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "last_vendor_status_change")
     private Date developerStatusDate;
 
+    @Column(name="self_developer")
+    private Boolean selfDeveloper;
+
     @Column(name = "address_id")
     private Long addressId;
 
@@ -507,6 +510,14 @@ public class CertifiedProductDetailsEntity {
 
     public void setDeveloperCode(final String developerCode) {
         this.developerCode = developerCode;
+    }
+
+    public Boolean getSelfDeveloper() {
+        return selfDeveloper;
+    }
+
+    public void setSelfDeveloper(Boolean selfDeveloper) {
+        this.selfDeveloper = selfDeveloper;
     }
 
     public String getIcsCode() {
