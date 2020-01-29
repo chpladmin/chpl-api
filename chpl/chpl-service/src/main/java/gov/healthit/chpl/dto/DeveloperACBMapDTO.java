@@ -14,7 +14,7 @@ public class DeveloperACBMapDTO implements Serializable {
     private Long developerId;
     private Long acbId;
     private String acbName;
-    private String transparencyAttestation;
+    private TransparencyAttestationDTO transparencyAttestation;
 
     public DeveloperACBMapDTO() {
     }
@@ -24,7 +24,7 @@ public class DeveloperACBMapDTO implements Serializable {
         this.developerId = entity.getDeveloperId();
         this.acbId = entity.getCertificationBodyId();
         if (entity.getTransparencyAttestation() != null) {
-            this.transparencyAttestation = entity.getTransparencyAttestation().toString();
+            this.transparencyAttestation = new TransparencyAttestationDTO(entity.getTransparencyAttestation().toString());
         }
         if (entity.getCertificationBody() != null) {
             this.acbName = entity.getCertificationBody().getName();
@@ -36,7 +36,7 @@ public class DeveloperACBMapDTO implements Serializable {
         this.developerId = entity.getDeveloperId();
         this.acbId = entity.getCertificationBodyId();
         if (entity.getTransparencyAttestation() != null) {
-            this.transparencyAttestation = entity.getTransparencyAttestation().toString();
+            this.transparencyAttestation = new TransparencyAttestationDTO(entity.getTransparencyAttestation().toString());
         }
         this.acbName = entity.getAcbName();
     }
@@ -45,7 +45,7 @@ public class DeveloperACBMapDTO implements Serializable {
         return id;
     }
 
-    public void setId(final Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -53,7 +53,7 @@ public class DeveloperACBMapDTO implements Serializable {
         return developerId;
     }
 
-    public void setDeveloperId(final Long developerId) {
+    public void setDeveloperId(Long developerId) {
         this.developerId = developerId;
     }
 
@@ -65,11 +65,11 @@ public class DeveloperACBMapDTO implements Serializable {
         this.acbId = acbId;
     }
 
-    public String getTransparencyAttestation() {
+    public TransparencyAttestationDTO getTransparencyAttestation() {
         return transparencyAttestation;
     }
 
-    public void setTransparencyAttestation(final String transparencyAttestation) {
+    public void setTransparencyAttestation(TransparencyAttestationDTO transparencyAttestation) {
         this.transparencyAttestation = transparencyAttestation;
     }
 
@@ -77,7 +77,7 @@ public class DeveloperACBMapDTO implements Serializable {
         return acbName;
     }
 
-    public void setAcbName(final String acbName) {
+    public void setAcbName(String acbName) {
         this.acbName = acbName;
     }
 }

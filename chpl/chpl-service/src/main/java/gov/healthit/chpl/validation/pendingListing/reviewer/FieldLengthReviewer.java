@@ -56,7 +56,7 @@ public class FieldLengthReviewer implements Reviewer {
 
     private void checkField(final PendingCertifiedProductDTO listing, final Object field, final String errorField, String type) {
         String message = null;
-        
+
         if (field instanceof Long) {
             Long fieldCasted = (Long) field;
             if (fieldCasted.toString().length() > msgUtil.getMessageAsInteger("maxLength." + errorField)) {
@@ -70,8 +70,8 @@ public class FieldLengthReviewer implements Reviewer {
                         String.valueOf(msgUtil.getMessageAsInteger("maxLength." + errorField)), fieldCasted);
             }
         }
-        if(message != null) {
-            if (type.equals(ERROR) ) {
+        if (message != null) {
+            if (type.equals(ERROR)) {
                 listing.getErrorMessages().add(message);
             } else {
                 listing.getWarningMessages().add(message);

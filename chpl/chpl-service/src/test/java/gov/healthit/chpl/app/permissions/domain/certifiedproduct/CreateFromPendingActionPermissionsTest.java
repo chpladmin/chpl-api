@@ -10,11 +10,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.app.permissions.domain.ActionPermissionsBaseTest;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domains.certifiedproduct.CreateFromPendingActionPermissions;
 
@@ -45,7 +45,9 @@ public class CreateFromPendingActionPermissionsTest extends ActionPermissionsBas
         assertFalse(permissions.hasAccess());
 
         // Since it is admin it has access to all - parm value does not matter.
-        assertTrue(permissions.hasAccess(1L));
+        PendingCertifiedProductDTO dto = new PendingCertifiedProductDTO();
+        dto.setCertificationBodyId(1L);
+        assertTrue(permissions.hasAccess(dto));
     }
 
     @Override
@@ -68,9 +70,13 @@ public class CreateFromPendingActionPermissionsTest extends ActionPermissionsBas
         // This should always be false
         assertFalse(permissions.hasAccess());
 
-        assertFalse(permissions.hasAccess(1L));
+        PendingCertifiedProductDTO dto = new PendingCertifiedProductDTO();
+        dto.setCertificationBodyId(1L);
+        assertFalse(permissions.hasAccess(dto));
 
-        assertTrue(permissions.hasAccess(2L));
+        dto = new PendingCertifiedProductDTO();
+        dto.setCertificationBodyId(2L);
+        assertTrue(permissions.hasAccess(dto));
     }
 
     @Override

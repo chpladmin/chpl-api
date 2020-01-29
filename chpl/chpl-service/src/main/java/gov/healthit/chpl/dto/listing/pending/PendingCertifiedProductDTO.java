@@ -40,6 +40,7 @@ import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
+import gov.healthit.chpl.dto.TransparencyAttestationDTO;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductAccessibilityStandardEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
@@ -50,11 +51,6 @@ import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTestingLa
 import gov.healthit.chpl.entity.listing.pending.PendingCqmCriterionEntity;
 import gov.healthit.chpl.util.Util;
 
-/**
- * Pending Certified Product DTO.
- * @author alarned
- *
- */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PendingCertifiedProductDTO implements Serializable {
     private static final long serialVersionUID = 8778880570983282001L;
@@ -72,9 +68,6 @@ public class PendingCertifiedProductDTO implements Serializable {
     private Set<String> errorMessages;
     private Set<String> warningMessages;
 
-    /**
-     * fields directly from the spreadsheet
-     **/
     private String uniqueId;
     private String recordStatus;
     private String practiceType;
@@ -102,7 +95,7 @@ public class PendingCertifiedProductDTO implements Serializable {
     private Boolean ics;
     private Boolean hasQms;
     private Boolean accessibilityCertified;
-    private String transparencyAttestation;
+    private TransparencyAttestationDTO transparencyAttestation;
     private String transparencyAttestationUrl;
 
     private List<PendingCertifiedProductTestingLabDTO> testingLabs;
@@ -116,9 +109,6 @@ public class PendingCertifiedProductDTO implements Serializable {
 
     private Date uploadDate;
 
-    /**
-     * Default constructor.
-     */
     public PendingCertifiedProductDTO() {
         this.errorMessages = new HashSet<String>();
         this.warningMessages = new HashSet<String>();
@@ -132,11 +122,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         this.accessibilityStandards = new ArrayList<PendingCertifiedProductAccessibilityStandardDTO>();
     }
 
-    /**
-     * Construct from details object.
-     * @param details the object
-     */
-    public PendingCertifiedProductDTO(final PendingCertifiedProductDetails details) {
+    public PendingCertifiedProductDTO(PendingCertifiedProductDetails details) {
         this();
         this.id = details.getId();
         if (details.getPracticeType().get("id") != null) {
@@ -177,16 +163,16 @@ public class PendingCertifiedProductDTO implements Serializable {
             this.productVersion = details.getVersion().getVersion();
         }
         if (details.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY) != null) {
-            this.certificationEditionId =
-                    Long.valueOf(details.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString());
+            this.certificationEditionId = Long
+                    .valueOf(details.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString());
         }
         if (details.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY) != null) {
-            this.certificationEdition =
-                    details.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
+            this.certificationEdition = details.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY)
+                    .toString();
         }
         if (details.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY) != null) {
-            this.certificationBodyId =
-                    Long.valueOf(details.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
+            this.certificationBodyId = Long
+                    .valueOf(details.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
         }
         if (details.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY) != null) {
             this.certificationBodyName = details.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString();
@@ -213,7 +199,9 @@ public class PendingCertifiedProductDTO implements Serializable {
         this.ics = (details.getIcs() == null || details.getIcs().getInherits() == null) ? Boolean.FALSE
                 : details.getIcs().getInherits();
         this.accessibilityCertified = details.getAccessibilityCertified();
-        this.transparencyAttestation = details.getTransparencyAttestation();
+        if (details.getTransparencyAttestation() != null) {
+            this.transparencyAttestation = new TransparencyAttestationDTO(details.getTransparencyAttestation());
+        }
         this.transparencyAttestationUrl = details.getTransparencyAttestationUrl();
         this.accessibilityCertified = details.getAccessibilityCertified();
 
@@ -250,7 +238,6 @@ public class PendingCertifiedProductDTO implements Serializable {
             }
         }
 
-
         List<CertifiedProductQmsStandard> qmsStandards = details.getQmsStandards();
         if (qmsStandards != null && qmsStandards.size() > 0) {
             for (CertifiedProductQmsStandard qms : qmsStandards) {
@@ -266,8 +253,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         List<CertifiedProductAccessibilityStandard> accStds = details.getAccessibilityStandards();
         if (accStds != null && accStds.size() > 0) {
             for (CertifiedProductAccessibilityStandard as : accStds) {
-                PendingCertifiedProductAccessibilityStandardDTO asDto =
-                        new PendingCertifiedProductAccessibilityStandardDTO();
+                PendingCertifiedProductAccessibilityStandardDTO asDto = new PendingCertifiedProductAccessibilityStandardDTO();
                 asDto.setAccessibilityStandardId(as.getAccessibilityStandardId());
                 asDto.setName(as.getAccessibilityStandardName());
                 this.accessibilityStandards.add(asDto);
@@ -277,8 +263,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         List<CertifiedProductTargetedUser> targetedUsers = details.getTargetedUsers();
         if (targetedUsers != null && targetedUsers.size() > 0) {
             for (CertifiedProductTargetedUser tu : targetedUsers) {
-                PendingCertifiedProductTargetedUserDTO tuDto =
-                        new PendingCertifiedProductTargetedUserDTO();
+                PendingCertifiedProductTargetedUserDTO tuDto = new PendingCertifiedProductTargetedUserDTO();
                 tuDto.setName(tu.getTargetedUserName());
                 tuDto.setTargetedUserId(tu.getTargetedUserId());
                 this.targetedUsers.add(tuDto);
@@ -300,11 +285,14 @@ public class PendingCertifiedProductDTO implements Serializable {
             certDto.setSed(crResult.isSed());
             certDto.setApiDocumentation(crResult.getApiDocumentation());
             certDto.setPrivacySecurityFramework(crResult.getPrivacySecurityFramework());
+            certDto.setAttestationAnswer(crResult.getAttestationAnswer());
+            certDto.setDocumentationUrl(crResult.getDocumentationUrl());
+            certDto.setExportDocumentation(crResult.getExportDocumentation());
+            certDto.setUseCases(crResult.getUseCases());
 
             if (crResult.getAdditionalSoftware() != null && crResult.getAdditionalSoftware().size() > 0) {
                 for (CertificationResultAdditionalSoftware software : crResult.getAdditionalSoftware()) {
-                    PendingCertificationResultAdditionalSoftwareDTO as =
-                            new PendingCertificationResultAdditionalSoftwareDTO();
+                    PendingCertificationResultAdditionalSoftwareDTO as = new PendingCertificationResultAdditionalSoftwareDTO();
                     as.setCertifiedProductId(software.getCertifiedProductId());
                     as.setChplId(software.getCertifiedProductNumber());
                     as.setJustification(software.getJustification());
@@ -333,8 +321,7 @@ public class PendingCertifiedProductDTO implements Serializable {
 
             if (crResult.getTestFunctionality() != null && crResult.getTestFunctionality().size() > 0) {
                 for (CertificationResultTestFunctionality func : crResult.getTestFunctionality()) {
-                    PendingCertificationResultTestFunctionalityDTO funcDto =
-                            new PendingCertificationResultTestFunctionalityDTO();
+                    PendingCertificationResultTestFunctionalityDTO funcDto = new PendingCertificationResultTestFunctionalityDTO();
                     funcDto.setNumber(func.getName());
                     funcDto.setTestFunctionalityId(func.getTestFunctionalityId());
                     certDto.getTestFunctionality().add(funcDto);
@@ -343,8 +330,7 @@ public class PendingCertifiedProductDTO implements Serializable {
 
             if (crResult.getTestProcedures() != null && crResult.getTestProcedures().size() > 0) {
                 for (CertificationResultTestProcedure proc : crResult.getTestProcedures()) {
-                    PendingCertificationResultTestProcedureDTO procDto =
-                            new PendingCertificationResultTestProcedureDTO();
+                    PendingCertificationResultTestProcedureDTO procDto = new PendingCertificationResultTestProcedureDTO();
                     if (proc.getTestProcedure() != null) {
                         procDto.setTestProcedureId(proc.getTestProcedure().getId());
                         TestProcedureDTO testProcedure = new TestProcedureDTO();
@@ -479,8 +465,7 @@ public class PendingCertifiedProductDTO implements Serializable {
                         crTaskDto.setPendingTestTask(taskDto);
 
                         for (TestParticipant part : task.getTestParticipants()) {
-                            PendingCertificationResultTestTaskParticipantDTO crPartDto =
-                                    new PendingCertificationResultTestTaskParticipantDTO();
+                            PendingCertificationResultTestTaskParticipantDTO crPartDto = new PendingCertificationResultTestTaskParticipantDTO();
                             PendingTestParticipantDTO partDto = new PendingTestParticipantDTO();
                             partDto.setAssistiveTechnologyNeeds(part.getAssistiveTechnologyNeeds());
                             if (part.getComputerExperienceMonths() != null) {
@@ -554,11 +539,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         }
     }
 
-    /**
-     * Construct with entity.
-     * @param entity the entity
-     */
-    public PendingCertifiedProductDTO(final PendingCertifiedProductEntity entity) {
+    public PendingCertifiedProductDTO(PendingCertifiedProductEntity entity) {
         this();
         this.id = entity.getId();
         this.hasQms = entity.isHasQms();
@@ -566,7 +547,6 @@ public class PendingCertifiedProductDTO implements Serializable {
         this.deleted = entity.getDeleted();
         this.lastModifiedUser = entity.getLastModifiedUser();
         this.developerId = entity.getDeveloperId();
-        // this.developerAddress = new AddressDTO(entity.getDeveloperAddress());
         this.productId = entity.getProductId();
         this.productVersionId = entity.getProductVersionId();
         this.certificationEditionId = entity.getCertificationEditionId();
@@ -600,7 +580,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         this.ics = entity.getIcs();
         this.accessibilityCertified = entity.getAccessibilityCertified();
         if (entity.getTransparencyAttestation() != null) {
-            this.transparencyAttestation = entity.getTransparencyAttestation().toString();
+            this.transparencyAttestation = new TransparencyAttestationDTO(entity.getTransparencyAttestation().toString());
         }
         this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
 
@@ -667,7 +647,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return id;
     }
 
-    public void setId(final Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -675,7 +655,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return hasQms;
     }
 
-    public void setHasQms(final Boolean hasQms) {
+    public void setHasQms(Boolean hasQms) {
         this.hasQms = hasQms;
     }
 
@@ -683,7 +663,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return practiceTypeId;
     }
 
-    public void setPracticeTypeId(final Long practiceTypeId) {
+    public void setPracticeTypeId(Long practiceTypeId) {
         this.practiceTypeId = practiceTypeId;
     }
 
@@ -691,7 +671,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return developerId;
     }
 
-    public void setDeveloperId(final Long developerId) {
+    public void setDeveloperId(Long developerId) {
         this.developerId = developerId;
     }
 
@@ -699,7 +679,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return developerAddress;
     }
 
-    public void setDeveloperAddress(final AddressDTO developerAddress) {
+    public void setDeveloperAddress(AddressDTO developerAddress) {
         this.developerAddress = developerAddress;
     }
 
@@ -707,7 +687,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return productId;
     }
 
-    public void setProductId(final Long productId) {
+    public void setProductId(Long productId) {
         this.productId = productId;
     }
 
@@ -715,7 +695,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return productVersionId;
     }
 
-    public void setProductVersionId(final Long productVersionId) {
+    public void setProductVersionId(Long productVersionId) {
         this.productVersionId = productVersionId;
     }
 
@@ -723,7 +703,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return certificationEditionId;
     }
 
-    public void setCertificationEditionId(final Long certificationEditionId) {
+    public void setCertificationEditionId(Long certificationEditionId) {
         this.certificationEditionId = certificationEditionId;
     }
 
@@ -731,7 +711,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return certificationBodyId;
     }
 
-    public void setCertificationBodyId(final Long certificationBodyId) {
+    public void setCertificationBodyId(Long certificationBodyId) {
         this.certificationBodyId = certificationBodyId;
     }
 
@@ -739,7 +719,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return productClassificationId;
     }
 
-    public void setProductClassificationId(final Long productClassificationId) {
+    public void setProductClassificationId(Long productClassificationId) {
         this.productClassificationId = productClassificationId;
     }
 
@@ -747,7 +727,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return uniqueId;
     }
 
-    public void setUniqueId(final String uniqueId) {
+    public void setUniqueId(String uniqueId) {
         this.uniqueId = uniqueId;
     }
 
@@ -755,7 +735,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return recordStatus;
     }
 
-    public void setRecordStatus(final String recordStatus) {
+    public void setRecordStatus(String recordStatus) {
         this.recordStatus = recordStatus;
     }
 
@@ -763,7 +743,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return practiceType;
     }
 
-    public void setPracticeType(final String practiceType) {
+    public void setPracticeType(String practiceType) {
         this.practiceType = practiceType;
     }
 
@@ -771,7 +751,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return developerName;
     }
 
-    public void setDeveloperName(final String developerName) {
+    public void setDeveloperName(String developerName) {
         this.developerName = developerName;
     }
 
@@ -779,7 +759,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return productName;
     }
 
-    public void setProductName(final String productName) {
+    public void setProductName(String productName) {
         this.productName = productName;
     }
 
@@ -787,7 +767,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return productVersion;
     }
 
-    public void setProductVersion(final String productVersion) {
+    public void setProductVersion(String productVersion) {
         this.productVersion = productVersion;
     }
 
@@ -795,7 +775,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return certificationEdition;
     }
 
-    public void setCertificationEdition(final String certificationEdition) {
+    public void setCertificationEdition(String certificationEdition) {
         this.certificationEdition = certificationEdition;
     }
 
@@ -803,7 +783,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return acbCertificationId;
     }
 
-    public void setAcbCertificationId(final String acbCertificationId) {
+    public void setAcbCertificationId(String acbCertificationId) {
         this.acbCertificationId = acbCertificationId;
     }
 
@@ -811,7 +791,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return certificationBodyName;
     }
 
-    public void setCertificationBodyName(final String certificationBodyName) {
+    public void setCertificationBodyName(String certificationBodyName) {
         this.certificationBodyName = certificationBodyName;
     }
 
@@ -819,7 +799,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return productClassificationName;
     }
 
-    public void setProductClassificationName(final String productClassificationName) {
+    public void setProductClassificationName(String productClassificationName) {
         this.productClassificationName = productClassificationName;
     }
 
@@ -827,7 +807,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return Util.getNewDate(certificationDate);
     }
 
-    public void setCertificationDate(final Date certificationDate) {
+    public void setCertificationDate(Date certificationDate) {
         this.certificationDate = Util.getNewDate(certificationDate);
     }
 
@@ -835,7 +815,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return developerStreetAddress;
     }
 
-    public void setDeveloperStreetAddress(final String developerStreetAddress) {
+    public void setDeveloperStreetAddress(String developerStreetAddress) {
         this.developerStreetAddress = developerStreetAddress;
     }
 
@@ -843,7 +823,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return developerCity;
     }
 
-    public void setDeveloperCity(final String developerCity) {
+    public void setDeveloperCity(String developerCity) {
         this.developerCity = developerCity;
     }
 
@@ -851,7 +831,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return developerState;
     }
 
-    public void setDeveloperState(final String developerState) {
+    public void setDeveloperState(String developerState) {
         this.developerState = developerState;
     }
 
@@ -859,7 +839,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return developerZipCode;
     }
 
-    public void setDeveloperZipCode(final String developerZipCode) {
+    public void setDeveloperZipCode(String developerZipCode) {
         this.developerZipCode = developerZipCode;
     }
 
@@ -867,7 +847,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return developerWebsite;
     }
 
-    public void setDeveloperWebsite(final String developerWebsite) {
+    public void setDeveloperWebsite(String developerWebsite) {
         this.developerWebsite = developerWebsite;
     }
 
@@ -875,7 +855,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return developerEmail;
     }
 
-    public void setDeveloperEmail(final String developerEmail) {
+    public void setDeveloperEmail(String developerEmail) {
         this.developerEmail = developerEmail;
     }
 
@@ -883,7 +863,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return reportFileLocation;
     }
 
-    public void setReportFileLocation(final String reportFileLocation) {
+    public void setReportFileLocation(String reportFileLocation) {
         this.reportFileLocation = reportFileLocation;
     }
 
@@ -891,7 +871,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return certificationCriterion;
     }
 
-    public void setCertificationCriterion(final List<PendingCertificationResultDTO> certificationCriterion) {
+    public void setCertificationCriterion(List<PendingCertificationResultDTO> certificationCriterion) {
         this.certificationCriterion = certificationCriterion;
     }
 
@@ -899,7 +879,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return cqmCriterion;
     }
 
-    public void setCqmCriterion(final List<PendingCqmCriterionDTO> cqmCriterion) {
+    public void setCqmCriterion(List<PendingCqmCriterionDTO> cqmCriterion) {
         this.cqmCriterion = cqmCriterion;
     }
 
@@ -907,7 +887,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return Util.getNewDate(uploadDate);
     }
 
-    public void setUploadDate(final Date uploadDate) {
+    public void setUploadDate(Date uploadDate) {
         this.uploadDate = Util.getNewDate(uploadDate);
     }
 
@@ -915,7 +895,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return errorMessages;
     }
 
-    public void setErrorMessages(final Set<String> errorMessages) {
+    public void setErrorMessages(Set<String> errorMessages) {
         this.errorMessages = errorMessages;
     }
 
@@ -923,7 +903,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return warningMessages;
     }
 
-    public void setWarningMessages(final Set<String> warningMessages) {
+    public void setWarningMessages(Set<String> warningMessages) {
         this.warningMessages = warningMessages;
     }
 
@@ -931,7 +911,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return ics;
     }
 
-    public void setIcs(final Boolean ics) {
+    public void setIcs(Boolean ics) {
         this.ics = ics;
     }
 
@@ -939,7 +919,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return developerContactName;
     }
 
-    public void setDeveloperContactName(final String developerContactName) {
+    public void setDeveloperContactName(String developerContactName) {
         this.developerContactName = developerContactName;
     }
 
@@ -947,7 +927,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return developerPhoneNumber;
     }
 
-    public void setDeveloperPhoneNumber(final String developerPhoneNumber) {
+    public void setDeveloperPhoneNumber(String developerPhoneNumber) {
         this.developerPhoneNumber = developerPhoneNumber;
     }
 
@@ -955,7 +935,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return sedReportFileLocation;
     }
 
-    public void setSedReportFileLocation(final String sedReportFileLocation) {
+    public void setSedReportFileLocation(String sedReportFileLocation) {
         this.sedReportFileLocation = sedReportFileLocation;
     }
 
@@ -963,15 +943,15 @@ public class PendingCertifiedProductDTO implements Serializable {
         return qmsStandards;
     }
 
-    public void setQmsStandards(final List<PendingCertifiedProductQmsStandardDTO> qmsStandards) {
+    public void setQmsStandards(List<PendingCertifiedProductQmsStandardDTO> qmsStandards) {
         this.qmsStandards = qmsStandards;
     }
 
-    public String getTransparencyAttestation() {
+    public TransparencyAttestationDTO getTransparencyAttestation() {
         return transparencyAttestation;
     }
 
-    public void setTransparencyAttestation(final String transparencyAttestation) {
+    public void setTransparencyAttestation(TransparencyAttestationDTO transparencyAttestation) {
         this.transparencyAttestation = transparencyAttestation;
     }
 
@@ -979,7 +959,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return developerContactId;
     }
 
-    public void setDeveloperContactId(final Long developerContactId) {
+    public void setDeveloperContactId(Long developerContactId) {
         this.developerContactId = developerContactId;
     }
 
@@ -987,7 +967,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return transparencyAttestationUrl;
     }
 
-    public void setTransparencyAttestationUrl(final String transparencyAttestationUrl) {
+    public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
         this.transparencyAttestationUrl = transparencyAttestationUrl;
     }
 
@@ -995,7 +975,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return testingLabs;
     }
 
-    public void setTestingLabs(final  List<PendingCertifiedProductTestingLabDTO> testingLabs) {
+    public void setTestingLabs(List<PendingCertifiedProductTestingLabDTO> testingLabs) {
         this.testingLabs = testingLabs;
     }
 
@@ -1003,7 +983,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return targetedUsers;
     }
 
-    public void setTargetedUsers(final List<PendingCertifiedProductTargetedUserDTO> targetedUsers) {
+    public void setTargetedUsers(List<PendingCertifiedProductTargetedUserDTO> targetedUsers) {
         this.targetedUsers = targetedUsers;
     }
 
@@ -1011,7 +991,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return accessibilityCertified;
     }
 
-    public void setAccessibilityCertified(final Boolean accessibilityCertified) {
+    public void setAccessibilityCertified(Boolean accessibilityCertified) {
         this.accessibilityCertified = accessibilityCertified;
     }
 
@@ -1019,7 +999,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return accessibilityStandards;
     }
 
-    public void setAccessibilityStandards(final
+    public void setAccessibilityStandards(
             List<PendingCertifiedProductAccessibilityStandardDTO> accessibilityStandards) {
         this.accessibilityStandards = accessibilityStandards;
     }
@@ -1028,7 +1008,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return sedIntendedUserDescription;
     }
 
-    public void setSedIntendedUserDescription(final String sedIntendedUserDescription) {
+    public void setSedIntendedUserDescription(String sedIntendedUserDescription) {
         this.sedIntendedUserDescription = sedIntendedUserDescription;
     }
 
@@ -1036,7 +1016,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return Util.getNewDate(sedTestingEnd);
     }
 
-    public void setSedTestingEnd(final Date sedTestingEnd) {
+    public void setSedTestingEnd(Date sedTestingEnd) {
         this.sedTestingEnd = Util.getNewDate(sedTestingEnd);
     }
 
@@ -1044,7 +1024,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return deleted;
     }
 
-    public void setDeleted(final Boolean deleted) {
+    public void setDeleted(Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -1052,7 +1032,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(final Long lastModifiedUser) {
+    public void setLastModifiedUser(Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -1060,7 +1040,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return icsParents;
     }
 
-    public void setIcsParents(final List<CertifiedProductDetailsDTO> icsParents) {
+    public void setIcsParents(List<CertifiedProductDetailsDTO> icsParents) {
         this.icsParents = icsParents;
     }
 
@@ -1068,7 +1048,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         return icsChildren;
     }
 
-    public void setIcsChildren(final List<CertifiedProductDetailsDTO> icsChildren) {
+    public void setIcsChildren(List<CertifiedProductDetailsDTO> icsChildren) {
         this.icsChildren = icsChildren;
     }
 }

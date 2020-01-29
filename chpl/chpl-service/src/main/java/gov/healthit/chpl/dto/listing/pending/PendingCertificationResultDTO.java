@@ -26,7 +26,12 @@ public class PendingCertificationResultDTO implements Serializable {
     private Boolean sed;
     private Boolean g1Success;
     private Boolean g2Success;
+    private Boolean attestationAnswer;
     private String apiDocumentation;
+    private String exportDocumentation;
+    private String documentationUrl;
+    private String useCases;
+
     private String privacySecurityFramework;
     private CertificationCriterionDTO criterion;
 
@@ -69,7 +74,11 @@ public class PendingCertificationResultDTO implements Serializable {
         this.setSed(entity.getSed());
         this.setG1Success(entity.getG1Success());
         this.setG2Success(entity.getG2Success());
+        this.attestationAnswer = entity.getAttestationAnswer();
         this.apiDocumentation = entity.getApiDocumentation();
+        this.exportDocumentation = entity.getExportDocumentation();
+        this.documentationUrl = entity.getDocumentationUrl();
+        this.useCases = entity.getUseCases();
         this.privacySecurityFramework = entity.getPrivacySecurityFramework();
 
         if (entity.getUcdProcesses() != null && entity.getUcdProcesses().size() > 0) {
@@ -255,6 +264,38 @@ public class PendingCertificationResultDTO implements Serializable {
 
     public void setApiDocumentation(final String apiDocumentation) {
         this.apiDocumentation = apiDocumentation;
+    }
+
+    public Boolean getAttestationAnswer() {
+        return attestationAnswer;
+    }
+
+    public void setAttestationAnswer(Boolean attestationAnswer) {
+        this.attestationAnswer = attestationAnswer;
+    }
+
+    public String getExportDocumentation() {
+        return exportDocumentation;
+    }
+
+    public void setExportDocumentation(String exportDocumentation) {
+        this.exportDocumentation = exportDocumentation;
+    }
+
+    public String getDocumentationUrl() {
+        return documentationUrl;
+    }
+
+    public void setDocumentationUrl(String documentationUrl) {
+        this.documentationUrl = documentationUrl;
+    }
+
+    public String getUseCases() {
+        return useCases;
+    }
+
+    public void setUseCases(String useCases) {
+        this.useCases = useCases;
     }
 
     public String getPrivacySecurityFramework() {

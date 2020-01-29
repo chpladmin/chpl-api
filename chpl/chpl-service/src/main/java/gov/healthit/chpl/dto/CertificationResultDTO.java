@@ -21,7 +21,11 @@ public class CertificationResultDTO implements Serializable {
     private Boolean successful;
     private Boolean g1Success;
     private Boolean g2Success;
+    private Boolean attestationAnswer;
     private String apiDocumentation;
+    private String exportDocumentation;
+    private String documentationUrl;
+    private String useCases;
     private String privacySecurityFramework;
     private Date lastModifiedDate;
     private Long lastModifiedUser;
@@ -60,7 +64,11 @@ public class CertificationResultDTO implements Serializable {
         this.sed = entity.getSed();
         this.g1Success = entity.getG1Success();
         this.g2Success = entity.getG2Success();
+        this.attestationAnswer = entity.getAttestationAnswer();
         this.apiDocumentation = entity.getApiDocumentation();
+        this.exportDocumentation = entity.getExportDocumentation();
+        this.documentationUrl = entity.getDocumentationUrl();
+        this.useCases = entity.getUseCases();
         this.privacySecurityFramework = entity.getPrivacySecurityFramework();
         this.successful = entity.isSuccess();
         this.deleted = entity.getDeleted();
@@ -74,7 +82,11 @@ public class CertificationResultDTO implements Serializable {
         this.sed = domain.isSed();
         this.g1Success = domain.isG1Success();
         this.g2Success = domain.isG2Success();
+        this.attestationAnswer = domain.getAttestationAnswer();
         this.apiDocumentation = domain.getApiDocumentation();
+        this.exportDocumentation = domain.getExportDocumentation();
+        this.documentationUrl = domain.getDocumentationUrl();
+        this.useCases = domain.getUseCases();
         this.privacySecurityFramework = domain.getPrivacySecurityFramework();
         this.successful = domain.isSuccess();
     }
@@ -241,6 +253,38 @@ public class CertificationResultDTO implements Serializable {
 
     public void setApiDocumentation(final String apiDocumentation) {
         this.apiDocumentation = apiDocumentation;
+    }
+
+    public Boolean getAttestationAnswer() {
+        return attestationAnswer;
+    }
+
+    public void setAttestationAnswer(Boolean attestationAnswer) {
+        this.attestationAnswer = attestationAnswer;
+    }
+
+    public String getExportDocumentation() {
+        return exportDocumentation;
+    }
+
+    public void setExportDocumentation(String exportDocumentation) {
+        this.exportDocumentation = exportDocumentation;
+    }
+
+    public String getDocumentationUrl() {
+        return documentationUrl;
+    }
+
+    public void setDocumentationUrl(String documentationUrl) {
+        this.documentationUrl = documentationUrl;
+    }
+
+    public String getUseCases() {
+        return useCases;
+    }
+
+    public void setUseCases(String useCases) {
+        this.useCases = useCases;
     }
 
     public String getPrivacySecurityFramework() {

@@ -269,6 +269,28 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <RollingFile name="removeV17UploadTemplateJob"
+            fileName="${logDir}/scheduler/removeV17UploadTemplateJob.log"
+            filePattern="${logDir}/scheduler/history/removeV17UploadTemplateJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
+        <RollingFile name="createTestToolJob"
+            fileName="${logDir}/scheduler/createTestToolJob.log"
+            filePattern="${logDir}/scheduler/history/createTestToolJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
         <RollingFile name="removeCriteriaJob"
             fileName="${logDir}/scheduler/removeCriteriaJob.log"
             filePattern="${logDir}/scheduler/history/removeCriteriaJob-%d{yyyy-MM-dd}.log">
@@ -294,6 +316,17 @@
         <RollingFile name="removeRT13ECMacraMeasureJob"
             fileName="${logDir}/scheduler/RemoveRT13ECMacraMeasureJob.log"
             filePattern="${logDir}/scheduler/history/RemoveRT13ECMacraMeasureJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
+        <RollingFile name="addCriteriaToListingsJob"
+            fileName="${logDir}/scheduler/addCriteriaToListingsJob.log"
+            filePattern="${logDir}/scheduler/history/addCriteriaToListingsJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
                 <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
             </PatternLayout>
@@ -410,6 +443,14 @@
             additivity="false">
             <AppenderRef ref="remove2014UploadTemplateJob" />
         </Logger>
+        <Logger name="removeV17UploadTemplateJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="removeV17UploadTemplateJob" />
+        </Logger>
+        <Logger name="createTestToolJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="createTestToolJob" />
+        </Logger>
         <Logger name="removeCriteriaJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="removeCriteriaJob" />
@@ -421,6 +462,10 @@
         <Logger name="removeRT13ECMacraMeasureJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="removeRT13ECMacraMeasureJob" />
+        </Logger>
+        <Logger name="addCriteriaToListingsJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="addCriteriaToListingsJob" />
         </Logger>
     </Loggers>
 </Configuration>

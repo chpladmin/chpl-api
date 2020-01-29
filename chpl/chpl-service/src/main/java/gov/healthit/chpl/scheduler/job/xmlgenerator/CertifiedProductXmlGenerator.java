@@ -26,6 +26,7 @@ public class CertifiedProductXmlGenerator extends XmlGenerator {
             createSimpleElement(cp.getEdition(), "edition", sw);
             createSimpleElement(cp.getId(), "id", sw);
             createSimpleElement(cp.getLastModifiedDate(), "lastModifiedDate", sw);
+            createSimpleElement(cp.getCertificationStatus(), "certificationStatus", sw);
             sw.writeEndElement();
         }
     }

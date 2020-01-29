@@ -5,15 +5,20 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Workbook;
+import org.ff4j.FF4j;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -26,6 +31,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.builder.QuarterlyReportBuilderXlsx;
@@ -63,6 +69,9 @@ import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.manager.SurveillanceReportManager;
 import junit.framework.TestCase;
 
+@ActiveProfiles({
+        "Ff4jMock"
+})
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
         gov.healthit.chpl.CHPLTestConfig.class
@@ -75,6 +84,9 @@ import junit.framework.TestCase;
 public class QuarterlyReportManagerTest extends TestCase {
 
     private static JWTAuthenticatedUser adminUser, oncUser, acbUser, atlUser, cmsUser;
+
+    @Autowired
+    private FF4j ff4j;
 
     @Autowired
     private SurveillanceReportManager reportManager;
@@ -142,6 +154,16 @@ public class QuarterlyReportManagerTest extends TestCase {
         cmsUser.getPermissions().add(new GrantedPermission("ROLE_CMS_STAFF"));
     }
 
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+        Mockito.doReturn(false).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK);
+        Mockito.doReturn(false).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE);
+        // Mockito.when(ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)).thenReturn(false);
+        // Mockito.when(ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)).thenReturn(false);
+
+    }
+
     @Test
     @Rollback(true)
     @Transactional
@@ -153,7 +175,7 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void createExclusionListingNotRelevantTest() throws EntityCreationException,
-        InvalidArgumentsException, EntityRetrievalException, JsonProcessingException {
+            InvalidArgumentsException, EntityRetrievalException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         QuarterlyReportDTO createdReport = createReport();
         QuarterlyReportExclusionDTO exclusion = reportManager.createQuarterlyReportExclusion(createdReport, 10L, "Test");
@@ -167,21 +189,21 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void createExclusion() throws EntityCreationException,
-        InvalidArgumentsException, EntityRetrievalException, JsonProcessingException {
+            InvalidArgumentsException, EntityRetrievalException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         Long listingId = 1L;
         String reason = "test";
         QuarterlyReportDTO createdReport = createReport();
-        //need a relevant surveillance
-        Surveillance createdSurv =
-                createSurveillance(listingId, new Date(createdReport.getStartDate().getTime() + (24*60*60*1000)));
+        // need a relevant surveillance
+        Surveillance createdSurv = createSurveillance(listingId,
+                new Date(createdReport.getStartDate().getTime() + (24 * 60 * 60 * 1000)));
         QuarterlyReportExclusionDTO exclusion = reportManager.createQuarterlyReportExclusion(createdReport, listingId, reason);
         assertNotNull(exclusion);
         assertNotNull(exclusion.getId());
         assertTrue(exclusion.getId() > 0);
         assertEquals(listingId, exclusion.getListingId());
         assertEquals(reason, exclusion.getReason());
-        //make sure the exclusion shows up when getting relevant listings
+        // make sure the exclusion shows up when getting relevant listings
         List<QuarterlyReportRelevantListingDTO> relevantListings = reportManager.getRelevantListings(createdReport);
         assertNotNull(relevantListings);
         assertTrue(relevantListings.size() > 0);
@@ -200,14 +222,14 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void createExclusionAlreadyExists() throws EntityCreationException,
-        InvalidArgumentsException, EntityRetrievalException, JsonProcessingException {
+            InvalidArgumentsException, EntityRetrievalException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         QuarterlyReportDTO createdReport = createReport();
-        //need a relevant surveillance
-        createSurveillance(1L, new Date(createdReport.getStartDate().getTime() + (24*60*60*1000)));
-        //original exclusion
+        // need a relevant surveillance
+        createSurveillance(1L, new Date(createdReport.getStartDate().getTime() + (24 * 60 * 60 * 1000)));
+        // original exclusion
         reportManager.createQuarterlyReportExclusion(createdReport, 1L, "original");
-        //duplicate exclusion
+        // duplicate exclusion
         reportManager.createQuarterlyReportExclusion(createdReport, 1L, "duplicate");
         SecurityContextHolder.getContext().setAuthentication(null);
     }
@@ -216,13 +238,13 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void addPrivilegedSurveillanceData() throws EntityCreationException,
-        InvalidArgumentsException, EntityRetrievalException, JsonProcessingException {
+            InvalidArgumentsException, EntityRetrievalException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         Long listingId = 1L;
         QuarterlyReportDTO createdReport = createReport();
-        //need a relevant surveillance
-        Surveillance createdSurv =
-                createSurveillance(listingId, new Date(createdReport.getStartDate().getTime() + (24*60*60*1000)));
+        // need a relevant surveillance
+        Surveillance createdSurv = createSurveillance(listingId,
+                new Date(createdReport.getStartDate().getTime() + (24 * 60 * 60 * 1000)));
         reportManager.createQuarterlyReportExclusion(createdReport, 1L, "a good reason");
 
         PrivilegedSurveillanceDTO map = new PrivilegedSurveillanceDTO();
@@ -232,7 +254,7 @@ public class QuarterlyReportManagerTest extends TestCase {
         map.setK1Reviewed(true);
         map.setGroundsForInitiating("some grounds");
         reportManager.createOrUpdateQuarterlyReportSurveillanceMap(map);
-        //make sure the privileged data shows up when getting relevant listings
+        // make sure the privileged data shows up when getting relevant listings
         List<QuarterlyReportRelevantListingDTO> relevantListings = reportManager.getRelevantListings(createdReport);
         assertNotNull(relevantListings);
         assertTrue(relevantListings.size() > 0);
@@ -504,19 +526,19 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void updateExclusionChangeReason() throws EntityCreationException,
-        InvalidArgumentsException, EntityRetrievalException, JsonProcessingException {
+            InvalidArgumentsException, EntityRetrievalException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         Long listingId = 1L;
         String reason = "test";
         String changedReason = "updated test";
         QuarterlyReportDTO createdReport = createReport();
-        //need a relevant surveillance
-        createSurveillance(listingId, new Date(createdReport.getStartDate().getTime() + (24*60*60*1000)));
+        // need a relevant surveillance
+        createSurveillance(listingId, new Date(createdReport.getStartDate().getTime() + (24 * 60 * 60 * 1000)));
         QuarterlyReportExclusionDTO exclusion = reportManager.createQuarterlyReportExclusion(createdReport, listingId, reason);
         assertNotNull(exclusion);
         assertNotNull(exclusion.getId());
-        QuarterlyReportExclusionDTO updatedExclusion =
-                reportManager.updateQuarterlyReportExclusion(createdReport, listingId, changedReason);
+        QuarterlyReportExclusionDTO updatedExclusion = reportManager.updateQuarterlyReportExclusion(createdReport, listingId,
+                changedReason);
         assertNotNull(updatedExclusion);
         assertNotNull(updatedExclusion.getId());
         assertTrue(updatedExclusion.getId() > 0);
@@ -540,19 +562,18 @@ public class QuarterlyReportManagerTest extends TestCase {
     @Rollback(true)
     @Transactional
     public void deleteExclusion() throws EntityCreationException,
-        InvalidArgumentsException, EntityRetrievalException, JsonProcessingException {
+            InvalidArgumentsException, EntityRetrievalException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         Long listingId = 1L;
         String reason = "test";
         QuarterlyReportDTO createdReport = createReport();
-        //need a relevant surveillance
-        createSurveillance(listingId, new Date(createdReport.getStartDate().getTime() + (24*60*60*1000)));
+        // need a relevant surveillance
+        createSurveillance(listingId, new Date(createdReport.getStartDate().getTime() + (24 * 60 * 60 * 1000)));
         QuarterlyReportExclusionDTO exclusion = reportManager.createQuarterlyReportExclusion(createdReport, listingId, reason);
         assertNotNull(exclusion);
         assertNotNull(exclusion.getId());
         reportManager.deleteQuarterlyReportExclusion(createdReport.getId(), listingId);
-        List<QuarterlyReportRelevantListingDTO> relevantListings =
-                reportManager.getRelevantListings(createdReport);
+        List<QuarterlyReportRelevantListingDTO> relevantListings = reportManager.getRelevantListings(createdReport);
         assertNotNull(relevantListings);
         assertTrue(relevantListings.size() > 0);
         for (QuarterlyReportRelevantListingDTO relevantListing : relevantListings) {
@@ -579,8 +600,7 @@ public class QuarterlyReportManagerTest extends TestCase {
     public void getByAcbAndYear() throws EntityCreationException, EntityRetrievalException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         QuarterlyReportDTO report = createReport();
-        List<QuarterlyReportDTO> fetchedReports =
-                reportManager.getQuarterlyReports(report.getAcb().getId(), report.getYear());
+        List<QuarterlyReportDTO> fetchedReports = reportManager.getQuarterlyReports(report.getAcb().getId(), report.getYear());
         assertNotNull(fetchedReports);
         assertEquals(1, fetchedReports.size());
         assertEquals(report.getId(), fetchedReports.get(0).getId());
@@ -638,16 +658,19 @@ public class QuarterlyReportManagerTest extends TestCase {
         toCreate.setYear(2019);
         toCreate.setAcb(acb);
         toCreate.setQuarter(quarter);
-        toCreate.setActivitiesOutcomesSummary("In order to meet its obligation to conduct reactive surveillance, the ONC-ACB undertook the following activities and implemented the following measures to ensure that it was able to systematically obtain, synthesize and act on all facts and circumstances that would cause a reasonable person to question the ongoing compliance of any certified Complete EHR or certified Health IT Module. In order to meet its obligation to conduct reactive surveillance, the ONC-ACB undertook the following activities and implemented the following measures to ensure that it was able to systematically obtain, synthesize and act on all facts and circumstances that would cause a reasonable person to question the ongoing compliance of any certified Complete EHR or certified Health IT Module. ");
+        toCreate.setActivitiesOutcomesSummary(
+                "In order to meet its obligation to conduct reactive surveillance, the ONC-ACB undertook the following activities and implemented the following measures to ensure that it was able to systematically obtain, synthesize and act on all facts and circumstances that would cause a reasonable person to question the ongoing compliance of any certified Complete EHR or certified Health IT Module. In order to meet its obligation to conduct reactive surveillance, the ONC-ACB undertook the following activities and implemented the following measures to ensure that it was able to systematically obtain, synthesize and act on all facts and circumstances that would cause a reasonable person to question the ongoing compliance of any certified Complete EHR or certified Health IT Module. ");
         toCreate.setReactiveSummary("test reactive element summary");
         toCreate.setPrioritizedElementSummary("test prioritized element summary");
         toCreate.setTransparencyDisclosureSummary("test transparency and disclosure summary");
         QuarterlyReportDTO createdReport = reportManager.createQuarterlyReport(toCreate);
 
-        //create a surveillance to add to the report so we have relevant listings
-        Surveillance createdSurv1 = createSurveillance(1L, new Date(createdReport.getStartDate().getTime() + (24*60*60*1000)));
-        Surveillance createdSurv2 = createSurveillance(2L, new Date(createdReport.getStartDate().getTime() + (48*60*60*1000)));
-        createSurveillance(3L, new Date(createdReport.getStartDate().getTime() + (72*60*60*1000)));
+        // create a surveillance to add to the report so we have relevant listings
+        Surveillance createdSurv1 = createSurveillance(1L,
+                new Date(createdReport.getStartDate().getTime() + (24 * 60 * 60 * 1000)));
+        Surveillance createdSurv2 = createSurveillance(2L,
+                new Date(createdReport.getStartDate().getTime() + (48 * 60 * 60 * 1000)));
+        createSurveillance(3L, new Date(createdReport.getStartDate().getTime() + (72 * 60 * 60 * 1000)));
 
         PrivilegedSurveillanceDTO privilegedSurvData = new PrivilegedSurveillanceDTO();
         privilegedSurvData.setId(createdSurv1.getId());
@@ -657,15 +680,16 @@ public class QuarterlyReportManagerTest extends TestCase {
         privilegedSurvData.setDirectionDeveloperResolution("direction!");
         reportManager.createOrUpdateQuarterlyReportSurveillanceMap(privilegedSurvData);
 
-        //add excluded listing to the quarter
+        // add excluded listing to the quarter
         reportManager.createQuarterlyReportExclusion(createdReport, 1L, "A really good reason for q1");
         reportManager.createQuarterlyReportExclusion(createdReport, 3L, "A really good reason for listing id 3");
 
-        //complaint associated with nothing
-        createComplaint(acbId, "no associations", new Date(createdReport.getStartDate().getTime() + 128*60*60*1000));
+        // complaint associated with nothing
+        createComplaint(acbId, "no associations", new Date(createdReport.getStartDate().getTime() + 128 * 60 * 60 * 1000));
 
-        //complaint associated with a listing
-        ComplaintDTO listingComplaint = createComplaint(acbId, "one listing", new Date(createdReport.getStartDate().getTime() + 24*60*60*1000));
+        // complaint associated with a listing
+        ComplaintDTO listingComplaint = createComplaint(acbId, "one listing",
+                new Date(createdReport.getStartDate().getTime() + 24 * 60 * 60 * 1000));
         listingComplaint.setComplainantTypeOther("Other complaint type description");
         ComplaintListingMapDTO listingMap = new ComplaintListingMapDTO();
         listingMap.setListingId(1L);
@@ -673,8 +697,9 @@ public class QuarterlyReportManagerTest extends TestCase {
         listingComplaint.getListings().add(listingMap);
         complaintDao.update(listingComplaint);
 
-        //complaint associated with 2 listings
-        ComplaintDTO listingsComplaint = createComplaint(acbId, "two listings", new Date(createdReport.getStartDate().getTime() + 48*60*60*1000));
+        // complaint associated with 2 listings
+        ComplaintDTO listingsComplaint = createComplaint(acbId, "two listings",
+                new Date(createdReport.getStartDate().getTime() + 48 * 60 * 60 * 1000));
         ComplaintListingMapDTO listingMap1 = new ComplaintListingMapDTO();
         listingMap1.setListingId(2L);
         listingMap1.setComplaintId(listingsComplaint.getId());
@@ -685,16 +710,18 @@ public class QuarterlyReportManagerTest extends TestCase {
         listingsComplaint.getListings().add(listingMap2);
         complaintDao.update(listingsComplaint);
 
-        //complaint associated with a criteria
-        ComplaintDTO criteriaComplaint = createComplaint(acbId, "one criteria", new Date(createdReport.getStartDate().getTime() + 72*60*60*1000));
+        // complaint associated with a criteria
+        ComplaintDTO criteriaComplaint = createComplaint(acbId, "one criteria",
+                new Date(createdReport.getStartDate().getTime() + 72 * 60 * 60 * 1000));
         ComplaintCriterionMapDTO criteriaMap = new ComplaintCriterionMapDTO();
         criteriaMap.setCertificationCriterionId(2L);
         criteriaMap.setComplaintId(criteriaComplaint.getId());
         criteriaComplaint.getCriteria().add(criteriaMap);
         complaintDao.update(criteriaComplaint);
 
-        //complaint associated with multiple criteria
-        ComplaintDTO criterionComplaint = createComplaint(acbId, "two criteria", new Date(createdReport.getStartDate().getTime() + 96*60*60*1000));
+        // complaint associated with multiple criteria
+        ComplaintDTO criterionComplaint = createComplaint(acbId, "two criteria",
+                new Date(createdReport.getStartDate().getTime() + 96 * 60 * 60 * 1000));
         ComplaintCriterionMapDTO criteriaMap1 = new ComplaintCriterionMapDTO();
         criteriaMap1.setCertificationCriterionId(3L);
         criteriaMap1.setComplaintId(criterionComplaint.getId());
@@ -705,8 +732,9 @@ public class QuarterlyReportManagerTest extends TestCase {
         criterionComplaint.getCriteria().add(criteriaMap2);
         complaintDao.update(criterionComplaint);
 
-        //complaint associated with surveillance
-        ComplaintDTO survComplaint = createComplaint(acbId, "surveillance", new Date(createdReport.getStartDate().getTime() + 72*60*60*1000));
+        // complaint associated with surveillance
+        ComplaintDTO survComplaint = createComplaint(acbId, "surveillance",
+                new Date(createdReport.getStartDate().getTime() + 72 * 60 * 60 * 1000));
         ComplaintSurveillanceMapDTO survMap = new ComplaintSurveillanceMapDTO();
         survMap.setSurveillanceId(createdSurv1.getId());
         SurveillanceBasicDTO complaintSurv = new SurveillanceBasicDTO();
@@ -720,17 +748,17 @@ public class QuarterlyReportManagerTest extends TestCase {
         Workbook workbook = reportBuilder.buildXlsx(fetchedReport);
         assertNotNull(workbook);
 
-        //uncomment to write report
-//        OutputStream outputStream = null;
-//        try {
-//            outputStream = new FileOutputStream("quarterly.xlsx");
-//            workbook.write(outputStream);
-//        } catch (final Exception ex) {
-//            fail(ex.getMessage());
-//        } finally {
-//            outputStream.flush();
-//            outputStream.close();
-//        }
+        // uncomment to write report
+        // OutputStream outputStream = null;
+        // try {
+        // outputStream = new FileOutputStream("quarterly.xlsx");
+        // workbook.write(outputStream);
+        // } catch (final Exception ex) {
+        // fail(ex.getMessage());
+        // } finally {
+        // outputStream.flush();
+        // outputStream.close();
+        // }
 
         SecurityContextHolder.getContext().setAuthentication(null);
     }
@@ -750,7 +778,8 @@ public class QuarterlyReportManagerTest extends TestCase {
         acb.setId(-4L);
         toCreate.setAcb(acb);
         toCreate.setQuarter(quarter);
-        toCreate.setActivitiesOutcomesSummary("In order to meet its obligation to conduct reactive surveillance, the ONC-ACB undertook the following activities and implemented the following measures to ensure that it was able to systematically obtain, synthesize and act on all facts and circumstances that would cause a reasonable person to question the ongoing compliance of any certified Complete EHR or certified Health IT Module. In order to meet its obligation to conduct reactive surveillance, the ONC-ACB undertook the following activities and implemented the following measures to ensure that it was able to systematically obtain, synthesize and act on all facts and circumstances that would cause a reasonable person to question the ongoing compliance of any certified Complete EHR or certified Health IT Module. ");
+        toCreate.setActivitiesOutcomesSummary(
+                "In order to meet its obligation to conduct reactive surveillance, the ONC-ACB undertook the following activities and implemented the following measures to ensure that it was able to systematically obtain, synthesize and act on all facts and circumstances that would cause a reasonable person to question the ongoing compliance of any certified Complete EHR or certified Health IT Module. In order to meet its obligation to conduct reactive surveillance, the ONC-ACB undertook the following activities and implemented the following measures to ensure that it was able to systematically obtain, synthesize and act on all facts and circumstances that would cause a reasonable person to question the ongoing compliance of any certified Complete EHR or certified Health IT Module. ");
         toCreate.setReactiveSummary("test reactive element summary");
         toCreate.setPrioritizedElementSummary("test prioritized element summary");
         toCreate.setTransparencyDisclosureSummary("test transparency and disclosure summary");
@@ -764,7 +793,8 @@ public class QuarterlyReportManagerTest extends TestCase {
         return createReport(-1L, 2019, 1L);
     }
 
-    private QuarterlyReportDTO createReport(final Long acbId, final Integer year, final Long quarterId) throws EntityCreationException, EntityRetrievalException {
+    private QuarterlyReportDTO createReport(final Long acbId, final Integer year, final Long quarterId)
+            throws EntityCreationException, EntityRetrievalException {
         QuarterDTO quarter = quarterDao.getById(quarterId);
         String activitiesOutcomesSummary = "summary";
         String prioritizedElementSummary = "test";
@@ -860,7 +890,7 @@ public class QuarterlyReportManagerTest extends TestCase {
     }
 
     private ComplaintDTO createComplaint(final Long acbId, final String summary, final Date receivedDate)
-    throws EntityRetrievalException {
+            throws EntityRetrievalException {
         CertificationBodyDTO acb = new CertificationBodyDTO();
         acb.setId(acbId);
 

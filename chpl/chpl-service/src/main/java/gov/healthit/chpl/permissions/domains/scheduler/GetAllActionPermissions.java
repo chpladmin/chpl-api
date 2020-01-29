@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.domain.schedule.ChplJob;
+import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.util.AuthUtil;
 
@@ -43,7 +44,7 @@ public class GetAllActionPermissions extends ActionPermissions {
 
     private Boolean doesUserHavePermissionToJob(final ChplJob job) {
         // Get the authorities from the job
-        if (job.getGroup() != null && job.getGroup().equals("chplJobs")) {
+        if (job.getGroup() != null && job.getGroup().equals(SchedulerManager.CHPL_JOBS_KEY)) {
             if (job.getJobDataMap().containsKey("authorities")) {
                 List<String> authorities = Arrays
                         .asList(job.getJobDataMap().get("authorities").toString().split(AUTHORITY_DELIMITER));

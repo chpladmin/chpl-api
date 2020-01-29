@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityDocumentationEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
@@ -51,6 +52,11 @@ public class DeleteDocumentActionPermissions extends ActionPermissions {
                         //Access is denied.
                         throw new AccessDeniedException(msgUtil.getMessage(
                                 "surveillance.nonconformityDocNotDeletedForRemovedCriteria", nonconformity.getType()));
+                    } else if (isListing2014Edition(surv)) {
+                        //done instead of returning false to get a more customized message than
+                        //Access is denied.
+                        throw new AccessDeniedException(msgUtil.getMessage(
+                                "surveillance.nonconformityDocNotDeletedFor2014Edition", nonconformity.getType()));
                     } else {
                         return true;
                     }
@@ -89,5 +95,15 @@ public class DeleteDocumentActionPermissions extends ActionPermissions {
                 && nonconformity.getCertificationCriterionEntity() != null
                 && nonconformity.getCertificationCriterionEntity().getRemoved() != null
                 && nonconformity.getCertificationCriterionEntity().getRemoved().booleanValue();
+    }
+
+    private boolean isListing2014Edition(SurveillanceEntity surv) {
+        if (!ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)) {
+            return false;
+        }
+
+        return surv.getCertifiedProduct() != null
+                && surv.getCertifiedProduct().getCertificationEditionId().equals(
+                CertificationEditionConcept.CERTIFICATION_EDITION_2014.getId());
     }
 }
