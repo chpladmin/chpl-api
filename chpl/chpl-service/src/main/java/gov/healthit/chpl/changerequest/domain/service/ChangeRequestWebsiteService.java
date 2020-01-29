@@ -27,7 +27,6 @@ import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.DeveloperManager;
@@ -159,7 +158,7 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
             DeveloperDTO updatedDeveloper = developerManager.update(developer, false);
             cr.setDeveloper(new Developer(updatedDeveloper));
             return cr;
-        } catch (JsonProcessingException | MissingReasonException | ValidationException e) {
+        } catch (JsonProcessingException | ValidationException e) {
             throw new RuntimeException(e);
         }
     }

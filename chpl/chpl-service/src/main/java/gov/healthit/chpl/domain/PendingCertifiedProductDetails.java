@@ -32,26 +32,14 @@ import gov.healthit.chpl.dto.listing.pending.PendingCqmCriterionDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingTestParticipantDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingTestTaskDTO;
 
-/**
- * Pending Certified Product Details domain object.
- * @author alarned
- *
- */
 public class PendingCertifiedProductDetails extends CertifiedProductSearchDetails implements Serializable {
     private static final long serialVersionUID = -461584179489619328L;
     private String recordStatus;
     private Boolean hasQms;
 
-    /**
-     * Default constructor.
-     */
     public PendingCertifiedProductDetails() {
     }
 
-    /**
-     * Constructor from DTO.
-     * @param dto the DTO
-     */
     public PendingCertifiedProductDetails(final PendingCertifiedProductDTO dto) {
         this.setId(dto.getId());
         this.setErrorMessages(dto.getErrorMessages());
@@ -192,7 +180,9 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
             this.setCountCqms(cqmCount);
         }
 
-        this.setTransparencyAttestation(dto.getTransparencyAttestation());
+        if (dto.getTransparencyAttestation() != null) {
+            this.setTransparencyAttestation(new TransparencyAttestation(dto.getTransparencyAttestation()));
+        }
         this.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
 
         List<PendingCertifiedProductQmsStandardDTO> qmsDtos = dto.getQmsStandards();
@@ -249,6 +239,10 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
             cert.setG2Success(certCriterion.getG2Success());
             cert.setApiDocumentation(certCriterion.getApiDocumentation());
             cert.setPrivacySecurityFramework(certCriterion.getPrivacySecurityFramework());
+            cert.setAttestationAnswer(certCriterion.getAttestationAnswer());
+            cert.setDocumentationUrl(certCriterion.getDocumentationUrl());
+            cert.setExportDocumentation(certCriterion.getExportDocumentation());
+            cert.setUseCases(certCriterion.getUseCases());
 
             if (certCriterion.getAdditionalSoftware() != null) {
                 for (PendingCertificationResultAdditionalSoftwareDTO as : certCriterion.getAdditionalSoftware()) {
@@ -440,7 +434,8 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
                                     part.setProductExperienceMonths(pt.getProductExperienceMonths() == null ? ""
                                             : pt.getProductExperienceMonths() + "");
                                     part.setProfessionalExperienceMonths(pt.getProfessionalExperienceMonths() == null
-                                            ? "" : pt.getProfessionalExperienceMonths() + "");
+                                            ? ""
+                                            : pt.getProfessionalExperienceMonths() + "");
                                     newTask.getTestParticipants().add(part);
                                 }
                             }

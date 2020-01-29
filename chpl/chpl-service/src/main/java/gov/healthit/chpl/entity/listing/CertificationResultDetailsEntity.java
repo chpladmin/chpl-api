@@ -61,8 +61,20 @@ public class CertificationResultDetailsEntity {
     @Column(name = "g2_success")
     private Boolean g2Success;
 
+    @Column(name = "attestation_answer")
+    private Boolean attestationAnswer;
+
     @Column(name = "api_documentation")
     private String apiDocumentation;
+
+    @Column(name = "export_documentation")
+    private String exportDocumentation;
+
+    @Column(name = "documentation_url")
+    private String documentationUrl;
+
+    @Column(name = "use_cases")
+    private String useCases;
 
     @Column(name = "privacy_security_framework")
     private String privacySecurityFramework;
@@ -148,6 +160,38 @@ public class CertificationResultDetailsEntity {
 
     public void setG2Success(final Boolean g2Success) {
         this.g2Success = g2Success;
+    }
+
+    public Boolean getAttestationAnswer() {
+        return attestationAnswer;
+    }
+
+    public void setAttestationAnswer(Boolean attestationAnswer) {
+        this.attestationAnswer = attestationAnswer;
+    }
+
+    public String getExportDocumentation() {
+        return exportDocumentation;
+    }
+
+    public void setExportDocumentation(String exportDocumentation) {
+        this.exportDocumentation = exportDocumentation;
+    }
+
+    public String getDocumentationUrl() {
+        return documentationUrl;
+    }
+
+    public void setDocumentationUrl(String documentationUrl) {
+        this.documentationUrl = documentationUrl;
+    }
+
+    public String getUseCases() {
+        return useCases;
+    }
+
+    public void setUseCases(String useCases) {
+        this.useCases = useCases;
     }
 
     public String getApiDocumentation() {
