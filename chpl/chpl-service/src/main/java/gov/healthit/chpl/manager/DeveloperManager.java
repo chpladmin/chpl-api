@@ -389,21 +389,11 @@ public class DeveloperManager extends SecuredManager {
     }
 
     /**
-<<<<<<< HEAD
-     * Splits a developer into two. The new developer will have at least one product assigned to it
-     * that used to be assigned to the original developer along with the versions and listings
-     * associated with those products. At least one product along with its versions and listings
-     * will remain assigned to the original developer.
-     * Since the developer code is auto-generated in the database, any listing that gets
-     * transferred to the new developer will automatically have a unique ID (no other developer
-     * can have the same developer code).
-=======
      * Splits a developer into two. The new developer will have at least one product assigned to it that used to be
      * assigned to the original developer along with the versions and listings associated with those products. At least
      * one product along with its versions and listings will remain assigned to the original developer. Since the
      * developer code is auto-generated in the database, any listing that gets transferred to the new developer will
      * automatically have a unique ID (no other developer can have the same developer code).
->>>>>>> upstream/staging
      */
     @Transactional(rollbackFor = {
             EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
