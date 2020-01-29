@@ -44,6 +44,7 @@ import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventPair;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
+import gov.healthit.chpl.dto.TransparencyAttestationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -62,7 +63,7 @@ import gov.healthit.chpl.util.ValidationUtils;
 @Lazy
 @Service
 public class DeveloperManager extends SecuredManager {
-    private static final String NEW_DEVELOPER_CODE = "XXXX";
+    public static final String NEW_DEVELOPER_CODE = "XXXX";
     private static final Logger LOGGER = LogManager.getLogger(DeveloperManager.class);
 
     private DeveloperDAO developerDao;
@@ -328,13 +329,16 @@ public class DeveloperManager extends SecuredManager {
             AttestationType transparencyAttestation = null;
             for (DeveloperDTO dev : beforeDevelopers) {
                 DeveloperACBMapDTO taMap = developerDao.getTransparencyMapping(dev.getId(), acb.getId());
-                if (taMap != null && !StringUtils.isEmpty(taMap.getTransparencyAttestation())) {
-                    AttestationType currAtt = AttestationType.getValue(taMap.getTransparencyAttestation());
+                if (taMap != null
+                        && taMap.getTransparencyAttestation() != null
+                        && !StringUtils.isEmpty(taMap.getTransparencyAttestation().getTransparencyAttestation())) {
+                    AttestationType currAtt = AttestationType.getValue(
+                            taMap.getTransparencyAttestation().getTransparencyAttestation());
                     if (transparencyAttestation == null) {
                         transparencyAttestation = currAtt;
                     } else if (currAtt != transparencyAttestation) {
                         throw new EntityCreationException("Cannot complete merge because " + acb.getName()
-                        + " has a conflicting transparency attestation for these developers.");
+                                + " has a conflicting transparency attestation for these developers.");
                     }
                 }
             }
@@ -343,7 +347,7 @@ public class DeveloperManager extends SecuredManager {
                 DeveloperACBMapDTO devMap = new DeveloperACBMapDTO();
                 devMap.setAcbId(acb.getId());
                 devMap.setAcbName(acb.getName());
-                devMap.setTransparencyAttestation(transparencyAttestation.name());
+                devMap.setTransparencyAttestation(new TransparencyAttestationDTO(transparencyAttestation.name()));
                 developerToCreate.getTransparencyAttestationMappings().add(devMap);
             }
         }
@@ -378,13 +382,14 @@ public class DeveloperManager extends SecuredManager {
 
         activityManager.addActivity(
                 ActivityConcept.DEVELOPER, createdDeveloper.getId(), "Merged " + developerIdsToMerge.size()
-                + " developers into new developer '" + createdDeveloper.getName() + "'.",
+                        + " developers into new developer '" + createdDeveloper.getName() + "'.",
                 beforeDevelopers, createdDeveloper);
 
         return createdDeveloper;
     }
 
     /**
+<<<<<<< HEAD
      * Splits a developer into two. The new developer will have at least one product assigned to it
      * that used to be assigned to the original developer along with the versions and listings
      * associated with those products. At least one product along with its versions and listings
@@ -392,6 +397,13 @@ public class DeveloperManager extends SecuredManager {
      * Since the developer code is auto-generated in the database, any listing that gets
      * transferred to the new developer will automatically have a unique ID (no other developer
      * can have the same developer code).
+=======
+     * Splits a developer into two. The new developer will have at least one product assigned to it that used to be
+     * assigned to the original developer along with the versions and listings associated with those products. At least
+     * one product along with its versions and listings will remain assigned to the original developer. Since the
+     * developer code is auto-generated in the database, any listing that gets transferred to the new developer will
+     * automatically have a unique ID (no other developer can have the same developer code).
+>>>>>>> upstream/staging
      */
     @Transactional(rollbackFor = {
             EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
@@ -405,7 +417,7 @@ public class DeveloperManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).SPLIT, #oldDeveloper)")
     public DeveloperDTO split(DeveloperDTO oldDeveloper, DeveloperDTO developerToCreate,
             List<Long> productIdsToMove) throws ValidationException, AccessDeniedException,
-    EntityRetrievalException, EntityCreationException, JsonProcessingException {
+            EntityRetrievalException, EntityCreationException, JsonProcessingException {
         // check developer fields for all valid values (except transparency attestation)
         Set<String> devErrors = runCreateValidations(developerToCreate);
         if (devErrors != null && devErrors.size() > 0) {
@@ -468,8 +480,8 @@ public class DeveloperManager extends SecuredManager {
         }
 
         DeveloperDTO afterDeveloper = null;
-        //the split is complete - log split activity
-        //get the original developer object from the db to make sure it's all filled in
+        // the split is complete - log split activity
+        // get the original developer object from the db to make sure it's all filled in
         DeveloperDTO origDeveloper = getById(oldDeveloper.getId());
         afterDeveloper = getById(createdDeveloper.getId());
         List<DeveloperDTO> splitDevelopers = new ArrayList<DeveloperDTO>();
@@ -477,7 +489,7 @@ public class DeveloperManager extends SecuredManager {
         splitDevelopers.add(afterDeveloper);
         activityManager.addActivity(ActivityConcept.DEVELOPER, afterDeveloper.getId(),
                 "Split developer " + origDeveloper.getName() + " into " + origDeveloper.getName()
-                + " and " + afterDeveloper.getName(),
+                        + " and " + afterDeveloper.getName(),
                 origDeveloper, splitDevelopers);
         return afterDeveloper;
     }
@@ -524,7 +536,7 @@ public class DeveloperManager extends SecuredManager {
                 } else {
                     newChplProductNumber = chplProductNumberUtil.getChplProductNumber(certifiedProduct.getYear(),
                             chplProductNumberUtil.parseChplProductNumber(certifiedProduct.getChplProductNumber())
-                            .getAtlCode(),
+                                    .getAtlCode(),
                             certifiedProduct.getCertificationBodyCode(), newDeveloperCode,
                             certifiedProduct.getProductCode(), certifiedProduct.getVersionCode(),
                             certifiedProduct.getIcsCode(), certifiedProduct.getAdditionalSoftwareCode(),
@@ -532,8 +544,8 @@ public class DeveloperManager extends SecuredManager {
                 }
                 if (newChplProductNumbers.containsKey(newChplProductNumber)) {
                     duplicatedChplProductNumbers
-                    .add(new DuplicateChplProdNumber(newChplProductNumbers.get(newChplProductNumber),
-                            certifiedProduct.getChplProductNumber(), newChplProductNumber));
+                            .add(new DuplicateChplProdNumber(newChplProductNumbers.get(newChplProductNumber),
+                                    certifiedProduct.getChplProductNumber(), newChplProductNumber));
                 } else {
                     newChplProductNumbers.put(newChplProductNumber, certifiedProduct.getChplProductNumber());
                 }
@@ -567,7 +579,7 @@ public class DeveloperManager extends SecuredManager {
                 LOGGER.warn("Skipping system validation due to null pending developer or a null system developer");
             }
         } else {
-            LOGGER.info("Skipping system validation due to new developer code '" + NEW_DEVELOPER_CODE + "'");
+            LOGGER.info("Skipping system validation due to new developer code '" + getNewDeveloperCode() + "'");
         }
     }
 
@@ -620,8 +632,8 @@ public class DeveloperManager extends SecuredManager {
         List<DeveloperACBMapDTO> transparencyMaps = developerDao.getAllTransparencyMappings();
         Map<Long, DeveloperDTO> mappedDevelopers = new HashMap<Long, DeveloperDTO>();
         for (DeveloperDTO dev : developers) {
-            //initialize each developer object with null transparency attestation mappings
-            //for every ACB
+            // initialize each developer object with null transparency attestation mappings
+            // for every ACB
             for (CertificationBodyDTO acb : availableAcbs) {
                 DeveloperACBMapDTO mapToAdd = new DeveloperACBMapDTO();
                 mapToAdd.setAcbId(acb.getId());
@@ -633,7 +645,7 @@ public class DeveloperManager extends SecuredManager {
             mappedDevelopers.put(dev.getId(), dev);
         }
 
-        //fill in existing values for transparency Maps for acb+developer
+        // fill in existing values for transparency Maps for acb+developer
         for (DeveloperACBMapDTO transparencyMap : transparencyMaps) {
             if (transparencyMap.getAcbId() != null) {
                 DeveloperDTO dev = mappedDevelopers.get(transparencyMap.getDeveloperId());
@@ -655,7 +667,7 @@ public class DeveloperManager extends SecuredManager {
 
     private boolean isNewDeveloperCode(String chplProductNumber) {
         String devCode = chplProductNumberUtil.getDeveloperCode(chplProductNumber);
-        return StringUtils.equals(devCode, NEW_DEVELOPER_CODE);
+        return StringUtils.equals(devCode, getNewDeveloperCode());
     }
 
     private Set<String> runUpdateValidations(DeveloperDTO dto) {
@@ -719,6 +731,11 @@ public class DeveloperManager extends SecuredManager {
         }
         return errorMessages;
     }
+
+    public static String getNewDeveloperCode() {
+        return NEW_DEVELOPER_CODE;
+    }
+
     private class DuplicateChplProdNumber {
         private String origChplProductNumberA;
         private String origChplProductNumberB;

@@ -23,6 +23,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProduct2014CsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductCsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductXmlPresenter;
+import gov.healthit.chpl.util.Util;
 
 /**
  * Quartz job to generate download files by edition.
@@ -105,6 +106,7 @@ extends DownloadableResourceCreatorJob implements InterruptableJob {
         List<CertificationCriterionDTO> criteria = getCriteriaDao().findByCertificationEditionYear(edition)
                 .stream()
                 .filter(cr -> !cr.getRemoved())
+                .sorted((crA, crB) -> Util.sortCriteria(crA, crB))
                 .collect(Collectors.<CertificationCriterionDTO>toList());
         csvPresenter.setApplicableCriteria(criteria);
         csvPresenter.open(getCsvFile());

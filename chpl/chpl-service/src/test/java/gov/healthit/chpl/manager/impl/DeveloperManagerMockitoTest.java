@@ -27,6 +27,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.DeveloperManager;
+import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.rules.developer.CHPLTestDeveloperValidationConfig;
 import gov.healthit.chpl.manager.rules.developer.DeveloperValidationFactory;
 import gov.healthit.chpl.manager.rules.developer.DeveloperValidationFactoryTest;
@@ -68,7 +69,7 @@ public class DeveloperManagerMockitoTest {
 
     @Spy
     @InjectMocks
-    private DeveloperManagerImpl developerManager;
+    private DeveloperManager developerManager;
 
     private DeveloperDTO sysDev;
     private PendingCertifiedProductDetails pendingCp;

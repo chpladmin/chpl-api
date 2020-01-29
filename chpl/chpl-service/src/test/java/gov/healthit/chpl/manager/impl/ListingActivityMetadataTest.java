@@ -42,6 +42,7 @@ import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
+import gov.healthit.chpl.domain.TransparencyAttestation;
 import gov.healthit.chpl.domain.activity.ActivityCategory;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
@@ -201,9 +202,12 @@ public class ListingActivityMetadataTest extends TestCase {
         statusEvent.setReason(reason);
         toUpdateListing.getCertificationEvents().add(statusEvent);
 
+        toUpdateListing.setTransparencyAttestation(new TransparencyAttestation("Affirmative"));
+
         ListingUpdateRequest toUpdate = new ListingUpdateRequest();
         toUpdate.setListing(toUpdateListing);
         toUpdate.setReason("test reason");
+
         cpManager.update(toUpdate);
 
         CertifiedProductSearchDetails afterListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -259,7 +263,7 @@ public class ListingActivityMetadataTest extends TestCase {
         assertNotNull(beforeListing.getSurveillance());
         assertEquals(1, beforeListing.getSurveillance().size());
         try {
-            survManager.deleteSurveillance(-1L, beforeListing.getSurveillance().get(0));
+            survManager.deleteSurveillance(beforeListing.getSurveillance().get(0));
         } catch (Exception e) {
             fail("Could not delete surveillance: " + e.getMessage());
             e.printStackTrace();

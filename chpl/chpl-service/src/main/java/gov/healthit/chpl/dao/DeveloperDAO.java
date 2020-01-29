@@ -175,7 +175,10 @@ public class DeveloperDAO extends BaseDAOImpl {
         DeveloperACBMapEntity mapping = new DeveloperACBMapEntity();
         mapping.getDeveloperId(dto.getDeveloperId());
         mapping.setCertificationBodyId(dto.getAcbId());
-        mapping.setTransparencyAttestation(AttestationType.getValue(dto.getTransparencyAttestation()));
+        if (dto.getTransparencyAttestation() != null && dto.getTransparencyAttestation().getTransparencyAttestation() != null) {
+            mapping.setTransparencyAttestation(
+                    AttestationType.getValue(dto.getTransparencyAttestation().getTransparencyAttestation()));
+        }
         mapping.setCreationDate(new Date());
         mapping.setDeleted(false);
         mapping.setLastModifiedDate(new Date());
@@ -324,11 +327,12 @@ public class DeveloperDAO extends BaseDAOImpl {
 
     public DeveloperACBMapDTO updateTransparencyMapping(DeveloperACBMapDTO dto) {
         DeveloperACBMapEntity mapping = getTransparencyMappingEntity(dto.getDeveloperId(), dto.getAcbId());
-        if (mapping == null) {
+        if (mapping == null || mapping.getTransparencyAttestation() == null) {
             return null;
         }
 
-        mapping.setTransparencyAttestation(AttestationType.getValue(dto.getTransparencyAttestation()));
+        mapping.setTransparencyAttestation(
+                AttestationType.getValue(dto.getTransparencyAttestation().getTransparencyAttestation()));
         mapping.setLastModifiedDate(new Date());
         mapping.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.persist(mapping);
@@ -595,8 +599,8 @@ public class DeveloperDAO extends BaseDAOImpl {
 
         Query query = entityManager.createQuery("FROM ListingsFromBannedDevelopersEntity ",
                 ListingsFromBannedDevelopersEntity.class);
-        @SuppressWarnings("unchecked") List<ListingsFromBannedDevelopersEntity> listingsFromBannedDevelopers
-        = query.getResultList();
+        @SuppressWarnings("unchecked") List<ListingsFromBannedDevelopersEntity> listingsFromBannedDevelopers = query
+                .getResultList();
         List<DecertifiedDeveloperDTO> decertifiedDevelopers = new ArrayList<DecertifiedDeveloperDTO>();
         for (ListingsFromBannedDevelopersEntity currListing : listingsFromBannedDevelopers) {
             boolean devExists = false;

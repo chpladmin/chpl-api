@@ -9,11 +9,13 @@ import java.util.Date;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
+
 public final class Util {
     private static final Logger LOGGER = LogManager.getLogger(Util.class);
     private static final int BASE_16 = 16;
-    private static final String dateFormat = "yyyy-MM-dd";
-    private static final String timestampFormat = "yyyyMMdd_HHmmss";
+    private static final String DATE_FORMAT = "yyyy-MM-dd";
+    private static final String TIMESTAMP_FORMAT = "yyyyMMdd_HHmmss";
 
     private Util() {
 
@@ -42,11 +44,11 @@ public final class Util {
     }
 
     public static SimpleDateFormat getDateFormatter() {
-        return new SimpleDateFormat(dateFormat);
+        return new SimpleDateFormat(DATE_FORMAT);
     }
 
     public static SimpleDateFormat getTimestampFormatter() {
-        return new SimpleDateFormat(timestampFormat);
+        return new SimpleDateFormat(TIMESTAMP_FORMAT);
     }
 
     public static String coerceToCriterionNumberFormat(final String input) {
@@ -96,5 +98,40 @@ public final class Util {
         } else {
             return null;
         }
+    }
+
+    public static int sortCriteria(CertificationCriterionDTO c1, CertificationCriterionDTO c2) {
+        Integer c1Number = Integer.parseInt(c1.getCertificationEdition());
+        Integer c2Number = Integer.parseInt(c2.getCertificationEdition());
+        if (c1Number.compareTo(c2Number) != 0) {
+            return c1Number.compareTo(c2Number);
+        }
+        if (c1.getCertificationEdition().equalsIgnoreCase("2011")) {
+            c1Number = Integer.parseInt(c1.getNumber().split(" ")[0].split(".")[1]);
+            c2Number = Integer.parseInt(c2.getNumber().split(" ")[0].split(".")[1]);
+            if (c1Number.compareTo(c2Number) != 0) {
+                return c1Number.compareTo(c2Number);
+            }
+        }
+        String c1String = c1.getNumber().split(" ")[1].substring(1, 2);
+        String c2String = c2.getNumber().split(" ")[1].substring(1, 2);
+        if (c1String.compareTo(c2String) != 0) {
+            return c1String.compareTo(c2String);
+        }
+        c1String = c1.getNumber().split(" ")[1].split("\\)\\(")[1];
+        c1Number = Integer.parseInt(c1String.substring(0, c1String.indexOf(")")));
+        c2String = c2.getNumber().split(" ")[1].split("\\)\\(")[1];
+        c2Number = Integer.parseInt(c2String.substring(0, c2String.indexOf(")")));
+        if (c1Number.compareTo(c2Number) != 0) {
+            return c1Number.compareTo(c2Number);
+        }
+        c1String = c1.getNumber().split(" ")[1].split("\\)\\(")[2];
+        c1Number = Integer.parseInt(c1String.substring(0, c1String.indexOf(")")));
+        c2String = c2.getNumber().split(" ")[1].split("\\)\\(")[2];
+        c2Number = Integer.parseInt(c2String.substring(0, c2String.indexOf(")")));
+        if (c1Number.compareTo(c2Number) != 0) {
+            return c1Number.compareTo(c2Number);
+        }
+        return c1.getTitle().compareTo(c2.getTitle());
     }
 }
