@@ -888,5 +888,19 @@
                 </entry>
             </job-data-map>
         </job>
+        <job>
+            <name>modifyTestFunctionalityJob</name>
+            <group>systemJobs</group>
+            <description>Modifies a specific test functionality's number and name</description>
+            <job-class>gov.healthit.chpl.scheduler.job.ModifyTestFunctionalityJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+            </job-data-map>
+        </job>
     </schedule>
 </job-scheduling-data>
