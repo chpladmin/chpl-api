@@ -26,6 +26,7 @@ public class DeveloperDTO implements Serializable {
     private Long lastModifiedUser;
     private String name;
     private String website;
+    private Boolean selfDeveloper;
     private List<DeveloperStatusEventDTO> statusEvents;
     private List<DeveloperACBMapDTO> transparencyAttestationMappings;
     private Statuses statuses;
@@ -45,6 +46,7 @@ public class DeveloperDTO implements Serializable {
         this.lastModifiedUser = entity.getLastModifiedUser();
         this.name = entity.getName();
         this.website = entity.getWebsite();
+        this.selfDeveloper = entity.getSelfDeveloper();
     }
 
     public DeveloperDTO(DeveloperEntity entity) {
@@ -69,6 +71,7 @@ public class DeveloperDTO implements Serializable {
         this.lastModifiedUser = entity.getLastModifiedUser();
         this.name = entity.getName();
         this.website = entity.getWebsite();
+        this.selfDeveloper = entity.getSelfDeveloper();
         if (entity.getDeveloperCertificationStatusesEntity() != null) {
             this.statuses = new Statuses(entity.getDeveloperCertificationStatusesEntity().getActive(),
                     entity.getDeveloperCertificationStatusesEntity().getRetired(),
@@ -142,6 +145,14 @@ public class DeveloperDTO implements Serializable {
 
     public void setWebsite(final String website) {
         this.website = website;
+    }
+
+    public Boolean getSelfDeveloper() {
+        return selfDeveloper;
+    }
+
+    public void setSelfDeveloper(Boolean selfDeveloper) {
+        this.selfDeveloper = selfDeveloper;
     }
 
     public String getDeveloperCode() {

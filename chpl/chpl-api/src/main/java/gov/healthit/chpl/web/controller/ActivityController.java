@@ -17,10 +17,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,6 +36,7 @@ import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
+import gov.healthit.chpl.domain.activity.ActivityMetadataPage;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
@@ -48,6 +46,7 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.ActivityMetadataManager;
+import gov.healthit.chpl.manager.ActivityPagedMetadataManager;
 import gov.healthit.chpl.manager.AnnouncementManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
@@ -68,43 +67,58 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/activity")
 public class ActivityController {
     private static final Logger LOGGER = LogManager.getLogger(ActivityController.class);
-    /** Default value for maximum range of activity to return. */
     public static final int DEFAULT_MAX_ACTIVITY_RANGE_DAYS = 30;
+    private static final int DEFAULT_MAX_ACTIVITY_PAGE_SIZE = 100;
 
-    @Autowired
-    private Environment env;
-    @Autowired
-    private ErrorMessageUtil msgUtil;
-    @Autowired
     private ActivityManager activityManager;
-    @Autowired
     private ActivityMetadataManager activityMetadataManager;
-    @Autowired
+    private ActivityPagedMetadataManager pagedMetadataManager;
     private AnnouncementManager announcementManager;
-    @Autowired
     private TestingLabManager atlManager;
-    @Autowired
     private CertifiedProductManager cpManager;
-    @Autowired
     private PendingCertifiedProductManager pcpManager;
-    @Autowired
     private DeveloperManager developerManager;
-    @Autowired
     private ProductManager productManager;
-    @Autowired
     private ProductVersionManager versionManager;
-    @Autowired
     private UserManager userManager;
-    @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
-    @Autowired
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
-    @Autowired
+    private ErrorMessageUtil msgUtil;
     private ResourcePermissions resourcePermissions;
-    @Autowired
     private FF4j ff4j;
 
-    @Autowired private MessageSource messageSource;
+    @Value("${maxActivityRangeInDays}")
+    private Integer maxActivityRangeInDays;
+
+
+    @Autowired
+    public ActivityController(ActivityManager activityManager, ActivityMetadataManager activityMetadataManager,
+            ActivityPagedMetadataManager pagedMetadataManager, AnnouncementManager announcementManager,
+            TestingLabManager atlManager, CertifiedProductManager cpManager, PendingCertifiedProductManager pcpManager,
+            DeveloperManager developerManager, ProductManager productManager,
+            ProductVersionManager versionManager, UserManager userManager,
+            ChplProductNumberUtil chplProductNumberUtil, CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
+            ResourcePermissions resourcePermissions, ErrorMessageUtil msgUtil, FF4j ff4j) {
+        this.activityManager = activityManager;
+        this.activityMetadataManager = activityMetadataManager;
+        this.pagedMetadataManager = pagedMetadataManager;
+        this.announcementManager = announcementManager;
+        this.atlManager = atlManager;
+        this.cpManager = cpManager;
+        this.pcpManager = pcpManager;
+        this.developerManager = developerManager;
+        this.productManager = productManager;
+        this.versionManager = versionManager;
+        this.userManager = userManager;
+        this.chplProductNumberUtil = chplProductNumberUtil;
+        this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
+        this.resourcePermissions = resourcePermissions;
+        this.msgUtil = msgUtil;
+        this.ff4j = ff4j;
+        if (maxActivityRangeInDays == null) {
+            maxActivityRangeInDays = DEFAULT_MAX_ACTIVITY_RANGE_DAYS;
+        }
+    }
 
     @ApiOperation(value = "Get detailed audit data for a specific activity event.",
             notes = "Security Restrictions: ROLE_ADMIN and ROLE_ONC may view any activity event. "
@@ -117,11 +131,28 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get metadata about auditable records in the system for listings.",
+            notes = "All parameters are optional and will default to the first page of listing activity "
+                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
+                    + "with the most recent activity first.")
+    @RequestMapping(value = "/metadata/beta/listings", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public ActivityMetadataPage metadataForListings(@RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+        if (!ff4j.check(FeatureList.ENHANCED_REPORTS)) {
+            throw new NotImplementedException();
+        }
+        return pagedMetadataManager.getActivityMetadataByConcept(
+                ActivityConcept.CERTIFIED_PRODUCT, start, end, pageNum, pageSize);
+    }
+
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Get metadata about auditable records in the system for listings.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
     @RequestMapping(value = "/metadata/listings", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
-    public List<ActivityMetadata> metadataForListings(@RequestParam final Long start,
-            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
+    public List<ActivityMetadata> metadataForListings(@RequestParam Long start,
+            @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDatesAndDateRange(start, end);
@@ -643,13 +674,9 @@ public class ActivityController {
             startDate = new Date(start);
             endDate = new Date(end);
         } else if (start == null && end != null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartHasEnd"),
-                    LocaleContextHolder.getLocale()));
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
         } else if (start != null && end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingEndHasStart"),
-                    LocaleContextHolder.getLocale()));
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
         }
 
         List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
@@ -660,9 +687,7 @@ public class ActivityController {
             }
         }
         if (acb == null) {
-            String err = String.format(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("acb.accessDenied"),
-                    LocaleContextHolder.getLocale()), AuthUtil.getUsername(), id);
+            String err = String.format(msgUtil.getMessage("acb.accessDenied", AuthUtil.getUsername(), id));
             throw new AccessDeniedException(err);
         }
         List<CertificationBodyDTO> acbs = new ArrayList<CertificationBodyDTO>();
@@ -706,13 +731,9 @@ public class ActivityController {
             startDate = new Date(start);
             endDate = new Date(end);
         } else if (start == null && end != null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartHasEnd"),
-                    LocaleContextHolder.getLocale()));
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
         } else if (start != null && end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingEndHasStart"),
-                    LocaleContextHolder.getLocale()));
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
         }
 
         return getActivityEventsForAnnouncement(id, startDate, endDate);
@@ -761,13 +782,9 @@ public class ActivityController {
             startDate = new Date(start);
             endDate = new Date(end);
         } else if (start == null && end != null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartHasEnd"),
-                    LocaleContextHolder.getLocale()));
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
         } else if (start != null && end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingEndHasStart"),
-                    LocaleContextHolder.getLocale()));
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
         }
 
         List<TestingLabDTO> allowedAtls = atlManager.getAllForUser();
@@ -844,13 +861,9 @@ public class ActivityController {
             startDate = new Date(start);
             endDate = new Date(end);
         } else if (start == null && end != null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartHasEnd"),
-                    LocaleContextHolder.getLocale()));
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
         } else if (start != null && end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingEndHasStart"),
-                    LocaleContextHolder.getLocale()));
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
         }
 
         return getActivityEventsForCertifiedProductsByIdAndDateRange(id, startDate, endDate);
@@ -898,15 +911,10 @@ public class ActivityController {
             startDate = new Date(start);
             endDate = new Date(end);
         } else if (start == null && end != null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartHasEnd"),
-                    LocaleContextHolder.getLocale()));
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
         } else if (start != null && end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingEndHasStart"),
-                    LocaleContextHolder.getLocale()));
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
         }
-
         return getActivityEventsForCertifiedProductsByIdAndDateRange(dtos.get(0).getId(), startDate, endDate);
     }
 
@@ -943,13 +951,9 @@ public class ActivityController {
             startDate = new Date(start);
             endDate = new Date(end);
         } else if (start == null && end != null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartHasEnd"),
-                    LocaleContextHolder.getLocale()));
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
         } else if (start != null && end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingEndHasStart"),
-                    LocaleContextHolder.getLocale()));
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
         }
 
         return getActivityEventsForCertifiedProductsByIdAndDateRange(dtos.get(0).getId(), startDate, endDate);
@@ -1006,13 +1010,9 @@ public class ActivityController {
             startDate = new Date(start);
             endDate = new Date(end);
         } else if (start == null && end != null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartHasEnd"),
-                    LocaleContextHolder.getLocale()));
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
         } else if (start != null && end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingEndHasStart"),
-                    LocaleContextHolder.getLocale()));
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
         }
 
         //admin can get anything
@@ -1054,13 +1054,9 @@ public class ActivityController {
             startDate = new Date(start);
             endDate = new Date(end);
         } else if (start == null && end != null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartHasEnd"),
-                    LocaleContextHolder.getLocale()));
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
         } else if (start != null && end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingEndHasStart"),
-                    LocaleContextHolder.getLocale()));
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
         }
         return getActivityEventsForProducts(id, startDate, endDate);
     }
@@ -1097,13 +1093,9 @@ public class ActivityController {
             startDate = new Date(start);
             endDate = new Date(end);
         } else if (start == null && end != null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartHasEnd"),
-                    LocaleContextHolder.getLocale()));
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
         } else if (start != null && end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingEndHasStart"),
-                    LocaleContextHolder.getLocale()));
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
         }
         return getActivityEventsForVersions(id, startDate, endDate);
     }
@@ -1147,13 +1139,9 @@ public class ActivityController {
             startDate = new Date(start);
             endDate = new Date(end);
         } else if (start == null && end != null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartHasEnd"),
-                    LocaleContextHolder.getLocale()));
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
         } else if (start != null && end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingEndHasStart"),
-                    LocaleContextHolder.getLocale()));
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
         }
 
         //ROLE_ADMIN can get user activity on any user; other roles must
@@ -1203,13 +1191,9 @@ public class ActivityController {
             startDate = new Date(start);
             endDate = new Date(end);
         } else if (start == null && end != null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartHasEnd"),
-                    LocaleContextHolder.getLocale()));
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
         } else if (start != null && end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingEndHasStart"),
-                    LocaleContextHolder.getLocale()));
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
         }
         return getActivityEventsForDevelopers(id, startDate, endDate);
     }
@@ -1249,13 +1233,9 @@ public class ActivityController {
             startDate = new Date(start);
             endDate = new Date(end);
         } else if (start == null && end != null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartHasEnd"),
-                    LocaleContextHolder.getLocale()));
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
         } else if (start != null && end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingEndHasStart"),
-                    LocaleContextHolder.getLocale()));
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
         }
         return activityManager.getActivityForUserInDateRange(id, startDate, endDate);
     }
@@ -1443,7 +1423,7 @@ public class ActivityController {
                 Instant.ofEpochMilli(endDate).atZone(ZoneId.of("UTC")).toLocalDate();
 
         if (startDateUtc.isAfter(endDateUtc)) {
-            throw new IllegalArgumentException("Cannot search for activity with the start date after the end date");
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.startDateAfterEndDate"));
         }
     }
 
@@ -1461,11 +1441,9 @@ public class ActivityController {
                 Instant.ofEpochMilli(endDate).atZone(ZoneId.of("UTC")).toLocalDate();
 
         if (startDateUtc.isAfter(endDateUtc)) {
-            throw new IllegalArgumentException("Cannot search for activity with the start date after the end date");
+            throw new IllegalArgumentException(msgUtil.getMessage("activity.startDateAfterEndDate"));
         }
 
-        Integer maxActivityRangeInDays = Integer.getInteger(
-                env.getProperty("maxActivityRangeInDays"), DEFAULT_MAX_ACTIVITY_RANGE_DAYS);
         endDateUtc = endDateUtc.minusDays(maxActivityRangeInDays);
         if (startDateUtc.isBefore(endDateUtc)) {
             throw new IllegalArgumentException(

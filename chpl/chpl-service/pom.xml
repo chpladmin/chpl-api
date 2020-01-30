@@ -414,19 +414,6 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                    <!-- add the main class App to the manifest for the created jar -->
-                    <archive>
-                        <manifest>
-                            <mainClass>gov.healthit.chpl.app.App</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-            <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.2-beta-5</version>
                 <executions>
@@ -494,6 +481,7 @@
                         <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceResultType.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceType.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/TransparencyAttestationMap.java</source>
+                        <source>src/main/java/gov/healthit/chpl/domain/TransparencyAttestation.java</source>
                     </sources>
                 </configuration>
                 <executions>

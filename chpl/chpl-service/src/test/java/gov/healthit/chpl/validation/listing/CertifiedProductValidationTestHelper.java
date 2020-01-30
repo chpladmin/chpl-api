@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
@@ -155,6 +156,9 @@ public final class CertifiedProductValidationTestHelper {
         certResult.setTestProcedures(null);
         certResult.setTestStandards(null);
         certResult.setSuccess(true);
+        CertificationCriterion criterion = new CertificationCriterion();
+        criterion.setNumber(number);
+        certResult.setCriterion(criterion);
         return certResult;
     }
 }

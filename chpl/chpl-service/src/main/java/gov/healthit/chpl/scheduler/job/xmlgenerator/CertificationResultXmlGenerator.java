@@ -31,6 +31,10 @@ public class CertificationResultXmlGenerator extends XmlGenerator {
             createSimpleElement(result.getNumber(), "number", sw);
             createSimpleElement(result.getPrivacySecurityFramework(), "privacySecurityFramework", sw);
             createSimpleElement(result.isSed(), "sed", sw);
+            createSimpleElement(result.getAttestationAnswer(), "attestationAnswer", sw);
+            createSimpleElement(result.getDocumentationUrl(), "documentationUrl", sw);
+            createSimpleElement(result.getExportDocumentation(), "exportDocumentation", sw);
+            createSimpleElement(result.getUseCases(), "useCases", sw);
             createSimpleElement(result.isSuccess(), "success", sw);
             CertificationResultTestDataXmlGenerator.add(result.getTestDataUsed(), "testDataList", sw);
             CertificationResultTestFunctionalityXmlGenerator.add(result.getTestFunctionality(), "testFunctionalityList", sw);

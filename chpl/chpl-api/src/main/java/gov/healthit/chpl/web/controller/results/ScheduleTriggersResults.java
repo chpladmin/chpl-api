@@ -22,6 +22,10 @@ public class ScheduleTriggersResults implements Serializable {
         results = new ArrayList<ChplRepeatableTrigger>();
     }
 
+    public ScheduleTriggersResults(List<ChplRepeatableTrigger> results) {
+        this.results = new ArrayList<ChplRepeatableTrigger>(results);
+    }
+
     public List<ChplRepeatableTrigger> getResults() {
         return results;
     }

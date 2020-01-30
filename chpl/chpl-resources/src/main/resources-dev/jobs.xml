@@ -771,6 +771,21 @@
             </job-data-map>
         </job>
 
+        <!-- Job used to create Test Tools-->
+        <job>
+            <name>createTestToolJob</name>
+            <group>systemJobs</group>
+            <description>Create Test Tool(s)</description>
+            <job-class>gov.healthit.chpl.scheduler.job.CreateTestToolJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+            </job-data-map>
+        </job>
         <!-- Job used to mark specific 2015 criteria as removed -->
         <job>
             <name>removeCriteriaJob</name>
@@ -792,6 +807,92 @@
             <group>systemJobs</group>
             <description>Sets the removed flag to 'true' for RT13 EC macra measure</description>
             <job-class>gov.healthit.chpl.scheduler.job.RemoveRT13ECMacraMeasureJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+            </job-data-map>
+        </job>
+        <!-- Remove v17 Upload Template Job -->
+        <job>
+            <name>removeV17UploadTemplateJob</name>
+            <group>systemJobs</group>
+            <description>Marks v17 upload template as deleted</description>
+            <job-class>gov.healthit.chpl.scheduler.job.RemoveV17UploadTemplate</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+            </job-data-map>
+        </job>
+        <!-- Job used to add criteria to 2015 Listings-->
+        <job>
+            <name>addCriteriaTo2015ListingsJob</name>
+            <group>systemJobs</group>
+            <description>Add criteria to all 2015 Listings</description>
+            <job-class>gov.healthit.chpl.scheduler.job.AddCriteriaTo2015ListingsJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+                <entry>
+                    <key>emailCsvFileName</key>
+                    <value>2015CriteriaAddResults.csv</value>
+                </entry>
+                <entry>
+                    <key>emailSubject</key>
+                    <value>2015 Listing Criteria Add Results</value>
+                </entry>
+                <entry>
+                    <key>parameters</key>
+                    <value>[{"label": "Email Report To", "key": "email", "type": "text"}, {"label": "Send Update Every (x) Listings", "key": "statusInterval", "type": "text"} ]</value>
+                </entry>
+            </job-data-map>
+        </job>
+        <!-- Job used to add criteria to a single Listing-->
+        <job>
+            <name>addCriteriaToSingleListingJob</name>
+            <group>subordinateJobs</group>
+            <description>Add certification criteria to a single Listing</description>
+            <job-class>gov.healthit.chpl.scheduler.job.AddCriteriaToSingleListingJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+            </job-data-map>
+        </job>
+        <!-- Job used to add criteria to a single Pending Listing-->
+        <job>
+            <name>addCriteriaToSinglePendingListingJob</name>
+            <group>subordinateJobs</group>
+            <description>Add certification criteria to a single Pending Listing</description>
+            <job-class>gov.healthit.chpl.scheduler.job.AddCriteriaToSinglePendingListingJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+            </job-data-map>
+        </job>
+        <job>
+            <name>modifyTestFunctionalityJob</name>
+            <group>systemJobs</group>
+            <description>Modifies a specific test functionality's number and name</description>
+            <job-class>gov.healthit.chpl.scheduler.job.ModifyTestFunctionalityJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>

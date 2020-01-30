@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -40,6 +41,7 @@ import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
+import gov.healthit.chpl.dto.TransparencyAttestationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -128,7 +130,7 @@ public class DeveloperController {
                     + "developers into one.   A user of this service should pass in a single developerId to update "
                     + "just that developer.  If multiple developer IDs are passed in, the service performs a merge "
                     + "meaning that a new developer is created with all of the information provided (name, address, "
-                    + "etc.) and all of the prodcuts previously assigned to the developerId's specified are "
+                    + "etc.) and all of the products previously assigned to the developerId's specified are "
                     + "reassigned to the newly created developer. The old developers are then deleted. "
                     + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB")
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -177,11 +179,14 @@ public class DeveloperController {
         DeveloperDTO newDeveloper = new DeveloperDTO();
         newDeveloper.setName(splitRequest.getNewDeveloper().getName());
         newDeveloper.setWebsite(splitRequest.getNewDeveloper().getWebsite());
+        newDeveloper.setSelfDeveloper(splitRequest.getNewDeveloper().getSelfDeveloper());
         for (TransparencyAttestationMap attMap : splitRequest.getNewDeveloper().getTransparencyAttestations()) {
             DeveloperACBMapDTO devMap = new DeveloperACBMapDTO();
             devMap.setAcbId(attMap.getAcbId());
             devMap.setAcbName(attMap.getAcbName());
-            devMap.setTransparencyAttestation(attMap.getAttestation());
+            if (attMap.getAttestation() != null && !StringUtils.isEmpty(attMap.getAttestation().getTransparencyAttestation())) {
+                devMap.setTransparencyAttestation(new TransparencyAttestationDTO(attMap.getAttestation().getTransparencyAttestation()));
+            }
             newDeveloper.getTransparencyAttestationMappings().add(devMap);
         }
         if (splitRequest.getNewDeveloper().getAddress() != null) {
@@ -243,7 +248,7 @@ public class DeveloperController {
     produces = "application/json; charset=utf-8")
     public PermissionDeletedResponse deleteUserFromDeveloper(
             @PathVariable final Long developerId, @PathVariable final Long userId)
-        throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+                    throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         if (!ff4j.check(FeatureList.ROLE_DEVELOPER)) {
             throw new NotImplementedException();
         }
@@ -293,6 +298,7 @@ public class DeveloperController {
             toCreate.setDeveloperCode(developerInfo.getDeveloper().getDeveloperCode());
             toCreate.setName(developerInfo.getDeveloper().getName());
             toCreate.setWebsite(developerInfo.getDeveloper().getWebsite());
+            toCreate.setSelfDeveloper(developerInfo.getDeveloper().getSelfDeveloper());
             if (developerInfo.getDeveloper().getStatusEvents() != null
                     && developerInfo.getDeveloper().getStatusEvents().size() > 0) {
                 for (DeveloperStatusEvent providedStatusHistory : developerInfo.getDeveloper().getStatusEvents()) {
@@ -340,11 +346,14 @@ public class DeveloperController {
             toUpdate.setId(developerInfo.getDeveloperIds().get(0));
             toUpdate.setName(developerInfo.getDeveloper().getName());
             toUpdate.setWebsite(developerInfo.getDeveloper().getWebsite());
+            toUpdate.setSelfDeveloper(developerInfo.getDeveloper().getSelfDeveloper());
             for (TransparencyAttestationMap attMap : developerInfo.getDeveloper().getTransparencyAttestations()) {
                 DeveloperACBMapDTO devMap = new DeveloperACBMapDTO();
                 devMap.setAcbId(attMap.getAcbId());
                 devMap.setAcbName(attMap.getAcbName());
-                devMap.setTransparencyAttestation(attMap.getAttestation());
+                if (attMap.getAttestation() != null) {
+                    devMap.setTransparencyAttestation(new TransparencyAttestationDTO( attMap.getAttestation()));
+                }
                 toUpdate.getTransparencyAttestationMappings().add(devMap);
             }
 
