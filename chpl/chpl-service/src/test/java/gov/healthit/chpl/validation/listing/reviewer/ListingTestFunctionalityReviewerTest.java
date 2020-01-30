@@ -43,7 +43,6 @@ import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.TestFunctionalityCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.manager.TestingFunctionalityManager;
-import gov.healthit.chpl.manager.impl.TestingFunctionalityManagerImpl;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ListingMockUtil;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.TestFunctionality2014Reviewer;
@@ -82,7 +81,7 @@ public class ListingTestFunctionalityReviewerTest {
 
     @Before
     public void setup() {
-        testFunctionalityManager = new TestingFunctionalityManagerImpl(testFunctionalityDAO);
+        testFunctionalityManager = new TestingFunctionalityManager(testFunctionalityDAO);
         MockitoAnnotations.initMocks(this);
 
         tfReviewer = new TestFunctionality2014Reviewer(testFunctionalityDAO, testFunctionalityManager,

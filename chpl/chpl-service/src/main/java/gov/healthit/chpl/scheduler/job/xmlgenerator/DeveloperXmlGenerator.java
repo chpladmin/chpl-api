@@ -9,7 +9,7 @@ public class DeveloperXmlGenerator extends XmlGenerator {
     public static void addDeveloper(Developer dev, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         sw.writeStartElement(rootNodeName);
         AddressXmlGenerator.addAddress(dev.getAddress(), "address", sw);
-        ContactXmlGenerator.addContact(dev.getContact(),"contact", sw);
+        ContactXmlGenerator.addContact(dev.getContact(), "contact", sw);
         createSimpleElement(dev.getDeveloperCode(), "developerCode", sw);
         createSimpleElement(dev.getDeveloperId(), "developerId", sw);
         createSimpleElement(dev.getName(), "name", sw);
@@ -17,6 +17,7 @@ public class DeveloperXmlGenerator extends XmlGenerator {
         DeveloperStatusEventXmlGenerator.add(dev.getStatusEvents(), "statusEvents", sw);
         TransparencyAttestationMapXmlGenerator.add(dev.getTransparencyAttestations(), "transparencyAttestations", sw);
         createSimpleElement(dev.getWebsite(), "website", sw);
+        createSimpleElement(dev.getSelfDeveloper(), "selfDeveloper", sw);
         sw.writeEndElement();
     }
 }

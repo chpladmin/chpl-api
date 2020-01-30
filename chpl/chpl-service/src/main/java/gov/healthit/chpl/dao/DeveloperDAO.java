@@ -90,6 +90,12 @@ public class DeveloperDAO extends BaseDAOImpl {
             entity.setName(dto.getName());
             entity.setWebsite(dto.getWebsite());
 
+            if (dto.getSelfDeveloper() != null) {
+                entity.setSelfDeveloper(dto.getSelfDeveloper());
+            } else {
+                entity.setSelfDeveloper(false);
+            }
+
             if (dto.getDeleted() != null) {
                 entity.setDeleted(dto.getDeleted());
             } else {
@@ -151,8 +157,8 @@ public class DeveloperDAO extends BaseDAOImpl {
                             throw new EntityCreationException(msg);
                         }
                     } else {
-                        String msg = "Developer Status name and date must be provided but at least one was not found; cannot insert this status history for developer "
-                                + entity.getName();
+                        String msg = "Developer Status name and date must be provided but at least one was not found;"
+                                + "cannot insert this status history for developer " + entity.getName();
                         LOGGER.error(msg);
                         throw new EntityCreationException(msg);
                     }
@@ -222,6 +228,11 @@ public class DeveloperDAO extends BaseDAOImpl {
         }
 
         entity.setWebsite(dto.getWebsite());
+        if (dto.getSelfDeveloper() != null) {
+            entity.setSelfDeveloper(dto.getSelfDeveloper());
+        } else {
+            entity.setSelfDeveloper(false);
+        }
         if (dto.getName() != null) {
             entity.setName(dto.getName());
         }
@@ -354,7 +365,7 @@ public class DeveloperDAO extends BaseDAOImpl {
 
     public List<DeveloperDTO> findAllIdsAndNames() {
 
-        List<DeveloperEntitySimple> entities = entityManager.createQuery("SELECT dev "
+        @SuppressWarnings("unchecked") List<DeveloperEntitySimple> entities = entityManager.createQuery("SELECT dev "
                 + "FROM DeveloperEntitySimple dev "
                 + "WHERE dev.deleted = false").getResultList();
         List<DeveloperDTO> dtos = new ArrayList<>();
@@ -394,7 +405,7 @@ public class DeveloperDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery("SELECT dt " + "FROM DeveloperTransparencyEntity dt ",
                 DeveloperTransparencyEntity.class);
 
-        List<DeveloperTransparencyEntity> entityResults = query.getResultList();
+        @SuppressWarnings("unchecked") List<DeveloperTransparencyEntity> entityResults = query.getResultList();
         List<DeveloperTransparency> domainResults = new ArrayList<DeveloperTransparency>();
         for (DeveloperTransparencyEntity entity : entityResults) {
             DeveloperTransparency domain = new DeveloperTransparency();
@@ -477,7 +488,7 @@ public class DeveloperDAO extends BaseDAOImpl {
                 + "AND pve.id = :versionId " + "AND pve.productId = pe.id " + "AND ve.id = pe.developerId ",
                 DeveloperEntity.class);
         getDeveloperByVersionIdQuery.setParameter("versionId", productVersionId);
-        List<DeveloperEntity> results = getDeveloperByVersionIdQuery.getResultList();
+        @SuppressWarnings("unchecked") List<DeveloperEntity> results = getDeveloperByVersionIdQuery.getResultList();
         if (results != null && results.size() > 0) {
             return new DeveloperDTO(results.get(0));
         }
@@ -500,7 +511,7 @@ public class DeveloperDAO extends BaseDAOImpl {
                 + "WHERE dev.deleted = false "
                 + "AND dev.website = :website ", DeveloperEntity.class);
         query.setParameter("website", website);
-        List<DeveloperEntity> results = query.getResultList();
+        @SuppressWarnings("unchecked") List<DeveloperEntity> results = query.getResultList();
         List<DeveloperDTO> resultDtos = new ArrayList<DeveloperDTO>();
         for (DeveloperEntity entity : results) {
             resultDtos.add(new DeveloperDTO(entity));
@@ -515,7 +526,7 @@ public class DeveloperDAO extends BaseDAOImpl {
                         + "WHERE developerStatusName IN (:banned) AND deleted = false AND acbIsRetired = false",
                 CertifiedProductDetailsEntity.class);
         bannedListingsQuery.setParameter("banned", String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc));
-        List<CertifiedProductDetailsEntity> bannedListings = bannedListingsQuery.getResultList();
+        @SuppressWarnings("unchecked") List<CertifiedProductDetailsEntity> bannedListings = bannedListingsQuery.getResultList();
         List<DecertifiedDeveloperDTODeprecated> decertifiedDevelopers = new ArrayList<DecertifiedDeveloperDTODeprecated>();
         // populate dtoList from result
         for (CertifiedProductDetailsEntity currListing : bannedListings) {
@@ -628,7 +639,7 @@ public class DeveloperDAO extends BaseDAOImpl {
     public List<DeveloperDTO> getByCertificationBodyId(final List<Long> certificationBodyIds) {
         return getEntitiesByCertificationBodyId(certificationBodyIds).stream()
                 .map(dev -> new DeveloperDTO(dev))
-                .collect(Collectors.<DeveloperDTO> toList());
+                .collect(Collectors.<DeveloperDTO>toList());
     }
 
     private void create(final DeveloperEntity entity) {
@@ -676,7 +687,7 @@ public class DeveloperDAO extends BaseDAOImpl {
         }
         Query query = entityManager.createQuery(queryStr, DeveloperEntity.class);
         query.setParameter("entityid", id);
-        List<DeveloperEntity> result = query.getResultList();
+        @SuppressWarnings("unchecked") List<DeveloperEntity> result = query.getResultList();
 
         if (result == null || result.size() == 0) {
             String msg = msgUtil.getMessage("developer.notFound");
@@ -698,7 +709,7 @@ public class DeveloperDAO extends BaseDAOImpl {
                         + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
                         + "where (NOT v.deleted = true) AND (v.name = :name) ", DeveloperEntity.class);
         query.setParameter("name", name);
-        List<DeveloperEntity> result = query.getResultList();
+        @SuppressWarnings("unchecked") List<DeveloperEntity> result = query.getResultList();
 
         if (result.size() > 0) {
             entity = result.get(0);
@@ -717,7 +728,7 @@ public class DeveloperDAO extends BaseDAOImpl {
                         + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
                         + "where (NOT v.deleted = true) AND (v.developerCode = :code) ", DeveloperEntity.class);
         query.setParameter("code", code);
-        List<DeveloperEntity> result = query.getResultList();
+        @SuppressWarnings("unchecked") List<DeveloperEntity> result = query.getResultList();
 
         if (result.size() > 0) {
             entity = result.get(0);
@@ -734,7 +745,7 @@ public class DeveloperDAO extends BaseDAOImpl {
         query.setParameter("developerId", developerId);
         query.setParameter("acbId", acbId);
 
-        List<DeveloperACBMapEntity> results = query.getResultList();
+        @SuppressWarnings("unchecked") List<DeveloperACBMapEntity> results = query.getResultList();
         if (results != null && results.size() > 0) {
             return results.get(0);
         }
