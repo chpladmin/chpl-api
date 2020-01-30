@@ -19,6 +19,7 @@ import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
+import gov.healthit.chpl.dto.TransparencyAttestationDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTestingLabDTO;
@@ -30,18 +31,23 @@ import gov.healthit.chpl.util.ValidationUtils;
 
 @Component("pendingChplNumberReviewer")
 public class ChplNumberReviewer implements Reviewer {
-    @Autowired private TestingLabDAO atlDao;
-    @Autowired private CertificationBodyDAO acbDao;
-    @Autowired private DeveloperDAO developerDao;
-    @Autowired private CertificationEditionDAO certEditionDao;
-    @Autowired private ChplProductNumberUtil chplProductNumberUtil;
-    @Autowired private ErrorMessageUtil msgUtil;
+    @Autowired
+    private TestingLabDAO atlDao;
+    @Autowired
+    private CertificationBodyDAO acbDao;
+    @Autowired
+    private DeveloperDAO developerDao;
+    @Autowired
+    private CertificationEditionDAO certEditionDao;
+    @Autowired
+    private ChplProductNumberUtil chplProductNumberUtil;
+    @Autowired
+    private ErrorMessageUtil msgUtil;
 
     /**
-     * Looks at the format of the CHPL Product Number
-     * Makes sure each part of the identifier is correctly formatted and is the correct value.
-     * May change the CHPL ID if necessary (if additional software was added or certification date was changed)
-     * and if the CHPL ID is changed, confirms that the new ID is unique.
+     * Looks at the format of the CHPL Product Number Makes sure each part of the identifier is correctly formatted and
+     * is the correct value. May change the CHPL ID if necessary (if additional software was added or certification date
+     * was changed) and if the CHPL ID is changed, confirms that the new ID is unique.
      */
     public void review(final PendingCertifiedProductDTO listing) {
         String uniqueId = listing.getUniqueId();
@@ -59,19 +65,18 @@ public class ChplNumberReviewer implements Reviewer {
         String additionalSoftwareCode = uniqueIdParts[ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_INDEX];
         String certifiedDateCode = uniqueIdParts[ChplProductNumberUtil.CERTIFIED_DATE_CODE_INDEX];
 
-        //Ensure the new chpl product number is unique
+        // Ensure the new chpl product number is unique
         String chplProductNumber;
         try {
-            chplProductNumber =
-                    chplProductNumberUtil.generate(
-                            uniqueId,
-                            listing.getCertificationEdition(),
-                            listing.getTestingLabs(),
-                            listing.getCertificationBodyId(),
-                            listing.getDeveloperId());
+            chplProductNumber = chplProductNumberUtil.generate(
+                    uniqueId,
+                    listing.getCertificationEdition(),
+                    listing.getTestingLabs(),
+                    listing.getCertificationBodyId(),
+                    listing.getDeveloperId());
             if (!chplProductNumberUtil.isUnique(chplProductNumber)) {
                 listing.getErrorMessages().add(msgUtil.getMessage(
-                                "listing.chplProductNumber.notUnique", chplProductNumber));
+                        "listing.chplProductNumber.notUnique", chplProductNumber));
             }
         } catch (IndexOutOfBoundsException e) {
             listing.getErrorMessages().add(msgUtil.getMessage("atl.notFound"));
@@ -82,7 +87,7 @@ public class ChplNumberReviewer implements Reviewer {
             if (("2014".equals(certificationEdition.getYear()) && !"14".equals(editionCode))
                     || ("2015".equals(certificationEdition.getYear()) && !"15".equals(editionCode))) {
                 listing.getErrorMessages()
-                .add("The first part of the CHPL ID must match the certification year of the listing.");
+                        .add("The first part of the CHPL ID must match the certification year of the listing.");
             }
 
             List<PendingCertifiedProductTestingLabDTO> testingLabs = null;
@@ -93,16 +98,16 @@ public class ChplNumberReviewer implements Reviewer {
                 if (testingLabs.size() > 1) {
                     if (!"99".equals(atlCode)) {
                         listing.getWarningMessages()
-                        .add(msgUtil.getMessage("atl.shouldBe99"));
+                                .add(msgUtil.getMessage("atl.shouldBe99"));
                     }
                 } else {
                     TestingLabDTO testingLab = atlDao.getByName(testingLabs.get(0).getTestingLabName());
                     if ("99".equals(atlCode)) {
                         listing.getErrorMessages()
-                        .add(msgUtil.getMessage("atl.shouldNotBe99"));
+                                .add(msgUtil.getMessage("atl.shouldNotBe99"));
                     } else if (!testingLab.getTestingLabCode().equals(atlCode)) {
                         listing.getErrorMessages()
-                        .add(msgUtil.getMessage("atl.codeMismatch", testingLab.getName(), atlCode));
+                                .add(msgUtil.getMessage("atl.codeMismatch", testingLab.getName(), atlCode));
                     }
                 }
             }
@@ -125,7 +130,7 @@ public class ChplNumberReviewer implements Reviewer {
                     DeveloperStatusEventDTO mostRecentStatus = developer.getStatus();
                     if (mostRecentStatus == null || mostRecentStatus.getStatus() == null) {
                         listing.getErrorMessages().add("The current status of the developer " + developer.getName()
-                        + " cannot be determined. A developer must be listed as Active in order to create certified products belongong to it.");
+                                + " cannot be determined. A developer must be listed as Active in order to create certified products belongong to it.");
                     } else if (!mostRecentStatus.getStatus().getStatusName()
                             .equals(DeveloperStatusType.Active.toString())) {
                         listing.getErrorMessages().add("The developer " + developer.getName() + " has a status of "
@@ -135,23 +140,17 @@ public class ChplNumberReviewer implements Reviewer {
 
                     if (!developer.getDeveloperCode().equals(developerCode)) {
                         listing.getErrorMessages()
-                        .add("The developer code '" + developerCode
-                                + "' does not match the assigned developer code for "
-                                + listing.getDeveloperName() + ": '" + developer.getDeveloperCode() + "'.");
+                                .add("The developer code '" + developerCode
+                                        + "' does not match the assigned developer code for "
+                                        + listing.getDeveloperName() + ": '" + developer.getDeveloperCode() + "'.");
                     }
                     if (certificationBody != null) {
                         DeveloperACBMapDTO mapping = developerDao.getTransparencyMapping(developer.getId(),
                                 certificationBody.getId());
                         if (mapping != null) {
-                            // check transparency attestation and url for
-                            // warnings
-                            if ((mapping.getTransparencyAttestation() == null
-                                    && listing.getTransparencyAttestation() != null)
-                                    || (mapping.getTransparencyAttestation() != null
-                                    && listing.getTransparencyAttestation() == null)
-                                    || (mapping.getTransparencyAttestation() != null
-                                    && !mapping.getTransparencyAttestation()
-                                    .equals(listing.getTransparencyAttestation()))) {
+                            // check transparency attestation and url for warnings
+                            if (!areTransparencyAttestationsEqual(mapping.getTransparencyAttestation(),
+                                    listing.getTransparencyAttestation())) {
                                 listing.getWarningMessages().add(msgUtil.getMessage("transparencyAttestation.save"));
                             }
                         } else if (!StringUtils.isEmpty(listing.getTransparencyAttestation())) {
@@ -167,9 +166,9 @@ public class ChplNumberReviewer implements Reviewer {
                             + " does not match any developer in the system. New developers should use the code 'XXXX'.");
                 } else {
                     listing.getErrorMessages()
-                    .add("The developer code " + developerCode + " is for '" + developerByCode.getName()
-                    + "' which does not match the developer name in the upload file '"
-                    + listing.getDeveloperName() + "'");
+                            .add("The developer code " + developerCode + " is for '" + developerByCode.getName()
+                                    + "' which does not match the developer name in the upload file '"
+                                    + listing.getDeveloperName() + "'");
                 }
             }
         } catch (final EntityRetrievalException ex) {
@@ -180,24 +179,24 @@ public class ChplNumberReviewer implements Reviewer {
                 ChplProductNumberUtil.PRODUCT_CODE_INDEX,
                 ChplProductNumberUtil.PRODUCT_CODE_REGEX)) {
             listing.getErrorMessages()
-            .add(msgUtil.getMessage("listing.badProductCodeChars",
-                    ChplProductNumberUtil.PRODUCT_CODE_LENGTH));
+                    .add(msgUtil.getMessage("listing.badProductCodeChars",
+                            ChplProductNumberUtil.PRODUCT_CODE_LENGTH));
         }
 
         if (!ValidationUtils.chplNumberPartIsValid(listing.getUniqueId(),
                 ChplProductNumberUtil.VERSION_CODE_INDEX,
                 ChplProductNumberUtil.VERSION_CODE_REGEX)) {
             listing.getErrorMessages()
-            .add(msgUtil.getMessage("listing.badVersionCodeChars",
-                    ChplProductNumberUtil.VERSION_CODE_LENGTH));
+                    .add(msgUtil.getMessage("listing.badVersionCodeChars",
+                            ChplProductNumberUtil.VERSION_CODE_LENGTH));
         }
 
         if (!ValidationUtils.chplNumberPartIsValid(listing.getUniqueId(),
                 ChplProductNumberUtil.ICS_CODE_INDEX,
                 ChplProductNumberUtil.ICS_CODE_REGEX)) {
             listing.getErrorMessages()
-            .add(msgUtil.getMessage("listing.badIcsCodeChars",
-                    ChplProductNumberUtil.ICS_CODE_LENGTH));
+                    .add(msgUtil.getMessage("listing.badIcsCodeChars",
+                            ChplProductNumberUtil.ICS_CODE_LENGTH));
         } else {
             Integer icsCodeInteger = Integer.valueOf(uniqueIdParts[ChplProductNumberUtil.ICS_CODE_INDEX]);
             if (icsCodeInteger != null) {
@@ -217,8 +216,8 @@ public class ChplNumberReviewer implements Reviewer {
                 ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_INDEX,
                 ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_REGEX)) {
             listing.getErrorMessages()
-            .add(msgUtil.getMessage("listing.badAdditionalSoftwareCodeChars",
-                    ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_LENGTH));
+                    .add(msgUtil.getMessage("listing.badAdditionalSoftwareCodeChars",
+                            ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_LENGTH));
         } else {
             if (additionalSoftwareCode.equals("0")) {
                 boolean hasAS = false;
@@ -249,8 +248,8 @@ public class ChplNumberReviewer implements Reviewer {
                 ChplProductNumberUtil.CERTIFIED_DATE_CODE_INDEX,
                 ChplProductNumberUtil.CERTIFIED_DATE_CODE_REGEX)) {
             listing.getErrorMessages()
-            .add(msgUtil.getMessage("listing.badCertifiedDateCodeChars",
-                    ChplProductNumberUtil.CERTIFIED_DATE_CODE_LENGTH));
+                    .add(msgUtil.getMessage("listing.badCertifiedDateCodeChars",
+                            ChplProductNumberUtil.CERTIFIED_DATE_CODE_LENGTH));
         }
         SimpleDateFormat idDateFormat = new SimpleDateFormat("yyMMdd");
         try {
@@ -262,7 +261,17 @@ public class ChplNumberReviewer implements Reviewer {
             }
         } catch (final ParseException pex) {
             listing.getErrorMessages()
-            .add("Could not parse the certification date part of the product id: " + certifiedDateCode);
+                    .add("Could not parse the certification date part of the product id: " + certifiedDateCode);
         }
+    }
+
+    private Boolean areTransparencyAttestationsEqual(TransparencyAttestationDTO ta1, TransparencyAttestationDTO ta2) {
+        Boolean equal = false;
+        if (ta1 != null && ta2 != null) {
+            if (ta1.getTransparencyAttestation() != null && ta2.getTransparencyAttestation() != null) {
+                equal = ta1.getTransparencyAttestation().equals(ta2.getTransparencyAttestation());
+            }
+        }
+        return equal;
     }
 }
