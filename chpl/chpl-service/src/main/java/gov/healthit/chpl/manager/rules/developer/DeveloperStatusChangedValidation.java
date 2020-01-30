@@ -4,7 +4,7 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
-import gov.healthit.chpl.manager.impl.DeveloperManagerImpl;
+import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -16,7 +16,7 @@ public class DeveloperStatusChangedValidation extends ValidationRule<DeveloperVa
         this.resourcePermissions = resourcePermissions;
     }
 
-    public DeveloperStatusChangedValidation(final DeveloperManagerImpl developerManagerImpl,
+    public DeveloperStatusChangedValidation(final DeveloperManager developerManagerImpl,
             final ResourcePermissions resourcePermissions, final DeveloperDAO developerDao) {
         this.resourcePermissions = resourcePermissions;
     }

@@ -30,6 +30,7 @@ import gov.healthit.chpl.util.Util;
 public class DeveloperEntity implements Serializable {
 
     private static final long serialVersionUID = -1396979009499564864L;
+    private static final int WEBSITE_MAX_LENGTH = 300;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,8 +45,11 @@ public class DeveloperEntity implements Serializable {
     private String name;
 
     @Basic(optional = true)
-    @Column(length = 300, nullable = true)
+    @Column(length = WEBSITE_MAX_LENGTH, nullable = true)
     private String website;
+
+    @Column(name = "self_developer")
+    private Boolean selfDeveloper;
 
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
@@ -273,6 +277,14 @@ public class DeveloperEntity implements Serializable {
      */
     public void setWebsite(final String website) {
         this.website = website;
+    }
+
+    public Boolean getSelfDeveloper() {
+        return selfDeveloper;
+    }
+
+    public void setSelfDeveloper(Boolean selfDeveloper) {
+        this.selfDeveloper = selfDeveloper;
     }
 
     public DeveloperCertificationStatusesEntity getDeveloperCertificationStatusesEntity() {

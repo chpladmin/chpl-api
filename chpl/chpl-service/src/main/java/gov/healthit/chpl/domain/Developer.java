@@ -36,23 +36,26 @@ public class Developer implements Serializable {
     private String developerCode;
 
     /**
-     * The name of the developer or vendor of the certified health IT product
-     * being uploaded. It is applicable to 2014 and 2015 Edition. If uploading a
-     * certified product from a developer that already exists in the CHPL
-     * database, please use the CHPL Developer management functionality to
-     * ensure that the name of the developer matches the database record to
-     * prevent duplication.
+     * The name of the developer or vendor of the certified health IT product being uploaded. It is applicable to 2014
+     * and 2015 Edition. If uploading a certified product from a developer that already exists in the CHPL database,
+     * please use the CHPL Developer management functionality to ensure that the name of the developer matches the
+     * database record to prevent duplication.
      */
     @XmlElement(required = true)
     private String name;
 
     /**
-     * Website of health IT developer. Fully qualified URL which is reachable
-     * via web browser validation and verification. This variable is applicable
-     * for 2014 and 2015 Edition.
+     * Website of health IT developer. Fully qualified URL which is reachable via web browser validation and
+     * verification. This variable is applicable for 2014 and 2015 Edition.
      */
     @XmlElement(required = false, nillable = true)
     private String website;
+
+    /**
+     * Indication of whether a health IT developer is a "self-developer" or not.
+     */
+    @XmlElement(required = true)
+    private Boolean selfDeveloper;
 
     /**
      * Developer's physical address
@@ -73,8 +76,7 @@ public class Developer implements Serializable {
     private Boolean deleted;
 
     /**
-     * Transparency attestations between each certification body and the
-     * developer.
+     * Transparency attestations between each certification body and the developer.
      */
     @XmlElement(required = false, nillable = true)
     private List<TransparencyAttestationMap> transparencyAttestations;
@@ -83,12 +85,12 @@ public class Developer implements Serializable {
      * Status changes that have occurred on the developer.
      */
     @XmlElementWrapper(name = "statusEvents", nillable = true, required = false)
-    @XmlElement(name = "statusEvent",required = false, nillable = true)
+    @XmlElement(name = "statusEvent", required = false, nillable = true)
     private List<DeveloperStatusEvent> statusEvents;
 
     /**
-     * The status of a developer with certified Health IT. Allowable values are
-     * "Active", "Suspended by ONC", or "Under Certification Ban by ONC"
+     * The status of a developer with certified Health IT. Allowable values are "Active", "Suspended by ONC", or "Under
+     * Certification Ban by ONC"
      */
     @XmlElement(required = false, nillable = true)
     private DeveloperStatus status;
@@ -105,6 +107,7 @@ public class Developer implements Serializable {
         this.name = dto.getName();
         this.website = dto.getWebsite();
         this.deleted = dto.getDeleted();
+        this.selfDeveloper = dto.getSelfDeveloper();
         if (dto.getAddress() != null) {
             this.address = new Address(dto.getAddress());
         }
@@ -121,7 +124,9 @@ public class Developer implements Serializable {
                 TransparencyAttestationMap toAdd = new TransparencyAttestationMap();
                 toAdd.setAcbId(map.getAcbId());
                 toAdd.setAcbName(map.getAcbName());
-                toAdd.setAttestation(map.getTransparencyAttestation());
+                if (map.getTransparencyAttestation() != null) {
+                    toAdd.setAttestation(new TransparencyAttestation(map.getTransparencyAttestation()));
+                }
                 this.transparencyAttestations.add(toAdd);
             }
         }
@@ -158,6 +163,14 @@ public class Developer implements Serializable {
 
     public void setWebsite(final String website) {
         this.website = website;
+    }
+
+    public Boolean getSelfDeveloper() {
+        return selfDeveloper;
+    }
+
+    public void setSelfDeveloper(Boolean selfDeveloper) {
+        this.selfDeveloper = selfDeveloper;
     }
 
     public Address getAddress() {
