@@ -28,6 +28,7 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.MacraMeasureCom
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaTestTaskComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaUcdComparisonReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredCriteriaValidator;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestFunctionality2015Reviewer;
@@ -124,6 +125,10 @@ public class Edition2015ListingValidator extends Validator {
     private RemovedCriteriaUcdComparisonReviewer ucdCriteriaComparisonReviewer;
 
     @Autowired
+    @Qualifier("requiredCriteriaValidator")
+    private RequiredCriteriaValidator requiredCriteriaValidator;
+
+    @Autowired
     @Qualifier("invalidCriteriaCombinationReviewer")
     private InvalidCriteriaCombinationReviewer invalidCriteriaCombinationReviewer;
 
@@ -150,6 +155,7 @@ public class Edition2015ListingValidator extends Validator {
             reviewers.add(tt2015Reviewer);
             reviewers.add(urlReviewer);
             reviewers.add(testFunctionalityReviewer);
+            reviewers.add(requiredCriteriaValidator);
             reviewers.add(invalidCriteriaCombinationReviewer);
         }
         return reviewers;

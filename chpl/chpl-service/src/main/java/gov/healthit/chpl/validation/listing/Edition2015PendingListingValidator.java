@@ -22,6 +22,7 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.ValidDataReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.DuplicateData2015Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.InvalidCriteriaCombinationReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.RequiredCriteriaValidator;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.SedG32015Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.TestFunctionality2015Reviewer;
@@ -104,6 +105,10 @@ public class Edition2015PendingListingValidator extends PendingValidator {
     private RemovedCriteriaReviewer removedCriteriaReviewer;
 
     @Autowired
+    @Qualifier("pendingRequiredCriteriaValidator")
+    private RequiredCriteriaValidator requiredCriteriaValidator;
+
+    @Autowired
     @Qualifier("pendingInvalidCriteriaCombinationReviewer")
     private InvalidCriteriaCombinationReviewer invalidCriteriaCombinationReviewer;
 
@@ -130,6 +135,7 @@ public class Edition2015PendingListingValidator extends PendingValidator {
             reviewers.add(urlReviewer);
             reviewers.add(testFunctionalityReviewer);
             reviewers.add(removedCriteriaReviewer);
+            reviewers.add(requiredCriteriaValidator);
             reviewers.add(invalidCriteriaCombinationReviewer);
         }
         return reviewers;
