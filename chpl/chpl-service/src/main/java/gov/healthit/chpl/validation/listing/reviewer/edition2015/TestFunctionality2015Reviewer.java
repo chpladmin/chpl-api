@@ -65,7 +65,7 @@ public class TestFunctionality2015Reviewer extends PermissionBasedReviewer {
                     for (CertificationResultTestFunctionality crtf : cr.getTestFunctionality()) {
                         Set<String> messages = getTestingFunctionalityErrorMessages(crtf, cr, listing);
                         for (String message : messages) {
-                            addErrorOrWarningByPermission(listing, cr, message);
+                            addCriterionErrorOrWarningByPermission(listing, cr, message);
                         }
                     }
                 }

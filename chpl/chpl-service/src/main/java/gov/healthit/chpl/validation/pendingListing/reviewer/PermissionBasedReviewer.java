@@ -19,6 +19,19 @@ public abstract class PermissionBasedReviewer implements Reviewer {
         this.resourcePermissions = resourcePermissions;
     }
 
+    public void addListingWarningByPermission(PendingCertifiedProductDTO listing, String errorMessageName,
+            Object... errorMessageArgs) {
+        String message = msgUtil.getMessage(errorMessageName, errorMessageArgs);
+        addListingWarningByPermission(listing, message);
+    }
+
+    public void addListingWarningByPermission(PendingCertifiedProductDTO listing, String message) {
+        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
+                listing.getWarningMessages().add(message);
+                //ACBs do not get any error or warning about removed criteria validation issues
+        }
+    }
+
     public void addErrorOrWarningByPermission(
             PendingCertifiedProductDTO listing, PendingCertificationResultDTO certResult,
             String errorMessageName, Object... errorMessageArgs) {

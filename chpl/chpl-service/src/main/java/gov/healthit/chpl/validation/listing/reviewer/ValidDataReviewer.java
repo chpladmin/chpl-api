@@ -36,7 +36,7 @@ public class ValidDataReviewer extends PermissionBasedReviewer {
                     PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept
                             .getValue(formattedPrivacyAndSecurityFramework);
                     if (foundPrivacyAndSecurityFramework == null) {
-                        addErrorOrWarningByPermission(listing, cert,
+                        addCriterionErrorOrWarningByPermission(listing, cert,
                                 "listing.criteria.invalidPrivacySecurityFramework", cert.getNumber(),
                                 formattedPrivacyAndSecurityFramework, PrivacyAndSecurityFrameworkConcept.getFormattedValues());
                     }
@@ -49,7 +49,7 @@ public class ValidDataReviewer extends PermissionBasedReviewer {
                             try {
                                 boolean exists = chplNumberUtil.chplIdExists(asDto.getCertifiedProductNumber());
                                 if (!exists) {
-                                    addErrorOrWarningByPermission(listing, cert,
+                                    addCriterionErrorOrWarningByPermission(listing, cert,
                                             "listing.criteria.invalidAdditionalSoftware", asDto.getCertifiedProductNumber(),
                                             cert.getNumber());
                                 }

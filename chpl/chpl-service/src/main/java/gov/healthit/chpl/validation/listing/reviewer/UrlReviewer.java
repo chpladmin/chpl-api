@@ -61,7 +61,7 @@ public class UrlReviewer extends PermissionBasedReviewer {
             final CertificationResult cert, final String input, final String fieldName) {
         if (!StringUtils.isEmpty(input)) {
             if (ValidationUtils.hasNewline(input) || !ValidationUtils.isWellFormedUrl(input)) {
-                addErrorOrWarningByPermission(listing, cert,
+                addCriterionErrorOrWarningByPermission(listing, cert,
                         "listing.criteria.invalidUrlFound", fieldName, cert.getNumber());
             }
         }

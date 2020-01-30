@@ -50,7 +50,7 @@ public class RequiredDataReviewer extends PermissionBasedReviewer {
             if (cert.isSuccess() != null && cert.isSuccess().equals(Boolean.TRUE)
                     && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
                     && cert.isGap() == null) {
-                addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingGap", cert.getNumber());
+                addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingGap", cert.getNumber());
             }
         }
     }

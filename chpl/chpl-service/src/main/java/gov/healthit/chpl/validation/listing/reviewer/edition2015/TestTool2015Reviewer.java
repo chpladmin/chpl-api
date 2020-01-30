@@ -34,7 +34,7 @@ public class TestTool2015Reviewer extends PermissionBasedReviewer{
                     if (!StringUtils.isEmpty(testTool.getTestToolName())
                             && StringUtils.isEmpty(testTool.getTestToolVersion())) {
                         // require test tool version if a test tool name was entered
-                        addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestToolVersion",
+                        addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestToolVersion",
                                 testTool.getTestToolName(), cert.getNumber());
                     }
                 }

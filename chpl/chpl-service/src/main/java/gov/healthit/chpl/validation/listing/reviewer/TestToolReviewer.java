@@ -41,7 +41,7 @@ public class TestToolReviewer extends PermissionBasedReviewer {
                     while (testToolIter.hasNext()) {
                         CertificationResultTestTool testTool = testToolIter.next();
                         if (StringUtils.isEmpty(testTool.getTestToolName())) {
-                            addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestToolName",
+                            addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestToolName",
                                     cert.getNumber());
                         } else {
                             TestToolDTO tt = testToolDao.getByName(testTool.getTestToolName());
@@ -50,7 +50,7 @@ public class TestToolReviewer extends PermissionBasedReviewer {
                                         .add(msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed",
                                                 testTool.getTestToolName(), cert.getNumber()));
                             } else if (tt == null) {
-                                addErrorOrWarningByPermission(listing, cert, "listing.criteria.testToolNotFound",
+                                addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.testToolNotFound",
                                         cert.getNumber(), testTool.getTestToolName());
                             }
                         }
