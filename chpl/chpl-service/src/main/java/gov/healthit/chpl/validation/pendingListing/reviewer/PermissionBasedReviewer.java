@@ -1,5 +1,7 @@
 package gov.healthit.chpl.validation.pendingListing.reviewer;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +19,12 @@ public abstract class PermissionBasedReviewer implements Reviewer {
     public PermissionBasedReviewer(ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
         this.msgUtil = msgUtil;
         this.resourcePermissions = resourcePermissions;
+    }
+
+    public void addListingWarningsByPermission(PendingCertifiedProductDTO listing, List<String> errorMessages) {
+        for (String message : errorMessages) {
+            addListingWarningByPermission(listing, message);
+        }
     }
 
     public void addListingWarningByPermission(PendingCertifiedProductDTO listing, String errorMessageName,

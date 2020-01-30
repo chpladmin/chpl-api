@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,8 @@ import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
@@ -124,50 +127,61 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     @Override
     public void review(final PendingCertifiedProductDTO listing) {
         super.review(listing);
-        List<String> allMetCerts = new ArrayList<String>();
-        for (PendingCertificationResultDTO certCriteria : listing.getCertificationCriterion()) {
-            if (certCriteria.getMeetsCriteria() != null && certCriteria.getMeetsCriteria().equals(Boolean.TRUE)) {
-                allMetCerts.add(certCriteria.getCriterion().getNumber());
-            }
-        }
 
-        List<String> errors = ValidationUtils.checkClassOfCriteriaForErrors("170.315 (a)", allMetCerts,
+        List<CertificationCriterion> attestedCriteria = getAttestedCriteria(listing);
+
+        List<String> errors = ValidationUtils.checkClassOfCriteriaForErrors("170.315 (a)", attestedCriteria,
                 Arrays.asList(A_RELATED_CERTS));
         listing.getErrorMessages().addAll(errors);
+        List<String> warnings = ValidationUtils.checkClassOfCriteriaForWarnings("170.315 (a)", attestedCriteria,
+                Arrays.asList(A_RELATED_CERTS));
+        addListingWarningsByPermission(listing, warnings);
 
-        errors = ValidationUtils.checkClassOfCriteriaForErrors("170.315 (b)", allMetCerts,
+        errors = ValidationUtils.checkClassOfCriteriaForErrors("170.315 (b)", attestedCriteria,
                 Arrays.asList(B_RELATED_CERTS));
         listing.getErrorMessages().addAll(errors);
+        warnings = ValidationUtils.checkClassOfCriteriaForWarnings("170.315 (b)", attestedCriteria,
+                Arrays.asList(B_RELATED_CERTS));
+        addListingWarningsByPermission(listing, warnings);
 
-        errors = ValidationUtils.checkClassOfCriteriaForErrors("170.315 (c)", allMetCerts,
+        errors = ValidationUtils.checkClassOfCriteriaForErrors("170.315 (c)", attestedCriteria,
                 Arrays.asList(C_RELATED_CERTS));
         listing.getErrorMessages().addAll(errors);
+        warnings = ValidationUtils.checkClassOfCriteriaForWarnings("170.315 (c)", attestedCriteria,
+                Arrays.asList(C_RELATED_CERTS));
+        addListingWarningsByPermission(listing, warnings);
 
-        errors = ValidationUtils.checkClassOfCriteriaForErrors("170.315 (f)", allMetCerts,
+        errors = ValidationUtils.checkClassOfCriteriaForErrors("170.315 (f)", attestedCriteria,
                 Arrays.asList(F_RELATED_CERTS));
         listing.getErrorMessages().addAll(errors);
+        warnings = ValidationUtils.checkClassOfCriteriaForWarnings("170.315 (f)", attestedCriteria,
+                Arrays.asList(F_RELATED_CERTS));
+        addListingWarningsByPermission(listing, warnings);
 
-        errors = ValidationUtils.checkClassOfCriteriaForErrors("170.315 (h)", allMetCerts,
+        errors = ValidationUtils.checkClassOfCriteriaForErrors("170.315 (h)", attestedCriteria,
                 Arrays.asList(H_RELATED_CERTS));
         listing.getErrorMessages().addAll(errors);
+        warnings = ValidationUtils.checkClassOfCriteriaForWarnings("170.315 (h)", attestedCriteria,
+                Arrays.asList(H_RELATED_CERTS));
+        addListingWarningsByPermission(listing, warnings);
 
-        errors = ValidationUtils.checkSpecificCriteriaForErrors("170.315 (e)(1)", allMetCerts,
+        errors = ValidationUtils.checkSpecificCriteriaForErrors("170.315 (e)(1)", attestedCriteria,
                 Arrays.asList(E1_RELATED_CERTS));
         listing.getErrorMessages().addAll(errors);
 
         // check for (c)(1), (c)(2), (c)(3), (c)(4)
-        boolean meetsC1Criterion = ValidationUtils.hasCert("170.315 (c)(1)", allMetCerts);
-        boolean meetsC2Criterion = ValidationUtils.hasCert("170.315 (c)(2)", allMetCerts);
-        boolean meetsC3Criterion = ValidationUtils.hasCert("170.315 (c)(3)", allMetCerts);
-        boolean meetsC4Criterion = ValidationUtils.hasCert("170.315 (c)(4)", allMetCerts);
+        boolean meetsC1Criterion = ValidationUtils.hasCert("170.315 (c)(1)", attestedCriteria);
+        boolean meetsC2Criterion = ValidationUtils.hasCert("170.315 (c)(2)", attestedCriteria);
+        boolean meetsC3Criterion = ValidationUtils.hasCert("170.315 (c)(3)", attestedCriteria);
+        boolean meetsC4Criterion = ValidationUtils.hasCert("170.315 (c)(4)", attestedCriteria);
         boolean hasC1Cqm = false;
         boolean hasC2Cqm = false;
         boolean hasC3Cqm = false;
         boolean hasC4Cqm = false;
         for (PendingCqmCriterionDTO cqm : listing.getCqmCriterion()) {
-            List<String> cqmCerts = new ArrayList<String>();
+            List<CertificationCriterion> cqmCerts = new ArrayList<CertificationCriterion>();
             for (PendingCqmCertificationCriterionDTO criteria : cqm.getCertifications()) {
-                cqmCerts.add(criteria.getCertificationCriteriaNumber());
+                cqmCerts.add(new CertificationCriterion(criteria.getCriterion()));
             }
             hasC1Cqm = hasC1Cqm || ValidationUtils.hasCert("170.315 (c)(1)", cqmCerts);
             hasC2Cqm = hasC2Cqm || ValidationUtils.hasCert("170.315 (c)(2)", cqmCerts);
@@ -206,22 +220,22 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         // check for (e)(2) or (e)(3) required complimentary certs
         List<String> e2e3ComplimentaryErrors =
                 ValidationUtils.checkComplimentaryCriteriaAllRequired(e2e3Criterion,
-                        Arrays.asList(E2E3_RELATED_CERTS), allMetCerts);
+                        Arrays.asList(E2E3_RELATED_CERTS), attestedCriteria);
         listing.getErrorMessages().addAll(e2e3ComplimentaryErrors);
 
         // check for (g)(7) or (g)(8) or (g)(9) required complimentary certs
         List<String> g7g8g9ComplimentaryErrors =
                 ValidationUtils.checkComplimentaryCriteriaAllRequired(g7g8g9Criterion,
-                        Arrays.asList(G7G8G9_RELATED_CERTS), allMetCerts);
+                        Arrays.asList(G7G8G9_RELATED_CERTS), attestedCriteria);
         listing.getErrorMessages().addAll(g7g8g9ComplimentaryErrors);
 
         //if g7, g8, or g9 is found then one of d2 or d10 is required
         g7g8g9ComplimentaryErrors =
-                ValidationUtils.checkComplimentaryCriteriaAnyRequired(g7g8g9Criterion, d2d10Criterion, allMetCerts);
+                ValidationUtils.checkComplimentaryCriteriaAnyRequired(g7g8g9Criterion, d2d10Criterion, attestedCriteria);
         listing.getErrorMessages().addAll(g7g8g9ComplimentaryErrors);
 
         //g1 macra check
-        if (ValidationUtils.hasCert(G1_CRITERIA_NUMBER, allMetCerts)) {
+        if (ValidationUtils.hasCert(G1_CRITERIA_NUMBER, attestedCriteria)) {
             //must have at least one criteria with g1 macras listed
             boolean hasG1Macra = false;
             for (int i = 0; i < listing.getCertificationCriterion().size() && !hasG1Macra; i++) {
@@ -239,7 +253,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         }
 
         //g2 macra check
-        if (ValidationUtils.hasCert(G2_CRITERIA_NUMBER, allMetCerts)) {
+        if (ValidationUtils.hasCert(G2_CRITERIA_NUMBER, attestedCriteria)) {
             //must have at least one criteria with g2 macras listed
             boolean hasG2Macra = false;
             for (int i = 0; i < listing.getCertificationCriterion().size() && !hasG2Macra; i++) {
@@ -259,7 +273,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         // g3 checks
         boolean needsG3 = false;
         for (int i = 0; i < UCD_RELATED_CERTS.length; i++) {
-            if (ValidationUtils.hasCert(UCD_RELATED_CERTS[i], allMetCerts)) {
+            if (ValidationUtils.hasCert(UCD_RELATED_CERTS[i], attestedCriteria)) {
                 needsG3 = true;
 
                 // check for full set of UCD data
@@ -627,7 +641,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         }
 
         if (needsG3) {
-            boolean hasG3 = ValidationUtils.hasCert("170.315 (g)(3)", allMetCerts);
+            boolean hasG3 = ValidationUtils.hasCert("170.315 (g)(3)", attestedCriteria);
             if (!hasG3) {
                 listing.getErrorMessages().add("170.315 (g)(3) is required but was not found.");
             }
@@ -636,26 +650,26 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         // g3 inverse check
         boolean hasG3ComplimentaryCerts = false;
         for (int i = 0; i < UCD_RELATED_CERTS.length; i++) {
-            if (ValidationUtils.hasCert(UCD_RELATED_CERTS[i], allMetCerts)) {
+            if (ValidationUtils.hasCert(UCD_RELATED_CERTS[i], attestedCriteria)) {
                 hasG3ComplimentaryCerts = true;
             }
         }
         if (!hasG3ComplimentaryCerts) {
             // make sure it doesn't have g3
-            boolean hasG3 = ValidationUtils.hasCert("170.315 (g)(3)", allMetCerts);
+            boolean hasG3 = ValidationUtils.hasCert("170.315 (g)(3)", attestedCriteria);
             if (hasG3) {
                 listing.getErrorMessages().add("170.315 (g)(3) is not allowed but was found.");
             }
         }
 
         // g4 check
-        boolean hasG4 = ValidationUtils.hasCert("170.315 (g)(4)", allMetCerts);
+        boolean hasG4 = ValidationUtils.hasCert("170.315 (g)(4)", attestedCriteria);
         if (!hasG4) {
             listing.getErrorMessages().add("170.315 (g)(4) is required but was not found.");
         }
 
         // g5 check
-        boolean hasG5 = ValidationUtils.hasCert("170.315 (g)(5)", allMetCerts);
+        boolean hasG5 = ValidationUtils.hasCert("170.315 (g)(5)", attestedCriteria);
         if (!hasG5) {
             listing.getErrorMessages().add("170.315 (g)(5) is required but was not found.");
         }
@@ -663,23 +677,23 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         // g6 checks
         boolean needsG6 = false;
         for (int i = 0; i < CERTS_REQUIRING_G6.length && !needsG6; i++) {
-            if (ValidationUtils.hasCert(CERTS_REQUIRING_G6[i], allMetCerts)) {
+            if (ValidationUtils.hasCert(CERTS_REQUIRING_G6[i], attestedCriteria)) {
                 needsG6 = true;
             }
         }
         if (needsG6) {
-            boolean hasG6 = ValidationUtils.hasCert("170.315 (g)(6)", allMetCerts);
+            boolean hasG6 = ValidationUtils.hasCert("170.315 (g)(6)", attestedCriteria);
             if (!hasG6) {
                 listing.getErrorMessages().add("170.315 (g)(6) is required but was not found.");
             }
         }
 
         // reverse g6 check
-        boolean hasG6 = ValidationUtils.hasCert("170.315 (g)(6)", allMetCerts);
+        boolean hasG6 = ValidationUtils.hasCert("170.315 (g)(6)", attestedCriteria);
         if (hasG6) {
             boolean hasG6ComplimentaryCerts = false;
             for (int i = 0; i < CERTS_REQUIRING_G6.length; i++) {
-                if (ValidationUtils.hasCert(CERTS_REQUIRING_G6[i], allMetCerts)) {
+                if (ValidationUtils.hasCert(CERTS_REQUIRING_G6[i], attestedCriteria)) {
                     hasG6ComplimentaryCerts = true;
                 }
             }
@@ -692,9 +706,9 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         // TODO: detailed G6 check; waiting on rule from ONC
 
         // h1 plus b1
-        boolean hasH1 = ValidationUtils.hasCert("170.315 (h)(1)", allMetCerts);
+        boolean hasH1 = ValidationUtils.hasCert("170.315 (h)(1)", attestedCriteria);
         if (hasH1) {
-            boolean hasB1 = ValidationUtils.hasCert("170.315 (b)(1)", allMetCerts);
+            boolean hasB1 = ValidationUtils.hasCert("170.315 (b)(1)", attestedCriteria);
             if (!hasB1) {
                 listing.getErrorMessages()
                 .add("170.315 (h)(1) was found so 170.315 (b)(1) is required but was not found.");
@@ -927,5 +941,18 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         if (listing.getIcs() == null) {
             listing.getErrorMessages().add("ICS is required.");
         }
+    }
+
+    private List<CertificationCriterion> getAttestedCriteria(PendingCertifiedProductDTO listing) {
+        List<PendingCertificationResultDTO> attestedCertificationResults = listing.getCertificationCriterion().stream()
+                .filter(certResult -> certResult.getMeetsCriteria() != null && certResult.getMeetsCriteria().equals(Boolean.TRUE))
+                .collect(Collectors.<PendingCertificationResultDTO>toList());
+
+        List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
+        for (PendingCertificationResultDTO cr : attestedCertificationResults) {
+            CertificationCriterionDTO criterionDto = cr.getCriterion();
+            criteria.add(new CertificationCriterion(criterionDto));
+        }
+        return criteria;
     }
 }

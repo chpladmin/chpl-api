@@ -24,7 +24,7 @@ public class SedG32015Reviewer extends PermissionBasedReviewer {
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
-        List<CertificationResult> existingCriteriaWithSed = listing.getCertificationResults().stream()
+        List<CertificationResult> presentCriteriaWithSed = listing.getCertificationResults().stream()
                 .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess().equals(Boolean.TRUE)
                         && certResult.isSed() != null && certResult.isSed().equals(Boolean.TRUE)
                         && (certResult.getCriterion().getRemoved() == null
@@ -46,22 +46,22 @@ public class SedG32015Reviewer extends PermissionBasedReviewer {
 
 
         //cases where the listing has at least one sed criteria but has not attested to g3
-        if (!hasRemovedSedCriteria(removedCriteriaWithSed) && hasExistingSedCriteria(existingCriteriaWithSed)
+        if (!hasRemovedSedCriteria(removedCriteriaWithSed) && hasPresentSedCriteria(presentCriteriaWithSed)
                 && !attestsToG3(g3CertificationResult)) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.foundSedCriteriaWithoutAttestingSed"));
         }
-        if (hasRemovedSedCriteria(removedCriteriaWithSed) && !hasExistingSedCriteria(existingCriteriaWithSed)
+        if (hasRemovedSedCriteria(removedCriteriaWithSed) && !hasPresentSedCriteria(presentCriteriaWithSed)
                 && !attestsToG3(g3CertificationResult)) {
             //add warning if onc/admin, acb sees nothing
             addListingWarningByPermission(listing, msgUtil.getMessage("listing.criteria.foundSedCriteriaWithoutAttestingSed"));
         }
 
         //cases where the listing has attested to g3 but has no sed criteria
-        if (!hasRemovedSedCriteria(removedCriteriaWithSed) && !hasExistingSedCriteria(existingCriteriaWithSed)
+        if (!hasRemovedSedCriteria(removedCriteriaWithSed) && !hasPresentSedCriteria(presentCriteriaWithSed)
                 && attestsToG3(g3CertificationResult)) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.foundNoSedCriteriaButAttestingSed"));
         }
-        if (hasRemovedSedCriteria(removedCriteriaWithSed) && !hasExistingSedCriteria(existingCriteriaWithSed)
+        if (hasRemovedSedCriteria(removedCriteriaWithSed) && !hasPresentSedCriteria(presentCriteriaWithSed)
                 && attestsToG3(g3CertificationResult)) {
             //add warning if onc/admin, acb sees nothing
             addListingWarningByPermission(listing, msgUtil.getMessage("listing.criteria.foundNoSedCriteriaButAttestingSed"));
@@ -72,8 +72,8 @@ public class SedG32015Reviewer extends PermissionBasedReviewer {
         return removedCriteriaWithSed != null && removedCriteriaWithSed.size() > 0;
     }
 
-    private boolean hasExistingSedCriteria(List<CertificationResult> existingCriteriaWithSed) {
-        return existingCriteriaWithSed != null && existingCriteriaWithSed.size() > 0;
+    private boolean hasPresentSedCriteria(List<CertificationResult> presentCriteriaWithSed) {
+        return presentCriteriaWithSed != null && presentCriteriaWithSed.size() > 0;
     }
 
     private boolean attestsToG3(Optional<CertificationResult> g3CertificationResult) {
