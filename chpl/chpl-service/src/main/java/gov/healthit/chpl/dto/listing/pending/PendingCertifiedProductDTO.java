@@ -397,7 +397,7 @@ public class PendingCertifiedProductDTO implements Serializable {
                 for (UcdProcess ucd : details.getSed().getUcdProcesses()) {
                     boolean hasCriteria = false;
                     for (CertificationCriterion criteria : ucd.getCriteria()) {
-                        if (criteria.getNumber().equals(certDto.getCriterion().getNumber())) {
+                        if (criteria.getId().equals(certDto.getCriterion().getId())) {
                             hasCriteria = true;
                         }
                     }
@@ -416,7 +416,7 @@ public class PendingCertifiedProductDTO implements Serializable {
                 for (TestTask task : details.getSed().getTestTasks()) {
                     boolean hasCriteria = false;
                     for (CertificationCriterion criteria : task.getCriteria()) {
-                        if (criteria.getNumber().equals(certDto.getCriterion().getNumber())) {
+                        if (criteria.getId().equals(certDto.getCriterion().getId())) {
                             hasCriteria = true;
                         }
                     }

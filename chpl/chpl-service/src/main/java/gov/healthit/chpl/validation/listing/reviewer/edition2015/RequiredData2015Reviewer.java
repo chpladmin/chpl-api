@@ -629,7 +629,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                 .add("Certification " + cert.getNumber()
                                 + " contains invalid G1 Macra Measure. No measure found with ID '"
                                 + measure.getId() + "'.");
-                            } else if (!foundMeasure.getCriteria().getNumber().equals(cert.getNumber())) {
+                            } else if (!foundMeasure.getCriteria().getId().equals(cert.getCriterion().getId())) {
                                 listing.getErrorMessages().add("Certification " + cert.getNumber()
                                 + " contains an invalid G1 Macra Measure. Measure with ID '" + measure.getId()
                                 + "' is the measure '" + foundMeasure.getName() + "' and is for criteria '"
@@ -656,7 +656,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                 .add("Certification " + cert.getNumber()
                                 + " contains invalid G2 Macra Measure. No measure found with ID '"
                                 + measure.getId() + "'.");
-                            } else if (!foundMeasure.getCriteria().getNumber().equals(cert.getNumber())) {
+                            } else if (!foundMeasure.getCriteria().getId().equals(cert.getCriterion().getId())) {
                                 listing.getErrorMessages().add("Certification " + cert.getNumber()
                                 + " contains an invalid G2 Macra Measure. Measure with ID '" + measure.getId()
                                 + "' is the measure '" + foundMeasure.getName() + "' and is for criteria '"

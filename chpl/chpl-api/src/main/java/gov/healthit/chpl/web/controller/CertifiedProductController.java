@@ -895,6 +895,10 @@ public class CertifiedProductController {
                                         PendingCertifiedProductEntity pendingCp = handler.handle();
                                         cpsToAdd.add(pendingCp);
                                     } catch (final InvalidArgumentsException ex) {
+                                        LOGGER.error("Failed uploading file " + file.getName(), ex);
+                                        handlerErrors.add(ex.getMessage());
+                                    } catch (final Exception ex) {
+                                        LOGGER.error("Failed uploading file " + file.getName(), ex);
                                         handlerErrors.add(ex.getMessage());
                                     }
                                 }
@@ -919,8 +923,10 @@ public class CertifiedProductController {
                         PendingCertifiedProductEntity pendingCp = handler.handle();
                         cpsToAdd.add(pendingCp);
                     } catch (final InvalidArgumentsException ex) {
+                        LOGGER.error("Failed uploading file " + file.getName(), ex);
                         handlerErrors.add(ex.getMessage());
                     } catch (final Exception ex) {
+                        LOGGER.error("Failed uploading file " + file.getName(), ex);
                         handlerErrors.add(ex.getMessage());
                     }
                 }

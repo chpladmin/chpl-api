@@ -2120,7 +2120,7 @@ public class CertifiedProductManager extends SecuredManager {
         for (CQMResultCriteriaDTO existingItem : existingCqm.getCriteria()) {
             boolean exists = false;
             for (CQMResultCriteriaDTO updatedItem : updatedCqm.getCriteria()) {
-                if (existingItem.getCriterion().getNumber().equals(updatedItem.getCriterion().getNumber())) {
+                if (existingItem.getCriterion().getId().equals(updatedItem.getCriterion().getId())) {
                     exists = true;
                 }
             }
@@ -2132,7 +2132,7 @@ public class CertifiedProductManager extends SecuredManager {
         for (CQMResultCriteriaDTO updatedItem : updatedCqm.getCriteria()) {
             boolean exists = false;
             for (CQMResultCriteriaDTO existingItem : existingCqm.getCriteria()) {
-                if (existingItem.getCriterion().getNumber().equals(updatedItem.getCriterion().getNumber())) {
+                if (existingItem.getCriterion().getId().equals(updatedItem.getCriterion().getId())) {
                     exists = true;
                 }
             }
