@@ -436,8 +436,6 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
 
         addTestFunctionalityMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "(b)(3)(iii)");
 
-        addTestFunctionalityMap("170.315 (c)(3)", "Clinical Quality Measures - Report (Cures Update)", "(c)(3)(ii)");
-
         addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "(e)(1)(i)(A)(2)");
         addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "(e)(1)(i)(A)(3)");
         addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "(e)(1)(i)(B)(2)(i)");
@@ -747,7 +745,8 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         }
 
         @Transactional
-        public TestFunctionalityCriteriaMapDTO getByCriteriaNumberTitleAndValue(String criteriaNumber, String criteriaTitle, String value) {
+        public TestFunctionalityCriteriaMapDTO getByCriteriaNumberTitleAndValue(String criteriaNumber,
+                String criteriaTitle, String value) {
             Query query = entityManager.createQuery("SELECT tfMap "
                     + "FROM TestFunctionalityCriteriaMapEntity tfMap "
                     + "JOIN FETCH tfMap.testFunctionality tf "
