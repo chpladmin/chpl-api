@@ -27,8 +27,8 @@ public class SedG32015Reviewer extends PermissionBasedReviewer {
         List<PendingCertificationResultDTO> existingCriteriaWithSed = listing.getCertificationCriterion().stream()
                 .filter(certResult -> certResult.getMeetsCriteria() != null && certResult.getMeetsCriteria().equals(Boolean.TRUE)
                         && certResult.getSed() != null && certResult.getSed().equals(Boolean.TRUE)
-                        && (certResult.getCriterion().getRemoved() == null
-                        && certResult.getCriterion().getRemoved().equals(Boolean.FALSE)))
+                        && certResult.getCriterion().getRemoved() != null
+                        && certResult.getCriterion().getRemoved().equals(Boolean.FALSE))
                 .collect(Collectors.<PendingCertificationResultDTO>toList());
 
         List<PendingCertificationResultDTO> removedCriteriaWithSed = listing.getCertificationCriterion().stream()

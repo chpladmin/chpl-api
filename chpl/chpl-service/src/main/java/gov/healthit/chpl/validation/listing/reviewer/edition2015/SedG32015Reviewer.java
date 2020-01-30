@@ -27,8 +27,8 @@ public class SedG32015Reviewer extends PermissionBasedReviewer {
         List<CertificationResult> presentCriteriaWithSed = listing.getCertificationResults().stream()
                 .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess().equals(Boolean.TRUE)
                         && certResult.isSed() != null && certResult.isSed().equals(Boolean.TRUE)
-                        && (certResult.getCriterion().getRemoved() == null
-                        && certResult.getCriterion().getRemoved().equals(Boolean.FALSE)))
+                        && certResult.getCriterion().getRemoved() != null
+                        && certResult.getCriterion().getRemoved().equals(Boolean.FALSE))
                 .collect(Collectors.<CertificationResult>toList());
 
         List<CertificationResult> removedCriteriaWithSed = listing.getCertificationResults().stream()
