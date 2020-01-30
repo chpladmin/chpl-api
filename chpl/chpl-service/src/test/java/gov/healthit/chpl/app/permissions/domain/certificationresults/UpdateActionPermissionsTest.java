@@ -50,7 +50,8 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         // Since it is admin it has access to all - parm value does not matter.
-        assertTrue(permissions.hasAccess(new CertifiedProductSearchDetails()));
+        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
+        assertTrue(permissions.hasAccess(listing));
     }
 
     @Override
@@ -62,7 +63,8 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         // Since it is ONC it has access to all - parm value does not matter.
-        assertTrue(permissions.hasAccess(new CertifiedProductSearchDetails()));
+        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
+        assertTrue(permissions.hasAccess(listing));
     }
 
     @Override
@@ -73,11 +75,14 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         // This should always be false
         assertFalse(permissions.hasAccess());
 
-        CertifiedProductSearchDetails obj = new CertifiedProductSearchDetails();
-        obj.getCertifyingBody().put(CertifiedProductSearchDetails.ACB_ID_KEY, 1L);
-        assertFalse(permissions.hasAccess(obj));
-        obj.getCertifyingBody().put(CertifiedProductSearchDetails.ACB_ID_KEY, 2L);
-        assertTrue(permissions.hasAccess(obj));
+        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
+        listing.getCertifyingBody().put(CertifiedProductSearchDetails.ACB_ID_KEY, 1l);
+        assertFalse(permissions.hasAccess(listing));
+
+        listing = new CertifiedProductSearchDetails();
+        listing.getCertifyingBody().put(CertifiedProductSearchDetails.ACB_ID_KEY, 2l);
+
+        assertTrue(permissions.hasAccess(listing));
     }
 
     @Override

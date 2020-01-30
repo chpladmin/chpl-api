@@ -37,6 +37,9 @@ public class DeveloperEntitySimple implements Serializable {
     @Column(length = 300, nullable = true)
     private String website;
 
+    @Column(name="self_developer")
+    private Boolean selfDeveloper;
+
     @Basic(optional = true)
     @Column(name = "contact_id")
     private Long contactId;
@@ -225,6 +228,14 @@ public class DeveloperEntitySimple implements Serializable {
         this.website = website;
     }
 
+    public Boolean getSelfDeveloper() {
+        return selfDeveloper;
+    }
+
+    public void setSelfDeveloper(Boolean selfDeveloper) {
+        this.selfDeveloper = selfDeveloper;
+    }
+
     public String getDeveloperCode() {
         return developerCode;
     }
@@ -243,7 +254,8 @@ public class DeveloperEntitySimple implements Serializable {
         sb.append("lastModifiedDate: " + this.getLastModifiedDate() + ", ");
         sb.append("lastModifiedUser: " + this.getLastModifiedUser() + ", ");
         sb.append("name: " + this.getName() + ", ");
-        sb.append("website: " + this.getWebsite());
+        sb.append("website: " + this.getWebsite() + ", ");
+        sb.append("selfDeveloper: " + this.getSelfDeveloper());
         return sb.toString();
     }
 

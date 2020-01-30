@@ -1214,11 +1214,7 @@ public class CertifiedProductManager extends SecuredManager {
                 statusHistoryToAdd.setStatusDate(new Date());
                 statusHistoryToAdd.setReason(msgUtil.getMessage("developer.statusAutomaticallyChanged"));
                 cpDeveloper.getStatusEvents().add(statusHistoryToAdd);
-                try {
-                    developerManager.update(cpDeveloper, false);
-                } catch (MissingReasonException ignore) {
-                    // reason will never be missing since we set it above
-                }
+                developerManager.update(cpDeveloper, false);
             }
         }
 
@@ -2238,7 +2234,7 @@ public class CertifiedProductManager extends SecuredManager {
             scheduler = getScheduler();
 
             TriggerKey triggerId = triggerKey("triggerBanNow_" + new Date().getTime(), "triggerDeveloperBanTrigger");
-            JobKey jobId = jobKey("Trigger Developer Ban Notification", "chplJobs");
+            JobKey jobId = jobKey("Trigger Developer Ban Notification", SchedulerManager.CHPL_JOBS_KEY);
 
             Trigger qzTrigger = newTrigger().withIdentity(triggerId).startNow().forJob(jobId)
                     .usingJobData("status", updatedListing.getCurrentStatus().getStatus().getName())
