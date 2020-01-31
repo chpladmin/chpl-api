@@ -263,17 +263,12 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
             }
         }
 
-        // g3 checks
-        boolean needsG3 = false;
         for (int i = 0; i < UCD_RELATED_CERTS.length; i++) {
             if (ValidationUtils.hasCert(UCD_RELATED_CERTS[i], attestedCriteria)) {
-                needsG3 = true;
-
                 // check for full set of UCD data
                 for (CertificationResult cert : listing.getCertificationResults()) {
                     if (cert.getNumber().equals(UCD_RELATED_CERTS[i])) {
-                        // make sure at least one UCD process has this criteria
-                        // number
+                        // make sure at least one UCD process has this criteria number
                         if (cert.isSed()) {
                             if (listing.getSed() == null || listing.getSed().getUcdProcesses() == null
                                     || listing.getSed().getUcdProcesses().size() == 0) {
@@ -421,27 +416,10 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 }
             }
         }
-        if (needsG3) {
-            boolean hasG3 = ValidationUtils.hasCert("170.315 (g)(3)", attestedCriteria);
-            if (!hasG3) {
-                listing.getErrorMessages().add("170.315 (g)(3) is required but was not found.");
-            }
-        }
 
-        // g3 inverse check
-        boolean hasG3ComplimentaryCerts = false;
-        for (int i = 0; i < UCD_RELATED_CERTS.length; i++) {
-            if (ValidationUtils.hasCert(UCD_RELATED_CERTS[i], attestedCriteria)) {
-                hasG3ComplimentaryCerts = true;
-            }
-        }
-        if (!hasG3ComplimentaryCerts) {
-            // make sure it doesn't have g3
-            boolean hasG3 = ValidationUtils.hasCert("170.315 (g)(3)", attestedCriteria);
-            if (hasG3) {
-                listing.getErrorMessages().add("170.315 (g)(3) is not allowed but was found.");
-            }
-        }
+        validateG3(listing);
+        validateG3Inverse(listing);
+        validateG6(listing);
 
         // g4 check
         boolean hasG4 = ValidationUtils.hasCert("170.315 (g)(4)", attestedCriteria);
@@ -454,22 +432,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         if (!hasG5) {
             listing.getErrorMessages().add("170.315 (g)(5) is required but was not found.");
         }
-
-        // g6 checks
-        boolean needsG6 = false;
-        for (int i = 0; i < CERTS_REQUIRING_G6.length && !needsG6; i++) {
-            if (ValidationUtils.hasCert(CERTS_REQUIRING_G6[i], attestedCriteria)) {
-                needsG6 = true;
-            }
-        }
-        if (needsG6) {
-            boolean hasG6 = ValidationUtils.hasCert("170.315 (g)(6)", attestedCriteria);
-            if (!hasG6) {
-                listing.getErrorMessages().add("170.315 (g)(6) is required but was not found.");
-            }
-        }
-
-        // TODO: detailed G6 check
 
         // h1 plus b1
         boolean hasH1 = ValidationUtils.hasCert("170.315 (h)(1)", attestedCriteria);
@@ -687,6 +649,77 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         }
     }
 
+    private void validateG3(CertifiedProductSearchDetails listing) {
+        List<CertificationCriterion> attestedCriteria = getAttestedCriteria(listing);
+        List<CertificationCriterion> presentAttestedUcdCriteria = attestedCriteria.stream()
+                .filter(cert -> cert.getRemoved() == null || cert.getRemoved().equals(Boolean.TRUE))
+                .filter(cert -> certNumberIsInCertList(cert, UCD_RELATED_CERTS))
+                .collect(Collectors.<CertificationCriterion>toList());
+        List<CertificationCriterion> removedAttestedUcdCriteria = attestedCriteria.stream()
+                .filter(cert -> cert.getRemoved() != null && cert.getRemoved().equals(Boolean.FALSE))
+                .filter(cert -> certNumberIsInCertList(cert, UCD_RELATED_CERTS))
+                .collect(Collectors.<CertificationCriterion>toList());
+        boolean hasG3 = ValidationUtils.hasCert("170.315 (g)(3)", attestedCriteria);
+
+        String msg = "170.315 (g)(3) is required but was not found.";
+        if (presentAttestedUcdCriteria != null && presentAttestedUcdCriteria.size() > 0 && !hasG3) {
+            listing.getErrorMessages().add(msg);
+        }
+        if (removedAttestedUcdCriteria != null && removedAttestedUcdCriteria.size() > 0
+                && (presentAttestedUcdCriteria == null || presentAttestedUcdCriteria.size() == 0)
+                && !hasG3) {
+            addListingWarningByPermission(listing, msg);
+        }
+    }
+
+    private void validateG3Inverse(CertifiedProductSearchDetails listing) {
+        List<CertificationCriterion> attestedCriteria = getAttestedCriteria(listing);
+        List<CertificationCriterion> presentAttestedUcdCriteria = attestedCriteria.stream()
+                .filter(cert -> cert.getRemoved() == null || cert.getRemoved().equals(Boolean.TRUE))
+                .filter(cert -> certNumberIsInCertList(cert, UCD_RELATED_CERTS))
+                .collect(Collectors.<CertificationCriterion>toList());
+        List<CertificationCriterion> removedAttestedUcdCriteria = attestedCriteria.stream()
+                .filter(cert -> cert.getRemoved() != null && cert.getRemoved().equals(Boolean.FALSE))
+                .filter(cert -> certNumberIsInCertList(cert, UCD_RELATED_CERTS))
+                .collect(Collectors.<CertificationCriterion>toList());
+        boolean hasG3 = ValidationUtils.hasCert("170.315 (g)(3)", attestedCriteria);
+
+        String msg = "170.315 (g)(3) is not allowed but was found.";
+        if ((presentAttestedUcdCriteria == null || presentAttestedUcdCriteria.size() == 0)
+                && (removedAttestedUcdCriteria == null || removedAttestedUcdCriteria.size() == 0)
+                && hasG3) {
+            listing.getErrorMessages().add(msg);
+        }
+        if (removedAttestedUcdCriteria != null && removedAttestedUcdCriteria.size() > 0
+                && (presentAttestedUcdCriteria == null || presentAttestedUcdCriteria.size() == 0)
+                && hasG3) {
+            addListingWarningByPermission(listing, msg);
+        }
+    }
+
+    private void validateG6(CertifiedProductSearchDetails listing) {
+        List<CertificationCriterion> attestedCriteria = getAttestedCriteria(listing);
+        List<CertificationCriterion> presentAttestedG6Criteria = attestedCriteria.stream()
+                .filter(cert -> cert.getRemoved() == null || cert.getRemoved().equals(Boolean.TRUE))
+                .filter(cert -> certNumberIsInCertList(cert, CERTS_REQUIRING_G6))
+                .collect(Collectors.<CertificationCriterion>toList());
+        List<CertificationCriterion> removedAttestedG6Criteria = attestedCriteria.stream()
+                .filter(cert -> cert.getRemoved() != null && cert.getRemoved().equals(Boolean.FALSE))
+                .filter(cert -> certNumberIsInCertList(cert, CERTS_REQUIRING_G6))
+                .collect(Collectors.<CertificationCriterion>toList());
+        boolean hasG6 = ValidationUtils.hasCert("170.315 (g)(6)", attestedCriteria);
+
+        String msg = "170.315 (g)(6) is required but was not found.";
+        if (presentAttestedG6Criteria != null && presentAttestedG6Criteria.size() > 0 && !hasG6) {
+            listing.getErrorMessages().add(msg);
+        }
+        if (removedAttestedG6Criteria != null && removedAttestedG6Criteria.size() > 0
+                && (presentAttestedG6Criteria == null || presentAttestedG6Criteria.size() == 0)
+                && !hasG6) {
+            addListingWarningByPermission(listing, msg);
+        }
+    }
+
     private List<CertificationCriterion> getAttestedCriteria(CertifiedProductSearchDetails listing) {
         List<CertificationResult> attestedCertificationResults = listing.getCertificationResults().stream()
                 .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess().equals(Boolean.TRUE))
@@ -697,5 +730,15 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
             criteria.add(cr.getCriterion());
         }
         return criteria;
+    }
+
+    private boolean certNumberIsInCertList(CertificationCriterion cert, String[] certNumberList) {
+        boolean result = false;
+        for (String currCertNumber : certNumberList) {
+            if (currCertNumber.equals(cert.getNumber())) {
+                result = true;
+            }
+        }
+        return result;
     }
 }

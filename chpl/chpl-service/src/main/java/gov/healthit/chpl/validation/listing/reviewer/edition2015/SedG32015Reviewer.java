@@ -46,7 +46,7 @@ public class SedG32015Reviewer extends PermissionBasedReviewer {
 
 
         //cases where the listing has at least one sed criteria but has not attested to g3
-        if (!hasRemovedSedCriteria(removedCriteriaWithSed) && hasPresentSedCriteria(presentCriteriaWithSed)
+        if (hasPresentSedCriteria(presentCriteriaWithSed)
                 && !attestsToG3(g3CertificationResult)) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.foundSedCriteriaWithoutAttestingSed"));
         }
