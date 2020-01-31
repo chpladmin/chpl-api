@@ -5,10 +5,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
@@ -31,18 +33,26 @@ import gov.healthit.chpl.util.ValidationUtils;
 
 @Component("pendingChplNumberReviewer")
 public class ChplNumberReviewer implements Reviewer {
-    @Autowired
     private TestingLabDAO atlDao;
-    @Autowired
     private CertificationBodyDAO acbDao;
-    @Autowired
     private DeveloperDAO developerDao;
-    @Autowired
     private CertificationEditionDAO certEditionDao;
-    @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
-    @Autowired
     private ErrorMessageUtil msgUtil;
+    private FF4j ff4j;
+
+    @Autowired
+    public ChplNumberReviewer(TestingLabDAO atlDao, CertificationBodyDAO acbDao, DeveloperDAO developerDao,
+            CertificationEditionDAO certEditionDao, ChplProductNumberUtil chplProductNumberUtil, ErrorMessageUtil msgUtil,
+            FF4j ff4j) {
+        this.atlDao = atlDao;
+        this.acbDao = acbDao;
+        this.developerDao = developerDao;
+        this.certEditionDao = certEditionDao;
+        this.chplProductNumberUtil = chplProductNumberUtil;
+        this.msgUtil = msgUtil;
+        this.ff4j = ff4j;
+    }
 
     /**
      * Looks at the format of the CHPL Product Number Makes sure each part of the identifier is correctly formatted and
@@ -145,17 +155,19 @@ public class ChplNumberReviewer implements Reviewer {
                                         + listing.getDeveloperName() + ": '" + developer.getDeveloperCode() + "'.");
                     }
                     if (certificationBody != null) {
-                        DeveloperACBMapDTO mapping = developerDao.getTransparencyMapping(developer.getId(),
-                                certificationBody.getId());
-                        if (mapping != null) {
-                            // check transparency attestation and url for warnings
-                            if (!areTransparencyAttestationsEqual(mapping.getTransparencyAttestation(),
-                                    listing.getTransparencyAttestation())) {
-                                listing.getWarningMessages().add(msgUtil.getMessage("transparencyAttestation.save"));
+                        if (!ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)) {
+                            DeveloperACBMapDTO mapping = developerDao.getTransparencyMapping(developer.getId(),
+                                    certificationBody.getId());
+                            if (mapping != null) {
+                                // check transparency attestation and url for warnings
+                                if (!areTransparencyAttestationsEqual(mapping.getTransparencyAttestation(),
+                                        listing.getTransparencyAttestation())) {
+                                    listing.getWarningMessages().add(msgUtil.getMessage("transparencyAttestation.save"));
+                                }
+                            } else if (!StringUtils.isEmpty(listing.getTransparencyAttestation())) {
+                                listing.getWarningMessages().add(msgUtil.getMessage(
+                                        "transparencyAttestation.save"));
                             }
-                        } else if (!StringUtils.isEmpty(listing.getTransparencyAttestation())) {
-                            listing.getWarningMessages().add(msgUtil.getMessage(
-                                    "transparencyAttestation.save"));
                         }
                     }
                 }
