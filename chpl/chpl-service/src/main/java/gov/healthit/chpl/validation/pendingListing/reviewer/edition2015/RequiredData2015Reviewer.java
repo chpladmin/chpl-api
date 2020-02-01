@@ -967,25 +967,25 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
     private void validateG6Inverse(PendingCertifiedProductDTO listing) {
         List<CertificationCriterion> attestedCriteria = getAttestedCriteria(listing);
-        List<CertificationCriterion> presentAttestedUcdCriteria = attestedCriteria.stream()
+        List<CertificationCriterion> presentAttestedG6Criteria = attestedCriteria.stream()
                 .filter(cert -> cert.getRemoved() == null || cert.getRemoved().equals(Boolean.TRUE))
                 .filter(cert -> certNumberIsInCertList(cert, CERTS_REQUIRING_G6))
                 .collect(Collectors.<CertificationCriterion>toList());
-        List<CertificationCriterion> removedAttestedUcdCriteria = attestedCriteria.stream()
+        List<CertificationCriterion> removedAttestedG6Criteria = attestedCriteria.stream()
                 .filter(cert -> cert.getRemoved() != null && cert.getRemoved().equals(Boolean.FALSE))
                 .filter(cert -> certNumberIsInCertList(cert, CERTS_REQUIRING_G6))
                 .collect(Collectors.<CertificationCriterion>toList());
-        boolean hasG3 = ValidationUtils.hasCert("170.315 (g)(6)", attestedCriteria);
+        boolean hasG6 = ValidationUtils.hasCert("170.315 (g)(6)", attestedCriteria);
 
         String msg = "170.315 (g)(6) was found but a related required cert was not found.";
-        if ((presentAttestedUcdCriteria == null || presentAttestedUcdCriteria.size() == 0)
-                && (removedAttestedUcdCriteria == null || removedAttestedUcdCriteria.size() == 0)
-                && hasG3) {
+        if ((presentAttestedG6Criteria == null || presentAttestedG6Criteria.size() == 0)
+                && (removedAttestedG6Criteria == null || removedAttestedG6Criteria.size() == 0)
+                && hasG6) {
             listing.getErrorMessages().add(msg);
         }
-        if (removedAttestedUcdCriteria != null && removedAttestedUcdCriteria.size() > 0
-                && (presentAttestedUcdCriteria == null || presentAttestedUcdCriteria.size() == 0)
-                && hasG3) {
+        if (removedAttestedG6Criteria != null && removedAttestedG6Criteria.size() > 0
+                && (presentAttestedG6Criteria == null || presentAttestedG6Criteria.size() == 0)
+                && hasG6) {
             addListingWarningByPermission(listing, msg);
         }
     }
