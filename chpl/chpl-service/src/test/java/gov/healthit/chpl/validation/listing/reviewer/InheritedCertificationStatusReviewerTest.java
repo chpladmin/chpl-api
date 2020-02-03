@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,11 +15,9 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
@@ -33,9 +30,6 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ListingMockUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ActiveProfiles({
-        "Ff4jMock"
-})
 @ContextConfiguration(classes = {
         gov.healthit.chpl.CHPLTestConfig.class
 })
@@ -53,14 +47,10 @@ public class InheritedCertificationStatusReviewerTest {
     private static final String ICS_NOT_LARGEST_CODE_ERROR = "The ICS Code for this listing was "
             + "given as '1' but it was expected to be one more than the largest inherited ICS code '2'.";
 
-    @Autowired
-    private ListingMockUtil mockUtil;
+    private ListingMockUtil mockUtil = new ListingMockUtil();
 
     @Autowired
     private MessageSource messageSource;
-
-    @Autowired
-    private FF4j ff4j;
 
     @Spy
     private ChplProductNumberUtil productNumUtil;
@@ -94,9 +84,6 @@ public class InheritedCertificationStatusReviewerTest {
                 .when(msgUtil).getMessage(ArgumentMatchers.eq("listing.icsNotLargestCode"),
                         ArgumentMatchers.anyInt(),
                         ArgumentMatchers.anyInt());
-
-        Mockito.doReturn(false).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE);
-
     }
 
     @Test

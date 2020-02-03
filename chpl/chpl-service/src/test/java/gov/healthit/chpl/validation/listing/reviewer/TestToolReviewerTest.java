@@ -40,8 +40,7 @@ public class TestToolReviewerTest {
     private static final String RETIRED_TEST_TOOL_NOT_ALLOWED_ERROR = "Test Tool 'Bogus Test Tool' can not be used for criteria '"
             + C_3 + "', as it is a retired tool, and this Certified Product does not carry ICS.";
 
-    @Autowired
-    private ListingMockUtil mockUtil;
+    private ListingMockUtil mockUtil = new ListingMockUtil();
 
     @Autowired
     private MessageSource messageSource;

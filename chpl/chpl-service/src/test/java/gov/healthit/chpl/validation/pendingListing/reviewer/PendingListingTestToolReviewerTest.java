@@ -46,8 +46,8 @@ public class PendingListingTestToolReviewerTest {
     private static final String RETIRED_TEST_TOOL_NOT_ALLOWED_ERROR = "Test Tool 'Bogus Test Tool' can not be used for criteria '"
             + B_2 + "', as it is a retired tool.";
 
-    @Autowired
-    private ListingMockUtil mockUtil;
+    private ListingMockUtil mockUtil = new ListingMockUtil();
+
     @Autowired
     private MessageSource messageSource;
 
@@ -69,7 +69,7 @@ public class PendingListingTestToolReviewerTest {
         MockitoAnnotations.initMocks(this);
 
         testToolReviewer = new TestToolReviewer(testToolDao, msgUtil, productNumberUtil);
-        testTool2015Reviewer= new TestTool2015Reviewer(msgUtil);
+        testTool2015Reviewer = new TestTool2015Reviewer(msgUtil);
         ambulatoryTestToolReviewier = new AmbulatoryRequiredTestToolReviewer(msgUtil, certRules);
 
         Mockito.doReturn(NO_TEST_TOOL_ERROR).when(msgUtil)

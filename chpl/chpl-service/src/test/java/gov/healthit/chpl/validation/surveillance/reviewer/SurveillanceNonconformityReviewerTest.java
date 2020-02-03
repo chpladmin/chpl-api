@@ -17,7 +17,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -37,24 +36,19 @@ import gov.healthit.chpl.util.ListingMockUtil;
 import gov.healthit.chpl.util.SurveillanceMockUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
 public class SurveillanceNonconformityReviewerTest {
-    private static final String NONCONFORMITY_REQUIRED =
-            "Surveillance Requirement \"%s\" has a result of 'Non-Conformity' but no nonconformities were found.";
-    private static final String NONCONFORMITY_TYPE_REQUIRED =
-            "Nonconformity type (reg text number or other value) is required for surveillance requirement \"%s\".";
-    private static final String NONCONFORMITY_TYPE_INVALID =
-            "Nonconformity type \"%s\" must match either a criterion the surveilled product has attested to or one of the following: \"%s\", \"%s\", \"%s\", or \"%s\".";
-    private static final String NONCONFORMITY_STATUS_REQUIRED =
-            "Nonconformity status is required for requirement %s, nonconformity %s.";
-    private static final String NONCONFORMITY_STATUS_INVALID =
-            "No non-conformity status with name \"%s\" was found for requirement \"%s\", nonconformity \"%s\".";
+    private static final String NONCONFORMITY_REQUIRED = "Surveillance Requirement \"%s\" has a result of 'Non-Conformity' but no nonconformities were found.";
+    private static final String NONCONFORMITY_TYPE_REQUIRED = "Nonconformity type (reg text number or other value) is required for surveillance requirement \"%s\".";
+    private static final String NONCONFORMITY_TYPE_INVALID = "Nonconformity type \"%s\" must match either a criterion the surveilled product has attested to or one of the following: \"%s\", \"%s\", \"%s\", or \"%s\".";
+    private static final String NONCONFORMITY_STATUS_REQUIRED = "Nonconformity status is required for requirement %s, nonconformity %s.";
+    private static final String NONCONFORMITY_STATUS_INVALID = "No non-conformity status with name \"%s\" was found for requirement \"%s\", nonconformity \"%s\".";
 
-    @Autowired
-    private SurveillanceMockUtil mockUtil;
+    private SurveillanceMockUtil mockUtil = new SurveillanceMockUtil();
 
-    @Autowired
-    private ListingMockUtil listingMockUtil;
+    private ListingMockUtil listingMockUtil = new ListingMockUtil();
 
     @Mock
     private CertificationResultDetailsDAO certResultDetailsDao;
@@ -71,8 +65,7 @@ public class SurveillanceNonconformityReviewerTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        List<CertificationResultDetailsDTO> certResults =
-                new ArrayList<CertificationResultDetailsDTO>();
+        List<CertificationResultDetailsDTO> certResults = new ArrayList<CertificationResultDetailsDTO>();
         CertificationResultDetailsDTO certResult = listingMockUtil.create2015CertResultDetails(1L, "170.315 (a)(1)", true);
         certResults.add(certResult);
         Mockito.when(

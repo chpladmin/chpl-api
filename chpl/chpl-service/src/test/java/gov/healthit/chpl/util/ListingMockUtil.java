@@ -7,9 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
+import gov.healthit.chpl.SpringContext;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestData;
@@ -56,14 +54,17 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTestingLabDT
 import gov.healthit.chpl.dto.listing.pending.PendingTestParticipantDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingTestTaskDTO;
 
-@Component
 public class ListingMockUtil {
     public static final String CHPL_ID_2014 = "14.07.07.2642.IC04.36.00.1.160402";
     public static final String CHPL_ID_2015 = "15.02.02.3007.A056.01.00.0.180214";
     private static final Long EDITION_2015_ID = 3L;
     private static final Long EDITION_2014_ID = 2L;
-    @Autowired
+
     private CertificationResultRules certRules;
+
+    public ListingMockUtil() {
+        certRules = SpringContext.getBean(CertificationResultRules.class);
+    }
 
     public CertifiedProduct createSimpleCertifiedProduct(Long id, String chplProductNumber,
             String edition, Date certificationDate) {
