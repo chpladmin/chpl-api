@@ -15,6 +15,7 @@ import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.scheduler.job.urlStatus.UrlType;
 
 @Repository(value = "certificationResultDetailsDAO")
 public class CertificationResultDetailsDAO extends BaseDAOImpl {
@@ -44,14 +45,28 @@ public class CertificationResultDetailsDAO extends BaseDAOImpl {
     }
 
     @Transactional(readOnly = true)
-    public List<CertificationResultDetailsDTO> getByUrl(final String url) {
+    public List<CertificationResultDetailsDTO> getByUrl(String url, UrlType urlType) {
         String queryStr = "SELECT crd "
                 + "FROM CertificationResultDetailsEntity crd "
                 + "JOIN FETCH crd.certificationCriterion cc "
                 + "JOIN FETCH cc.certificationEdition "
-                + "WHERE crd.deleted = false "
-                + "AND crd.apiDocumentation = :url";
-
+                + "WHERE crd.deleted = false ";
+        switch (urlType) {
+        case API_DOCUMENTATION:
+            queryStr += "AND crd.apiDocumentation = :url";
+            break;
+        case EXPORT_DOCUMENTATION:
+            queryStr += "AND crd.exportDocumentation = :url";
+            break;
+        case DOCUMENTATION_URL:
+            queryStr += "AND crd.documentationUrl = :url";
+            break;
+        case USE_CASES:
+            queryStr += "AND crd.useCases = :url";
+            break;
+        default:
+                break;
+        }
         Query query = entityManager.createQuery(queryStr, CertificationResultDetailsEntity.class);
         query.setParameter("url", url);
         List<CertificationResultDetailsEntity> entities = query.getResultList();

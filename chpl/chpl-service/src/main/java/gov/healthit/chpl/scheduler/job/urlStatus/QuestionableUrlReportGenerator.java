@@ -80,6 +80,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
 
     @Autowired
     private FF4j ff4j;
+
     @Override
     @Transactional
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
@@ -166,7 +167,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                     LOGGER.info("[" + i + "] Getting criteria with bad "
                             + urlResult.getUrlType().getName() + " website " + urlResult.getUrl());
                     List<CertificationResultDetailsDTO> certResultsWithBadUrl =
-                            certResultDao.getByUrl(urlResult.getUrl());
+                            certResultDao.getByUrl(urlResult.getUrl(), urlResult.getUrlType());
                     for (CertificationResultDetailsDTO certResult : certResultsWithBadUrl) {
                         //get the associated listing
                         CertifiedProductSummaryDTO associatedListing = null;
