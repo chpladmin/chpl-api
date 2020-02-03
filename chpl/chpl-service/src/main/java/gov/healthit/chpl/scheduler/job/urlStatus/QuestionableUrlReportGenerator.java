@@ -19,6 +19,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.ff4j.FF4j;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -76,6 +78,8 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
     @Autowired
     private CertificationResultDetailsDAO certResultDao;
 
+    @Autowired
+    private FF4j ff4j;
     @Override
     @Transactional
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
@@ -156,6 +160,9 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                     }
                     break;
                 case API_DOCUMENTATION:
+                case EXPORT_DOCUMENTATION:
+                case DOCUMENTATION_URL:
+                case USE_CASES:
                     LOGGER.info("[" + i + "] Getting criteria with bad "
                             + urlResult.getUrlType().getName() + " website " + urlResult.getUrl());
                     List<CertificationResultDetailsDTO> certResultsWithBadUrl =
@@ -448,6 +455,9 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             int brokenTestResultsSummaryUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.TEST_RESULTS_SUMMARY);
             int brokenFullUsabilityReportUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.FULL_USABILITY_REPORT);
             int brokenApiDocumentationUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.API_DOCUMENTATION);
+            int brokenExportDocumentationUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.EXPORT_DOCUMENTATION);
+            int brokenDocumentationUrlUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.DOCUMENTATION_URL);
+            int brokenUseCasesUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.USE_CASES);
 
             htmlMessage += "<ul>";
             htmlMessage += "<li>" + UrlType.ATL.getName() + ": " + brokenAtlUrls + "</li>";
@@ -457,6 +467,11 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             htmlMessage += "<li>" + UrlType.MANDATORY_DISCLOSURE_URL.getName() + ": " + brokenMandatoryDisclosureUrls + "</li>";
             htmlMessage += "<li>" + UrlType.TEST_RESULTS_SUMMARY.getName() + ": " + brokenTestResultsSummaryUrls + "</li>";
             htmlMessage += "<li>" + UrlType.API_DOCUMENTATION.getName() + ": " + brokenApiDocumentationUrls + "</li>";
+            if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
+                htmlMessage += "<li>" + UrlType.EXPORT_DOCUMENTATION.getName() + ": " + brokenExportDocumentationUrls + "</li>";
+                htmlMessage += "<li>" + UrlType.DOCUMENTATION_URL.getName() + ": " + brokenDocumentationUrlUrls + "</li>";
+                htmlMessage += "<li>" + UrlType.USE_CASES.getName() + ": " + brokenUseCasesUrls + "</li>";
+            }
             htmlMessage += "</ul>";
         }
 

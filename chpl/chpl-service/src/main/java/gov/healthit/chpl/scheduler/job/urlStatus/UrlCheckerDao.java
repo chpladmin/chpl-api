@@ -144,6 +144,60 @@ public class UrlCheckerDao extends BaseDAOImpl {
                         }
                     }
                     break;
+                case EXPORT_DOCUMENTATION:
+                    @SuppressWarnings("unchecked") List<String> exportDocumentationWebsites =
+                    entityManager.createQuery(
+                            "SELECT DISTINCT exportDocumentation "
+                            + "FROM CertificationResultEntity "
+                            + "WHERE exportDocumentation IS NOT NULL "
+                            + "AND exportDocumentation != '' "
+                            + "AND deleted = false")
+                    .getResultList();
+                    for (String website : exportDocumentationWebsites) {
+                        if (!StringUtils.isEmpty(website)) {
+                            UrlResult checkableUrl = new UrlResult();
+                            checkableUrl.setUrl(website);
+                            checkableUrl.setUrlType(urlType);
+                            results.add(checkableUrl);
+                        }
+                    }
+                    break;
+                case DOCUMENTATION_URL:
+                    @SuppressWarnings("unchecked") List<String> documentationUrlWebsites =
+                    entityManager.createQuery(
+                            "SELECT DISTINCT documentationUrl "
+                            + "FROM CertificationResultEntity "
+                            + "WHERE documentationUrl IS NOT NULL "
+                            + "AND documentationUrl != '' "
+                            + "AND deleted = false")
+                    .getResultList();
+                    for (String website : documentationUrlWebsites) {
+                        if (!StringUtils.isEmpty(website)) {
+                            UrlResult checkableUrl = new UrlResult();
+                            checkableUrl.setUrl(website);
+                            checkableUrl.setUrlType(urlType);
+                            results.add(checkableUrl);
+                        }
+                    }
+                    break;
+                case USE_CASES:
+                    @SuppressWarnings("unchecked") List<String> useCasesWebsites =
+                    entityManager.createQuery(
+                            "SELECT DISTINCT useCases "
+                            + "FROM CertificationResultEntity "
+                            + "WHERE useCases IS NOT NULL "
+                            + "AND useCases != '' "
+                            + "AND deleted = false")
+                    .getResultList();
+                    for (String website : useCasesWebsites) {
+                        if (!StringUtils.isEmpty(website)) {
+                            UrlResult checkableUrl = new UrlResult();
+                            checkableUrl.setUrl(website);
+                            checkableUrl.setUrlType(urlType);
+                            results.add(checkableUrl);
+                        }
+                    }
+                    break;
                 default:
                     break;
             }
