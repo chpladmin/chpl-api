@@ -78,7 +78,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
 
     @Override
     @Transactional
-    public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+    public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Questionable URL Report Generator job. *********");
 
@@ -124,9 +124,10 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                 case FULL_USABILITY_REPORT:
                 case MANDATORY_DISCLOSURE_URL:
                 case TEST_RESULTS_SUMMARY:
-                    LOGGER.info("[" + i + "] Getting Listings with bad " + urlResult.getUrlType().getName() + " website " + urlResult.getUrl());
+                    LOGGER.info("[" + i + "] Getting Listings with bad "
+                            + urlResult.getUrlType().getName() + " website " + urlResult.getUrl());
                     List<CertifiedProductSummaryDTO> listingsWithBadUrl =
-                        cpDao.getSummaryByUrl(urlResult.getUrl(), urlResult.getUrlType());
+                            cpDao.getSummaryByUrl(urlResult.getUrl(), urlResult.getUrlType());
                     for (CertifiedProductSummaryDTO listing : listingsWithBadUrl) {
                         FailedUrlResult urlResultWithError = new FailedUrlResult(urlResult);
                         if (listing.getAcb() != null) {
@@ -155,9 +156,10 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                     }
                     break;
                 case API_DOCUMENTATION:
-                    LOGGER.info("[" + i + "] Getting criteria with bad " + urlResult.getUrlType().getName() + " website " + urlResult.getUrl());
+                    LOGGER.info("[" + i + "] Getting criteria with bad "
+                            + urlResult.getUrlType().getName() + " website " + urlResult.getUrl());
                     List<CertificationResultDetailsDTO> certResultsWithBadUrl =
-                        certResultDao.getByUrl(urlResult.getUrl());
+                            certResultDao.getByUrl(urlResult.getUrl());
                     for (CertificationResultDetailsDTO certResult : certResultsWithBadUrl) {
                         //get the associated listing
                         CertifiedProductSummaryDTO associatedListing = null;
@@ -233,10 +235,10 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
 
                 EmailBuilder emailBuilder = new EmailBuilder(env);
                 emailBuilder.recipients(addresses)
-                                .subject(subject)
-                                .htmlMessage(htmlMessage)
-                                .fileAttachments(files)
-                                .sendEmail();
+                .subject(subject)
+                .htmlMessage(htmlMessage)
+                .fileAttachments(files)
+                .sendEmail();
             } catch (MessagingException e) {
                 LOGGER.error(e);
             }
@@ -252,7 +254,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
      * @param reportFilename
      * @return
      */
-    private File getOutputFile(final List<FailedUrlResult> urlResultsToWrite, final String reportFilename) {
+    private File getOutputFile(List<FailedUrlResult> urlResultsToWrite, String reportFilename) {
         File temp = null;
         try {
             temp = File.createTempFile(reportFilename, ".csv");
@@ -264,14 +266,14 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
         if (temp != null) {
             try (OutputStreamWriter writer = new OutputStreamWriter(
                     new FileOutputStream(temp), Charset.forName("UTF-8").newEncoder());
-                CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
+                    CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
                 csvPrinter.printRecord(getHeaderRow());
                 //urlResultsToWrite must be sorted by url
                 for (int i = 0; i < urlResultsToWrite.size(); i++) {
                     FailedUrlResult currUrlResult = urlResultsToWrite.get(i);
                     FailedUrlResult prevUrlResult = null;
                     if (i > 0) {
-                        prevUrlResult = urlResultsToWrite.get(i-1);
+                        prevUrlResult = urlResultsToWrite.get(i - 1);
                     }
                     List<String> rowValue = null;
                     if (prevUrlResult == null || !currUrlResult.getUrl().equals(prevUrlResult.getUrl())) {
@@ -306,7 +308,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
      * @param urlResult
      * @return
      */
-    private List<String> generateRowValue(final FailedUrlResult urlResult, final boolean firstUrlInGroup) {
+    private List<String> generateRowValue(FailedUrlResult urlResult, boolean firstUrlInGroup) {
         List<String> result = new ArrayList<String>();
         if (firstUrlInGroup) {
             result.add(urlResult.getUrl());
@@ -434,7 +436,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
      * @param noContentMsg
      * @return
      */
-    private String createHtmlEmailBody(final List<FailedUrlResult> urlResults, final String noContentMsg) {
+    private String createHtmlEmailBody(List<FailedUrlResult> urlResults, String noContentMsg) {
         String htmlMessage = "";
         if (urlResults.size() == 0) {
             htmlMessage = noContentMsg;
@@ -461,7 +463,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
         return htmlMessage;
     }
 
-    private int getCountOfBrokenUrlsOfType(final List<FailedUrlResult> urlResults, final UrlType urlType) {
+    private int getCountOfBrokenUrlsOfType(List<FailedUrlResult> urlResults, UrlType urlType) {
         int count = 0;
         for (FailedUrlResult urlResult : urlResults) {
             if (urlResult.getUrlType().equals(urlType)) {
@@ -479,6 +481,6 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
         return DateFormat.getDateTimeInstance(
                 DateFormat.LONG,
                 DateFormat.LONG,
-                 Locale.US);
+                Locale.US);
     }
 }
