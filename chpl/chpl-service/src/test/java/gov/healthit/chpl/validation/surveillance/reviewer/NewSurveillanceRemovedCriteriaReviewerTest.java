@@ -16,6 +16,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -29,15 +30,21 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SurveillanceMockUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
+@ActiveProfiles({
+        "Ff4jMock"
+})
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
 public class NewSurveillanceRemovedCriteriaReviewerTest {
-    private static final String NO_REQUIREMENT_WITH_REMOVED_CRITERIA =
-            "The requirement \"%s\" cannot be added because that criteria has been removed.";
-    private static final String NO_NONCONFORMITY_WITH_REMOVED_CRITERIA =
-            "The nonconformity \"%s\" cannot be added because that criteria has been removed.";
+    private static final String NO_REQUIREMENT_WITH_REMOVED_CRITERIA = "The requirement \"%s\" cannot be added because that criteria has been removed.";
+    private static final String NO_NONCONFORMITY_WITH_REMOVED_CRITERIA = "The nonconformity \"%s\" cannot be added because that criteria has been removed.";
 
     @Autowired
     private SurveillanceMockUtil mockUtil;
+
+    @Autowired
+    private FF4j ff4j;
 
     @Mock
     private CertificationCriterionDAO criterionDAO;
@@ -48,19 +55,14 @@ public class NewSurveillanceRemovedCriteriaReviewerTest {
     @Mock
     private ResourcePermissions resourcePermissions;
 
-    @Mock
-    private FF4j ff4j;
-
     @InjectMocks
     private NewSurveillanceRemovedCriteriaReviewer reviewer;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-
-        Mockito.when(
-                ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK))
-                .thenReturn(true);
+        Mockito.doReturn(true).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK);
+        Mockito.doReturn(true).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE);
 
         Mockito.doAnswer(new Answer<String>() {
             @Override
