@@ -12,7 +12,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -22,17 +21,21 @@ import gov.healthit.chpl.util.ListingMockUtil;
 
 /**
  * Tests URLs to ensure they have no new lines and look like an URL in pending Listings.
+ * 
  * @author alarned
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
 public class PendingListingUrlReviewerTest {
     private static final String BAD_REPORT_FILE_LOCATION_ERROR = "Fake error message";
 
-    @Autowired private ListingMockUtil mockUtil;
+    private ListingMockUtil mockUtil = new ListingMockUtil();
 
-    @Mock private ErrorMessageUtil msgUtil;
+    @Mock
+    private ErrorMessageUtil msgUtil;
 
     @InjectMocks
     private UrlReviewer urlReviewer;
@@ -46,16 +49,12 @@ public class PendingListingUrlReviewerTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         Mockito.doReturn(BAD_REPORT_FILE_LOCATION_ERROR)
-        .when(msgUtil).getMessage(eq("listing.invalidUrlFound"), anyString());
+                .when(msgUtil).getMessage(eq("listing.invalidUrlFound"), anyString());
         listing = mockUtil.createPendingListing("2015");
     }
 
-
     /**
-     * Given the report file location has new lines
-     * when the validator runs
-     * then there should be an error.
-     * OCD-744
+     * Given the report file location has new lines when the validator runs then there should be an error. OCD-744
      */
     @Test
     public void testWhenReportFileLocationUrlHasNewLine() {
@@ -66,10 +65,7 @@ public class PendingListingUrlReviewerTest {
     }
 
     /**
-     * Given the report file location has an invalid url
-     * when the validator runs
-     * then there should be an error.
-     * OCD-744
+     * Given the report file location has an invalid url when the validator runs then there should be an error. OCD-744
      */
     @Test
     public void testWhenReportFileLocationUrlHasProperShape() {
@@ -80,12 +76,9 @@ public class PendingListingUrlReviewerTest {
     }
 
     /**
-     * Given the report file location has an empty URL
-     * when the validator runs
-     * then there should not be an error.
+     * Given the report file location has an empty URL when the validator runs then there should not be an error.
      *
-     * A different validator is checking for required elements.
-     * OCD-744
+     * A different validator is checking for required elements. OCD-744
      */
     @Test
     public void testWhenReportFileLocationUrlIsEmpty() {
@@ -96,12 +89,9 @@ public class PendingListingUrlReviewerTest {
     }
 
     /**
-     * Given the report file location has a null URL
-     * when the validator runs
-     * then there should not be an error.
+     * Given the report file location has a null URL when the validator runs then there should not be an error.
      *
-     * A different validator is checking for required elements.
-     * OCD-744
+     * A different validator is checking for required elements. OCD-744
      */
     @Test
     public void testWhenReportFileLocationUrlIsNull() {

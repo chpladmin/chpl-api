@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -26,7 +27,6 @@ import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertificationBodyManager;
-import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.rules.developer.CHPLTestDeveloperValidationConfig;
 import gov.healthit.chpl.manager.rules.developer.DeveloperValidationFactory;
@@ -55,7 +55,7 @@ public class DeveloperManagerMockitoTest {
     @Mock
     private ResourcePermissions resourcePermissions;
 
-    @Mock
+    @Autowired
     private FF4j ff4j;
 
     @Mock

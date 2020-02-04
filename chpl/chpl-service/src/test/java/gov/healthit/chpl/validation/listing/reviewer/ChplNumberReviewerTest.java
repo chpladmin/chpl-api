@@ -25,7 +25,9 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ListingMockUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
 public class ChplNumberReviewerTest {
     private static final String PRODUCT_CODE_ERROR = "The product code is required and must be "
             + ChplProductNumberUtil.PRODUCT_CODE_LENGTH
@@ -51,14 +53,10 @@ public class ChplNumberReviewerTest {
             "The unique id indicates the product does have ICS but the value for Inherited Certification Status is false.";
     private static final String DUPLICATE_CHPLID_ERROR_END = "one already exists with this value.";
 
-    @Autowired
-    private ListingMockUtil mockUtil;
+    private ListingMockUtil mockUtil = new ListingMockUtil();
 
     @Autowired
     private MessageSource messageSource;
-
-//    @Spy
-//    private CertifiedProductDAO listingDao;
 
     @Spy
     private ChplProductNumberUtil chplProductNumberUtil;
@@ -78,26 +76,26 @@ public class ChplNumberReviewerTest {
         chplNumberReviewer = new ChplNumberReviewer(certificationResultManager, chplProductNumberUtil, msgUtil);
 
         Mockito.doReturn(PRODUCT_CODE_ERROR)
-        .when(msgUtil).getMessage(
-                ArgumentMatchers.eq("listing.badProductCodeChars"), ArgumentMatchers.anyInt());
+                .when(msgUtil).getMessage(
+                        ArgumentMatchers.eq("listing.badProductCodeChars"), ArgumentMatchers.anyInt());
         Mockito.doReturn(VERSION_CODE_ERROR)
-        .when(msgUtil).getMessage(
-                ArgumentMatchers.eq("listing.badVersionCodeChars"), ArgumentMatchers.anyInt());
+                .when(msgUtil).getMessage(
+                        ArgumentMatchers.eq("listing.badVersionCodeChars"), ArgumentMatchers.anyInt());
         Mockito.doReturn(ICS_CODE_ERROR)
-        .when(msgUtil).getMessage(
-                ArgumentMatchers.eq("listing.badIcsCodeChars"), ArgumentMatchers.anyInt());
+                .when(msgUtil).getMessage(
+                        ArgumentMatchers.eq("listing.badIcsCodeChars"), ArgumentMatchers.anyInt());
         Mockito.doReturn(ADDSOFT_CODE_ERROR)
-        .when(msgUtil).getMessage(
-                ArgumentMatchers.eq("listing.badAdditionalSoftwareCodeChars"), ArgumentMatchers.anyInt());
+                .when(msgUtil).getMessage(
+                        ArgumentMatchers.eq("listing.badAdditionalSoftwareCodeChars"), ArgumentMatchers.anyInt());
         Mockito.doReturn(CERTDATE_CODE_ERROR)
-        .when(msgUtil).getMessage(
-                ArgumentMatchers.eq("listing.badCertifiedDateCodeChars"), ArgumentMatchers.anyInt());
+                .when(msgUtil).getMessage(
+                        ArgumentMatchers.eq("listing.badCertifiedDateCodeChars"), ArgumentMatchers.anyInt());
         Mockito.doReturn(ICS_CODE_0_HAS_PARENTS_ERROR)
-        .when(msgUtil).getMessage(
-                ArgumentMatchers.eq("listing.ics00"));
+                .when(msgUtil).getMessage(
+                        ArgumentMatchers.eq("listing.ics00"));
         Mockito.doReturn(ICS_CODE_FALSE_HAS_ICS_ERROR)
-        .when(msgUtil).getMessage(
-                ArgumentMatchers.eq("listing.icsCodeFalseValueTrue"));
+                .when(msgUtil).getMessage(
+                        ArgumentMatchers.eq("listing.icsCodeFalseValueTrue"));
         Mockito.doReturn(ICS_CODE_TRUE_NO_ICS_ERROR)
         .when(msgUtil).getMessage(
                 ArgumentMatchers.eq("listing.icsCodeTrueValueFalse"));
@@ -107,7 +105,8 @@ public class ChplNumberReviewerTest {
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
 
         Mockito.doReturn(true).when(chplProductNumberUtil).isUnique(ArgumentMatchers.anyString());
-        Mockito.doReturn(false).when(certificationResultManager).getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong());
+        Mockito.doReturn(false).when(certificationResultManager)
+                .getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong());
     }
 
     @Test
@@ -223,7 +222,7 @@ public class ChplNumberReviewerTest {
     @Test
     public void testHasIcsTrueButNoParents_HasError() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
-        //our listing doesn't have ICS so change it to true
+        // our listing doesn't have ICS so change it to true
         listing.setChplProductNumber(mockUtil.getChangedListingId(
                 listing.getChplProductNumber(), ChplProductNumberUtil.ICS_CODE_INDEX, "01"));
         listing.getIcs().setInherits(Boolean.FALSE);
@@ -327,8 +326,8 @@ public class ChplNumberReviewerTest {
     @Test
     public void testAdditionalSoftwareCodeChanged_IsNotDuplicate_HasNoErrors() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
-        //the mock listing does not have additional software;
-        //add some to a criteria that was met.
+        // the mock listing does not have additional software;
+        // add some to a criteria that was met.
         boolean addedSoftwareToOneCert = false;
         for (CertificationResult cert : listing.getCertificationResults()) {
             if (!addedSoftwareToOneCert && cert.isSuccess()) {
@@ -358,11 +357,11 @@ public class ChplNumberReviewerTest {
         Mockito.doReturn(false).when(chplProductNumberUtil).isUnique(ArgumentMatchers.anyString());
 
         Mockito.doReturn(true)
-        .when(certificationResultManager).getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong());
+                .when(certificationResultManager).getCertifiedProductHasAdditionalSoftware(ArgumentMatchers.anyLong());
 
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
-        //the mock listing does not have additional software;
-        //add some to a criteria that was met.
+        // the mock listing does not have additional software;
+        // add some to a criteria that was met.
         boolean addedSoftwareToOneCert = false;
         for (CertificationResult cert : listing.getCertificationResults()) {
             if (!addedSoftwareToOneCert && cert.isSuccess()) {

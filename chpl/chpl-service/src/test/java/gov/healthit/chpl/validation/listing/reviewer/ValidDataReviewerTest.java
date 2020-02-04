@@ -31,18 +31,16 @@ import gov.healthit.chpl.util.ListingMockUtil;
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
 public class ValidDataReviewerTest extends TestingUsers {
     private static final String D_1 = "170.315 (d)(1)";
-    private static final String BAD_PRIVACY_SECURITY_ERROR =
-            "Certification " + D_1
+    private static final String BAD_PRIVACY_SECURITY_ERROR = "Certification " + D_1
             + " contains Privacy and Security Framework value 'Approach 12' which must match one of "
             + PrivacyAndSecurityFrameworkConcept.getFormattedValues();
-    private static final String BAD_ADDL_SOFTWARE_ERROR =
-            "No CHPL product was found matching additional software CHP-12345 for " + D_1;
+    private static final String BAD_ADDL_SOFTWARE_ERROR = "No CHPL product was found matching additional software CHP-12345 for "
+            + D_1;
 
     @Spy private ChplProductNumberUtil chplNumberUtil;
     @Mock private ResourcePermissions resourcePermissions;
     @Mock private ErrorMessageUtil msgUtil;
     @Autowired private ListingMockUtil mockUtil;
-
     @InjectMocks
     private ValidDataReviewer validDataReivewer;
 
@@ -64,8 +62,8 @@ public class ValidDataReviewerTest extends TestingUsers {
     @Test
     public void testValidListing_EmptyValidFields_DoesNotHaveErrors() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
-        for(CertificationResult certResult : listing.getCertificationResults()) {
-            if(certResult.getNumber().equals(D_1)) {
+        for (CertificationResult certResult : listing.getCertificationResults()) {
+            if (certResult.getNumber().equals(D_1)) {
                 certResult.setPrivacySecurityFramework(null);
                 certResult.setAdditionalSoftware(null);
             }
@@ -90,8 +88,9 @@ public class ValidDataReviewerTest extends TestingUsers {
         }
         try {
             Mockito.when(chplNumberUtil.chplIdExists(ArgumentMatchers.anyString()))
-        .thenReturn(true);
-        } catch (EntityRetrievalException ex) { }
+                    .thenReturn(true);
+        } catch (EntityRetrievalException ex) {
+        }
         validDataReivewer.review(listing);
         assertFalse(listing.getErrorMessages().contains(BAD_PRIVACY_SECURITY_ERROR));
         assertFalse(listing.getErrorMessages().contains(BAD_ADDL_SOFTWARE_ERROR));
@@ -107,8 +106,9 @@ public class ValidDataReviewerTest extends TestingUsers {
         }
         try {
             Mockito.when(chplNumberUtil.chplIdExists(ArgumentMatchers.anyString()))
-        .thenReturn(true);
-        } catch (EntityRetrievalException ex) { }
+                    .thenReturn(true);
+        } catch (EntityRetrievalException ex) {
+        }
         validDataReivewer.review(listing);
         assertTrue(listing.getErrorMessages().contains(BAD_PRIVACY_SECURITY_ERROR));
         assertFalse(listing.getErrorMessages().contains(BAD_ADDL_SOFTWARE_ERROR));
@@ -127,8 +127,9 @@ public class ValidDataReviewerTest extends TestingUsers {
         }
         try {
             Mockito.when(chplNumberUtil.chplIdExists(ArgumentMatchers.anyString()))
-        .thenReturn(false);
-        } catch (EntityRetrievalException ex) { }
+                    .thenReturn(false);
+        } catch (EntityRetrievalException ex) {
+        }
         validDataReivewer.review(listing);
         assertFalse(listing.getErrorMessages().contains(BAD_PRIVACY_SECURITY_ERROR));
         assertTrue(listing.getErrorMessages().contains(BAD_ADDL_SOFTWARE_ERROR));

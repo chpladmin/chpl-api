@@ -44,12 +44,11 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import junit.framework.TestCase;
 
 @ActiveProfiles({
-        "ListingValidatorMock", "Ff4jMock"
+        "ListingValidatorMock"
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        gov.healthit.chpl.CHPLTestConfig.class,
-        gov.healthit.chpl.Ff4jTestConfiguration.class
+        gov.healthit.chpl.CHPLTestConfig.class
 })
 @TestExecutionListeners({
         DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,

@@ -49,8 +49,8 @@ public class PendingListingTestToolReviewerTest extends TestingUsers {
     private static final String RETIRED_TEST_TOOL_NOT_ALLOWED_ERROR = "Test Tool 'Bogus Test Tool' can not be used for criteria '"
             + B_2 + "', as it is a retired tool.";
 
-    @Autowired
-    private ListingMockUtil mockUtil;
+    private ListingMockUtil mockUtil = new ListingMockUtil();
+
     @Autowired
     private MessageSource messageSource;
 

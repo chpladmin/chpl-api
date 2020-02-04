@@ -18,7 +18,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -35,28 +34,21 @@ import gov.healthit.chpl.util.ListingMockUtil;
 import gov.healthit.chpl.util.SurveillanceMockUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
 public class SurveillanceRequirementReviewerTest {
-    private static final String REQUIREMENTS_REQUIRED =
-            "At least one surveillance requirement is required for CHPL product \"%s\".";
-    private static final String REQ_NAME_MISSING =
-            "A surveillance requirement (reg text number or other value) is required.";
-    private static final String REQUIREMENT_TYPE_NAME_INVALID =
-            "No type with name \"%s\" was found for surveillance requirement \"%s\".";
-    private static final String UNATTESTED_CRITERIA_NOT_ALLOWED =
-            "The requirement \"%s\" is not valid for requirement type \"%s\". Valid values are any criterion this product has attested to.";
-    private static final String TRANSPARENCY_REQ_INVALID =
-            "The requirement \"%s\" is not valid for requirement type \"%s\". Valid values are \"%s\" or \"%s\".";
-    private static final String RESULT_MISSING =
-            "Result was not found for surveillance requirement \"%s\".";
-    private static final String REQUIREMENT_STATUS_NAME_INVALID =
-            "No result with name '%s' was found for surveillance requirement \"%s\".";
+    private static final String REQUIREMENTS_REQUIRED = "At least one surveillance requirement is required for CHPL product \"%s\".";
+    private static final String REQ_NAME_MISSING = "A surveillance requirement (reg text number or other value) is required.";
+    private static final String REQUIREMENT_TYPE_NAME_INVALID = "No type with name \"%s\" was found for surveillance requirement \"%s\".";
+    private static final String UNATTESTED_CRITERIA_NOT_ALLOWED = "The requirement \"%s\" is not valid for requirement type \"%s\". Valid values are any criterion this product has attested to.";
+    private static final String TRANSPARENCY_REQ_INVALID = "The requirement \"%s\" is not valid for requirement type \"%s\". Valid values are \"%s\" or \"%s\".";
+    private static final String RESULT_MISSING = "Result was not found for surveillance requirement \"%s\".";
+    private static final String REQUIREMENT_STATUS_NAME_INVALID = "No result with name '%s' was found for surveillance requirement \"%s\".";
 
-    @Autowired
-    private SurveillanceMockUtil mockUtil;
+    private SurveillanceMockUtil mockUtil = new SurveillanceMockUtil();
 
-    @Autowired
-    private ListingMockUtil listingMockUtil;
+    private ListingMockUtil listingMockUtil = new ListingMockUtil();
 
     @Mock
     private CertificationResultDetailsDAO certResultDetailsDao;
@@ -222,8 +214,7 @@ public class SurveillanceRequirementReviewerTest {
     @Test
     public void testRequirementForUnattestedCriteriaHasError() {
         Surveillance surv = mockUtil.createOpenSurveillanceNoNonconformity();
-        List<CertificationResultDetailsDTO> certResults =
-                new ArrayList<CertificationResultDetailsDTO>();
+        List<CertificationResultDetailsDTO> certResults = new ArrayList<CertificationResultDetailsDTO>();
         CertificationResultDetailsDTO certResult = listingMockUtil.create2015CertResultDetails(1L, "170.315 (a)(1)", true);
         certResults.add(certResult);
         Mockito.when(
@@ -241,10 +232,8 @@ public class SurveillanceRequirementReviewerTest {
         Surveillance surv = mockUtil.createOpenSurveillanceNoNonconformity();
         SurveillanceRequirement req = surv.getRequirements().iterator().next();
 
-        List<CertificationResultDetailsDTO> certResults =
-                new ArrayList<CertificationResultDetailsDTO>();
-        CertificationResultDetailsDTO certResult =
-                listingMockUtil.create2015CertResultDetails(1L, req.getRequirement(), true);
+        List<CertificationResultDetailsDTO> certResults = new ArrayList<CertificationResultDetailsDTO>();
+        CertificationResultDetailsDTO certResult = listingMockUtil.create2015CertResultDetails(1L, req.getRequirement(), true);
         certResults.add(certResult);
         Mockito.when(
                 certResultDetailsDao.getCertificationResultsForSurveillanceListing(ArgumentMatchers.any()))
