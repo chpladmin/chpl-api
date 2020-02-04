@@ -187,10 +187,8 @@ public class SearchViewController {
             } else if (edition.equals("2014")) {
                 toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2014Name"));
             } else if (edition.equals("2015")) {
-                if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
+                if (ff4j.check(FeatureList.RULE_PUBLISH_DATE_PLUS_THIRTY_DAYS)) {
                     toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015Name"));
-                } else if (ff4j.check(FeatureList.RULE_PUBLISH_DATE_PLUS_THIRTY_DAYS)) {
-                    toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015NameInterim"));
                 } else {
                     toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015NameLegacy"));
                 }
