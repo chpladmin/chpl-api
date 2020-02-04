@@ -28,7 +28,8 @@ import gov.healthit.chpl.util.ListingMockUtil;
 public class CertificationDateReviewerTest {
     private static final String FUTURE_CERT_DATE_ERROR = "Certification date occurs in the future.";
 
-    private ListingMockUtil mockUtil = new ListingMockUtil();
+    @Autowired
+    private ListingMockUtil mockUtil;
 
     @Autowired
     private MessageSource messageSource;

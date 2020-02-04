@@ -30,7 +30,8 @@ public class PendingListingSedG3ReviewerTest {
     private static final String NO_G3_HAS_SED = "Listing has not attested to (g)(3), but at least one criteria was found attesting to SED.";
     private static final String HAS_G3_NO_SED = "Listing has attested to (g)(3), but no criteria were found attesting to SED.";
 
-    private ListingMockUtil mockUtil = new ListingMockUtil();
+    @Autowired
+    private ListingMockUtil mockUtil;
 
     @Autowired
     private MessageSource messageSource;

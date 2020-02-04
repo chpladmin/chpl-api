@@ -36,7 +36,8 @@ public class NewSurveillanceRemovedCriteriaReviewerTest {
     private static final String NO_REQUIREMENT_WITH_REMOVED_CRITERIA = "The requirement \"%s\" cannot be added because that criteria has been removed.";
     private static final String NO_NONCONFORMITY_WITH_REMOVED_CRITERIA = "The nonconformity \"%s\" cannot be added because that criteria has been removed.";
 
-    private SurveillanceMockUtil mockUtil = new SurveillanceMockUtil();
+    @Autowired
+    private SurveillanceMockUtil mockUtil;
 
     @Autowired
     private FF4j ff4j;

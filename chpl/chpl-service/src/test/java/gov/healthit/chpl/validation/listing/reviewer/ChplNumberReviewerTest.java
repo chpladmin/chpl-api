@@ -50,7 +50,8 @@ public class ChplNumberReviewerTest {
     private static final String ICS_CODE_TRUE_NO_ICS_ERROR = "The unique id indicates the product does have ICS but the value for Inherited Certification Status is false.";
     private static final String DUPLICATE_CHPLID_ERROR_END = "one already exists with this ID.";
 
-    private ListingMockUtil mockUtil = new ListingMockUtil();
+    @Autowired
+    private ListingMockUtil mockUtil;
 
     @Autowired
     private MessageSource messageSource;

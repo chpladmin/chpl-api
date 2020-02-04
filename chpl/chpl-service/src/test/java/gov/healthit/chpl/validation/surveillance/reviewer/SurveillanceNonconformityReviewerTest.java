@@ -17,6 +17,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -46,9 +47,11 @@ public class SurveillanceNonconformityReviewerTest {
     private static final String NONCONFORMITY_STATUS_REQUIRED = "Nonconformity status is required for requirement %s, nonconformity %s.";
     private static final String NONCONFORMITY_STATUS_INVALID = "No non-conformity status with name \"%s\" was found for requirement \"%s\", nonconformity \"%s\".";
 
-    private SurveillanceMockUtil mockUtil = new SurveillanceMockUtil();
+    @Autowired
+    private SurveillanceMockUtil mockUtil;
 
-    private ListingMockUtil listingMockUtil = new ListingMockUtil();
+    @Autowired
+    private ListingMockUtil listingMockUtil;
 
     @Mock
     private CertificationResultDetailsDAO certResultDetailsDao;

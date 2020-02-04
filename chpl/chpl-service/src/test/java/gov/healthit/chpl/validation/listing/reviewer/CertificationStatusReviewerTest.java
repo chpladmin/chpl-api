@@ -28,7 +28,8 @@ import gov.healthit.chpl.util.ListingMockUtil;
 public class CertificationStatusReviewerTest {
     private static final String FIRST_STATUS_NOT_ACTIVE_ERROR = "The earliest certification status for any listing on the CHPL must be Active.";
 
-    private ListingMockUtil mockUtil = new ListingMockUtil();
+    @Autowired
+    private ListingMockUtil mockUtil;
 
     @Autowired
     private MessageSource messageSource;

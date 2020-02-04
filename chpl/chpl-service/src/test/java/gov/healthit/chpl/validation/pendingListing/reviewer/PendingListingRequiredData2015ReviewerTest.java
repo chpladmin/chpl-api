@@ -50,7 +50,8 @@ public class PendingListingRequiredData2015ReviewerTest {
     @Autowired
     private TestDataDAO testDataDao;
 
-    private ListingMockUtil mockUtil = new ListingMockUtil();
+    @Autowired
+    private ListingMockUtil mockUtil;
 
     @Autowired
     private MessageSource messageSource;

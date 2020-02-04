@@ -2,6 +2,9 @@ package gov.healthit.chpl.util;
 
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
@@ -12,10 +15,12 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 
+@Component
 public class SurveillanceMockUtil {
-    private static final long WEEK_IN_MILLIS = 7 * 24 * 60 * 60 * 1000;
+    private static final long WEEK_IN_MILLIS = 7*24*60*60*1000;
 
-    private ListingMockUtil listingMockUtil = new ListingMockUtil();
+    @Autowired
+    private ListingMockUtil listingMockUtil;
 
     public Surveillance createOpenSurveillanceNoNonconformity() {
         Surveillance surv = new Surveillance();

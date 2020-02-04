@@ -18,6 +18,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -46,9 +47,11 @@ public class SurveillanceRequirementReviewerTest {
     private static final String RESULT_MISSING = "Result was not found for surveillance requirement \"%s\".";
     private static final String REQUIREMENT_STATUS_NAME_INVALID = "No result with name '%s' was found for surveillance requirement \"%s\".";
 
-    private SurveillanceMockUtil mockUtil = new SurveillanceMockUtil();
+    @Autowired
+    private SurveillanceMockUtil mockUtil;
 
-    private ListingMockUtil listingMockUtil = new ListingMockUtil();
+    @Autowired
+    private ListingMockUtil listingMockUtil;
 
     @Mock
     private CertificationResultDetailsDAO certResultDetailsDao;

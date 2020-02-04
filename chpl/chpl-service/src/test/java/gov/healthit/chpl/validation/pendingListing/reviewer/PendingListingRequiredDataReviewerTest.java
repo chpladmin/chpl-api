@@ -35,7 +35,8 @@ import gov.healthit.chpl.util.ListingMockUtil;
 public class PendingListingRequiredDataReviewerTest {
     private static final String B_1 = "170.314 (b)(1)";
 
-    private ListingMockUtil mockUtil = new ListingMockUtil();
+    @Autowired
+    private ListingMockUtil mockUtil;
 
     @Autowired
     private MessageSource messageSource;
