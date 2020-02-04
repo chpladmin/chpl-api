@@ -64,6 +64,7 @@ public class TestingFunctionalityManager implements ApplicationListener<ContextR
 
         if (testFunctionalityByCriteria2014.containsKey(criteriaId)) {
             List<TestFunctionalityDTO> dtos = testFunctionalityByCriteria2014.get(criteriaId);
+
             for (TestFunctionalityDTO dto : dtos) {
                 if (dto.getPracticeType() == null || dto.getPracticeType().getId().equals(practiceTypeId)) {
                     allowedTestFunctionalities.add(new TestFunctionality(dto));

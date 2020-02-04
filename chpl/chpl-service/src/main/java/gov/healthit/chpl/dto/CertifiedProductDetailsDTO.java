@@ -117,6 +117,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.developer.setName(entity.getDeveloperName());
         this.developer.setDeveloperCode(entity.getDeveloperCode());
         this.developer.setWebsite(entity.getDeveloperWebsite());
+        this.developer.setSelfDeveloper(entity.getSelfDeveloper());
 
         if (entity.getDeveloperStatusId() != null) {
             developerCurrentStatus = new DeveloperStatusEventDTO();

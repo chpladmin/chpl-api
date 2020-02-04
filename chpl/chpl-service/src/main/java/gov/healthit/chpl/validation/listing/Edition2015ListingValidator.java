@@ -23,20 +23,17 @@ import gov.healthit.chpl.validation.listing.reviewer.UnattestedCriteriaWithDataR
 import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ValidDataReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.InvalidCriteriaCombinationReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.MacraMeasureComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaTestTaskComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaUcdComparisonReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredCriteriaValidator;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestFunctionality2015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestTool2015Reviewer;
 
-/**
- * Validation interface for any listing that is already uploaded and confirmed on the CHPL.
- * @author kekey
- *
- */
 @Component
 public class Edition2015ListingValidator extends Validator {
     @Autowired
@@ -127,6 +124,14 @@ public class Edition2015ListingValidator extends Validator {
     @Qualifier("removedCriteriaUcdComparisonReviewer")
     private RemovedCriteriaUcdComparisonReviewer ucdCriteriaComparisonReviewer;
 
+    @Autowired
+    @Qualifier("requiredCriteriaValidator")
+    private RequiredCriteriaValidator requiredCriteriaValidator;
+
+    @Autowired
+    @Qualifier("invalidCriteriaCombinationReviewer")
+    private InvalidCriteriaCombinationReviewer invalidCriteriaCombinationReviewer;
+
     private List<Reviewer> reviewers;
     private List<ComparisonReviewer> comparisonReviewers;
 
@@ -150,6 +155,8 @@ public class Edition2015ListingValidator extends Validator {
             reviewers.add(tt2015Reviewer);
             reviewers.add(urlReviewer);
             reviewers.add(testFunctionalityReviewer);
+            reviewers.add(requiredCriteriaValidator);
+            reviewers.add(invalidCriteriaCombinationReviewer);
         }
         return reviewers;
     }

@@ -2236,7 +2236,7 @@ public class CertifiedProductManager extends SecuredManager {
             scheduler = getScheduler();
 
             TriggerKey triggerId = triggerKey("triggerBanNow_" + new Date().getTime(), "triggerDeveloperBanTrigger");
-            JobKey jobId = jobKey("Trigger Developer Ban Notification", "chplJobs");
+            JobKey jobId = jobKey("Trigger Developer Ban Notification", SchedulerManager.CHPL_JOBS_KEY);
 
             Trigger qzTrigger = newTrigger().withIdentity(triggerId).startNow().forJob(jobId)
                     .usingJobData("status", updatedListing.getCurrentStatus().getStatus().getName())

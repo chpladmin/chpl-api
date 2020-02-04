@@ -88,6 +88,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         result.add("Vendor State");
         result.add("Vendor Zip Code");
         result.add("Vendor Website");
+        result.add("Self-developer");
         result.add("Vendor Contact Name");
         result.add("Vendor Contact Email");
         result.add("Vendor Contact Phone");
@@ -140,6 +141,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         }
         result.add(data.getDeveloper().getWebsite() == null
                     ? "" : data.getDeveloper().getWebsite());
+        result.add(data.getDeveloper().getSelfDeveloper() ? "Yes": "No");
         if (data.getProduct().getContact() != null) {
                 result.add(data.getProduct().getContact().getFullName() == null
                         ? "" : data.getProduct().getContact().getFullName());
