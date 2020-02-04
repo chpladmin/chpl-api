@@ -47,9 +47,11 @@ public class SurveillanceDetailsReviewerTest {
     private static final String RANDOMIZED_SITES_NA = "Number of randomized sites used is not applicable for surveillance type \"%s\".";
     private static final String END_DATE_REQ = "End date for surveillance is required when there are no open nonconformities.";
 
-    private SurveillanceMockUtil mockUtil = new SurveillanceMockUtil();
+    @Autowired
+    private SurveillanceMockUtil mockUtil;
 
-    private ListingMockUtil listingMockUtil = new ListingMockUtil();
+    @Autowired
+    private ListingMockUtil listingMockUtil;
 
     @Autowired
     private FF4j ff4j;

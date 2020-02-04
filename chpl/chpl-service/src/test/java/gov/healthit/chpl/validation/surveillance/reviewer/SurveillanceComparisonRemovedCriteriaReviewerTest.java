@@ -42,7 +42,8 @@ public class SurveillanceComparisonRemovedCriteriaReviewerTest {
     private static final String NO_REQUIREMENT_EDITED_WITH_REMOVED_CRITERIA = "The requirement \"%s\" cannot be modified because that criteria has been removed.";
     private static final String NO_NONCONFORMITY_EDITED_WITH_REMOVED_CRITERIA = "The nonconformity \"%s\" cannot be modified because that criteria has been removed.";
 
-    private SurveillanceMockUtil mockUtil = new SurveillanceMockUtil();
+    @Autowired
+    private SurveillanceMockUtil mockUtil;
 
     @Mock
     private CertificationCriterionDAO criterionDAO;

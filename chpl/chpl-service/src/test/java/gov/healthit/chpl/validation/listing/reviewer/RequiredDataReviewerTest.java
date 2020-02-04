@@ -38,7 +38,8 @@ public class RequiredDataReviewerTest extends TestingUsers {
     private static final String STATUS_NOT_FOUND_ERROR = "A certification status must be provided for every listing on the CHPL.";
     private static final String CRITERIA_MISSING_GAP_ERROR_START = "GAP is required for certification";
 
-    private ListingMockUtil mockUtil = new ListingMockUtil();
+    @Autowired
+    private ListingMockUtil mockUtil;
 
     @Autowired
     private MessageSource messageSource;

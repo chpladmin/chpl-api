@@ -25,7 +25,8 @@ public class FieldLengthReviewerTest {
     @Autowired
     private gov.healthit.chpl.validation.pendingListing.reviewer.FieldLengthReviewer fieldLengthReivewerPending;
 
-    private ListingMockUtil mockUtil = new ListingMockUtil();
+    @Autowired
+    private ListingMockUtil mockUtil;
 
     @Before
     public void setup() {

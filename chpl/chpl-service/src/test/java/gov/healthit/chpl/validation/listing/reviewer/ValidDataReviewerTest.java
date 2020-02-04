@@ -41,8 +41,7 @@ public class ValidDataReviewerTest extends TestingUsers {
     @Mock private ResourcePermissions resourcePermissions;
     @Mock private ErrorMessageUtil msgUtil;
     @Autowired private ListingMockUtil mockUtil;
-    @InjectMocks
-    private ValidDataReviewer validDataReivewer;
+    @InjectMocks private ValidDataReviewer validDataReivewer;
 
     @Before
     public void setup() {

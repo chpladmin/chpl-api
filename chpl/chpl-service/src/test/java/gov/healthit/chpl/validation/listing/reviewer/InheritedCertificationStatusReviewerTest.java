@@ -47,7 +47,8 @@ public class InheritedCertificationStatusReviewerTest {
     private static final String ICS_NOT_LARGEST_CODE_ERROR = "The ICS Code for this listing was "
             + "given as '1' but it was expected to be one more than the largest inherited ICS code '2'.";
 
-    private ListingMockUtil mockUtil = new ListingMockUtil();
+    @Autowired
+    private ListingMockUtil mockUtil;
 
     @Autowired
     private MessageSource messageSource;

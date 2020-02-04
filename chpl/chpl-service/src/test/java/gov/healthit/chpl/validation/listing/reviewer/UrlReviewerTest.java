@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -32,7 +33,8 @@ import gov.healthit.chpl.util.ListingMockUtil;
 public class UrlReviewerTest {
     private static final String BAD_REPORT_FILE_LOCATION_ERROR = "Fake error message";
 
-    private ListingMockUtil mockUtil = new ListingMockUtil();
+    @Autowired
+    private ListingMockUtil mockUtil;
 
     @Mock
     private ErrorMessageUtil msgUtil;
