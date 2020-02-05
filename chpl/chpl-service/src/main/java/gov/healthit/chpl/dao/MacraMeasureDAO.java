@@ -68,14 +68,6 @@ public class MacraMeasureDAO extends BaseDAOImpl {
         entityManager.flush();
     }
 
-    public void updateSubstringInAllValues(final String oldSubstring, final String newSubstring) {
-        getAllMeasuresWhereValueIsNotNull().stream()
-            .forEach(measure -> {
-                measure.setValue(measure.getValue().replaceAll(oldSubstring, newSubstring));
-                entityManager.merge(measure);
-            });
-    }
-
     private List<MacraMeasureEntity> getMeasuresByCertificationCriteria(String criteriaNumber) {
         Query query = entityManager
                 .createQuery("FROM MacraMeasureEntity mme "
@@ -133,12 +125,5 @@ public class MacraMeasureDAO extends BaseDAOImpl {
             entity = result.get(0);
         }
         return entity;
-    }
-
-    private List<MacraMeasureEntity> getAllMeasuresWhereValueIsNotNull() {
-        Query query = entityManager
-                .createQuery("FROM MacraMeasureEntity mme "
-                        + "WHERE mme.value IS NOT NULL", MacraMeasureEntity.class);
-        return query.getResultList();
     }
 }

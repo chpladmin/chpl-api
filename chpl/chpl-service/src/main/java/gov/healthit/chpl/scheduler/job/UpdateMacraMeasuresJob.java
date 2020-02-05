@@ -1,19 +1,23 @@
 package gov.healthit.chpl.scheduler.job;
 
+import java.util.List;
+
+import javax.persistence.Query;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.ff4j.FF4j;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.FeatureList;
-import gov.healthit.chpl.dao.MacraMeasureDAO;
+import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.entity.MacraMeasureEntity;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 
 public class UpdateMacraMeasuresJob extends QuartzJob {
@@ -26,43 +30,53 @@ public class UpdateMacraMeasuresJob extends QuartzJob {
     private static final String NEW_G1G2_SUBSTRING = "PI";
 
     @Autowired
-    private MacraMeasureDAO macraMeasureDAO;
-
-    @Autowired
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
     @Autowired
     private JpaTransactionManager txnMgr;
 
     @Autowired
-    private FF4j ff4j;
+    private UpdateMacraMeasuresDao updateMacraMeasuresDao;
 
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        if (!ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
-            LOGGER.info("The " + FeatureList.EFFECTIVE_RULE_DATE + " flag is off. "
-                    + "Macra Measueres will not be updated.");
-        } else {
-            LOGGER.info(SPACER + " Started the " + JOB_NAME + " job " + SPACER);
-            
-            TransactionTemplate txnTemplate = new TransactionTemplate(txnMgr);
-            txnTemplate.execute(new TransactionCallbackWithoutResult() {
-                @Override
-                protected void doInTransactionWithoutResult(TransactionStatus status) {
-                    try {
-                        macraMeasureDAO.updateSubstringInAllValues(OLD_G1G2_SUBSTRING, NEW_G1G2_SUBSTRING);
-                        LOGGER.info(SPACER + " Updated all g1g2 '" + OLD_G1G2_SUBSTRING
-                                + "' MACRA measures to '" + NEW_G1G2_SUBSTRING + "' " + SPACER);
-                    } catch (Exception e) {
-                        LOGGER.error(e.getMessage(), e);
-                        status.setRollbackOnly();
-                    }
-                }
-            });
+        LOGGER.info(SPACER + " Started the " + JOB_NAME + " job " + SPACER);
 
-            certifiedProductDetailsManager.refreshData();
-            LOGGER.info(SPACER + " Completed the " + JOB_NAME + " job " + SPACER);
+        TransactionTemplate txnTemplate = new TransactionTemplate(txnMgr);
+        txnTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                try {
+                    updateMacraMeasuresDao.updateSubstringInAllValues(OLD_G1G2_SUBSTRING, NEW_G1G2_SUBSTRING);
+                    LOGGER.info(SPACER + " Updated all g1g2 '" + OLD_G1G2_SUBSTRING
+                            + "' MACRA measures to '" + NEW_G1G2_SUBSTRING + "' " + SPACER);
+                } catch (Exception e) {
+                    LOGGER.error(e.getMessage(), e);
+                    status.setRollbackOnly();
+                }
+            }
+        });
+
+        certifiedProductDetailsManager.refreshData();
+        LOGGER.info(SPACER + " Completed the " + JOB_NAME + " job " + SPACER);
+    }
+
+    @Component("updateMacraMeasuresDao")
+    private static class UpdateMacraMeasuresDao extends BaseDAOImpl {
+        private void updateSubstringInAllValues(final String oldSubstring, final String newSubstring) {
+            getAllMeasuresWhereValueIsNotNull().stream()
+                .forEach(measure -> {
+                    measure.setValue(measure.getValue().replaceAll(oldSubstring, newSubstring));
+                    entityManager.merge(measure);
+                });
+        }
+
+        private List<MacraMeasureEntity> getAllMeasuresWhereValueIsNotNull() {
+            Query query = entityManager
+                    .createQuery("FROM MacraMeasureEntity mme "
+                            + "WHERE mme.value IS NOT NULL", MacraMeasureEntity.class);
+            return query.getResultList();
         }
     }
 }
