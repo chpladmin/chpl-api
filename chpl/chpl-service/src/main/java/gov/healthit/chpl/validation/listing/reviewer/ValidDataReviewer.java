@@ -10,44 +10,51 @@ import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.PrivacyAndSecurityFrameworkConcept;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("validDataReviewer")
-public class ValidDataReviewer implements Reviewer {
+public class ValidDataReviewer extends PermissionBasedReviewer {
 
     private ChplProductNumberUtil chplNumberUtil;
 
     @Autowired
-    public ValidDataReviewer(final @Lazy ChplProductNumberUtil chplNumberUtil) {
+    public ValidDataReviewer(@Lazy ChplProductNumberUtil chplNumberUtil, ErrorMessageUtil msgUtil,
+            ResourcePermissions resourcePermissions) {
+        super(msgUtil, resourcePermissions);
         this.chplNumberUtil = chplNumberUtil;
     }
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         for (CertificationResult cert : listing.getCertificationResults()) {
-            if (!StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
-                String formattedPrivacyAndSecurityFramework = CertificationResult
-                        .formatPrivacyAndSecurityFramework(cert.getPrivacySecurityFramework());
-                PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept
-                        .getValue(formattedPrivacyAndSecurityFramework);
-                if (foundPrivacyAndSecurityFramework == null) {
-                    listing.getErrorMessages().add("Certification " + cert.getNumber()
-                            + " contains Privacy and Security Framework value '" + formattedPrivacyAndSecurityFramework
-                            + "' which must match one of " + PrivacyAndSecurityFrameworkConcept.getFormattedValues());
+            if (cert.isSuccess() != null && cert.isSuccess().equals(Boolean.TRUE)) {
+                if (!StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
+                    String formattedPrivacyAndSecurityFramework = CertificationResult
+                            .formatPrivacyAndSecurityFramework(cert.getPrivacySecurityFramework());
+                    PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept
+                            .getValue(formattedPrivacyAndSecurityFramework);
+                    if (foundPrivacyAndSecurityFramework == null) {
+                        addCriterionErrorOrWarningByPermission(listing, cert,
+                                "listing.criteria.invalidPrivacySecurityFramework", cert.getNumber(),
+                                formattedPrivacyAndSecurityFramework, PrivacyAndSecurityFrameworkConcept.getFormattedValues());
+                    }
                 }
-            }
 
-            if (cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
-                for (CertificationResultAdditionalSoftware asDto : cert.getAdditionalSoftware()) {
-                    if (asDto.getCertifiedProductId() == null
-                            && !StringUtils.isEmpty(asDto.getCertifiedProductNumber())) {
-                        try {
-                            boolean exists = chplNumberUtil.chplIdExists(asDto.getCertifiedProductNumber());
-                            if (!exists) {
-                                listing.getErrorMessages().add("No CHPL product was found matching additional software "
-                                        + asDto.getCertifiedProductNumber() + " for " + cert.getNumber());
+                if (cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
+                    for (CertificationResultAdditionalSoftware asDto : cert.getAdditionalSoftware()) {
+                        if (asDto.getCertifiedProductId() == null
+                                && !StringUtils.isEmpty(asDto.getCertifiedProductNumber())) {
+                            try {
+                                boolean exists = chplNumberUtil.chplIdExists(asDto.getCertifiedProductNumber());
+                                if (!exists) {
+                                    addCriterionErrorOrWarningByPermission(listing, cert,
+                                            "listing.criteria.invalidAdditionalSoftware", asDto.getCertifiedProductNumber(),
+                                            cert.getNumber());
+                                }
+                            } catch (EntityRetrievalException e) {
                             }
-                        } catch (EntityRetrievalException e) {
                         }
                     }
                 }

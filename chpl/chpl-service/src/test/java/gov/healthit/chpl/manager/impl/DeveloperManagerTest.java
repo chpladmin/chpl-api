@@ -4,20 +4,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -30,7 +27,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
@@ -54,13 +50,9 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import junit.framework.TestCase;
 
-@ActiveProfiles({
-    "Ff4jMock"
-})
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        gov.healthit.chpl.CHPLTestConfig.class,
-        gov.healthit.chpl.Ff4jTestConfiguration.class
+        gov.healthit.chpl.CHPLTestConfig.class
 })
 @TestExecutionListeners({
         DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
@@ -79,9 +71,6 @@ public class DeveloperManagerTest extends TestCase {
     @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
-
-    @Autowired
-    private FF4j ff4j;
 
     private static JWTAuthenticatedUser adminUser;
     private static JWTAuthenticatedUser testUser3;
@@ -106,7 +95,6 @@ public class DeveloperManagerTest extends TestCase {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        Mockito.when(ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)).thenReturn(false);
     }
 
     @Test
@@ -122,7 +110,7 @@ public class DeveloperManagerTest extends TestCase {
 
     @Test
     @Transactional
-    @Ignore //ignoring until transparency attestation mappings are fixed
+    @Ignore // ignoring until transparency attestation mappings are fixed
     public void testGetDeveloperAsAcbAdmin() throws EntityRetrievalException {
         SecurityContextHolder.getContext().setAuthentication(testUser3);
         DeveloperDTO developer = developerManager.getById(-1L);
@@ -367,10 +355,9 @@ public class DeveloperManagerTest extends TestCase {
     }
 
     /**
-     * Given the CHPL is accepting search requests When I call the REST API's
-     * /decertified/developers, the controller calls the
-     * developerManager.getDecertifiedDevelopers() Then the manager returns a
-     * list of DeveloperDecertifiedDTO with expected results.
+     * Given the CHPL is accepting search requests When I call the REST API's /decertified/developers, the controller
+     * calls the developerManager.getDecertifiedDevelopers() Then the manager returns a list of DeveloperDecertifiedDTO
+     * with expected results.
      *
      * @throws EntityRetrievalException
      */

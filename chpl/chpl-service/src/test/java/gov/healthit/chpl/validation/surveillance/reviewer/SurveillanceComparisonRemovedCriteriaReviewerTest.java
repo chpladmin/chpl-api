@@ -36,16 +36,14 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SurveillanceMockUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
 public class SurveillanceComparisonRemovedCriteriaReviewerTest {
-    private static final String NO_REQUIREMENT_ADDED_WITH_REMOVED_CRITERIA =
-            "The requirement \"%s\" cannot be added because that criteria has been removed.";
-    private static final String NO_NONCONFORMITY_ADDED_WITH_REMOVED_CRITERIA =
-            "The nonconformity \"%s\" cannot be added because that criteria has been removed.";
-    private static final String NO_REQUIREMENT_EDITED_WITH_REMOVED_CRITERIA =
-            "The requirement \"%s\" cannot be modified because that criteria has been removed.";
-    private static final String NO_NONCONFORMITY_EDITED_WITH_REMOVED_CRITERIA =
-            "The nonconformity \"%s\" cannot be modified because that criteria has been removed.";
+    private static final String NO_REQUIREMENT_ADDED_WITH_REMOVED_CRITERIA = "The requirement \"%s\" cannot be added because that criteria has been removed.";
+    private static final String NO_NONCONFORMITY_ADDED_WITH_REMOVED_CRITERIA = "The nonconformity \"%s\" cannot be added because that criteria has been removed.";
+    private static final String NO_REQUIREMENT_EDITED_WITH_REMOVED_CRITERIA = "The requirement \"%s\" cannot be modified because that criteria has been removed.";
+    private static final String NO_NONCONFORMITY_EDITED_WITH_REMOVED_CRITERIA = "The nonconformity \"%s\" cannot be modified because that criteria has been removed.";
 
     @Autowired
     private SurveillanceMockUtil mockUtil;
@@ -59,7 +57,7 @@ public class SurveillanceComparisonRemovedCriteriaReviewerTest {
     @Mock
     private ResourcePermissions resourcePermissions;
 
-    @Mock
+    @Autowired
     private FF4j ff4j;
 
     @InjectMocks
@@ -69,9 +67,8 @@ public class SurveillanceComparisonRemovedCriteriaReviewerTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(
-                ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK))
-                .thenReturn(true);
+        Mockito.doReturn(true).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK);
+        Mockito.doReturn(true).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE);
 
         Mockito.doAnswer(new Answer<String>() {
             @Override

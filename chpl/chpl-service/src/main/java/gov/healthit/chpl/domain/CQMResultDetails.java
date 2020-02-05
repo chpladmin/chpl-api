@@ -142,12 +142,7 @@ public class CQMResultDetails implements Serializable {
 
         if (dto.getCriteria() != null && dto.getCriteria().size() > 0) {
             for (CQMResultCriteriaDTO criteriaDTO : dto.getCriteria()) {
-                CQMResultCertification criteria = new CQMResultCertification();
-                criteria.setCertificationId(criteriaDTO.getCqmResultId());
-                criteria.setId(criteriaDTO.getId());
-                if (criteriaDTO.getCriterion() != null) {
-                    criteria.setCertificationNumber(criteriaDTO.getCriterion().getNumber());
-                }
+                CQMResultCertification criteria = new CQMResultCertification(criteriaDTO);
                 this.criteria.add(criteria);
             }
         }

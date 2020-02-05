@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -15,26 +16,26 @@ import org.springframework.context.MessageSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import gov.healthit.chpl.TestingUsers;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ListingMockUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-public class RequiredDataReviewerTest {
+public class RequiredDataReviewerTest extends TestingUsers {
     private static final String D_1 = "170.315 (d)(1)";
-    private static final String CERT_EDITION_NOT_FOUND_ERROR =
-            "Certification edition is required but was not found.";
+    private static final String CERT_EDITION_NOT_FOUND_ERROR = "Certification edition is required but was not found.";
     private static final String ATL_NOT_FOUND_ERROR = "Testing lab not found.";
     private static final String CERTID_NOT_FOUND_ERROR = "CHPL certification ID was not found.";
     private static final String CERT_DATE_NOT_FOUND_ERROR = "Certification date was not found.";
     private static final String DEV_NOT_FOUND_ERROR = "A developer is required.";
     private static final String PRODUCT_NOT_FOUND_ERROR = "A product name is required.";
     private static final String VERSION_NOT_FOUND_ERROR = "A product version is required.";
-    private static final String STATUS_NOT_FOUND_ERROR =
-            "A certification status must be provided for every listing on the CHPL.";
+    private static final String STATUS_NOT_FOUND_ERROR = "A certification status must be provided for every listing on the CHPL.";
     private static final String CRITERIA_MISSING_GAP_ERROR_START = "GAP is required for certification";
 
     @Autowired
@@ -49,31 +50,35 @@ public class RequiredDataReviewerTest {
     @Spy
     private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
 
+    @Mock
+    private ResourcePermissions resourcePermissions;
+
     private RequiredDataReviewer requiredDataReivewer;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        setupForAcbUser(resourcePermissions);
 
-        requiredDataReivewer = new RequiredDataReviewer(certResultRules, msgUtil);
+        requiredDataReivewer = new RequiredDataReviewer(certResultRules, msgUtil, resourcePermissions);
 
         Mockito.doReturn(CRITERIA_MISSING_GAP_ERROR_START)
-        .when(msgUtil).getMessage(
-                ArgumentMatchers.eq("listing.criteria.missingGap"), ArgumentMatchers.anyString());
+                .when(msgUtil).getMessage(
+                        ArgumentMatchers.eq("listing.criteria.missingGap"), ArgumentMatchers.anyString());
         Mockito.doReturn(STATUS_NOT_FOUND_ERROR)
-        .when(msgUtil).getMessage(
-                ArgumentMatchers.eq("listing.noStatusProvided"));
+                .when(msgUtil).getMessage(
+                        ArgumentMatchers.eq("listing.noStatusProvided"));
         Mockito.doReturn(ATL_NOT_FOUND_ERROR)
-        .when(msgUtil).getMessage(
-                ArgumentMatchers.eq("atl.notFound"));
+                .when(msgUtil).getMessage(
+                        ArgumentMatchers.eq("atl.notFound"));
         Mockito.when(certResultRules.hasCertOption(
                 ArgumentMatchers.anyString(),
                 ArgumentMatchers.eq(CertificationResultRules.GAP)))
-        .thenReturn(false);
+                .thenReturn(false);
         Mockito.when(certResultRules.hasCertOption(
                 ArgumentMatchers.eq(D_1),
                 ArgumentMatchers.eq(CertificationResultRules.GAP)))
-        .thenReturn(true);
+                .thenReturn(true);
     }
 
     @Test

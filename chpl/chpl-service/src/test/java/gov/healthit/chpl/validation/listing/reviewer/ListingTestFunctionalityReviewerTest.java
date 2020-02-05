@@ -33,6 +33,7 @@ import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -43,16 +44,16 @@ import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.TestFunctionalityCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.manager.TestingFunctionalityManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.util.ListingMockUtil;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.TestFunctionality2014Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestFunctionality2015Reviewer;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
 public class ListingTestFunctionalityReviewerTest {
-    @Autowired
-    private ListingMockUtil listingMockUtil;
 
     @Autowired
     private MessageSource messageSource;
@@ -60,7 +61,7 @@ public class ListingTestFunctionalityReviewerTest {
     @Spy
     private TestFunctionalityDAO testFunctionalityDAO;
 
-    @Spy
+    @Mock
     private CertificationCriterionDAO certificationCriterionDAO;
 
     @Spy
@@ -68,6 +69,9 @@ public class ListingTestFunctionalityReviewerTest {
 
     @Mock
     private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
+
+    @Mock
+    private ResourcePermissions resourcePermissions;
 
     @Spy
     private CertificationEditionDAO certificationEditionDAO;
@@ -88,29 +92,30 @@ public class ListingTestFunctionalityReviewerTest {
                 certificationEditionDAO, msgUtil);
 
         tfReviewer2015 = new TestFunctionality2015Reviewer(testFunctionalityDAO, testFunctionalityManager,
-                certificationEditionDAO, msgUtil);
+                certificationEditionDAO, msgUtil, resourcePermissions);
 
         Mockito.doReturn("In Criteria 170.314 (a)(6), Test Functionality (a)(6)(11) is for "
                 + "other Settings and is not valid for Practice Type Ambulatory.")
-            .when(msgUtil).getMessage(
-                ArgumentMatchers.eq("listing.criteria.testFunctionalityPracticeTypeMismatch"),
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(),
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
+                .when(msgUtil).getMessage(
+                        ArgumentMatchers.eq("listing.criteria.testFunctionalityPracticeTypeMismatch"),
+                        ArgumentMatchers.anyString(), ArgumentMatchers.anyString(),
+                        ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
 
         Mockito.when(certificationEditionDAO.findAll()).thenReturn(getEditions());
 
-        Mockito.when(testFunctionalityManager.getTestFunctionalityCriteriaMap2014()).thenReturn(getTestFunctionalityCriteriaMap2014());
+        Mockito.when(testFunctionalityManager.getTestFunctionalityCriteriaMap2014())
+                .thenReturn(getTestFunctionalityCriteriaMap2014());
 
-        Mockito.when(testFunctionalityManager.getTestFunctionalityCriteriaMap2015()).thenReturn(getTestFunctionalityCriteriaMap2015());
+        Mockito.when(testFunctionalityManager.getTestFunctionalityCriteriaMap2015())
+                .thenReturn(getTestFunctionalityCriteriaMap2015());
 
         Mockito.when(testFunctionalityDAO.getTestFunctionalityCritieriaMaps()).thenReturn(xxxx());
 
-        //TODO - Can this be extracted as some sort of generic method, so it can be used all error messages??
+        // TODO - Can this be extracted as some sort of generic method, so it can be used all error messages??
         Mockito.doAnswer(new Answer<String>() {
             @Override
             public String answer(final InvocationOnMock invocation) throws Throwable {
-                String message =
-                        "In Criteria %s, Test Functionality %s is for Criteria %s and is not valid for Criteria %s.";
+                String message = "In Criteria %s, Test Functionality %s is for Criteria %s and is not valid for Criteria %s.";
                 Object[] args = invocation.getArguments();
                 return String.format(message, (String) args[1], (String) args[2], (String) args[3], (String) args[4]);
             }
@@ -120,7 +125,7 @@ public class ListingTestFunctionalityReviewerTest {
                 ArgumentMatchers.anyString());
     }
 
-    //Case 1: A valid test functionality
+    // Case 1: A valid test functionality
     @Test
     public void validateCertifiedProductTestFunctionality() {
         Mockito.when(testFunctionalityDAO.getByNumberAndEdition(ArgumentMatchers.anyString(), ArgumentMatchers.anyLong()))
@@ -149,7 +154,7 @@ public class ListingTestFunctionalityReviewerTest {
         assertFalse(doesTestFunctionalityCriterionErrorMessageExist(listing.getErrorMessages()));
     }
 
-    //Case 2: An invalid test functionality based on practice type
+    // Case 2: An invalid test functionality based on practice type
     @Test
     public void validateCertifiedProductTestFunctionalityPracticeTypeMismatch() throws Exception {
         Mockito.when(testFunctionalityDAO.getByNumberAndEdition(ArgumentMatchers.anyString(), ArgumentMatchers.anyLong()))
@@ -177,7 +182,7 @@ public class ListingTestFunctionalityReviewerTest {
         assertTrue(doesTestFunctionalityPracticeTypeErrorMessageExist(listing.getErrorMessages()));
     }
 
-    //Case 3: An invalid test functionality based on certifcation criterion
+    // Case 3: An invalid test functionality based on certifcation criterion
     @Test
     public void validateCertifiedProductTestFunctionalityCertificationCriterionMismatch() {
         Mockito.when(testFunctionalityDAO.getByNumberAndEdition(ArgumentMatchers.anyString(), ArgumentMatchers.anyLong()))
@@ -209,7 +214,7 @@ public class ListingTestFunctionalityReviewerTest {
     @Test
     public void validate2015ListingTestFunctionality_Valid() {
         Mockito.when(testFunctionalityDAO.getByNumberAndEdition(ArgumentMatchers.anyString(), ArgumentMatchers.anyLong()))
-        .thenReturn(getTestFunctionality(34L, "(b)(1)(ii)(A)(5)(1)", "2015"));
+                .thenReturn(getTestFunctionality(34L, "(b)(1)(ii)(A)(5)(1)", "2015"));
 
         CertifiedProductSearchDetails listing = createListing("2015");
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
@@ -234,7 +239,7 @@ public class ListingTestFunctionalityReviewerTest {
     @Test
     public void validate2015ListingTestFunctionality_Invalid() {
         Mockito.when(testFunctionalityDAO.getByNumberAndEdition(ArgumentMatchers.anyString(), ArgumentMatchers.anyLong()))
-        .thenReturn(getTestFunctionality(33L, "(a)(14)(iii)(A)(2)", "2015"));
+                .thenReturn(getTestFunctionality(33L, "(a)(14)(iii)(A)(2)", "2015"));
 
         CertifiedProductSearchDetails listing = createListing("2015");
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
@@ -328,6 +333,10 @@ public class ListingTestFunctionalityReviewerTest {
         certResult.setTestProcedures(null);
         certResult.setTestStandards(null);
         certResult.setSuccess(true);
+        CertificationCriterion crit = new CertificationCriterion();
+        crit.setNumber(number);
+        crit.setRemoved(Boolean.FALSE);
+        certResult.setCriterion(crit);
         return certResult;
     }
 
@@ -416,7 +425,7 @@ public class ListingTestFunctionalityReviewerTest {
         editions.add(edition2015);
 
         return editions;
-     }
+    }
 
     private Map<Long, List<TestFunctionalityDTO>> getTestFunctionalityCriteriaMap2014() {
         Map<Long, List<TestFunctionalityDTO>> map = new HashMap<Long, List<TestFunctionalityDTO>>();

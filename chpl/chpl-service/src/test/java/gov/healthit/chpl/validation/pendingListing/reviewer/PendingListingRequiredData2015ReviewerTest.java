@@ -8,9 +8,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +18,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import gov.healthit.chpl.TestingUsers;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
@@ -27,6 +28,7 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ListingMockUtil;
@@ -34,7 +36,7 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.Required
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-public class PendingListingRequiredData2015ReviewerTest {
+public class PendingListingRequiredData2015ReviewerTest extends TestingUsers {
 
     @Autowired
     private MacraMeasureDAO macraMeasureDAO;
@@ -57,23 +59,28 @@ public class PendingListingRequiredData2015ReviewerTest {
     @Autowired
     private CertificationResultRules certRules;
 
-    @Spy
-    private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
+    @Mock
+    private ResourcePermissions resourcePermissions;
+
+    @Mock
+    private ErrorMessageUtil msgUtil;
 
     private RequiredData2015Reviewer reviewer;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        reviewer = new RequiredData2015Reviewer(macraMeasureDAO, testFuncDao, testProcDao, testDataDao, msgUtil, certRules);
+        setupForAcbUser(resourcePermissions);
+
+        reviewer = new RequiredData2015Reviewer(macraMeasureDAO, testFuncDao, testProcDao,
+                testDataDao, msgUtil, resourcePermissions, certRules);
 
         Mockito.doAnswer(new Answer<String>() {
             @Override
             public String answer(final InvocationOnMock invocation) throws Throwable {
-                String badTestTaskNumber =
-                        "An unrecognized character was found in Test Task \"%s\" \"%s\" \"%s\"."
-                                + "The value must be only a numeric value. You can correct it within the field itself "
-                                + "on the Edit Certified Product screen or modify it in the csv file and upload again.";
+                String badTestTaskNumber = "An unrecognized character was found in Test Task \"%s\" \"%s\" \"%s\"."
+                        + "The value must be only a numeric value. You can correct it within the field itself "
+                        + "on the Edit Certified Product screen or modify it in the csv file and upload again.";
                 Object[] args = invocation.getArguments();
                 return formatMessage(badTestTaskNumber, (String) args[1], (String) args[2], (String) args[3]);
             }
@@ -83,9 +90,8 @@ public class PendingListingRequiredData2015ReviewerTest {
         Mockito.doAnswer(new Answer<String>() {
             @Override
             public String answer(final InvocationOnMock invocation) throws Throwable {
-                String badTestTaskNumber =
-                        "A non-integer numeric number was found in Test Task \"%s\" \"%s\" \"%s\". "
-                                + "The number has been rounded to \"%s\".";
+                String badTestTaskNumber = "A non-integer numeric number was found in Test Task \"%s\" \"%s\" \"%s\". "
+                        + "The number has been rounded to \"%s\".";
                 Object[] args = invocation.getArguments();
                 return formatMessage(badTestTaskNumber, (String) args[1], (String) args[2], (String) args[3], (String) args[4]);
             }
@@ -97,8 +103,7 @@ public class PendingListingRequiredData2015ReviewerTest {
         Mockito.doAnswer(new Answer<String>() {
             @Override
             public String answer(final InvocationOnMock invocation) throws Throwable {
-                String badTestTaskNumber =
-                        "The test task %s for criteria %s requires a Task Success Average value.";
+                String badTestTaskNumber = "The test task %s for criteria %s requires a Task Success Average value.";
                 Object[] args = invocation.getArguments();
                 return formatMessage(badTestTaskNumber, (String) args[1], (String) args[2]);
             }
@@ -108,8 +113,7 @@ public class PendingListingRequiredData2015ReviewerTest {
         Mockito.doAnswer(new Answer<String>() {
             @Override
             public String answer(final InvocationOnMock invocation) throws Throwable {
-                String badTestTaskNumber =
-                        "The test task %s for criteria %s requires a Task Success Standard Deviation value.";
+                String badTestTaskNumber = "The test task %s for criteria %s requires a Task Success Standard Deviation value.";
                 Object[] args = invocation.getArguments();
                 return formatMessage(badTestTaskNumber, (String) args[1], (String) args[2]);
             }
@@ -119,8 +123,7 @@ public class PendingListingRequiredData2015ReviewerTest {
         Mockito.doAnswer(new Answer<String>() {
             @Override
             public String answer(final InvocationOnMock invocation) throws Throwable {
-                String badTestTaskNumber =
-                        "The test task %s for criteria %s requires a Task Path Deviation Observed value.";
+                String badTestTaskNumber = "The test task %s for criteria %s requires a Task Path Deviation Observed value.";
                 Object[] args = invocation.getArguments();
                 return formatMessage(badTestTaskNumber, (String) args[1], (String) args[2]);
             }
@@ -130,8 +133,7 @@ public class PendingListingRequiredData2015ReviewerTest {
         Mockito.doAnswer(new Answer<String>() {
             @Override
             public String answer(final InvocationOnMock invocation) throws Throwable {
-                String badTestTaskNumber =
-                        "The test task %s for criteria %s requires a Task Path Deviation Optimal value.";
+                String badTestTaskNumber = "The test task %s for criteria %s requires a Task Path Deviation Optimal value.";
                 Object[] args = invocation.getArguments();
                 return formatMessage(badTestTaskNumber, (String) args[1], (String) args[2]);
             }
@@ -141,8 +143,7 @@ public class PendingListingRequiredData2015ReviewerTest {
         Mockito.doAnswer(new Answer<String>() {
             @Override
             public String answer(final InvocationOnMock invocation) throws Throwable {
-                String badTestTaskNumber =
-                        "The test task %s for criteria %s requires a Task Time Average value.";
+                String badTestTaskNumber = "The test task %s for criteria %s requires a Task Time Average value.";
                 Object[] args = invocation.getArguments();
                 return formatMessage(badTestTaskNumber, (String) args[1], (String) args[2]);
             }
@@ -152,8 +153,7 @@ public class PendingListingRequiredData2015ReviewerTest {
         Mockito.doAnswer(new Answer<String>() {
             @Override
             public String answer(final InvocationOnMock invocation) throws Throwable {
-                String badTestTaskNumber =
-                        "The test task %s for criteria %s requires a Task Time Standard Deviation value.";
+                String badTestTaskNumber = "The test task %s for criteria %s requires a Task Time Standard Deviation value.";
                 Object[] args = invocation.getArguments();
                 return formatMessage(badTestTaskNumber, (String) args[1], (String) args[2]);
             }
@@ -163,8 +163,7 @@ public class PendingListingRequiredData2015ReviewerTest {
         Mockito.doAnswer(new Answer<String>() {
             @Override
             public String answer(final InvocationOnMock invocation) throws Throwable {
-                String badTestTaskNumber =
-                        "The test task %s for criteria %s requires a Task Time Deviation Observed Average value.";
+                String badTestTaskNumber = "The test task %s for criteria %s requires a Task Time Deviation Observed Average value.";
                 Object[] args = invocation.getArguments();
                 return formatMessage(badTestTaskNumber, (String) args[1], (String) args[2]);
             }
@@ -174,8 +173,7 @@ public class PendingListingRequiredData2015ReviewerTest {
         Mockito.doAnswer(new Answer<String>() {
             @Override
             public String answer(final InvocationOnMock invocation) throws Throwable {
-                String badTestTaskNumber =
-                        "The test task %s for criteria %s requires a Task Time Deviation Optimal Average value.";
+                String badTestTaskNumber = "The test task %s for criteria %s requires a Task Time Deviation Optimal Average value.";
                 Object[] args = invocation.getArguments();
                 return formatMessage(badTestTaskNumber, (String) args[1], (String) args[2]);
             }
@@ -185,8 +183,7 @@ public class PendingListingRequiredData2015ReviewerTest {
         Mockito.doAnswer(new Answer<String>() {
             @Override
             public String answer(final InvocationOnMock invocation) throws Throwable {
-                String badTestTaskNumber =
-                        "The test task %s for criteria %s requires a Task Errors value.";
+                String badTestTaskNumber = "The test task %s for criteria %s requires a Task Errors value.";
                 Object[] args = invocation.getArguments();
                 return formatMessage(badTestTaskNumber, (String) args[1], (String) args[2]);
             }
@@ -196,8 +193,7 @@ public class PendingListingRequiredData2015ReviewerTest {
         Mockito.doAnswer(new Answer<String>() {
             @Override
             public String answer(final InvocationOnMock invocation) throws Throwable {
-                String badTestTaskNumber =
-                        "The test task %s for criteria %s requires a Task Errors Standard Deviation value.";
+                String badTestTaskNumber = "The test task %s for criteria %s requires a Task Errors Standard Deviation value.";
                 Object[] args = invocation.getArguments();
                 return formatMessage(badTestTaskNumber, (String) args[1], (String) args[2]);
             }
@@ -207,8 +203,7 @@ public class PendingListingRequiredData2015ReviewerTest {
         Mockito.doAnswer(new Answer<String>() {
             @Override
             public String answer(final InvocationOnMock invocation) throws Throwable {
-                String badTestTaskNumber =
-                        "The test task %s for criteria %s requires a Task Rating value.";
+                String badTestTaskNumber = "The test task %s for criteria %s requires a Task Rating value.";
                 Object[] args = invocation.getArguments();
                 return formatMessage(badTestTaskNumber, (String) args[1], (String) args[2]);
             }
@@ -218,8 +213,7 @@ public class PendingListingRequiredData2015ReviewerTest {
         Mockito.doAnswer(new Answer<String>() {
             @Override
             public String answer(final InvocationOnMock invocation) throws Throwable {
-                String badTestTaskNumber =
-                        "The test task %s for criteria %s requires a Task Rating Standard Deviation value.";
+                String badTestTaskNumber = "The test task %s for criteria %s requires a Task Rating Standard Deviation value.";
                 Object[] args = invocation.getArguments();
                 return formatMessage(badTestTaskNumber, (String) args[1], (String) args[2]);
             }
@@ -229,8 +223,7 @@ public class PendingListingRequiredData2015ReviewerTest {
         Mockito.doAnswer(new Answer<String>() {
             @Override
             public String answer(final InvocationOnMock invocation) throws Throwable {
-                String g1MacraNotAllowed =
-                        "Certification %s may not reference the G1 Macra Measure: '%s' "
+                String g1MacraNotAllowed = "Certification %s may not reference the G1 Macra Measure: '%s' "
                         + "since this listing does not have ICS. The measure has been removed.";
                 Object[] args = invocation.getArguments();
                 return formatMessage(g1MacraNotAllowed, (String) args[1], (String) args[2]);

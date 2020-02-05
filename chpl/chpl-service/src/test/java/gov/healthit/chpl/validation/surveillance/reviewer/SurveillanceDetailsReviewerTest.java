@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
+import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
@@ -34,25 +36,25 @@ import gov.healthit.chpl.util.ListingMockUtil;
 import gov.healthit.chpl.util.SurveillanceMockUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
 public class SurveillanceDetailsReviewerTest {
-    private static final String CHPL_NUMBER_NOT_FOUND =
-            "Could not find chpl product with unique id \"%s\".";
+    private static final String CHPL_NUMBER_NOT_FOUND = "Could not find chpl product with unique id \"%s\".";
     private static final String MISSING_START_DATE = "Start date for surveillance is required.";
     private static final String SURV_TYPE_NOT_FOUND = "A surveillance type was not found matching \"%s\".";
-    private static final String RANDOMIZED_SITES_REQUIRED =
-            "Randomized surveillance must provide a nonzero value for number of randomized sites used.";
-    private static final String RANDOMIZED_SITES_NA =
-            "Number of randomized sites used is not applicable for surveillance type \"%s\".";
-    private static final String END_DATE_REQ =
-            "End date for surveillance is required when there are no open nonconformities.";
-
+    private static final String RANDOMIZED_SITES_REQUIRED = "Randomized surveillance must provide a nonzero value for number of randomized sites used.";
+    private static final String RANDOMIZED_SITES_NA = "Number of randomized sites used is not applicable for surveillance type \"%s\".";
+    private static final String END_DATE_REQ = "End date for surveillance is required when there are no open nonconformities.";
 
     @Autowired
     private SurveillanceMockUtil mockUtil;
 
     @Autowired
     private ListingMockUtil listingMockUtil;
+
+    @Autowired
+    private FF4j ff4j;
 
     @Mock
     private CertifiedProductDAO cpDao;
@@ -125,13 +127,16 @@ public class SurveillanceDetailsReviewerTest {
             }
         }).when(msgUtil).getMessage(
                 ArgumentMatchers.eq("surveillance.endDateRequiredNoOpenNonConformities"));
+
+        Mockito.doReturn(true).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK);
+        Mockito.doReturn(true).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE);
     }
 
     @Test
     public void testInvalidOldStyleChplIdHasErrorMessage() {
         Surveillance surv = mockUtil.createOpenSurveillanceNoNonconformity();
-        CertifiedProduct listingWithOldStyleChplId =
-                listingMockUtil.createSimpleCertifiedProduct(null, "CHP-12345", "2014", new Date());
+        CertifiedProduct listingWithOldStyleChplId = listingMockUtil.createSimpleCertifiedProduct(null, "CHP-12345", "2014",
+                new Date());
         surv.setCertifiedProduct(listingWithOldStyleChplId);
 
         Mockito.when(
@@ -146,8 +151,8 @@ public class SurveillanceDetailsReviewerTest {
     @Test
     public void testInvalidNewStyleChplIdHasErrorMessage() {
         Surveillance surv = mockUtil.createOpenSurveillanceNoNonconformity();
-        CertifiedProduct listingWithNewStyleChplId =
-                listingMockUtil.createSimpleCertifiedProduct(null, ListingMockUtil.CHPL_ID_2015, "2015", new Date());
+        CertifiedProduct listingWithNewStyleChplId = listingMockUtil.createSimpleCertifiedProduct(null,
+                ListingMockUtil.CHPL_ID_2015, "2015", new Date());
         surv.setCertifiedProduct(listingWithNewStyleChplId);
 
         Mockito.when(
@@ -162,12 +167,12 @@ public class SurveillanceDetailsReviewerTest {
     @Test
     public void testValidNewStyleChplIdPopulatesData() {
         Surveillance surv = mockUtil.createOpenSurveillanceNoNonconformity();
-        CertifiedProduct listingWithNewStyleChplId =
-                listingMockUtil.createSimpleCertifiedProduct(null, ListingMockUtil.CHPL_ID_2015, "2015", new Date());
+        CertifiedProduct listingWithNewStyleChplId = listingMockUtil.createSimpleCertifiedProduct(null,
+                ListingMockUtil.CHPL_ID_2015, "2015", new Date());
         surv.setCertifiedProduct(listingWithNewStyleChplId);
 
-        CertifiedProduct foundListing =
-                listingMockUtil.createSimpleCertifiedProduct(1L, ListingMockUtil.CHPL_ID_2015, "2015", new Date());
+        CertifiedProduct foundListing = listingMockUtil.createSimpleCertifiedProduct(1L, ListingMockUtil.CHPL_ID_2015, "2015",
+                new Date());
         Mockito.when(
                 chplProductNumberUtil.getListing(ArgumentMatchers.eq(listingWithNewStyleChplId.getChplProductNumber())))
                 .thenReturn(foundListing);

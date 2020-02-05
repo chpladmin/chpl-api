@@ -85,7 +85,7 @@ import junit.framework.TestCase;
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        gov.healthit.chpl.CHPLTestConfig.class, gov.healthit.chpl.Ff4jTestConfiguration.class
+        gov.healthit.chpl.CHPLTestConfig.class
 })
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
     DirtiesContextTestExecutionListener.class,

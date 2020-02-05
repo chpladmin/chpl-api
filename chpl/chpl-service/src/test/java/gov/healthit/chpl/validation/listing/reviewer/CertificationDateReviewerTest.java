@@ -22,11 +22,17 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ListingMockUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
 public class CertificationDateReviewerTest {
     private static final String FUTURE_CERT_DATE_ERROR = "Certification date occurs in the future.";
-    @Autowired private ListingMockUtil mockUtil;
-    @Autowired private MessageSource messageSource;
+
+    @Autowired
+    private ListingMockUtil mockUtil;
+
+    @Autowired
+    private MessageSource messageSource;
 
     @Spy
     private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
@@ -40,7 +46,7 @@ public class CertificationDateReviewerTest {
         certDateReviewer = new CertificationDateReviewer(msgUtil);
     }
 
-    //Case: A valid certification date
+    // Case: A valid certification date
     @Test
     public void testValidCertificationDate_DoesNotHaveError() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
@@ -48,12 +54,12 @@ public class CertificationDateReviewerTest {
         assertFalse(listing.getErrorMessages().contains(FUTURE_CERT_DATE_ERROR));
     }
 
-    //Case: An invalid/future certification date
+    // Case: An invalid/future certification date
     @Test
     public void testFutureCertificationDate_HasError() {
         Mockito.doReturn(FUTURE_CERT_DATE_ERROR)
-        .when(msgUtil).getMessage(
-                ArgumentMatchers.eq("listing.futureCertificationDate"));
+                .when(msgUtil).getMessage(
+                        ArgumentMatchers.eq("listing.futureCertificationDate"));
 
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         Calendar cal = Calendar.getInstance();
