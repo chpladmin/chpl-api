@@ -51,6 +51,11 @@ public class AddDocumentActionPermissions extends ActionPermissions {
                         //Access is denied.
                         throw new AccessDeniedException(msgUtil.getMessage(
                                 "surveillance.nonconformityDocNotAddedForRemovedCriteria", nonconformity.getType()));
+                    } else if (isNonconformityForRemovedRequirement(nonconformity)) {
+                        //done instead of returning false to get a more customized message than
+                        //Access is denied.
+                        throw new AccessDeniedException(msgUtil.getMessage(
+                                "surveillance.nonconformityDocNotAddedForRemovedRequirement", nonconformity.getType()));
                     } else if (isListing2014Edition(surv)) {
                         //done instead of returning false to get a more customized message than
                         //Access is denied.
@@ -91,6 +96,16 @@ public class AddDocumentActionPermissions extends ActionPermissions {
                 && nonconformity.getCertificationCriterionEntity() != null
                 && nonconformity.getCertificationCriterionEntity().getRemoved() != null
                 && nonconformity.getCertificationCriterionEntity().getRemoved().booleanValue();
+    }
+
+    private boolean isNonconformityForRemovedRequirement(SurveillanceNonconformityEntity nonconformity) {
+        if (!ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)) {
+            return false;
+        }
+
+        return nonconformity != null
+                && nonconformity.getCertificationCriterionEntity() != null
+                && nonconformity.getCertificationCriterionEntity().getNumber().equalsIgnoreCase("170.523 (b)(2)");
     }
 
     private boolean isListing2014Edition(SurveillanceEntity surv) {

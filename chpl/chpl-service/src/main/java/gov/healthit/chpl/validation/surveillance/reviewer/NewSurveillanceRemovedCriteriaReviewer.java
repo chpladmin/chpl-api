@@ -45,8 +45,10 @@ public class NewSurveillanceRemovedCriteriaReviewer implements Reviewer {
 
         for (SurveillanceRequirement req : surv.getRequirements()) {
             checkRequirementForRemovedCriteria(surv, req);
+            checkRequirementForRemovedTransparency(surv, req);
             for (SurveillanceNonconformity nc : req.getNonconformities()) {
                 checkNonconformityForRemovedCriteria(surv, nc);
+                checkNonconformityForRemovedTransparency(surv, nc);
             }
         }
     }
@@ -64,6 +66,18 @@ public class NewSurveillanceRemovedCriteriaReviewer implements Reviewer {
         }
     }
 
+    private void checkRequirementForRemovedTransparency(Surveillance surv, SurveillanceRequirement req) {
+        if (req.getType() != null && !StringUtils.isEmpty(req.getType().getName())
+                && req.getType().getName().equalsIgnoreCase(SurveillanceRequirementType.TRANS_DISCLOSURE_REQ)) {
+            String requirement = req.getRequirement();
+            if (requirement != null && requirement.equalsIgnoreCase("170.523 (k)(2)")) {
+                surv.getErrorMessages().add(
+                        msgUtil.getMessage("surveillance.requirementNotAddedForRemovedRequirement",
+                                req.getRequirement()));
+            }
+        }
+    }
+
     private void checkNonconformityForRemovedCriteria(Surveillance surv, SurveillanceNonconformity nc) {
         if (!StringUtils.isEmpty(nc.getNonconformityType())) {
                 CertificationCriterionDTO criterion = certDao.getByName(nc.getNonconformityType());
@@ -73,6 +87,15 @@ public class NewSurveillanceRemovedCriteriaReviewer implements Reviewer {
                             msgUtil.getMessage("surveillance.nonconformityNotAddedForRemovedCriteria",
                                     nc.getNonconformityType()));
                 }
+        }
+    }
+
+    private void checkNonconformityForRemovedTransparency(Surveillance surv, SurveillanceNonconformity nc) {
+        String requirement = nc.getNonconformityType();
+        if (requirement != null && requirement.equalsIgnoreCase("170.523 (k)(2)")) {
+            surv.getErrorMessages().add(
+                    msgUtil.getMessage("surveillance.nonconformityNotAddedForRemovedRequirement",
+                            nc.getNonconformityType()));
         }
     }
 }
