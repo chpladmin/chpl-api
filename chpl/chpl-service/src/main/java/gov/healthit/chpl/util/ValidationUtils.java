@@ -173,14 +173,24 @@ public final class ValidationUtils {
         return hasCert;
     }
 
-    public static boolean hasCriterion(String certNumber, List<CertificationCriterion> allCerts) {
+    public static boolean hasCert(CertificationCriterion criterion, List<CertificationCriterion> allCerts) {
         boolean hasCert = false;
         for (int i = 0; i < allCerts.size() && !hasCert; i++) {
-            if (allCerts.get(i).getNumber().equals(certNumber)) {
+            if (allCerts.get(i).getId().equals(criterion.getId())) {
                 hasCert = true;
             }
         }
         return hasCert;
+    }
+
+    public static CertificationCriterion getCert(String certNumber, List<CertificationCriterion> allCerts) {
+        CertificationCriterion cert = null;
+        for (int i = 0; i < allCerts.size() && cert == null; i++) {
+            if (allCerts.get(i).getNumber().equals(certNumber)) {
+                cert = allCerts.get(i);
+            }
+        }
+        return cert;
     }
 
     /**

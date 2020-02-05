@@ -83,6 +83,10 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
             "170.315 (g)(9)"
     };
 
+    private static final String[] CERTS_REQUIRING_CQM = {
+            "170.315 (c)(1)", "170.315 (c)(2)", "170.315 (c)(3)", "170.315 (c)(4)"
+    };
+
     private static final String G1_CRITERIA_NUMBER = "170.315 (g)(1)";
     private static final String G2_CRITERIA_NUMBER = "170.315 (g)(2)";
     private List<String> e2e3Criterion = new ArrayList<String>();
@@ -166,53 +170,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 Arrays.asList(E1_RELATED_CERTS));
         listing.getErrorMessages().addAll(errors);
 
-        // check for (c)(1), (c)(2), (c)(3), (c)(4)
-        boolean meetsC1Criterion = ValidationUtils.hasCert("170.315 (c)(1)", attestedCriteria);
-        boolean meetsC2Criterion = ValidationUtils.hasCert("170.315 (c)(2)", attestedCriteria);
-        boolean meetsC3Criterion = ValidationUtils.hasCert("170.315 (c)(3)", attestedCriteria);
-        boolean meetsC4Criterion = ValidationUtils.hasCert("170.315 (c)(4)", attestedCriteria);
-        boolean hasC1Cqm = false;
-        boolean hasC2Cqm = false;
-        boolean hasC3Cqm = false;
-        boolean hasC4Cqm = false;
-
-        for (CQMResultDetails cqm : listing.getCqmResults()) {
-            List<CertificationCriterion> cqmCriterion = new ArrayList<CertificationCriterion>();
-            for (CQMResultCertification criteria : cqm.getCriteria()) {
-                cqmCriterion.add(criteria.getCriterion());
-            }
-            hasC1Cqm = hasC1Cqm || ValidationUtils.hasCriterion("170.315 (c)(1)", cqmCriterion);
-            hasC2Cqm = hasC2Cqm || ValidationUtils.hasCriterion("170.315 (c)(2)", cqmCriterion);
-            hasC3Cqm = hasC3Cqm || ValidationUtils.hasCriterion("170.315 (c)(3)", cqmCriterion);
-            hasC4Cqm = hasC4Cqm || ValidationUtils.hasCriterion("170.315 (c)(4)", cqmCriterion);
-        }
-        if (meetsC1Criterion && !hasC1Cqm) {
-            listing.getErrorMessages()
-            .add(msgUtil.getMessage("listing.criteria.missingCqmFor170315c", "170.315 (c)(1)"));
-        } else if (!meetsC1Criterion && hasC1Cqm) {
-            listing.getErrorMessages()
-            .add(msgUtil.getMessage("listing.criteria.missing170315cForCqm", "170.315 (c)(1)"));
-        }
-        if (meetsC2Criterion && !hasC2Cqm) {
-            listing.getErrorMessages()
-            .add(msgUtil.getMessage("listing.criteria.missingCqmFor170315c", "170.315 (c)(2)"));
-            listing.getErrorMessages()
-            .add(msgUtil.getMessage("listing.criteria.missing170315cForCqm", "170.315 (c)(2)"));
-        }
-        if (meetsC3Criterion && !hasC3Cqm) {
-            listing.getErrorMessages()
-            .add(msgUtil.getMessage("listing.criteria.missingCqmFor170315c", "170.315 (c)(3)"));
-        } else if (!meetsC3Criterion && hasC3Cqm) {
-            listing.getErrorMessages()
-            .add(msgUtil.getMessage("listing.criteria.missing170315cForCqm", "170.315 (c)(3)"));
-        }
-        if (meetsC4Criterion && !hasC4Cqm) {
-            listing.getErrorMessages()
-            .add(msgUtil.getMessage("listing.criteria.missingCqmFor170315c", "170.315 (c)(4)"));
-        } else if (!meetsC4Criterion && hasC4Cqm) {
-            listing.getErrorMessages()
-            .add(msgUtil.getMessage("listing.criteria.missing170315cForCqm", "170.315 (c)(4)"));
-        }
+        validateCqms(listing);
 
         // check for (e)(2) or (e)(3) certs
         List<String> e2e3ComplimentaryErrors = ValidationUtils.checkComplimentaryCriteriaAllRequired(e2e3Criterion,
@@ -718,6 +676,86 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 && !hasG6) {
             addListingWarningByPermission(listing, msg);
         }
+    }
+
+    private void validateCqms(CertifiedProductSearchDetails listing) {
+        List<CertificationCriterion> attestedCriteria = getAttestedCriteria(listing);
+
+     // check for (c)(1), (c)(2), (c)(3), (c)(4)
+//        boolean meetsC1Criterion = ValidationUtils.hasCert("170.315 (c)(1)", attestedCriteria);
+//        boolean meetsC2Criterion = ValidationUtils.hasCert("170.315 (c)(2)", attestedCriteria);
+//        boolean meetsOldC3Criterion = ValidationUtils.hasCert("170.315 (c)(3)", attestedCriteria);
+//        boolean meetsCuresC3Criterion = ValidationUtils.hasCert("170.315 (c)(3)", attestedCriteria);
+//        boolean meetsC4Criterion = ValidationUtils.hasCert("170.315 (c)(4)", attestedCriteria);
+//        boolean hasC1Cqm = false;
+//        boolean hasC2Cqm = false;
+//        boolean hasC3Cqm = false;
+//        boolean hasC4Cqm = false;
+
+        //all criteria under a cqm must also be attested to at the listing level
+        for (CQMResultDetails cqm : listing.getCqmResults()) {
+            for (CQMResultCertification cqmCriterion : cqm.getCriteria()) {
+                if (!ValidationUtils.hasCert(cqmCriterion.getCriterion(), attestedCriteria)) {
+                    listing.getErrorMessages().add(
+                            msgUtil.getMessage("listing.criteria.missingCriteriaForCqm", cqm.getCmsId(), cqmCriterion.getCriterion().getNumber()));
+                }
+            }
+        }
+
+        //any of c1-c4 that is met at the listing level must also have a cqm mapped to that criterion
+        for (String criteriaNumber : CERTS_REQUIRING_CQM) {
+            CertificationCriterion criterion = ValidationUtils.getCert(criteriaNumber, attestedCriteria);
+            if (criterion != null) {
+                listing.getCqmResults().stream()
+                    .filter(cqm -> cqmHasCert(criterion, cqm.getCriteria()));
+                //TODO finish this logic
+                //Actual TODO Move all CQM checking into separate reviewers
+                for (CQMResultDetails cqm : listing.getCqmResults()) {
+                    for (CQMResultCertification cqmCriterion : cqm.getCriteria()) {
+                        if (!ValidationUtils.hasCert(cqmCriterion.getCriterion(), attestedCriteria)) {
+                            listing.getErrorMessages().add(
+                                    msgUtil.getMessage("listing.criteria.missingCriteriaForCqm", cqm.getCmsId(), cqmCriterion.getCriterion().getNumber()));
+                        }
+                    }
+                }
+            }
+        }
+//            hasC1Cqm = hasC1Cqm || ValidationUtils.hasCert("170.315 (c)(1)", cqmCriterion);
+//            hasC2Cqm = hasC2Cqm || ValidationUtils.hasCert("170.315 (c)(2)", cqmCriterion);
+//            hasC3Cqm = hasC3Cqm || ValidationUtils.hasCert("170.315 (c)(3)", cqmCriterion);
+//            hasC4Cqm = hasC4Cqm || ValidationUtils.hasCert("170.315 (c)(4)", cqmCriterion);
+//        }
+//        if (meetsC1Criterion && !hasC1Cqm) {
+//            listing.getErrorMessages()
+//            .add(msgUtil.getMessage("listing.criteria.missingCqmFor170315c", "170.315 (c)(1)"));
+//        } else if (!meetsC1Criterion && hasC1Cqm) {
+//            listing.getErrorMessages()
+//            .add(msgUtil.getMessage("listing.criteria.missing170315cForCqm", "170.315 (c)(1)"));
+//        }
+//        if (meetsC2Criterion && !hasC2Cqm) {
+//            listing.getErrorMessages()
+//            .add(msgUtil.getMessage("listing.criteria.missingCqmFor170315c", "170.315 (c)(2)"));
+//            listing.getErrorMessages()
+//            .add(msgUtil.getMessage("listing.criteria.missing170315cForCqm", "170.315 (c)(2)"));
+//        }
+//        if (meetsC3Criterion && !hasC3Cqm) {
+//            listing.getErrorMessages()
+//            .add(msgUtil.getMessage("listing.criteria.missingCqmFor170315c", "170.315 (c)(3)"));
+//        } else if (!meetsC3Criterion && hasC3Cqm) {
+//            listing.getErrorMessages()
+//            .add(msgUtil.getMessage("listing.criteria.missing170315cForCqm", "170.315 (c)(3)"));
+//        }
+//        if (meetsC4Criterion && !hasC4Cqm) {
+//            listing.getErrorMessages()
+//            .add(msgUtil.getMessage("listing.criteria.missingCqmFor170315c", "170.315 (c)(4)"));
+//        } else if (!meetsC4Criterion && hasC4Cqm) {
+//            listing.getErrorMessages()
+//            .add(msgUtil.getMessage("listing.criteria.missing170315cForCqm", "170.315 (c)(4)"));
+//        }
+    }
+
+    private boolean cqmHasCert(CertificationCriterion criterion, List<CQMResultCertification> cqmResult) {
+        //TODO
     }
 
     private List<CertificationCriterion> getAttestedCriteria(CertifiedProductSearchDetails listing) {
