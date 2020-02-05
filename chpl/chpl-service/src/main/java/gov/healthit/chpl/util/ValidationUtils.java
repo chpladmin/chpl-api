@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 
 /**
@@ -423,5 +424,17 @@ public final class ValidationUtils {
             }
         }
         return errors;
+    }
+
+    public static List<CertificationCriterion> getAttestedCriteria(CertifiedProductSearchDetails listing) {
+        List<CertificationResult> attestedCertificationResults = listing.getCertificationResults().stream()
+                .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess().equals(Boolean.TRUE))
+                .collect(Collectors.<CertificationResult>toList());
+
+        List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
+        for (CertificationResult cr : attestedCertificationResults) {
+            criteria.add(cr.getCriterion());
+        }
+        return criteria;
     }
 }
