@@ -2157,8 +2157,10 @@ public class CertifiedProductManager extends SecuredManager {
     private Long findCqmCriterionId(final CQMResultCriteriaDTO cqm) throws EntityRetrievalException {
         if (cqm.getCriterionId() != null) {
             return cqm.getCriterionId();
-        }
-        if (cqm.getCriterion() != null && !StringUtils.isEmpty(cqm.getCriterion().getNumber())) {
+        } else if (cqm.getCriterion() != null && cqm.getCriterion().getId() != null) {
+            return cqm.getCriterion().getId();
+        } else if (cqm.getCriterion() != null && !StringUtils.isEmpty(cqm.getCriterion().getNumber())
+                && !StringUtils.isEmpty(cqm.getCriterion().getTitle())) {
             CertificationCriterionDTO cert = certCriterionDao.getByNumberAndTitle(
                     cqm.getCriterion().getNumber(), cqm.getCriterion().getTitle());
             if (cert != null) {
@@ -2167,8 +2169,6 @@ public class CertifiedProductManager extends SecuredManager {
                 throw new EntityRetrievalException(
                         "Could not find certification criteria with number " + cqm.getCriterion().getNumber());
             }
-        } else if (cqm.getCriterion() != null && cqm.getCriterion().getId() != null) {
-            return cqm.getCriterion().getId();
         } else {
             throw new EntityRetrievalException("A criteria id or number must be provided.");
         }
@@ -2195,8 +2195,7 @@ public class CertifiedProductManager extends SecuredManager {
                         CQMResultCriteriaDTO cqmdto = new CQMResultCriteriaDTO();
                         cqmdto.setId(criteria.getId());
                         cqmdto.setCriterionId(criteria.getCertificationId());
-                        CertificationCriterionDTO certDto = new CertificationCriterionDTO();
-                        certDto.setNumber(criteria.getCertificationNumber());
+                        CertificationCriterionDTO certDto = new CertificationCriterionDTO(criteria.getCriterion());
                         cqmdto.setCriterion(certDto);
                         dto.getCriteria().add(cqmdto);
                     }
