@@ -28,8 +28,6 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestTaskD
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestTaskParticipantDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductQmsStandardDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCqmCertificationCriterionDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCqmCriterionDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingTestTaskDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
@@ -168,54 +166,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 Arrays.asList(E1_RELATED_CERTS));
         listing.getErrorMessages().addAll(errors);
 
-        // check for (c)(1), (c)(2), (c)(3), (c)(4)
-        boolean meetsC1Criterion = ValidationUtils.hasCert("170.315 (c)(1)", attestedCriteria);
-        boolean meetsC2Criterion = ValidationUtils.hasCert("170.315 (c)(2)", attestedCriteria);
-        boolean meetsC3Criterion = ValidationUtils.hasCert("170.315 (c)(3)", attestedCriteria);
-        boolean meetsC4Criterion = ValidationUtils.hasCert("170.315 (c)(4)", attestedCriteria);
-        boolean hasC1Cqm = false;
-        boolean hasC2Cqm = false;
-        boolean hasC3Cqm = false;
-        boolean hasC4Cqm = false;
-        for (PendingCqmCriterionDTO cqm : listing.getCqmCriterion()) {
-            List<CertificationCriterion> cqmCerts = new ArrayList<CertificationCriterion>();
-            for (PendingCqmCertificationCriterionDTO criteria : cqm.getCertifications()) {
-                cqmCerts.add(new CertificationCriterion(criteria.getCriterion()));
-            }
-            hasC1Cqm = hasC1Cqm || ValidationUtils.hasCert("170.315 (c)(1)", cqmCerts);
-            hasC2Cqm = hasC2Cqm || ValidationUtils.hasCert("170.315 (c)(2)", cqmCerts);
-            hasC3Cqm = hasC3Cqm || ValidationUtils.hasCert("170.315 (c)(3)", cqmCerts);
-            hasC4Cqm = hasC4Cqm || ValidationUtils.hasCert("170.315 (c)(4)", cqmCerts);
-        }
-        if (meetsC1Criterion && !hasC1Cqm) {
-            listing.getErrorMessages().add(
-                    "Certification criterion 170.315 (c)(1) was found but no matching Clinical Quality Measurement was found.");
-        } else if (!meetsC1Criterion && hasC1Cqm) {
-            listing.getErrorMessages().add(
-                    "A Clinical Quality Measurement was found under Certification criterion 170.315 (c)(1), but the product does not attest to that criterion.");
-        }
-        if (meetsC2Criterion && !hasC2Cqm) {
-            listing.getErrorMessages().add(
-                    "Certification criterion 170.315 (c)(2) was found but no matching Clinical Quality Measurement was found.");
-        } else if (!meetsC2Criterion && hasC2Cqm) {
-            listing.getErrorMessages().add(
-                    "A Clinical Quality Measurement was found under Certification criterion 170.315 (c)(2), but the product does not attest to that criterion.");
-        }
-        if (meetsC3Criterion && !hasC3Cqm) {
-            listing.getErrorMessages().add(
-                    "Certification criterion 170.315 (c)(3) was found but no matching Clinical Quality Measurement was found.");
-        } else if (!meetsC3Criterion && hasC3Cqm) {
-            listing.getErrorMessages().add(
-                    "A Clinical Quality Measurement was found under Certification criterion 170.315 (c)(3), but the product does not attest to that criterion.");
-        }
-        if (meetsC4Criterion && !hasC4Cqm) {
-            listing.getErrorMessages().add(
-                    "Certification criterion 170.315 (c)(4) was found but no matching Clinical Quality Measurement was found.");
-        } else if (!meetsC4Criterion && hasC4Cqm) {
-            listing.getErrorMessages().add(
-                    "A Clinical Quality Measurement was found under Certification criterion 170.315 (c)(4), but the product does not attest to that criterion.");
-        }
-
         // check for (e)(2) or (e)(3) required complimentary certs
         List<String> e2e3ComplimentaryErrors =
                 ValidationUtils.checkComplimentaryCriteriaAllRequired(e2e3Criterion,
@@ -274,7 +224,8 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
             if (ValidationUtils.hasCert(UCD_RELATED_CERTS[i], attestedCriteria)) {
                 // check for full set of UCD data
                 for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
-                    if (cert.getCriterion().getNumber().equals(UCD_RELATED_CERTS[i])) {
+                    if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria().equals(Boolean.TRUE)
+                            && cert.getCriterion().getNumber().equals(UCD_RELATED_CERTS[i])) {
                         if (cert.getUcdProcesses() == null || cert.getUcdProcesses().size() == 0) {
                             addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingUcdProcess",
                                     cert.getCriterion().getNumber());

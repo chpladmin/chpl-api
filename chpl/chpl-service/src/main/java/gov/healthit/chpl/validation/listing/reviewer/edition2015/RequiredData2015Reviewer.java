@@ -217,7 +217,8 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
             if (ValidationUtils.hasCert(UCD_RELATED_CERTS[i], attestedCriteria)) {
                 // check for full set of UCD data
                 for (CertificationResult cert : listing.getCertificationResults()) {
-                    if (cert.getNumber().equals(UCD_RELATED_CERTS[i])) {
+                    if (cert.isSuccess() != null && cert.isSuccess().equals(Boolean.TRUE)
+                            && cert.getNumber().equals(UCD_RELATED_CERTS[i])) {
                         // make sure at least one UCD process has this criteria number
                         if (cert.isSed()) {
                             if (listing.getSed() == null || listing.getSed().getUcdProcesses() == null

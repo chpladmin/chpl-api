@@ -209,28 +209,28 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
             // in the upload
             List<CertificationCriterionDTO> all2015Criteria = certDao
                     .findByCertificationEditionYear(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
-            Map<String, Boolean> allCriteriaMap = new LinkedHashMap<String, Boolean>();
+            Map<Long, Boolean> allCriteriaMap = new LinkedHashMap<Long, Boolean>();
             for (CertificationCriterionDTO criterion : all2015Criteria) {
-                allCriteriaMap.put(criterion.getNumber(), Boolean.FALSE);
+                allCriteriaMap.put(criterion.getId(), Boolean.FALSE);
             }
 
             int criteriaBeginIndex = getColumnIndexMap().getCriteriaStartIndex();
             for (int i = 0; i < getCriteriaNames().length; i++) {
                 String criteriaName = getCriteriaNames()[i];
-                allCriteriaMap.put(criteriaName, Boolean.TRUE);
                 int criteriaEndIndex = getColumnIndexMap().getLastIndexForCriteria(getHeading(), criteriaBeginIndex);
-                pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                        criteriaName, firstRow, criteriaBeginIndex, criteriaEndIndex));
+                PendingCertificationResultEntity certEntity = parseCriteria(pendingCertifiedProduct,
+                        criteriaName, firstRow, criteriaBeginIndex, criteriaEndIndex);
+                pendingCertifiedProduct.getCertificationCriterion().add(certEntity);
+                allCriteriaMap.put(certEntity.getMappedCriterion().getId(), Boolean.TRUE);
                 criteriaBeginIndex = criteriaEndIndex + 1;
             }
 
             // add certification results for any criteria that are part of the
-            // edition but that
-            // weren't in the upload file
-            for (String criterionNumber : allCriteriaMap.keySet()) {
-                if (allCriteriaMap.get(criterionNumber).equals(Boolean.FALSE)) {
+            // edition but that weren't in the upload file
+            for (Long criterionId : allCriteriaMap.keySet()) {
+                if (allCriteriaMap.get(criterionId).equals(Boolean.FALSE)) {
                     pendingCertifiedProduct.getCertificationCriterion()
-                            .add(getCertificationResult(criterionNumber, ""));
+                            .add(getCertificationResult(criterionId, ""));
                 }
             }
         }
@@ -423,8 +423,8 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
     }
 
     protected PendingCertificationResultEntity parseCriteria(
-            final PendingCertifiedProductEntity pendingCertifiedProduct, final String criteriaNumber,
-            final CSVRecord firstRow, final int beginIndex, final int endIndex) {
+            PendingCertifiedProductEntity pendingCertifiedProduct, String criteriaNumber,
+            CSVRecord firstRow, int beginIndex, int endIndex) {
         int currIndex = beginIndex;
         PendingCertificationResultEntity cert = null;
         try {
