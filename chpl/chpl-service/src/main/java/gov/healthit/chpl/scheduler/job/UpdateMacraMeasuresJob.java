@@ -75,7 +75,9 @@ public class UpdateMacraMeasuresJob extends QuartzJob {
         private List<MacraMeasureEntity> getAllMeasuresWhereValueIsNotNull() {
             Query query = entityManager
                     .createQuery("FROM MacraMeasureEntity mme "
-                            + "WHERE mme.value IS NOT NULL", MacraMeasureEntity.class);
+                            + "WHERE mme.value IS NOT NULL "
+                            + "AND mme.deleted = FALSE",
+                            MacraMeasureEntity.class);
             return query.getResultList();
         }
     }
