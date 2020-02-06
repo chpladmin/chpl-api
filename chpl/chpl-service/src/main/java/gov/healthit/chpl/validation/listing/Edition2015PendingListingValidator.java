@@ -20,6 +20,8 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.UnattestedCriteriaWi
 import gov.healthit.chpl.validation.pendingListing.reviewer.UnsupportedCharacterReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.ValidDataReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.AttestedCriteriaCqmReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.CqmAttestedCriteriaReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.DuplicateData2015Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.InvalidCriteriaCombinationReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.RequiredCriteriaValidator;
@@ -30,7 +32,7 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.TestTool
 
 /**
  * Validation interface for 2015 listings in the pending stage of upload to the CHPL.
- * 
+ *
  * @author kekey
  *
  */
@@ -112,6 +114,14 @@ public class Edition2015PendingListingValidator extends PendingValidator {
     @Qualifier("pendingInvalidCriteriaCombinationReviewer")
     private InvalidCriteriaCombinationReviewer invalidCriteriaCombinationReviewer;
 
+    @Autowired
+    @Qualifier("pendingCqmAttestedCriteriaReviewer")
+    private CqmAttestedCriteriaReviewer cqmAttestedCriteriaReviewer;
+
+    @Autowired
+    @Qualifier("pendingAttestedCriteriaCqmReviewer")
+    private AttestedCriteriaCqmReviewer attestedCriteriaCqmReviewer;
+
     private List<Reviewer> reviewers;
 
     @Override
@@ -137,6 +147,8 @@ public class Edition2015PendingListingValidator extends PendingValidator {
             reviewers.add(removedCriteriaReviewer);
             reviewers.add(requiredCriteriaValidator);
             reviewers.add(invalidCriteriaCombinationReviewer);
+            reviewers.add(cqmAttestedCriteriaReviewer);
+            reviewers.add(attestedCriteriaCqmReviewer);
         }
         return reviewers;
     }

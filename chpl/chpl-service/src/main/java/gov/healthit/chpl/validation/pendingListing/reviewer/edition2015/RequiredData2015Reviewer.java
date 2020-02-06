@@ -15,7 +15,6 @@ import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
@@ -128,7 +127,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     public void review(final PendingCertifiedProductDTO listing) {
         super.review(listing);
 
-        List<CertificationCriterion> attestedCriteria = getAttestedCriteria(listing);
+        List<CertificationCriterion> attestedCriteria = ValidationUtils.getAttestedCriteria(listing);
 
         List<String> errors = ValidationUtils.checkClassOfCriteriaForErrors("170.315 (a)", attestedCriteria,
                 Arrays.asList(A_RELATED_CERTS));
@@ -895,7 +894,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     }
 
     private void validateG3(PendingCertifiedProductDTO listing) {
-        List<CertificationCriterion> attestedCriteria = getAttestedCriteria(listing);
+        List<CertificationCriterion> attestedCriteria = ValidationUtils.getAttestedCriteria(listing);
         List<CertificationCriterion> presentAttestedUcdCriteria = attestedCriteria.stream()
                 .filter(cert -> cert.getRemoved() == null || cert.getRemoved().equals(Boolean.TRUE))
                 .filter(cert -> certNumberIsInCertList(cert, UCD_RELATED_CERTS))
@@ -918,7 +917,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     }
 
     private void validateG3Inverse(PendingCertifiedProductDTO listing) {
-        List<CertificationCriterion> attestedCriteria = getAttestedCriteria(listing);
+        List<CertificationCriterion> attestedCriteria = ValidationUtils.getAttestedCriteria(listing);
         List<CertificationCriterion> presentAttestedUcdCriteria = attestedCriteria.stream()
                 .filter(cert -> cert.getRemoved() == null || cert.getRemoved().equals(Boolean.TRUE))
                 .filter(cert -> certNumberIsInCertList(cert, UCD_RELATED_CERTS))
@@ -943,7 +942,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     }
 
     private void validateG6(PendingCertifiedProductDTO listing) {
-        List<CertificationCriterion> attestedCriteria = getAttestedCriteria(listing);
+        List<CertificationCriterion> attestedCriteria = ValidationUtils.getAttestedCriteria(listing);
         List<CertificationCriterion> presentAttestedG6Criteria = attestedCriteria.stream()
                 .filter(cert -> cert.getRemoved() == null || cert.getRemoved().equals(Boolean.TRUE))
                 .filter(cert -> certNumberIsInCertList(cert, CERTS_REQUIRING_G6))
@@ -966,7 +965,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     }
 
     private void validateG6Inverse(PendingCertifiedProductDTO listing) {
-        List<CertificationCriterion> attestedCriteria = getAttestedCriteria(listing);
+        List<CertificationCriterion> attestedCriteria = ValidationUtils.getAttestedCriteria(listing);
         List<CertificationCriterion> presentAttestedG6Criteria = attestedCriteria.stream()
                 .filter(cert -> cert.getRemoved() == null || cert.getRemoved().equals(Boolean.TRUE))
                 .filter(cert -> certNumberIsInCertList(cert, CERTS_REQUIRING_G6))
@@ -988,19 +987,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 && hasG6) {
             addListingWarningByPermission(listing, msg);
         }
-    }
-
-    private List<CertificationCriterion> getAttestedCriteria(PendingCertifiedProductDTO listing) {
-        List<PendingCertificationResultDTO> attestedCertificationResults = listing.getCertificationCriterion().stream()
-                .filter(certResult -> certResult.getMeetsCriteria() != null && certResult.getMeetsCriteria().equals(Boolean.TRUE))
-                .collect(Collectors.<PendingCertificationResultDTO>toList());
-
-        List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
-        for (PendingCertificationResultDTO cr : attestedCertificationResults) {
-            CertificationCriterionDTO criterionDto = cr.getCriterion();
-            criteria.add(new CertificationCriterion(criterionDto));
-        }
-        return criteria;
     }
 
     private boolean certNumberIsInCertList(CertificationCriterion cert, String[] certNumberList) {

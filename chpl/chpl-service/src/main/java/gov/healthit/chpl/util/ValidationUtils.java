@@ -14,7 +14,9 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 
 /**
  * Utilities used to validate various basic elements of CHPL domain objects.
@@ -434,6 +436,19 @@ public final class ValidationUtils {
         List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
         for (CertificationResult cr : attestedCertificationResults) {
             criteria.add(cr.getCriterion());
+        }
+        return criteria;
+    }
+
+    public static List<CertificationCriterion> getAttestedCriteria(PendingCertifiedProductDTO listing) {
+        List<PendingCertificationResultDTO> attestedCertificationResults = listing.getCertificationCriterion().stream()
+                .filter(certResult -> certResult.getMeetsCriteria() != null && certResult.getMeetsCriteria().equals(Boolean.TRUE))
+                .collect(Collectors.<PendingCertificationResultDTO>toList());
+
+        List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
+        for (PendingCertificationResultDTO cr : attestedCertificationResults) {
+            CertificationCriterionDTO criterionDto = cr.getCriterion();
+            criteria.add(new CertificationCriterion(criterionDto));
         }
         return criteria;
     }
