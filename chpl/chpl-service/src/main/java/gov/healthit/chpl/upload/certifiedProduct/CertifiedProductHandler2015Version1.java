@@ -825,27 +825,29 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                         if (currCriteria.startsWith("170.315")) {
                             currCriteria = currCriteria.split(" ")[1];
                         }
-                        CertificationCriterionDTO cert = null;
-                        if (currCriteria.equals("c1") || currCriteria.contentEquals("(c)(1)")) {
-                            cert = certDao.getByNumberAndTitle("170.315 (c)(1)", "Clinical Quality Measures - Record and Export");
-                        } else if (currCriteria.equals("c2") || currCriteria.contentEquals("(c)(2)")) {
-                            cert = certDao.getByNumberAndTitle("170.315 (c)(2)", "Clinical Quality Measures - Import and Calculate");
-                        } else if (currCriteria.equals("c3") || currCriteria.contentEquals("(c)(3)")) {
-                            cert = certDao.getByNumberAndTitle("170.315 (c)(3)", "Clinical Quality Measures - Report");
-                            //TODO: handle Cures Update version as part of OCD-3149
-                        } else if (currCriteria.equals("c4") || currCriteria.contentEquals("(c)(4)")) {
-                            cert = certDao.getByNumberAndTitle("170.315 (c)(4)", "Clinical Quality Measures - Filter");
-                        }
-                        if (cert != null) {
-                            PendingCqmCertificationCriteriaEntity certEntity = new PendingCqmCertificationCriteriaEntity();
-                            certEntity.setCertificationId(cert.getId());
-                            CertificationCriterionEntity criteriaEntity = new CertificationCriterionEntity();
-                            criteriaEntity.setId(cert.getId());
-                            criteriaEntity.setNumber(cert.getNumber());
-                            criteriaEntity.setTitle(cert.getTitle());
-                            certEntity.setCertificationCriteria(criteriaEntity);
-                            currResult.getCertifications().add(certEntity);
-                        } else {
+                        CertificationCriterionEntity criteriaEntity = null;
+                        try {
+                            if (currCriteria.equals("c1") || currCriteria.contentEquals("(c)(1)")) {
+                                criteriaEntity = getCriterion("170.315 (c)(1)", false);
+                            } else if (currCriteria.equals("c2") || currCriteria.contentEquals("(c)(2)")) {
+                                criteriaEntity = getCriterion("170.315 (c)(2)", false);
+                            } else if (currCriteria.equals("c3") || currCriteria.contentEquals("(c)(3)")) {
+                                criteriaEntity = getCriterion("170.315 (c)(3)", false);
+                                //TODO: handle Cures Update version as part of OCD-3149
+                            } else if (currCriteria.equals("c4") || currCriteria.contentEquals("(c)(4)")) {
+                                criteriaEntity = getCriterion("170.315 (c)(4)", false);
+                            }
+
+                            if (criteriaEntity != null) {
+                                PendingCqmCertificationCriteriaEntity certEntity = new PendingCqmCertificationCriteriaEntity();
+                                certEntity.setCertificationId(criteriaEntity.getId());
+                                certEntity.setCertificationCriteria(criteriaEntity);
+                                currResult.getCertifications().add(certEntity);
+                            } else {
+                                product.getErrorMessages().add("Could not find a certification criteria matching "
+                                        + currCriteria + " for product " + product.getUniqueId());
+                            }
+                        } catch (InvalidArgumentsException ex) {
                             product.getErrorMessages().add("Could not find a certification criteria matching "
                                     + currCriteria + " for product " + product.getUniqueId());
                         }

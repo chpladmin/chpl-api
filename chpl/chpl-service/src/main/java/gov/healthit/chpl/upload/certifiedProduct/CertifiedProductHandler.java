@@ -304,7 +304,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         return result;
     }
 
-    private CertificationCriterionEntity getCriterion(String criterionName, boolean isCures)
+    protected CertificationCriterionEntity getCriterion(String criterionName, boolean isCures)
             throws InvalidArgumentsException {
         List<CertificationCriterionEntity> certEntities = certDao.getEntitiesByNumber(criterionName);
         if (certEntities == null || certEntities.size() == 0) {
