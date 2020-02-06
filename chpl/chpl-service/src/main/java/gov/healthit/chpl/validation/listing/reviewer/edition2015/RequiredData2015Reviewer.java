@@ -177,14 +177,16 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         boolean hasC4Cqm = false;
 
         for (CQMResultDetails cqm : listing.getCqmResults()) {
-            List<CertificationCriterion> cqmCriterion = new ArrayList<CertificationCriterion>();
-            for (CQMResultCertification criteria : cqm.getCriteria()) {
-                cqmCriterion.add(criteria.getCriterion());
+            List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
+            for (CQMResultCertification cqmCriterion : cqm.getCriteria()) {
+                CertificationCriterion criterion = new CertificationCriterion();
+                criterion.setNumber(cqmCriterion.getCertificationNumber());
+                criteria.add(criterion);
             }
-            hasC1Cqm = hasC1Cqm || ValidationUtils.hasCriterion("170.315 (c)(1)", cqmCriterion);
-            hasC2Cqm = hasC2Cqm || ValidationUtils.hasCriterion("170.315 (c)(2)", cqmCriterion);
-            hasC3Cqm = hasC3Cqm || ValidationUtils.hasCriterion("170.315 (c)(3)", cqmCriterion);
-            hasC4Cqm = hasC4Cqm || ValidationUtils.hasCriterion("170.315 (c)(4)", cqmCriterion);
+            hasC1Cqm = hasC1Cqm || ValidationUtils.hasCriterion("170.315 (c)(1)", criteria);
+            hasC2Cqm = hasC2Cqm || ValidationUtils.hasCriterion("170.315 (c)(2)", criteria);
+            hasC3Cqm = hasC3Cqm || ValidationUtils.hasCriterion("170.315 (c)(3)", criteria);
+            hasC4Cqm = hasC4Cqm || ValidationUtils.hasCriterion("170.315 (c)(4)", criteria);
         }
         if (meetsC1Criterion && !hasC1Cqm) {
             listing.getErrorMessages()
