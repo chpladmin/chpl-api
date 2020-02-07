@@ -82,7 +82,7 @@ import gov.healthit.chpl.validation.listing.PendingValidator;
 import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
+@ContextConfiguration(classes = { old.gov.healthit.chpl.CHPLTestConfig.class })
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
     DirtiesContextTestExecutionListener.class,
     TransactionalTestExecutionListener.class,

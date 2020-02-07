@@ -315,6 +315,7 @@
             <version>1.3</version>
             <scope>test</scope>
         </dependency>
+        <!--
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -326,6 +327,19 @@
                     <groupId>org.hamcrest</groupId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.4.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>5.4.0</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -369,6 +383,14 @@
             <groupId>org.ff4j</groupId>
             <artifactId>ff4j-store-ehcache</artifactId>
             <version>1.8</version>
+        </dependency>
+        
+        <!-- @Build annotation for generation of builder pattern -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.10</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -509,6 +531,17 @@
                   <version>8.26</version>
                 </dependency>
               </dependencies>
+           </plugin>
+           
+           <plugin>
+             <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-surefire-plugin</artifactId>
+             <version>2.20.1</version>
+             <configuration>
+               <excludes>
+                 <exclude>old.**</exclude>
+               </excludes>
+             </configuration>
            </plugin>
         </plugins>
         <!-- </pluginManagement> -->

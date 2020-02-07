@@ -5,14 +5,13 @@ import java.util.Date;
 
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
-/**
- * Certification body domain object.
- * 
- * @author kekey
- *
- */
-public class CertificationBody implements Serializable {
+@Builder
+@AllArgsConstructor
+public @Data class CertificationBody implements Serializable {
     private static final long serialVersionUID = 5328477887912042588L;
     private Long id;
     private String acbCode;
@@ -51,67 +50,4 @@ public class CertificationBody implements Serializable {
             this.address = new Address(entity.getAddress());
         }
     }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public String getWebsite() {
-        return website;
-    }
-
-    public void setWebsite(final String website) {
-        this.website = website;
-    }
-
-    public Address getAddress() {
-        return address;
-    }
-
-    public void setAddress(final Address address) {
-        this.address = address;
-    }
-
-    public String getAcbCode() {
-        return acbCode;
-    }
-
-    public void setAcbCode(final String acbCode) {
-        this.acbCode = acbCode;
-    }
-
-    public boolean isRetired() {
-        return retired;
-    }
-
-    public void setRetired(final boolean retired) {
-        this.retired = retired;
-    }
-
-    public Date getRetirementDate() {
-        return retirementDate;
-    }
-
-    public void setRetirementDate(final Date retirementDate) {
-        this.retirementDate = retirementDate;
-    }
-
-    @Override
-    public String toString() {
-        return "CertificationBody [id=" + id + ", acbCode=" + acbCode + ", name=" + name + ", website=" + website
-                + ", address=" + address + ", retired=" + retired + ", retirementDate=" + retirementDate + "]";
-    }
-
 }

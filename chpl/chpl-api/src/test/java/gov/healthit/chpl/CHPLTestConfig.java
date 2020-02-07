@@ -66,6 +66,7 @@ import com.github.springtestdbunit.bean.DatabaseDataSourceConnectionFactoryBean;
 
 import gov.healthit.chpl.caching.CacheInitializor;
 import gov.healthit.chpl.job.MeaningfulUseUploadJob;
+import old.gov.healthit.chpl.ChplTestCacheConfig;
 
 @Configuration
 @Import({ChplTestCacheConfig.class})

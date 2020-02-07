@@ -48,7 +48,7 @@ import gov.healthit.chpl.web.controller.results.SplitVersionResponse;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        gov.healthit.chpl.CHPLTestConfig.class
+        old.gov.healthit.chpl.CHPLTestConfig.class
 })
 @TestExecutionListeners({
         DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
