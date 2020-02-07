@@ -108,8 +108,7 @@ public class DeleteDocumentActionPermissions extends ActionPermissions {
         }
 
         return nonconformity != null
-                && nonconformity.getCertificationCriterionEntity() != null
-                && nonconformity.getCertificationCriterionEntity().getNumber().equalsIgnoreCase("170.523 (k)(2)");
+                && nonconformity.getType().equalsIgnoreCase("170.523 (k)(2)");
     }
 
     private boolean isListing2014Edition(SurveillanceEntity surv) {
