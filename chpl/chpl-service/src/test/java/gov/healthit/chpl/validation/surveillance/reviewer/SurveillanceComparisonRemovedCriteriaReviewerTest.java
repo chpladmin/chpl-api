@@ -60,7 +60,7 @@ public class SurveillanceComparisonRemovedCriteriaReviewerTest {
     private FF4j ff4j;
 
     @InjectMocks
-    private RemovedCriteriaComparisonReviewer reviewer;
+    private SurveillanceRemovedDataComparisonReviewer reviewer;
 
     @Before
     public void setup() {

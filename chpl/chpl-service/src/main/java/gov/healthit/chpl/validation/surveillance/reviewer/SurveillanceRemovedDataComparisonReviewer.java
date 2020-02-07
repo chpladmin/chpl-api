@@ -18,8 +18,8 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-@Component("survRemovedCriteriaComparisonReviewer")
-public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
+@Component("surveillanceRemovedDataComparisonReviewer")
+public class SurveillanceRemovedDataComparisonReviewer implements ComparisonReviewer {
 
     private CertificationCriterionDAO criterionDao;
     private ErrorMessageUtil msgUtil;
@@ -27,7 +27,7 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
     private FF4j ff4j;
 
     @Autowired
-    public RemovedCriteriaComparisonReviewer(CertificationCriterionDAO criterionDao, ErrorMessageUtil msgUtil,
+    public SurveillanceRemovedDataComparisonReviewer(CertificationCriterionDAO criterionDao, ErrorMessageUtil msgUtil,
             ResourcePermissions resourcePermissions, FF4j ff4j) {
         this.criterionDao = criterionDao;
         this.msgUtil = msgUtil;

@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.validation.surveillance.reviewer.AuthorityReviewer;
-import gov.healthit.chpl.validation.surveillance.reviewer.RemovedCriteriaComparisonReviewer;
+import gov.healthit.chpl.validation.surveillance.reviewer.SurveillanceRemovedDataComparisonReviewer;
 import gov.healthit.chpl.validation.surveillance.reviewer.SurveillanceDetailsReviewer;
 import gov.healthit.chpl.validation.surveillance.reviewer.SurveillanceNonconformityReviewer;
 import gov.healthit.chpl.validation.surveillance.reviewer.SurveillanceRequirementReviewer;
@@ -20,8 +20,8 @@ public class SurveillanceUpdateWithAuthorityValidator extends SurveillanceUpdate
             SurveillanceNonconformityReviewer survNcReviewer,
             @Qualifier("surveillanceUnsupportedCharacterReviewer") UnsupportedCharacterReviewer charReviewer,
             AuthorityReviewer authorityReviewer,
-            @Qualifier("survRemovedCriteriaComparisonReviewer") RemovedCriteriaComparisonReviewer removedCriteriaReviewer) {
-        super(survDetailsReviewer, survReqReviewer, survNcReviewer, charReviewer, removedCriteriaReviewer);
+            @Qualifier("surveillanceRemovedDataComparisonReviewer") SurveillanceRemovedDataComparisonReviewer removedDataReviewer) {
+        super(survDetailsReviewer, survReqReviewer, survNcReviewer, charReviewer, removedDataReviewer);
         getReviewers().add(authorityReviewer);
     }
 }
