@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
+import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityDocumentationEntity;
@@ -108,7 +109,7 @@ public class DeleteDocumentActionPermissions extends ActionPermissions {
         }
 
         return nonconformity != null
-                && nonconformity.getType().equalsIgnoreCase("170.523 (k)(2)");
+                && nonconformity.getType().equalsIgnoreCase(NonconformityType.K2.getName());
     }
 
     private boolean isListing2014Edition(SurveillanceEntity surv) {

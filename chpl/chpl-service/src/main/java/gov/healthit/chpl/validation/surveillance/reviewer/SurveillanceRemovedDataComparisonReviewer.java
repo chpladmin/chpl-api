@@ -10,6 +10,8 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
+import gov.healthit.chpl.domain.NonconformityType;
+import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
@@ -200,7 +202,7 @@ public class SurveillanceRemovedDataComparisonReviewer implements ComparisonRevi
         if (req.getType() != null && !StringUtils.isEmpty(req.getType().getName())) {
             if (req.getType().getName().equalsIgnoreCase(SurveillanceRequirementType.TRANS_DISCLOSURE_REQ)) {
                 String requirement = req.getRequirement();
-                if (requirement != null && requirement.equalsIgnoreCase("170.523 (k)(2)")) {
+                if (requirement != null && requirement.equalsIgnoreCase(RequirementTypeEnum.K2.getName())) {
                     return true;
                 }
             }
@@ -227,7 +229,7 @@ public class SurveillanceRemovedDataComparisonReviewer implements ComparisonRevi
     private boolean hasRemovedRequirement(SurveillanceNonconformity nonconformity) {
         if (!StringUtils.isEmpty(nonconformity.getNonconformityType())) {
             String requirement = nonconformity.getNonconformityType();
-            if (requirement != null && requirement.equalsIgnoreCase("170.523 (k)(2)")) {
+            if (requirement != null && requirement.equalsIgnoreCase(NonconformityType.K2.getName())) {
                 return true;
             }
         }
