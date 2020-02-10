@@ -19,6 +19,8 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.entity.MacraMeasureEntity;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
+import gov.healthit.chpl.manager.PendingCertifiedProductManager;
+import net.sf.ehcache.CacheManager;
 
 public class UpdateMacraMeasuresJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("updateMacraMeasuresJobLogger");
@@ -31,6 +33,9 @@ public class UpdateMacraMeasuresJob extends QuartzJob {
 
     @Autowired
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
+
+    @Autowired
+    private PendingCertifiedProductManager pcpManager;
 
     @Autowired
     private JpaTransactionManager txnMgr;
@@ -58,7 +63,9 @@ public class UpdateMacraMeasuresJob extends QuartzJob {
             }
         });
 
+        CacheManager.getInstance().clearAll();
         certifiedProductDetailsManager.refreshData();
+        pcpManager.refreshData();
         LOGGER.info(SPACER + " Completed the " + JOB_NAME + " job " + SPACER);
     }
 
