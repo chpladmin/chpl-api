@@ -639,7 +639,7 @@ public class DeveloperDAO extends BaseDAOImpl {
     public List<DeveloperDTO> getByCertificationBodyId(final List<Long> certificationBodyIds) {
         return getEntitiesByCertificationBodyId(certificationBodyIds).stream()
                 .map(dev -> new DeveloperDTO(dev))
-                .collect(Collectors.<DeveloperDTO>toList());
+                .collect(Collectors.<DeveloperDTO> toList());
     }
 
     private void create(final DeveloperEntity entity) {
