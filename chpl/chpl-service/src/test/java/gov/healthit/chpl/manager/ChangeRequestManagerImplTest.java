@@ -16,6 +16,7 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestWebsite;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsFactory;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsService;
@@ -292,6 +293,10 @@ public class ChangeRequestManagerImplTest {
                         .developerId(Long.valueOf(20l))
                         .developerCode("1234")
                         .name("Dev 1")
+                        .build())
+                .changeRequestType(ChangeRequestType.builder()
+                        .id(1l)
+                        .name("Website Change Request")
                         .build())
                 .currentStatus(ChangeRequestStatus.builder()
                         .id(Long.valueOf(8l))

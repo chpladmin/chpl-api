@@ -18,15 +18,13 @@ import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.Singular;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @AllArgsConstructor
-public @Data class Developer implements Serializable {
+public class Developer implements Serializable {
     private static final long serialVersionUID = 7341544844577617247L;
 
     /**
@@ -85,7 +83,6 @@ public @Data class Developer implements Serializable {
      * Transparency attestations between each certification body and the developer.
      */
     @XmlElement(required = false, nillable = true)
-    @Singular
     private List<TransparencyAttestationMap> transparencyAttestations;
 
     /**
@@ -93,7 +90,6 @@ public @Data class Developer implements Serializable {
      */
     @XmlElementWrapper(name = "statusEvents", nillable = true, required = false)
     @XmlElement(name = "statusEvent", required = false, nillable = true)
-    @Singular
     private List<DeveloperStatusEvent> statusEvents;
 
     /**
@@ -107,27 +103,6 @@ public @Data class Developer implements Serializable {
         this.transparencyAttestations = new ArrayList<TransparencyAttestationMap>();
         this.statusEvents = new ArrayList<DeveloperStatusEvent>();
     }
-
-    // public Developer(Long developerId, String developerCode, String name, String website, Boolean selfDeveloper,
-    // Address address,
-    // Contact contact, String lastmodifiedDate,
-    // Boolean deleted, List<TransparencyAttestationMap> transparencyAttestations, List<DeveloperStatusEvent>
-    // statusEvents,
-    // DeveloperStatus status) {
-    // this();
-    // this.developerId = developerId;
-    // this.developerCode = developerCode;
-    // this.name = name;
-    // this.website = website;
-    // this.selfDeveloper = selfDeveloper;
-    // this.address = address;
-    // this.contact = contact;
-    // this.lastModifiedDate = lastmodifiedDate;
-    // this.deleted = deleted;
-    // this.transparencyAttestations = transparencyAttestations;
-    // this.statusEvents = statusEvents;
-    // this.status = status;
-    // }
 
     public Developer(DeveloperDTO dto) {
         this();
@@ -170,4 +145,99 @@ public @Data class Developer implements Serializable {
         }
     }
 
+    public Long getDeveloperId() {
+        return developerId;
+    }
+
+    public void setDeveloperId(final Long developerId) {
+        this.developerId = developerId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(final String website) {
+        this.website = website;
+    }
+
+    public Boolean getSelfDeveloper() {
+        return selfDeveloper;
+    }
+
+    public void setSelfDeveloper(Boolean selfDeveloper) {
+        this.selfDeveloper = selfDeveloper;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(final Address address) {
+        this.address = address;
+    }
+
+    public String getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(final String lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public String getDeveloperCode() {
+        return developerCode;
+    }
+
+    public void setDeveloperCode(final String developerCode) {
+        this.developerCode = developerCode;
+    }
+
+    public Contact getContact() {
+        return contact;
+    }
+
+    public void setContact(final Contact contact) {
+        this.contact = contact;
+    }
+
+    public List<TransparencyAttestationMap> getTransparencyAttestations() {
+        return transparencyAttestations;
+    }
+
+    public void setTransparencyAttestations(final List<TransparencyAttestationMap> transparencyAttestations) {
+        this.transparencyAttestations = transparencyAttestations;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public DeveloperStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(final DeveloperStatus status) {
+        this.status = status;
+    }
+
+    public List<DeveloperStatusEvent> getStatusEvents() {
+        return statusEvents;
+    }
+
+    public void setStatusEvents(final List<DeveloperStatusEvent> statusEvents) {
+        this.statusEvents = statusEvents;
+    }
 }

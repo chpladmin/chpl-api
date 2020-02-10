@@ -509,6 +509,7 @@
                 <executions>
                     <execution>
                         <id>schemagen</id>
+                        <phase>package</phase>
                         <goals>
                             <goal>schemagen</goal>
                         </goals>
