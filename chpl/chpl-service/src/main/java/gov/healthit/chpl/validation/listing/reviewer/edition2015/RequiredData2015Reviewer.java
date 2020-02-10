@@ -680,22 +680,12 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 .filter(cert -> cert.getRemoved() == null || cert.getRemoved().equals(Boolean.FALSE))
                 .filter(cert -> certNumberIsInCertList(cert, UCD_RELATED_CERTS))
                 .collect(Collectors.<CertificationCriterion>toList());
-        List<CertificationCriterion> removedAttestedUcdCriteria = attestedCriteria.stream()
-                .filter(cert -> cert.getRemoved() != null && cert.getRemoved().equals(Boolean.TRUE))
-                .filter(cert -> certNumberIsInCertList(cert, UCD_RELATED_CERTS))
-                .collect(Collectors.<CertificationCriterion>toList());
         boolean hasG3 = ValidationUtils.hasCert("170.315 (g)(3)", attestedCriteria);
 
         String msg = "170.315 (g)(3) is not allowed but was found.";
         if ((presentAttestedUcdCriteria == null || presentAttestedUcdCriteria.size() == 0)
-                && (removedAttestedUcdCriteria == null || removedAttestedUcdCriteria.size() == 0)
                 && hasG3) {
             listing.getErrorMessages().add(msg);
-        }
-        if (removedAttestedUcdCriteria != null && removedAttestedUcdCriteria.size() > 0
-                && (presentAttestedUcdCriteria == null || presentAttestedUcdCriteria.size() == 0)
-                && hasG3) {
-            addListingWarningByPermission(listing, msg);
         }
     }
 
