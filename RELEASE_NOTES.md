@@ -1,5 +1,23 @@
 # Release Notes
 
+## Version 23.0.0
+_11 February 2020_
+
+### Bug Fixes
+* Allow generation of downloadable files
+
+### Features
+* Support view of all system triggers on Scheduled Jobs page
+* Add job to remove the 2015 Upload Template (v17)
+* Add "Self-developer" as field for Developers
+* Add Quartz Job to insert new Test Tool
+* Add job to modify Test Functionality name/number
+
+### Breaking Change Features
+* Update Transparency Attestation to have a new format
+
+---
+
 ## Version 22.1.0
 _27 January 2020_
 
