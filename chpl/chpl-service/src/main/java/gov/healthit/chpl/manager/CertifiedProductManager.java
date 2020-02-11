@@ -1116,7 +1116,7 @@ public class CertifiedProductManager extends SecuredManager {
         // Update the listing
         CertifiedProductDTO dtoToUpdate = new CertifiedProductDTO(updatedListing);
         CertifiedProductDTO result = cpDao.update(dtoToUpdate);
-        updateListingsChildData(existingListing, updatedListing, result);
+        updateListingsChildData(existingListing, updatedListing);
 
         // Log the activity
         logCertifiedProductUpdateActivity(existingListing, updateRequest.getReason());
@@ -1133,8 +1133,7 @@ public class CertifiedProductManager extends SecuredManager {
                 changedProduct, reason);
     }
 
-    private void updateListingsChildData(final CertifiedProductSearchDetails existingListing,
-            final CertifiedProductSearchDetails updatedListing, final CertifiedProductDTO updatedListingDTO)
+    private void updateListingsChildData(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing)
             throws EntityCreationException, EntityRetrievalException, IOException {
         updateTestingLabs(updatedListing.getId(), existingListing.getTestingLabs(), updatedListing.getTestingLabs());
         updateIcsChildren(updatedListing.getId(), existingListing.getIcs(), updatedListing.getIcs());
@@ -1152,7 +1151,8 @@ public class CertifiedProductManager extends SecuredManager {
                 updatedListing.getMeaningfulUseUserHistory());
         updateCertifications(existingListing, updatedListing,
                 existingListing.getCertificationResults(), updatedListing.getCertificationResults());
-        updateCqms(updatedListingDTO, existingListing.getCqmResults(), updatedListing.getCqmResults());
+        copyCriterionIdsToCqmMappings(updatedListing);
+        updateCqms(updatedListing, existingListing.getCqmResults(), updatedListing.getCqmResults());
     }
 
     private void performSecondaryActionsBasedOnStatusChanges(final CertifiedProductSearchDetails existingListing,
@@ -1973,11 +1973,26 @@ public class CertifiedProductManager extends SecuredManager {
         return numChanges;
     }
 
-    private int updateCqms(final CertifiedProductDTO listing, final List<CQMResultDetails> existingCqmDetails,
-            final List<CQMResultDetails> updatedCqmDetails)
+    private void copyCriterionIdsToCqmMappings(CertifiedProductSearchDetails listing) {
+        for (CQMResultDetails cqmResult : listing.getCqmResults()) {
+            for (CQMResultCertification cqmCertMapping : cqmResult.getCriteria()) {
+                if (cqmCertMapping.getCertificationId() == null
+                        && !StringUtils.isEmpty(cqmCertMapping.getCertificationNumber())) {
+                    for (CertificationResult certResult : listing.getCertificationResults()) {
+                        if (certResult.isSuccess().equals(Boolean.TRUE)
+                                && certResult.getCriterion().getNumber().equals(cqmCertMapping.getCertificationNumber())) {
+                            cqmCertMapping.setCertificationId(certResult.getCriterion().getId());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private int updateCqms(CertifiedProductSearchDetails listing, List<CQMResultDetails> existingCqmDetails,
+            List<CQMResultDetails> updatedCqmDetails)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
-        // convert to CQMResultDetailsDTO since CMS CQMs can have multiple
-        // entries
+        // convert to CQMResultDetailsDTO since CMS CQMs can have multiple entries
         // per success version. work with these objects instead of the passed-in
         // ones
         List<CQMResultDetailsDTO> existingCqms = new ArrayList<CQMResultDetailsDTO>();
@@ -2098,8 +2113,8 @@ public class CertifiedProductManager extends SecuredManager {
         return numChanges;
     }
 
-    private int updateCqm(final CertifiedProductDTO listing, final CQMResultDetailsDTO existingCqm,
-            final CQMResultDetailsDTO updatedCqm) throws EntityRetrievalException {
+    private int updateCqm(CertifiedProductSearchDetails listing, CQMResultDetailsDTO existingCqm,
+            CQMResultDetailsDTO updatedCqm) throws EntityRetrievalException {
 
         int numChanges = 0;
         // look for changes in the cqms and update if necessary
