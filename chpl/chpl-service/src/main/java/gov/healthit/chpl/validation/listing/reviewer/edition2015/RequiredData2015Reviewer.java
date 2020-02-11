@@ -124,7 +124,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         }
 
         List<CertificationCriterion> attestedCriteria = ValidationUtils.getAttestedCriteria(listing);
-
         List<String> errors = ValidationUtils.checkClassOfCriteriaForErrors("170.315 (a)", attestedCriteria,
                 Arrays.asList(A_RELATED_CERTS));
         listing.getErrorMessages().addAll(errors);
