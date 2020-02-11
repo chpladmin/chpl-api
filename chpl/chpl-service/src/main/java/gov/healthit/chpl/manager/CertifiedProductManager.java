@@ -2185,8 +2185,6 @@ public class CertifiedProductManager extends SecuredManager {
                 dto.setNqfNumber(cqm.getNqfNumber());
                 dto.setCmsId(cqm.getCmsId());
                 dto.setNumber(cqm.getNumber());
-                dto.setCmsId(cqm.getCmsId());
-                dto.setNqfNumber(cqm.getNqfNumber());
                 dto.setTitle(cqm.getTitle());
                 dto.setVersion(version);
                 dto.setSuccess(Boolean.TRUE);
@@ -2195,7 +2193,9 @@ public class CertifiedProductManager extends SecuredManager {
                         CQMResultCriteriaDTO cqmdto = new CQMResultCriteriaDTO();
                         cqmdto.setId(criteria.getId());
                         cqmdto.setCriterionId(criteria.getCertificationId());
-                        CertificationCriterionDTO certDto = new CertificationCriterionDTO(criteria.getCriterion());
+                        CertificationCriterionDTO certDto = new CertificationCriterionDTO();
+                        certDto.setId(criteria.getCertificationId());
+                        certDto.setNumber(criteria.getCertificationNumber());
                         cqmdto.setCriterion(certDto);
                         dto.getCriteria().add(cqmdto);
                     }
@@ -2208,8 +2208,6 @@ public class CertifiedProductManager extends SecuredManager {
             dto.setNqfNumber(cqm.getNqfNumber());
             dto.setCmsId(cqm.getCmsId());
             dto.setNumber(cqm.getNumber());
-            dto.setCmsId(cqm.getCmsId());
-            dto.setNqfNumber(cqm.getNqfNumber());
             dto.setTitle(cqm.getTitle());
             dto.setSuccess(cqm.isSuccess());
             result.add(dto);

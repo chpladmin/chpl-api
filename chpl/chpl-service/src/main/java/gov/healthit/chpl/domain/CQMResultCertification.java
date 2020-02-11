@@ -5,7 +5,6 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
@@ -37,9 +36,6 @@ public class CQMResultCertification implements Serializable {
     @XmlElement(required = false, nillable = true)
     private String certificationNumber;
 
-    @XmlTransient
-    private CertificationCriterion criterion;
-
     public CQMResultCertification() {
 
     }
@@ -47,7 +43,6 @@ public class CQMResultCertification implements Serializable {
     public CQMResultCertification(CQMResultCriteriaDTO dto) {
         this.id = dto.getId();
         this.certificationId = dto.getCriterionId();
-        this.criterion = new CertificationCriterion(dto.getCriterion());
         if (dto.getCriterion() != null) {
             this.certificationNumber = dto.getCriterion().getNumber();
         }
@@ -75,13 +70,5 @@ public class CQMResultCertification implements Serializable {
 
     public void setCertificationNumber(final String criteriaNumber) {
         this.certificationNumber = criteriaNumber;
-    }
-
-    public CertificationCriterion getCriterion() {
-        return criterion;
-    }
-
-    public void setCriterion(CertificationCriterion criterion) {
-        this.criterion = criterion;
     }
 }

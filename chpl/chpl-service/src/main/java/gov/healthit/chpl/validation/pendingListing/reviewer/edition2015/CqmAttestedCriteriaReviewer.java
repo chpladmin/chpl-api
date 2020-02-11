@@ -3,7 +3,6 @@ package gov.healthit.chpl.validation.pendingListing.reviewer.edition2015;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCqmCertificationCriterionDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCqmCriterionDTO;
@@ -25,11 +24,11 @@ public class CqmAttestedCriteriaReviewer implements Reviewer {
         //any criteria that is applied to a cqm must also be attested to on the listing
         for (PendingCqmCriterionDTO cqm : listing.getCqmCriterion()) {
             for (PendingCqmCertificationCriterionDTO cqmCriterion : cqm.getCertifications()) {
-                if (!ValidationUtils.hasCert(new CertificationCriterion(cqmCriterion.getCriterion()),
+                if (!ValidationUtils.hasCert(cqmCriterion.getCertificationCriteriaNumber(),
                         ValidationUtils.getAttestedCriteria(listing))) {
                     listing.getErrorMessages().add(
                             msgUtil.getMessage("listing.criteria.missingCriteriaForCqm",
-                                    cqm.getCmsId(), cqmCriterion.getCriterion().getNumber()));
+                                    cqm.getCmsId(), cqmCriterion.getCertificationCriteriaNumber()));
                 }
             }
         }

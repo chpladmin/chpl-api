@@ -24,10 +24,11 @@ public class CqmAttestedCriteriaReviewer implements Reviewer {
         //any criteria that is applied to a cqm must also be attested to on the listing
         for (CQMResultDetails cqm : listing.getCqmResults()) {
             for (CQMResultCertification cqmCriterion : cqm.getCriteria()) {
-                if (!ValidationUtils.hasCert(cqmCriterion.getCriterion(), ValidationUtils.getAttestedCriteria(listing))) {
+                if (!ValidationUtils.hasCert(cqmCriterion.getCertificationNumber(),
+                        ValidationUtils.getAttestedCriteria(listing))) {
                     listing.getErrorMessages().add(
                             msgUtil.getMessage("listing.criteria.missingCriteriaForCqm",
-                                    cqm.getCmsId(), cqmCriterion.getCriterion().getNumber()));
+                                    cqm.getCmsId(), cqmCriterion.getCertificationNumber()));
                 }
             }
         }

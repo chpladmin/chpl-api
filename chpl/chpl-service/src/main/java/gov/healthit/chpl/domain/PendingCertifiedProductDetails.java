@@ -494,7 +494,6 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
                         c.setCertificationId(criteriaDTO.getCertificationId());
                         c.setCertificationNumber(criteriaDTO.getCertificationCriteriaNumber());
                         c.setId(criteriaDTO.getId());
-                        c.setCriterion(new CertificationCriterion(criteriaDTO.getCriterion()));
                         cqm.getCriteria().add(c);
                     }
                 }

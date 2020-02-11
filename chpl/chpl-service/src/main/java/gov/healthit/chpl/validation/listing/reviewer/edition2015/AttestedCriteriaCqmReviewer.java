@@ -73,7 +73,7 @@ public class AttestedCriteriaCqmReviewer implements Reviewer {
     private boolean isCriterionIncludedInCqmCerts(CertificationCriterion criterion,
             List<CQMResultCertification> cqmCerts) {
         Optional<CQMResultCertification> foundCqmCert = cqmCerts.stream()
-                .filter(cqmResult -> cqmResult.getCriterion().getId().equals(criterion.getId()))
+                .filter(cqmResult -> cqmResult.getCertificationNumber().equals(criterion.getNumber()))
                 .findFirst();
         return foundCqmCert.isPresent();
     }

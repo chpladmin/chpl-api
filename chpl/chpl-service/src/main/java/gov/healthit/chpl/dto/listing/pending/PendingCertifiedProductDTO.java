@@ -520,10 +520,8 @@ public class PendingCertifiedProductDTO implements Serializable {
                         PendingCqmCertificationCriterionDTO pendingCqmCert = new PendingCqmCertificationCriterionDTO();
                         pendingCqmCert.setCertificationCriteriaNumber(cqmCert.getCertificationNumber());
                         pendingCqmCert.setCertificationId(cqmCert.getCertificationId());
+                        pendingCqmCert.setCertificationCriteriaNumber(cqmCert.getCertificationNumber());
                         pendingCqmCert.setCqmId(cqmDto.getId());
-                        CertificationCriterionDTO cqmCriterion =
-                                new CertificationCriterionDTO(cqmCert.getCriterion());
-                        pendingCqmCert.setCriterion(cqmCriterion);
                         cqmDto.getCertifications().add(pendingCqmCert);
                     }
                     this.cqmCriterion.add(cqmDto);
