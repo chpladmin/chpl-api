@@ -32,7 +32,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
     private ResourcePermissions resourcePermissions;
 
     @Mock
-    private CertifiedProductDAO cpDao;
+    private CertifiedProductDAO certifiedProductDAO;
 
     @InjectMocks
     private CreateActionPermissions permissions;
@@ -44,10 +44,10 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         try {
             CertifiedProductDTO listingNoAccess = new CertifiedProductDTO();
             listingNoAccess.setCertificationBodyId(1L);
-            Mockito.when(cpDao.getById(ArgumentMatchers.eq(1L))).thenReturn(listingNoAccess);
+            Mockito.when(certifiedProductDAO.getById(ArgumentMatchers.eq(1L))).thenReturn(listingNoAccess);
             CertifiedProductDTO listingWithAccess = new CertifiedProductDTO();
             listingWithAccess.setCertificationBodyId(2L);
-            Mockito.when(cpDao.getById(ArgumentMatchers.eq(2L))).thenReturn(listingWithAccess);
+            Mockito.when(certifiedProductDAO.getById(ArgumentMatchers.eq(2L))).thenReturn(listingWithAccess);
         } catch (Exception ex) {
             fail(ex.getMessage());
         }
@@ -85,19 +85,15 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         // This should always be false
         assertFalse(permissions.hasAccess());
 
-        Surveillance noAccess = new Surveillance();
-        CertifiedProduct noAccessCp = new CertifiedProduct();
-        noAccessCp.setId(1L);
-        noAccess.setId(1L);
-        noAccess.setCertifiedProduct(noAccessCp);
-        assertFalse(permissions.hasAccess(noAccess));
+        Surveillance surv = new Surveillance();
+        surv.setCertifiedProduct(new CertifiedProduct());
+        surv.getCertifiedProduct().setId(1l);
 
-        Surveillance hasAccess = new Surveillance();
-        CertifiedProduct hasAccessCp = new CertifiedProduct();
-        hasAccessCp.setId(2L);
-        hasAccess.setId(2L);
-        hasAccess.setCertifiedProduct(hasAccessCp);
-        assertTrue(permissions.hasAccess(hasAccess));
+        Mockito.when(certifiedProductDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getListing(1l));
+        assertFalse(permissions.hasAccess(surv));
+
+        Mockito.when(certifiedProductDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getListing(2l));
+        assertTrue(permissions.hasAccess(surv));
     }
 
     @Override
@@ -134,5 +130,11 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
 
         // Anon has no access - the param shouldn't even matter
         assertFalse(permissions.hasAccess(new Surveillance()));
+    }
+
+    private CertifiedProductDTO getListing(Long acbId) {
+        CertifiedProductDTO dto = new CertifiedProductDTO();
+        dto.setCertificationBodyId(acbId);
+        return dto;
     }
 }

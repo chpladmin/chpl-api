@@ -24,11 +24,6 @@ import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementEntity;
 import gov.healthit.chpl.entity.surveillance.report.PrivilegedSurveillanceEntity;
 import gov.healthit.chpl.util.Util;
 
-/**
- * Entity containing entirety of a Certified Product.
- * @author alarned
- *
- */
 @Entity
 @Immutable
 @Table(name = "certified_product_details")

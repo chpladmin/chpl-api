@@ -160,6 +160,7 @@ public class SearchViewController {
         String edition = editionInput;
         String format = formatInput;
         String responseType = "text/csv";
+        String filenameToStream = null;
 
         if (!StringUtils.isEmpty(edition)) {
             // make sure it's a 4 character year
@@ -186,11 +187,12 @@ public class SearchViewController {
             } else if (edition.equals("2014")) {
                 toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2014Name"));
             } else if (edition.equals("2015")) {
-                if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
+                if (ff4j.check(FeatureList.RULE_PUBLISH_DATE_PLUS_THIRTY_DAYS)) {
                     toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015Name"));
                 } else {
                     toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015NameLegacy"));
                 }
+                filenameToStream = env.getProperty("schemaCsv2015Name");
             }
 
             if (!toDownload.exists()) {
@@ -215,7 +217,11 @@ public class SearchViewController {
         }
 
         LOGGER.info("Downloading " + toDownload.getName());
-        fileUtils.streamFileAsResponse(toDownload, responseType, response);
+        if (filenameToStream != null) {
+            fileUtils.streamFileAsResponse(toDownload, responseType, response, filenameToStream);
+        } else {
+            fileUtils.streamFileAsResponse(toDownload, responseType, response);
+        }
     }
 
     /**
@@ -1270,7 +1276,7 @@ public class SearchViewController {
      */
     @Deprecated
     @ApiOperation(value = "DEPRECATED. Use /data/search-options instead. Get all search options in the CHPL",
-            notes = "This returns all of the other /data/{something} results in one single response.")
+    notes = "This returns all of the other /data/{something} results in one single response.")
     @RequestMapping(value = "/data/search_options", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)

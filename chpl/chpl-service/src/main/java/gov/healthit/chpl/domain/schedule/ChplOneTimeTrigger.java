@@ -14,5 +14,4 @@ public class ChplOneTimeTrigger extends ChplTrigger implements Serializable {
     public void setRunDateMillis(Long runDateMillis) {
         this.runDateMillis = runDateMillis;
     }
-
 }
