@@ -14,7 +14,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -40,16 +39,13 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 
-@ActiveProfiles({
-    "Ff4jMock"
-})
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        old.gov.healthit.chpl.CHPLTestConfig.class, gov.healthit.chpl.Ff4jTestConfiguration.class
+        old.gov.healthit.chpl.CHPLTestConfig.class
 })
 @TestExecutionListeners({
-        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
-        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+    DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
 })
 @DatabaseSetup("classpath:data/testData.xml")
 public class DeveloperControllerTest {
