@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -43,22 +42,23 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.DeveloperManager;
 import junit.framework.TestCase;
 
-@ActiveProfiles({
-    "Ff4jMock"
-})
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        gov.healthit.chpl.CHPLTestConfig.class, gov.healthit.chpl.Ff4jTestConfiguration.class
+        gov.healthit.chpl.CHPLTestConfig.class
 })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class,
+        DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class,
+        DbUnitTestExecutionListener.class
+})
 @DatabaseSetup("classpath:data/testData.xml")
 public class DeveloperTest extends TestCase {
 
-    @Autowired private QuestionableActivityDAO qaDao;
-    @Autowired private DeveloperManager devManager;
+    @Autowired
+    private QuestionableActivityDAO qaDao;
+    @Autowired
+    private DeveloperManager devManager;
     private static JWTAuthenticatedUser adminUser;
 
     @Rule
@@ -78,9 +78,8 @@ public class DeveloperTest extends TestCase {
     @Test
     @Transactional
     @Rollback
-    public void testUpdateName() throws
-    EntityCreationException, EntityRetrievalException,
-    JsonProcessingException, MissingReasonException, ValidationException {
+    public void testUpdateName() throws EntityCreationException, EntityRetrievalException,
+            JsonProcessingException, MissingReasonException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
@@ -89,8 +88,8 @@ public class DeveloperTest extends TestCase {
         devManager.update(developer, false);
         Date afterActivity = new Date();
 
-        List<QuestionableActivityDeveloperDTO> activities =
-                qaDao.findDeveloperActivityBetweenDates(beforeActivity, afterActivity);
+        List<QuestionableActivityDeveloperDTO> activities = qaDao.findDeveloperActivityBetweenDates(beforeActivity,
+                afterActivity);
         assertNotNull(activities);
         assertEquals(1, activities.size());
         QuestionableActivityDeveloperDTO activity = activities.get(0);
@@ -106,9 +105,8 @@ public class DeveloperTest extends TestCase {
     @Test
     @Transactional
     @Rollback
-    public void testUpdateCurrentStatus() throws
-    EntityCreationException, EntityRetrievalException,
-    JsonProcessingException, MissingReasonException, ValidationException {
+    public void testUpdateCurrentStatus() throws EntityCreationException, EntityRetrievalException,
+            JsonProcessingException, MissingReasonException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
@@ -125,8 +123,8 @@ public class DeveloperTest extends TestCase {
         devManager.update(developer, false);
         Date afterActivity = new Date();
 
-        List<QuestionableActivityDeveloperDTO> activities =
-                qaDao.findDeveloperActivityBetweenDates(beforeActivity, afterActivity);
+        List<QuestionableActivityDeveloperDTO> activities = qaDao.findDeveloperActivityBetweenDates(beforeActivity,
+                afterActivity);
         assertNotNull(activities);
         assertEquals(2, activities.size());
         int numFound = 0;
@@ -152,9 +150,8 @@ public class DeveloperTest extends TestCase {
     @Test
     @Transactional
     @Rollback
-    public void testRemoveStatusHistory() throws
-    EntityCreationException, EntityRetrievalException,
-    JsonProcessingException, MissingReasonException, ValidationException {
+    public void testRemoveStatusHistory() throws EntityCreationException, EntityRetrievalException,
+            JsonProcessingException, MissingReasonException, ValidationException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
@@ -170,8 +167,8 @@ public class DeveloperTest extends TestCase {
         devManager.update(developer, false);
         Date afterActivity = new Date();
 
-        List<QuestionableActivityDeveloperDTO> activities =
-                qaDao.findDeveloperActivityBetweenDates(beforeActivity, afterActivity);
+        List<QuestionableActivityDeveloperDTO> activities = qaDao.findDeveloperActivityBetweenDates(beforeActivity,
+                afterActivity);
         assertNotNull(activities);
         assertEquals(2, activities.size());
         int numFound = 0;

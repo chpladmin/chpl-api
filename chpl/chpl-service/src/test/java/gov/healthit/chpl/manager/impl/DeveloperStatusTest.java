@@ -17,7 +17,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -51,13 +50,9 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-@ActiveProfiles({
-        "Ff4jMock"
-})
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        gov.healthit.chpl.CHPLTestConfig.class,
-        gov.healthit.chpl.Ff4jTestConfiguration.class
+        gov.healthit.chpl.CHPLTestConfig.class
 })
 public class DeveloperStatusTest {
     private static final String MISSING_REASON_ERROR = "A reason must be given for marking this developer as banned on %s.";
@@ -83,7 +78,7 @@ public class DeveloperStatusTest {
     @Autowired
     private DeveloperValidationFactory developerValidationFactory;
 
-    @Mock
+    @Autowired
     private FF4j ff4j;
 
     @Mock
@@ -121,7 +116,7 @@ public class DeveloperStatusTest {
 
         Mockito.when(permissionChecker.getAllAcbsForCurrentUser()).thenReturn(new ArrayList<CertificationBodyDTO>());
         Mockito.when(acbManager.getAll()).thenReturn(new ArrayList<CertificationBodyDTO>());
-        Mockito.when(ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)).thenReturn(false);
+        Mockito.doReturn(false).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK);
         Mockito.doReturn(MISSING_REASON_ERROR).when(msgUtil)
                 .getMessage(ArgumentMatchers.eq("developer.missingReasonForBan"), ArgumentMatchers.anyString());
         Mockito.doReturn(NO_ADMIN_NO_STATUS_CHANGE_ERROR).when(msgUtil)

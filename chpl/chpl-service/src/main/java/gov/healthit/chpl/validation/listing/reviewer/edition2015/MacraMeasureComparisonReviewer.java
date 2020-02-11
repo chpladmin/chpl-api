@@ -45,7 +45,8 @@ public class MacraMeasureComparisonReviewer implements ComparisonReviewer {
             for (CertificationResult existingCert : existingListing.getCertificationResults()) {
                 //find matching criteria in existing/updated listings
                 if (!StringUtils.isEmpty(updatedCert.getNumber()) && !StringUtils.isEmpty(existingCert.getNumber())
-                        && updatedCert.getNumber().equals(existingCert.getNumber()) && updatedCert.isSuccess()) {
+                        && updatedCert.getNumber().equals(existingCert.getNumber()) && updatedCert.isSuccess() != null
+                        && updatedCert.isSuccess().equals(Boolean.TRUE)) {
                     //if the updated listing has attested to the cert, check its g1/g2 macra measures
                     if (updatedCert.getG1MacraMeasures() != null
                             && updatedCert.getG1MacraMeasures().size() > 0) {

@@ -955,12 +955,7 @@ public class CertifiedProductDetailsManager {
             List<CQMResultCriteriaDTO> criteria = cqmResultDao.getCriteriaForCqmResult(cqmResult.getId());
             if (criteria != null && criteria.size() > 0) {
                 for (CQMResultCriteriaDTO criteriaDTO : criteria) {
-                    CQMResultCertification c = new CQMResultCertification();
-                    c.setCertificationId(criteriaDTO.getCriterionId());
-                    c.setId(criteriaDTO.getId());
-                    if (criteriaDTO.getCriterion() != null) {
-                        c.setCertificationNumber(criteriaDTO.getCriterion().getNumber());
-                    }
+                    CQMResultCertification c = new CQMResultCertification(criteriaDTO);
                     cqmResultCertifications.add(c);
                 }
             }
