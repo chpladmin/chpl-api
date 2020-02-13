@@ -18,6 +18,7 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 public class CertificationCriterion implements Serializable {
     private static final long serialVersionUID = 5732322243572571895L;
     private static final String CURES_TITLE = "Cures Update";
+    private static final String CURES_SUFFIX = " (Cures Update)";
 
     @XmlElement(required = false, nillable = true)
     private Long id;
@@ -112,5 +113,14 @@ public class CertificationCriterion implements Serializable {
     @XmlTransient
     public boolean isCures() {
         return getTitle() != null && getTitle().contains(CURES_TITLE);
+    }
+
+    @XmlTransient
+    public String formatCriteriaNumber() {
+        String result = getNumber();
+        if (isCures()) {
+            result += CURES_SUFFIX;
+        }
+        return result;
     }
 }
