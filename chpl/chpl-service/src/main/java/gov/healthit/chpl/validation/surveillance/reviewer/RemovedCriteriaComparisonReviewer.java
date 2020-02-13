@@ -151,11 +151,14 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
         if (!StringUtils.isEmpty(nonconformity.getNonconformityType())) {
             String nonconformityType =
                     gov.healthit.chpl.util.Util.coerceToCriterionNumberFormat(nonconformity.getNonconformityType());
-            CertificationCriterionDTO criterion = criterionDao.getAllByNumber(nonconformityType).get(0);
+            List<CertificationCriterionDTO> criteria = criterionDao.getAllByNumber(nonconformityType);
             //TODO Fix this as part of OCD-3220
-            if (criterion != null && criterion.getRemoved() != null
-                    && criterion.getRemoved().booleanValue()) {
-                return true;
+            if (criteria != null && criteria.size() > 0) {
+                CertificationCriterionDTO criterion = criteria.get(0);
+                if (criterion != null && criterion.getRemoved() != null
+                        && criterion.getRemoved().booleanValue()) {
+                    return true;
+                }
             }
         }
         return false;

@@ -912,9 +912,10 @@ public class SurveillanceDAO extends BaseDAOImpl {
     private void populateSurveillanceNonconformityEntity(final SurveillanceNonconformityEntity to,
             final SurveillanceNonconformity from) {
         if (from.getNonconformityType() != null) {
-            CertificationCriterionDTO crit = criterionDao.getAllByNumber(from.getNonconformityType()).get(0);
+            List<CertificationCriterionDTO> criteria = criterionDao.getAllByNumber(from.getNonconformityType());
             //TODO Fix this as part of OCD-3220
-            if (crit != null) {
+            if (criteria != null && criteria.size() > 0) {
+                CertificationCriterionDTO crit = criteria.get(0);
                 to.setCertificationCriterionId(crit.getId());
             } else {
                 to.setType(from.getNonconformityType());
