@@ -106,10 +106,7 @@ public class Sed2015CsvPresenter {
                         if (assocCriteriaStr.length() > 0) {
                             assocCriteriaStr.append(";");
                         }
-                        assocCriteriaStr.append(criteria.getNumber());
-                        if (criteria.isCures()) {
-                            assocCriteriaStr.append(CURES_UPDATE_TITLE);
-                        }
+                        assocCriteriaStr.append(criteria.formatCriteriaNumber());
                     }
                     row.add(assocCriteriaStr.toString());
                     row.add(testTask.getDescription());

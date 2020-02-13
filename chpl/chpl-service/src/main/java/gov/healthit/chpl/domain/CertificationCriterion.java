@@ -115,7 +115,6 @@ public class CertificationCriterion implements Serializable {
         return getTitle() != null && getTitle().contains(CURES_TITLE);
     }
 
-    @XmlTransient
     public String formatCriteriaNumber() {
         String result = getNumber();
         if (isCures()) {
