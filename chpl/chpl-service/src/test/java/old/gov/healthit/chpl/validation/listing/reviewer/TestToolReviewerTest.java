@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -15,11 +16,13 @@ import org.springframework.context.MessageSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import gov.healthit.chpl.TestingUsers;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.TestToolDTO;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.reviewer.TestToolReviewer;
@@ -30,7 +33,7 @@ import old.gov.healthit.chpl.util.ListingMockUtil;
 @ContextConfiguration(classes = {
         old.gov.healthit.chpl.CHPLTestConfig.class
 })
-public class TestToolReviewerTest {
+public class TestToolReviewerTest extends TestingUsers {
     private static final String C_3 = "170.315 (c)(3)";
     private static final String NO_TEST_TOOL_NAME_ERROR = "There was no test tool name found for certification " + C_3
             + ".";
@@ -56,15 +59,19 @@ public class TestToolReviewerTest {
     @Spy
     private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
 
+    @Mock
+    private ResourcePermissions resourcePermissions;
+
     private TestToolReviewer testToolReviewer;
     private TestTool2015Reviewer testTool2015Reviewer;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        setupForAcbUser(resourcePermissions);
 
-        testToolReviewer = new TestToolReviewer(testToolDao, msgUtil, productNumberUtil);
-        testTool2015Reviewer = new TestTool2015Reviewer(msgUtil);
+        testToolReviewer = new TestToolReviewer(testToolDao, msgUtil, resourcePermissions);
+        testTool2015Reviewer = new TestTool2015Reviewer(msgUtil, resourcePermissions);
 
         Mockito.doReturn(NO_TEST_TOOL_NAME_ERROR).when(msgUtil)
                 .getMessage(ArgumentMatchers.eq("listing.criteria.missingTestToolName"), ArgumentMatchers.anyString());

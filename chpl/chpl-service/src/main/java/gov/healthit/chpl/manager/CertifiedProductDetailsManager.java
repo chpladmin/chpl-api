@@ -710,7 +710,7 @@ public class CertifiedProductDetailsManager {
 
         // set allowed macra measures (if any)
         for (MacraMeasure measure : macraMeasures) {
-            if (measure.getCriteria().getNumber().equals(result.getNumber())) {
+            if (measure.getCriteria().getId().equals(result.getCriterion().getId())) {
                 result.getAllowedMacraMeasures().add(measure);
             }
         }
@@ -727,8 +727,7 @@ public class CertifiedProductDetailsManager {
                 practiceTypeId = Long.valueOf(cp.getPracticeType().get("id").toString());
             }
         }
-        String criteriaNumber = cr.getNumber();
-        return testFunctionalityManager.getTestFunctionalities(criteriaNumber, edition, practiceTypeId);
+        return testFunctionalityManager.getTestFunctionalities(cr.getCriterion().getId(), edition, practiceTypeId);
     }
 
     private CertifiedProductSearchDetails getCertifiedProductSearchDetails(CertifiedProductDetailsDTO dto)
@@ -955,12 +954,7 @@ public class CertifiedProductDetailsManager {
             List<CQMResultCriteriaDTO> criteria = cqmResultDao.getCriteriaForCqmResult(cqmResult.getId());
             if (criteria != null && criteria.size() > 0) {
                 for (CQMResultCriteriaDTO criteriaDTO : criteria) {
-                    CQMResultCertification c = new CQMResultCertification();
-                    c.setCertificationId(criteriaDTO.getCriterionId());
-                    c.setId(criteriaDTO.getId());
-                    if (criteriaDTO.getCriterion() != null) {
-                        c.setCertificationNumber(criteriaDTO.getCriterion().getNumber());
-                    }
+                    CQMResultCertification c = new CQMResultCertification(criteriaDTO);
                     cqmResultCertifications.add(c);
                 }
             }

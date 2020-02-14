@@ -4,14 +4,19 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 
 /**
  * Utilities used to validate various basic elements of CHPL domain objects.
@@ -161,14 +166,34 @@ public final class ValidationUtils {
      * @param allCerts certifications to check in
      * @return true iff certNumber found in allCerts
      */
-    public static boolean hasCert(final String certNumber, final List<String> allCerts) {
+    public static boolean hasCert(String certNumber, List<CertificationCriterion> allCerts) {
         boolean hasCert = false;
         for (int i = 0; i < allCerts.size() && !hasCert; i++) {
-            if (allCerts.get(i).equals(certNumber)) {
+            if (allCerts.get(i).getNumber().equals(certNumber)) {
                 hasCert = true;
             }
         }
         return hasCert;
+    }
+
+    public static boolean hasCert(CertificationCriterion criterion, List<CertificationCriterion> allCerts) {
+        boolean hasCert = false;
+        for (int i = 0; i < allCerts.size() && !hasCert; i++) {
+            if (allCerts.get(i).getId().equals(criterion.getId())) {
+                hasCert = true;
+            }
+        }
+        return hasCert;
+    }
+
+    public static CertificationCriterion getCert(String certNumber, List<CertificationCriterion> allCerts) {
+        CertificationCriterion cert = null;
+        for (int i = 0; i < allCerts.size() && cert == null; i++) {
+            if (allCerts.get(i).getNumber().equals(certNumber)) {
+                cert = allCerts.get(i);
+            }
+        }
+        return cert;
     }
 
     /**
@@ -181,8 +206,8 @@ public final class ValidationUtils {
      * @param complimentaryCertNumbers complimentary criteria that must be present
      * @return a list of error messages
      */
-    public static List<String> checkComplimentaryCriteriaAllRequired(final List<String> criterionToCheck,
-            final List<String> complimentaryCertNumbers, final List<String> allCriteriaMet) {
+    public static List<String> checkComplimentaryCriteriaAllRequired(List<String> criterionToCheck,
+            List<String> complimentaryCertNumbers, List<CertificationCriterion> allCriteriaMet) {
         List<String> errors = new ArrayList<String>();
         boolean hasAnyCert = hasAnyCert(criterionToCheck, allCriteriaMet);
         if (hasAnyCert) {
@@ -216,8 +241,8 @@ public final class ValidationUtils {
      * @param complimentaryCertNumbers complimentary criteria of which at least one must be present
      * @return a list of error messages
      */
-    public static List<String> checkComplimentaryCriteriaAnyRequired(final List<String> criterionToCheck,
-            final List<String> complimentaryCertNumbers, final List<String> allCriteriaMet) {
+    public static List<String> checkComplimentaryCriteriaAnyRequired(List<String> criterionToCheck,
+            List<String> complimentaryCertNumbers, List<CertificationCriterion> allCriteriaMet) {
         List<String> errors = new ArrayList<String>();
         boolean hasAnyCert = hasAnyCert(criterionToCheck, allCriteriaMet);
         if (hasAnyCert) {
@@ -253,7 +278,7 @@ public final class ValidationUtils {
      * @param allCerts criteria to check against
      * @return true iff at least one of certsToCheck is in allCerts
      */
-    public static boolean hasAnyCert(final List<String> certsToCheck, final List<String> allCerts) {
+    public static boolean hasAnyCert(List<String> certsToCheck, List<CertificationCriterion> allCerts) {
         boolean result = false;
         for (String currCertToCheck : certsToCheck) {
             if (hasCert(currCertToCheck, allCerts)) {
@@ -305,20 +330,20 @@ public final class ValidationUtils {
      * @param complimentaryCertNumbers complimentary criteria that must be met
      * @return list of errors
      */
-    public static List<String> checkClassOfCriteriaForErrors(final String criterionNumberStart,
-            final List<String> allCriteriaMet, final List<String> complimentaryCertNumbers) {
+    public static List<String> checkClassOfCriteriaForErrors(String criterionNumberStart,
+            List<CertificationCriterion> allCriteriaMet, List<String> complimentaryCertNumbers) {
         List<String> errors = new ArrayList<String>();
-        boolean hasCriterion = false;
-        for (String currCriteria : allCriteriaMet) {
-            if (currCriteria.startsWith(criterionNumberStart)) {
-                hasCriterion = true;
-            }
-        }
-        if (hasCriterion) {
+        List<CertificationCriterion> presentAttestedCriteriaInClass = allCriteriaMet.stream()
+                .filter(certResult -> certResult.getNumber().startsWith(criterionNumberStart)
+                        && (certResult.getRemoved() == null
+                        || certResult.getRemoved().equals(Boolean.FALSE)))
+                .collect(Collectors.<CertificationCriterion>toList());
+
+        if (presentAttestedCriteriaInClass != null && presentAttestedCriteriaInClass.size() > 0) {
             for (String currRequiredCriteria : complimentaryCertNumbers) {
                 boolean hasComplimentaryCert = false;
-                for (String certCriteria : complimentaryCertNumbers) {
-                    if (certCriteria.equals(currRequiredCriteria)) {
+                for (CertificationCriterion certResult : allCriteriaMet) {
+                    if (certResult.getNumber().equals(currRequiredCriteria)) {
                         hasComplimentaryCert = true;
                     }
                 }
@@ -332,6 +357,41 @@ public final class ValidationUtils {
         return errors;
     }
 
+    public static List<String> checkClassOfCriteriaForWarnings(String criterionNumberStart,
+            List<CertificationCriterion> allCriteriaMet, List<String> complimentaryCertNumbers) {
+        List<String> warnings = new ArrayList<String>();
+        List<CertificationCriterion> removedAttestedCriteriaInClass = allCriteriaMet.stream()
+                .filter(certResult -> certResult.getNumber().startsWith(criterionNumberStart)
+                        && (certResult.getRemoved() == null
+                        || certResult.getRemoved().equals(Boolean.TRUE)))
+                .collect(Collectors.<CertificationCriterion>toList());
+        List<CertificationCriterion> presentAttestedCriteriaInClass = allCriteriaMet.stream()
+                .filter(certResult -> certResult.getNumber().startsWith(criterionNumberStart)
+                        && (certResult.getRemoved() == null
+                        || certResult.getRemoved().equals(Boolean.FALSE)))
+                .collect(Collectors.<CertificationCriterion>toList());
+
+        //if the only attested criteria in the "class" of criteria are marked as removed
+        //then the lack of a complimentary criteria is only a warning
+        if (removedAttestedCriteriaInClass != null && removedAttestedCriteriaInClass.size() > 0
+                && (presentAttestedCriteriaInClass == null || presentAttestedCriteriaInClass.size() == 0)) {
+            for (String currRequiredCriteria : complimentaryCertNumbers) {
+                boolean hasComplimentaryCert = false;
+                for (CertificationCriterion certResult : allCriteriaMet) {
+                    if (certResult.getNumber().equals(currRequiredCriteria)) {
+                        hasComplimentaryCert = true;
+                    }
+                }
+
+                if (!hasComplimentaryCert) {
+                    warnings.add("Certification criterion " + criterionNumberStart + "(*) was found " + "so "
+                            + currRequiredCriteria + " is required but was not found.");
+                }
+            }
+        }
+        return warnings;
+    }
+
     /**
      * Look for a required complimentary criteria when a specific criteria has
      * been met.
@@ -342,11 +402,11 @@ public final class ValidationUtils {
      * @return list of errors
      */
     public static List<String> checkSpecificCriteriaForErrors(final String criterionNumber,
-            final List<String> allCriteriaMet, final List<String> complimentaryCertNumbers) {
+            final List<CertificationCriterion> allCriteriaMet, final List<String> complimentaryCertNumbers) {
         List<String> errors = new ArrayList<String>();
         boolean hasCriterion = false;
-        for (String currCriteria : allCriteriaMet) {
-            if (currCriteria.equals(criterionNumber)) {
+        for (CertificationCriterion currCriteria : allCriteriaMet) {
+            if (currCriteria.getNumber().equals(criterionNumber)) {
                 hasCriterion = true;
             }
         }
@@ -366,5 +426,30 @@ public final class ValidationUtils {
             }
         }
         return errors;
+    }
+
+    public static List<CertificationCriterion> getAttestedCriteria(CertifiedProductSearchDetails listing) {
+        List<CertificationResult> attestedCertificationResults = listing.getCertificationResults().stream()
+                .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess().equals(Boolean.TRUE))
+                .collect(Collectors.<CertificationResult>toList());
+
+        List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
+        for (CertificationResult cr : attestedCertificationResults) {
+            criteria.add(cr.getCriterion());
+        }
+        return criteria;
+    }
+
+    public static List<CertificationCriterion> getAttestedCriteria(PendingCertifiedProductDTO listing) {
+        List<PendingCertificationResultDTO> attestedCertificationResults = listing.getCertificationCriterion().stream()
+                .filter(certResult -> certResult.getMeetsCriteria() != null && certResult.getMeetsCriteria().equals(Boolean.TRUE))
+                .collect(Collectors.<PendingCertificationResultDTO>toList());
+
+        List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
+        for (PendingCertificationResultDTO cr : attestedCertificationResults) {
+            CertificationCriterionDTO criterionDto = cr.getCriterion();
+            criteria.add(new CertificationCriterion(criterionDto));
+        }
+        return criteria;
     }
 }

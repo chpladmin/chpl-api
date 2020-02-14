@@ -54,5 +54,4 @@ public class PendingCqmCertificationCriterionDTO implements Serializable {
     public void setCertificationCriteriaNumber(final String certificationCriteriaNumber) {
         this.certificationCriteriaNumber = certificationCriteriaNumber;
     }
-
 }

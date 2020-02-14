@@ -7,6 +7,7 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCqmCriterionDTO;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.pendingListing.reviewer.RequiredDataReviewer;
@@ -24,8 +25,9 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
     };
 
     @Autowired
-    public RequiredData2014Reviewer(ErrorMessageUtil msgUtil, CertificationResultRules certRules) {
-        super(msgUtil, certRules);
+    public RequiredData2014Reviewer(ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
+            CertificationResultRules certRules) {
+        super(msgUtil, resourcePermissions, certRules);
     }
 
     @Override

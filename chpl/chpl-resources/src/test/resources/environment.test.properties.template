@@ -39,6 +39,10 @@ rateLimitTimeUnit=minute
 asyncListingDetailsEnabled=false
 asyncCacheRefreshEnabled=false
 
+#format MM/DD/YYYY
+cures.ruleEffectiveDate=07/01/2020
+questionableActivity.b3ChangeDate=01/01/2020
+
 #Website Change Request Email
 changeRequest.website.approval.subject=Website URL change request approved
 changeRequest.website.approval.body=Hello,<br/><br/>The website change request that was submitted on %s to change the website URL to %s has been approved by %s.  The updated website URL will now be reflected in CHPL.<br/><br/>Thanks,<br/>The CHPL Team

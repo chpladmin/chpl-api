@@ -3,6 +3,9 @@ package old.gov.healthit.chpl.validation.surveillance.reviewer;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.ff4j.FF4j;
 import org.junit.Before;
@@ -88,14 +91,18 @@ public class NewSurveillanceRemovedCriteriaReviewerTest {
 
         Surveillance newSurveillance = mockUtil.createOpenSurveillanceNoNonconformity();
         String criteriaNumber = newSurveillance.getRequirements().iterator().next().getRequirement();
-        CertificationCriterionDTO removedCriteria = new CertificationCriterionDTO();
-        removedCriteria.setId(1L);
-        removedCriteria.setNumber(criteriaNumber);
-        removedCriteria.setRemoved(true);
+
+        List<CertificationCriterionDTO> removedCriteria = new ArrayList<CertificationCriterionDTO>();
+        CertificationCriterionDTO crit = new CertificationCriterionDTO();
+        crit.setId(1L);
+        crit.setNumber(criteriaNumber);
+        crit.setRemoved(true);
+        removedCriteria.add(crit);
 
         Mockito.when(
-                criterionDAO.getByName(ArgumentMatchers.anyString()))
+                criterionDAO.getAllByNumber(ArgumentMatchers.anyString()))
                 .thenReturn(removedCriteria);
+        //TODO Fix this as part of OCD-3220
 
         reviewer.review(newSurveillance);
 
@@ -110,14 +117,18 @@ public class NewSurveillanceRemovedCriteriaReviewerTest {
         Surveillance newSurveillance = mockUtil.createOpenSurveillanceWithOpenNonconformity();
         SurveillanceNonconformity nc = newSurveillance.getRequirements().iterator().next().getNonconformities().get(0);
         String criteriaNumber = nc.getNonconformityType();
-        CertificationCriterionDTO removedCriteria = new CertificationCriterionDTO();
-        removedCriteria.setId(1L);
-        removedCriteria.setNumber(criteriaNumber);
-        removedCriteria.setRemoved(true);
+
+        List<CertificationCriterionDTO> removedCriteria = new ArrayList<CertificationCriterionDTO>();
+        CertificationCriterionDTO crit = new CertificationCriterionDTO();
+        crit.setId(1L);
+        crit.setNumber(criteriaNumber);
+        crit.setRemoved(true);
+        removedCriteria.add(crit);
 
         Mockito.when(
-                criterionDAO.getByName(ArgumentMatchers.anyString()))
+                criterionDAO.getAllByNumber(ArgumentMatchers.anyString()))
                 .thenReturn(removedCriteria);
+        //TODO Fix this as part of OCD-3220
 
         reviewer.review(newSurveillance);
 
@@ -131,14 +142,18 @@ public class NewSurveillanceRemovedCriteriaReviewerTest {
 
         Surveillance newSurveillance = mockUtil.createOpenSurveillanceNoNonconformity();
         String criteriaNumber = newSurveillance.getRequirements().iterator().next().getRequirement();
-        CertificationCriterionDTO removedCriteria = new CertificationCriterionDTO();
-        removedCriteria.setId(1L);
-        removedCriteria.setNumber(criteriaNumber);
-        removedCriteria.setRemoved(true);
+
+        List<CertificationCriterionDTO> removedCriteria = new ArrayList<CertificationCriterionDTO>();
+        CertificationCriterionDTO crit = new CertificationCriterionDTO();
+        crit.setId(1L);
+        crit.setNumber(criteriaNumber);
+        crit.setRemoved(true);
+        removedCriteria.add(crit);
 
         Mockito.when(
-                criterionDAO.getByName(ArgumentMatchers.anyString()))
+                criterionDAO.getAllByNumber(ArgumentMatchers.anyString()))
                 .thenReturn(removedCriteria);
+        //TODO Fix this as part of OCD-3220
 
         reviewer.review(newSurveillance);
 
@@ -153,14 +168,18 @@ public class NewSurveillanceRemovedCriteriaReviewerTest {
         Surveillance newSurveillance = mockUtil.createOpenSurveillanceWithOpenNonconformity();
         SurveillanceNonconformity nc = newSurveillance.getRequirements().iterator().next().getNonconformities().get(0);
         String criteriaNumber = nc.getNonconformityType();
-        CertificationCriterionDTO removedCriteria = new CertificationCriterionDTO();
-        removedCriteria.setId(1L);
-        removedCriteria.setNumber(criteriaNumber);
-        removedCriteria.setRemoved(true);
+
+        List<CertificationCriterionDTO> removedCriteria = new ArrayList<CertificationCriterionDTO>();
+        CertificationCriterionDTO crit = new CertificationCriterionDTO();
+        crit.setId(1L);
+        crit.setNumber(criteriaNumber);
+        crit.setRemoved(true);
+        removedCriteria.add(crit);
 
         Mockito.when(
-                criterionDAO.getByName(ArgumentMatchers.anyString()))
+                criterionDAO.getAllByNumber(ArgumentMatchers.anyString()))
                 .thenReturn(removedCriteria);
+        //TODO Fix this as part of OCD-3220
 
         reviewer.review(newSurveillance);
 
@@ -174,14 +193,18 @@ public class NewSurveillanceRemovedCriteriaReviewerTest {
 
         Surveillance newSurveillance = mockUtil.createOpenSurveillanceNoNonconformity();
         String criteriaNumber = newSurveillance.getRequirements().iterator().next().getRequirement();
-        CertificationCriterionDTO removedCriteria = new CertificationCriterionDTO();
-        removedCriteria.setId(1L);
-        removedCriteria.setNumber(criteriaNumber);
-        removedCriteria.setRemoved(true);
+
+        List<CertificationCriterionDTO> removedCriteria = new ArrayList<CertificationCriterionDTO>();
+        CertificationCriterionDTO crit = new CertificationCriterionDTO();
+        crit.setId(1L);
+        crit.setNumber(criteriaNumber);
+        crit.setRemoved(true);
+        removedCriteria.add(crit);
 
         Mockito.when(
-                criterionDAO.getByName(ArgumentMatchers.anyString()))
+                criterionDAO.getAllByNumber(ArgumentMatchers.anyString()))
                 .thenReturn(removedCriteria);
+        //TODO Fix this as part of OCD-3220
 
         reviewer.review(newSurveillance);
 
@@ -196,14 +219,18 @@ public class NewSurveillanceRemovedCriteriaReviewerTest {
         Surveillance newSurveillance = mockUtil.createOpenSurveillanceWithOpenNonconformity();
         SurveillanceNonconformity nc = newSurveillance.getRequirements().iterator().next().getNonconformities().get(0);
         String criteriaNumber = nc.getNonconformityType();
-        CertificationCriterionDTO removedCriteria = new CertificationCriterionDTO();
-        removedCriteria.setId(1L);
-        removedCriteria.setNumber(criteriaNumber);
-        removedCriteria.setRemoved(true);
+
+        List<CertificationCriterionDTO> removedCriteria = new ArrayList<CertificationCriterionDTO>();
+        CertificationCriterionDTO crit = new CertificationCriterionDTO();
+        crit.setId(1L);
+        crit.setNumber(criteriaNumber);
+        crit.setRemoved(true);
+        removedCriteria.add(crit);
 
         Mockito.when(
-                criterionDAO.getByName(ArgumentMatchers.anyString()))
+                criterionDAO.getAllByNumber(ArgumentMatchers.anyString()))
                 .thenReturn(removedCriteria);
+        //TODO Fix this as part of OCD-3220
 
         reviewer.review(newSurveillance);
 
@@ -217,14 +244,18 @@ public class NewSurveillanceRemovedCriteriaReviewerTest {
 
         Surveillance newSurveillance = mockUtil.createOpenSurveillanceNoNonconformity();
         String criteriaNumber = newSurveillance.getRequirements().iterator().next().getRequirement();
-        CertificationCriterionDTO removedCriteria = new CertificationCriterionDTO();
-        removedCriteria.setId(1L);
-        removedCriteria.setNumber(criteriaNumber);
-        removedCriteria.setRemoved(false);
+
+        List<CertificationCriterionDTO> removedCriteria = new ArrayList<CertificationCriterionDTO>();
+        CertificationCriterionDTO crit = new CertificationCriterionDTO();
+        crit.setId(1L);
+        crit.setNumber(criteriaNumber);
+        crit.setRemoved(false);
+        removedCriteria.add(crit);
 
         Mockito.when(
-                criterionDAO.getByName(ArgumentMatchers.anyString()))
+                criterionDAO.getAllByNumber(ArgumentMatchers.anyString()))
                 .thenReturn(removedCriteria);
+        //TODO Fix this as part of OCD-3220
 
         reviewer.review(newSurveillance);
 
@@ -239,14 +270,18 @@ public class NewSurveillanceRemovedCriteriaReviewerTest {
         Surveillance newSurveillance = mockUtil.createOpenSurveillanceWithOpenNonconformity();
         SurveillanceNonconformity nc = newSurveillance.getRequirements().iterator().next().getNonconformities().get(0);
         String criteriaNumber = nc.getNonconformityType();
-        CertificationCriterionDTO removedCriteria = new CertificationCriterionDTO();
-        removedCriteria.setId(1L);
-        removedCriteria.setNumber(criteriaNumber);
-        removedCriteria.setRemoved(false);
 
+        List<CertificationCriterionDTO> removedCriteria = new ArrayList<CertificationCriterionDTO>();
+        CertificationCriterionDTO crit = new CertificationCriterionDTO();
+        crit.setId(1L);
+        crit.setNumber(criteriaNumber);
+        crit.setRemoved(false);
+
+        removedCriteria.add(crit);
         Mockito.when(
-                criterionDAO.getByName(ArgumentMatchers.anyString()))
+                criterionDAO.getAllByNumber(ArgumentMatchers.anyString()))
                 .thenReturn(removedCriteria);
+        //TODO Fix this as part of OCD-3220
 
         reviewer.review(newSurveillance);
 

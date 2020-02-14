@@ -892,7 +892,8 @@ public class SurveillanceDAO extends BaseDAOImpl {
     private void populateSurveillanceRequirementEntity(final SurveillanceRequirementEntity to,
             final SurveillanceRequirement from) {
         if (from.getRequirement() != null) {
-            CertificationCriterionDTO crit = criterionDao.getByName(from.getRequirement());
+            CertificationCriterionDTO crit = criterionDao.getAllByNumber(from.getRequirement()).get(0);
+            //TODO Fix this as part of OCD-3220
             if (crit != null) {
                 to.setCertificationCriterionId(crit.getId());
             } else {
@@ -911,8 +912,10 @@ public class SurveillanceDAO extends BaseDAOImpl {
     private void populateSurveillanceNonconformityEntity(final SurveillanceNonconformityEntity to,
             final SurveillanceNonconformity from) {
         if (from.getNonconformityType() != null) {
-            CertificationCriterionDTO crit = criterionDao.getByName(from.getNonconformityType());
-            if (crit != null) {
+            List<CertificationCriterionDTO> criteria = criterionDao.getAllByNumber(from.getNonconformityType());
+            //TODO Fix this as part of OCD-3220
+            if (criteria != null && criteria.size() > 0) {
+                CertificationCriterionDTO crit = criteria.get(0);
                 to.setCertificationCriterionId(crit.getId());
             } else {
                 to.setType(from.getNonconformityType());

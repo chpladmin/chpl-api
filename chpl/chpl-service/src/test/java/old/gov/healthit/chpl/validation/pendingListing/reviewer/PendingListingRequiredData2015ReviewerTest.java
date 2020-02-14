@@ -8,9 +8,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,16 +27,18 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.RequiredData2015Reviewer;
+import old.gov.healthit.chpl.TestingUsers;
 import old.gov.healthit.chpl.util.ListingMockUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
         old.gov.healthit.chpl.CHPLTestConfig.class
 })
-public class PendingListingRequiredData2015ReviewerTest {
+public class PendingListingRequiredData2015ReviewerTest extends TestingUsers {
 
     @Autowired
     private MacraMeasureDAO macraMeasureDAO;
@@ -59,15 +61,21 @@ public class PendingListingRequiredData2015ReviewerTest {
     @Autowired
     private CertificationResultRules certRules;
 
-    @Spy
-    private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
+    @Mock
+    private ResourcePermissions resourcePermissions;
+
+    @Mock
+    private ErrorMessageUtil msgUtil;
 
     private RequiredData2015Reviewer reviewer;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        reviewer = new RequiredData2015Reviewer(macraMeasureDAO, testFuncDao, testProcDao, testDataDao, msgUtil, certRules);
+        setupForAcbUser(resourcePermissions);
+
+        reviewer = new RequiredData2015Reviewer(macraMeasureDAO, testFuncDao, testProcDao,
+                testDataDao, msgUtil, resourcePermissions, certRules);
 
         Mockito.doAnswer(new Answer<String>() {
             @Override

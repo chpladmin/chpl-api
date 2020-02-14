@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -24,16 +25,18 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.pendingListing.reviewer.RequiredDataReviewer;
+import old.gov.healthit.chpl.TestingUsers;
 import old.gov.healthit.chpl.util.ListingMockUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
         old.gov.healthit.chpl.CHPLTestConfig.class
 })
-public class PendingListingRequiredDataReviewerTest {
+public class PendingListingRequiredDataReviewerTest extends TestingUsers {
     private static final String B_1 = "170.314 (b)(1)";
 
     @Autowired
@@ -45,6 +48,9 @@ public class PendingListingRequiredDataReviewerTest {
     @Autowired
     private CertificationResultRules certRules;
 
+    @Mock
+    private ResourcePermissions resourcePermissions;
+
     @Spy
     private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
 
@@ -53,7 +59,8 @@ public class PendingListingRequiredDataReviewerTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        reviewer = new RequiredDataReviewer(msgUtil, certRules);
+        setupForAcbUser(resourcePermissions);
+        reviewer = new RequiredDataReviewer(msgUtil, resourcePermissions, certRules);
 
         // TODO - Can this be extracted as some sort of generic method, so it can be used all error messages??
         Mockito.doAnswer(new Answer<String>() {

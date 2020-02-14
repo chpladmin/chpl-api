@@ -15,7 +15,7 @@ import net.sf.ehcache.CacheManager;
 
 /**
  * The RemoveCriteriaJob sets the removed flag to "true" for the following 2015 criteria:
- * (a)(6), (a)(7), (a)(8), (a)(10), (a)(11), (a)(13), (b)(4), (b)(5), and (e)(2).
+ * (a)(6), (a)(7), (a)(8), (a)(11), (b)(4), and (b)(5).
  */
 public class RemoveCriteriaJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("removeCriteriaJobLogger");
@@ -26,8 +26,12 @@ public class RemoveCriteriaJob extends QuartzJob {
     @Autowired
     private FF4j ff4j;
 
-    private static final String[] CRITERIA_TO_REMOVE = {"170.315 (a)(6)", "170.315 (a)(7)",
-            "170.315 (a)(8)", "170.315 (a)(11)", "170.315 (b)(4)", "170.315 (b)(5)"};
+    private static final String[] CRITERIA_TO_REMOVE = {"170.315 (a)(6):Problem List",
+            "170.315 (a)(7):Medication List",
+            "170.315 (a)(8):Medication Allergy List",
+            "170.315 (a)(11):Smoking Status",
+            "170.315 (b)(4):Common Clinical Data Set Summary Record - Create",
+            "170.315 (b)(5):Common Clinical Data Set Summary Record - Receive"};
 
     public RemoveCriteriaJob() throws Exception {
         super();
@@ -42,7 +46,9 @@ public class RemoveCriteriaJob extends QuartzJob {
         } else {
             for (String criteria : CRITERIA_TO_REMOVE) {
                 try {
-                    CertificationCriterionDTO certDto = certCriteriaDao.getByName(criteria);
+                    String[] criterionElements = criteria.split(":");
+                    CertificationCriterionDTO certDto = certCriteriaDao
+                            .getByNumberAndTitle(criterionElements[0], criterionElements[1]);
                     certDto.setRemoved(true);
                     certCriteriaDao.update(certDto);
                     LOGGER.info("Updated criteria " + criteria);

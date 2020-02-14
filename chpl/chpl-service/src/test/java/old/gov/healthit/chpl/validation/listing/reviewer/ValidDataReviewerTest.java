@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -20,15 +21,18 @@ import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.PrivacyAndSecurityFrameworkConcept;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.reviewer.ValidDataReviewer;
+import old.gov.healthit.chpl.TestingUsers;
 import old.gov.healthit.chpl.util.ListingMockUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
         old.gov.healthit.chpl.CHPLTestConfig.class
 })
-public class ValidDataReviewerTest {
+public class ValidDataReviewerTest extends TestingUsers {
     private static final String D_1 = "170.315 (d)(1)";
     private static final String BAD_PRIVACY_SECURITY_ERROR = "Certification " + D_1
             + " contains Privacy and Security Framework value 'Approach 12' which must match one of "
@@ -38,16 +42,28 @@ public class ValidDataReviewerTest {
 
     @Spy
     private ChplProductNumberUtil chplNumberUtil;
-
+    @Mock
+    private ResourcePermissions resourcePermissions;
+    @Mock
+    private ErrorMessageUtil msgUtil;
     @Autowired
     private ListingMockUtil mockUtil;
-
     @InjectMocks
     private ValidDataReviewer validDataReivewer;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        setupForAcbUser(resourcePermissions);
+        Mockito.doReturn(BAD_PRIVACY_SECURITY_ERROR)
+                .when(msgUtil).getMessage(
+                        ArgumentMatchers.eq("listing.criteria.invalidPrivacySecurityFramework"),
+                        ArgumentMatchers.anyString(), ArgumentMatchers.anyString(),
+                        ArgumentMatchers.anyString());
+        Mockito.doReturn(BAD_ADDL_SOFTWARE_ERROR)
+                .when(msgUtil).getMessage(
+                        ArgumentMatchers.eq("listing.criteria.invalidAdditionalSoftware"),
+                        ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
     }
 
     @Test

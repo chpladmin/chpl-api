@@ -25,6 +25,7 @@ import gov.healthit.chpl.domain.TestTask;
  */
 public class Sed2015CsvPresenter {
     private static final Logger LOGGER = LogManager.getLogger(Sed2015CsvPresenter.class);
+    private static final String CURES_UPDATE_TITLE = " (Cures Update)";
 
     /**
      * Returns number of rows printed (minus the header)
@@ -37,7 +38,7 @@ public class Sed2015CsvPresenter {
             for (CertifiedProductSearchDetails currListing : cpList) {
                 List<List<String>> rows = generateRows(currListing);
                 if (rows != null) { // can return null to skip a row
-                    for(List<String> row : rows) {
+                    for (List<String> row : rows) {
                         csvPrinter.printRecord(row);
                         numRows++;
                     }
@@ -105,7 +106,7 @@ public class Sed2015CsvPresenter {
                         if (assocCriteriaStr.length() > 0) {
                             assocCriteriaStr.append(";");
                         }
-                        assocCriteriaStr.append(criteria.getNumber());
+                        assocCriteriaStr.append(criteria.formatCriteriaNumber());
                     }
                     row.add(assocCriteriaStr.toString());
                     row.add(testTask.getDescription());

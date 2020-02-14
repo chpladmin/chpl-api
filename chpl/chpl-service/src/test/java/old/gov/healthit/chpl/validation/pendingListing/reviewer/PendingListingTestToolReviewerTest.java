@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -15,11 +16,13 @@ import org.springframework.context.MessageSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import gov.healthit.chpl.TestingUsers;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -32,7 +35,7 @@ import old.gov.healthit.chpl.util.ListingMockUtil;
 @ContextConfiguration(classes = {
         old.gov.healthit.chpl.CHPLTestConfig.class
 })
-public class PendingListingTestToolReviewerTest {
+public class PendingListingTestToolReviewerTest extends TestingUsers {
     private static final String B_2 = "170.314 (b)(2)";
     private static final String G_1 = "170.314 (g)(1)";
     private static final String G_2 = "170.314 (g)(2)";
@@ -61,6 +64,8 @@ public class PendingListingTestToolReviewerTest {
     private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
     @Spy
     private CertificationResultRules certRules;
+    @Mock
+    private ResourcePermissions resourcePermissions;
 
     private TestToolReviewer testToolReviewer;
     private TestTool2015Reviewer testTool2015Reviewer;
@@ -69,9 +74,10 @@ public class PendingListingTestToolReviewerTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        setupForAcbUser(resourcePermissions);
 
-        testToolReviewer = new TestToolReviewer(testToolDao, msgUtil, productNumberUtil);
-        testTool2015Reviewer = new TestTool2015Reviewer(msgUtil);
+        testToolReviewer = new TestToolReviewer(testToolDao, msgUtil, productNumberUtil, resourcePermissions);
+        testTool2015Reviewer= new TestTool2015Reviewer(msgUtil, resourcePermissions);
         ambulatoryTestToolReviewier = new AmbulatoryRequiredTestToolReviewer(msgUtil, certRules);
 
         Mockito.doReturn(NO_TEST_TOOL_ERROR).when(msgUtil)

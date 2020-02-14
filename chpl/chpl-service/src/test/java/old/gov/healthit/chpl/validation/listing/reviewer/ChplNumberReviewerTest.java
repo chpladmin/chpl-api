@@ -46,10 +46,13 @@ public class ChplNumberReviewerTest {
     private static final String CERTDATE_CODE_ERROR = "The certified date code is required and must be "
             + ChplProductNumberUtil.CERTIFIED_DATE_CODE_LENGTH
             + " characters in length containing only the characters 0-9.";
-    private static final String ICS_CODE_0_HAS_PARENTS_ERROR = "ICS Code is 00, which means this Listing must not inherit from any other Listings";
-    private static final String ICS_CODE_FALSE_HAS_ICS_ERROR = "The unique id indicates the product does not have ICS but the value for Inherited Certification Status is true.";
-    private static final String ICS_CODE_TRUE_NO_ICS_ERROR = "The unique id indicates the product does have ICS but the value for Inherited Certification Status is false.";
-    private static final String DUPLICATE_CHPLID_ERROR_END = "one already exists with this ID.";
+    private static final String ICS_CODE_0_HAS_PARENTS_ERROR =
+            "ICS Code is 00, which means this Listing must not inherit from any other Listings";
+    private static final String ICS_CODE_FALSE_HAS_ICS_ERROR =
+            "The unique id indicates the product does not have ICS but the value for Inherited Certification Status is true.";
+    private static final String ICS_CODE_TRUE_NO_ICS_ERROR =
+            "The unique id indicates the product does have ICS but the value for Inherited Certification Status is false.";
+    private static final String DUPLICATE_CHPLID_ERROR_END = "one already exists with this value.";
 
     @Autowired
     private ListingMockUtil mockUtil;
@@ -96,8 +99,12 @@ public class ChplNumberReviewerTest {
                 .when(msgUtil).getMessage(
                         ArgumentMatchers.eq("listing.icsCodeFalseValueTrue"));
         Mockito.doReturn(ICS_CODE_TRUE_NO_ICS_ERROR)
-                .when(msgUtil).getMessage(
-                        ArgumentMatchers.eq("listing.icsCodeTrueValueFalse"));
+        .when(msgUtil).getMessage(
+                ArgumentMatchers.eq("listing.icsCodeTrueValueFalse"));
+        Mockito.doReturn(DUPLICATE_CHPLID_ERROR_END)
+        .when(msgUtil).getMessage(
+                ArgumentMatchers.eq("listing.chplProductNumber.systemChangedNotUnique"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
 
         Mockito.doReturn(true).when(chplProductNumberUtil).isUnique(ArgumentMatchers.anyString());
         Mockito.doReturn(false).when(certificationResultManager)
