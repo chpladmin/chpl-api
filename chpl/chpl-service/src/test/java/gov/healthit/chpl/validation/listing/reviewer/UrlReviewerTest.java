@@ -22,17 +22,22 @@ import gov.healthit.chpl.util.ListingMockUtil;
 
 /**
  * Tests URLs to ensure the URLs have no new lines and look like an URL.
+ * 
  * @author alarned
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
 public class UrlReviewerTest {
     private static final String BAD_REPORT_FILE_LOCATION_ERROR = "Fake error message";
 
-    @Autowired private ListingMockUtil mockUtil;
+    @Autowired
+    private ListingMockUtil mockUtil;
 
-    @Mock private ErrorMessageUtil msgUtil;
+    @Mock
+    private ErrorMessageUtil msgUtil;
 
     @InjectMocks
     private UrlReviewer urlReviewer;
@@ -46,15 +51,13 @@ public class UrlReviewerTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         Mockito.doReturn(BAD_REPORT_FILE_LOCATION_ERROR)
-        .when(msgUtil).getMessage(eq("listing.invalidUrlFound"), anyString());
+                .when(msgUtil).getMessage(eq("listing.invalidUrlFound"), anyString());
+
         listing = mockUtil.createValid2015Listing();
     }
 
     /**
-     * Given the report file location has new lines
-     * when the validator runs
-     * then there should be an error.
-     * OCD-744
+     * Given the report file location has new lines when the validator runs then there should be an error. OCD-744
      */
     @Test
     public void testWhenReportFileLocationUrlHasNewLine() {
@@ -65,10 +68,7 @@ public class UrlReviewerTest {
     }
 
     /**
-     * Given the report file location has an invalid url
-     * when the validator runs
-     * then there should be an error.
-     * OCD-744
+     * Given the report file location has an invalid url when the validator runs then there should be an error. OCD-744
      */
     @Test
     public void testWhenReportFileLocationUrlHasProperShape() {
@@ -79,12 +79,9 @@ public class UrlReviewerTest {
     }
 
     /**
-     * Given the report file location has an empty URL
-     * when the validator runs
-     * then there should not be an error.
+     * Given the report file location has an empty URL when the validator runs then there should not be an error.
      *
-     * A different validator is checking for required elements.
-     * OCD-744
+     * A different validator is checking for required elements. OCD-744
      */
     @Test
     public void testWhenReportFileLocationUrlIsEmpty() {
@@ -95,12 +92,9 @@ public class UrlReviewerTest {
     }
 
     /**
-     * Given the report file location has a null URL
-     * when the validator runs
-     * then there should not be an error.
+     * Given the report file location has a null URL when the validator runs then there should not be an error.
      *
-     * A different validator is checking for required elements.
-     * OCD-744
+     * A different validator is checking for required elements. OCD-744
      */
     @Test
     public void testWhenReportFileLocationUrlIsNull() {

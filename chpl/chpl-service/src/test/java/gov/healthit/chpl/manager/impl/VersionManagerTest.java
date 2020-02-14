@@ -2,15 +2,18 @@ package gov.healthit.chpl.manager.impl;
 
 import java.util.Date;
 
+import org.ff4j.FF4j;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -23,6 +26,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
@@ -40,12 +44,9 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import junit.framework.TestCase;
 
-@ActiveProfiles({
-    "Ff4jMock"
-})
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        gov.healthit.chpl.CHPLTestConfig.class, gov.healthit.chpl.Ff4jTestConfiguration.class
+        gov.healthit.chpl.CHPLTestConfig.class
 })
 @TestExecutionListeners({
         DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
@@ -60,6 +61,9 @@ public class VersionManagerTest extends TestCase {
     private DeveloperManager developerManager;
     @Autowired
     private DeveloperStatusDAO devStatusDao;
+
+    @Autowired
+    private FF4j ff4j;
 
     @Rule
     @Autowired
@@ -84,6 +88,13 @@ public class VersionManagerTest extends TestCase {
         acbUser.setFriendlyName("ACB User");
         acbUser.setSubjectName("acb");
         acbUser.getPermissions().add(new GrantedPermission("ROLE_ACB"));
+    }
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+
+        Mockito.doReturn(true).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK);
     }
 
     @Test

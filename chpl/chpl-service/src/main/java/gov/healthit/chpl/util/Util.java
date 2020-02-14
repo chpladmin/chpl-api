@@ -5,6 +5,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,6 +18,11 @@ public final class Util {
     private static final int BASE_16 = 16;
     private static final String DATE_FORMAT = "yyyy-MM-dd";
     private static final String TIMESTAMP_FORMAT = "yyyyMMdd_HHmmss";
+
+    private static final int NUMBER_TITLE = 1;
+    private static final int NUMBER_PARA_1 = 2;
+    private static final int NUMBER_PARA_2 = 3;
+    private static final int NUMBER_PARA_3 = 4;
 
     private Util() {
 
@@ -101,37 +108,62 @@ public final class Util {
     }
 
     public static int sortCriteria(CertificationCriterionDTO c1, CertificationCriterionDTO c2) {
-        Integer c1Number = Integer.parseInt(c1.getCertificationEdition());
-        Integer c2Number = Integer.parseInt(c2.getCertificationEdition());
-        if (c1Number.compareTo(c2Number) != 0) {
-            return c1Number.compareTo(c2Number);
+        Pattern pattern = Pattern.compile(
+                "^(\\d{3}\\.\\d{3})\\s{1}"      // captures "170.314"
+                        + "(\\([a-z]{1}\\))"    // captures "(b)"
+                        + "(\\([0-9]{1,2}\\))?" // captures "(5)" or "(12)"
+                        + "(\\([A-Z]{1}\\))?$"  // captures "(A)"
+                );
+        Matcher m1 = pattern.matcher(c1.getNumber());
+        Matcher m2 = pattern.matcher(c2.getNumber());
+        int ret = 0;
+        if (!m1.matches() || !m2.matches()) {
+            return ret;
         }
-        if (c1.getCertificationEdition().equalsIgnoreCase("2011")) {
-            c1Number = Integer.parseInt(c1.getNumber().split(" ")[0].split(".")[1]);
-            c2Number = Integer.parseInt(c2.getNumber().split(" ")[0].split(".")[1]);
-            if (c1Number.compareTo(c2Number) != 0) {
-                return c1Number.compareTo(c2Number);
-            }
+        ret = compareStrings(m1.group(NUMBER_TITLE), m2.group(NUMBER_TITLE));
+        if (ret != 0) {
+            return ret;
         }
-        String c1String = c1.getNumber().split(" ")[1].substring(1, 2);
-        String c2String = c2.getNumber().split(" ")[1].substring(1, 2);
-        if (c1String.compareTo(c2String) != 0) {
-            return c1String.compareTo(c2String);
+        ret = compareStrings(m1.group(NUMBER_PARA_1), m2.group(NUMBER_PARA_1));
+        if (ret != 0) {
+            return ret;
         }
-        c1String = c1.getNumber().split(" ")[1].split("\\)\\(")[1];
-        c1Number = Integer.parseInt(c1String.substring(0, c1String.indexOf(")")));
-        c2String = c2.getNumber().split(" ")[1].split("\\)\\(")[1];
-        c2Number = Integer.parseInt(c2String.substring(0, c2String.indexOf(")")));
-        if (c1Number.compareTo(c2Number) != 0) {
-            return c1Number.compareTo(c2Number);
+        ret = compareInts(m1.group(NUMBER_PARA_2), m2.group(NUMBER_PARA_2));
+        if (ret != 0) {
+            return ret;
         }
-        c1String = c1.getNumber().split(" ")[1].split("\\)\\(")[2];
-        c1Number = Integer.parseInt(c1String.substring(0, c1String.indexOf(")")));
-        c2String = c2.getNumber().split(" ")[1].split("\\)\\(")[2];
-        c2Number = Integer.parseInt(c2String.substring(0, c2String.indexOf(")")));
-        if (c1Number.compareTo(c2Number) != 0) {
-            return c1Number.compareTo(c2Number);
+        ret = compareStrings(m1.group(NUMBER_PARA_3), m2.group(NUMBER_PARA_3));
+        if (ret != 0) {
+            return ret;
         }
         return c1.getTitle().compareTo(c2.getTitle());
+    }
+
+    private static int compareStrings(String s1, String s2) {
+        if (s1 == null && s2 == null) {
+            return 0;
+        }
+        if (s1 == null) {
+            return -1;
+        }
+        if (s2 == null) {
+            return 1;
+        }
+        return s1.compareTo(s2);
+    }
+
+    private static int compareInts(String s1, String s2) {
+        if (s1 == null && s2 == null) {
+            return 0;
+        }
+        if (s1 == null) {
+            return -1;
+        }
+        if (s2 == null) {
+            return 1;
+        }
+        Integer i1 = Integer.parseInt(s1.substring(1, s1.length() - 1));
+        Integer i2 = Integer.parseInt(s2.substring(1, s2.length() - 1));
+        return i1.compareTo(i2);
     }
 }

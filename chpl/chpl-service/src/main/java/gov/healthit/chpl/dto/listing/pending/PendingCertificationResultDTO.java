@@ -329,5 +329,4 @@ public class PendingCertificationResultDTO implements Serializable {
     public void setCriterion(final CertificationCriterionDTO criterion) {
         this.criterion = criterion;
     }
-
 }

@@ -30,14 +30,16 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ListingMockUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
 public class InheritedCertificationStatusReviewerTest {
     private static final String ICS_TRUE_NO_PARENTS_ERROR = "The ICS value is 'true' which means this "
             + "listing has inherited properties. It is required that at least one parent from which "
             + "the listing inherits be provided.";
     private static final String ICS_UNIQUE_ID_NOT_FOUND_ERROR = "No listing was found with the unique ID "
             + "'" + ListingMockUtil.CHPL_ID_2015 + "'. "
-                    + "ICS parent listings must reference existing listings in the CHPL.";
+            + "ICS parent listings must reference existing listings in the CHPL.";
     private static final String ICS_SELF_INHERITANCE_ERROR = "A parent listing was found with the same ID "
             + "as this listing. A listing cannot inherit from itself.";
     private static final String ICS_EDITION_MISMATCH_ERROR = "A parent was found with certification "
@@ -51,11 +53,16 @@ public class InheritedCertificationStatusReviewerTest {
     @Autowired
     private MessageSource messageSource;
 
-    @Spy private ChplProductNumberUtil productNumUtil;
-    @Spy private CertifiedProductSearchDAO searchDao;
-    @Spy private ListingGraphDAO inheritanceDao;
-    @Spy private CertificationEditionDAO certEditionDao;
-    @Spy private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
+    @Spy
+    private ChplProductNumberUtil productNumUtil;
+    @Spy
+    private CertifiedProductSearchDAO searchDao;
+    @Spy
+    private ListingGraphDAO inheritanceDao;
+    @Spy
+    private CertificationEditionDAO certEditionDao;
+    @Spy
+    private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
 
     private InheritedCertificationStatusReviewer icsReviewer;
 
@@ -67,17 +74,17 @@ public class InheritedCertificationStatusReviewerTest {
                 msgUtil);
 
         Mockito.doReturn(ICS_TRUE_NO_PARENTS_ERROR)
-        .when(msgUtil).getMessage(ArgumentMatchers.eq("listing.icsTrueAndNoParentsFound"));
+                .when(msgUtil).getMessage(ArgumentMatchers.eq("listing.icsTrueAndNoParentsFound"));
         Mockito.doReturn(ICS_UNIQUE_ID_NOT_FOUND_ERROR)
-        .when(msgUtil).getMessage(ArgumentMatchers.eq("listing.icsUniqueIdNotFound"), ArgumentMatchers.anyString());
+                .when(msgUtil).getMessage(ArgumentMatchers.eq("listing.icsUniqueIdNotFound"), ArgumentMatchers.anyString());
         Mockito.doReturn(ICS_SELF_INHERITANCE_ERROR)
-        .when(msgUtil).getMessage(ArgumentMatchers.eq("listing.icsSelfInheritance"));
+                .when(msgUtil).getMessage(ArgumentMatchers.eq("listing.icsSelfInheritance"));
         Mockito.doReturn(ICS_EDITION_MISMATCH_ERROR)
-        .when(msgUtil).getMessage(ArgumentMatchers.eq("listing.icsEditionMismatch"), ArgumentMatchers.anyString());
+                .when(msgUtil).getMessage(ArgumentMatchers.eq("listing.icsEditionMismatch"), ArgumentMatchers.anyString());
         Mockito.doReturn(ICS_NOT_LARGEST_CODE_ERROR)
-        .when(msgUtil).getMessage(ArgumentMatchers.eq("listing.icsNotLargestCode"),
-                ArgumentMatchers.anyInt(),
-                ArgumentMatchers.anyInt());
+                .when(msgUtil).getMessage(ArgumentMatchers.eq("listing.icsNotLargestCode"),
+                        ArgumentMatchers.anyInt(),
+                        ArgumentMatchers.anyInt());
     }
 
     @Test
@@ -136,7 +143,7 @@ public class InheritedCertificationStatusReviewerTest {
     @Test
     public void testIcsWithBadParentId_HasErrors() {
         Mockito.when(searchDao.getByChplProductNumber(ArgumentMatchers.anyString()))
-        .thenReturn(null);
+                .thenReturn(null);
 
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
         String changedChplId = mockUtil.getChangedListingId(
@@ -172,7 +179,7 @@ public class InheritedCertificationStatusReviewerTest {
         self.setId(listing.getId());
         self.setChplProductNumber(listing.getChplProductNumber());
         Mockito.when(searchDao.getByChplProductNumber(ArgumentMatchers.anyString()))
-        .thenReturn(self);
+                .thenReturn(self);
 
         InheritedCertificationStatus ics = new InheritedCertificationStatus();
         ics.setInherits(Boolean.TRUE);
@@ -213,7 +220,7 @@ public class InheritedCertificationStatusReviewerTest {
         listing.setIcs(ics);
 
         Mockito.when(searchDao.getByChplProductNumber(ArgumentMatchers.anyString()))
-        .thenReturn(parent);
+                .thenReturn(parent);
         List<CertificationEditionDTO> parentEditions = new ArrayList<CertificationEditionDTO>();
         CertificationEditionDTO edition = new CertificationEditionDTO();
         edition.setId(1L);
@@ -221,7 +228,7 @@ public class InheritedCertificationStatusReviewerTest {
         edition.setYear("2011");
         parentEditions.add(edition);
         Mockito.when(certEditionDao.getEditions(ArgumentMatchers.anyList()))
-        .thenReturn(parentEditions);
+                .thenReturn(parentEditions);
 
         icsReviewer.review(listing);
         assertFalse(listing.getErrorMessages().contains(ICS_TRUE_NO_PARENTS_ERROR));
@@ -251,7 +258,7 @@ public class InheritedCertificationStatusReviewerTest {
         listing.setIcs(ics);
 
         Mockito.when(searchDao.getByChplProductNumber(ArgumentMatchers.anyString()))
-        .thenReturn(parent);
+                .thenReturn(parent);
         List<CertificationEditionDTO> parentEditions = new ArrayList<CertificationEditionDTO>();
         CertificationEditionDTO edition = new CertificationEditionDTO();
         edition.setId(3L);
@@ -259,9 +266,9 @@ public class InheritedCertificationStatusReviewerTest {
         edition.setYear("2015");
         parentEditions.add(edition);
         Mockito.when(certEditionDao.getEditions(ArgumentMatchers.anyList()))
-        .thenReturn(parentEditions);
+                .thenReturn(parentEditions);
         Mockito.when(inheritanceDao.getLargestIcs(ArgumentMatchers.anyList()))
-        .thenReturn(2);
+                .thenReturn(2);
 
         icsReviewer.review(listing);
         assertFalse(listing.getErrorMessages().contains(ICS_TRUE_NO_PARENTS_ERROR));

@@ -40,34 +40,44 @@ public class FailedUrlResult {
     public FailedUrlResult(final UrlResult urlResult) {
         BeanUtils.copyProperties(urlResult, this);
     }
+
     public String getUrl() {
         return url;
     }
+
     public void setUrl(final String url) {
         this.url = url;
     }
+
     public UrlType getUrlType() {
         return urlType;
     }
-    public void setUrlType(final UrlType urlType) {
+
+    public void setUrlType(UrlType urlType) {
         this.urlType = urlType;
     }
+
     public Date getLastChecked() {
         return lastChecked;
     }
-    public void setLastChecked(final Date lastChecked) {
+
+    public void setLastChecked(Date lastChecked) {
         this.lastChecked = lastChecked;
     }
+
     public Integer getResponseCode() {
         return responseCode;
     }
-    public void setResponseCode(final Integer responseCode) {
+
+    public void setResponseCode(Integer responseCode) {
         this.responseCode = responseCode;
     }
+
     public String getResponseMessage() {
         return responseMessage;
     }
-    public void setResponseMessage(final String responseMessage) {
+
+    public void setResponseMessage(String responseMessage) {
         this.responseMessage = responseMessage;
     }
 
@@ -75,7 +85,7 @@ public class FailedUrlResult {
         return atlName;
     }
 
-    public void setAtlName(final String atlName) {
+    public void setAtlName(String atlName) {
         this.atlName = atlName;
     }
 
@@ -83,7 +93,7 @@ public class FailedUrlResult {
         return acbName;
     }
 
-    public void setAcbName(final String acbName) {
+    public void setAcbName(String acbName) {
         this.acbName = acbName;
     }
 
@@ -91,7 +101,7 @@ public class FailedUrlResult {
         return developerName;
     }
 
-    public void setDeveloperName(final String developerName) {
+    public void setDeveloperName(String developerName) {
         this.developerName = developerName;
     }
 
@@ -99,7 +109,7 @@ public class FailedUrlResult {
         return productName;
     }
 
-    public void setProductName(final String productName) {
+    public void setProductName(String productName) {
         this.productName = productName;
     }
 
@@ -107,7 +117,7 @@ public class FailedUrlResult {
         return version;
     }
 
-    public void setVersion(final String version) {
+    public void setVersion(String version) {
         this.version = version;
     }
 
@@ -115,7 +125,7 @@ public class FailedUrlResult {
         return contactName;
     }
 
-    public void setContactName(final String contactName) {
+    public void setContactName(String contactName) {
         this.contactName = contactName;
     }
 
@@ -123,7 +133,7 @@ public class FailedUrlResult {
         return contactEmail;
     }
 
-    public void setContactEmail(final String contactEmail) {
+    public void setContactEmail(String contactEmail) {
         this.contactEmail = contactEmail;
     }
 
@@ -131,7 +141,7 @@ public class FailedUrlResult {
         return contactPhone;
     }
 
-    public void setContactPhone(final String contactPhone) {
+    public void setContactPhone(String contactPhone) {
         this.contactPhone = contactPhone;
     }
 
@@ -139,7 +149,7 @@ public class FailedUrlResult {
         return chplProductNumber;
     }
 
-    public void setChplProductNumber(final String chplProductNumber) {
+    public void setChplProductNumber(String chplProductNumber) {
         this.chplProductNumber = chplProductNumber;
     }
 
@@ -147,7 +157,7 @@ public class FailedUrlResult {
         return edition;
     }
 
-    public void setEdition(final String edition) {
+    public void setEdition(String edition) {
         this.edition = edition;
     }
 
@@ -155,7 +165,7 @@ public class FailedUrlResult {
         return certificationStatus;
     }
 
-    public void setCertificationStatus(final String certificationStatus) {
+    public void setCertificationStatus(String certificationStatus) {
         this.certificationStatus = certificationStatus;
     }
 
@@ -163,7 +173,7 @@ public class FailedUrlResult {
         return criteria;
     }
 
-    public void setCriteria(final String criteria) {
+    public void setCriteria(String criteria) {
         this.criteria = criteria;
     }
 
@@ -171,7 +181,7 @@ public class FailedUrlResult {
         return certificationDate;
     }
 
-    public void setCertificationDate(final Date certificationDate) {
+    public void setCertificationDate(Date certificationDate) {
         this.certificationDate = certificationDate;
     }
 }

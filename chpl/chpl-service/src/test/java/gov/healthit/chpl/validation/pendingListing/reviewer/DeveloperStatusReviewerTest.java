@@ -29,25 +29,26 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ListingMockUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
 public class DeveloperStatusReviewerTest {
     private static final String DEV_NAME = "Test Developer";
-    private static final String NO_DEV_STATUS_ERROR =
-            "The current status of the developer " + DEV_NAME + " cannot be determined. "
-                    + "A developer must be listed as Active in order to create certified products belonging to it.";
+    private static final String NO_DEV_STATUS_ERROR = "The current status of the developer " + DEV_NAME
+            + " cannot be determined. "
+            + "A developer must be listed as Active in order to create certified products belonging to it.";
     private static final String DEV_SUSPENDED_EDITED_BY_ADMIN_ERROR = "The developer " + DEV_NAME + " has a status of "
-                    + DeveloperStatusType.SuspendedByOnc.getName() + ". Certified products belonging "
-                    + "to this developer cannot be created until its status returns to "
-                    + DeveloperStatusType.Active.getName() + " or "
-                    + DeveloperStatusType.UnderCertificationBanByOnc.getName() + ".";
+            + DeveloperStatusType.SuspendedByOnc.getName() + ". Certified products belonging "
+            + "to this developer cannot be created until its status returns to "
+            + DeveloperStatusType.Active.getName() + " or "
+            + DeveloperStatusType.UnderCertificationBanByOnc.getName() + ".";
     private static final String DEV_SUSPENDED_CREATED_BY_NONADMIN_ERROR = "The developer " + DEV_NAME + " has a status of "
             + DeveloperStatusType.SuspendedByOnc.getName() + ". Certified products belonging "
             + "to this developer cannot be created until its status returns to Active.";
-    private static final String DEV_BANNED_ERROR =
-            "The developer " + DEV_NAME + " has a status of "
-                    + DeveloperStatusType.UnderCertificationBanByOnc.toString()
-                    + ". Certified products belonging to this developer cannot be created until "
-                    + "its status returns to Active.";
+    private static final String DEV_BANNED_ERROR = "The developer " + DEV_NAME + " has a status of "
+            + DeveloperStatusType.UnderCertificationBanByOnc.toString()
+            + ". Certified products belonging to this developer cannot be created until "
+            + "its status returns to Active.";
     private static final String DEV_NOT_FOUND = "Developer not found.";
 
     @Autowired
@@ -70,27 +71,27 @@ public class DeveloperStatusReviewerTest {
         MockitoAnnotations.initMocks(this);
 
         Mockito.doReturn(NO_DEV_STATUS_ERROR)
-        .when(msgUtil).getMessage(
-                ArgumentMatchers.eq("listing.developer.noStatusFound.noCreate"),
-                ArgumentMatchers.anyString());
+                .when(msgUtil).getMessage(
+                        ArgumentMatchers.eq("listing.developer.noStatusFound.noCreate"),
+                        ArgumentMatchers.anyString());
         Mockito.doReturn(DEV_SUSPENDED_EDITED_BY_ADMIN_ERROR)
-        .when(msgUtil).getMessage(
-                ArgumentMatchers.eq("listing.developer.notActiveOrBanned.noCreate"),
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(),
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
+                .when(msgUtil).getMessage(
+                        ArgumentMatchers.eq("listing.developer.notActiveOrBanned.noCreate"),
+                        ArgumentMatchers.anyString(), ArgumentMatchers.anyString(),
+                        ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
         Mockito.doReturn(DEV_SUSPENDED_CREATED_BY_NONADMIN_ERROR)
-        .when(msgUtil).getMessage(
-                ArgumentMatchers.eq("listing.developer.notActive.noCreate"),
-                ArgumentMatchers.anyString(),
-                ArgumentMatchers.eq(DeveloperStatusType.SuspendedByOnc.getName()));
+                .when(msgUtil).getMessage(
+                        ArgumentMatchers.eq("listing.developer.notActive.noCreate"),
+                        ArgumentMatchers.anyString(),
+                        ArgumentMatchers.eq(DeveloperStatusType.SuspendedByOnc.getName()));
         Mockito.doReturn(DEV_BANNED_ERROR)
-        .when(msgUtil).getMessage(
-                ArgumentMatchers.eq("listing.developer.notActive.noCreate"),
-                ArgumentMatchers.anyString(),
-                ArgumentMatchers.eq(DeveloperStatusType.UnderCertificationBanByOnc.getName()));
+                .when(msgUtil).getMessage(
+                        ArgumentMatchers.eq("listing.developer.notActive.noCreate"),
+                        ArgumentMatchers.anyString(),
+                        ArgumentMatchers.eq(DeveloperStatusType.UnderCertificationBanByOnc.getName()));
         Mockito.doReturn(DEV_NOT_FOUND)
-        .when(msgUtil).getMessage(
-                ArgumentMatchers.eq("developer.notFound"));
+                .when(msgUtil).getMessage(
+                        ArgumentMatchers.eq("developer.notFound"));
     }
 
     @Test
@@ -137,7 +138,8 @@ public class DeveloperStatusReviewerTest {
 
     @Test
     public void testSuspendedDeveloper_CreatedByNonAdmin_HasError() throws EntityRetrievalException {
-        Mockito.when(developerDao.getById(ArgumentMatchers.anyLong())).thenReturn(createDeveloperDTO(DeveloperStatusType.SuspendedByOnc));
+        Mockito.when(developerDao.getById(ArgumentMatchers.anyLong()))
+                .thenReturn(createDeveloperDTO(DeveloperStatusType.SuspendedByOnc));
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
 
@@ -151,7 +153,8 @@ public class DeveloperStatusReviewerTest {
 
     @Test
     public void testSuspendedDeveloper_CreatedByAdmin_HasError() throws EntityRetrievalException {
-        Mockito.when(developerDao.getById(ArgumentMatchers.anyLong())).thenReturn(createDeveloperDTO(DeveloperStatusType.SuspendedByOnc));
+        Mockito.when(developerDao.getById(ArgumentMatchers.anyLong()))
+                .thenReturn(createDeveloperDTO(DeveloperStatusType.SuspendedByOnc));
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
 
@@ -165,7 +168,8 @@ public class DeveloperStatusReviewerTest {
 
     @Test
     public void testSuspendedDeveloper_CreatedByOnc_HasError() throws EntityRetrievalException {
-        Mockito.when(developerDao.getById(ArgumentMatchers.anyLong())).thenReturn(createDeveloperDTO(DeveloperStatusType.SuspendedByOnc));
+        Mockito.when(developerDao.getById(ArgumentMatchers.anyLong()))
+                .thenReturn(createDeveloperDTO(DeveloperStatusType.SuspendedByOnc));
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(true);
 
@@ -179,7 +183,8 @@ public class DeveloperStatusReviewerTest {
 
     @Test
     public void testBannedDeveloper_CreatedByNonAdmin_HasError() throws EntityRetrievalException {
-        Mockito.when(developerDao.getById(ArgumentMatchers.anyLong())).thenReturn(createDeveloperDTO(DeveloperStatusType.UnderCertificationBanByOnc));
+        Mockito.when(developerDao.getById(ArgumentMatchers.anyLong()))
+                .thenReturn(createDeveloperDTO(DeveloperStatusType.UnderCertificationBanByOnc));
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
 
@@ -193,7 +198,8 @@ public class DeveloperStatusReviewerTest {
 
     @Test
     public void testBannedDeveloper_CreatedByAdmin_NoError() throws EntityRetrievalException {
-        Mockito.when(developerDao.getById(ArgumentMatchers.anyLong())).thenReturn(createDeveloperDTO(DeveloperStatusType.UnderCertificationBanByOnc));
+        Mockito.when(developerDao.getById(ArgumentMatchers.anyLong()))
+                .thenReturn(createDeveloperDTO(DeveloperStatusType.UnderCertificationBanByOnc));
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
 
@@ -207,7 +213,8 @@ public class DeveloperStatusReviewerTest {
 
     @Test
     public void testBannedDeveloper_CreatedByOnc_NoError() throws EntityRetrievalException {
-        Mockito.when(developerDao.getById(ArgumentMatchers.anyLong())).thenReturn(createDeveloperDTO(DeveloperStatusType.UnderCertificationBanByOnc));
+        Mockito.when(developerDao.getById(ArgumentMatchers.anyLong()))
+                .thenReturn(createDeveloperDTO(DeveloperStatusType.UnderCertificationBanByOnc));
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(true);
 

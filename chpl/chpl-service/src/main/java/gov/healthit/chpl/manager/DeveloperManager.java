@@ -12,6 +12,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -78,15 +80,15 @@ public class DeveloperManager extends SecuredManager {
     private ErrorMessageUtil msgUtil;
     private ResourcePermissions resourcePermissions;
     private DeveloperValidationFactory developerValidationFactory;
+    private FF4j ff4j;
 
     @Autowired
     public DeveloperManager(DeveloperDAO developerDao, ProductManager productManager,
             CertificationBodyManager acbManager, CertifiedProductManager cpManager,
             CertifiedProductDetailsManager cpdManager, CertificationBodyDAO certificationBodyDao,
             CertifiedProductDAO certifiedProductDAO, ChplProductNumberUtil chplProductNumberUtil,
-            ActivityManager activityManager, ErrorMessageUtil msgUtil,
-            ResourcePermissions resourcePermissions,
-            DeveloperValidationFactory developerValidationFactory) {
+            ActivityManager activityManager, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
+            DeveloperValidationFactory developerValidationFactory, FF4j ff4j) {
         this.developerDao = developerDao;
         this.productManager = productManager;
         this.acbManager = acbManager;
@@ -99,6 +101,7 @@ public class DeveloperManager extends SecuredManager {
         this.msgUtil = msgUtil;
         this.resourcePermissions = resourcePermissions;
         this.developerValidationFactory = developerValidationFactory;
+        this.ff4j = ff4j;
     }
 
     @Transactional(readOnly = true)
@@ -190,7 +193,14 @@ public class DeveloperManager extends SecuredManager {
         }
         developerDao.update(updatedDev);
         updateStatusHistory(beforeDev, updatedDev);
-        createOrUpdateTransparencyMappings(updatedDev);
+
+        if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)) {
+            if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
+                createOrUpdateTransparencyMappings(updatedDev);
+            }
+        } else {
+            createOrUpdateTransparencyMappings(updatedDev);
+        }
 
         DeveloperDTO after = getById(updatedDev.getId());
         activityManager.addActivity(ActivityConcept.DEVELOPER, after.getId(),
@@ -288,7 +298,15 @@ public class DeveloperManager extends SecuredManager {
 
         DeveloperDTO created = developerDao.create(dto);
         dto.setId(created.getId());
-        createOrUpdateTransparencyMappings(dto);
+
+        if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)) {
+            if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
+                createOrUpdateTransparencyMappings(dto);
+            }
+        } else {
+            createOrUpdateTransparencyMappings(dto);
+        }
+
         activityManager.addActivity(ActivityConcept.DEVELOPER, created.getId(),
                 "Developer " + created.getName() + " has been created.", null, created);
         return created;

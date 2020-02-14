@@ -521,6 +521,9 @@ public class PendingCertifiedProductDTO implements Serializable {
                         pendingCqmCert.setCertificationCriteriaNumber(cqmCert.getCertificationNumber());
                         pendingCqmCert.setCertificationId(cqmCert.getCertificationId());
                         pendingCqmCert.setCqmId(cqmDto.getId());
+                        CertificationCriterionDTO cqmCriterion =
+                                new CertificationCriterionDTO(cqmCert.getCriterion());
+                        pendingCqmCert.setCriterion(cqmCriterion);
                         cqmDto.getCertifications().add(pendingCqmCert);
                     }
                     this.cqmCriterion.add(cqmDto);

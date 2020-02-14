@@ -68,7 +68,7 @@ public class UrlResultEntity {
         return id;
     }
 
-    public void setId(final Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -76,7 +76,7 @@ public class UrlResultEntity {
         return url;
     }
 
-    public void setUrl(final String url) {
+    public void setUrl(String url) {
         this.url = url;
     }
 
@@ -84,7 +84,7 @@ public class UrlResultEntity {
         return urlTypeId;
     }
 
-    public void setUrlTypeId(final Long urlTypeId) {
+    public void setUrlTypeId(Long urlTypeId) {
         this.urlTypeId = urlTypeId;
     }
 
@@ -92,7 +92,7 @@ public class UrlResultEntity {
         return urlType;
     }
 
-    public void setUrlType(final UrlTypeEntity urlType) {
+    public void setUrlType(UrlTypeEntity urlType) {
         this.urlType = urlType;
     }
 
@@ -100,7 +100,7 @@ public class UrlResultEntity {
         return responseCode;
     }
 
-    public void setResponseCode(final Integer responseCode) {
+    public void setResponseCode(Integer responseCode) {
         this.responseCode = responseCode;
     }
 
@@ -108,7 +108,7 @@ public class UrlResultEntity {
         return responseMessage;
     }
 
-    public void setResponseMessage(final String responseMessage) {
+    public void setResponseMessage(String responseMessage) {
         this.responseMessage = responseMessage;
     }
 
@@ -116,7 +116,7 @@ public class UrlResultEntity {
         return lastChecked;
     }
 
-    public void setLastChecked(final Date lastChecked) {
+    public void setLastChecked(Date lastChecked) {
         this.lastChecked = lastChecked;
     }
 
@@ -124,7 +124,7 @@ public class UrlResultEntity {
         return creationDate;
     }
 
-    public void setCreationDate(final Date creationDate) {
+    public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -132,7 +132,7 @@ public class UrlResultEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(final Date lastModifiedDate) {
+    public void setLastModifiedDate(Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -140,7 +140,7 @@ public class UrlResultEntity {
         return deleted;
     }
 
-    public void setDeleted(final Boolean deleted) {
+    public void setDeleted(Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -148,7 +148,7 @@ public class UrlResultEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(final Long lastModifiedUser) {
+    public void setLastModifiedUser(Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 }
