@@ -38,8 +38,11 @@ import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
  */
 public class UrlStatusDataCollector extends QuartzJob implements InterruptableJob {
     private static final Logger LOGGER = LogManager.getLogger("urlStatusDataCollectorJobLogger");
-    private static final long DAYS_TO_MILLIS = 24 * 60 * 60 * 1000;
+    private static final int SECONDS_TO_MILLIS = 1000;
+    private static final long DAYS_TO_MILLIS = 24 * 60 * 60 * SECONDS_TO_MILLIS;
     private static final int BATCH_SIZE = 100;
+    private static final int DEFAULT_INTERVAL_DAYS = 1;
+    private static final int DEFAULT_TIMEOUT_SECONTS = 10;
 
     @Autowired
     private Environment env;
@@ -50,11 +53,11 @@ public class UrlStatusDataCollector extends QuartzJob implements InterruptableJo
     @Autowired
     private UrlCallerAsync urlCallerAsync;
 
-    private int successCheckIntervalDays = 1;
-    private int failureCheckIntervalDays = 1;
-    private int redirectCheckIntervalDays = 1;
-    private int connectTimeoutSeconds = 10;
-    private int requestTimeoutSeconds = 10;
+    private int successCheckIntervalDays = DEFAULT_INTERVAL_DAYS;
+    private int failureCheckIntervalDays = DEFAULT_INTERVAL_DAYS;
+    private int redirectCheckIntervalDays = DEFAULT_INTERVAL_DAYS;
+    private int connectTimeoutSeconds = DEFAULT_TIMEOUT_SECONTS;
+    private int requestTimeoutSeconds = DEFAULT_TIMEOUT_SECONTS;
     private AsyncHttpClient httpClient;
     private Map<UrlResult, Future<Integer>> urlResponseCodeFuturesMap;
     private boolean interrupted;
@@ -66,7 +69,7 @@ public class UrlStatusDataCollector extends QuartzJob implements InterruptableJo
 
     @Override
     @Transactional
-    public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+    public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the URL Status Data Collector job. *********");
 
@@ -112,8 +115,8 @@ public class UrlStatusDataCollector extends QuartzJob implements InterruptableJo
      * @param allSystemUrls all the urls that are in the system
      * @throws EntityRetrievalException if the url result to delete cannot be found in the database
      */
-    private void removeObsoleteUrlResults(final List<UrlResult> existingUrlResults,
-            final List<UrlResult> allSystemUrls) throws EntityRetrievalException {
+    private void removeObsoleteUrlResults(List<UrlResult> existingUrlResults,
+            List<UrlResult> allSystemUrls) throws EntityRetrievalException {
         //determine if any url results are no longer needed because it no longer exists in the system
         for (UrlResult existingUrlResult : existingUrlResults) {
             boolean stillExists = false;
@@ -138,8 +141,8 @@ public class UrlStatusDataCollector extends QuartzJob implements InterruptableJo
      * @param allSystemUrls all the urls that are in the system
      * @throws EntityCreationException if the new url result cannot be created in the database
      */
-    private void addNewUrlResults(final List<UrlResult> existingUrlResults,
-            final List<UrlResult> allSystemUrls) throws EntityCreationException {
+    private void addNewUrlResults(List<UrlResult> existingUrlResults,
+            List<UrlResult> allSystemUrls) throws EntityCreationException {
         //add any urls to the result table that aren't already there and add them
         //will have null last checked date, response code, and response message initially
         for (UrlResult systemUrl : allSystemUrls) {
@@ -170,7 +173,7 @@ public class UrlStatusDataCollector extends QuartzJob implements InterruptableJo
      * @param urlList the list of URLs to query and record response codes for
      * @throws EntityRetrievalException
      */
-    private void processUrls(final int batchNum, final List<UrlResult> urlList) throws EntityRetrievalException {
+    private void processUrls(int batchNum, List<UrlResult> urlList) throws EntityRetrievalException {
         //make async requests for each url in the batch
         for (int batchIndex = 0; batchIndex < urlList.size(); batchIndex++) {
             UrlResult systemUrl = urlList.get(batchIndex);
@@ -303,8 +306,8 @@ public class UrlStatusDataCollector extends QuartzJob implements InterruptableJo
         }
 
         DefaultAsyncHttpClientConfig.Builder clientBuilder = Dsl.config()
-                .setConnectTimeout(connectTimeoutSeconds*1000)
-                .setRequestTimeout(requestTimeoutSeconds*1000)
+                .setConnectTimeout(connectTimeoutSeconds * SECONDS_TO_MILLIS)
+                .setRequestTimeout(requestTimeoutSeconds * SECONDS_TO_MILLIS)
                 .setSslContext(sslContext);
         httpClient = Dsl.asyncHttpClient(clientBuilder);
     }
@@ -321,9 +324,9 @@ public class UrlStatusDataCollector extends QuartzJob implements InterruptableJo
         if (systemUrl.getLastChecked() == null) {
             return true;
         } else {
-            long successNextCheckMillis = systemUrl.getLastChecked().getTime() + (successCheckIntervalDays*DAYS_TO_MILLIS);
-            long redirectNextCheckMillis = systemUrl.getLastChecked().getTime() + (redirectCheckIntervalDays*DAYS_TO_MILLIS);
-            long failureNextCheckMillis = systemUrl.getLastChecked().getTime() + (failureCheckIntervalDays*DAYS_TO_MILLIS);
+            long successNextCheckMillis = systemUrl.getLastChecked().getTime() + (successCheckIntervalDays * DAYS_TO_MILLIS);
+            long redirectNextCheckMillis = systemUrl.getLastChecked().getTime() + (redirectCheckIntervalDays * DAYS_TO_MILLIS);
+            long failureNextCheckMillis = systemUrl.getLastChecked().getTime() + (failureCheckIntervalDays * DAYS_TO_MILLIS);
             if (isSuccess(systemUrl.getResponseCode())
                     && System.currentTimeMillis() >= successNextCheckMillis) {
                 return true;
