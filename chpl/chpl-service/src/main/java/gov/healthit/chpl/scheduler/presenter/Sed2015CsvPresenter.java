@@ -18,14 +18,8 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 
-/**
- * Present objects as CSV file.
- * @author kekey
- *
- */
 public class Sed2015CsvPresenter {
     private static final Logger LOGGER = LogManager.getLogger(Sed2015CsvPresenter.class);
-    private static final String CURES_UPDATE_TITLE = " (Cures Update)";
 
     /**
      * Returns number of rows printed (minus the header)
