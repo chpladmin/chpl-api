@@ -16,7 +16,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import gov.healthit.chpl.TestingUsers;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
@@ -29,6 +28,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.pendingListing.reviewer.TestToolReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.AmbulatoryRequiredTestToolReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.TestTool2015Reviewer;
+import old.gov.healthit.chpl.TestingUsers;
 import old.gov.healthit.chpl.util.ListingMockUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -77,7 +77,7 @@ public class PendingListingTestToolReviewerTest extends TestingUsers {
         setupForAcbUser(resourcePermissions);
 
         testToolReviewer = new TestToolReviewer(testToolDao, msgUtil, productNumberUtil, resourcePermissions);
-        testTool2015Reviewer= new TestTool2015Reviewer(msgUtil, resourcePermissions);
+        testTool2015Reviewer = new TestTool2015Reviewer(msgUtil, resourcePermissions);
         ambulatoryTestToolReviewier = new AmbulatoryRequiredTestToolReviewer(msgUtil, certRules);
 
         Mockito.doReturn(NO_TEST_TOOL_ERROR).when(msgUtil)

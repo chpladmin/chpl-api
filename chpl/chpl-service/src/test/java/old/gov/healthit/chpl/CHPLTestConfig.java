@@ -78,7 +78,7 @@ import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableTransactionManagement
 @ComponentScan(basePackages = {
-        "gov.healthit.chpl.**"
+        "gov.healthit.chpl.**", "old.gov.healthit.chpl.**"
 }, excludeFilters = {
         @ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class),
         @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = CacheInitializor.class)
