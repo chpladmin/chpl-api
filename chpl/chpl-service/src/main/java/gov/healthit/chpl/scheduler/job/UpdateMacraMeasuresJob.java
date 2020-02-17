@@ -1,5 +1,6 @@
 package gov.healthit.chpl.scheduler.job;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -31,6 +32,21 @@ public class UpdateMacraMeasuresJob extends QuartzJob {
     private static final String OLD_G1G2_SUBSTRING = "ACI";
     private static final String NEW_G1G2_SUBSTRING = "PI";
 
+    private static final String G_8 = "170.315 (g)(8)";
+    private static final String G_9 = "170.315 (g)(9)";
+    private static final List<String> VALUES_TO_REMOVE = Arrays.asList("RT2a EP Stage 2",
+            "RT2a EC PI Transition",
+            "RT2a EH/CAH Stage 2",
+            "RT2c EP Stage 2",
+            "RT2c EC PI Transition",
+            "RT2c EH/CAH Stage 2",
+            "RT4a EP Stage 2",
+            "RT4a EC PI Transition",
+            "RT4a EH/CAH Stage 2",
+            "RT4c EP Stage 2",
+            "RT4c EC PI Transition",
+            "RT4c EH/CAH Stage 2");
+
     @Autowired
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
@@ -56,6 +72,9 @@ public class UpdateMacraMeasuresJob extends QuartzJob {
                     updateMacraMeasuresDao.updateSubstringInAllValues(OLD_G1G2_SUBSTRING, NEW_G1G2_SUBSTRING);
                     LOGGER.info(SPACER + " Updated all g1g2 '" + OLD_G1G2_SUBSTRING
                             + "' MACRA measures to '" + NEW_G1G2_SUBSTRING + "' " + SPACER);
+
+                    updateMacraMeasuresDao.updateStage2AsRemoved();
+                    LOGGER.info(SPACER + " Updated specific g8/g9 Macra Measures as removed. " + SPACER);
                 } catch (Exception e) {
                     LOGGER.error(e.getMessage(), e);
                     status.setRollbackOnly();
@@ -73,15 +92,27 @@ public class UpdateMacraMeasuresJob extends QuartzJob {
     private static class UpdateMacraMeasuresDao extends BaseDAOImpl {
         private void updateSubstringInAllValues(final String oldSubstring, final String newSubstring) {
             getAllMeasuresWhereValueIsNotNull().stream()
-                .forEach(measure -> {
-                    measure.setValue(measure.getValue().replaceAll(oldSubstring, newSubstring));
-                    entityManager.merge(measure);
-                });
+                    .forEach(measure -> {
+                        measure.setValue(measure.getValue().replaceAll(oldSubstring, newSubstring));
+                        entityManager.merge(measure);
+                    });
+        }
+
+        private void updateStage2AsRemoved() {
+            getAllMeasuresWhereValueIsNotNull().stream()
+                    .filter(measure -> (measure.getCertificationCriterion().getNumber().equals(G_8)
+                            || measure.getCertificationCriterion().getNumber().equals(G_9))
+                            && VALUES_TO_REMOVE.contains(measure.getValue()))
+                    .forEach(measure -> {
+                        measure.setRemoved(true);
+                        entityManager.merge(measure);
+                    });
         }
 
         private List<MacraMeasureEntity> getAllMeasuresWhereValueIsNotNull() {
             Query query = entityManager
                     .createQuery("FROM MacraMeasureEntity mme "
+                            + "JOIN FETCH mme.certificationCriterion cce "
                             + "WHERE mme.value IS NOT NULL "
                             + "AND mme.deleted = FALSE",
                             MacraMeasureEntity.class);

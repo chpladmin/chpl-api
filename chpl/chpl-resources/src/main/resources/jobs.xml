@@ -763,11 +763,11 @@
                 </entry>
             </job-data-map>
         </job>
-        <!--  Updates all g1g2 "ACI" MACRA measures to "PI" -->
+        <!-- Updates all MACRA measures to based on new requirements -->
         <job>
             <name>updateMacraMeasuresJob</name>
             <group>systemJobs</group>
-            <description>Updates all g1g2 ACI MACRA measures to PI</description>
+            <description>Updates all MACRA measures to based on new requirements</description>
             <job-class>gov.healthit.chpl.scheduler.job.UpdateMacraMeasuresJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
