@@ -58,9 +58,10 @@ public class ProductVersionController {
             notes = "List all versions associated with a specific product.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ProductVersion> getVersionsByProduct(@RequestParam(required = true) final Long productId)
-            throws EntityRetrievalException {
-        //make sure the product exists
-        productManager.getById(productId);
+            throws InvalidArgumentsException {
+        if (!productManager.exists(productId)) {
+            throw new InvalidArgumentsException("Product " + productId + " does not exist.");
+        }
 
         //get the versions
         List<ProductVersionDTO> versionList = null;

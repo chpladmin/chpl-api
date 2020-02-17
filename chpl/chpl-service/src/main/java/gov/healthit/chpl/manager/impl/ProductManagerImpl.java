@@ -82,6 +82,12 @@ public class ProductManagerImpl extends SecuredManager implements ProductManager
 
     @Override
     @Transactional(readOnly = true)
+    public boolean exists(Long id) {
+        return productDao.exists(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<ProductDTO> getAll() {
         return productDao.findAll();
     }
