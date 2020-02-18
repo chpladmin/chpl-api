@@ -24,7 +24,6 @@ import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.SplitVersionsRequest;
 import gov.healthit.chpl.domain.UpdateVersionsRequest;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -219,10 +218,10 @@ public class ProductVersionController {
         // find out which CHPL product numbers would have changed (only
         // new-style ones)
         // and add them to the response header
-        List<CertifiedProductDetailsDTO> possibleChangedChplIds = cpManager.getByVersion(newVersionFromSplit.getId());
+        List<CertifiedProduct> possibleChangedChplIds = cpManager.getByVersion(newVersionFromSplit.getId());
         if (possibleChangedChplIds != null && possibleChangedChplIds.size() > 0) {
             StringBuffer buf = new StringBuffer();
-            for (CertifiedProductDetailsDTO possibleChanged : possibleChangedChplIds) {
+            for (CertifiedProduct possibleChanged : possibleChangedChplIds) {
                 if (!chplProductNumberUtil.isLegacy(possibleChanged.getChplProductNumber())) {
                     if (buf.length() > 0) {
                         buf.append(",");

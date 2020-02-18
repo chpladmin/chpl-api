@@ -1000,7 +1000,7 @@ public class CertifiedProductDetailsManager {
         CertifiedProduct cp = new CertifiedProduct();
         cp.setId(dto.getId());
         cp.setChplProductNumber(chplProductNumberUtil.generate(dto.getId()));
-        cp.setLastModifiedDate(dto.getLastModifiedDate() != null ? dto.getLastModifiedDate().getTime() + "" : "");
+        cp.setLastModifiedDate(dto.getLastModifiedDate() != null ? dto.getLastModifiedDate().getTime() : null);
         CertificationEditionDTO edition = getEdition(dto.getCertificationEditionId());
         if (edition != null) {
             cp.setEdition(edition.getYear());
