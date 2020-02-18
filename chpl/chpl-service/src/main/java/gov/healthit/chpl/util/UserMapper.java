@@ -34,7 +34,7 @@ public class UserMapper {
     }
 
     @Transactional(readOnly = true)
-    public UserDTO from(final UserEntity entity) {
+    public UserDTO fromBasic(final UserEntity entity) {
         UserDTO dto = new UserDTO();
         if (entity != null) {
             dto.setId(entity.getId());
@@ -54,6 +54,14 @@ public class UserMapper {
                 dto.setTitle(entity.getContact().getTitle());
                 dto.setSignatureDate(entity.getContact().getSignatureDate());
             }
+        }
+        return dto;
+    }
+
+    @Transactional(readOnly = true)
+    public UserDTO from(final UserEntity entity) {
+        UserDTO dto = fromBasic(entity);
+        if (dto != null) {
             if (entity.getPermission() != null) {
                 dto.setPermission(new UserPermissionDTO(entity.getPermission()));
             }
