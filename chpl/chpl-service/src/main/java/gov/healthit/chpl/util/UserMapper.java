@@ -34,31 +34,6 @@ public class UserMapper {
     }
 
     @Transactional(readOnly = true)
-    public UserDTO fromBasic(UserEntity entity) {
-        UserDTO dto = new UserDTO();
-        if (entity != null) {
-            dto.setId(entity.getId());
-            dto.setSubjectName(entity.getSubjectName());
-            dto.setFailedLoginCount(entity.getFailedLoginCount());
-            dto.setAccountExpired(entity.isAccountExpired());
-            dto.setAccountLocked(entity.isAccountLocked());
-            dto.setAccountEnabled(entity.isAccountEnabled());
-            dto.setCredentialsExpired(entity.isCredentialsExpired());
-            dto.setPasswordResetRequired(entity.isPasswordResetRequired());
-            dto.setLastLoggedInDate(entity.getLastLoggedInDate());
-            if (entity.getContact() != null) {
-                dto.setFullName(entity.getContact().getFullName());
-                dto.setFriendlyName(entity.getContact().getFriendlyName());
-                dto.setEmail(entity.getContact().getEmail());
-                dto.setPhoneNumber(entity.getContact().getPhoneNumber());
-                dto.setTitle(entity.getContact().getTitle());
-                dto.setSignatureDate(entity.getContact().getSignatureDate());
-            }
-        }
-        return dto;
-    }
-
-    @Transactional(readOnly = true)
     public UserDTO from(final UserEntity entity) {
         UserDTO dto = new UserDTO();
         if (entity != null) {
