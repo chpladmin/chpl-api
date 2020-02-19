@@ -86,7 +86,7 @@ public class DeveloperEntity implements Serializable {
 
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @MapsId
+    @MapsId("id")
     @JoinColumn(name = "vendor_id", unique = true, nullable = true, insertable = false, updatable = false)
     private DeveloperCertificationStatusesEntity developerCertificationStatuses;
 

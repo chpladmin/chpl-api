@@ -86,7 +86,7 @@ public class ProductEntity implements Serializable {
 
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @MapsId
+    @MapsId("id")
     @JoinColumn(name = "product_id", unique = true, nullable = true, insertable = false, updatable = false)
     @Where(clause = "deleted <> 'true'")
     private ProductCertificationStatusesEntity productCertificationStatuses;
