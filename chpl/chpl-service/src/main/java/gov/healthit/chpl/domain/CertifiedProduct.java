@@ -37,7 +37,7 @@ public class CertifiedProduct implements Serializable {
      * since epoch.
      */
     @XmlElement(required = false, nillable = true)
-    private String lastModifiedDate;
+    private Long lastModifiedDate;
 
     /**
      * Edition of the listing. Ex: 2011, 2014, or 2015
@@ -70,7 +70,7 @@ public class CertifiedProduct implements Serializable {
                     + dto.getProductCode() + "." + dto.getVersionCode() + "." + dto.getIcsCode() + "."
                     + dto.getAdditionalSoftwareCode() + "." + dto.getCertifiedDateCode());
         }
-        this.setLastModifiedDate(dto.getLastModifiedDate() != null ? dto.getLastModifiedDate().getTime() + "" : "");
+        this.setLastModifiedDate(dto.getLastModifiedDate() != null ? dto.getLastModifiedDate().getTime() : null);
         this.edition = dto.getYear();
         this.certificationDate = (dto.getCertificationDate() != null ? dto.getCertificationDate().getTime() : -1);
         this.certificationStatus = dto.getCertificationStatusName();
@@ -110,11 +110,11 @@ public class CertifiedProduct implements Serializable {
         this.chplProductNumber = chplProductNumber;
     }
 
-    public String getLastModifiedDate() {
+    public Long getLastModifiedDate() {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(final String lastModifiedDate) {
+    public void setLastModifiedDate(Long lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
