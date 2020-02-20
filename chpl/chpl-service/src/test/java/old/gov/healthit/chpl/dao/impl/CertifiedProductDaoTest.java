@@ -31,6 +31,7 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -126,7 +127,7 @@ public class CertifiedProductDaoTest {
     public void getProductsByVersion() {
         final int expectedListings = 3;
         Long versionId = -1L;
-        List<CertifiedProductDetailsDTO> products = null;
+        List<CertifiedProduct> products = null;
         products = productDao.getDetailsByVersionId(versionId);
         assertNotNull(products);
         assertEquals(expectedListings, products.size());

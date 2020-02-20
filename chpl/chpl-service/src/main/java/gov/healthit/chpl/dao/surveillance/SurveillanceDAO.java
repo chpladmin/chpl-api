@@ -892,9 +892,10 @@ public class SurveillanceDAO extends BaseDAOImpl {
     private void populateSurveillanceRequirementEntity(final SurveillanceRequirementEntity to,
             final SurveillanceRequirement from) {
         if (from.getRequirement() != null) {
-            CertificationCriterionDTO crit = criterionDao.getAllByNumber(from.getRequirement()).get(0);
+            List<CertificationCriterionDTO> criteria = criterionDao.getAllByNumber(from.getRequirement());
             //TODO Fix this as part of OCD-3220
-            if (crit != null) {
+            if (criteria != null && criteria.size() > 0) {
+                CertificationCriterionDTO crit = criteria.get(0);
                 to.setCertificationCriterionId(crit.getId());
             } else {
                 to.setSurveilledRequirement(from.getRequirement());

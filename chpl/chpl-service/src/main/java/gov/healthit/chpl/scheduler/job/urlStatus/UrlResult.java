@@ -16,7 +16,7 @@ public class UrlResult {
     public UrlResult() {
     }
 
-    public UrlResult(final UrlResultEntity entity) {
+    public UrlResult(UrlResultEntity entity) {
         BeanUtils.copyProperties(entity, this);
         if (this.urlType == null) {
             if (entity.getUrlType() != null) {
@@ -26,7 +26,7 @@ public class UrlResult {
     }
 
     @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(Object obj) {
         if (!(obj instanceof UrlResult)) {
             return false;
         }
@@ -45,40 +45,47 @@ public class UrlResult {
         }
         return false;
     }
+    @Override
+    public int hashCode() {
+        if (StringUtils.isEmpty(this.getUrl()) || this.getLastChecked() == null) {
+            return -1;
+        }
+        return this.getUrl().hashCode() + this.getLastChecked().hashCode();
+    }
     public Long getId() {
         return id;
     }
-    public void setId(final Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
     public String getUrl() {
         return url;
     }
-    public void setUrl(final String url) {
+    public void setUrl(String url) {
         this.url = url;
     }
     public UrlType getUrlType() {
         return urlType;
     }
-    public void setUrlType(final UrlType urlType) {
+    public void setUrlType(UrlType urlType) {
         this.urlType = urlType;
     }
     public Date getLastChecked() {
         return lastChecked;
     }
-    public void setLastChecked(final Date lastChecked) {
+    public void setLastChecked(Date lastChecked) {
         this.lastChecked = lastChecked;
     }
     public Integer getResponseCode() {
         return responseCode;
     }
-    public void setResponseCode(final Integer responseCode) {
+    public void setResponseCode(Integer responseCode) {
         this.responseCode = responseCode;
     }
     public String getResponseMessage() {
         return responseMessage;
     }
-    public void setResponseMessage(final String responseMessage) {
+    public void setResponseMessage(String responseMessage) {
         this.responseMessage = responseMessage;
     }
 }
