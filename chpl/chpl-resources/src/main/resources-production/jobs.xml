@@ -12,41 +12,12 @@
     </pre-processing-commands>
     <schedule>
         <!-- Delete from here to "DELETE END MARKER" after PROD push -->
-        <!-- Remove v17 Upload Template Job -->
+        <!--  Updates all g1g2 "ACI" MACRA measures to "PI" -->
         <job>
-            <name>removeV17UploadTemplateJob</name>
+            <name>updateMacraMeasuresJob</name>
             <group>systemJobs</group>
-            <description>Marks v17 upload template as deleted</description>
-            <job-class>gov.healthit.chpl.scheduler.job.RemoveV17UploadTemplate</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC</value>
-                </entry>
-            </job-data-map>
-        </job>
-        <!-- Job used to create Test Tools-->
-        <job>
-            <name>createTestToolJob</name>
-            <group>systemJobs</group>
-            <description>Create Test Tool(s)</description>
-            <job-class>gov.healthit.chpl.scheduler.job.CreateTestToolJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC</value>
-                </entry>
-            </job-data-map>
-        </job>
-        <job>
-            <name>modifyTestFunctionalityJob</name>
-            <group>systemJobs</group>
-            <description>Modifies a specific test functionality's number and name</description>
-            <job-class>gov.healthit.chpl.scheduler.job.ModifyTestFunctionalityJob</job-class>
+            <description>Updates all g1g2 ACI MACRA measures to PI</description>
+            <job-class>gov.healthit.chpl.scheduler.job.UpdateMacraMeasuresJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>

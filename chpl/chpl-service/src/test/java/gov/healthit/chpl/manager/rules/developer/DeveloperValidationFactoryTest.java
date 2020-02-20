@@ -19,13 +19,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.healthit.chpl.CHPLTestConfig;
 import gov.healthit.chpl.FeatureList;
-import gov.healthit.chpl.Ff4jTestConfiguration;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
@@ -38,16 +36,12 @@ import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-@ActiveProfiles({
-        "Ff4jMock"
-})
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        CHPLTestConfig.class, CHPLTestDeveloperValidationConfig.class, ErrorMessageUtil.class, DeveloperValidationFactory.class,
-        Ff4jTestConfiguration.class
+        CHPLTestConfig.class, CHPLTestDeveloperValidationConfig.class, ErrorMessageUtil.class, DeveloperValidationFactory.class
 })
 public class DeveloperValidationFactoryTest {
-    @Mock
+    @Autowired
     private FF4j ff4j;
 
     @Mock
@@ -106,7 +100,7 @@ public class DeveloperValidationFactoryTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        Mockito.when(ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)).thenReturn(false);
+        Mockito.doReturn(false).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
     }
 
@@ -345,22 +339,26 @@ public class DeveloperValidationFactoryTest {
 
         // If both the flag is on and the role is AcbAdmin then all rules are
         // enforced/edit error is expected if there are changes
-        Mockito.when(ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)).thenReturn(true);
+        // Mockito.when(ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)).thenReturn(true);
+        Mockito.doReturn(false).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
         runValidateEditTransparencyAttestationTests(devDto, beforeDev, errorMessages, true);
 
         // If the flag EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK is off then no edit error is expected
-        Mockito.when(ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)).thenReturn(false);
+        // Mockito.when(ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)).thenReturn(false);
+        Mockito.doReturn(false).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
         runValidateEditTransparencyAttestationTests(devDto, beforeDev, errorMessages, false);
 
         // If the role is not AcbAdmin, then no edit error is expected
-        Mockito.when(ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)).thenReturn(true);
+        // Mockito.when(ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)).thenReturn(true);
+        Mockito.doReturn(false).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
         runValidateEditTransparencyAttestationTests(devDto, beforeDev, errorMessages, false);
 
         // If both the flag is off and the role is not AcbAdmin then no edit error is expected
-        Mockito.when(ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)).thenReturn(false);
+        // Mockito.when(ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)).thenReturn(false);
+        Mockito.doReturn(false).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
         runValidateEditTransparencyAttestationTests(devDto, beforeDev, errorMessages, false);
     }

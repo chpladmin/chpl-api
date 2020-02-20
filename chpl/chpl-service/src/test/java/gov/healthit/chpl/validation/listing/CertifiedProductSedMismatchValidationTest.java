@@ -44,25 +44,26 @@ import gov.healthit.chpl.manager.CertificationResultManager;
 
 /**
  * Tests certified product sed+g3 mismatch rule
+ * 
  * @author alarned
  *
  */
 
-// This test class has a modified configuration to get the tests to work.  The method
+// This test class has a modified configuration to get the tests to work. The method
 // CertificationResultsManagerImpl.getCertifiedProductHasAdditionalSoftware() does not
-// work in the test environment, so we are overriding that method.  Since we are not
-// testing that particular method with these tests, this should be OK.  To do this, we
+// work in the test environment, so we are overriding that method. Since we are not
+// testing that particular method with these tests, this should be OK. To do this, we
 // did the following:
-//   1. Create a new class (MyCertificationResultManager) that extends
-//       CertificationResultManagerImpl and override the
-//       getCertifiedProductHasAdditionalSoftware method with a constant value
-//       of 'false'
-//   2. Created a new Spring configuration class CertifiedProductSedMismatchValidationTestConfig,
-//       based on the CHPLTestConfig class
-//   3. In the new config class, specify that the CertificationResultManager bean should
-//       use an instance of MyCertificationResultManager.
-//   4. Modify this test class to use the new spring configuration that was just created:
-//       @ContextConfiguration(classes = { CertifiedProductSedMismatchValidationTestConfig.class })
+// 1. Create a new class (MyCertificationResultManager) that extends
+// CertificationResultManagerImpl and override the
+// getCertifiedProductHasAdditionalSoftware method with a constant value
+// of 'false'
+// 2. Created a new Spring configuration class CertifiedProductSedMismatchValidationTestConfig,
+// based on the CHPLTestConfig class
+// 3. In the new config class, specify that the CertificationResultManager bean should
+// use an instance of MyCertificationResultManager.
+// 4. Modify this test class to use the new spring configuration that was just created:
+// @ContextConfiguration(classes = { CertifiedProductSedMismatchValidationTestConfig.class })
 @Configuration
 @Import(gov.healthit.chpl.CHPLTestConfig.class)
 class CertifiedProductSedMismatchValidationTestConfig {
@@ -73,7 +74,7 @@ class CertifiedProductSedMismatchValidationTestConfig {
     }
 }
 
-class TestCertificationResultManager extends CertificationResultManager  {
+class TestCertificationResultManager extends CertificationResultManager {
     @Override
     public boolean getCertifiedProductHasAdditionalSoftware(Long certifiedProductId) {
         return false;
@@ -82,11 +83,15 @@ class TestCertificationResultManager extends CertificationResultManager  {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { CertifiedProductValidationTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
+@ContextConfiguration(classes = {
+        CertifiedProductValidationTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class,
+        DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class,
+        DbUnitTestExecutionListener.class
+})
 @DatabaseSetup("classpath:data/testData.xml")
 public class CertifiedProductSedMismatchValidationTest {
 
@@ -129,8 +134,7 @@ public class CertifiedProductSedMismatchValidationTest {
     }
 
     /**
-     * OCD-1778: SED business rule.
-     * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
+     * OCD-1778: SED business rule. Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
      */
     @Transactional
     @Rollback(true)
@@ -139,10 +143,12 @@ public class CertifiedProductSedMismatchValidationTest {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         PendingCertifiedProductDTO pendingListing = CertifiedProductValidationTestHelper.createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
-        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (a)(1)");
+        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (a)(1)");
         pendingCertResult.setSed(Boolean.TRUE);
         pendingCertResults.add(pendingCertResult);
-        PendingCertificationResultDTO sedCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (g)(3)");
+        PendingCertificationResultDTO sedCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (g)(3)");
         pendingCertResults.add(sedCertResult);
 
         pendingListing.setCertificationCriterion(pendingCertResults);
@@ -157,8 +163,7 @@ public class CertifiedProductSedMismatchValidationTest {
     }
 
     /**
-     * OCD-1778: SED business rule.
-     * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
+     * OCD-1778: SED business rule. Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
      */
     @Transactional
     @Rollback(true)
@@ -167,10 +172,12 @@ public class CertifiedProductSedMismatchValidationTest {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         PendingCertifiedProductDTO pendingListing = CertifiedProductValidationTestHelper.createPendingListing("2014");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
-        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.314 (a)(1)");
+        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.314 (a)(1)");
         pendingCertResult.setSed(Boolean.TRUE);
         pendingCertResults.add(pendingCertResult);
-        PendingCertificationResultDTO sedCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.314 (g)(3)");
+        PendingCertificationResultDTO sedCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.314 (g)(3)");
         pendingCertResults.add(sedCertResult);
 
         pendingListing.setCertificationCriterion(pendingCertResults);
@@ -185,8 +192,7 @@ public class CertifiedProductSedMismatchValidationTest {
     }
 
     /**
-     * OCD-1778: SED business rule.
-     * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
+     * OCD-1778: SED business rule. Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
      */
     @Transactional
     @Rollback(true)
@@ -195,7 +201,8 @@ public class CertifiedProductSedMismatchValidationTest {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         PendingCertifiedProductDTO pendingListing = CertifiedProductValidationTestHelper.createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
-        PendingCertificationResultDTO sedCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (g)(3)");
+        PendingCertificationResultDTO sedCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (g)(3)");
         pendingCertResults.add(sedCertResult);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
@@ -207,8 +214,7 @@ public class CertifiedProductSedMismatchValidationTest {
     }
 
     /**
-     * OCD-1778: SED business rule.
-     * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
+     * OCD-1778: SED business rule. Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
      */
     @Transactional
     @Rollback(true)
@@ -217,7 +223,8 @@ public class CertifiedProductSedMismatchValidationTest {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         PendingCertifiedProductDTO pendingListing = CertifiedProductValidationTestHelper.createPendingListing("2014");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
-        PendingCertificationResultDTO sedCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.314 (g)(3)");
+        PendingCertificationResultDTO sedCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.314 (g)(3)");
         pendingCertResults.add(sedCertResult);
         pendingListing.setCertificationCriterion(pendingCertResults);
 
@@ -229,8 +236,7 @@ public class CertifiedProductSedMismatchValidationTest {
     }
 
     /**
-     * OCD-1778: SED business rule.
-     * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
+     * OCD-1778: SED business rule. Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
      */
     @Transactional
     @Rollback(true)
@@ -239,7 +245,8 @@ public class CertifiedProductSedMismatchValidationTest {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         PendingCertifiedProductDTO pendingListing = CertifiedProductValidationTestHelper.createPendingListing("2014");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
-        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.314 (a)(1)");
+        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.314 (a)(1)");
         pendingCertResult.setSed(Boolean.TRUE);
         pendingCertResults.add(pendingCertResult);
         pendingListing.setCertificationCriterion(pendingCertResults);
@@ -252,8 +259,7 @@ public class CertifiedProductSedMismatchValidationTest {
     }
 
     /**
-     * OCD-1778: SED business rule.
-     * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
+     * OCD-1778: SED business rule. Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
      */
     @Transactional
     @Rollback(true)
@@ -262,7 +268,8 @@ public class CertifiedProductSedMismatchValidationTest {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         PendingCertifiedProductDTO pendingListing = CertifiedProductValidationTestHelper.createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
-        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper.createPendingCertResult("170.315 (a)(1)");
+        PendingCertificationResultDTO pendingCertResult = CertifiedProductValidationTestHelper
+                .createPendingCertResult("170.315 (a)(1)");
         pendingCertResult.setSed(Boolean.TRUE);
         pendingCertResults.add(pendingCertResult);
         pendingListing.setCertificationCriterion(pendingCertResults);
@@ -275,8 +282,7 @@ public class CertifiedProductSedMismatchValidationTest {
     }
 
     /**
-     * OCD-1778: SED business rule.
-     * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
+     * OCD-1778: SED business rule. Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
      */
     @Transactional
     @Rollback(true)
@@ -301,8 +307,7 @@ public class CertifiedProductSedMismatchValidationTest {
     }
 
     /**
-     * OCD-1778: SED business rule.
-     * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
+     * OCD-1778: SED business rule. Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
      */
     @Transactional
     @Rollback(true)
@@ -327,8 +332,8 @@ public class CertifiedProductSedMismatchValidationTest {
     }
 
     /**
-     * OCD-2358: SED business rule does not apply for legacy CHPL listings
-     * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
+     * OCD-2358: SED business rule does not apply for legacy CHPL listings Listing may attest to SED criteria (g3) iff
+     * it attests SED to at least one criteria.
      */
     @Transactional
     @Rollback(true)
@@ -353,8 +358,7 @@ public class CertifiedProductSedMismatchValidationTest {
     }
 
     /**
-     * OCD-1778: SED business rule.
-     * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
+     * OCD-1778: SED business rule. Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
      */
     @Transactional
     @Rollback(true)
@@ -375,8 +379,7 @@ public class CertifiedProductSedMismatchValidationTest {
     }
 
     /**
-     * OCD-1778: SED business rule.
-     * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
+     * OCD-1778: SED business rule. Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
      */
     @Transactional
     @Rollback(true)
@@ -397,8 +400,8 @@ public class CertifiedProductSedMismatchValidationTest {
     }
 
     /**
-     * OCD-2358: SED business rule does not apply for legacy CHPL listings
-     * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
+     * OCD-2358: SED business rule does not apply for legacy CHPL listings Listing may attest to SED criteria (g3) iff
+     * it attests SED to at least one criteria.
      */
     @Transactional
     @Rollback(true)
@@ -419,8 +422,7 @@ public class CertifiedProductSedMismatchValidationTest {
     }
 
     /**
-     * OCD-1778: SED business rule.
-     * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
+     * OCD-1778: SED business rule. Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
      */
     @Transactional
     @Rollback(true)
@@ -442,8 +444,8 @@ public class CertifiedProductSedMismatchValidationTest {
     }
 
     /**
-     * OCD-2358: SED business rule does not apply for legacy CHPL listings
-     * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
+     * OCD-2358: SED business rule does not apply for legacy CHPL listings Listing may attest to SED criteria (g3) iff
+     * it attests SED to at least one criteria.
      */
     @Transactional
     @Rollback(true)
@@ -465,8 +467,7 @@ public class CertifiedProductSedMismatchValidationTest {
     }
 
     /**
-     * OCD-1778: SED business rule.
-     * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
+     * OCD-1778: SED business rule. Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
      */
     @Transactional
     @Rollback(true)

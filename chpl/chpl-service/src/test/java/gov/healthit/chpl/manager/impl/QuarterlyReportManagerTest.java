@@ -18,7 +18,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -69,9 +68,6 @@ import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.manager.SurveillanceReportManager;
 import junit.framework.TestCase;
 
-@ActiveProfiles({
-        "Ff4jMock"
-})
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
         gov.healthit.chpl.CHPLTestConfig.class
@@ -159,9 +155,6 @@ public class QuarterlyReportManagerTest extends TestCase {
         MockitoAnnotations.initMocks(this);
         Mockito.doReturn(false).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK);
         Mockito.doReturn(false).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE);
-        // Mockito.when(ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)).thenReturn(false);
-        // Mockito.when(ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)).thenReturn(false);
-
     }
 
     @Test

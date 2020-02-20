@@ -11,6 +11,7 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.UcdProcess;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.reviewer.RequiredDataReviewer;
@@ -29,8 +30,9 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
     };
 
     @Autowired
-    public RequiredData2014Reviewer(CertificationResultRules certRules, ErrorMessageUtil msgUtil) {
-        super(certRules, msgUtil);
+    public RequiredData2014Reviewer(CertificationResultRules certRules, ErrorMessageUtil msgUtil,
+            ResourcePermissions resourcePermissions) {
+        super(certRules, msgUtil, resourcePermissions);
     }
 
     @Override

@@ -11,6 +11,7 @@ import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -24,46 +25,41 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
  *
  */
 @Component("pendingTestToolReviewer")
-public class TestToolReviewer implements Reviewer {
+public class TestToolReviewer extends PermissionBasedReviewer {
     private TestToolDAO testToolDao;
-    private ErrorMessageUtil msgUtil;
     private ChplProductNumberUtil productNumUtil;
 
     @Autowired
     public TestToolReviewer(TestToolDAO testToolDAO, ErrorMessageUtil msgUtil,
-            ChplProductNumberUtil chplProductNumberUtil) {
+            ChplProductNumberUtil chplProductNumberUtil, ResourcePermissions resourcePermissions) {
+        super(msgUtil, resourcePermissions);
         this.testToolDao = testToolDAO;
-        this.msgUtil = msgUtil;
         this.productNumUtil = chplProductNumberUtil;
     }
 
     @Override
     public void review(final PendingCertifiedProductDTO listing) {
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
-            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria()) {
+            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria().equals(Boolean.TRUE)) {
                 if (cert.getTestTools() != null && cert.getTestTools().size() > 0) {
                     Iterator<PendingCertificationResultTestToolDTO> testToolIter = cert.getTestTools().iterator();
                     while (testToolIter.hasNext()) {
                         PendingCertificationResultTestToolDTO testTool = testToolIter.next();
                         if (StringUtils.isEmpty(testTool.getName())) {
-                            listing.getErrorMessages().add(
-                                    msgUtil.getMessage("listing.criteria.missingTestToolName", cert.getCriterion().getNumber()));
+                            addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestToolName", cert.getCriterion().getNumber());
                         } else {
                             TestToolDTO foundTestTool = testToolDao.getByName(testTool.getName());
                             if (foundTestTool != null) {
                                 // retired tools aren't allowed if there is ICS or an ICS Mismatch
                                 if (foundTestTool.isRetired()) {
                                     if (!hasIcs(listing) || hasIcsMismatch(listing)) {
-                                        listing.getErrorMessages()
-                                                .add(msgUtil.getMessage(
-                                                        "listing.criteria.retiredTestToolNoIcsNotAllowed",
-                                                        testTool.getName(), cert.getCriterion().getNumber()));
+                                        addErrorOrWarningByPermission(listing, cert, "listing.criteria.retiredTestToolNoIcsNotAllowed",
+                                                        testTool.getName(), cert.getCriterion().getNumber());
                                     }
                                 }
                             } else {
-                                listing.getErrorMessages()
-                                        .add(msgUtil.getMessage("listing.criteria.testToolNotFoundAndRemoved",
-                                                cert.getCriterion().getNumber(), testTool.getName()));
+                                addErrorOrWarningByPermission(listing, cert, "listing.criteria.testToolNotFoundAndRemoved",
+                                                cert.getCriterion().getNumber(), testTool.getName());
                                 testToolIter.remove();
                             }
                         }

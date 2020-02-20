@@ -17,6 +17,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -56,7 +57,7 @@ public class PendingListingTestFunctionalityReviewerTest {
     @Spy
     private TestFunctionalityDAO testFunctionalityDAO;
 
-    @Spy
+    @Mock
     private CertificationCriterionDAO certificationCriterionDAO;
 
     @Spy

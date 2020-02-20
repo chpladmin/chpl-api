@@ -955,12 +955,7 @@ public class CertifiedProductDetailsManager {
             List<CQMResultCriteriaDTO> criteria = cqmResultDao.getCriteriaForCqmResult(cqmResult.getId());
             if (criteria != null && criteria.size() > 0) {
                 for (CQMResultCriteriaDTO criteriaDTO : criteria) {
-                    CQMResultCertification c = new CQMResultCertification();
-                    c.setCertificationId(criteriaDTO.getCriterionId());
-                    c.setId(criteriaDTO.getId());
-                    if (criteriaDTO.getCriterion() != null) {
-                        c.setCertificationNumber(criteriaDTO.getCriterion().getNumber());
-                    }
+                    CQMResultCertification c = new CQMResultCertification(criteriaDTO);
                     cqmResultCertifications.add(c);
                 }
             }
@@ -1005,7 +1000,7 @@ public class CertifiedProductDetailsManager {
         CertifiedProduct cp = new CertifiedProduct();
         cp.setId(dto.getId());
         cp.setChplProductNumber(chplProductNumberUtil.generate(dto.getId()));
-        cp.setLastModifiedDate(dto.getLastModifiedDate() != null ? dto.getLastModifiedDate().getTime() + "" : "");
+        cp.setLastModifiedDate(dto.getLastModifiedDate() != null ? dto.getLastModifiedDate().getTime() : null);
         CertificationEditionDTO edition = getEdition(dto.getCertificationEditionId());
         if (edition != null) {
             cp.setEdition(edition.getYear());

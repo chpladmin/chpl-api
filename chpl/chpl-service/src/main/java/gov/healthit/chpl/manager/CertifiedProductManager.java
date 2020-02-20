@@ -316,7 +316,7 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     @Transactional(readOnly = true)
-    public List<CertifiedProductDetailsDTO> getByVersion(final Long versionId) throws EntityRetrievalException {
+    public List<CertifiedProduct> getByVersion(final Long versionId) throws EntityRetrievalException {
         versionManager.getById(versionId); // throws 404 if bad id
         return cpDao.getDetailsByVersionId(versionId);
     }
@@ -328,12 +328,12 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     @Transactional(readOnly = true)
-    public List<CertifiedProductDetailsDTO> getByVersionWithEditPermission(final Long versionId)
+    public List<CertifiedProduct> getByVersionWithEditPermission(final Long versionId)
             throws EntityRetrievalException {
         versionManager.getById(versionId); // throws 404 if bad id
         List<CertificationBodyDTO> userAcbs = resourcePermissions.getAllAcbsForCurrentUser();
         if (userAcbs == null || userAcbs.size() == 0) {
-            return new ArrayList<CertifiedProductDetailsDTO>();
+            return new ArrayList<CertifiedProduct>();
         }
         List<Long> acbIdList = new ArrayList<Long>(userAcbs.size());
         for (CertificationBodyDTO dto : userAcbs) {

@@ -22,10 +22,12 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ListingMockUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
+@ContextConfiguration(classes = {
+        gov.healthit.chpl.CHPLTestConfig.class
+})
 public class CertificationStatusReviewerTest {
-    private static final String FIRST_STATUS_NOT_ACTIVE_ERROR =
-            "The earliest certification status for any listing on the CHPL must be Active.";
+    private static final String FIRST_STATUS_NOT_ACTIVE_ERROR = "The earliest certification status for any listing on the CHPL must be Active.";
+
     @Autowired
     private ListingMockUtil mockUtil;
 
@@ -44,7 +46,7 @@ public class CertificationStatusReviewerTest {
         certStatusReviewer = new CertificationStatusReviewer(msgUtil);
     }
 
-    //Case: A valid active certification status is first
+    // Case: A valid active certification status is first
     @Test
     public void testValidFirstStatus_DoesNotHaveError() {
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
@@ -52,16 +54,16 @@ public class CertificationStatusReviewerTest {
         assertFalse(listing.getErrorMessages().contains(FIRST_STATUS_NOT_ACTIVE_ERROR));
     }
 
-    //Case: An invalid first certification status
+    // Case: An invalid first certification status
     @Test
     public void testRetiredFirstStatus_HasError() {
         Mockito.doReturn(FIRST_STATUS_NOT_ACTIVE_ERROR)
-        .when(msgUtil).getMessage(
-                ArgumentMatchers.eq("listing.firstStatusNotActive"),
-                ArgumentMatchers.anyString());
+                .when(msgUtil).getMessage(
+                        ArgumentMatchers.eq("listing.firstStatusNotActive"),
+                        ArgumentMatchers.anyString());
 
         CertifiedProductSearchDetails listing = mockUtil.createValid2015Listing();
-        //make a status older than the oldest status that is not Active
+        // make a status older than the oldest status that is not Active
         CertificationStatusEvent currOldestStatus = listing.getOldestStatus();
         CertificationStatusEvent oldestStatus = new CertificationStatusEvent();
         oldestStatus.setEventDate(currOldestStatus.getEventDate() - 1);
