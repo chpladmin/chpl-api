@@ -1,5 +1,20 @@
 # Release Notes
 
+## Version 23.1.0
+_20 February 2020_
+
+### Bug Fixes
+* Improve performance of some developer, product, and version API calls
+
+### Flagged Features
+* Add updateMacraMeasuresJob to update g1g2 MACRA measures from ACI to PI
+
+### Features
+* Discontinue validation checks against criteria marked as removed.
+* Add new criteria data types to URL report
+
+---
+
 ## Version 23.0.0
 _11 February 2020_
 
