@@ -87,7 +87,7 @@ public class RemovedCriteriaUcdComparisonReviewer implements ComparisonReviewer 
         for (CertificationCriterion updatedCriterion : updatedCriteria) {
             boolean existsInOriginal = false;
             for (CertificationCriterion originalCriterion : originalCriteria) {
-                if (updatedCriterion.getNumber().equals(originalCriterion.getNumber())) {
+                if (updatedCriterion.getId().equals(originalCriterion.getId())) {
                     existsInOriginal = true;
                 }
             }

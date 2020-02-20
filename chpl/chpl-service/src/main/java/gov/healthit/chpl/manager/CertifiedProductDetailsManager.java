@@ -710,7 +710,7 @@ public class CertifiedProductDetailsManager {
 
         // set allowed macra measures (if any)
         for (MacraMeasure measure : macraMeasures) {
-            if (measure.getCriteria().getNumber().equals(result.getNumber())) {
+            if (measure.getCriteria().getId().equals(result.getCriterion().getId())) {
                 result.getAllowedMacraMeasures().add(measure);
             }
         }
@@ -727,8 +727,7 @@ public class CertifiedProductDetailsManager {
                 practiceTypeId = Long.valueOf(cp.getPracticeType().get("id").toString());
             }
         }
-        String criteriaNumber = cr.getNumber();
-        return testFunctionalityManager.getTestFunctionalities(criteriaNumber, edition, practiceTypeId);
+        return testFunctionalityManager.getTestFunctionalities(cr.getCriterion().getId(), edition, practiceTypeId);
     }
 
     private CertifiedProductSearchDetails getCertifiedProductSearchDetails(CertifiedProductDetailsDTO dto)

@@ -18,11 +18,6 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 
-/**
- * Present objects as CSV file.
- * @author kekey
- *
- */
 public class Sed2015CsvPresenter {
     private static final Logger LOGGER = LogManager.getLogger(Sed2015CsvPresenter.class);
 
@@ -37,7 +32,7 @@ public class Sed2015CsvPresenter {
             for (CertifiedProductSearchDetails currListing : cpList) {
                 List<List<String>> rows = generateRows(currListing);
                 if (rows != null) { // can return null to skip a row
-                    for(List<String> row : rows) {
+                    for (List<String> row : rows) {
                         csvPrinter.printRecord(row);
                         numRows++;
                     }
@@ -105,7 +100,7 @@ public class Sed2015CsvPresenter {
                         if (assocCriteriaStr.length() > 0) {
                             assocCriteriaStr.append(";");
                         }
-                        assocCriteriaStr.append(criteria.getNumber());
+                        assocCriteriaStr.append(criteria.formatCriteriaNumber());
                     }
                     row.add(assocCriteriaStr.toString());
                     row.add(testTask.getDescription());

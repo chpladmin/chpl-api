@@ -44,7 +44,7 @@ public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresent
         result.add("Open Nonconformities");
         if (getApplicableCriteria() != null) {
             for (CertificationCriterionDTO criteria : getApplicableCriteria()) {
-                result.add(criteria.getNumber());
+                result.add(criteria.getNumber() + ": " + criteria.getTitle());
             }
         }
         return result;

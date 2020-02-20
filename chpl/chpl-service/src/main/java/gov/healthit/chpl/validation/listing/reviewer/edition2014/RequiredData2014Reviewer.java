@@ -129,7 +129,7 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
         boolean hasUcd = false;
         for (UcdProcess ucdProcess : ucdProcesses) {
             for (CertificationCriterion ucdCriteria : ucdProcess.getCriteria()) {
-                if (ucdCriteria.getNumber().equalsIgnoreCase(cert.getNumber())) {
+                if (ucdCriteria.getId().equals(cert.getCriterion().getId())) {
                     hasUcd = true;
                 }
             }

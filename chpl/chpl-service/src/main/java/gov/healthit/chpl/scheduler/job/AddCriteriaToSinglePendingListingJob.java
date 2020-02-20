@@ -30,6 +30,7 @@ import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.scheduler.job.extra.JobResponse;
 
 public class AddCriteriaToSinglePendingListingJob extends QuartzJob {
+    private static final long ADMIN_ID = -2L;
 
     // Default logger
     private Logger logger = LogManager.getLogger("addCriteriaToListingsJobLogger");
@@ -41,7 +42,7 @@ public class AddCriteriaToSinglePendingListingJob extends QuartzJob {
     private PendingCertifiedProductManager pcpManager;
 
     @Autowired
-    private CertificationCriterionDAO certCritDAO;
+    private CertificationCriterionDAO criterionDAO;
 
     @Autowired
     private JpaTransactionManager txManager;
@@ -65,19 +66,22 @@ public class AddCriteriaToSinglePendingListingJob extends QuartzJob {
         if (pcp != null) {
             try {
                 for (String criterion : criteria) {
-                    addCertToPendingListing(pcp, criterion);
+                    String[] criterionValues = criterion.split(":");
+                    addCertToPendingListing(pcp, criterionValues[0], criterionValues[1]);
                 }
                 String msg = "Completed Updating pending certified product {" + pcp.getChplProductNumber() + "}: "
                         + "-" + criteria.toString();
                 response = new JobResponse(pcp.getChplProductNumber(), true, msg);
 
             } catch (Exception e) {
-                String msg = "Unsuccessful Update pending certified product {" + pcp.getChplProductNumber() + "} " + criteria.toString()
+                String msg = "Unsuccessful Update pending certified product {"
+            + pcp.getChplProductNumber() + "} " + criteria.toString()
                 + ':' + e.getMessage();
                 response =  new JobResponse(pcp.getChplProductNumber(), false, msg);
             }
         } else {
-            response = new JobResponse("No CHPL Product Number", false, "No pending listing with id " + listingId + " was found.");
+            response = new JobResponse("No CHPL Product Number", false,
+                    "No pending listing with id " + listingId + " was found.");
         }
 
         jobContext.setResult(response);
@@ -106,7 +110,8 @@ public class AddCriteriaToSinglePendingListingJob extends QuartzJob {
     }
 
     private void addCertToPendingListing(
-            PendingCertifiedProductDetails pcp, String criterionNumber) throws EntityCreationException {
+            PendingCertifiedProductDetails pcp, String criterionNumber, String criterionTitle)
+                    throws EntityCreationException {
             TransactionTemplate txTemplate = new TransactionTemplate(txManager);
             txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
             txTemplate.execute(new TransactionCallbackWithoutResult() {
@@ -115,11 +120,11 @@ public class AddCriteriaToSinglePendingListingJob extends QuartzJob {
             //can't use the manager method because we don't want to record activity
             //so wrapping the DAO call in a transaction
             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                CertificationCriterionEntity criterion = certCritDAO.getEntityByName(criterionNumber);
+                CertificationCriterionEntity criterion = criterionDAO.getEntityByNumberAndTitle(criterionNumber, criterionTitle);
                 if (criterion == null || criterion.getId() == null) {
                     logger.error(
                             "Cannot create certification result mapping for unknown criteria " + criterionNumber);
-                } else if (!certResultExists(pcp, criterionNumber)) {
+                } else if (!certResultExists(pcp, criterionNumber, criterionTitle)) {
                     PendingCertificationResultEntity toCreate = new PendingCertificationResultEntity();
                     toCreate.setPendingCertifiedProductId(pcp.getId());
                     toCreate.setMappedCriterion(criterion);
@@ -133,17 +138,18 @@ public class AddCriteriaToSinglePendingListingJob extends QuartzJob {
                     }
                 } else {
                     logger.info("Certification result mapping already exists for " + pcp.getChplProductNumber()
-                        + " and " + criterionNumber);
+                        + " and " + criterionNumber + ":" + criterionTitle);
                 }
             }
         });
     }
 
-    private boolean certResultExists(PendingCertifiedProductDetails pcp, String criterionNumber) {
+    private boolean certResultExists(PendingCertifiedProductDetails pcp, String criterionNumber, String criterionTitle) {
         boolean result = false;
         List<CertificationResult> certResults = pcp.getCertificationResults();
         for (CertificationResult certResult : certResults) {
-            if (certResult.getCriterion().getNumber().equalsIgnoreCase(criterionNumber)) {
+            if (certResult.getCriterion().getNumber().equalsIgnoreCase(criterionNumber)
+                    && certResult.getCriterion().getTitle().equalsIgnoreCase(criterionTitle)) {
                 result = true;
             }
         }
@@ -153,7 +159,7 @@ public class AddCriteriaToSinglePendingListingJob extends QuartzJob {
     private void setSecurityContext() {
         JWTAuthenticatedUser adminUser = new JWTAuthenticatedUser();
         adminUser.setFullName("Administrator");
-        adminUser.setId(-2L);
+        adminUser.setId(ADMIN_ID);
         adminUser.setFriendlyName("Admin");
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));

@@ -397,7 +397,7 @@ public class PendingCertifiedProductDTO implements Serializable {
                 for (UcdProcess ucd : details.getSed().getUcdProcesses()) {
                     boolean hasCriteria = false;
                     for (CertificationCriterion criteria : ucd.getCriteria()) {
-                        if (criteria.getNumber().equals(certDto.getCriterion().getNumber())) {
+                        if (criteria.getId().equals(certDto.getCriterion().getId())) {
                             hasCriteria = true;
                         }
                     }
@@ -416,7 +416,7 @@ public class PendingCertifiedProductDTO implements Serializable {
                 for (TestTask task : details.getSed().getTestTasks()) {
                     boolean hasCriteria = false;
                     for (CertificationCriterion criteria : task.getCriteria()) {
-                        if (criteria.getNumber().equals(certDto.getCriterion().getNumber())) {
+                        if (criteria.getId().equals(certDto.getCriterion().getId())) {
                             hasCriteria = true;
                         }
                     }
@@ -503,6 +503,7 @@ public class PendingCertifiedProductDTO implements Serializable {
             this.certificationCriterion.add(certDto);
         }
 
+        copyCriterionIdsToCqmMappings(details);
         List<CQMResultDetails> cqmResults = details.getCqmResults();
         for (CQMResultDetails cqmResult : cqmResults) {
             if (cqmResult.getSuccessVersions() != null && cqmResult.getSuccessVersions().size() > 0) {
@@ -518,12 +519,9 @@ public class PendingCertifiedProductDTO implements Serializable {
                     cqmDto.setVersion(version);
                     for (CQMResultCertification cqmCert : cqmResult.getCriteria()) {
                         PendingCqmCertificationCriterionDTO pendingCqmCert = new PendingCqmCertificationCriterionDTO();
-                        pendingCqmCert.setCertificationCriteriaNumber(cqmCert.getCertificationNumber());
                         pendingCqmCert.setCertificationId(cqmCert.getCertificationId());
+                        pendingCqmCert.setCertificationCriteriaNumber(cqmCert.getCertificationNumber());
                         pendingCqmCert.setCqmId(cqmDto.getId());
-                        CertificationCriterionDTO cqmCriterion =
-                                new CertificationCriterionDTO(cqmCert.getCriterion());
-                        pendingCqmCert.setCriterion(cqmCriterion);
                         cqmDto.getCertifications().add(pendingCqmCert);
                     }
                     this.cqmCriterion.add(cqmDto);
@@ -1053,5 +1051,21 @@ public class PendingCertifiedProductDTO implements Serializable {
 
     public void setIcsChildren(List<CertifiedProductDetailsDTO> icsChildren) {
         this.icsChildren = icsChildren;
+    }
+
+    private void copyCriterionIdsToCqmMappings(PendingCertifiedProductDetails listing) {
+        for (CQMResultDetails cqmResult : listing.getCqmResults()) {
+            for (CQMResultCertification cqmCertMapping : cqmResult.getCriteria()) {
+                if (cqmCertMapping.getCertificationId() == null
+                        && !StringUtils.isEmpty(cqmCertMapping.getCertificationNumber())) {
+                    for (CertificationResult certResult : listing.getCertificationResults()) {
+                        if (certResult.isSuccess().equals(Boolean.TRUE)
+                                && certResult.getCriterion().getNumber().equals(cqmCertMapping.getCertificationNumber())) {
+                            cqmCertMapping.setCertificationId(certResult.getCriterion().getId());
+                        }
+                    }
+                }
+            }
+        }
     }
 }
