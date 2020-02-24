@@ -1,7 +1,9 @@
 package gov.healthit.chpl.scheduler.job;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Query;
 
@@ -32,20 +34,101 @@ public class UpdateMacraMeasuresJob extends QuartzJob {
     private static final String OLD_G1G2_SUBSTRING = "ACI";
     private static final String NEW_G1G2_SUBSTRING = "PI";
 
+    private static final String A_1 = "170.315 (a)(1)";
+    private static final String A_2 = "170.315 (a)(2)";
+    private static final String A_3 = "170.315 (a)(3)";
+    private static final String A_10 = "170.315 (a)(10)";
+    private static final String A_13 = "170.315 (a)(13)";
+    private static final String B_1 = "170.315 (b)(1)";
+    private static final String B_2 = "170.315 (b)(2)";
+    private static final String B_3 = "170.315 (b)(3)";
+    private static final String E_1 = "170.315 (e)(1)";
+    private static final String E_2 = "170.315 (e)(2)";
     private static final String G_8 = "170.315 (g)(8)";
     private static final String G_9 = "170.315 (g)(9)";
-    private static final List<String> VALUES_TO_REMOVE = Arrays.asList("RT2a EP Stage 2",
-            "RT2a EC PI Transition",
-            "RT2a EH/CAH Stage 2",
-            "RT2c EP Stage 2",
-            "RT2c EC PI Transition",
-            "RT2c EH/CAH Stage 2",
-            "RT4a EP Stage 2",
-            "RT4a EC PI Transition",
-            "RT4a EH/CAH Stage 2",
-            "RT4c EP Stage 2",
-            "RT4c EC PI Transition",
-            "RT4c EH/CAH Stage 2");
+
+    private static Map<String, List<String>> measuresToRemove;
+    static {
+        measuresToRemove = new HashMap<String, List<String>>();
+        measuresToRemove.put(A_1,
+                Arrays.asList("EP Stage 2",
+                        "EH/CAH Stage 2",
+                        "GAP-EP",
+                        "GAP-EH/CAH"));
+        measuresToRemove.put(A_2,
+                Arrays.asList("EP Stage 2",
+                        "EH/CAH Stage 2",
+                        "GAP-EP",
+                        "GAP-EH/CAH"));
+        measuresToRemove.put(A_3,
+                Arrays.asList("EP Stage 2",
+                        "EH/CAH Stage 2",
+                        "GAP-EP",
+                        "GAP-EH/CAH"));
+        measuresToRemove.put(A_10,
+                Arrays.asList("EP Stage 2",
+                        "EC PI Transition",
+                        "EH/CAH Stage 2"));
+        measuresToRemove.put(A_13,
+                Arrays.asList("EP Stage 2",
+                        "EC PI Transition",
+                        "EH/CAH Stage 2"));
+        measuresToRemove.put(B_1,
+                Arrays.asList("RT7 EP Stage 2",
+                        "RT7 EC PI Transition",
+                        "RT7 EH/CAH Stage 2"));
+        measuresToRemove.put(B_2,
+                Arrays.asList("EP Stage 2",
+                        "EC PI Transition",
+                        "EH/CAH Stage 2"));
+        measuresToRemove.put(B_3,
+                Arrays.asList("EP Stage 2",
+                        "EC PI Transition",
+                        "EH/CAH Stage 2"));
+        measuresToRemove.put(E_1,
+                Arrays.asList("RT2a EP Stage 2",
+                        "RT2a EC PI Transition ",
+                        "RT2a EH/CAH Stage 2",
+                        "RT2b EP Stage 2",
+                        "RT2b EC ACI Transition",
+                        "RT2b EH/CAH Stage 2",
+                        "RT4a EP Stage 2",
+                        "RT4a EC ACI Transition",
+                        "RT4a EH/CAH Stage 2",
+                        "RT4b EP Stage 2",
+                        "RT4b EC PI Transition",
+                        "RT4b EH/CAH Stage 2"));
+        measuresToRemove.put(E_2,
+                Arrays.asList("EP Stage 2",
+                        "EC PI Transition",
+                        "EH/CAH Stage 2"));
+        measuresToRemove.put(G_8,
+                Arrays.asList("RT2a EP Stage 2",
+                        "RT2a EC PI Transition",
+                        "RT2a EH/CAH Stage 2",
+                        "RT2c EP Stage 2",
+                        "RT2c EC PI Transition",
+                        "RT2c EH/CAH Stage 2",
+                        "RT4a EP Stage 2",
+                        "RT4a EC PI Transition",
+                        "RT4a EH/CAH Stage 2",
+                        "RT4c EP Stage 2",
+                        "RT4c EC PI Transition",
+                        "RT4c EH/CAH Stage 2"));
+        measuresToRemove.put(G_9,
+                Arrays.asList("RT2a EP Stage 2",
+                        "RT2a EC PI Transition",
+                        "RT2a EH/CAH Stage 2",
+                        "RT2c EP Stage 2",
+                        "RT2c EC PI Transition",
+                        "RT2c EH/CAH Stage 2",
+                        "RT4a EP Stage 2",
+                        "RT4a EC PI Transition",
+                        "RT4a EH/CAH Stage 2",
+                        "RT4c EP Stage 2",
+                        "RT4c EC PI Transition",
+                        "RT4c EH/CAH Stage 2"));
+    }
 
     @Autowired
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
@@ -100,13 +183,19 @@ public class UpdateMacraMeasuresJob extends QuartzJob {
 
         private void updateStage2AsRemoved() {
             getAllMeasuresWhereValueIsNotNull().stream()
-                    .filter(measure -> (measure.getCertificationCriterion().getNumber().equals(G_8)
-                            || measure.getCertificationCriterion().getNumber().equals(G_9))
-                            && VALUES_TO_REMOVE.contains(measure.getValue()))
+                    .filter(mm -> isThisAMacraMeasureToRemove(mm))
                     .forEach(measure -> {
                         measure.setRemoved(true);
                         entityManager.merge(measure);
                     });
+        }
+
+        private boolean isThisAMacraMeasureToRemove(MacraMeasureEntity mm) {
+            if (measuresToRemove.containsKey(mm.getCertificationCriterion().getNumber())) {
+                List<String> measures = measuresToRemove.get(mm.getCertificationCriterion().getNumber());
+                return measures.contains(mm.getValue());
+            }
+            return false;
         }
 
         private List<MacraMeasureEntity> getAllMeasuresWhereValueIsNotNull() {
