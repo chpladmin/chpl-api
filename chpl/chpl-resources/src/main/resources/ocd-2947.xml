@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<job-scheduling-data
+    xmlns="http://www.quartz-scheduler.org/xml/JobSchedulingData"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData http://www.quartz-scheduler.org/xml/job_scheduling_data_2_0.xsd"
+    version="2.0">
+    <pre-processing-commands>
+        <delete-triggers-in-group>triggerJob</delete-triggers-in-group>
+        <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
+        <!-- Delete the below pre-processing command(s) after PROD push -->
+        <!-- End delete pre-processing command(s). -->
+    </pre-processing-commands>
+    <schedule>
+        <!--  Add V18 Upload Template -->
+        <job>
+            <name>addV18UploadTemplateJob</name>
+            <group>systemJobs</group>
+            <description>Makes 2015 V18 Upload Template Available</description>
+            <job-class>gov.healthit.chpl.scheduler.job.AddV18UploadTemplateJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+            </job-data-map>
+        </job>
+    </schedule>
+</job-scheduling-data>
