@@ -188,7 +188,7 @@ public abstract class TemplateColumnIndexMap {
             colTitle = heading.get(criteriaEndIndex).toString();
             while (criteriaEndIndex <= getCriteriaEndIndex() && !colTitle.startsWith(CRITERIA_COL_HEADING_BEGIN)) {
                 criteriaEndIndex++;
-                if (criteriaEndIndex <= getCriteriaEndIndex()) {
+                if (criteriaEndIndex < getCriteriaEndIndex()) {
                     colTitle = heading.get(criteriaEndIndex).toString();
                 }
             }

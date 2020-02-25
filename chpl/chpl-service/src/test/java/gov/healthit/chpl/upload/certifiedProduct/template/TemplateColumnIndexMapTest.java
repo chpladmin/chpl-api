@@ -5,6 +5,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.StringReader;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
 public class TemplateColumnIndexMapTest {
@@ -64,5 +70,39 @@ public class TemplateColumnIndexMapTest {
         String badHeading = "DOES NOT MATCH";
         assertFalse(map.isCriteriaNumberHeadingCures(badHeading));
 
+    }
+
+    @Test
+    public void getLastIndexForCriteriaFromCsvHeading_FirstCriterion_ReturnsCorrectIndex() {
+        CSVRecord header = null;
+        String[] headerValues = new String[] {"CRITERIA_170_315_D_11__C", "GAP",
+                "Standard Tested Against", "Additional Software", "CP Source", "CP Source Grouping",
+                "Non CP Source", "Non CP Source Version", "Non CP Source Grouping",
+                "Test procedure version", "CRITERIA_170_315_D_12_Cures__C"};
+        String rowData = StringUtils.join(headerValues, ',');
+        try (CSVParser parser = CSVFormat.DEFAULT.parse(new StringReader(rowData))) {
+            header = parser.iterator().next();
+        } catch (Exception ignore) { }
+
+        int lastIndexForD11Criterion = map.getLastIndexForCriteria(header, 0);
+        assertEquals(9, lastIndexForD11Criterion);
+    }
+
+    @Test
+    public void getLastIndexForCriteriaFromCsvHeading_LastCriterion_ReturnsCorrectIndex() {
+        CSVRecord header = null;
+        String[] headerValues = new String[map.getCriteriaEndIndex()];
+        headerValues[0] = "CRITERIA_170_315_D_11__C";
+        for (int i = 1; i < headerValues.length; i++) {
+            headerValues[i] = "col_" + i;
+        }
+
+        String rowData = StringUtils.join(headerValues, ',');
+        try (CSVParser parser = CSVFormat.DEFAULT.parse(new StringReader(rowData))) {
+            header = parser.iterator().next();
+        } catch (Exception ignore) { }
+
+        int lastIndexForD11Criterion = map.getLastIndexForCriteria(header, 0);
+        assertEquals(map.getCriteriaEndIndex(), lastIndexForD11Criterion);
     }
 }

@@ -4,6 +4,6 @@ public class TemplateColumnIndexMap2015Version4 extends TemplateColumnIndexMap20
 
     @Override
     public int getCriteriaEndIndex() {
-        return 961;
+        return 960;
     }
 }

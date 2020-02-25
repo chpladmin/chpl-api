@@ -198,12 +198,15 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
 
             int criteriaBeginIndex = getColumnIndexMap().getCriteriaStartIndex();
             int criteriaEndIndex = getColumnIndexMap().getLastIndexForCriteria(getHeading(), criteriaBeginIndex);
-            while (criteriaEndIndex <= getColumnIndexMap().getCriteriaEndIndex()) {
+            while (criteriaEndIndex > 0 && criteriaEndIndex <= getColumnIndexMap().getCriteriaEndIndex()) {
                 PendingCertificationResultEntity certEntity = parseCriteria(pendingCertifiedProduct,
                         firstRow, criteriaBeginIndex, criteriaEndIndex);
                 pendingCertifiedProduct.getCertificationCriterion().add(certEntity);
-                allCriteriaMap.put(certEntity.getMappedCriterion().getId(), Boolean.TRUE);
-                criteriaBeginIndex = criteriaEndIndex + 1;
+                if (certEntity.getMappedCriterion() != null) {
+                    allCriteriaMap.put(certEntity.getMappedCriterion().getId(), Boolean.TRUE);
+                }
+
+                criteriaBeginIndex = Math.min(getColumnIndexMap().getCriteriaEndIndex(), criteriaEndIndex + 1);
                 criteriaEndIndex = getColumnIndexMap().getLastIndexForCriteria(getHeading(), criteriaBeginIndex);
             }
 
