@@ -28,6 +28,7 @@ public class ModifyTestFunctionalityJob extends QuartzJob {
     private static final String TF_NEW_NAME = "Optional: 170.315(b)(3)(i)(C) For each transaction listed in paragraph "
             + "(b)(3)(i)(A) of this section, the technology must be able to receive and transmit the reason for the prescription "
             + "using the indication elements in the SIG Segment";
+    private static final Long ADMIN_ID = -2L;
 
     @Autowired
     private ModifiableTestFunctionalityDao modifiableTestFunctionalityDao;
@@ -59,7 +60,7 @@ public class ModifyTestFunctionalityJob extends QuartzJob {
     private void setSecurityContext() {
         JWTAuthenticatedUser adminUser = new JWTAuthenticatedUser();
         adminUser.setFullName("Administrator");
-        adminUser.setId(-2L);
+        adminUser.setId(ADMIN_ID);
         adminUser.setFriendlyName("Admin");
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
@@ -71,7 +72,8 @@ public class ModifyTestFunctionalityJob extends QuartzJob {
     @Component("modifiableTestFunctionalityDao")
     private static class ModifiableTestFunctionalityDao extends BaseDAOImpl {
 
-        public ModifiableTestFunctionalityDao() {
+        @SuppressWarnings("unused")
+        ModifiableTestFunctionalityDao() {
             super();
         }
 
@@ -83,7 +85,7 @@ public class ModifyTestFunctionalityJob extends QuartzJob {
                     + "AND deleted = false";
             Query query = entityManager.createQuery(hql);
             query.setParameter("number", number);
-            List<TestFunctionalityEntity> tfEntities = query.getResultList();
+            @SuppressWarnings("unchecked") List<TestFunctionalityEntity> tfEntities = query.getResultList();
             TestFunctionalityEntity result = null;
             if (tfEntities != null && tfEntities.size() > 0) {
                 result = tfEntities.get(0);
