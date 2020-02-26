@@ -26,7 +26,6 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.entity.NonconformityStatusEntity;
 import gov.healthit.chpl.entity.ValidationMessageType;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
@@ -891,17 +890,13 @@ public class SurveillanceDAO extends BaseDAOImpl {
 
     private void populateSurveillanceRequirementEntity(final SurveillanceRequirementEntity to,
             final SurveillanceRequirement from) {
-        if (from.getRequirement() != null) {
-            List<CertificationCriterionDTO> criteria = criterionDao.getAllByNumber(from.getRequirement());
-            //TODO Fix this as part of OCD-3220
-            if (criteria != null && criteria.size() > 0) {
-                CertificationCriterionDTO crit = criteria.get(0);
-                to.setCertificationCriterionId(crit.getId());
-            } else {
-                to.setSurveilledRequirement(from.getRequirement());
-                to.setCertificationCriterionId(null);
-            }
+        if (from.getCriterion() != null) {
+            to.setCertificationCriterionId(from.getCriterion().getId());
+        } else if (from.getRequirement() != null) {
+            to.setSurveilledRequirement(from.getRequirement());
+            to.setCertificationCriterionId(null);
         }
+
         if (from.getType() != null) {
             to.setSurveillanceRequirementTypeId(from.getType().getId());
         }
@@ -912,16 +907,13 @@ public class SurveillanceDAO extends BaseDAOImpl {
 
     private void populateSurveillanceNonconformityEntity(final SurveillanceNonconformityEntity to,
             final SurveillanceNonconformity from) {
-        if (from.getNonconformityType() != null) {
-            List<CertificationCriterionDTO> criteria = criterionDao.getAllByNumber(from.getNonconformityType());
-            //TODO Fix this as part of OCD-3220
-            if (criteria != null && criteria.size() > 0) {
-                CertificationCriterionDTO crit = criteria.get(0);
-                to.setCertificationCriterionId(crit.getId());
-            } else {
-                to.setType(from.getNonconformityType());
-            }
+        if (from.getCriterion() != null) {
+            to.setCertificationCriterionId(from.getCriterion().getId());
+        } else if (from.getNonconformityType() != null) {
+            to.setType(from.getNonconformityType());
+            to.setCertificationCriterionId(null);
         }
+
         to.setCapApproval(from.getCapApprovalDate());
         to.setCapEndDate(from.getCapEndDate());
         to.setCapMustCompleteDate(from.getCapMustCompleteDate());
