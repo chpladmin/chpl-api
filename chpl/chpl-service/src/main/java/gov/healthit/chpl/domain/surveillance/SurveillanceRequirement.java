@@ -44,7 +44,7 @@ public class SurveillanceRequirement implements Serializable {
      * then this field will have the criterion details (number, title, etc).
      */
     @XmlElement(required = false)
-    private CertificationCriterion requirementCriterion;
+    private CertificationCriterion criterion;
 
     /**
      * The result for surveillance conducted on each surveillance requirement.
@@ -131,11 +131,11 @@ public class SurveillanceRequirement implements Serializable {
             return false;
         }
 
-        if ((this.getRequirementCriterion() == null && anotherRequirement.getRequirementCriterion() != null)
-                || (this.getRequirementCriterion() != null && anotherRequirement.getRequirementCriterion() == null)) {
+        if ((this.getCriterion() == null && anotherRequirement.getCriterion() != null)
+                || (this.getCriterion() != null && anotherRequirement.getCriterion() == null)) {
             return false;
-        } else if (this.getRequirementCriterion() != null && anotherRequirement.getRequirementCriterion() != null
-                && !this.getRequirementCriterion().getId().equals(anotherRequirement.getRequirementCriterion().getId())) {
+        } else if (this.getCriterion() != null && anotherRequirement.getCriterion() != null
+                && !this.getCriterion().getId().equals(anotherRequirement.getCriterion().getId())) {
             return false;
         }
 
@@ -180,12 +180,12 @@ public class SurveillanceRequirement implements Serializable {
         this.requirement = requirement;
     }
 
-    public CertificationCriterion getRequirementCriterion() {
-        return requirementCriterion;
+    public CertificationCriterion getCriterion() {
+        return criterion;
     }
 
-    public void setRequirementCriterion(CertificationCriterion requirementCriterion) {
-        this.requirementCriterion = requirementCriterion;
+    public void setCriterion(CertificationCriterion criterion) {
+        this.criterion = criterion;
     }
 
     public SurveillanceResultType getResult() {
@@ -225,16 +225,16 @@ public class SurveillanceRequirement implements Serializable {
                 || (this.getRequirement() != null && anotherReq.getRequirement() == null)) {
             return false;
         }
-        if ((this.getRequirementCriterion() == null && anotherReq.getRequirementCriterion() != null)
-                || (this.getRequirementCriterion() != null && anotherReq.getRequirementCriterion() == null)) {
+        if ((this.getCriterion() == null && anotherReq.getCriterion() != null)
+                || (this.getCriterion() != null && anotherReq.getCriterion() == null)) {
             return false;
         }
 
         boolean isEqual = false;
         boolean requirementNamesMatch = this.getRequirement().equals(anotherReq.getRequirement());
-        if (this.getRequirementCriterion() != null && anotherReq.getRequirementCriterion() != null) {
+        if (this.getCriterion() != null && anotherReq.getCriterion() != null) {
             isEqual = requirementNamesMatch
-                    && this.getRequirementCriterion().getId().equals(anotherReq.getRequirementCriterion().getId());
+                    && this.getCriterion().getId().equals(anotherReq.getCriterion().getId());
         }
         return isEqual;
     }
@@ -244,9 +244,9 @@ public class SurveillanceRequirement implements Serializable {
         if (this.getRequirement() == null) {
             return -1;
         }
-        if (this.getRequirementCriterion() == null) {
+        if (this.getCriterion() == null) {
             return this.getRequirement().hashCode();
         }
-        return this.getRequirementCriterion().getId().hashCode();
+        return this.getCriterion().getId().hashCode();
     }
 }

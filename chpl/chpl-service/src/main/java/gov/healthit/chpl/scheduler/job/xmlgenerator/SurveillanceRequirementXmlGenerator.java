@@ -23,8 +23,8 @@ public class SurveillanceRequirementXmlGenerator extends XmlGenerator {
             sw.writeStartElement(rootNodeName);
             createSimpleElement(sr.getId(), "id", sw);
             createSimpleElement(sr.getRequirement(), "requirement", sw);
-            if (sr.getRequirementCriterion() != null) {
-                CertificationCriterionXmlGenerator.add(sr.getRequirementCriterion(), "criterion", sw);
+            if (sr.getCriterion() != null) {
+                CertificationCriterionXmlGenerator.add(sr.getCriterion(), "criterion", sw);
             }
             SurveillanceResultTypeXmlGenerator.add(sr.getResult(), "result", sw);
             SurveillanceRequirementTypeXmlGenerator.addSurveillanceRequirementType(sr.getType(), "type", sw);

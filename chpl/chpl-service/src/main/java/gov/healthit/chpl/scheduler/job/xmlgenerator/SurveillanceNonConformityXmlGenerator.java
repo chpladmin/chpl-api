@@ -42,8 +42,8 @@ public class SurveillanceNonConformityXmlGenerator extends XmlGenerator {
             sw.writeStartElement(rootNodeName);
             createSimpleElement(snc.getId(), "id", sw);
             createSimpleElement(snc.getNonconformityType(), "nonconformityType", sw);
-            if (snc.getNonconformityCriterion() != null) {
-                CertificationCriterionXmlGenerator.add(snc.getNonconformityCriterion(), "criterion", sw);
+            if (snc.getCriterion() != null) {
+                CertificationCriterionXmlGenerator.add(snc.getCriterion(), "criterion", sw);
             }
             SurveillanceNonConformityStatusXmlGenerator.add(snc.getStatus(), "status", sw);
             createSimpleElement(snc.getDateOfDetermination(), "dateOfTermination", sw);

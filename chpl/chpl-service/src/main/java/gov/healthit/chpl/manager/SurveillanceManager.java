@@ -297,7 +297,7 @@ public class SurveillanceManager extends SecuredManager {
                     CertificationCriterionEntity criterionEntity = reqEntity.getCertificationCriterionEntity();
                     req.setRequirement(criterionEntity.getNumber());
                     CertificationCriterion criterion = convertToDomain(criterionEntity);
-                    req.setRequirementCriterion(criterion);
+                    req.setCriterion(criterion);
                 } else {
                     req.setRequirement(reqEntity.getSurveilledRequirement());
                 }
@@ -339,7 +339,7 @@ public class SurveillanceManager extends SecuredManager {
                         if (ncEntity.getCertificationCriterionEntity() != null) {
                             CertificationCriterionEntity criterionEntity = ncEntity.getCertificationCriterionEntity();
                             CertificationCriterion criterion = convertToDomain(criterionEntity);
-                            nc.setNonconformityCriterion(criterion);
+                            nc.setCriterion(criterion);
                         }
                         nc.setResolution(ncEntity.getResolution());
                         nc.setSitesPassed(ncEntity.getSitesPassed());

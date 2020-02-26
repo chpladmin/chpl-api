@@ -42,7 +42,7 @@ public class SurveillanceNonconformity implements Serializable {
      * then this field will have the criterion details (number, title, etc).
      */
     @XmlElement(required = false)
-    private CertificationCriterion nonconformityCriterion;
+    private CertificationCriterion criterion;
 
     /**
      * The status of a non-conformity found as a result of a surveillance
@@ -204,11 +204,11 @@ public class SurveillanceNonconformity implements Serializable {
                 && !this.nonconformityType.equalsIgnoreCase(anotherNonconformity.nonconformityType)) {
             return false;
         }
-        if ((this.nonconformityCriterion == null && anotherNonconformity.nonconformityCriterion != null)
-                || (this.nonconformityCriterion != null && anotherNonconformity.nonconformityCriterion == null)) {
+        if ((this.criterion == null && anotherNonconformity.criterion != null)
+                || (this.criterion != null && anotherNonconformity.criterion == null)) {
             return false;
-        } else if (this.nonconformityCriterion != null && anotherNonconformity.nonconformityCriterion != null
-                && !this.nonconformityCriterion.getId().equals(anotherNonconformity.nonconformityCriterion.getId())) {
+        } else if (this.criterion != null && anotherNonconformity.criterion != null
+                && !this.criterion.getId().equals(anotherNonconformity.criterion.getId())) {
             return false;
         }
         if (this.status == null && anotherNonconformity.status != null
@@ -321,12 +321,12 @@ public class SurveillanceNonconformity implements Serializable {
         this.nonconformityType = nonconformityType;
     }
 
-    public CertificationCriterion getNonconformityCriterion() {
-        return nonconformityCriterion;
+    public CertificationCriterion getCriterion() {
+        return criterion;
     }
 
-    public void setNonconformityCriterion(CertificationCriterion nonconformityCriterion) {
-        this.nonconformityCriterion = nonconformityCriterion;
+    public void setCriterion(CertificationCriterion criterion) {
+        this.criterion = criterion;
     }
 
     public SurveillanceNonconformityStatus getStatus() {
