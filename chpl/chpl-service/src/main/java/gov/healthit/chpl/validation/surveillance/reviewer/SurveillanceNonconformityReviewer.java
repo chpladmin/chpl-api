@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
@@ -73,37 +74,44 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
 
     private void checkNonconformityTypeValidity(Surveillance surv, SurveillanceRequirement req,
             SurveillanceNonconformity nc, List<CertificationResultDetailsDTO> certResults) {
-        if (StringUtils.isEmpty(nc.getNonconformityType())) {
+        if (StringUtils.isEmpty(nc.getNonconformityType()) && nc.getCriterion() == null) {
             surv.getErrorMessages().add(
                     msgUtil.getMessage("surveillance.nonConformityTypeRequired", req.getRequirement()));
+        } else if (nc.getCriterion() != null) {
+            nc.setNonconformityType(nc.getCriterion().getNumber());
+            Optional<CertificationResultDetailsDTO> attestedCertResult =
+                    certResults.stream()
+                    .filter(certResult -> isCriteriaAttestedTo(certResult, nc.getCriterion()))
+                    .findFirst();
+            if (!attestedCertResult.isPresent()) {
+                surv.getErrorMessages()
+                .add(msgUtil.getMessage("surveillance.nonConformityTypeMatchException",
+                        nc.getNonconformityType(), NonconformityType.K1.getName(),
+                        NonconformityType.K2.getName(), NonconformityType.L.getName(),
+                        NonconformityType.OTHER.getName()));
+            }
         } else {
             nc.setNonconformityType(gov.healthit.chpl.util.Util
                     .coerceToCriterionNumberFormat(nc.getNonconformityType()));
-            Optional<CertificationResultDetailsDTO> attestedCertResult =
-                    certResults.stream()
-                    .filter(certResult -> isCriteriaAttestedTo(certResult, nc.getNonconformityType()))
-                    .findFirst();
-            if (!attestedCertResult.isPresent()) {
-                //nonconformity type is not a criterion the listing attested to, but it could be one of a few other values
-                if (!NonconformityType.K1.getName().equals(nc.getNonconformityType())
-                        && !NonconformityType.K2.getName().equals(nc.getNonconformityType())
-                        && !NonconformityType.L.getName().equals(nc.getNonconformityType())
-                        && !NonconformityType.OTHER.getName().equals(nc.getNonconformityType())) {
-                    surv.getErrorMessages()
-                            .add(msgUtil.getMessage("surveillance.nonConformityTypeMatchException",
-                                    nc.getNonconformityType(), NonconformityType.K1.getName(),
-                                    NonconformityType.K2.getName(), NonconformityType.L.getName(),
-                                    NonconformityType.OTHER.getName()));
-                }
+            //nonconformity type is not a criterion but it could be one of a few other values
+            if (!NonconformityType.K1.getName().equals(nc.getNonconformityType())
+                    && !NonconformityType.K2.getName().equals(nc.getNonconformityType())
+                    && !NonconformityType.L.getName().equals(nc.getNonconformityType())
+                    && !NonconformityType.OTHER.getName().equals(nc.getNonconformityType())) {
+                surv.getErrorMessages()
+                        .add(msgUtil.getMessage("surveillance.nonConformityTypeMatchException",
+                                nc.getNonconformityType(), NonconformityType.K1.getName(),
+                                NonconformityType.K2.getName(), NonconformityType.L.getName(),
+                                NonconformityType.OTHER.getName()));
             }
         }
     }
 
-    private boolean isCriteriaAttestedTo(CertificationResultDetailsDTO certResult, String criterionNumber) {
+    private boolean isCriteriaAttestedTo(CertificationResultDetailsDTO certResult, CertificationCriterion criterion) {
         return !StringUtils.isEmpty(certResult.getNumber())
                 && certResult.getSuccess() != null
                 && certResult.getSuccess().booleanValue()
-                && certResult.getNumber().equals(criterionNumber);
+                && certResult.getId().equals(criterion.getId());
     }
 
     private void checkNonconformityStatusValidity(Surveillance surv,
