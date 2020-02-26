@@ -18,8 +18,8 @@ public class SurveillanceNonConformityXmlGenerator extends XmlGenerator {
      * @param sw stream writer
      * @throws XMLStreamException if exception during writing process
      */
-    public static void add(final List<SurveillanceNonconformity> sncs, final String rootNodeName,
-            final XMLStreamWriter sw) throws XMLStreamException {
+    public static void add(List<SurveillanceNonconformity> sncs, String rootNodeName,
+            XMLStreamWriter sw) throws XMLStreamException {
         if (sncs != null) {
             sw.writeStartElement(rootNodeName);
             for (SurveillanceNonconformity snc : sncs) {
@@ -36,12 +36,15 @@ public class SurveillanceNonConformityXmlGenerator extends XmlGenerator {
      * @param sw stream writer
      * @throws XMLStreamException if exception during writing process
      */
-    public static void add(final SurveillanceNonconformity snc, final String rootNodeName, final XMLStreamWriter sw)
+    public static void add(SurveillanceNonconformity snc, String rootNodeName, XMLStreamWriter sw)
             throws XMLStreamException {
         if (snc != null) {
             sw.writeStartElement(rootNodeName);
             createSimpleElement(snc.getId(), "id", sw);
             createSimpleElement(snc.getNonconformityType(), "nonconformityType", sw);
+            if (snc.getNonconformityCriterion() != null) {
+                CertificationCriterionXmlGenerator.add(snc.getNonconformityCriterion(), "criterion", sw);
+            }
             SurveillanceNonConformityStatusXmlGenerator.add(snc.getStatus(), "status", sw);
             createSimpleElement(snc.getDateOfDetermination(), "dateOfTermination", sw);
             createSimpleElement(snc.getCapApprovalDate(), "capApprovalDate", sw);

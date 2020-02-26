@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.auth.UserPermissionDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
@@ -35,6 +36,7 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.auth.UserPermissionDTO;
+import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityDocumentationEntity;
@@ -292,7 +294,10 @@ public class SurveillanceManager extends SecuredManager {
                 SurveillanceRequirement req = new SurveillanceRequirement();
                 req.setId(reqEntity.getId());
                 if (reqEntity.getCertificationCriterionEntity() != null) {
-                    req.setRequirement(reqEntity.getCertificationCriterionEntity().getNumber());
+                    CertificationCriterionEntity criterionEntity = reqEntity.getCertificationCriterionEntity();
+                    req.setRequirement(criterionEntity.getNumber());
+                    CertificationCriterion criterion = convertToDomain(criterionEntity);
+                    req.setRequirementCriterion(criterion);
                 } else {
                     req.setRequirement(reqEntity.getSurveilledRequirement());
                 }
@@ -331,6 +336,11 @@ public class SurveillanceManager extends SecuredManager {
                         nc.setFindings(ncEntity.getFindings());
                         nc.setId(ncEntity.getId());
                         nc.setNonconformityType(ncEntity.getType());
+                        if (ncEntity.getCertificationCriterionEntity() != null) {
+                            CertificationCriterionEntity criterionEntity = ncEntity.getCertificationCriterionEntity();
+                            CertificationCriterion criterion = convertToDomain(criterionEntity);
+                            nc.setNonconformityCriterion(criterion);
+                        }
                         nc.setResolution(ncEntity.getResolution());
                         nc.setSitesPassed(ncEntity.getSitesPassed());
                         nc.setSummary(ncEntity.getSummary());
@@ -360,6 +370,18 @@ public class SurveillanceManager extends SecuredManager {
             }
         }
         return surv;
+    }
+
+    private CertificationCriterion convertToDomain(CertificationCriterionEntity criterionEntity) {
+        CertificationCriterion criterion = new CertificationCriterion();
+        criterion.setId(criterionEntity.getId());
+        criterion.setCertificationEditionId(criterionEntity.getCertificationEditionId());
+        criterion.setCertificationEdition(criterionEntity.getCertificationEdition().getYear());
+        criterion.setDescription(criterionEntity.getDescription());
+        criterion.setNumber(criterionEntity.getNumber());
+        criterion.setRemoved(criterionEntity.getRemoved());
+        criterion.setTitle(criterionEntity.getTitle());
+        return criterion;
     }
 
     private void checkSurveillanceAuthority(final Surveillance surv) throws SurveillanceAuthorityAccessDeniedException {

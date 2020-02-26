@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.StringUtils;
 
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.util.Util;
 
 /**
@@ -21,7 +22,7 @@ import gov.healthit.chpl.util.Util;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SurveillanceNonconformity implements Serializable {
-    private static final long serialVersionUID = -1116153210791576784L;
+    private static long serialVersionUID = -1116153210791576784L;
 
     /**
      * Nonconformity internal ID
@@ -35,6 +36,13 @@ public class SurveillanceNonconformity implements Serializable {
      */
     @XmlElement(required = true)
     private String nonconformityType;
+
+    /**
+     * If the nonconformity type is a certified capability
+     * then this field will have the criterion details (number, title, etc).
+     */
+    @XmlElement(required = false)
+    private CertificationCriterion nonconformityCriterion;
 
     /**
      * The status of a non-conformity found as a result of a surveillance
@@ -127,7 +135,7 @@ public class SurveillanceNonconformity implements Serializable {
      * @param anotherNonconformity
      * @return whether the two nonconformity objects are the same
      */
-    public boolean matches(final SurveillanceNonconformity anotherNonconformity) {
+    public boolean matches(SurveillanceNonconformity anotherNonconformity) {
         if (!propertiesMatch(anotherNonconformity)) {
             return false;
         }
@@ -194,6 +202,13 @@ public class SurveillanceNonconformity implements Serializable {
             return false;
         } else if (!StringUtils.isEmpty(this.nonconformityType) && !StringUtils.isEmpty(anotherNonconformity.nonconformityType)
                 && !this.nonconformityType.equalsIgnoreCase(anotherNonconformity.nonconformityType)) {
+            return false;
+        }
+        if ((this.nonconformityCriterion == null && anotherNonconformity.nonconformityCriterion != null)
+                || (this.nonconformityCriterion != null && anotherNonconformity.nonconformityCriterion == null)) {
+            return false;
+        } else if (this.nonconformityCriterion != null && anotherNonconformity.nonconformityCriterion != null
+                && !this.nonconformityCriterion.getId().equals(anotherNonconformity.nonconformityCriterion.getId())) {
             return false;
         }
         if (this.status == null && anotherNonconformity.status != null
@@ -294,7 +309,7 @@ public class SurveillanceNonconformity implements Serializable {
         return id;
     }
 
-    public void setId(final Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -302,15 +317,23 @@ public class SurveillanceNonconformity implements Serializable {
         return nonconformityType;
     }
 
-    public void setNonconformityType(final String nonconformityType) {
+    public void setNonconformityType(String nonconformityType) {
         this.nonconformityType = nonconformityType;
+    }
+
+    public CertificationCriterion getNonconformityCriterion() {
+        return nonconformityCriterion;
+    }
+
+    public void setNonconformityCriterion(CertificationCriterion nonconformityCriterion) {
+        this.nonconformityCriterion = nonconformityCriterion;
     }
 
     public SurveillanceNonconformityStatus getStatus() {
         return status;
     }
 
-    public void setStatus(final SurveillanceNonconformityStatus status) {
+    public void setStatus(SurveillanceNonconformityStatus status) {
         this.status = status;
     }
 
@@ -318,7 +341,7 @@ public class SurveillanceNonconformity implements Serializable {
         return Util.getNewDate(dateOfDetermination);
     }
 
-    public void setDateOfDetermination(final Date dateOfDetermination) {
+    public void setDateOfDetermination(Date dateOfDetermination) {
         this.dateOfDetermination = Util.getNewDate(dateOfDetermination);
     }
 
@@ -326,7 +349,7 @@ public class SurveillanceNonconformity implements Serializable {
         return Util.getNewDate(capApprovalDate);
     }
 
-    public void setCapApprovalDate(final Date capApprovalDate) {
+    public void setCapApprovalDate(Date capApprovalDate) {
         this.capApprovalDate = Util.getNewDate(capApprovalDate);
     }
 
@@ -334,7 +357,7 @@ public class SurveillanceNonconformity implements Serializable {
         return Util.getNewDate(capStartDate);
     }
 
-    public void setCapStartDate(final Date capStartDate) {
+    public void setCapStartDate(Date capStartDate) {
         this.capStartDate = Util.getNewDate(capStartDate);
     }
 
@@ -342,7 +365,7 @@ public class SurveillanceNonconformity implements Serializable {
         return Util.getNewDate(capEndDate);
     }
 
-    public void setCapEndDate(final Date capEndDate) {
+    public void setCapEndDate(Date capEndDate) {
         this.capEndDate = Util.getNewDate(capEndDate);
     }
 
@@ -350,7 +373,7 @@ public class SurveillanceNonconformity implements Serializable {
         return Util.getNewDate(capMustCompleteDate);
     }
 
-    public void setCapMustCompleteDate(final Date capMustCompleteDate) {
+    public void setCapMustCompleteDate(Date capMustCompleteDate) {
         this.capMustCompleteDate = Util.getNewDate(capMustCompleteDate);
     }
 
@@ -358,7 +381,7 @@ public class SurveillanceNonconformity implements Serializable {
         return summary;
     }
 
-    public void setSummary(final String summary) {
+    public void setSummary(String summary) {
         this.summary = summary;
     }
 
@@ -366,7 +389,7 @@ public class SurveillanceNonconformity implements Serializable {
         return findings;
     }
 
-    public void setFindings(final String findings) {
+    public void setFindings(String findings) {
         this.findings = findings;
     }
 
@@ -374,7 +397,7 @@ public class SurveillanceNonconformity implements Serializable {
         return sitesPassed;
     }
 
-    public void setSitesPassed(final Integer sitesPassed) {
+    public void setSitesPassed(Integer sitesPassed) {
         this.sitesPassed = sitesPassed;
     }
 
@@ -382,7 +405,7 @@ public class SurveillanceNonconformity implements Serializable {
         return totalSites;
     }
 
-    public void setTotalSites(final Integer totalSites) {
+    public void setTotalSites(Integer totalSites) {
         this.totalSites = totalSites;
     }
 
@@ -390,7 +413,7 @@ public class SurveillanceNonconformity implements Serializable {
         return developerExplanation;
     }
 
-    public void setDeveloperExplanation(final String developerExplanation) {
+    public void setDeveloperExplanation(String developerExplanation) {
         this.developerExplanation = developerExplanation;
     }
 
@@ -398,7 +421,7 @@ public class SurveillanceNonconformity implements Serializable {
         return resolution;
     }
 
-    public void setResolution(final String resolution) {
+    public void setResolution(String resolution) {
         this.resolution = resolution;
     }
 
@@ -406,7 +429,7 @@ public class SurveillanceNonconformity implements Serializable {
         return documents;
     }
 
-    public void setDocuments(final List<SurveillanceNonconformityDocument> documents) {
+    public void setDocuments(List<SurveillanceNonconformityDocument> documents) {
         this.documents = documents;
     }
 
@@ -414,7 +437,7 @@ public class SurveillanceNonconformity implements Serializable {
         return Util.getNewDate(lastModifiedDate);
     }
 
-    public void setLastModifiedDate(final Date lastModifiedDate) {
+    public void setLastModifiedDate(Date lastModifiedDate) {
         this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 }
