@@ -27,7 +27,7 @@ import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 
 @Component("testFunctionalityAllowedByRoleReviewer")
-@Log4j2()
+@Log4j2
 public class TestFunctionalityAllowedByRoleReviewer implements ComparisonReviewer {
 
     private FF4j ff4j;
@@ -56,15 +56,7 @@ public class TestFunctionalityAllowedByRoleReviewer implements ComparisonReviewe
                             .ofNullable(existingCr.get().getTestFunctionality());
 
                     List<CertificationResultTestFunctionality> addedCrtfs = getAddedCrtfs(listUpdateCrtfs, listExistingCrtfs);
-
-                    addedCrtfs.stream()
-                            .forEach(x -> log.info("Added this CRTF: " + x.toString()));
-
                     List<CertificationResultTestFunctionality> removedCrtfs = getRemovedCrtfs(listUpdateCrtfs, listExistingCrtfs);
-
-                    removedCrtfs.stream()
-                            .forEach(x -> log.info("Removed this CRTF: " + x.toString()));
-
                     List<CertificationResultTestFunctionality> allEditedCrtfs = Stream
                             .concat(addedCrtfs.stream(), removedCrtfs.stream())
                             .collect(Collectors.toList());
