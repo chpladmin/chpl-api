@@ -97,7 +97,9 @@ public class SurveillanceRequirementReviewer implements Reviewer {
     private void checkCriterionRequirementTypeValidity(Surveillance surv, SurveillanceRequirement req,
             List<CertificationResultDetailsDTO> certResults) {
         if (req.getCriterion() == null) {
-            msgUtil.getMessage("surveillance.criterionMissingForRequirementType", req.getType().getName());
+            surv.getErrorMessages().add(
+                    msgUtil.getMessage("surveillance.requirementInvalidForRequirementType",
+                            req.getRequirement(), req.getType().getName()));
             return;
         }
         req.setRequirement(req.getCriterion().getNumber());
@@ -117,10 +119,10 @@ public class SurveillanceRequirementReviewer implements Reviewer {
     }
 
     private boolean isCriteriaAttestedTo(CertificationResultDetailsDTO certResult, CertificationCriterion criterion ) {
-        return !StringUtils.isEmpty(certResult.getNumber())
+        return certResult.getCriterion() != null
                 && certResult.getSuccess() != null
                 && certResult.getSuccess().booleanValue()
-                && certResult.getId().equals(criterion.getId());
+                && certResult.getCriterion().getId().equals(criterion.getId());
     }
 
     private void checkTransparencyRequirementTypeValidity(Surveillance surv, SurveillanceRequirement req) {

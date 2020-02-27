@@ -108,10 +108,10 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
     }
 
     private boolean isCriteriaAttestedTo(CertificationResultDetailsDTO certResult, CertificationCriterion criterion) {
-        return !StringUtils.isEmpty(certResult.getNumber())
+        return certResult.getCriterion() != null
                 && certResult.getSuccess() != null
                 && certResult.getSuccess().booleanValue()
-                && certResult.getId().equals(criterion.getId());
+                && certResult.getCriterion().getId().equals(criterion.getId());
     }
 
     private void checkNonconformityStatusValidity(Surveillance surv,

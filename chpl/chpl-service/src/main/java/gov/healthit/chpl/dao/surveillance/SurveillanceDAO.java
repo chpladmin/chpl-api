@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.auth.UserPermissionDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.auth.Authority;
@@ -46,8 +45,8 @@ import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("surveillanceDAO")
 public class SurveillanceDAO extends BaseDAOImpl {
-    private static final Logger LOGGER = LogManager.getLogger(SurveillanceDAO.class);
-    private static final String SURVEILLANCE_FULL_HQL = "SELECT DISTINCT surv "
+    private static Logger LOGGER = LogManager.getLogger(SurveillanceDAO.class);
+    private static String SURVEILLANCE_FULL_HQL = "SELECT DISTINCT surv "
             + "FROM SurveillanceEntity surv "
             + "JOIN FETCH surv.certifiedProduct " + "JOIN FETCH surv.surveillanceType "
             + "LEFT OUTER JOIN FETCH surv.surveilledRequirements reqs "
@@ -61,20 +60,29 @@ public class SurveillanceDAO extends BaseDAOImpl {
             + "LEFT OUTER JOIN FETCH ncs.nonconformityStatus "
             + "LEFT OUTER JOIN FETCH ncs.documents docs "
             + "WHERE surv.deleted <> true ";
-    private CertificationCriterionDAO criterionDao;
+    private static String PENDING_SURVEILLANCE_FULL_HQL = "SELECT DISTINCT surv "
+            + "FROM PendingSurveillanceEntity surv "
+            + "JOIN FETCH surv.certifiedProduct "
+            + "LEFT OUTER JOIN FETCH surv.surveilledRequirements reqs "
+            + "LEFT OUTER JOIN FETCH reqs.certificationCriterionEntity cce "
+            + "LEFT OUTER JOIN FETCH cce.certificationEdition "
+            + "LEFT OUTER JOIN FETCH reqs.nonconformities ncs "
+            + "LEFT OUTER JOIN FETCH ncs.certificationCriterionEntity cce2 "
+            + "LEFT OUTER JOIN FETCH cce2.certificationEdition "
+            + "LEFT OUTER JOIN FETCH surv.validation ";
+
     private UserPermissionDAO userPermissionDao;
     private ResourcePermissions resourcePermissions;
 
     @Autowired
-    public SurveillanceDAO(final CertificationCriterionDAO criterionDao, final UserPermissionDAO userPermissionDao,
-            final ResourcePermissions resourcePermissions) {
-        this.criterionDao = criterionDao;
+    public SurveillanceDAO(UserPermissionDAO userPermissionDao,
+            ResourcePermissions resourcePermissions) {
         this.userPermissionDao = userPermissionDao;
         this.resourcePermissions = resourcePermissions;
     }
 
 
-    public Long insertSurveillance(final Surveillance surv) throws UserPermissionRetrievalException {
+    public Long insertSurveillance(Surveillance surv) throws UserPermissionRetrievalException {
         SurveillanceEntity toInsert = new SurveillanceEntity();
         populateSurveillanceEntity(toInsert, surv);
         toInsert.setLastModifiedUser(AuthUtil.getAuditId());
@@ -106,7 +114,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
     }
 
 
-    public Long insertNonconformityDocument(final Long nonconformityId, final SurveillanceNonconformityDocument doc)
+    public Long insertNonconformityDocument(Long nonconformityId, SurveillanceNonconformityDocument doc)
             throws EntityRetrievalException {
         SurveillanceNonconformityEntity nc = entityManager.find(SurveillanceNonconformityEntity.class, nonconformityId);
         if (nc == null) {
@@ -128,7 +136,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
     }
 
 
-    public Long updateSurveillance(final Surveillance newSurv)
+    public Long updateSurveillance(Surveillance newSurv)
             throws EntityRetrievalException, UserPermissionRetrievalException {
         SurveillanceEntity oldSurv = fetchSurveillanceById(newSurv.getId());
         populateSurveillanceEntity(oldSurv, newSurv);
@@ -263,8 +271,8 @@ public class SurveillanceDAO extends BaseDAOImpl {
     }
 
 
-    public SurveillanceEntity getSurveillanceByCertifiedProductAndFriendlyId(final Long certifiedProductId,
-            final String survFriendlyId) {
+    public SurveillanceEntity getSurveillanceByCertifiedProductAndFriendlyId(Long certifiedProductId,
+            String survFriendlyId) {
         Query query = entityManager.createQuery(
                 "from SurveillanceEntity surv " + "where surv.friendlyId = :friendlyId "
                         + "and surv.certifiedProductId = :cpId " + "and surv.deleted <> true",
@@ -280,12 +288,12 @@ public class SurveillanceDAO extends BaseDAOImpl {
     }
 
 
-    public SurveillanceEntity getSurveillanceById(final Long id) throws EntityRetrievalException {
+    public SurveillanceEntity getSurveillanceById(Long id) throws EntityRetrievalException {
         SurveillanceEntity result = fetchSurveillanceById(id);
         return result;
     }
 
-    public SurveillanceEntity getSurveillanceByNonconformityId(final Long nonconformityId)
+    public SurveillanceEntity getSurveillanceByNonconformityId(Long nonconformityId)
             throws EntityRetrievalException {
         entityManager.clear();
         Query query = entityManager.createQuery(SURVEILLANCE_FULL_HQL
@@ -302,7 +310,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
         }
     }
 
-    public SurveillanceEntity getSurveillanceByDocumentId(final Long documentId)
+    public SurveillanceEntity getSurveillanceByDocumentId(Long documentId)
             throws EntityRetrievalException {
         entityManager.clear();
         Query query = entityManager.createQuery(SURVEILLANCE_FULL_HQL
@@ -319,7 +327,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
         }
     }
 
-    public SurveillanceNonconformityDocumentationEntity getDocumentById(final Long documentId)
+    public SurveillanceNonconformityDocumentationEntity getDocumentById(Long documentId)
             throws EntityRetrievalException {
         SurveillanceNonconformityDocumentationEntity doc = entityManager
                 .find(SurveillanceNonconformityDocumentationEntity.class, documentId);
@@ -331,7 +339,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
     }
 
 
-    public List<SurveillanceEntity> getSurveillanceByCertifiedProductId(final Long id) {
+    public List<SurveillanceEntity> getSurveillanceByCertifiedProductId(Long id) {
             entityManager.clear();
             Query query = entityManager.createQuery(SURVEILLANCE_FULL_HQL
                     + "AND surv.certifiedProductId = :cpId",
@@ -353,7 +361,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
     }
 
 
-    public Long insertPendingSurveillance(final Surveillance surv) throws UserPermissionRetrievalException {
+    public Long insertPendingSurveillance(Surveillance surv) throws UserPermissionRetrievalException {
         PendingSurveillanceEntity toInsert = new PendingSurveillanceEntity();
         toInsert.setSurvFriendlyIdToReplace(surv.getSurveillanceIdToReplace());
         if (surv.getCertifiedProduct() != null) {
@@ -392,6 +400,9 @@ public class SurveillanceDAO extends BaseDAOImpl {
             if (req.getType() != null) {
                 toInsertReq.setRequirementType(req.getType().getName());
             }
+            if (req.getCriterion() != null) {
+                toInsertReq.setCertificationCriterionId(req.getCriterion().getId());
+            }
             toInsertReq.setSurveilledRequirement(req.getRequirement());
             toInsertReq.setPendingSurveillanceId(toInsert.getId());
             toInsertReq.setLastModifiedUser(AuthUtil.getAuditId());
@@ -419,6 +430,9 @@ public class SurveillanceDAO extends BaseDAOImpl {
                 toInsertNc.setSummary(nc.getSummary());
                 toInsertNc.setTotalSites(nc.getTotalSites());
                 toInsertNc.setType(nc.getNonconformityType());
+                if (nc.getCriterion() != null) {
+                    toInsertNc.setCertificationCriterionId(nc.getCriterion().getId());
+                }
                 toInsertNc.setDeleted(false);
                 toInsertNc.setLastModifiedUser(AuthUtil.getAuditId());
 
@@ -430,7 +444,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
     }
 
 
-    public void deleteNonconformityDocument(final Long documentId) throws EntityRetrievalException {
+    public void deleteNonconformityDocument(Long documentId) throws EntityRetrievalException {
         SurveillanceNonconformityDocumentationEntity doc = entityManager
                 .find(SurveillanceNonconformityDocumentationEntity.class, documentId);
         if (doc == null) {
@@ -444,7 +458,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
     }
 
 
-    public void deleteSurveillance(final Surveillance surv) throws EntityRetrievalException {
+    public void deleteSurveillance(Surveillance surv) throws EntityRetrievalException {
         LOGGER.debug("Looking for surveillance with id " + surv.getId() + " to delete.");
         SurveillanceEntity toDelete = fetchSurveillanceById(surv.getId());
         if (toDelete.getSurveilledRequirements() != null) {
@@ -478,7 +492,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
     }
 
 
-    public void deletePendingSurveillance(final Surveillance surv) throws EntityRetrievalException {
+    public void deletePendingSurveillance(Surveillance surv) throws EntityRetrievalException {
         PendingSurveillanceEntity toDelete = fetchPendingSurveillanceById(surv.getId(), false);
 
         if (toDelete.getValidation() != null) {
@@ -513,20 +527,20 @@ public class SurveillanceDAO extends BaseDAOImpl {
     }
 
 
-    public PendingSurveillanceEntity getPendingSurveillanceById(final Long id) throws EntityRetrievalException {
+    public PendingSurveillanceEntity getPendingSurveillanceById(Long id) throws EntityRetrievalException {
         PendingSurveillanceEntity entity = fetchPendingSurveillanceById(id, false);
         return entity;
     }
 
 
-    public PendingSurveillanceEntity getPendingSurveillanceById(final Long id, Boolean includeDeleted)
+    public PendingSurveillanceEntity getPendingSurveillanceById(Long id, Boolean includeDeleted)
             throws EntityRetrievalException {
         PendingSurveillanceEntity entity = fetchPendingSurveillanceById(id, includeDeleted);
         return entity;
     }
 
 
-    public List<PendingSurveillanceEntity> getPendingSurveillanceByAcb(final Long acbId) {
+    public List<PendingSurveillanceEntity> getPendingSurveillanceByAcb(Long acbId) {
         List<PendingSurveillanceEntity> results = fetchPendingSurveillanceByAcbId(acbId);
         return results;
     }
@@ -545,7 +559,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
     }
 
 
-    public SurveillanceType findSurveillanceType(final String type) {
+    public SurveillanceType findSurveillanceType(String type) {
         LOGGER.debug("Searchig for surveillance type '" + type + "'.");
         if (StringUtils.isEmpty(type)) {
             return null;
@@ -567,7 +581,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
     }
 
 
-    public SurveillanceType findSurveillanceType(final Long id) {
+    public SurveillanceType findSurveillanceType(Long id) {
         LOGGER.debug("Searchig for surveillance type with id '" + id + "'.");
         if (id == null) {
             return null;
@@ -617,7 +631,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
 
 
     @Cacheable(CacheNames.FIND_SURVEILLANCE_REQ_TYPE)
-    public SurveillanceRequirementType findSurveillanceRequirementType(final String type) {
+    public SurveillanceRequirementType findSurveillanceRequirementType(String type) {
         LOGGER.debug("Searching for surveillance requirement type '" + type + "'.");
         if (StringUtils.isEmpty(type)) {
             return null;
@@ -640,7 +654,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
     }
 
 
-    public SurveillanceRequirementType findSurveillanceRequirementType(final Long id) {
+    public SurveillanceRequirementType findSurveillanceRequirementType(Long id) {
         LOGGER.debug("Searching for surveillance requirement type by id '" + id + "'.");
         if (id == null) {
             return null;
@@ -675,7 +689,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
 
 
     @Cacheable(CacheNames.FIND_SURVEILLANCE_RESULT_TYPE)
-    public SurveillanceResultType findSurveillanceResultType(final String type) {
+    public SurveillanceResultType findSurveillanceResultType(String type) {
         LOGGER.debug("Searching for surveillance result type '" + type + "'.");
         if (StringUtils.isEmpty(type)) {
             return null;
@@ -697,7 +711,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
     }
 
 
-    public SurveillanceResultType findSurveillanceResultType(final Long id) {
+    public SurveillanceResultType findSurveillanceResultType(Long id) {
         LOGGER.debug("Searching for surveillance result type by id '" + id + "'.");
         if (id == null) {
             return null;
@@ -731,7 +745,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
 
 
     @Cacheable(CacheNames.FIND_SURVEILLANCE_NONCONFORMITY_STATUS_TYPE)
-    public SurveillanceNonconformityStatus findSurveillanceNonconformityStatusType(final String type) {
+    public SurveillanceNonconformityStatus findSurveillanceNonconformityStatusType(String type) {
         LOGGER.debug("Searching for nonconformity status type '" + type + "'.");
         if (StringUtils.isEmpty(type)) {
             return null;
@@ -753,7 +767,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
     }
 
 
-    public SurveillanceNonconformityStatus findSurveillanceNonconformityStatusType(final Long id) {
+    public SurveillanceNonconformityStatus findSurveillanceNonconformityStatusType(Long id) {
         LOGGER.debug("Searching for nonconformity status type by id '" + id + "'.");
         if (id == null) {
             return null;
@@ -775,12 +789,13 @@ public class SurveillanceDAO extends BaseDAOImpl {
 
     @Transactional(readOnly = true)
     public List<PendingSurveillanceEntity> getAllPendingSurveillance() {
-        Query query = entityManager.createQuery("from PendingSurveillanceEntity where deleted <> true",
+        Query query = entityManager.createQuery(PENDING_SURVEILLANCE_FULL_HQL
+                + " WHERE surv.deleted <> true ",
                 PendingSurveillanceEntity.class);
         return query.getResultList();
     }
 
-    private SurveillanceEntity fetchSurveillanceById(final Long id) throws EntityRetrievalException {
+    private SurveillanceEntity fetchSurveillanceById(Long id) throws EntityRetrievalException {
         entityManager.clear();
         Query query = entityManager.createQuery(SURVEILLANCE_FULL_HQL
                 + "AND surv.id = :entityid",
@@ -796,15 +811,13 @@ public class SurveillanceDAO extends BaseDAOImpl {
         }
     }
 
-    private PendingSurveillanceEntity fetchPendingSurveillanceById(final Long id, Boolean includeDeleted)
+    private PendingSurveillanceEntity fetchPendingSurveillanceById(Long id, Boolean includeDeleted)
             throws EntityRetrievalException {
         PendingSurveillanceEntity entity = null;
-        String hql = "SELECT DISTINCT surv " + "FROM PendingSurveillanceEntity surv "
-                + "JOIN FETCH surv.certifiedProduct " + "LEFT OUTER JOIN FETCH surv.surveilledRequirements reqs "
-                + "LEFT OUTER JOIN FETCH reqs.nonconformities ncs " + "LEFT OUTER JOIN FETCH surv.validation "
-                + "WHERE surv.id = :entityid ";
+        String hql = PENDING_SURVEILLANCE_FULL_HQL
+                + " WHERE surv.id = :entityid ";
         if (!includeDeleted) {
-            hql = hql + "AND surv.deleted <> true ";
+            hql = hql + " AND surv.deleted <> true ";
         }
 
         entityManager.clear();
@@ -821,12 +834,11 @@ public class SurveillanceDAO extends BaseDAOImpl {
         return entity;
     }
 
-    private List<PendingSurveillanceEntity> fetchPendingSurveillanceByAcbId(final Long acbId) {
+    private List<PendingSurveillanceEntity> fetchPendingSurveillanceByAcbId(Long acbId) {
         entityManager.clear();
-        Query query = entityManager.createQuery("SELECT DISTINCT surv " + "FROM PendingSurveillanceEntity surv "
-                + "JOIN FETCH surv.certifiedProduct cp " + "LEFT OUTER JOIN FETCH surv.surveilledRequirements reqs "
-                + "LEFT OUTER JOIN FETCH reqs.nonconformities ncs " + "LEFT OUTER JOIN FETCH surv.validation "
-                + "WHERE surv.deleted <> true " + "AND cp.certificationBodyId = :acbId",
+        Query query = entityManager.createQuery(PENDING_SURVEILLANCE_FULL_HQL
+                + " WHERE surv.deleted <> true "
+                + " AND cp.certificationBodyId = :acbId",
                 PendingSurveillanceEntity.class);
         query.setParameter("acbId", acbId);
 
@@ -834,7 +846,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
         return results;
     }
 
-    private SurveillanceType convert(final SurveillanceTypeEntity entity) {
+    private SurveillanceType convert(SurveillanceTypeEntity entity) {
         SurveillanceType result = null;
         if (entity != null) {
             result = new SurveillanceType();
@@ -844,7 +856,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
         return result;
     }
 
-    private SurveillanceRequirementType convert(final SurveillanceRequirementTypeEntity entity) {
+    private SurveillanceRequirementType convert(SurveillanceRequirementTypeEntity entity) {
         SurveillanceRequirementType result = null;
         if (entity != null) {
             result = new SurveillanceRequirementType();
@@ -854,7 +866,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
         return result;
     }
 
-    private SurveillanceResultType convert(final SurveillanceResultTypeEntity entity) {
+    private SurveillanceResultType convert(SurveillanceResultTypeEntity entity) {
         SurveillanceResultType result = null;
         if (entity != null) {
             result = new SurveillanceResultType();
@@ -864,7 +876,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
         return result;
     }
 
-    private SurveillanceNonconformityStatus convert(final NonconformityStatusEntity entity) {
+    private SurveillanceNonconformityStatus convert(NonconformityStatusEntity entity) {
         SurveillanceNonconformityStatus result = null;
         if (entity != null) {
             result = new SurveillanceNonconformityStatus();
@@ -874,7 +886,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
         return result;
     }
 
-    private void populateSurveillanceEntity(final SurveillanceEntity to, final Surveillance from)
+    private void populateSurveillanceEntity(SurveillanceEntity to, Surveillance from)
             throws UserPermissionRetrievalException {
         if (from.getCertifiedProduct() != null) {
             to.setCertifiedProductId(from.getCertifiedProduct().getId());
@@ -888,8 +900,8 @@ public class SurveillanceDAO extends BaseDAOImpl {
         to.setUserPermissionId(userPermissionDao.getIdFromAuthority(from.getAuthority()));
     }
 
-    private void populateSurveillanceRequirementEntity(final SurveillanceRequirementEntity to,
-            final SurveillanceRequirement from) {
+    private void populateSurveillanceRequirementEntity(SurveillanceRequirementEntity to,
+            SurveillanceRequirement from) {
         if (from.getCriterion() != null) {
             to.setCertificationCriterionId(from.getCriterion().getId());
         } else if (from.getRequirement() != null) {
@@ -905,8 +917,8 @@ public class SurveillanceDAO extends BaseDAOImpl {
         }
     }
 
-    private void populateSurveillanceNonconformityEntity(final SurveillanceNonconformityEntity to,
-            final SurveillanceNonconformity from) {
+    private void populateSurveillanceNonconformityEntity(SurveillanceNonconformityEntity to,
+            SurveillanceNonconformity from) {
         if (from.getCriterion() != null) {
             to.setCertificationCriterionId(from.getCriterion().getId());
         } else if (from.getNonconformityType() != null) {

@@ -230,13 +230,12 @@ public class SurveillanceRequirement implements Serializable {
             return false;
         }
 
-        boolean isEqual = false;
-        boolean requirementNamesMatch = this.getRequirement().equals(anotherReq.getRequirement());
+        boolean requirementsMatch = this.getRequirement().equals(anotherReq.getRequirement());
         if (this.getCriterion() != null && anotherReq.getCriterion() != null) {
-            isEqual = requirementNamesMatch
+            requirementsMatch = requirementsMatch
                     && this.getCriterion().getId().equals(anotherReq.getCriterion().getId());
         }
-        return isEqual;
+        return requirementsMatch;
     }
 
     @Override
