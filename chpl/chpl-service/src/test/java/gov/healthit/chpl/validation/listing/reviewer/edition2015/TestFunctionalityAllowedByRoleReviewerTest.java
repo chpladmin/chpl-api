@@ -3,8 +3,8 @@ package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 import java.util.List;
 
 import org.ff4j.FF4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
@@ -29,7 +29,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
     private ResourcePermissions permissions;
     private TestFunctionalityAllowedByRoleReviewer reviewer;
 
-    @BeforeEach
+    @Before
     public void beforeAll() {
         // Setup some common mocks - these can be changed in each test if necessary
         ff4j = Mockito.mock(FF4j.class);
