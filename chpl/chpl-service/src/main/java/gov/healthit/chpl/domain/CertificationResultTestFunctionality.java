@@ -12,6 +12,9 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
@@ -24,6 +27,9 @@ import lombok.ToString;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @ToString
 public class CertificationResultTestFunctionality implements Serializable {
     private static final long serialVersionUID = -1647645050538126758L;
@@ -57,10 +63,6 @@ public class CertificationResultTestFunctionality implements Serializable {
      */
     @XmlElement(required = true)
     private String year;
-
-    public CertificationResultTestFunctionality() {
-        super();
-    }
 
     public CertificationResultTestFunctionality(CertificationResultTestFunctionalityDTO dto) {
         this.id = dto.getId();
