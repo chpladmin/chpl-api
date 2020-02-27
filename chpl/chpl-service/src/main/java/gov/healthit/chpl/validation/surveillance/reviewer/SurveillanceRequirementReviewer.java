@@ -64,7 +64,7 @@ public class SurveillanceRequirementReviewer implements Reviewer {
     }
 
     private void checkRequirementExists(Surveillance surv, SurveillanceRequirement req) {
-        if (StringUtils.isEmpty(req.getRequirement())) {
+        if (StringUtils.isEmpty(req.getRequirement()) && req.getCriterion() == null) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.requirementIsRequired"));
         }
     }
