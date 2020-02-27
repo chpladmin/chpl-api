@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -45,38 +46,39 @@ public class TestFunctionalityAllowedByRoleReviewer implements ComparisonReviewe
 
     @Override
     public void review(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing) {
-        log.info("*****************  Made it to the reviewer *****************");
+        if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)) {
+            for (CertificationResult updatedCr : updatedListing.getCertificationResults()) {
+                Optional<CertificationResult> existingCr = findCertificationResult(existingListing, updatedCr.getId());
+                if (existingCr.isPresent()) {
+                    Optional<List<CertificationResultTestFunctionality>> listUpdateCrtfs = Optional
+                            .ofNullable(updatedCr.getTestFunctionality());
+                    Optional<List<CertificationResultTestFunctionality>> listExistingCrtfs = Optional
+                            .ofNullable(existingCr.get().getTestFunctionality());
 
-        for (CertificationResult updatedCr : updatedListing.getCertificationResults()) {
-            Optional<CertificationResult> existingCr = findCertificationResult(existingListing, updatedCr.getId());
-            if (existingCr.isPresent()) {
-                Optional<List<CertificationResultTestFunctionality>> listUpdateCrtfs = Optional
-                        .ofNullable(updatedCr.getTestFunctionality());
-                Optional<List<CertificationResultTestFunctionality>> listExistingCrtfs = Optional
-                        .ofNullable(existingCr.get().getTestFunctionality());
+                    List<CertificationResultTestFunctionality> addedCrtfs = getAddedCrtfs(listUpdateCrtfs, listExistingCrtfs);
 
-                List<CertificationResultTestFunctionality> addedCrtfs = getAddedCrtfs(listUpdateCrtfs, listExistingCrtfs);
+                    addedCrtfs.stream()
+                            .forEach(x -> log.info("Added this CRTF: " + x.toString()));
 
-                addedCrtfs.stream()
-                        .forEach(x -> log.info("Added this CRTF: " + x.toString()));
+                    List<CertificationResultTestFunctionality> removedCrtfs = getRemovedCrtfs(listUpdateCrtfs, listExistingCrtfs);
 
-                List<CertificationResultTestFunctionality> removedCrtfs = getRemovedCrtfs(listUpdateCrtfs, listExistingCrtfs);
+                    removedCrtfs.stream()
+                            .forEach(x -> log.info("Removed this CRTF: " + x.toString()));
 
-                removedCrtfs.stream()
-                        .forEach(x -> log.info("Removed this CRTF: " + x.toString()));
+                    List<CertificationResultTestFunctionality> allEditedCrtfs = Stream
+                            .concat(addedCrtfs.stream(), removedCrtfs.stream())
+                            .collect(Collectors.toList());
 
-                List<CertificationResultTestFunctionality> allEditedCrtfs = Stream
-                        .concat(addedCrtfs.stream(), removedCrtfs.stream())
-                        .collect(Collectors.toList());
-
-                allEditedCrtfs.stream()
-                        .forEach(crtf -> {
-                            if (!isTestFunctionalityChangeAllowedBasedOnRole(updatedCr.getCriterion().getId(),
-                                    crtf.getTestFunctionalityId())) {
-                                updatedListing.getErrorMessages().add("Cannot edit test functionality {"
-                                        + updatedCr.getCriterion().getId() + ", " + crtf.getTestFunctionalityId() + "}");
-                            }
-                        });
+                    allEditedCrtfs.stream()
+                            .forEach(crtf -> {
+                                if (!isTestFunctionalityChangeAllowedBasedOnRole(updatedCr.getCriterion().getId(),
+                                        crtf.getTestFunctionalityId())) {
+                                    updatedListing.getErrorMessages()
+                                            .add(errorMessages.getMessage("listing.criteria.testFunctionalityPermissionError",
+                                                    crtf.getName(), updatedCr.getCriterion().getNumber()));
+                                }
+                            });
+                }
             }
         }
     }
