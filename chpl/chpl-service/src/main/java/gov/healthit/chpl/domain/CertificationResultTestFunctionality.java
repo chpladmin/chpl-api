@@ -12,19 +12,19 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
+import lombok.ToString;
 
 /**
- * Any optional, alternative, ambulatory (2015 only), or inpatient (2015 only)
- * capabilities within a certification criterion to which the Health IT module
- * was tested and certified. For example, within the 2015 certification criteria
- * 170.315(a), the optional functionality to include a "reason for order" field
- * should be denoted as "(a)(1)(ii)". You can find a list of potential values in
- * the 2014 or 2015 Functionality and Standards Reference Tables.
+ * Any optional, alternative, ambulatory (2015 only), or inpatient (2015 only) capabilities within a certification
+ * criterion to which the Health IT module was tested and certified. For example, within the 2015 certification criteria
+ * 170.315(a), the optional functionality to include a "reason for order" field should be denoted as "(a)(1)(ii)". You
+ * can find a list of potential values in the 2014 or 2015 Functionality and Standards Reference Tables.
  *
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@ToString
 public class CertificationResultTestFunctionality implements Serializable {
     private static final long serialVersionUID = -1647645050538126758L;
 
