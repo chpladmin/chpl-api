@@ -50,17 +50,17 @@ public final class ChartDataCreatorJob extends QuartzJob {
     public void execute(JobExecutionContext arg0) throws JobExecutionException {
         LOGGER.info("*****Chart Data Generator is starting now.*****");
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        List<CertifiedProductFlatSearchResult> certifiedProducts = certifiedProductSearchDAO.getAllCertifiedProducts();
-        LOGGER.info("Certified Product Count: " + certifiedProducts.size());
-
-        analyzeSed(certifiedProducts);
-        try {
-            analyzeProducts(certifiedProducts);
-        } catch (NumberFormatException | EntityRetrievalException e) {
-            LOGGER.error("Problem analyzing products" + e.getMessage());
-        }
-        analyzeDevelopers(certifiedProducts);
-        analyzeListingCounts(certifiedProducts);
+//        List<CertifiedProductFlatSearchResult> certifiedProducts = certifiedProductSearchDAO.getAllCertifiedProducts();
+//        LOGGER.info("Certified Product Count: " + certifiedProducts.size());
+//
+//        analyzeSed(certifiedProducts);
+//        try {
+//            analyzeProducts(certifiedProducts);
+//        } catch (NumberFormatException | EntityRetrievalException e) {
+//            LOGGER.error("Problem analyzing products" + e.getMessage());
+//        }
+//        analyzeDevelopers(certifiedProducts);
+//        analyzeListingCounts(certifiedProducts);
         analyzeNonconformity();
 
         LOGGER.info("*****Chart Data Generator is done running.*****");
