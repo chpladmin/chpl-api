@@ -33,12 +33,12 @@ import gov.healthit.chpl.util.FileUtils;
 
 @Component
 public class SurveillanceUploadManager extends SecuredManager {
-    private static final Logger LOGGER = LogManager.getLogger(SurveillanceUploadManager.class);
+    public static final String HEADING_CELL_INDICATOR = "RECORD_STATUS__C";
+    public static final String NEW_SURVEILLANCE_BEGIN_INDICATOR = "New";
+    public static final String UPDATE_SURVEILLANCE_BEGIN_INDICATOR = "Update";
+    public static final String SUBELEMENT_INDICATOR = "Subelement";
 
-    String HEADING_CELL_INDICATOR = "RECORD_STATUS__C";
-    String NEW_SURVEILLANCE_BEGIN_INDICATOR = "New";
-    String UPDATE_SURVEILLANCE_BEGIN_INDICATOR = "Update";
-    String SUBELEMENT_INDICATOR = "Subelement";
+    private static final Logger LOGGER = LogManager.getLogger(SurveillanceUploadManager.class);
 
     private FileUtils fileUtils;
     private SurveillanceUploadHandlerFactory uploadHandlerFactory;
