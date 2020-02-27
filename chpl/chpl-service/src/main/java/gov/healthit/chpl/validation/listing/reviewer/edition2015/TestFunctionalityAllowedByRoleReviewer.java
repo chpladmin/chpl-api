@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,22 +18,29 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 import lombok.Data;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 
 @Component("testFunctionalityAllowedByRoleReviewer")
-@Log4j2
+@Log4j2()
 public class TestFunctionalityAllowedByRoleReviewer implements ComparisonReviewer {
 
     private FF4j ff4j;
     private Environment env;
+    private ErrorMessageUtil errorMessages;
+    private ResourcePermissions permissions;
 
     @Autowired
-    public TestFunctionalityAllowedByRoleReviewer(FF4j ff4j, Environment env) {
+    public TestFunctionalityAllowedByRoleReviewer(FF4j ff4j, Environment env, ResourcePermissions permissions,
+            ErrorMessageUtil errorMessages) {
         this.ff4j = ff4j;
         this.env = env;
+        this.errorMessages = errorMessages;
+        this.permissions = permissions;
     }
 
     @Override
@@ -51,14 +59,24 @@ public class TestFunctionalityAllowedByRoleReviewer implements ComparisonReviewe
 
                 addedCrtfs.stream()
                         .forEach(x -> log.info("Added this CRTF: " + x.toString()));
-                addedCrtfs.stream()
-                        .forEach(x -> isTestFunctionalityChangeAllowedBasedOnRole(updatedCr, x));
 
                 List<CertificationResultTestFunctionality> removedCrtfs = getRemovedCrtfs(listUpdateCrtfs, listExistingCrtfs);
 
                 removedCrtfs.stream()
                         .forEach(x -> log.info("Removed this CRTF: " + x.toString()));
 
+                List<CertificationResultTestFunctionality> allEditedCrtfs = Stream
+                        .concat(addedCrtfs.stream(), removedCrtfs.stream())
+                        .collect(Collectors.toList());
+
+                allEditedCrtfs.stream()
+                        .forEach(crtf -> {
+                            if (!isTestFunctionalityChangeAllowedBasedOnRole(updatedCr.getCriterion().getId(),
+                                    crtf.getTestFunctionalityId())) {
+                                updatedListing.getErrorMessages().add("Cannot edit test functionality {"
+                                        + updatedCr.getCriterion().getId() + ", " + crtf.getTestFunctionalityId() + "}");
+                            }
+                        });
             }
         }
     }
@@ -97,16 +115,14 @@ public class TestFunctionalityAllowedByRoleReviewer implements ComparisonReviewe
                 .findFirst();
     }
 
-    private boolean isTestFunctionalityChangeAllowedBasedOnRole(CertificationResult cr,
-            CertificationResultTestFunctionality crtf) {
-        Optional<RestrictedTestFunctionality> restrictedTestFunctionality = findRestrictedTestFunctionality(
-                cr.getCriterion().getId(), crtf.getTestFunctionalityId());
+    private boolean isTestFunctionalityChangeAllowedBasedOnRole(Long criteriaId, Long testFunctionalityId) {
+        Optional<RestrictedTestFunctionality> restrictedTestFunctionality = findRestrictedTestFunctionality(criteriaId,
+                testFunctionalityId);
         if (restrictedTestFunctionality.isPresent()) {
-            log.info("Not Allowed based on Roles: " + restrictedTestFunctionality.get().toString());
+            return permissions.doesUserHaveRole(restrictedTestFunctionality.get().getAllowedRoleNames());
         } else {
-            log.info("No rule based on {" + cr.getCriterion().getId() + ", " + crtf.getTestFunctionalityId() + "}");
+            return true;
         }
-        return true;
     }
 
     private Optional<RestrictedTestFunctionality> findRestrictedTestFunctionality(Long criteriaId, Long testFunctionalityId) {
