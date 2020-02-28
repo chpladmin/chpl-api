@@ -29,7 +29,7 @@ public class ModifyTestFunctionalityJob extends QuartzJob {
             + "(b)(3)(i)(A) of this section, the technology must be able to receive and transmit the reason for the prescription "
             + "using the indication elements in the SIG Segment";
     private static final String E12_OLD_NUMBER = "(e)(1)(i)(A)(2)";
-    private static final String E12_NEW_NUMBER = " (e)(1)(i)(A)(4)";
+    private static final String E12_NEW_NUMBER = "(e)(1)(i)(A)(4)";
     private static final String E12_NEW_NAME = "Ambulatory: 170.315(e)(1)(i)(A)(4) Provider’s name and office contact "
             + "information";
     private static final String E13_OLD_NUMBER = "(e)(1)(i)(A)(3)";
@@ -102,6 +102,7 @@ public class ModifyTestFunctionalityJob extends QuartzJob {
             String hql = "SELECT tf "
                     + "FROM TestFunctionalityEntity tf "
                     + "WHERE tf.number = :number "
+                    + "AND tf.certificationEditionId = 3"
                     + "AND deleted = false";
             Query query = entityManager.createQuery(hql);
             query.setParameter("number", number);
