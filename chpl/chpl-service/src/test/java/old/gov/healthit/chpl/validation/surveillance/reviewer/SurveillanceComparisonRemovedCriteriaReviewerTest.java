@@ -33,7 +33,7 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.validation.surveillance.reviewer.RemovedCriteriaComparisonReviewer;
+import gov.healthit.chpl.validation.surveillance.reviewer.SurveillanceRemovedDataComparisonReviewer;
 import old.gov.healthit.chpl.util.SurveillanceMockUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -62,7 +62,7 @@ public class SurveillanceComparisonRemovedCriteriaReviewerTest {
     private FF4j ff4j;
 
     @InjectMocks
-    private RemovedCriteriaComparisonReviewer reviewer;
+    private SurveillanceRemovedDataComparisonReviewer reviewer;
 
     @Before
     public void setup() {
