@@ -14,7 +14,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
@@ -28,7 +27,6 @@ import lombok.ToString;
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 @ToString
 public class CertificationResultTestFunctionality implements Serializable {
@@ -63,6 +61,9 @@ public class CertificationResultTestFunctionality implements Serializable {
      */
     @XmlElement(required = true)
     private String year;
+
+    public CertificationResultTestFunctionality() {
+    }
 
     public CertificationResultTestFunctionality(CertificationResultTestFunctionalityDTO dto) {
         this.id = dto.getId();

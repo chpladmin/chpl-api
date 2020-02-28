@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.NoArgsConstructor;
 import lombok.Singular;
 
 /**
@@ -28,7 +27,6 @@ import lombok.Singular;
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class CertificationResult implements Serializable {
     private static final long serialVersionUID = -4917413876078419868L;
@@ -147,7 +145,7 @@ public class CertificationResult implements Serializable {
      */
     @XmlElementWrapper(name = "testFunctionalityList", nillable = true, required = false)
     @XmlElement(name = "testFunctionality")
-    @Singular("testFunctionality")
+    @Singular("testFunctionalitySingle")
     private List<CertificationResultTestFunctionality> testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
 
     /**
@@ -218,6 +216,9 @@ public class CertificationResult implements Serializable {
      */
     @XmlElement(name = "criterion")
     private CertificationCriterion criterion;
+
+    public CertificationResult() {
+    }
 
     public CertificationResult(final CertificationResultDetailsDTO certResult) {
         this();
