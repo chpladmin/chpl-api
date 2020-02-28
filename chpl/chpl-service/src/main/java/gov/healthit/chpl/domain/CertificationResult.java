@@ -1,6 +1,7 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -132,7 +133,7 @@ public class CertificationResult implements Serializable {
     private String privacySecurityFramework;
 
     @XmlTransient
-    private List<MacraMeasure> allowedMacraMeasures;
+    private List<MacraMeasure> allowedMacraMeasures = new ArrayList<MacraMeasure>();
 
     @XmlTransient
     private List<TestFunctionality> allowedTestFunctionalities;
@@ -147,21 +148,21 @@ public class CertificationResult implements Serializable {
     @XmlElementWrapper(name = "testFunctionalityList", nillable = true, required = false)
     @XmlElement(name = "testFunctionality")
     @Singular("testFunctionality")
-    private List<CertificationResultTestFunctionality> testFunctionality;
+    private List<CertificationResultTestFunctionality> testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
 
     /**
      * The test procedures used for the certification criteria
      */
     @XmlElementWrapper(name = "testProcedures", nillable = true, required = false)
     @XmlElement(name = "testProcedure")
-    private List<CertificationResultTestProcedure> testProcedures;
+    private List<CertificationResultTestProcedure> testProcedures = new ArrayList<CertificationResultTestProcedure>();
 
     /**
      * The versions of the test data being used for the certification criteria
      */
     @XmlElementWrapper(name = "testDataList", nillable = true, required = false)
     @XmlElement(name = "testData")
-    private List<CertificationResultTestData> testDataUsed;
+    private List<CertificationResultTestData> testDataUsed = new ArrayList<CertificationResultTestData>();
 
     /**
      * This variable indicates if any additional software is relied upon by the Health IT Module to demonstrate its
@@ -169,7 +170,7 @@ public class CertificationResult implements Serializable {
      */
     @XmlElementWrapper(name = "additionalSoftwareList", nillable = true, required = false)
     @XmlElement(name = "additionalSoftware")
-    private List<CertificationResultAdditionalSoftware> additionalSoftware;
+    private List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
 
     /**
      * A standard used to meet a certification criterion for 2014 and 2015 Edition. You can find a list of potential
@@ -178,7 +179,7 @@ public class CertificationResult implements Serializable {
      */
     @XmlElementWrapper(name = "testStandards", nillable = true, required = false)
     @XmlElement(name = "testStandard")
-    private List<CertificationResultTestStandard> testStandards;
+    private List<CertificationResultTestStandard> testStandards = new ArrayList<CertificationResultTestStandard>();
 
     /**
      * The test tool used to certify the Health IT Module to the corresponding certification criteria Allowable values
@@ -192,7 +193,7 @@ public class CertificationResult implements Serializable {
      */
     @XmlElementWrapper(name = "testTools", nillable = true, required = false)
     @XmlElement(name = "testTool")
-    private List<CertificationResultTestTool> testToolsUsed;
+    private List<CertificationResultTestTool> testToolsUsed = new ArrayList<CertificationResultTestTool>();
 
     /**
      * This variable indicates if the corresponding certification criteria was successfully tested for automated
@@ -201,7 +202,7 @@ public class CertificationResult implements Serializable {
      */
     @XmlElementWrapper(name = "g1MacraMeasures", nillable = true, required = false)
     @XmlElement(name = "macraMeasure")
-    private List<MacraMeasure> g1MacraMeasures;
+    private List<MacraMeasure> g1MacraMeasures = new ArrayList<MacraMeasure>();
 
     /**
      * This variable indicates if the corresponding certification criteria was successfully tested for automated measure
@@ -210,7 +211,7 @@ public class CertificationResult implements Serializable {
      */
     @XmlElementWrapper(name = "g2MacraMeasures", nillable = true, required = false)
     @XmlElement(name = "macraMeasure")
-    private List<MacraMeasure> g2MacraMeasures;
+    private List<MacraMeasure> g2MacraMeasures = new ArrayList<MacraMeasure>();
 
     /**
      * Detailed information about the relevant certification criterion.
