@@ -434,7 +434,6 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
 
     @SuppressWarnings({"checkstyle:linelength"})
     private void addTestFunctionalities() {
-        addTestFunctionality("(b)(3)(i)(C)", "Optional: 170.315(b)(3)(i)(C) For each transaction listed in paragraph (b)(3)(i)(A) of this section, the technology must be able to receive and transmit the reason for the prescription using the indication elements in the SIG Segment");
         addTestFunctionality("(b)(3)(ii)(B)(1)", "Create new prescriptions (NewRxRequest, NewRxResponseDenied)");
         addTestFunctionality("(b)(3)(ii)(B)(2)", "Receive fill status notifications (RxFillIndicator)");
         addTestFunctionality("(b)(3)(ii)(B)(3)", "Request transactions from a mailbox (GetMessage)");
@@ -458,7 +457,6 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         addTestFunctionalityMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "170.102(19)(i)");
         addTestFunctionalityMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "170.102(19)(ii)");
 
-        addTestFunctionalityMap("170.315 (b)(3)", "Electronic Prescribing", "(b)(3)(i)(C)");
         addTestFunctionalityMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "(b)(3)(ii)(B)(1)");
         addTestFunctionalityMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "(b)(3)(ii)(B)(2)");
         addTestFunctionalityMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "(b)(3)(ii)(B)(3)");
@@ -469,7 +467,6 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         addTestFunctionalityMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "(b)(3)(ii)(B)(8)");
         addTestFunctionalityMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "(b)(3)(ii)(B)(9)");
         addTestFunctionalityMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "(b)(3)(ii)(D)");
-        addTestFunctionalityMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "(b)(3)(iii)");
 
         addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "(e)(1)(i)(A)(2)");
         addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "(e)(1)(i)(A)(3)");
