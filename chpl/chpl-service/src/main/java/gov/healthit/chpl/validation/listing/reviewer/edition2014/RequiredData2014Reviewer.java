@@ -11,6 +11,7 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.UcdProcess;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.reviewer.RequiredDataReviewer;
@@ -29,8 +30,9 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
     };
 
     @Autowired
-    public RequiredData2014Reviewer(CertificationResultRules certRules, ErrorMessageUtil msgUtil) {
-        super(certRules, msgUtil);
+    public RequiredData2014Reviewer(CertificationResultRules certRules, ErrorMessageUtil msgUtil,
+            ResourcePermissions resourcePermissions) {
+        super(certRules, msgUtil, resourcePermissions);
     }
 
     @Override
@@ -127,7 +129,7 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
         boolean hasUcd = false;
         for (UcdProcess ucdProcess : ucdProcesses) {
             for (CertificationCriterion ucdCriteria : ucdProcess.getCriteria()) {
-                if (ucdCriteria.getNumber().equalsIgnoreCase(cert.getNumber())) {
+                if (ucdCriteria.getId().equals(cert.getCriterion().getId())) {
                     hasUcd = true;
                 }
             }

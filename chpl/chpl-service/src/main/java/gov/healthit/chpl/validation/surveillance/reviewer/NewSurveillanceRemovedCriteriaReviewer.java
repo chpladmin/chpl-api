@@ -1,5 +1,7 @@
 package gov.healthit.chpl.validation.surveillance.reviewer;
 
+import java.util.List;
+
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -58,7 +60,8 @@ public class NewSurveillanceRemovedCriteriaReviewer implements Reviewer {
     private void checkRequirementForRemovedCriteria(Surveillance surv, SurveillanceRequirement req) {
         if (req.getType() != null && !StringUtils.isEmpty(req.getType().getName())
                 && req.getType().getName().equalsIgnoreCase(SurveillanceRequirementType.CERTIFIED_CAPABILITY)) {
-                CertificationCriterionDTO criterion = certDao.getByName(req.getRequirement());
+                CertificationCriterionDTO criterion = certDao.getAllByNumber(req.getRequirement()).get(0);
+                //TODO Fix this as part of OCD-3220
                 if (criterion != null && criterion.getRemoved() != null
                         && criterion.getRemoved().booleanValue()) {
                     surv.getErrorMessages().add(
@@ -82,13 +85,17 @@ public class NewSurveillanceRemovedCriteriaReviewer implements Reviewer {
 
     private void checkNonconformityForRemovedCriteria(Surveillance surv, SurveillanceNonconformity nc) {
         if (!StringUtils.isEmpty(nc.getNonconformityType())) {
-                CertificationCriterionDTO criterion = certDao.getByName(nc.getNonconformityType());
+            List<CertificationCriterionDTO> criteria = certDao.getAllByNumber(nc.getNonconformityType());
+            //TODO Fix this as part of OCD-3220
+            if (criteria != null && criteria.size() > 0) {
+                CertificationCriterionDTO criterion = criteria.get(0);
                 if (criterion != null && criterion.getRemoved() != null
                         && criterion.getRemoved().booleanValue()) {
                     surv.getErrorMessages().add(
                             msgUtil.getMessage("surveillance.nonconformityNotAddedForRemovedCriteria",
                                     nc.getNonconformityType()));
                 }
+            }
         }
     }
 

@@ -6,18 +6,19 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("requiredDataReviewer")
-public class RequiredDataReviewer implements Reviewer {
-    protected ErrorMessageUtil msgUtil;
+public class RequiredDataReviewer extends PermissionBasedReviewer {
     protected CertificationResultRules certRules;
 
     @Autowired
-    public RequiredDataReviewer(CertificationResultRules certRules, ErrorMessageUtil msgUtil) {
+    public RequiredDataReviewer(CertificationResultRules certRules, ErrorMessageUtil msgUtil,
+            ResourcePermissions resourcePermissions) {
+        super(msgUtil, resourcePermissions);
         this.certRules = certRules;
-        this.msgUtil = msgUtil;
     }
 
     @Override
@@ -46,11 +47,10 @@ public class RequiredDataReviewer implements Reviewer {
         }
 
         for (CertificationResult cert : listing.getCertificationResults()) {
-            if (cert.isSuccess() != null && cert.isSuccess().booleanValue()) {
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) && cert.isGap() == null) {
-                    listing.getErrorMessages().add(
-                            msgUtil.getMessage("listing.criteria.missingGap", cert.getNumber()));
-                }
+            if (cert.isSuccess() != null && cert.isSuccess().equals(Boolean.TRUE)
+                    && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
+                    && cert.isGap() == null) {
+                addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingGap", cert.getNumber());
             }
         }
     }

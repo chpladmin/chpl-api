@@ -9,7 +9,6 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Date;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -22,34 +21,24 @@ import org.springframework.web.multipart.MultipartFile;
 
 import gov.healthit.chpl.exception.ValidationException;
 
-/**
- * Utility methods for finding and reading files.
- * @author kekey
- *
- */
 @Component
 public final class FileUtils {
-    /**
-     * Global buffer size.
-     */
     public static final int BUFFER_SIZE = 1024;
 
     private static final String DOWNLOAD_FOLDER_PROPERTY_NAME = "downloadFolderPath";
     private static final Logger LOGGER = LogManager.getLogger(FileUtils.class);
 
-    @Autowired private Environment env;
-    @Autowired private ErrorMessageUtil msgUtil;
+    private Environment env;
+    private ErrorMessageUtil msgUtil;
 
-    private FileUtils() {}
+    @Autowired
+    public FileUtils(Environment env, ErrorMessageUtil msgUtil) {
+        this.env = env;
+        this.msgUtil = msgUtil;
+    }
 
-    /**
-     * Given a file returns the contents as a string.
-     * @param file the input file
-     * @return the contents of that file as a string
-     * @throws ValidationException if the file could not be read
-     */
-    public String readFileAsString(final MultipartFile file) throws ValidationException {
-        //read the file into a string
+    public String readFileAsString(MultipartFile file) throws ValidationException {
+        // read the file into a string
         StringBuffer data = new StringBuffer();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
             String line = null;
@@ -67,11 +56,6 @@ public final class FileUtils {
         return data.toString();
     }
 
-    /**
-     * Get a reference to the system download folder.
-     * @return
-     * @throws IOException
-     */
     public File getDownloadFolder() throws IOException {
         String downloadFolderPath = env.getProperty(DOWNLOAD_FOLDER_PROPERTY_NAME);
         File downloadFolder = new File(downloadFolderPath);
@@ -81,15 +65,7 @@ public final class FileUtils {
         return downloadFolder;
     }
 
-    /**
-     * Creates a new file with the specified name in the system download directory.
-     * If a file already exists with the same name, makes an attempt to delete
-     * the existing file before creating the new one.
-     * @param filename
-     * @return
-     * @throws IOException
-     */
-    public File createDownloadFile(final String filename) throws IOException {
+    public File createDownloadFile(String filename) throws IOException {
         File downloadFolder = getDownloadFolder();
         String absoluteFilename = downloadFolder.getAbsolutePath()
                 + File.separator + filename;
@@ -105,26 +81,13 @@ public final class FileUtils {
         return newDownloadFile;
     }
 
-    /**
-     * Reads the contents of a file in the download folder into a byte array.
-     * @param filename the name of the file in the download folder
-     * @return the contents of the file as a byte array
-     * @throws IOException if the file does not exist or cannot be read
-     */
-    public byte[] readDownloadFile(final String filename) throws IOException {
+    public byte[] readDownloadFile(String filename) throws IOException {
         Path path = Paths.get(env.getProperty(DOWNLOAD_FOLDER_PROPERTY_NAME), filename);
         byte[] data = Files.readAllBytes(path);
         return data;
     }
 
-    /**
-     * Find a file by name in the download directory.
-     * @param filename the name of the file to find
-     * @return the file in the download directory
-     * @throws IOException if no file with the provided name is
-     * found under downloadFolderPath or if the file exists but cannot be read.
-     */
-    public File getDownloadFile(final String filename) throws IOException {
+    public File getDownloadFile(String filename) throws IOException {
         File downloadFolder = getDownloadFolder();
         File downloadFile = new File(downloadFolder.getAbsolutePath() + File.separator + filename);
         if (!downloadFile.exists() || !downloadFile.canRead()) {
@@ -135,15 +98,7 @@ public final class FileUtils {
         return downloadFile;
     }
 
-    /**
-     * There are many files with a similar name in the download folder because they are generated
-     * daily with a timestamp appended to their name. Finds the most recently written
-     * of the files in the download folder matching a specific pattern.
-     * @param filenamePattern the pattern of filename to look for. Must work with matches()
-     * @return the file
-     * @throws IOException if the download folder does not exist or cannot be read
-     */
-    public File getNewestFileMatchingName(final String filenamePattern) throws IOException {
+    public File getNewestFileMatchingName(String filenamePattern) throws IOException {
         String downloadFolderPath = env.getProperty(DOWNLOAD_FOLDER_PROPERTY_NAME);
         File downloadFolder = new File(downloadFolderPath);
         if (!downloadFolder.exists() || !downloadFolder.canRead()) {
@@ -166,14 +121,7 @@ public final class FileUtils {
         return newestFileWithFormat;
     }
 
-    /**
-     * Writes the contents of a file out to the response stream.
-     * @param file the file to write
-     * @param contentType content type of response like text/plain, text/csv, etc
-     * @param response the http response object
-     * @throws IOException if the stream cannot be written
-     */
-    public void streamFileAsResponse(final File file, final String contentType, final HttpServletResponse response)
+    public void streamFileAsResponse(File file, String contentType, HttpServletResponse response, String filenameToStreamAs)
             throws IOException {
         try (FileInputStream inputStream = new FileInputStream(file);
                 OutputStream outStream = response.getOutputStream();) {
@@ -184,7 +132,7 @@ public final class FileUtils {
 
             // set headers for the response
             String headerKey = "Content-Disposition";
-            String headerValue = String.format("attachment; filename=\"%s\"", file.getName());
+            String headerValue = String.format("attachment; filename=\"%s\"", filenameToStreamAs);
             response.setHeader(headerKey, headerValue);
 
             byte[] buffer = new byte[BUFFER_SIZE];
@@ -195,5 +143,9 @@ public final class FileUtils {
                 outStream.write(buffer, 0, bytesRead);
             }
         }
+    }
+
+    public void streamFileAsResponse(File file, String contentType, HttpServletResponse response) throws IOException {
+        streamFileAsResponse(file, contentType, response, file.getName());
     }
 }

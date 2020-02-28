@@ -202,7 +202,7 @@ public class ChangeRequestManagerImpl extends SecurityManager implements ChangeR
             ChangeRequestValidationContext context = new ChangeRequestValidationContext(cr, crFromDb);
 
             for (ValidationRule<ChangeRequestValidationContext> rule : rules) {
-                if (!rule.isValid(context)) {
+                if (rule != null && !rule.isValid(context)) {
                     errorMessages.addAll(rule.getMessages());
                 }
             }

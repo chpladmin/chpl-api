@@ -11,7 +11,14 @@ public enum UrlType {
     //sed_report_file_location
     FULL_USABILITY_REPORT("Full Usability Report"),
     //api_documentation
-    API_DOCUMENTATION("API Documentation");
+    API_DOCUMENTATION("API Documentation"),
+    // export_documentation
+    EXPORT_DOCUMENTATION("Export Documentation"),
+    // documentation_url
+    DOCUMENTATION_URL("Documentation URL"),
+    // use_cases
+    USE_CASES("Use Cases");
+
 
     private String name;
 

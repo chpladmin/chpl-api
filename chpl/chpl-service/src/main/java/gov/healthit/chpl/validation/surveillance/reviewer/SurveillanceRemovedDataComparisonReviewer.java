@@ -188,7 +188,8 @@ public class SurveillanceRemovedDataComparisonReviewer implements ComparisonRevi
             if (req.getType().getName().equalsIgnoreCase(SurveillanceRequirementType.CERTIFIED_CAPABILITY)) {
                 String requirementCriteria =
                         gov.healthit.chpl.util.Util.coerceToCriterionNumberFormat(req.getRequirement());
-                CertificationCriterionDTO criterion = criterionDao.getByName(requirementCriteria);
+                CertificationCriterionDTO criterion = criterionDao.getAllByNumber(requirementCriteria).get(0);
+                //TODO Fix this as part of OCD-3220
                 if (criterion != null && criterion.getRemoved() != null
                         && criterion.getRemoved().booleanValue()) {
                     return true;
@@ -217,10 +218,14 @@ public class SurveillanceRemovedDataComparisonReviewer implements ComparisonRevi
         if (!StringUtils.isEmpty(nonconformity.getNonconformityType())) {
             String nonconformityType =
                     gov.healthit.chpl.util.Util.coerceToCriterionNumberFormat(nonconformity.getNonconformityType());
-            CertificationCriterionDTO criterion = criterionDao.getByName(nonconformityType);
-            if (criterion != null && criterion.getRemoved() != null
-                    && criterion.getRemoved().booleanValue()) {
-                return true;
+            List<CertificationCriterionDTO> criteria = criterionDao.getAllByNumber(nonconformityType);
+            //TODO Fix this as part of OCD-3220
+            if (criteria != null && criteria.size() > 0) {
+                CertificationCriterionDTO criterion = criteria.get(0);
+                if (criterion != null && criterion.getRemoved() != null
+                        && criterion.getRemoved().booleanValue()) {
+                    return true;
+                }
             }
         }
         return false;

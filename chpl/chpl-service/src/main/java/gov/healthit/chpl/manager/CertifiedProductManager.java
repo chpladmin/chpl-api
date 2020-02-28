@@ -316,7 +316,7 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     @Transactional(readOnly = true)
-    public List<CertifiedProductDetailsDTO> getByVersion(final Long versionId) throws EntityRetrievalException {
+    public List<CertifiedProduct> getByVersion(final Long versionId) throws EntityRetrievalException {
         versionManager.getById(versionId); // throws 404 if bad id
         return cpDao.getDetailsByVersionId(versionId);
     }
@@ -328,12 +328,12 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     @Transactional(readOnly = true)
-    public List<CertifiedProductDetailsDTO> getByVersionWithEditPermission(final Long versionId)
+    public List<CertifiedProduct> getByVersionWithEditPermission(final Long versionId)
             throws EntityRetrievalException {
         versionManager.getById(versionId); // throws 404 if bad id
         List<CertificationBodyDTO> userAcbs = resourcePermissions.getAllAcbsForCurrentUser();
         if (userAcbs == null || userAcbs.size() == 0) {
-            return new ArrayList<CertifiedProductDetailsDTO>();
+            return new ArrayList<CertifiedProduct>();
         }
         List<Long> acbIdList = new ArrayList<Long>(userAcbs.size());
         for (CertificationBodyDTO dto : userAcbs) {
@@ -618,7 +618,8 @@ public class CertifiedProductManager extends SecuredManager {
             List<TestTaskDTO> testTasksAdded = new ArrayList<TestTaskDTO>();
 
             for (PendingCertificationResultDTO certResult : pendingCp.getCertificationCriterion()) {
-                CertificationCriterionDTO criterion = certCriterionDao.getByName(certResult.getCriterion().getNumber());
+                CertificationCriterionDTO criterion = certCriterionDao.getByNumberAndTitle(
+                        certResult.getCriterion().getNumber(), certResult.getCriterion().getTitle());
                 if (criterion == null) {
                     throw new EntityCreationException(
                             "Could not find certification criterion with number " + certResult.getCriterion().getNumber());
@@ -959,7 +960,7 @@ public class CertifiedProductManager extends SecuredManager {
                                     cqmResultToCreate.getCriteria().add(certDto);
                                 } else if (!StringUtils.isEmpty(cert.getCertificationCriteriaNumber())) {
                                     CertificationCriterionDTO critDto = certCriterionDao
-                                            .getByName(cert.getCertificationCriteriaNumber());
+                                            .getById(cert.getCertificationId());
                                     if (critDto != null) {
                                         certDto.setCriterionId(critDto.getId());
                                         cqmResultToCreate.getCriteria().add(certDto);
@@ -1115,7 +1116,7 @@ public class CertifiedProductManager extends SecuredManager {
         // Update the listing
         CertifiedProductDTO dtoToUpdate = new CertifiedProductDTO(updatedListing);
         CertifiedProductDTO result = cpDao.update(dtoToUpdate);
-        updateListingsChildData(existingListing, updatedListing, result);
+        updateListingsChildData(existingListing, updatedListing);
 
         // Log the activity
         logCertifiedProductUpdateActivity(existingListing, updateRequest.getReason());
@@ -1132,8 +1133,7 @@ public class CertifiedProductManager extends SecuredManager {
                 changedProduct, reason);
     }
 
-    private void updateListingsChildData(final CertifiedProductSearchDetails existingListing,
-            final CertifiedProductSearchDetails updatedListing, final CertifiedProductDTO updatedListingDTO)
+    private void updateListingsChildData(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing)
             throws EntityCreationException, EntityRetrievalException, IOException {
         updateTestingLabs(updatedListing.getId(), existingListing.getTestingLabs(), updatedListing.getTestingLabs());
         updateIcsChildren(updatedListing.getId(), existingListing.getIcs(), updatedListing.getIcs());
@@ -1151,7 +1151,8 @@ public class CertifiedProductManager extends SecuredManager {
                 updatedListing.getMeaningfulUseUserHistory());
         updateCertifications(existingListing, updatedListing,
                 existingListing.getCertificationResults(), updatedListing.getCertificationResults());
-        updateCqms(updatedListingDTO, existingListing.getCqmResults(), updatedListing.getCqmResults());
+        copyCriterionIdsToCqmMappings(updatedListing);
+        updateCqms(updatedListing, existingListing.getCqmResults(), updatedListing.getCqmResults());
     }
 
     private void performSecondaryActionsBasedOnStatusChanges(final CertifiedProductSearchDetails existingListing,
@@ -1961,8 +1962,8 @@ public class CertifiedProductManager extends SecuredManager {
 
         for (CertificationResult updatedItem : updatedCertifications) {
             for (CertificationResult existingItem : existingCertifications) {
-                if (!StringUtils.isEmpty(updatedItem.getNumber()) && !StringUtils.isEmpty(existingItem.getNumber())
-                        && updatedItem.getNumber().equals(existingItem.getNumber())) {
+                if (updatedItem.getCriterion() != null && existingItem.getCriterion() != null
+                        && updatedItem.getCriterion().getId().equals(existingItem.getCriterion().getId())) {
                     numChanges += certResultManager.update(existingListing, updatedListing, existingItem,
                             updatedItem);
                 }
@@ -1972,11 +1973,26 @@ public class CertifiedProductManager extends SecuredManager {
         return numChanges;
     }
 
-    private int updateCqms(final CertifiedProductDTO listing, final List<CQMResultDetails> existingCqmDetails,
-            final List<CQMResultDetails> updatedCqmDetails)
+    private void copyCriterionIdsToCqmMappings(CertifiedProductSearchDetails listing) {
+        for (CQMResultDetails cqmResult : listing.getCqmResults()) {
+            for (CQMResultCertification cqmCertMapping : cqmResult.getCriteria()) {
+                if (cqmCertMapping.getCertificationId() == null
+                        && !StringUtils.isEmpty(cqmCertMapping.getCertificationNumber())) {
+                    for (CertificationResult certResult : listing.getCertificationResults()) {
+                        if (certResult.isSuccess().equals(Boolean.TRUE)
+                                && certResult.getCriterion().getNumber().equals(cqmCertMapping.getCertificationNumber())) {
+                            cqmCertMapping.setCertificationId(certResult.getCriterion().getId());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private int updateCqms(CertifiedProductSearchDetails listing, List<CQMResultDetails> existingCqmDetails,
+            List<CQMResultDetails> updatedCqmDetails)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
-        // convert to CQMResultDetailsDTO since CMS CQMs can have multiple
-        // entries
+        // convert to CQMResultDetailsDTO since CMS CQMs can have multiple entries
         // per success version. work with these objects instead of the passed-in
         // ones
         List<CQMResultDetailsDTO> existingCqms = new ArrayList<CQMResultDetailsDTO>();
@@ -2097,8 +2113,8 @@ public class CertifiedProductManager extends SecuredManager {
         return numChanges;
     }
 
-    private int updateCqm(final CertifiedProductDTO listing, final CQMResultDetailsDTO existingCqm,
-            final CQMResultDetailsDTO updatedCqm) throws EntityRetrievalException {
+    private int updateCqm(CertifiedProductSearchDetails listing, CQMResultDetailsDTO existingCqm,
+            CQMResultDetailsDTO updatedCqm) throws EntityRetrievalException {
 
         int numChanges = 0;
         // look for changes in the cqms and update if necessary
@@ -2119,7 +2135,7 @@ public class CertifiedProductManager extends SecuredManager {
         for (CQMResultCriteriaDTO existingItem : existingCqm.getCriteria()) {
             boolean exists = false;
             for (CQMResultCriteriaDTO updatedItem : updatedCqm.getCriteria()) {
-                if (existingItem.getCriterion().getNumber().equals(updatedItem.getCriterion().getNumber())) {
+                if (existingItem.getCriterionId().equals(updatedItem.getCriterionId())) {
                     exists = true;
                 }
             }
@@ -2131,7 +2147,7 @@ public class CertifiedProductManager extends SecuredManager {
         for (CQMResultCriteriaDTO updatedItem : updatedCqm.getCriteria()) {
             boolean exists = false;
             for (CQMResultCriteriaDTO existingItem : existingCqm.getCriteria()) {
-                if (existingItem.getCriterion().getNumber().equals(updatedItem.getCriterion().getNumber())) {
+                if (existingItem.getCriterionId().equals(updatedItem.getCriterionId())) {
                     exists = true;
                 }
             }
@@ -2156,17 +2172,18 @@ public class CertifiedProductManager extends SecuredManager {
     private Long findCqmCriterionId(final CQMResultCriteriaDTO cqm) throws EntityRetrievalException {
         if (cqm.getCriterionId() != null) {
             return cqm.getCriterionId();
-        }
-        if (cqm.getCriterion() != null && !StringUtils.isEmpty(cqm.getCriterion().getNumber())) {
-            CertificationCriterionDTO cert = certCriterionDao.getByName(cqm.getCriterion().getNumber());
+        } else if (cqm.getCriterion() != null && cqm.getCriterion().getId() != null) {
+            return cqm.getCriterion().getId();
+        } else if (cqm.getCriterion() != null && !StringUtils.isEmpty(cqm.getCriterion().getNumber())
+                && !StringUtils.isEmpty(cqm.getCriterion().getTitle())) {
+            CertificationCriterionDTO cert = certCriterionDao.getByNumberAndTitle(
+                    cqm.getCriterion().getNumber(), cqm.getCriterion().getTitle());
             if (cert != null) {
                 return cert.getId();
             } else {
                 throw new EntityRetrievalException(
                         "Could not find certification criteria with number " + cqm.getCriterion().getNumber());
             }
-        } else if (cqm.getCriterion() != null && cqm.getCriterion().getId() != null) {
-            return cqm.getCriterion().getId();
         } else {
             throw new EntityRetrievalException("A criteria id or number must be provided.");
         }
@@ -2183,8 +2200,6 @@ public class CertifiedProductManager extends SecuredManager {
                 dto.setNqfNumber(cqm.getNqfNumber());
                 dto.setCmsId(cqm.getCmsId());
                 dto.setNumber(cqm.getNumber());
-                dto.setCmsId(cqm.getCmsId());
-                dto.setNqfNumber(cqm.getNqfNumber());
                 dto.setTitle(cqm.getTitle());
                 dto.setVersion(version);
                 dto.setSuccess(Boolean.TRUE);
@@ -2194,6 +2209,7 @@ public class CertifiedProductManager extends SecuredManager {
                         cqmdto.setId(criteria.getId());
                         cqmdto.setCriterionId(criteria.getCertificationId());
                         CertificationCriterionDTO certDto = new CertificationCriterionDTO();
+                        certDto.setId(criteria.getCertificationId());
                         certDto.setNumber(criteria.getCertificationNumber());
                         cqmdto.setCriterion(certDto);
                         dto.getCriteria().add(cqmdto);
@@ -2207,8 +2223,6 @@ public class CertifiedProductManager extends SecuredManager {
             dto.setNqfNumber(cqm.getNqfNumber());
             dto.setCmsId(cqm.getCmsId());
             dto.setNumber(cqm.getNumber());
-            dto.setCmsId(cqm.getCmsId());
-            dto.setNqfNumber(cqm.getNqfNumber());
             dto.setTitle(cqm.getTitle());
             dto.setSuccess(cqm.isSuccess());
             result.add(dto);

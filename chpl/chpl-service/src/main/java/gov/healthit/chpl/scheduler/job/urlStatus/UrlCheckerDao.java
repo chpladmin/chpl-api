@@ -34,7 +34,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
             switch (urlType) {
                 case ACB:
                     //query from acb table
-                    List<String> acbWebsites =
+                    @SuppressWarnings("unchecked") List<String> acbWebsites =
                         entityManager.createQuery("SELECT DISTINCT website FROM CertificationBodyEntity "
                                 + "WHERE website IS NOT NULL AND deleted = false")
                         .getResultList();
@@ -49,7 +49,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                     break;
                 case ATL:
                     //query from atl table
-                    List<String> atlWebsites =
+                    @SuppressWarnings("unchecked") List<String> atlWebsites =
                         entityManager.createQuery("SELECT DISTINCT website FROM TestingLabEntity "
                                 + "WHERE website IS NOT NULL AND deleted = false")
                         .getResultList();
@@ -64,7 +64,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                     break;
                 case DEVELOPER:
                     //query from developer table
-                    List<String> developerWebsites =
+                    @SuppressWarnings("unchecked") List<String> developerWebsites =
                         entityManager.createQuery("SELECT DISTINCT website FROM DeveloperEntity "
                                 + "WHERE website IS NOT NULL AND deleted = false")
                         .getResultList();
@@ -78,7 +78,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                     }
                     break;
                 case MANDATORY_DISCLOSURE_URL:
-                    List<String> mandatoryDisclosureWebsites =
+                    @SuppressWarnings("unchecked") List<String> mandatoryDisclosureWebsites =
                         entityManager.createQuery(
                                 "SELECT DISTINCT transparencyAttestationUrl "
                                 + "FROM CertifiedProductEntity "
@@ -95,7 +95,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                     }
                     break;
                 case TEST_RESULTS_SUMMARY:
-                    List<String> testResultsWebsites =
+                    @SuppressWarnings("unchecked") List<String> testResultsWebsites =
                     entityManager.createQuery(
                             "SELECT DISTINCT reportFileLocation "
                             + "FROM CertifiedProductEntity "
@@ -111,7 +111,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                     }
                     break;
                 case FULL_USABILITY_REPORT:
-                    List<String> fullUsabilityReportWebsites =
+                    @SuppressWarnings("unchecked") List<String> fullUsabilityReportWebsites =
                     entityManager.createQuery(
                             "SELECT DISTINCT sedReportFileLocation "
                             + "FROM CertifiedProductEntity "
@@ -127,7 +127,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                     }
                     break;
                 case API_DOCUMENTATION:
-                    List<String> apiDocumentationWebsites =
+                    @SuppressWarnings("unchecked") List<String> apiDocumentationWebsites =
                     entityManager.createQuery(
                             "SELECT DISTINCT apiDocumentation "
                             + "FROM CertificationResultEntity "
@@ -136,6 +136,60 @@ public class UrlCheckerDao extends BaseDAOImpl {
                             + "AND deleted = false")
                     .getResultList();
                     for (String website : apiDocumentationWebsites) {
+                        if (!StringUtils.isEmpty(website)) {
+                            UrlResult checkableUrl = new UrlResult();
+                            checkableUrl.setUrl(website);
+                            checkableUrl.setUrlType(urlType);
+                            results.add(checkableUrl);
+                        }
+                    }
+                    break;
+                case EXPORT_DOCUMENTATION:
+                    @SuppressWarnings("unchecked") List<String> exportDocumentationWebsites =
+                    entityManager.createQuery(
+                            "SELECT DISTINCT exportDocumentation "
+                            + "FROM CertificationResultEntity "
+                            + "WHERE exportDocumentation IS NOT NULL "
+                            + "AND exportDocumentation != '' "
+                            + "AND deleted = false")
+                    .getResultList();
+                    for (String website : exportDocumentationWebsites) {
+                        if (!StringUtils.isEmpty(website)) {
+                            UrlResult checkableUrl = new UrlResult();
+                            checkableUrl.setUrl(website);
+                            checkableUrl.setUrlType(urlType);
+                            results.add(checkableUrl);
+                        }
+                    }
+                    break;
+                case DOCUMENTATION_URL:
+                    @SuppressWarnings("unchecked") List<String> documentationUrlWebsites =
+                    entityManager.createQuery(
+                            "SELECT DISTINCT documentationUrl "
+                            + "FROM CertificationResultEntity "
+                            + "WHERE documentationUrl IS NOT NULL "
+                            + "AND documentationUrl != '' "
+                            + "AND deleted = false")
+                    .getResultList();
+                    for (String website : documentationUrlWebsites) {
+                        if (!StringUtils.isEmpty(website)) {
+                            UrlResult checkableUrl = new UrlResult();
+                            checkableUrl.setUrl(website);
+                            checkableUrl.setUrlType(urlType);
+                            results.add(checkableUrl);
+                        }
+                    }
+                    break;
+                case USE_CASES:
+                    @SuppressWarnings("unchecked") List<String> useCasesWebsites =
+                    entityManager.createQuery(
+                            "SELECT DISTINCT useCases "
+                            + "FROM CertificationResultEntity "
+                            + "WHERE useCases IS NOT NULL "
+                            + "AND useCases != '' "
+                            + "AND deleted = false")
+                    .getResultList();
+                    for (String website : useCasesWebsites) {
                         if (!StringUtils.isEmpty(website)) {
                             UrlResult checkableUrl = new UrlResult();
                             checkableUrl.setUrl(website);
@@ -170,7 +224,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
      */
     @Transactional
     public List<UrlResult> getAllUrlResults() {
-        List<UrlResultEntity> entities = entityManager.createQuery("SELECT url "
+        @SuppressWarnings("unchecked") List<UrlResultEntity> entities = entityManager.createQuery("SELECT url "
                         + "FROM UrlResultEntity url "
                         + "JOIN FETCH url.urlType "
                         + "WHERE url.deleted = false")
@@ -192,7 +246,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
      */
     @Transactional
     public List<UrlResult> getUrlResultsWithError() {
-        List<UrlResultEntity> entities = entityManager.createQuery("SELECT url "
+        @SuppressWarnings("unchecked") List<UrlResultEntity> entities = entityManager.createQuery("SELECT url "
                         + "FROM UrlResultEntity url "
                         + "JOIN FETCH url.urlType "
                         + "WHERE url.deleted = false "
@@ -276,7 +330,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                 + "JOIN FETCH url.urlType "
                 + "WHERE url.id = :id and url.deleted = false");
         query.setParameter("id", id);
-        List<UrlResultEntity> results = query.getResultList();
+        @SuppressWarnings("unchecked") List<UrlResultEntity> results = query.getResultList();
         if (results == null || results.size() == 0) {
             return null;
         }
@@ -293,7 +347,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                         + "AND url.deleted = false");
         query.setParameter("url", url);
         query.setParameter("urlTypeName", type.getName());
-        List<UrlResultEntity> results = query.getResultList();
+        @SuppressWarnings("unchecked") List<UrlResultEntity> results = query.getResultList();
         if (results == null || results.size() == 0) {
             return null;
         }
@@ -304,7 +358,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
         Query query =
                 entityManager.createQuery("SELECT id FROM UrlTypeEntity WHERE name = :name AND deleted = false");
         query.setParameter("name", name);
-        List<Long> results = query.getResultList();
+        @SuppressWarnings("unchecked") List<Long> results = query.getResultList();
         if (results == null || results.size() == 0) {
             return null;
         }

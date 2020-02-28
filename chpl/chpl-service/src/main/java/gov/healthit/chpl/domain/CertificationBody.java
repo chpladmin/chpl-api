@@ -5,13 +5,11 @@ import java.util.Date;
 
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
-/**
- * Certification body domain object.
- * 
- * @author kekey
- *
- */
+@Builder
+@AllArgsConstructor
 public class CertificationBody implements Serializable {
     private static final long serialVersionUID = 5328477887912042588L;
     private Long id;
