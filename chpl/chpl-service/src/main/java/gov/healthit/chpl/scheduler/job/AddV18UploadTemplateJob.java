@@ -1,6 +1,8 @@
 package gov.healthit.chpl.scheduler.job;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -13,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.dao.UploadTemplateVersionDAO;
 import gov.healthit.chpl.domain.concept.UploadTemplateVersion;
 import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
 import gov.healthit.chpl.entity.listing.pending.UploadTemplateVersionEntity;
@@ -37,12 +39,21 @@ public class AddV18UploadTemplateJob implements Job {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Add 2015 V18 Upload Template job. *********");
         try {
-            UploadTemplateVersionDTO newUploadTemplate = new UploadTemplateVersionDTO();
-            newUploadTemplate.setAvailableAsOf(new Date());
-            newUploadTemplate.setDeprecated(Boolean.FALSE);
-            newUploadTemplate.setHeaderCsv(CSV_HEADER);
-            newUploadTemplate.setName(UploadTemplateVersion.EDITION_2015_VERSION_4.getName());
-            uploadTemplateDao.create(newUploadTemplate);
+            List<UploadTemplateVersionDTO> allTemplates = uploadTemplateDao.findAll();
+            Optional<UploadTemplateVersionDTO> existingTemplate = allTemplates.stream()
+                .filter(currTemplate -> currTemplate.getName().equals(UploadTemplateVersion.EDITION_2015_VERSION_4.getName()))
+                .findFirst();
+
+            if (existingTemplate.isPresent()) {
+                LOGGER.info("Template " + UploadTemplateVersion.EDITION_2015_VERSION_4.getName() + " already exists.");
+            } else {
+                UploadTemplateVersionDTO newUploadTemplate = new UploadTemplateVersionDTO();
+                newUploadTemplate.setAvailableAsOf(new Date());
+                newUploadTemplate.setDeprecated(Boolean.FALSE);
+                newUploadTemplate.setHeaderCsv(CSV_HEADER);
+                newUploadTemplate.setName(UploadTemplateVersion.EDITION_2015_VERSION_4.getName());
+                uploadTemplateDao.create(newUploadTemplate);
+            }
         } catch (final Exception e) {
             LOGGER.error(e);
         } finally {
@@ -52,7 +63,7 @@ public class AddV18UploadTemplateJob implements Job {
     }
 
     @Component("insertableUploadTemplateDao")
-    private static class InsertableUploadTemplateDao extends BaseDAOImpl {
+    private static class InsertableUploadTemplateDao extends UploadTemplateVersionDAO {
 
         @SuppressWarnings("unused")
         InsertableUploadTemplateDao() {
