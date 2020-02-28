@@ -30,7 +30,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
     private TestFunctionalityAllowedByRoleReviewer reviewer;
 
     @Before
-    public void beforeAll() {
+    public void before() {
         // Setup some common mocks - these can be changed in each test if necessary
         ff4j = Mockito.mock(FF4j.class);
         Mockito.when(ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)).thenReturn(true);

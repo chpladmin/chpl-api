@@ -16,7 +16,12 @@ import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestSt
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestTaskEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestToolEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultUcdProcessEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Singular;
 
+@Builder
+@AllArgsConstructor
 public class PendingCertificationResultDTO implements Serializable {
     private static final long serialVersionUID = -1026669045107851464L;
     private Long id;
@@ -35,15 +40,34 @@ public class PendingCertificationResultDTO implements Serializable {
     private String privacySecurityFramework;
     private CertificationCriterionDTO criterion;
 
+    @Singular
     private List<PendingCertificationResultUcdProcessDTO> ucdProcesses;
+
+    @Singular("additionalSoftwareSingle")
     private List<PendingCertificationResultAdditionalSoftwareDTO> additionalSoftware;
+
+    @Singular("testDataSingle")
     private List<PendingCertificationResultTestDataDTO> testData;
+
+    @Singular("testFunctionalitySingle")
     private List<PendingCertificationResultTestFunctionalityDTO> testFunctionality;
+
+    @Singular
     private List<PendingCertificationResultTestProcedureDTO> testProcedures;
+
+    @Singular
     private List<PendingCertificationResultTestStandardDTO> testStandards;
+
+    @Singular
     private List<PendingCertificationResultTestToolDTO> testTools;
+
+    @Singular
     private List<PendingCertificationResultMacraMeasureDTO> g1MacraMeasures;
+
+    @Singular
     private List<PendingCertificationResultMacraMeasureDTO> g2MacraMeasures;
+
+    @Singular
     private List<PendingCertificationResultTestTaskDTO> testTasks;
 
     public PendingCertificationResultDTO() {
