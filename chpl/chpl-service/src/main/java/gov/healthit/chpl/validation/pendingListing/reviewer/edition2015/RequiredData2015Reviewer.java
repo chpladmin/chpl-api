@@ -665,7 +665,14 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                         && cert.getAttestationAnswer() != null && cert.getAttestationAnswer().equals(Boolean.TRUE)) {
                     addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingUseCases",
                             cert.getCriterion().getNumber());
+                } else if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.USE_CASES)
+                        && !StringUtils.isEmpty(cert.getUseCases())
+                        && (cert.getAttestationAnswer() == null || cert.getAttestationAnswer().equals(Boolean.FALSE))) {
+                    listing.getWarningMessages().add(
+                            msgUtil.getMessage("listing.criteria.useCasesWithoutAttestation",
+                            cert.getCriterion().getNumber()));
                 }
+
                 // jennifer asked to not make functionality tested be a required
                 // field
                 // if(certRules.hasCertOption(cert.getCriterion().getNumber(),
