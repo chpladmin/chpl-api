@@ -55,8 +55,6 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
 
     public abstract TemplateColumnIndexMap getColumnIndexMap();
 
-    public abstract String[] getCriteriaNames();
-
     public String getErrorMessage(final String errorField) {
         return msgUtil.getMessage(errorField);
     }

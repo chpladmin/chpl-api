@@ -182,8 +182,8 @@ public class PendingCertifiedProductManager extends SecuredManager {
             EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class
     })
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions).CREATE_OR_REPLACE, #acbId)")
-    public PendingCertifiedProductDTO createOrReplace(final Long acbId, final PendingCertifiedProductEntity toCreate)
+            + "T(gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions).CREATE_OR_REPLACE, #toCreate)")
+    public PendingCertifiedProductDTO createOrReplace(PendingCertifiedProductEntity toCreate)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         Long existingId = pcpDao.findIdByOncId(toCreate.getUniqueId());
         if (existingId != null) {
