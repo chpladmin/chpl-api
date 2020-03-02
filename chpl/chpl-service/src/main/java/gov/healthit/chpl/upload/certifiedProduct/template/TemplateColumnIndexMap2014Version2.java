@@ -123,6 +123,11 @@ public class TemplateColumnIndexMap2014Version2 extends TemplateColumnIndexMap {
     }
 
     @Override
+    public int getSelfDeveloperIndex() {
+        return -1;
+    }
+
+    @Override
     public int getCqmStartIndex() {
         return 28;
     }

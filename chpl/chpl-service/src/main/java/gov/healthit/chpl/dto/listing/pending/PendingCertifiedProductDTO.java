@@ -87,6 +87,7 @@ public class PendingCertifiedProductDTO implements Serializable {
     private String developerEmail;
     private String developerContactName;
     private String developerPhoneNumber;
+    private Boolean selfDeveloper;
     private Long developerContactId;
     private String reportFileLocation;
     private String sedReportFileLocation;
@@ -134,6 +135,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         this.developerId = details.getDeveloper().getDeveloperId();
         this.developerName = details.getDeveloper().getName();
         this.developerWebsite = details.getDeveloper().getWebsite();
+        this.selfDeveloper = details.getDeveloper().getSelfDeveloper();
         if (details.getDeveloper().getContact() != null) {
             this.developerEmail = details.getDeveloper().getContact().getEmail();
             this.developerContactName = details.getDeveloper().getContact().getFullName();
@@ -574,6 +576,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         this.developerContactName = entity.getDeveloperContactName();
         this.developerPhoneNumber = entity.getDeveloperPhoneNumber();
         this.developerContactId = entity.getDeveloperContactId();
+        this.selfDeveloper = entity.getSelfDeveloper();
         this.reportFileLocation = entity.getReportFileLocation();
         this.sedReportFileLocation = entity.getSedReportFileLocation();
         this.sedIntendedUserDescription = entity.getSedIntendedUserDescription();
@@ -1067,5 +1070,13 @@ public class PendingCertifiedProductDTO implements Serializable {
                 }
             }
         }
+    }
+
+    public Boolean getSelfDeveloper() {
+        return selfDeveloper;
+    }
+
+    public void setSelfDeveloper(Boolean selfDeveloper) {
+        this.selfDeveloper = selfDeveloper;
     }
 }

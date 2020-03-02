@@ -33,6 +33,7 @@ public abstract class TemplateColumnIndexMap {
     public abstract int getAccessibilityStandardIndex();
     public abstract int getK1Index();
     public abstract int getK2Index();
+    public abstract int getSelfDeveloperIndex();
     public abstract int getCqmStartIndex();
     public abstract int getCqmEndIndex();
     public abstract int getSedStartIndex();

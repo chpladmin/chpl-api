@@ -86,6 +86,10 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
     protected void parseDeveloperProductVersion(final PendingCertifiedProductEntity pendingCertifiedProduct,
             final CSVRecord record) {
         String developer = record.get(getColumnIndexMap().getDeveloperIndex()).trim();
+        if (getColumnIndexMap().getSelfDeveloperIndex() >= 0) {
+            String selfDeveloperStr = record.get(getColumnIndexMap().getSelfDeveloperIndex()).trim();
+            pendingCertifiedProduct.setSelfDeveloper(asBoolean(selfDeveloperStr));
+        }
         String product = record.get(getColumnIndexMap().getProductIndex()).trim();
         String productVersion = record.get(getColumnIndexMap().getVersionIndex()).trim();
         pendingCertifiedProduct.setDeveloperName(developer);

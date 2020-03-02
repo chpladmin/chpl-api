@@ -7,12 +7,13 @@ public class TemplateColumnIndexMap2015Version5 extends TemplateColumnIndexMap20
         return -1;
     }
 
+    @Override
     public int getSelfDeveloperIndex() {
         return 27;
     }
 
     @Override
     public int getCriteriaEndIndex() {
-        return 861;
+        return 1043;
     }
 }
