@@ -13,13 +13,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.NoArgsConstructor;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class CertificationCriterion implements Serializable {
     private static final long serialVersionUID = 5732322243572571895L;
@@ -46,6 +44,9 @@ public class CertificationCriterion implements Serializable {
 
     @XmlElement(required = true, nillable = false)
     private Boolean removed;
+
+    public CertificationCriterion() {
+    }
 
     public CertificationCriterion(final CertificationCriterionDTO dto) {
         this.id = dto.getId();
