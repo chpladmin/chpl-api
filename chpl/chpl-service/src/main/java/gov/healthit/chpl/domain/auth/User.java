@@ -34,13 +34,15 @@ public class User implements Serializable {
 
     /**
      * Constructed from DTO.
-     * 
+     *
      * @param dto
      *            the dto
      */
     public User(final UserDTO dto) {
         this.setUserId(dto.getId());
-        this.setRole(dto.getPermission().getAuthority());
+        if (dto.getPermission() != null) {
+            this.setRole(dto.getPermission().getAuthority());
+        }
         this.setSubjectName(dto.getSubjectName());
         this.setFullName(dto.getFullName());
         this.setFriendlyName(dto.getFriendlyName());
