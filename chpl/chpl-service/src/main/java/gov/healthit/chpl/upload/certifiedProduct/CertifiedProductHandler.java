@@ -246,17 +246,19 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         pendingCertifiedProduct.setTransparencyAttestationUrl(record.get(getColumnIndexMap().getK1Index()).trim());
 
         // (k)(2) attestation status
-        String k2AttestationStr = record.get(getColumnIndexMap().getK2Index()).trim();
-        if (!StringUtils.isEmpty(k2AttestationStr)) {
-            if ("0".equals(k2AttestationStr.trim())) {
-                pendingCertifiedProduct.setTransparencyAttestation(AttestationType.Negative);
-            } else if ("1".equals(k2AttestationStr.trim())) {
-                pendingCertifiedProduct.setTransparencyAttestation(AttestationType.Affirmative);
-            } else if ("2".equals(k2AttestationStr.trim())) {
-                pendingCertifiedProduct.setTransparencyAttestation(AttestationType.NA);
+        if (getColumnIndexMap().getK2Index() >= 0) {
+            String k2AttestationStr = record.get(getColumnIndexMap().getK2Index()).trim();
+            if (!StringUtils.isEmpty(k2AttestationStr)) {
+                if ("0".equals(k2AttestationStr.trim())) {
+                    pendingCertifiedProduct.setTransparencyAttestation(AttestationType.Negative);
+                } else if ("1".equals(k2AttestationStr.trim())) {
+                    pendingCertifiedProduct.setTransparencyAttestation(AttestationType.Affirmative);
+                } else if ("2".equals(k2AttestationStr.trim())) {
+                    pendingCertifiedProduct.setTransparencyAttestation(AttestationType.NA);
+                }
+            } else {
+                pendingCertifiedProduct.setTransparencyAttestation(null);
             }
-        } else {
-            pendingCertifiedProduct.setTransparencyAttestation(null);
         }
     }
 
