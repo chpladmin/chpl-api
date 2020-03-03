@@ -25,6 +25,7 @@ import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.ContactEntity;
+import gov.healthit.chpl.entity.UserDeveloperMapEntity;
 import gov.healthit.chpl.entity.developer.DeveloperACBMapEntity;
 import gov.healthit.chpl.entity.developer.DeveloperACBTransparencyMapEntity;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
@@ -45,14 +46,19 @@ public class DeveloperDAO extends BaseDAOImpl {
 
     private static final Logger LOGGER = LogManager.getLogger(DeveloperDAO.class);
     private static final DeveloperStatusType DEFAULT_STATUS = DeveloperStatusType.Active;
-    @Autowired
     private AddressDAO addressDao;
-    @Autowired
     private ContactDAO contactDao;
-    @Autowired
     private DeveloperStatusDAO statusDao;
-    @Autowired
     private ErrorMessageUtil msgUtil;
+
+    @Autowired
+    public DeveloperDAO(AddressDAO addressDao, ContactDAO contactDao, DeveloperStatusDAO statusDao,
+            ErrorMessageUtil msgUtil) {
+       this.addressDao = addressDao;
+       this.contactDao = contactDao;
+       this.statusDao = statusDao;
+       this.msgUtil = msgUtil;
+    }
 
     public DeveloperDTO create(DeveloperDTO dto) throws EntityCreationException, EntityRetrievalException {
 
@@ -642,6 +648,27 @@ public class DeveloperDAO extends BaseDAOImpl {
                 .collect(Collectors.<DeveloperDTO> toList());
     }
 
+    public List<DeveloperDTO> getDevelopersByUserId(final Long userId) {
+        Query query = entityManager.createQuery(
+                "FROM UserDeveloperMapEntity udm "
+                + "join fetch udm.developer developer "
+                + "join fetch udm.user u "
+                + "join fetch u.permission perm "
+                + "join fetch u.contact contact "
+                + "where (udm.deleted != true) AND (u.id = :userId) ",
+                UserDeveloperMapEntity.class);
+        query.setParameter("userId", userId);
+        List<UserDeveloperMapEntity> result = query.getResultList();
+
+        List<DeveloperDTO> dtos = new ArrayList<DeveloperDTO>();
+        if (result != null) {
+            for (UserDeveloperMapEntity entity : result) {
+                dtos.add(new DeveloperDTO(entity.getDeveloper()));
+            }
+        }
+        return dtos;
+    }
+
     private void create(final DeveloperEntity entity) {
         entityManager.persist(entity);
         entityManager.flush();
@@ -654,18 +681,25 @@ public class DeveloperDAO extends BaseDAOImpl {
 
     private List<DeveloperEntity> getAllEntities() {
         List<DeveloperEntity> result = entityManager.createQuery(
-                "SELECT DISTINCT v from " + "DeveloperEntity v " + "LEFT OUTER JOIN FETCH v.address "
-                        + "LEFT OUTER JOIN FETCH v.contact " + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
+                "SELECT DISTINCT v from "
+                        + "DeveloperEntity v "
+                        + "LEFT OUTER JOIN FETCH v.address "
+                        + "LEFT OUTER JOIN FETCH v.contact "
+                        + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
                         + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
-                        + "LEFT OUTER JOIN FETCH v.developerCertificationStatuses " + "where (NOT v.deleted = true)",
+                        + "LEFT OUTER JOIN FETCH v.developerCertificationStatuses "
+                        + "where (NOT v.deleted = true)",
                 DeveloperEntity.class).getResultList();
         return result;
     }
 
     private List<DeveloperEntity> getAllEntitiesIncludingDeleted() {
         List<DeveloperEntity> result = entityManager
-                .createQuery("SELECT DISTINCT v from " + "DeveloperEntity v " + "LEFT OUTER JOIN FETCH v.address "
-                        + "LEFT OUTER JOIN FETCH v.contact " + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
+                .createQuery("SELECT DISTINCT v from "
+                        + "DeveloperEntity v "
+                        + "LEFT OUTER JOIN FETCH v.address "
+                        + "LEFT OUTER JOIN FETCH v.contact "
+                        + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
                         + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
                         + "LEFT OUTER JOIN FETCH v.developerCertificationStatuses ", DeveloperEntity.class)
                 .getResultList();
@@ -679,9 +713,14 @@ public class DeveloperDAO extends BaseDAOImpl {
     private DeveloperEntity getEntityById(final Long id, final boolean includeDeleted) throws EntityRetrievalException {
 
         DeveloperEntity entity = null;
-        String queryStr = "SELECT DISTINCT v FROM " + "DeveloperEntity v " + "LEFT OUTER JOIN FETCH v.address "
-                + "LEFT OUTER JOIN FETCH v.contact " + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
-                + "LEFT OUTER JOIN FETCH statusEvents.developerStatus " + "WHERE v.id = :entityid ";
+        String queryStr = "SELECT DISTINCT v FROM "
+                + "DeveloperEntity v "
+                + "LEFT OUTER JOIN FETCH v.address "
+                + "LEFT OUTER JOIN FETCH v.contact "
+                + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
+                + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
+                + "LEFT OUTER JOIN FETCH v.developerCertificationStatuses "
+                + "WHERE v.id = :entityid ";
         if (!includeDeleted) {
             queryStr += " AND v.deleted = false";
         }
@@ -704,9 +743,13 @@ public class DeveloperDAO extends BaseDAOImpl {
         DeveloperEntity entity = null;
 
         Query query = entityManager
-                .createQuery("SELECT DISTINCT v from " + "DeveloperEntity v " + "LEFT OUTER JOIN FETCH v.address "
-                        + "LEFT OUTER JOIN FETCH v.contact " + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
+                .createQuery("SELECT DISTINCT v from "
+                        + "DeveloperEntity v "
+                        + "LEFT OUTER JOIN FETCH v.address "
+                        + "LEFT OUTER JOIN FETCH v.contact "
+                        + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
                         + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
+                        + "LEFT OUTER JOIN FETCH v.developerCertificationStatuses "
                         + "where (NOT v.deleted = true) AND (v.name = :name) ", DeveloperEntity.class);
         query.setParameter("name", name);
         @SuppressWarnings("unchecked") List<DeveloperEntity> result = query.getResultList();
@@ -723,9 +766,13 @@ public class DeveloperDAO extends BaseDAOImpl {
         DeveloperEntity entity = null;
 
         Query query = entityManager
-                .createQuery("SELECT DISTINCT v from " + "DeveloperEntity v " + "LEFT OUTER JOIN FETCH v.address "
-                        + "LEFT OUTER JOIN FETCH v.contact " + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
+                .createQuery("SELECT DISTINCT v from "
+                        + "DeveloperEntity v "
+                        + "LEFT OUTER JOIN FETCH v.address "
+                        + "LEFT OUTER JOIN FETCH v.contact "
+                        + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
                         + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
+                        + "LEFT OUTER JOIN FETCH v.developerCertificationStatuses "
                         + "where (NOT v.deleted = true) AND (v.developerCode = :code) ", DeveloperEntity.class);
         query.setParameter("code", code);
         @SuppressWarnings("unchecked") List<DeveloperEntity> result = query.getResultList();

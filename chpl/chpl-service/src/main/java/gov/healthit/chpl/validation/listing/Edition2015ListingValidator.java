@@ -23,6 +23,8 @@ import gov.healthit.chpl.validation.listing.reviewer.UnattestedCriteriaWithDataR
 import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ValidDataReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.AttestedCriteriaCqmReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.CqmAttestedCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.InvalidCriteriaCombinationReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.MacraMeasureComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaComparisonReviewer;
@@ -132,6 +134,14 @@ public class Edition2015ListingValidator extends Validator {
     @Qualifier("invalidCriteriaCombinationReviewer")
     private InvalidCriteriaCombinationReviewer invalidCriteriaCombinationReviewer;
 
+    @Autowired
+    @Qualifier("cqmAttestedCriteriaReviewer")
+    private CqmAttestedCriteriaReviewer cqmAttestedCriteriaReviewer;
+
+    @Autowired
+    @Qualifier("attestedCriteriaCqmReviewer")
+    private AttestedCriteriaCqmReviewer attestedCriteriaCqmReviewer;
+
     private List<Reviewer> reviewers;
     private List<ComparisonReviewer> comparisonReviewers;
 
@@ -157,6 +167,8 @@ public class Edition2015ListingValidator extends Validator {
             reviewers.add(testFunctionalityReviewer);
             reviewers.add(requiredCriteriaValidator);
             reviewers.add(invalidCriteriaCombinationReviewer);
+            reviewers.add(attestedCriteriaCqmReviewer);
+            reviewers.add(cqmAttestedCriteriaReviewer);
         }
         return reviewers;
     }

@@ -3,6 +3,7 @@ package gov.healthit.chpl.dao;
 import java.util.Date;
 import java.util.List;
 
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductSummaryDTO;
@@ -49,13 +50,13 @@ public interface CertifiedProductDAO {
 
     List<CertifiedProductDetailsDTO> getDetailsByChplNumbers(List<String> chplProductNumbers);
 
-    List<CertifiedProductDetailsDTO> getDetailsByVersionId(Long versionId);
+    List<CertifiedProduct> getDetailsByVersionId(Long versionId);
 
     List<CertifiedProductDetailsDTO> getDetailsByProductId(Long productId);
 
     List<CertifiedProductDetailsDTO> getDetailsByAcbIds(List<Long> acbIds);
 
-    List<CertifiedProductDetailsDTO> getDetailsByVersionAndAcbIds(Long versionId, List<Long> acbIds);
+    List<CertifiedProduct> getDetailsByVersionAndAcbIds(Long versionId, List<Long> acbIds);
 
     List<CertifiedProductSummaryDTO> getSummaryByUrl(String url, UrlType urlType);
 

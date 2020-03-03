@@ -1909,7 +1909,7 @@
         <properties>
             <privacySecurity>true</privacySecurity>
             <standardsTested>true</standardsTested>
-            <functionalityTested>true</functionalityTested>
+            <functionalityTested>false</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
             <documentationUrl>false</documentationUrl>

@@ -33,10 +33,16 @@ public class TestFunctionalityCriteriaMapEntity implements Serializable {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Column(name = "criteria_id")
+    private Long certificationCriterionId;
+
     @Basic(optional = false)
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "criteria_id", insertable = false, updatable = false)
     private CertificationCriterionEntity criteria;
+
+    @Column(name = "test_functionality_id")
+    private Long testFunctionalityId;
 
     @Basic(optional = false)
     @OneToOne(optional = false, fetch = FetchType.LAZY)
@@ -113,5 +119,21 @@ public class TestFunctionalityCriteriaMapEntity implements Serializable {
 
     public void setLastModifiedUser(Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public Long getCertificationCriterionId() {
+        return certificationCriterionId;
+    }
+
+    public void setCertificationCriterionId(Long certificationCriterionId) {
+        this.certificationCriterionId = certificationCriterionId;
+    }
+
+    public Long getTestFunctionalityId() {
+        return testFunctionalityId;
+    }
+
+    public void setTestFunctionalityId(Long testFunctionalityId) {
+        this.testFunctionalityId = testFunctionalityId;
     }
 }

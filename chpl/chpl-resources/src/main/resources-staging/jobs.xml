@@ -830,6 +830,21 @@
                 </entry>
             </job-data-map>
         </job>
+        <!--  Add V18 Upload Template -->
+        <job>
+            <name>addV18UploadTemplateJob</name>
+            <group>systemJobs</group>
+            <description>Makes 2015 V18 Upload Template Available</description>
+            <job-class>gov.healthit.chpl.scheduler.job.AddV18UploadTemplateJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+            </job-data-map>
+        </job>
         <!-- Job used to add criteria to 2015 Listings-->
         <job>
             <name>addCriteriaTo2015ListingsJob</name>
@@ -892,6 +907,21 @@
             <group>systemJobs</group>
             <description>Modifies a specific test functionality's number and name</description>
             <job-class>gov.healthit.chpl.scheduler.job.ModifyTestFunctionalityJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+            </job-data-map>
+        </job>
+        <!--  Updates all g1g2 "ACI" MACRA measures to "PI" -->
+        <job>
+            <name>updateMacraMeasuresJob</name>
+            <group>systemJobs</group>
+            <description>Updates all g1g2 ACI MACRA measures to PI</description>
+            <job-class>gov.healthit.chpl.scheduler.job.UpdateMacraMeasuresJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>

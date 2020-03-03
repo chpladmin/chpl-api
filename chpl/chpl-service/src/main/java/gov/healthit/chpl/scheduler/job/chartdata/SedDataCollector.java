@@ -11,8 +11,11 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.scheduler.SchedulerCertifiedProductSearchDetailsAsync;
@@ -27,7 +30,10 @@ import gov.healthit.chpl.scheduler.SchedulerCertifiedProductSearchDetailsAsync;
  */
 public class SedDataCollector {
     private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
-    private static final String EDITION_2015 = "2015";
+    private static final String CRITERION_G_3 = "170.315 (g)(3)";
+
+    @Autowired
+    private CertificationCriterionDAO criteriaDao;
 
     @Autowired
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
@@ -60,14 +66,30 @@ public class SedDataCollector {
 
     private List<CertifiedProductFlatSearchResult> filterData(
             final List<CertifiedProductFlatSearchResult> certifiedProducts) {
+        List<CertificationCriterionDTO> g3Criteria = criteriaDao.getAllByNumber(CRITERION_G_3);
         List<CertifiedProductFlatSearchResult> results = new ArrayList<CertifiedProductFlatSearchResult>();
         for (CertifiedProductFlatSearchResult result : certifiedProducts) {
-            if (result.getEdition().equalsIgnoreCase(EDITION_2015)
-                    && result.getCriteriaMet().contains("170.315 (g)(3)")) {
+            if (result.getEdition().equalsIgnoreCase(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())
+                    && containsAnyCriterion(result, g3Criteria)) {
                 results.add(result);
             }
         }
         return results;
+    }
+
+    private boolean containsAnyCriterion(CertifiedProductFlatSearchResult listing, List<CertificationCriterionDTO> criteria) {
+        boolean result = false;
+        String[] certIdStrings = listing.getCriteriaMet().split(CertifiedProductFlatSearchResult.CERTS_SPLIT_CHAR);
+        for (CertificationCriterionDTO criterion : criteria) {
+            for (int i = 0; i < certIdStrings.length && !result; i++) {
+                String certIdStr = certIdStrings[i];
+                Long certId = Long.parseLong(certIdStr);
+                if (criterion.getId().equals(certId)) {
+                    result = true;
+                }
+            }
+        }
+        return result;
     }
 
     private List<CertifiedProductSearchDetails> getCertifiedProductDetailsForAll(
