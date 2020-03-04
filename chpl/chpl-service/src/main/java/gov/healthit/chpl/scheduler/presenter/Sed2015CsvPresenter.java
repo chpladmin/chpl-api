@@ -28,6 +28,7 @@ public class Sed2015CsvPresenter {
         int numRows = 0;
         try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
+            writer.write('\ufeff');
             csvPrinter.printRecord(generateHeaderValues());
             for (CertifiedProductSearchDetails currListing : cpList) {
                 List<List<String>> rows = generateRows(currListing);
@@ -81,13 +82,13 @@ public class Sed2015CsvPresenter {
             return null;
         }
 
-        //each row corresponds to one participant of one test task
-        //and can result in many rows for a single listing
+        // each row corresponds to one participant of one test task
+        // and can result in many rows for a single listing
         List<List<String>> result = new ArrayList<List<String>>();
         for (TestTask testTask : listing.getSed().getTestTasks()) {
             if (testTask.getTestParticipants() == null || testTask.getTestParticipants().size() == 0) {
                 LOGGER.warn("No participants were found for listing " + listing.getChplProductNumber()
-                    + " test task ID " + testTask.getId());
+                        + " test task ID " + testTask.getId());
             } else {
                 for (TestParticipant participant : testTask.getTestParticipants()) {
                     List<String> row = new ArrayList<String>();
