@@ -10,6 +10,8 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
+import gov.healthit.chpl.domain.NonconformityType;
+import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
@@ -18,8 +20,8 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-@Component("survRemovedCriteriaComparisonReviewer")
-public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
+@Component("surveillanceRemovedDataComparisonReviewer")
+public class SurveillanceRemovedDataComparisonReviewer implements ComparisonReviewer {
 
     private CertificationCriterionDAO criterionDao;
     private ErrorMessageUtil msgUtil;
@@ -27,7 +29,7 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
     private FF4j ff4j;
 
     @Autowired
-    public RemovedCriteriaComparisonReviewer(CertificationCriterionDAO criterionDao, ErrorMessageUtil msgUtil,
+    public SurveillanceRemovedDataComparisonReviewer(CertificationCriterionDAO criterionDao, ErrorMessageUtil msgUtil,
             ResourcePermissions resourcePermissions, FF4j ff4j) {
         this.criterionDao = criterionDao;
         this.msgUtil = msgUtil;
@@ -63,14 +65,27 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
                         msgUtil.getMessage("surveillance.requirementNotAddedForRemovedCriteria",
                                 updatedReq.getRequirement()));
                 checkNonconformitiesForRemovedCriteria(updatedSurveillance, null, updatedReq.getNonconformities());
+            } else if (!existingReq.isPresent() && hasRemovedRequirement(updatedReq)) {
+                //if it's a new requirement it can't have transparency requirements
+                updatedSurveillance.getErrorMessages().add(
+                        msgUtil.getMessage("surveillance.requirementNotAddedForRemovedRequirement",
+                                updatedReq.getRequirement()));
+                checkNonconformitiesForRemovedRequirement(updatedSurveillance, null, updatedReq.getNonconformities());
             } else if (existingReq.isPresent()) {
                 if (hasRemovedCriteria(updatedReq) && !updatedReq.matches(existingReq.get())) {
                     //if it's an existing requirement with a removed criteria then it can't be edited
                     updatedSurveillance.getErrorMessages().add(
                             msgUtil.getMessage("surveillance.requirementNotEditedForRemovedCriteria",
                                     updatedReq.getRequirement()));
+                } else if (hasRemovedRequirement(updatedReq) && !updatedReq.matches(existingReq.get())) {
+                    //if it's an existing requirement with transparency then it can't be edited
+                    updatedSurveillance.getErrorMessages().add(
+                            msgUtil.getMessage("surveillance.requirementNotEditedForRemovedRequirement",
+                                    updatedReq.getRequirement()));
                 }
                 checkNonconformitiesForRemovedCriteria(
+                        updatedSurveillance, existingReq.get().getNonconformities(), updatedReq.getNonconformities());
+                checkNonconformitiesForRemovedRequirement(
                         updatedSurveillance, existingReq.get().getNonconformities(), updatedReq.getNonconformities());
             }
         }
@@ -103,6 +118,46 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
                     //if it's an existing nonconformity with a removed criteria then it can't be edited
                     updatedSurveillance.getErrorMessages().add(
                             msgUtil.getMessage("surveillance.nonconformityNotEditedForRemovedCriteria",
+                                    updatedNonconformity.getNonconformityType()));
+            }
+        }
+    }
+
+    private void checkNonconformitiesForRemovedRequirement(Surveillance updatedSurveillance,
+            List<SurveillanceNonconformity> existingSurvNonconformities,
+            List<SurveillanceNonconformity> updatedSurvNonconformities) {
+        for (SurveillanceNonconformity updatedNonconformity : updatedSurvNonconformities) {
+            //look for an existing nonconformity that matches the updated nonconformity
+            //and check for removed transparency and/or updates to the nonconformity
+            Optional<SurveillanceNonconformity> existingNonconformity
+                = existingSurvNonconformities.stream()
+                    .filter(existingSurvNonconformity ->
+                        doNonconformitiesMatch(updatedNonconformity, existingSurvNonconformity))
+                    .findFirst();
+
+            if (!existingNonconformity.isPresent() && hasRemovedCriteria(updatedNonconformity)) {
+                //if it's a new nonconformity it can't have any removed criteria
+                updatedSurveillance.getErrorMessages().add(
+                        msgUtil.getMessage("surveillance.nonconformityNotAddedForRemovedCriteria",
+                                updatedNonconformity.getNonconformityType()));
+            } else if (!existingNonconformity.isPresent() && hasRemovedRequirement(updatedNonconformity)) {
+                //if it's a new nonconformity it can't have transparency
+                updatedSurveillance.getErrorMessages().add(
+                        msgUtil.getMessage("surveillance.nonconformityNotAddedForRemovedRequirement",
+                                updatedNonconformity.getNonconformityType()));
+            } else if (existingNonconformity.isPresent()
+                    && hasRemovedCriteria(updatedNonconformity)
+                    && !updatedNonconformity.matches(existingNonconformity.get())) {
+                    //if it's an existing nonconformity with a removed criteria then it can't be edited
+                    updatedSurveillance.getErrorMessages().add(
+                            msgUtil.getMessage("surveillance.nonconformityNotEditedForRemovedCriteria",
+                                    updatedNonconformity.getNonconformityType()));
+            } else if (existingNonconformity.isPresent()
+                    && hasRemovedRequirement(updatedNonconformity)
+                    && !updatedNonconformity.matches(existingNonconformity.get())) {
+                    //if it's an existing nonconformity with transparency then it can't be edited
+                    updatedSurveillance.getErrorMessages().add(
+                            msgUtil.getMessage("surveillance.nonconformityNotEditedForRemovedRequirement",
                                     updatedNonconformity.getNonconformityType()));
             }
         }
@@ -144,6 +199,18 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
         return false;
     }
 
+    private boolean hasRemovedRequirement(SurveillanceRequirement req) {
+        if (req.getType() != null && !StringUtils.isEmpty(req.getType().getName())) {
+            if (req.getType().getName().equalsIgnoreCase(SurveillanceRequirementType.TRANS_DISCLOSURE_REQ)) {
+                String requirement = req.getRequirement();
+                if (requirement != null && requirement.equalsIgnoreCase(RequirementTypeEnum.K2.getName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * Determine if a nonconformity references a removed criteria.
      */
@@ -159,6 +226,16 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
                         && criterion.getRemoved().booleanValue()) {
                     return true;
                 }
+            }
+        }
+        return false;
+    }
+
+    private boolean hasRemovedRequirement(SurveillanceNonconformity nonconformity) {
+        if (!StringUtils.isEmpty(nonconformity.getNonconformityType())) {
+            String requirement = nonconformity.getNonconformityType();
+            if (requirement != null && requirement.equalsIgnoreCase(NonconformityType.K2.getName())) {
+                return true;
             }
         }
         return false;
