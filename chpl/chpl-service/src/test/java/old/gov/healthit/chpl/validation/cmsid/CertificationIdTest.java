@@ -63,7 +63,7 @@ public class CertificationIdTest extends TestCase {
         Validator validator = validatorFactory.getValidator("2014");
 
         // Lookup Criteria for Validating
-        List<String> criteriaDtos = certificationIdManager.getCriteriaNumbersMetByCertifiedProductIds(productIdList);
+        List<String> criteriaDtos = certificationIdManager.getCriteriaMetByCertifiedProductIds(productIdList);
 
         // Lookup CQMs for Validating
         List<CQMMetDTO> cqmDtos = certificationIdManager.getCqmsMetByCertifiedProductIds(productIdList);
@@ -85,7 +85,7 @@ public class CertificationIdTest extends TestCase {
         Validator validator = validatorFactory.getValidator("2015");
 
         // Lookup Criteria for Validating
-        List<String> criteriaDtos = certificationIdManager.getCriteriaNumbersMetByCertifiedProductIds(productIdList);
+        List<String> criteriaDtos = certificationIdManager.getCriteriaMetByCertifiedProductIds(productIdList);
 
         // Lookup CQMs for Validating
         List<CQMMetDTO> cqmDtos = certificationIdManager.getCqmsMetByCertifiedProductIds(productIdList);
@@ -108,7 +108,7 @@ public class CertificationIdTest extends TestCase {
         Validator validator = validatorFactory.getValidator("2014/2015");
 
         // Lookup Criteria for Validating
-        List<String> criteriaDtos = certificationIdManager.getCriteriaNumbersMetByCertifiedProductIds(productIdList);
+        List<String> criteriaDtos = certificationIdManager.getCriteriaMetByCertifiedProductIds(productIdList);
 
         // Lookup CQMs for Validating
         List<CQMMetDTO> cqmDtos = certificationIdManager.getCqmsMetByCertifiedProductIds(productIdList);

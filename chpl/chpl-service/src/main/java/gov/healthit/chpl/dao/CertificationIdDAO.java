@@ -18,8 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.CQMMetDTO;
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationIdAndCertifiedProductDTO;
 import gov.healthit.chpl.dto.CertificationIdDTO;
+import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.CertificationIdAndCertifiedProductEntity;
 import gov.healthit.chpl.entity.CertificationIdEntity;
 import gov.healthit.chpl.entity.CertificationIdProductMapEntity;
@@ -222,18 +224,22 @@ public class CertificationIdDAO extends BaseDAOImpl {
         return queryResult;
     }
 
-    public List<String> getCriteriaNumbersMetByCertifiedProductIds(List<Long> productIds) {
-        List<String> results = new ArrayList<String>();
+    public List<CertificationCriterionDTO> getCriteriaMetByCertifiedProductIds(List<Long> productIds) {
+        List<CertificationCriterionEntity> entities = new ArrayList<CertificationCriterionEntity>();
         if ((null != productIds) && (productIds.size() > 0)) {
             Query query = entityManager.createQuery(
-                    "SELECT crd.number FROM CertificationResultDetailsEntity crd "
+                    "SELECT crd.certificationCriterion FROM CertificationResultDetailsEntity crd "
                             + "WHERE crd.success = TRUE "
                             + "AND crd.deleted = FALSE "
-                            + "AND crd.certifiedProductId IN (:productIds) "
-                            + "GROUP BY crd.number",
-                            String.class);
+                            + "AND crd.certifiedProductId IN (:productIds)",
+                            CertificationCriterionEntity.class);
             query.setParameter("productIds", productIds);
-            results = query.getResultList();
+            entities = query.getResultList();
+        }
+        List<CertificationCriterionDTO> results = new ArrayList<CertificationCriterionDTO>();
+        for (CertificationCriterionEntity entity : entities) {
+            CertificationCriterionDTO dto = new CertificationCriterionDTO(entity);
+            results.add(dto);
         }
         return results;
     }
