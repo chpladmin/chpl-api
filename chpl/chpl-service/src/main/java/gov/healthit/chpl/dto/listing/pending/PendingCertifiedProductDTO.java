@@ -50,8 +50,17 @@ import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTargetedU
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTestingLabMapEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCqmCriterionEntity;
 import gov.healthit.chpl.util.Util;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 public class PendingCertifiedProductDTO implements Serializable {
     private static final long serialVersionUID = 8778880570983282001L;
     private Long id;
@@ -65,8 +74,6 @@ public class PendingCertifiedProductDTO implements Serializable {
     private Long productClassificationId;
     private Boolean deleted;
     private Long lastModifiedUser;
-    private Set<String> errorMessages;
-    private Set<String> warningMessages;
 
     private String uniqueId;
     private String recordStatus;
@@ -78,6 +85,8 @@ public class PendingCertifiedProductDTO implements Serializable {
     private String acbCertificationId;
     private String certificationBodyName;
     private String productClassificationName;
+    @Setter(AccessLevel.NONE)
+    @Getter(AccessLevel.NONE)
     private Date certificationDate;
     private String developerStreetAddress;
     private String developerCity;
@@ -92,6 +101,8 @@ public class PendingCertifiedProductDTO implements Serializable {
     private String reportFileLocation;
     private String sedReportFileLocation;
     private String sedIntendedUserDescription;
+    @Setter(AccessLevel.NONE)
+    @Getter(AccessLevel.NONE)
     private Date sedTestingEnd;
     private Boolean ics;
     private Boolean hasQms;
@@ -99,32 +110,24 @@ public class PendingCertifiedProductDTO implements Serializable {
     private TransparencyAttestationDTO transparencyAttestation;
     private String transparencyAttestationUrl;
 
-    private List<PendingCertifiedProductTestingLabDTO> testingLabs;
-    private List<CertifiedProductDetailsDTO> icsParents;
-    private List<CertifiedProductDetailsDTO> icsChildren;
-    private List<PendingCertificationResultDTO> certificationCriterion;
-    private List<PendingCqmCriterionDTO> cqmCriterion;
-    private List<PendingCertifiedProductQmsStandardDTO> qmsStandards;
-    private List<PendingCertifiedProductTargetedUserDTO> targetedUsers;
-    private List<PendingCertifiedProductAccessibilityStandardDTO> accessibilityStandards;
-
+    @Setter(AccessLevel.NONE)
+    @Getter(AccessLevel.NONE)
     private Date uploadDate;
 
-    public PendingCertifiedProductDTO() {
-        this.errorMessages = new HashSet<String>();
-        this.warningMessages = new HashSet<String>();
-        this.testingLabs = new ArrayList<PendingCertifiedProductTestingLabDTO>();
-        this.icsParents = new ArrayList<CertifiedProductDetailsDTO>();
-        this.icsChildren = new ArrayList<CertifiedProductDetailsDTO>();
-        this.certificationCriterion = new ArrayList<PendingCertificationResultDTO>();
-        this.cqmCriterion = new ArrayList<PendingCqmCriterionDTO>();
-        this.qmsStandards = new ArrayList<PendingCertifiedProductQmsStandardDTO>();
-        this.targetedUsers = new ArrayList<PendingCertifiedProductTargetedUserDTO>();
-        this.accessibilityStandards = new ArrayList<PendingCertifiedProductAccessibilityStandardDTO>();
-    }
+    private List<PendingCertifiedProductTestingLabDTO> testingLabs = new ArrayList<PendingCertifiedProductTestingLabDTO>();
+    private List<CertifiedProductDetailsDTO> icsParents = new ArrayList<CertifiedProductDetailsDTO>();
+    private List<CertifiedProductDetailsDTO> icsChildren = new ArrayList<CertifiedProductDetailsDTO>();
+    private List<PendingCertificationResultDTO> certificationCriterion = new ArrayList<PendingCertificationResultDTO>();
+    private List<PendingCqmCriterionDTO> cqmCriterion = new ArrayList<PendingCqmCriterionDTO>();
+    private List<PendingCertifiedProductQmsStandardDTO> qmsStandards = new ArrayList<PendingCertifiedProductQmsStandardDTO>();
+    private List<PendingCertifiedProductTargetedUserDTO> targetedUsers = new ArrayList<PendingCertifiedProductTargetedUserDTO>();
+    private List<PendingCertifiedProductAccessibilityStandardDTO> accessibilityStandards
+        = new ArrayList<PendingCertifiedProductAccessibilityStandardDTO>();
+
+    private Set<String> errorMessages = new HashSet<String>();
+    private Set<String> warningMessages = new HashSet<String>();
 
     public PendingCertifiedProductDTO(PendingCertifiedProductDetails details) {
-        this();
         this.id = details.getId();
         if (details.getPracticeType().get("id") != null) {
             this.practiceTypeId = Long.valueOf(details.getPracticeType().get("id").toString());
@@ -647,244 +650,12 @@ public class PendingCertifiedProductDTO implements Serializable {
         }
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Boolean getHasQms() {
-        return hasQms;
-    }
-
-    public void setHasQms(Boolean hasQms) {
-        this.hasQms = hasQms;
-    }
-
-    public Long getPracticeTypeId() {
-        return practiceTypeId;
-    }
-
-    public void setPracticeTypeId(Long practiceTypeId) {
-        this.practiceTypeId = practiceTypeId;
-    }
-
-    public Long getDeveloperId() {
-        return developerId;
-    }
-
-    public void setDeveloperId(Long developerId) {
-        this.developerId = developerId;
-    }
-
-    public AddressDTO getDeveloperAddress() {
-        return developerAddress;
-    }
-
-    public void setDeveloperAddress(AddressDTO developerAddress) {
-        this.developerAddress = developerAddress;
-    }
-
-    public Long getProductId() {
-        return productId;
-    }
-
-    public void setProductId(Long productId) {
-        this.productId = productId;
-    }
-
-    public Long getProductVersionId() {
-        return productVersionId;
-    }
-
-    public void setProductVersionId(Long productVersionId) {
-        this.productVersionId = productVersionId;
-    }
-
-    public Long getCertificationEditionId() {
-        return certificationEditionId;
-    }
-
-    public void setCertificationEditionId(Long certificationEditionId) {
-        this.certificationEditionId = certificationEditionId;
-    }
-
-    public Long getCertificationBodyId() {
-        return certificationBodyId;
-    }
-
-    public void setCertificationBodyId(Long certificationBodyId) {
-        this.certificationBodyId = certificationBodyId;
-    }
-
-    public Long getProductClassificationId() {
-        return productClassificationId;
-    }
-
-    public void setProductClassificationId(Long productClassificationId) {
-        this.productClassificationId = productClassificationId;
-    }
-
-    public String getUniqueId() {
-        return uniqueId;
-    }
-
-    public void setUniqueId(String uniqueId) {
-        this.uniqueId = uniqueId;
-    }
-
-    public String getRecordStatus() {
-        return recordStatus;
-    }
-
-    public void setRecordStatus(String recordStatus) {
-        this.recordStatus = recordStatus;
-    }
-
-    public String getPracticeType() {
-        return practiceType;
-    }
-
-    public void setPracticeType(String practiceType) {
-        this.practiceType = practiceType;
-    }
-
-    public String getDeveloperName() {
-        return developerName;
-    }
-
-    public void setDeveloperName(String developerName) {
-        this.developerName = developerName;
-    }
-
-    public String getProductName() {
-        return productName;
-    }
-
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
-    public String getProductVersion() {
-        return productVersion;
-    }
-
-    public void setProductVersion(String productVersion) {
-        this.productVersion = productVersion;
-    }
-
-    public String getCertificationEdition() {
-        return certificationEdition;
-    }
-
-    public void setCertificationEdition(String certificationEdition) {
-        this.certificationEdition = certificationEdition;
-    }
-
-    public String getAcbCertificationId() {
-        return acbCertificationId;
-    }
-
-    public void setAcbCertificationId(String acbCertificationId) {
-        this.acbCertificationId = acbCertificationId;
-    }
-
-    public String getCertificationBodyName() {
-        return certificationBodyName;
-    }
-
-    public void setCertificationBodyName(String certificationBodyName) {
-        this.certificationBodyName = certificationBodyName;
-    }
-
-    public String getProductClassificationName() {
-        return productClassificationName;
-    }
-
-    public void setProductClassificationName(String productClassificationName) {
-        this.productClassificationName = productClassificationName;
-    }
-
     public Date getCertificationDate() {
         return Util.getNewDate(certificationDate);
     }
 
     public void setCertificationDate(Date certificationDate) {
         this.certificationDate = Util.getNewDate(certificationDate);
-    }
-
-    public String getDeveloperStreetAddress() {
-        return developerStreetAddress;
-    }
-
-    public void setDeveloperStreetAddress(String developerStreetAddress) {
-        this.developerStreetAddress = developerStreetAddress;
-    }
-
-    public String getDeveloperCity() {
-        return developerCity;
-    }
-
-    public void setDeveloperCity(String developerCity) {
-        this.developerCity = developerCity;
-    }
-
-    public String getDeveloperState() {
-        return developerState;
-    }
-
-    public void setDeveloperState(String developerState) {
-        this.developerState = developerState;
-    }
-
-    public String getDeveloperZipCode() {
-        return developerZipCode;
-    }
-
-    public void setDeveloperZipCode(String developerZipCode) {
-        this.developerZipCode = developerZipCode;
-    }
-
-    public String getDeveloperWebsite() {
-        return developerWebsite;
-    }
-
-    public void setDeveloperWebsite(String developerWebsite) {
-        this.developerWebsite = developerWebsite;
-    }
-
-    public String getDeveloperEmail() {
-        return developerEmail;
-    }
-
-    public void setDeveloperEmail(String developerEmail) {
-        this.developerEmail = developerEmail;
-    }
-
-    public String getReportFileLocation() {
-        return reportFileLocation;
-    }
-
-    public void setReportFileLocation(String reportFileLocation) {
-        this.reportFileLocation = reportFileLocation;
-    }
-
-    public List<PendingCertificationResultDTO> getCertificationCriterion() {
-        return certificationCriterion;
-    }
-
-    public void setCertificationCriterion(List<PendingCertificationResultDTO> certificationCriterion) {
-        this.certificationCriterion = certificationCriterion;
-    }
-
-    public List<PendingCqmCriterionDTO> getCqmCriterion() {
-        return cqmCriterion;
-    }
-
-    public void setCqmCriterion(List<PendingCqmCriterionDTO> cqmCriterion) {
-        this.cqmCriterion = cqmCriterion;
     }
 
     public Date getUploadDate() {
@@ -895,165 +666,12 @@ public class PendingCertifiedProductDTO implements Serializable {
         this.uploadDate = Util.getNewDate(uploadDate);
     }
 
-    public Set<String> getErrorMessages() {
-        return errorMessages;
-    }
-
-    public void setErrorMessages(Set<String> errorMessages) {
-        this.errorMessages = errorMessages;
-    }
-
-    public Set<String> getWarningMessages() {
-        return warningMessages;
-    }
-
-    public void setWarningMessages(Set<String> warningMessages) {
-        this.warningMessages = warningMessages;
-    }
-
-    public Boolean getIcs() {
-        return ics;
-    }
-
-    public void setIcs(Boolean ics) {
-        this.ics = ics;
-    }
-
-    public String getDeveloperContactName() {
-        return developerContactName;
-    }
-
-    public void setDeveloperContactName(String developerContactName) {
-        this.developerContactName = developerContactName;
-    }
-
-    public String getDeveloperPhoneNumber() {
-        return developerPhoneNumber;
-    }
-
-    public void setDeveloperPhoneNumber(String developerPhoneNumber) {
-        this.developerPhoneNumber = developerPhoneNumber;
-    }
-
-    public String getSedReportFileLocation() {
-        return sedReportFileLocation;
-    }
-
-    public void setSedReportFileLocation(String sedReportFileLocation) {
-        this.sedReportFileLocation = sedReportFileLocation;
-    }
-
-    public List<PendingCertifiedProductQmsStandardDTO> getQmsStandards() {
-        return qmsStandards;
-    }
-
-    public void setQmsStandards(List<PendingCertifiedProductQmsStandardDTO> qmsStandards) {
-        this.qmsStandards = qmsStandards;
-    }
-
-    public TransparencyAttestationDTO getTransparencyAttestation() {
-        return transparencyAttestation;
-    }
-
-    public void setTransparencyAttestation(TransparencyAttestationDTO transparencyAttestation) {
-        this.transparencyAttestation = transparencyAttestation;
-    }
-
-    public Long getDeveloperContactId() {
-        return developerContactId;
-    }
-
-    public void setDeveloperContactId(Long developerContactId) {
-        this.developerContactId = developerContactId;
-    }
-
-    public String getTransparencyAttestationUrl() {
-        return transparencyAttestationUrl;
-    }
-
-    public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
-        this.transparencyAttestationUrl = transparencyAttestationUrl;
-    }
-
-    public List<PendingCertifiedProductTestingLabDTO> getTestingLabs() {
-        return testingLabs;
-    }
-
-    public void setTestingLabs(List<PendingCertifiedProductTestingLabDTO> testingLabs) {
-        this.testingLabs = testingLabs;
-    }
-
-    public List<PendingCertifiedProductTargetedUserDTO> getTargetedUsers() {
-        return targetedUsers;
-    }
-
-    public void setTargetedUsers(List<PendingCertifiedProductTargetedUserDTO> targetedUsers) {
-        this.targetedUsers = targetedUsers;
-    }
-
-    public Boolean getAccessibilityCertified() {
-        return accessibilityCertified;
-    }
-
-    public void setAccessibilityCertified(Boolean accessibilityCertified) {
-        this.accessibilityCertified = accessibilityCertified;
-    }
-
-    public List<PendingCertifiedProductAccessibilityStandardDTO> getAccessibilityStandards() {
-        return accessibilityStandards;
-    }
-
-    public void setAccessibilityStandards(
-            List<PendingCertifiedProductAccessibilityStandardDTO> accessibilityStandards) {
-        this.accessibilityStandards = accessibilityStandards;
-    }
-
-    public String getSedIntendedUserDescription() {
-        return sedIntendedUserDescription;
-    }
-
-    public void setSedIntendedUserDescription(String sedIntendedUserDescription) {
-        this.sedIntendedUserDescription = sedIntendedUserDescription;
-    }
-
     public Date getSedTestingEnd() {
         return Util.getNewDate(sedTestingEnd);
     }
 
     public void setSedTestingEnd(Date sedTestingEnd) {
         this.sedTestingEnd = Util.getNewDate(sedTestingEnd);
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public List<CertifiedProductDetailsDTO> getIcsParents() {
-        return icsParents;
-    }
-
-    public void setIcsParents(List<CertifiedProductDetailsDTO> icsParents) {
-        this.icsParents = icsParents;
-    }
-
-    public List<CertifiedProductDetailsDTO> getIcsChildren() {
-        return icsChildren;
-    }
-
-    public void setIcsChildren(List<CertifiedProductDetailsDTO> icsChildren) {
-        this.icsChildren = icsChildren;
     }
 
     private void copyCriterionIdsToCqmMappings(PendingCertifiedProductDetails listing) {
@@ -1070,13 +688,5 @@ public class PendingCertifiedProductDTO implements Serializable {
                 }
             }
         }
-    }
-
-    public Boolean getSelfDeveloper() {
-        return selfDeveloper;
-    }
-
-    public void setSelfDeveloper(Boolean selfDeveloper) {
-        this.selfDeveloper = selfDeveloper;
     }
 }
