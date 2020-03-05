@@ -79,6 +79,21 @@ public abstract class InvalidCriteriaCombination {
     @Value("${criterion.170_315_g_9_revised}")
     protected Integer criteriaG9RevisedId;
 
+    @Value("${criterion.170_315_d_2}")
+    protected Integer criteriaD2Id;
+    @Value("${criterion.170_315_d_2_revised}")
+    protected Integer criteriaD2RevisedId;
+
+    @Value("${criterion.170_315_d_3}")
+    protected Integer criteriaD3Id;
+    @Value("${criterion.170_315_d_3_revised}")
+    protected Integer criteriaD3RevisedId;
+
+    @Value("${criterion.170_315_d_10}")
+    protected Integer criteriaD10Id;
+    @Value("${criterion.170_315_d_10_revised}")
+    protected Integer criteriaD10RevisedId;
+
     protected ErrorMessageUtil msgUtil;
     protected FF4j ff4j;
 
@@ -101,7 +116,10 @@ public abstract class InvalidCriteriaCombination {
         final Pair<Integer, Integer> f5Pair = Pair.of(criteriaF5Id, criteriaF5RevisedId);
         final Pair<Integer, Integer> g6Pair = Pair.of(criteriaG6Id, criteriaG6RevisedId);
         final Pair<Integer, Integer> g9Pair = Pair.of(criteriaG9Id, criteriaG9RevisedId);
-        oldAndNewcriteriaIdPairs = new LinkedHashSet<Pair<Integer, Integer>>(
-                Arrays.asList(b1Pair, b2Pair, b3Pair, b7Pair, b8Pair, b9Pair, c3Pair, e1Pair, f5Pair, g6Pair, g9Pair));
+        final Pair<Integer, Integer> d2Pair = Pair.of(criteriaD2Id, criteriaD2RevisedId);
+        final Pair<Integer, Integer> d3Pair = Pair.of(criteriaD3Id, criteriaD3RevisedId);
+        final Pair<Integer, Integer> d10Pair = Pair.of(criteriaD10Id, criteriaD10RevisedId);
+        oldAndNewcriteriaIdPairs = new LinkedHashSet<Pair<Integer, Integer>>(Arrays.asList(b1Pair, b2Pair, b3Pair, b7Pair, b8Pair,
+                b9Pair, c3Pair, e1Pair, f5Pair, g6Pair, g9Pair, d2Pair, d3Pair, d10Pair));
     }
 }
