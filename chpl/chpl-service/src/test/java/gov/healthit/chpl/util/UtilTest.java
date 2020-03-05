@@ -71,7 +71,7 @@ public class UtilTest {
     }
 
     @Test
-    public void isCures_CertificationCriterionWithCuresSuffixInTitle_IsNotCures() {
+    public void isCures_CertificationCriterionWithoutCuresSuffixInTitle_IsNotCures() {
         criterion.setTitle("170.315(b)(7)");
         assertFalse("The criterion Should be identified as NOT CURES but was instead identfied as CURES",
                 Util.isCures(criterion));
@@ -84,7 +84,7 @@ public class UtilTest {
     }
 
     @Test
-    public void isCures_CertificationCriterionDtoWithCuresSuffixInTitle_IsNotCures() {
+    public void isCures_CertificationCriterionDtoWithoutCuresSuffixInTitle_IsNotCures() {
         criterion.setTitle("170.315(c)(3)");
         assertFalse("The criterion Should be identified as NOT CURES but was instead identfied as CURES",
                 Util.isCures(criterion));
