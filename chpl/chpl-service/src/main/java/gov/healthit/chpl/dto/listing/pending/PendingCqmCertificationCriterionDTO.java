@@ -2,7 +2,6 @@ package gov.healthit.chpl.dto.listing.pending;
 
 import java.io.Serializable;
 
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.entity.listing.pending.PendingCqmCertificationCriteriaEntity;
 
 public class PendingCqmCertificationCriterionDTO implements Serializable {
@@ -11,7 +10,6 @@ public class PendingCqmCertificationCriterionDTO implements Serializable {
     private Long cqmId;
     private Long certificationId;
     private String certificationCriteriaNumber;
-    private CertificationCriterionDTO criterion;
 
     public PendingCqmCertificationCriterionDTO() {
     }
@@ -20,7 +18,6 @@ public class PendingCqmCertificationCriterionDTO implements Serializable {
         this.id = entity.getId();
         this.cqmId = entity.getPendingCqmId();
         this.certificationId = entity.getCertificationId();
-        this.criterion = new CertificationCriterionDTO(entity.getCertificationCriteria());
         if (entity.getCertificationCriteria() != null) {
             this.certificationCriteriaNumber = entity.getCertificationCriteria().getNumber();
         }
@@ -57,13 +54,4 @@ public class PendingCqmCertificationCriterionDTO implements Serializable {
     public void setCertificationCriteriaNumber(final String certificationCriteriaNumber) {
         this.certificationCriteriaNumber = certificationCriteriaNumber;
     }
-
-    public CertificationCriterionDTO getCriterion() {
-        return criterion;
-    }
-
-    public void setCriterion(CertificationCriterionDTO criterion) {
-        this.criterion = criterion;
-    }
-
 }

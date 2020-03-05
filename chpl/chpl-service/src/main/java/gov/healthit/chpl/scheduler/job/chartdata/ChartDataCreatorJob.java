@@ -18,6 +18,7 @@ import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
 import gov.healthit.chpl.dto.ListingCountStatisticsDTO;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 
 /**
@@ -53,7 +54,11 @@ public final class ChartDataCreatorJob extends QuartzJob {
         LOGGER.info("Certified Product Count: " + certifiedProducts.size());
 
         analyzeSed(certifiedProducts);
-        analyzeProducts(certifiedProducts);
+        try {
+            analyzeProducts(certifiedProducts);
+        } catch (NumberFormatException | EntityRetrievalException e) {
+            LOGGER.error("Problem analyzing products" + e.getMessage());
+        }
         analyzeDevelopers(certifiedProducts);
         analyzeListingCounts(certifiedProducts);
         analyzeNonconformity();
@@ -84,7 +89,7 @@ public final class ChartDataCreatorJob extends QuartzJob {
         nonconformityStatisticsCalculator.saveCounts(dtos);
     }
 
-    private static void analyzeProducts(final List<CertifiedProductFlatSearchResult> listings) {
+    private static void analyzeProducts(final List<CertifiedProductFlatSearchResult> listings) throws NumberFormatException, EntityRetrievalException {
         CriterionProductStatisticsCalculator criterionProductStatisticsCalculator = new CriterionProductStatisticsCalculator();
         CriterionProductDataFilter criterionProductDataFilter = new CriterionProductDataFilter();
         List<CertifiedProductFlatSearchResult> filteredListings = criterionProductDataFilter.filterData(listings);

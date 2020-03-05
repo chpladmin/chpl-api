@@ -54,7 +54,6 @@ import gov.healthit.chpl.domain.PendingCertifiedProductMetadata;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMetadataDTO;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
@@ -168,7 +167,7 @@ public class CertifiedProductController {
             @RequestParam(required = true) final Long versionId,
             @RequestParam(required = false, defaultValue = "false") final boolean editable)
                     throws EntityRetrievalException {
-        List<CertifiedProductDetailsDTO> certifiedProductList = null;
+        List<CertifiedProduct> certifiedProductList = null;
 
         if (editable) {
             certifiedProductList = cpManager.getByVersionWithEditPermission(versionId);
@@ -176,14 +175,7 @@ public class CertifiedProductController {
             certifiedProductList = cpManager.getByVersion(versionId);
         }
 
-        List<CertifiedProduct> products = new ArrayList<CertifiedProduct>();
-        if (certifiedProductList != null && certifiedProductList.size() > 0) {
-            for (CertifiedProductDetailsDTO dto : certifiedProductList) {
-                CertifiedProduct result = new CertifiedProduct(dto);
-                products.add(result);
-            }
-        }
-        return products;
+        return certifiedProductList;
     }
 
     /**
@@ -895,6 +887,10 @@ public class CertifiedProductController {
                                         PendingCertifiedProductEntity pendingCp = handler.handle();
                                         cpsToAdd.add(pendingCp);
                                     } catch (final InvalidArgumentsException ex) {
+                                        LOGGER.error("Failed uploading file " + file.getName(), ex);
+                                        handlerErrors.add(ex.getMessage());
+                                    } catch (final Exception ex) {
+                                        LOGGER.error("Failed uploading file " + file.getName(), ex);
                                         handlerErrors.add(ex.getMessage());
                                     }
                                 }
@@ -919,8 +915,10 @@ public class CertifiedProductController {
                         PendingCertifiedProductEntity pendingCp = handler.handle();
                         cpsToAdd.add(pendingCp);
                     } catch (final InvalidArgumentsException ex) {
+                        LOGGER.error("Failed uploading file " + file.getName(), ex);
                         handlerErrors.add(ex.getMessage());
                     } catch (final Exception ex) {
+                        LOGGER.error("Failed uploading file " + file.getName(), ex);
                         handlerErrors.add(ex.getMessage());
                     }
                 }
@@ -941,8 +939,7 @@ public class CertifiedProductController {
             } else {
                 for (PendingCertifiedProductEntity cpToAdd : cpsToAdd) {
                     try {
-                        PendingCertifiedProductDTO pendingCpDto = pcpManager
-                                .createOrReplace(cpToAdd.getCertificationBodyId(), cpToAdd);
+                        PendingCertifiedProductDTO pendingCpDto = pcpManager.createOrReplace(cpToAdd);
                         PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(pendingCpDto);
                         uploadedProducts.add(details);
                     } catch (final EntityCreationException | EntityRetrievalException ex) {

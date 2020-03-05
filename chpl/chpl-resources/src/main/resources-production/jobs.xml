@@ -27,6 +27,20 @@
                 </entry>
             </job-data-map>
         </job>
-        <!-- DELETE END MARKER -->
+        <!--  Add V18 Upload Template -->
+        <job>
+            <name>addV18UploadTemplateJob</name>
+            <group>systemJobs</group>
+            <description>Makes 2015 V18 Upload Template Available</description>
+            <job-class>gov.healthit.chpl.scheduler.job.AddV18UploadTemplateJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+            </job-data-map>
+        </job>        <!-- DELETE END MARKER -->
     </schedule>
 </job-scheduling-data>

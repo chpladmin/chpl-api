@@ -13,7 +13,10 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 
 /**
  * Utilities used to validate various basic elements of CHPL domain objects.
@@ -173,14 +176,24 @@ public final class ValidationUtils {
         return hasCert;
     }
 
-    public static boolean hasCriterion(String certNumber, List<CertificationCriterion> allCerts) {
+    public static boolean hasCert(CertificationCriterion criterion, List<CertificationCriterion> allCerts) {
         boolean hasCert = false;
         for (int i = 0; i < allCerts.size() && !hasCert; i++) {
-            if (allCerts.get(i).getNumber().equals(certNumber)) {
+            if (allCerts.get(i).getId().equals(criterion.getId())) {
                 hasCert = true;
             }
         }
         return hasCert;
+    }
+
+    public static CertificationCriterion getCert(String certNumber, List<CertificationCriterion> allCerts) {
+        CertificationCriterion cert = null;
+        for (int i = 0; i < allCerts.size() && cert == null; i++) {
+            if (allCerts.get(i).getNumber().equals(certNumber)) {
+                cert = allCerts.get(i);
+            }
+        }
+        return cert;
     }
 
     /**
@@ -413,5 +426,30 @@ public final class ValidationUtils {
             }
         }
         return errors;
+    }
+
+    public static List<CertificationCriterion> getAttestedCriteria(CertifiedProductSearchDetails listing) {
+        List<CertificationResult> attestedCertificationResults = listing.getCertificationResults().stream()
+                .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess().equals(Boolean.TRUE))
+                .collect(Collectors.<CertificationResult>toList());
+
+        List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
+        for (CertificationResult cr : attestedCertificationResults) {
+            criteria.add(cr.getCriterion());
+        }
+        return criteria;
+    }
+
+    public static List<CertificationCriterion> getAttestedCriteria(PendingCertifiedProductDTO listing) {
+        List<PendingCertificationResultDTO> attestedCertificationResults = listing.getCertificationCriterion().stream()
+                .filter(certResult -> certResult.getMeetsCriteria() != null && certResult.getMeetsCriteria().equals(Boolean.TRUE))
+                .collect(Collectors.<PendingCertificationResultDTO>toList());
+
+        List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
+        for (PendingCertificationResultDTO cr : attestedCertificationResults) {
+            CertificationCriterionDTO criterionDto = cr.getCriterion();
+            criteria.add(new CertificationCriterion(criterionDto));
+        }
+        return criteria;
     }
 }

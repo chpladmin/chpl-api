@@ -28,7 +28,7 @@ import gov.healthit.chpl.scheduler.presenter.Sed2015CsvPresenter;
 public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourceCreatorJob {
     private static final Logger LOGGER = LogManager.getLogger("g3Sed2015DownloadableResourceCreatorJobLogger");
     private static final String CRITERIA_NAME = "170.315 (g)(3)";
-    private static final String EDITION = "2015";
+    private static final String TITLE = "Safety-Enhanced Design";
     private static final int MILLIS_PER_SECOND = 1000;
     private static final int SECONDS_PER_MINUTE = 60;
 
@@ -74,7 +74,7 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
      */
     private List<Long> getRelevantListingIds() throws EntityRetrievalException {
         LOGGER.info("Finding all listings attesting to " + CRITERIA_NAME + ".");
-        CertificationCriterionDTO certCrit = getCriteriaDao().getByNameAndYear(CRITERIA_NAME, EDITION);
+        CertificationCriterionDTO certCrit = getCriteriaDao().getByNumberAndTitle(CRITERIA_NAME, TITLE);
         List<Long> listingIds = getCertificationResultDao().getCpIdsByCriterionId(certCrit.getId());
         LOGGER.info("Found " + listingIds.size() + " listings attesting to " + CRITERIA_NAME + ".");
         return listingIds;

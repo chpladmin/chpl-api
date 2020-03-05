@@ -48,6 +48,7 @@ public class ComplaintsWorksheetBuilder {
 
     private static final String BOOLEAN_YES = "Yes";
     private static final String BOOLEAN_NO = "No";
+    private static final String CURES_UPDATE_STR = " (Cures Update)";
 
     private static final int COL_COMPLAINT_DATE = 1;
     private static final int COL_ACB_COMPLAINT_ID = 2;
@@ -127,7 +128,7 @@ public class ComplaintsWorksheetBuilder {
         sheet.setColumnWidth(COL_ACTIONS_RESPONSE, workbook.getColumnWidth(78));
         sheet.setColumnWidth(COL_COMPLAINANT_TYPE, workbook.getColumnWidth(22));
         sheet.setColumnWidth(COL_COMPLAINANT_TYPE_OTHER, workbook.getColumnWidth(22));
-        sheet.setColumnWidth(COL_CRITERIA_ID, sharedColWidth);
+        sheet.setColumnWidth(COL_CRITERIA_ID, workbook.getColumnWidth(22));
         sheet.setColumnWidth(COL_CHPL_ID, sharedColWidth);
         sheet.setColumnWidth(COL_SURV_ID, sharedColWidth);
         sheet.setColumnWidth(COL_DEVELOPER, sharedColWidth);
@@ -259,7 +260,7 @@ public class ComplaintsWorksheetBuilder {
     }
 
     /**
-     * Adds all of the complaint data to this worksheet. 
+     * Adds all of the complaint data to this worksheet.
      * Returns the number of rows added.
      * @param sheet
      * @param reportListingMap
@@ -369,12 +370,13 @@ public class ComplaintsWorksheetBuilder {
             //The first complaint row in this table should have all the complaint data
             //and following rows should only have the additional listing, surveillance,
             //or criteria that the complaint is associated with.
-            for (CertificationCriterion criteria : orderedCriterion) {
+            for (CertificationCriterion criterion : orderedCriterion) {
                 if (!isFirstRowForComplaint) {
                     row = workbook.getRow(sheet, rowNum++);
                     addedRows++;
                 }
-                addDataCell(workbook, row, COL_CRITERIA_ID, criteria.getNumber());
+                String criterionStr = criterion.getNumber() + (criterion.isCures() ? CURES_UPDATE_STR : "");
+                addDataCell(workbook, row, COL_CRITERIA_ID, criterionStr);
                 //nothing to show in the rest of the cells since they are all listing/surv specific
                 addDataCell(workbook, row, COL_CHPL_ID, "");
                 addDataCell(workbook, row, COL_SURV_ID, "");

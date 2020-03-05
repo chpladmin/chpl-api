@@ -307,13 +307,34 @@ public class ProductDAO extends BaseDAOImpl {
 
     }
 
+    public boolean exists(Long id) {
+        String queryStr = "SELECT COUNT(pe) "
+                + "FROM ProductEntity pe "
+                + "WHERE pe.id = :productId "
+                + "AND pe.deleted = false";
+
+        Query query = entityManager.createQuery(queryStr, Long.class);
+        query.setParameter("productId", id);
+        Object result = query.getSingleResult();
+        int count = 0;
+        if (result != null && result instanceof Long) {
+            count = ((Long) result).intValue();
+        }
+        return count > 0;
+    }
+
     @Transactional(readOnly = true)
     public List<ProductDTO> getByDeveloper(Long developerId) {
-        Query query = entityManager.createQuery("SELECT DISTINCT pe " + "FROM ProductEntity pe "
-                + "LEFT JOIN FETCH pe.developer " + "LEFT JOIN FETCH pe.contact " + "LEFT JOIN FETCH pe.ownerHistory "
-                + "LEFT JOIN FETCH pe.productVersions " + "WHERE (pe.developerId = :entityid) "
-                + "AND (NOT pe.deleted = true)", ProductEntity.class);
-        query.setParameter("entityid", developerId);
+        Query query = entityManager.createQuery("SELECT DISTINCT pe "
+                + "FROM ProductEntity pe "
+                + "JOIN FETCH pe.developer "
+                + "LEFT JOIN FETCH pe.contact "
+                + "LEFT JOIN FETCH pe.ownerHistory oh "
+                + "LEFT JOIN FETCH pe.productVersions pv "
+                + "LEFT JOIN FETCH pe.productCertificationStatuses "
+                + "WHERE (pe.developerId = :devId) "
+                + "AND (pe.deleted = false) ", ProductEntity.class);
+        query.setParameter("devId", developerId);
         List<ProductEntity> results = query.getResultList();
 
         List<ProductDTO> dtoResults = new ArrayList<ProductDTO>();
@@ -325,9 +346,14 @@ public class ProductDAO extends BaseDAOImpl {
 
     @Transactional(readOnly = true)
     public List<ProductDTO> getByDevelopers(List<Long> developerIds) {
-        Query query = entityManager.createQuery("SELECT DISTINCT pe " + "FROM ProductEntity pe "
-                + "LEFT JOIN FETCH pe.developer " + "LEFT JOIN FETCH pe.contact " + "LEFT JOIN FETCH pe.ownerHistory "
-                + "LEFT JOIN FETCH pe.productVersions " + "where (NOT pe.deleted = true) "
+        Query query = entityManager.createQuery("SELECT DISTINCT pe "
+                + "FROM ProductEntity pe "
+                + "JOIN FETCH pe.developer "
+                + "LEFT JOIN FETCH pe.contact "
+                + "LEFT JOIN FETCH pe.ownerHistory "
+                + "LEFT JOIN FETCH pe.productVersions "
+                + "LEFT JOIN FETCH pe.productCertificationStatuses "
+                + "where pe.deleted = false "
                 + "AND pe.developerId IN (:idList) ", ProductEntity.class);
         query.setParameter("idList", developerIds);
         List<ProductEntity> results = query.getResultList();
@@ -341,10 +367,16 @@ public class ProductDAO extends BaseDAOImpl {
 
     @Transactional(readOnly = true)
     public ProductDTO getByDeveloperAndName(Long developerId, String name) {
-        Query query = entityManager.createQuery("SELECT distinct pe " + "FROM ProductEntity pe "
-                + "LEFT JOIN FETCH pe.developer " + "LEFT JOIN FETCH pe.contact " + "LEFT JOIN FETCH pe.ownerHistory "
-                + "LEFT JOIN FETCH pe.productVersions " + "where (NOT pe.deleted = true) "
-                + "AND (pe.developerId = :developerId) and " + "(pe.name = :name)", ProductEntity.class);
+        Query query = entityManager.createQuery("SELECT distinct pe "
+                + "FROM ProductEntity pe "
+                + "JOIN FETCH pe.developer "
+                + "LEFT JOIN FETCH pe.contact "
+                + "LEFT JOIN FETCH pe.ownerHistory "
+                + "LEFT JOIN FETCH pe.productVersions "
+                + "LEFT JOIN FETCH pe.productCertificationStatuses "
+                + "WHERE pe.deleted = false "
+                + "AND (pe.developerId = :developerId) "
+                + "AND (pe.name = :name)", ProductEntity.class);
         query.setParameter("developerId", developerId);
         query.setParameter("name", name);
         List<ProductEntity> results = query.getResultList();
@@ -374,7 +406,8 @@ public class ProductDAO extends BaseDAOImpl {
 
         List<ProductEntity> result = entityManager
                 .createQuery(
-                        "SELECT distinct pe " + "FROM ProductEntity pe "
+                        "SELECT distinct pe "
+                                + "FROM ProductEntity pe "
                                 + "LEFT JOIN FETCH pe.developer "
                                 + "LEFT JOIN FETCH pe.contact "
                                 + "LEFT JOIN FETCH pe.ownerHistory "
@@ -403,9 +436,13 @@ public class ProductDAO extends BaseDAOImpl {
     }
 
     private List<ProductEntity> getAllEntitiesIncludingDeleted() {
-        List<ProductEntity> result = entityManager.createQuery("SELECT DISTINCT pe " + "FROM ProductEntity pe "
-                + "LEFT JOIN FETCH pe.developer " + "LEFT JOIN FETCH pe.contact " + "LEFT JOIN FETCH pe.ownerHistory "
-                + "LEFT JOIN FETCH pe.productVersions ", ProductEntity.class).getResultList();
+        List<ProductEntity> result = entityManager.createQuery("SELECT DISTINCT pe "
+                + "FROM ProductEntity pe "
+                + "JOIN FETCH pe.developer "
+                + "LEFT JOIN FETCH pe.contact "
+                + "LEFT JOIN FETCH pe.ownerHistory "
+                + "LEFT JOIN FETCH pe.productVersions "
+                + "LEFT JOIN FETCH pe.productCertificationStatuses ", ProductEntity.class).getResultList();
         LOGGER.debug("SQL call: List<ProductEntity> getAllEntities()");
         return result;
     }
@@ -423,6 +460,7 @@ public class ProductDAO extends BaseDAOImpl {
                 + "LEFT JOIN FETCH pe.contact "
                 + "LEFT JOIN FETCH pe.ownerHistory "
                 + "LEFT JOIN FETCH pe.productVersions "
+                + "LEFT JOIN FETCH pe.productCertificationStatuses "
                 + "WHERE pe.id = :entityid ";
         if (!includeDeleted) {
             queryStr += " AND pe.deleted = false";

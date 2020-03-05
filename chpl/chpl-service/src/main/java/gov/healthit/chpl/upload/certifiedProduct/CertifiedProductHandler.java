@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
@@ -27,6 +28,7 @@ import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTestingLabMapEntity;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -39,6 +41,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
     protected static final String FIRST_ROW_INDICATOR = "NEW";
     protected static final String SUBSEQUENT_ROW_INDICATOR = "SUBELEMENT";
     protected static final String CRITERIA_COL_HEADING_BEGIN = "CRITERIA_";
+    protected static final String CURES_TITLE_KEY = "Cures Update";
 
     private ErrorMessageUtil msgUtil;
 
@@ -51,8 +54,6 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
     public abstract PendingCertifiedProductEntity handle() throws InvalidArgumentsException;
 
     public abstract TemplateColumnIndexMap getColumnIndexMap();
-
-    public abstract String[] getCriteriaNames();
 
     public String getErrorMessage(final String errorField) {
         return msgUtil.getMessage(errorField);
@@ -266,26 +267,66 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         return criteria;
     }
 
-    /**
-     * look up the certification criteria by name and throw an error if we can't
-     * find it
-     *
-     * @param criterionName
-     * @param column
-     * @return
-     * @throws InvalidArgumentsException
-     */
-    protected PendingCertificationResultEntity getCertificationResult(final String criterionName,
-            final String columnValue) throws InvalidArgumentsException {
-        CertificationCriterionEntity certEntity = certDao.getEntityByName(criterionName);
-        if (certEntity == null) {
-            throw new InvalidArgumentsException("Could not find a certification criterion matching " + criterionName);
+    protected PendingCertificationResultEntity getCertificationResult(Long criterionId,
+            String columnValue) throws InvalidArgumentsException {
+        CertificationCriterionEntity certEntity = null;
+        try {
+            certEntity = certDao.getEntityById(criterionId);
+        } catch (EntityRetrievalException ex) {
+            throw new InvalidArgumentsException("Could not find a certification criterion with ID " + criterionId);
         }
 
         PendingCertificationResultEntity result = new PendingCertificationResultEntity();
         result.setMappedCriterion(certEntity);
         result.setMeetsCriteria(asBoolean(columnValue));
         return result;
+    }
+
+    protected PendingCertificationResultEntity getCertificationResult(String criterionName,
+            String columnValue) throws InvalidArgumentsException {
+        CertificationCriterionEntity certEntity = getCriterion(criterionName, false);
+
+        PendingCertificationResultEntity result = new PendingCertificationResultEntity();
+        result.setMappedCriterion(certEntity);
+        result.setMeetsCriteria(asBoolean(columnValue));
+        return result;
+    }
+
+    protected PendingCertificationResultEntity getCertificationResultCures(String criterionName,
+            String columnValue) throws InvalidArgumentsException {
+        CertificationCriterionEntity certEntity = getCriterion(criterionName, true);
+
+        PendingCertificationResultEntity result = new PendingCertificationResultEntity();
+        result.setMappedCriterion(certEntity);
+        result.setMeetsCriteria(asBoolean(columnValue));
+        return result;
+    }
+
+    protected CertificationCriterionEntity getCriterion(String criterionName, boolean isCures)
+            throws InvalidArgumentsException {
+        List<CertificationCriterionEntity> certEntities = certDao.getEntitiesByNumber(criterionName);
+        if (certEntities == null || certEntities.size() == 0) {
+            throw new InvalidArgumentsException("Could not find a certification criterion matching " + criterionName);
+        }
+
+        Optional<CertificationCriterionEntity> criterion = null;
+        if (isCures) {
+            criterion = certEntities.stream()
+                    .filter(certEntity -> !StringUtils.isEmpty(certEntity.getTitle())
+                    && certEntity.getTitle().contains(CURES_TITLE_KEY))
+                    .findFirst();
+        } else {
+            criterion = certEntities.stream()
+                    .filter(certEntity -> !StringUtils.isEmpty(certEntity.getTitle())
+                    && !certEntity.getTitle().contains(CURES_TITLE_KEY))
+                    .findFirst();
+        }
+
+        if (criterion == null || !criterion.isPresent()) {
+            throw new InvalidArgumentsException("Could not find a certification criterion (cures="
+                    + isCures + ") matching " + criterionName);
+        }
+        return criterion.get();
     }
 
     protected Boolean asBoolean(final String value) {

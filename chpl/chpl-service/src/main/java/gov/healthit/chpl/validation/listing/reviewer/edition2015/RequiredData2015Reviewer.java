@@ -13,8 +13,6 @@ import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
-import gov.healthit.chpl.domain.CQMResultCertification;
-import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestData;
@@ -125,8 +123,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.missingIcs"));
         }
 
-        List<CertificationCriterion> attestedCriteria = getAttestedCriteria(listing);
-
+        List<CertificationCriterion> attestedCriteria = ValidationUtils.getAttestedCriteria(listing);
         List<String> errors = ValidationUtils.checkClassOfCriteriaForErrors("170.315 (a)", attestedCriteria,
                 Arrays.asList(A_RELATED_CERTS));
         listing.getErrorMessages().addAll(errors);
@@ -165,56 +162,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         errors = ValidationUtils.checkSpecificCriteriaForErrors("170.315 (e)(1)", attestedCriteria,
                 Arrays.asList(E1_RELATED_CERTS));
         listing.getErrorMessages().addAll(errors);
-
-        // check for (c)(1), (c)(2), (c)(3), (c)(4)
-        boolean meetsC1Criterion = ValidationUtils.hasCert("170.315 (c)(1)", attestedCriteria);
-        boolean meetsC2Criterion = ValidationUtils.hasCert("170.315 (c)(2)", attestedCriteria);
-        boolean meetsC3Criterion = ValidationUtils.hasCert("170.315 (c)(3)", attestedCriteria);
-        boolean meetsC4Criterion = ValidationUtils.hasCert("170.315 (c)(4)", attestedCriteria);
-        boolean hasC1Cqm = false;
-        boolean hasC2Cqm = false;
-        boolean hasC3Cqm = false;
-        boolean hasC4Cqm = false;
-
-        for (CQMResultDetails cqm : listing.getCqmResults()) {
-            List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
-            for (CQMResultCertification cqmCriterion : cqm.getCriteria()) {
-                CertificationCriterion criterion = new CertificationCriterion();
-                criterion.setNumber(cqmCriterion.getCertificationNumber());
-                criteria.add(criterion);
-            }
-            hasC1Cqm = hasC1Cqm || ValidationUtils.hasCriterion("170.315 (c)(1)", criteria);
-            hasC2Cqm = hasC2Cqm || ValidationUtils.hasCriterion("170.315 (c)(2)", criteria);
-            hasC3Cqm = hasC3Cqm || ValidationUtils.hasCriterion("170.315 (c)(3)", criteria);
-            hasC4Cqm = hasC4Cqm || ValidationUtils.hasCriterion("170.315 (c)(4)", criteria);
-        }
-        if (meetsC1Criterion && !hasC1Cqm) {
-            listing.getErrorMessages()
-            .add(msgUtil.getMessage("listing.criteria.missingCqmFor170315c", "170.315 (c)(1)"));
-        } else if (!meetsC1Criterion && hasC1Cqm) {
-            listing.getErrorMessages()
-            .add(msgUtil.getMessage("listing.criteria.missing170315cForCqm", "170.315 (c)(1)"));
-        }
-        if (meetsC2Criterion && !hasC2Cqm) {
-            listing.getErrorMessages()
-            .add(msgUtil.getMessage("listing.criteria.missingCqmFor170315c", "170.315 (c)(2)"));
-            listing.getErrorMessages()
-            .add(msgUtil.getMessage("listing.criteria.missing170315cForCqm", "170.315 (c)(2)"));
-        }
-        if (meetsC3Criterion && !hasC3Cqm) {
-            listing.getErrorMessages()
-            .add(msgUtil.getMessage("listing.criteria.missingCqmFor170315c", "170.315 (c)(3)"));
-        } else if (!meetsC3Criterion && hasC3Cqm) {
-            listing.getErrorMessages()
-            .add(msgUtil.getMessage("listing.criteria.missing170315cForCqm", "170.315 (c)(3)"));
-        }
-        if (meetsC4Criterion && !hasC4Cqm) {
-            listing.getErrorMessages()
-            .add(msgUtil.getMessage("listing.criteria.missingCqmFor170315c", "170.315 (c)(4)"));
-        } else if (!meetsC4Criterion && hasC4Cqm) {
-            listing.getErrorMessages()
-            .add(msgUtil.getMessage("listing.criteria.missing170315cForCqm", "170.315 (c)(4)"));
-        }
 
         // check for (e)(2) or (e)(3) certs
         List<String> e2e3ComplimentaryErrors = ValidationUtils.checkComplimentaryCriteriaAllRequired(e2e3Criterion,
@@ -269,7 +216,8 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
             if (ValidationUtils.hasCert(UCD_RELATED_CERTS[i], attestedCriteria)) {
                 // check for full set of UCD data
                 for (CertificationResult cert : listing.getCertificationResults()) {
-                    if (cert.getNumber().equals(UCD_RELATED_CERTS[i])) {
+                    if (cert.isSuccess() != null && cert.isSuccess().equals(Boolean.TRUE)
+                            && cert.getNumber().equals(UCD_RELATED_CERTS[i])) {
                         // make sure at least one UCD process has this criteria number
                         if (cert.isSed()) {
                             if (listing.getSed() == null || listing.getSed().getUcdProcesses() == null
@@ -281,7 +229,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                 boolean foundCriteria = false;
                                 for (UcdProcess ucd : listing.getSed().getUcdProcesses()) {
                                     for (CertificationCriterion criteria : ucd.getCriteria()) {
-                                        if (criteria.getNumber().equalsIgnoreCase(cert.getNumber())) {
+                                        if (criteria.getId().equals(cert.getCriterion().getId())) {
                                             foundCriteria = true;
                                         }
                                     }
@@ -302,7 +250,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                 boolean foundCriteria = false;
                                 for (TestTask tt : listing.getSed().getTestTasks()) {
                                     for (CertificationCriterion criteria : tt.getCriteria()) {
-                                        if (criteria.getNumber().equalsIgnoreCase(cert.getNumber())) {
+                                        if (criteria.getId().equals(cert.getCriterion().getId())) {
                                             foundCriteria = true;
                                         }
                                     }
@@ -494,6 +442,12 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                         && cert.getAttestationAnswer() != null && cert.getAttestationAnswer().equals(Boolean.TRUE)) {
                     addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingUseCases",
                             cert.getCriterion().getNumber());
+                } else if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.USE_CASES)
+                        && !StringUtils.isEmpty(cert.getUseCases())
+                        && (cert.getAttestationAnswer() == null || cert.getAttestationAnswer().equals(Boolean.FALSE))) {
+                    listing.getWarningMessages().add(
+                            msgUtil.getMessage("listing.criteria.useCasesWithoutAttestation",
+                            cert.getCriterion().getNumber()));
                 }
 
                 if (!gapEligibleAndTrue
@@ -603,7 +557,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                 .add("Certification " + cert.getNumber()
                                 + " contains invalid G1 Macra Measure. No measure found with ID '"
                                 + measure.getId() + "'.");
-                            } else if (!foundMeasure.getCriteria().getNumber().equals(cert.getNumber())) {
+                            } else if (!foundMeasure.getCriteria().getId().equals(cert.getCriterion().getId())) {
                                 listing.getErrorMessages().add("Certification " + cert.getNumber()
                                 + " contains an invalid G1 Macra Measure. Measure with ID '" + measure.getId()
                                 + "' is the measure '" + foundMeasure.getName() + "' and is for criteria '"
@@ -630,7 +584,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                 .add("Certification " + cert.getNumber()
                                 + " contains invalid G2 Macra Measure. No measure found with ID '"
                                 + measure.getId() + "'.");
-                            } else if (!foundMeasure.getCriteria().getNumber().equals(cert.getNumber())) {
+                            } else if (!foundMeasure.getCriteria().getId().equals(cert.getCriterion().getId())) {
                                 listing.getErrorMessages().add("Certification " + cert.getNumber()
                                 + " contains an invalid G2 Macra Measure. Measure with ID '" + measure.getId()
                                 + "' is the measure '" + foundMeasure.getName() + "' and is for criteria '"
@@ -652,7 +606,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     }
 
     private void validateG3(CertifiedProductSearchDetails listing) {
-        List<CertificationCriterion> attestedCriteria = getAttestedCriteria(listing);
+        List<CertificationCriterion> attestedCriteria = ValidationUtils.getAttestedCriteria(listing);
         List<CertificationCriterion> presentAttestedUcdCriteria = attestedCriteria.stream()
                 .filter(cert -> cert.getRemoved() == null || cert.getRemoved().equals(Boolean.FALSE))
                 .filter(cert -> certNumberIsInCertList(cert, UCD_RELATED_CERTS))
@@ -675,7 +629,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     }
 
     private void validateG3Inverse(CertifiedProductSearchDetails listing) {
-        List<CertificationCriterion> attestedCriteria = getAttestedCriteria(listing);
+        List<CertificationCriterion> attestedCriteria = ValidationUtils.getAttestedCriteria(listing);
         List<CertificationCriterion> presentAttestedUcdCriteria = attestedCriteria.stream()
                 .filter(cert -> cert.getRemoved() == null || cert.getRemoved().equals(Boolean.FALSE))
                 .filter(cert -> certNumberIsInCertList(cert, UCD_RELATED_CERTS))
@@ -690,7 +644,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     }
 
     private void validateG6(CertifiedProductSearchDetails listing) {
-        List<CertificationCriterion> attestedCriteria = getAttestedCriteria(listing);
+        List<CertificationCriterion> attestedCriteria = ValidationUtils.getAttestedCriteria(listing);
         List<CertificationCriterion> presentAttestedG6Criteria = attestedCriteria.stream()
                 .filter(cert -> cert.getRemoved() == null || cert.getRemoved().equals(Boolean.FALSE))
                 .filter(cert -> certNumberIsInCertList(cert, CERTS_REQUIRING_G6))
@@ -710,18 +664,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 && !hasG6) {
             addListingWarningByPermission(listing, msg);
         }
-    }
-
-    private List<CertificationCriterion> getAttestedCriteria(CertifiedProductSearchDetails listing) {
-        List<CertificationResult> attestedCertificationResults = listing.getCertificationResults().stream()
-                .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess().equals(Boolean.TRUE))
-                .collect(Collectors.<CertificationResult>toList());
-
-        List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
-        for (CertificationResult cr : attestedCertificationResults) {
-            criteria.add(cr.getCriterion());
-        }
-        return criteria;
     }
 
     private boolean certNumberIsInCertList(CertificationCriterion cert, String[] certNumberList) {

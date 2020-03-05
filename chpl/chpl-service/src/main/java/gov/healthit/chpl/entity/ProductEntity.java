@@ -13,10 +13,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.MapsId;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
+
+import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.util.Util;
@@ -65,6 +68,7 @@ public class ProductEntity implements Serializable {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "productId")
     @Basic(optional = false)
     @Column(name = "product_id", nullable = false)
+    @Where(clause = "deleted <> 'true'")
     private Set<ProductVersionEntity> productVersions = new HashSet<ProductVersionEntity>();
 
     @Basic(optional = true)
@@ -82,12 +86,15 @@ public class ProductEntity implements Serializable {
 
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @MapsId("id")
     @JoinColumn(name = "product_id", unique = true, nullable = true, insertable = false, updatable = false)
+    @Where(clause = "deleted <> 'true'")
     private ProductCertificationStatusesEntity productCertificationStatuses;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "productId")
     @Basic(optional = true)
     @Column(name = "product_id", nullable = false)
+    @Where(clause = "deleted <> 'true'")
     private Set<ProductActiveOwnerEntity> ownerHistory = new HashSet<ProductActiveOwnerEntity>();
 
     public Date getCreationDate() {

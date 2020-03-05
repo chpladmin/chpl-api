@@ -182,8 +182,8 @@ public class PendingCertifiedProductManager extends SecuredManager {
             EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class
     })
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions).CREATE_OR_REPLACE, #acbId)")
-    public PendingCertifiedProductDTO createOrReplace(final Long acbId, final PendingCertifiedProductEntity toCreate)
+            + "T(gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions).CREATE_OR_REPLACE, #toCreate)")
+    public PendingCertifiedProductDTO createOrReplace(PendingCertifiedProductEntity toCreate)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         Long existingId = pcpDao.findIdByOncId(toCreate.getUniqueId());
         if (existingId != null) {
@@ -482,7 +482,7 @@ public class PendingCertifiedProductManager extends SecuredManager {
         // now add allMeasures for criteria
         for (CertificationResult cert : pcpDetails.getCertificationResults()) {
             for (MacraMeasure measure : macraMeasures) {
-                if (measure.getCriteria().getNumber().equals(cert.getNumber())) {
+                if (measure.getCriteria().getId().equals(cert.getCriterion().getId())) {
                     cert.getAllowedMacraMeasures().add(measure);
                 }
             }
@@ -501,9 +501,8 @@ public class PendingCertifiedProductManager extends SecuredManager {
                     practiceTypeId = Long.valueOf(pcpDetails.getPracticeType().get("id").toString());
                 }
             }
-            String criteriaNumber = cert.getNumber();
             cert.setAllowedTestFunctionalities(
-                    testFunctionalityManager.getTestFunctionalities(criteriaNumber, edition, practiceTypeId));
+                    testFunctionalityManager.getTestFunctionalities(cert.getCriterion().getId(), edition, practiceTypeId));
         }
     }
 }
