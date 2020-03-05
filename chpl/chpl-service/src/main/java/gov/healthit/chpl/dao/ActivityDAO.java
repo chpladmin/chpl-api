@@ -9,7 +9,6 @@ import java.util.Map;
 import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -36,10 +35,9 @@ public class ActivityDAO extends BaseDAOImpl {
     private UserMapper userMapper;
 
     @Autowired
-    public ActivityDAO(@Lazy final UserMapper userMapper) {
+    public ActivityDAO(UserMapper userMapper) {
         this.userMapper = userMapper;
     }
-
 
     public ActivityDTO create(final ActivityDTO dto) throws EntityCreationException, EntityRetrievalException {
 

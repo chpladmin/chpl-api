@@ -939,8 +939,7 @@ public class CertifiedProductController {
             } else {
                 for (PendingCertifiedProductEntity cpToAdd : cpsToAdd) {
                     try {
-                        PendingCertifiedProductDTO pendingCpDto = pcpManager
-                                .createOrReplace(cpToAdd.getCertificationBodyId(), cpToAdd);
+                        PendingCertifiedProductDTO pendingCpDto = pcpManager.createOrReplace(cpToAdd);
                         PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(pendingCpDto);
                         uploadedProducts.add(details);
                     } catch (final EntityCreationException | EntityRetrievalException ex) {

@@ -177,6 +177,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(temp),
                     Charset.forName("UTF-8").newEncoder());
                     CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
+                writer.write('\ufeff');
                 csvPrinter.printRecord(getHeaderRow());
                 for (List<String> rowValue : rows) {
                     csvPrinter.printRecord(rowValue);
