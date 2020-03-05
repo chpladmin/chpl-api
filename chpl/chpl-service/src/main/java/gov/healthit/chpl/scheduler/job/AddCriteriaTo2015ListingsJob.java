@@ -434,16 +434,16 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
 
     @SuppressWarnings({"checkstyle:linelength"})
     private void addTestFunctionalities() {
-        addTestFunctionality("(b)(3)(ii)(B)(1)", "Create new prescriptions (NewRxRequest, NewRxResponseDenied)");
+        addTestFunctionality("(b)(3)(ii)(B)(1)", "Create and respond to new prescriptions (NewRxRequest, NewRxResponseDenied)");
         addTestFunctionality("(b)(3)(ii)(B)(2)", "Receive fill status notifications (RxFillIndicator)");
-        addTestFunctionality("(b)(3)(ii)(B)(3)", "Request transactions from a mailbox (GetMessage)");
-        addTestFunctionality("(b)(3)(ii)(B)(4)", "Resupply Request to send an additional supply of medication (Resupply)");
+        addTestFunctionality("(b)(3)(ii)(B)(3)", "Ask the Mailbox if there are any transactions (GetMessage)");
+        addTestFunctionality("(b)(3)(ii)(B)(4)", "Request to send an additional supply of medication (Resupply)");
         addTestFunctionality("(b)(3)(ii)(B)(5)", "Communicate drug administration events (DrugAdministration)");
-        addTestFunctionality("(b)(3)(ii)(B)(6)", "Transfer medications between pharmacies (RxTransferRequest, RxTransferResponse, RxTransferConfirm)");
+        addTestFunctionality("(b)(3)(ii)(B)(6)", "Request and respond to transfer one or more prescriptions between pharmacies (RxTransferRequest, RxTransferResponse, RxTransferConfirm)");
         addTestFunctionality("(b)(3)(ii)(B)(7)", "Recertify the continued administration of a medication order (Recertification)");
-        addTestFunctionality("(b)(3)(ii)(B)(8)", "Complete risk evaluation and mitigation strategy (REMS) transactions (REMSInitiationRequest, REMSInitiationResponse, REMSRequest, and REMSResponse)");
-        addTestFunctionality("(b)(3)(ii)(B)(9)", "Electronic prior authorization transactions (PAInitiationRequest, PAInitiationResponse, PARequest, PAResponse, PAAppealRequest, PAAppealResponse and PACancelRequest, PACancelResponse)");
-        addTestFunctionality("(b)(3)(ii)(D)", "Optional: 170.315(b)(3)(ii)(D) For each transaction listed in paragraph (b)(3)(ii)(C) of this section, the technology must be able to receive and transmit the reason for the prescription using the indication elements in the SIG Segment");
+        addTestFunctionality("(b)(3)(ii)(B)(8)", "Complete Risk Evaluation and Mitigation Strategy (REMS) transactions (REMSInitiationRequest, REMSInitiationResponse, REMSRequest, and REMSResponse)");
+        addTestFunctionality("(b)(3)(ii)(B)(9)", "Electronic prior authorization transactions (PAInitiationRequest, PAInitiationResponse, PARequest, PAResponse, PAAppealRequest, PAAppealResponse,  PACancelRequest, and PACancelResponse).");
+        addTestFunctionality("(b)(3)(ii)(D)", "Optional: 170.315(b)(3)(ii)(D) For each transaction listed in paragraph (b)(3)(ii)(C) of this section, the technology must be able to receive and transmit the reason for the prescription using the <IndicationforUse> element in the SIG segment");
     }
 
     @SuppressWarnings({"checkstyle:linelength"})
