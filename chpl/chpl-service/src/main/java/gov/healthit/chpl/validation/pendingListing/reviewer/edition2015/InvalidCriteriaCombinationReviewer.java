@@ -1,8 +1,8 @@
 package gov.healthit.chpl.validation.pendingListing.reviewer.edition2015;
 
-import java.util.Iterator;
 import java.util.Optional;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,6 +12,7 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.InvalidCriteriaCombination;
 import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
 
@@ -28,11 +29,11 @@ public class InvalidCriteriaCombinationReviewer extends InvalidCriteriaCombinati
             checkForInvalidCriteriaCombination(listing, criteriaB6Id, criteriaB10Id);
             checkForInvalidCriteriaCombination(listing, criteriaG8Id, criteriaG10Id);
 
-            initializeOldAndNewCriteria();
-            Iterator<Integer> oldCriteriaIdsIter = oldCriteriaIds.iterator();
-            Iterator<Integer> newCriteriaIdsIter = newCriteriaIds.iterator();
-            while (oldCriteriaIdsIter.hasNext() && newCriteriaIdsIter.hasNext()) {
-                checkForInvalidCriteriaCombination(listing, oldCriteriaIdsIter.next(), newCriteriaIdsIter.next());
+            initializeOldAndNewCriteriaPairs();
+            for (Pair<Integer, Integer> pair : oldAndNewcriteriaIdPairs) {
+                final Integer oldCriteriaId = pair.getLeft();
+                final Integer newCriteriaId = pair.getRight();
+                checkForInvalidCriteriaCombination(listing, oldCriteriaId, newCriteriaId);
             }
         }
     }
@@ -47,7 +48,7 @@ public class InvalidCriteriaCombinationReviewer extends InvalidCriteriaCombinati
             final CertificationCriterionDTO critB = certResultB.get().getCriterion();
             listing.getErrorMessages()
                     .add(msgUtil.getMessage("listing.criteria.invalidCombination",
-                            getTitleForErrorMessage(critA), getTitleForErrorMessage(critB)));
+                            Util.formatCriteriaNumber(critA), Util.formatCriteriaNumber(critB)));
         }
     }
 
@@ -56,11 +57,5 @@ public class InvalidCriteriaCombinationReviewer extends InvalidCriteriaCombinati
         return listing.getCertificationCriterion().stream()
                 .filter(cr -> cr.getCriterion().getId().equals(Long.valueOf(criteriaId)) && cr.getMeetsCriteria())
                 .findFirst();
-    }
-
-    private String getTitleForErrorMessage(CertificationCriterionDTO criterion) {
-        return criterion.getTitle().contains(CURES_UPDATE_IN_TITLE)
-                ? criterion.getNumber() + " " + CURES_UPDATE_IN_TITLE
-                : criterion.getNumber();
     }
 }

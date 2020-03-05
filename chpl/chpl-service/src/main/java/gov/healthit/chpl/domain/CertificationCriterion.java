@@ -5,7 +5,6 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -17,8 +16,6 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CertificationCriterion implements Serializable {
     private static final long serialVersionUID = 5732322243572571895L;
-    private static final String CURES_TITLE = "Cures Update";
-    private static final String CURES_SUFFIX = " (Cures Update)";
 
     @XmlElement(required = false, nillable = true)
     private Long id;
@@ -108,18 +105,5 @@ public class CertificationCriterion implements Serializable {
 
     public void setRemoved(final Boolean removed) {
         this.removed = removed;
-    }
-
-    @XmlTransient
-    public boolean isCures() {
-        return getTitle() != null && getTitle().contains(CURES_TITLE);
-    }
-
-    public String formatCriteriaNumber() {
-        String result = getNumber();
-        if (isCures()) {
-            result += CURES_SUFFIX;
-        }
-        return result;
     }
 }
