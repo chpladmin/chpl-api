@@ -249,11 +249,11 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         if (getColumnIndexMap().getK2Index() >= 0) {
             String k2AttestationStr = record.get(getColumnIndexMap().getK2Index()).trim();
             if (!StringUtils.isEmpty(k2AttestationStr)) {
-                if ("0".equals(k2AttestationStr.trim())) {
+                if ("0".equals(k2AttestationStr)) {
                     pendingCertifiedProduct.setTransparencyAttestation(AttestationType.Negative);
-                } else if ("1".equals(k2AttestationStr.trim())) {
+                } else if ("1".equals(k2AttestationStr)) {
                     pendingCertifiedProduct.setTransparencyAttestation(AttestationType.Affirmative);
-                } else if ("2".equals(k2AttestationStr.trim())) {
+                } else if ("2".equals(k2AttestationStr)) {
                     pendingCertifiedProduct.setTransparencyAttestation(AttestationType.NA);
                 }
             } else {
