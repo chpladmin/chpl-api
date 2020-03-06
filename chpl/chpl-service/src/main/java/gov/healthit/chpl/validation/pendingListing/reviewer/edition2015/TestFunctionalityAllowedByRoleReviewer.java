@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.annotation.PostConstruct;
+
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -14,7 +16,6 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -31,6 +32,7 @@ public class TestFunctionalityAllowedByRoleReviewer implements Reviewer {
     private Environment env;
     private ErrorMessageUtil errorMessages;
     private ResourcePermissions permissions;
+    private List<RestrictedCriteriaTestFunctionality> restrictedCriteriaTestFunctionality;
 
     @Autowired
     public TestFunctionalityAllowedByRoleReviewer(FF4j ff4j, Environment env, ResourcePermissions permissions,
@@ -41,37 +43,27 @@ public class TestFunctionalityAllowedByRoleReviewer implements Reviewer {
         this.permissions = permissions;
     }
 
+    @PostConstruct
+    public void setup() {
+        restrictedCriteriaTestFunctionality = getRestrictedCriteriaTestFunctionality();
+    }
+
     @Override
     public void review(PendingCertifiedProductDTO listing) {
         if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)) {
             for (PendingCertificationResultDTO cr : listing.getCertificationCriterion()) {
                 if (cr.getTestFunctionality() != null) {
-                    for (PendingCertificationResultTestFunctionalityDTO crtf : cr.getTestFunctionality()) {
-                        if (!isTestFunctionalityChangeAllowedBasedOnRole(cr.getCriterion().getId(),
-                                crtf.getTestFunctionalityId())) {
-                            listing.getErrorMessages()
-                                    .add(errorMessages.getMessage("listing.criteria.testFunctionalityPermissionError",
-                                            crtf.getNumber(), cr.getCriterion().getNumber()));
-                        }
-                    }
+                    cr.getTestFunctionality().removeIf(
+                            crtf -> findRestrictedTestFunctionality(
+                                    cr.getCriterion().getId(),
+                                    crtf.getTestFunctionalityId()).isPresent());
                 }
-
             }
         }
     }
 
-    private boolean isTestFunctionalityChangeAllowedBasedOnRole(Long criteriaId, Long testFunctionalityId) {
-        Optional<RestrictedTestFunctionality> restrictedTestFunctionality = findRestrictedTestFunctionality(criteriaId,
-                testFunctionalityId);
-        if (restrictedTestFunctionality.isPresent()) {
-            return permissions.doesUserHaveRole(restrictedTestFunctionality.get().getAllowedRoleNames());
-        } else {
-            return true;
-        }
-    }
-
     private Optional<RestrictedTestFunctionality> findRestrictedTestFunctionality(Long criteriaId, Long testFunctionalityId) {
-        Optional<RestrictedCriteriaTestFunctionality> foundBasedOnCriteriaId = getRestrictedCriteriaTestFunctionality().stream()
+        Optional<RestrictedCriteriaTestFunctionality> foundBasedOnCriteriaId = restrictedCriteriaTestFunctionality.stream()
                 .filter(x -> x.getCriteriaId().equals(criteriaId))
                 .findAny();
 
