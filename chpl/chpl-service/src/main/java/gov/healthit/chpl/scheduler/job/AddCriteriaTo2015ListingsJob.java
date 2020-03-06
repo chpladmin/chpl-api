@@ -72,6 +72,9 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
             + "170.315 (b)(9):Care Plan (Cures Update);"
             + "170.315 (b)(10):Clinical Information Export;"
             + "170.315 (c)(3):Clinical Quality Measures - Report (Cures Update);"
+            + "170.315 (d)(2):Auditable Events and Tamper-Resistance (Cures Update);"
+            + "170.315 (d)(3):Audit Report(s) (Cures Update);"
+            + "170.315 (d)(10):Auditing Actions on Health Information (Cures Update);"
             + "170.315 (d)(12):Encrypt Authentication Credentials;"
             + "170.315 (d)(13):Multi-Factor Authentication;"
             + "170.315 (e)(1):View, Download, and Transmit to 3rd Party (Cures Update);"
@@ -175,6 +178,9 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         add2015Criterion("170.315 (b)(9)", "Care Plan (Cures Update)");
         add2015Criterion("170.315 (b)(10)", "Clinical Information Export");
         add2015Criterion("170.315 (c)(3)", "Clinical Quality Measures - Report (Cures Update)");
+        add2015Criterion("170.315 (d)(2)", "Auditable Events and Tamper-Resistance (Cures Update)");
+        add2015Criterion("170.315 (d)(3)", "Audit Report(s) (Cures Update)");
+        add2015Criterion("170.315 (d)(10)", "Auditing Actions on Health Information (Cures Update)");
         add2015Criterion("170.315 (d)(12)", "Encrypt Authentication Credentials");
         add2015Criterion("170.315 (d)(13)", "Multi-Factor Authentication");
         add2015Criterion("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)");
@@ -387,6 +393,9 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         addTestProcedureMap("170.315 (b)(10)", "Clinical Information Export", "ONC Test Method");
         addTestProcedureMap("170.315 (c)(3)", "Clinical Quality Measures - Report (Cures Update)", "ONC Test Method");
         addTestProcedureMap("170.315 (c)(3)", "Clinical Quality Measures - Report (Cures Update)", "NCQA eCQM Test Method");
+        addTestProcedureMap("170.315 (d)(2)", "Auditable Events and Tamper-Resistance (Cures Update)", "ONC Test Method");
+        addTestProcedureMap("170.315 (d)(3)", "Audit Report(s) (Cures Update)", "ONC Test Method");
+        addTestProcedureMap("170.315 (d)(10)", "Auditing Actions on Health Information (Cures Update)", "ONC Test Method");
         addTestProcedureMap("170.315 (d)(12)", "Encrypt Authentication Credentials", "ONC Test Method");
         addTestProcedureMap("170.315 (d)(13)", "Multi-Factor Authentication", "ONC Test Method");
         addTestProcedureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "ONC Test Method");
