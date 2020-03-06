@@ -25,6 +25,7 @@ import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.ContactEntity;
+import gov.healthit.chpl.entity.UserDeveloperMapEntity;
 import gov.healthit.chpl.entity.developer.DeveloperACBMapEntity;
 import gov.healthit.chpl.entity.developer.DeveloperACBTransparencyMapEntity;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
@@ -45,14 +46,19 @@ public class DeveloperDAO extends BaseDAOImpl {
 
     private static final Logger LOGGER = LogManager.getLogger(DeveloperDAO.class);
     private static final DeveloperStatusType DEFAULT_STATUS = DeveloperStatusType.Active;
-    @Autowired
     private AddressDAO addressDao;
-    @Autowired
     private ContactDAO contactDao;
-    @Autowired
     private DeveloperStatusDAO statusDao;
-    @Autowired
     private ErrorMessageUtil msgUtil;
+
+    @Autowired
+    public DeveloperDAO(AddressDAO addressDao, ContactDAO contactDao, DeveloperStatusDAO statusDao,
+            ErrorMessageUtil msgUtil) {
+       this.addressDao = addressDao;
+       this.contactDao = contactDao;
+       this.statusDao = statusDao;
+       this.msgUtil = msgUtil;
+    }
 
     public DeveloperDTO create(DeveloperDTO dto) throws EntityCreationException, EntityRetrievalException {
 
@@ -640,6 +646,27 @@ public class DeveloperDAO extends BaseDAOImpl {
         return getEntitiesByCertificationBodyId(certificationBodyIds).stream()
                 .map(dev -> new DeveloperDTO(dev))
                 .collect(Collectors.<DeveloperDTO> toList());
+    }
+
+    public List<DeveloperDTO> getDevelopersByUserId(final Long userId) {
+        Query query = entityManager.createQuery(
+                "FROM UserDeveloperMapEntity udm "
+                + "join fetch udm.developer developer "
+                + "join fetch udm.user u "
+                + "join fetch u.permission perm "
+                + "join fetch u.contact contact "
+                + "where (udm.deleted != true) AND (u.id = :userId) ",
+                UserDeveloperMapEntity.class);
+        query.setParameter("userId", userId);
+        List<UserDeveloperMapEntity> result = query.getResultList();
+
+        List<DeveloperDTO> dtos = new ArrayList<DeveloperDTO>();
+        if (result != null) {
+            for (UserDeveloperMapEntity entity : result) {
+                dtos.add(new DeveloperDTO(entity.getDeveloper()));
+            }
+        }
+        return dtos;
     }
 
     private void create(final DeveloperEntity entity) {

@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
-import gov.healthit.chpl.dao.UserDeveloperMapDAO;
-import gov.healthit.chpl.dao.UserTestingLabMapDAO;
+import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
@@ -21,16 +21,16 @@ import gov.healthit.chpl.entity.auth.UserEntity;
 @Component
 public class UserMapper {
 
-    private UserCertificationBodyMapDAO userCertificationBodyMapDAO;
-    private UserTestingLabMapDAO userTestingLabMapDAO;
-    private UserDeveloperMapDAO userDeveloperMapDAO;
+    private CertificationBodyDAO abcDao;
+    private TestingLabDAO atlDao;
+    private DeveloperDAO developerDao;
 
     @Autowired
-    public UserMapper(final UserCertificationBodyMapDAO userCertificationBodyMapDAO,
-            final UserTestingLabMapDAO userTestingLabMapDAO, final UserDeveloperMapDAO userDeveloperMapDAO) {
-        this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
-        this.userTestingLabMapDAO = userTestingLabMapDAO;
-        this.userDeveloperMapDAO = userDeveloperMapDAO;
+    public UserMapper(CertificationBodyDAO abcDao,
+            TestingLabDAO atlDao, DeveloperDAO developerDao) {
+        this.abcDao = abcDao;
+        this.atlDao = atlDao;
+        this.developerDao = developerDao;
     }
 
     @Transactional(readOnly = true)
@@ -84,15 +84,15 @@ public class UserMapper {
     }
 
     private List<CertificationBodyDTO> getAllAcbsForUser(final Long userID) {
-        return userCertificationBodyMapDAO.getCertificationBodyByUserId(userID);
+        return abcDao.getCertificationBodiesByUserId(userID);
     }
 
     private List<TestingLabDTO> getAllAtlsForUser(final Long userId) {
-        return userTestingLabMapDAO.getTestingLabsByUserId(userId);
+        return atlDao.getTestingLabsByUserId(userId);
     }
 
     private List<DeveloperDTO> getAllDevelopersForUser(final Long userId) {
-        return userDeveloperMapDAO.getDevelopersByUserId(userId);
+        return developerDao.getDevelopersByUserId(userId);
     }
 
 }

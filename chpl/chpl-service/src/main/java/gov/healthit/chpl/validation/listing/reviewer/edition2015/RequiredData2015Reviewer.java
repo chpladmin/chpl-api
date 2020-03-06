@@ -442,6 +442,12 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                         && cert.getAttestationAnswer() != null && cert.getAttestationAnswer().equals(Boolean.TRUE)) {
                     addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingUseCases",
                             cert.getCriterion().getNumber());
+                } else if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.USE_CASES)
+                        && !StringUtils.isEmpty(cert.getUseCases())
+                        && (cert.getAttestationAnswer() == null || cert.getAttestationAnswer().equals(Boolean.FALSE))) {
+                    listing.getWarningMessages().add(
+                            msgUtil.getMessage("listing.criteria.useCasesWithoutAttestation",
+                            cert.getCriterion().getNumber()));
                 }
 
                 if (!gapEligibleAndTrue
