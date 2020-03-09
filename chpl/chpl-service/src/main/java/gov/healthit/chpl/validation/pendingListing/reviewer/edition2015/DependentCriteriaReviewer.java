@@ -1,7 +1,9 @@
 package gov.healthit.chpl.validation.pendingListing.reviewer.edition2015;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -14,8 +16,12 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 
+import gov.healthit.chpl.dao.CertificationCriterionDAO;
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
@@ -25,11 +31,18 @@ import lombok.extern.log4j.Log4j2;
 public class DependentCriteriaReviewer implements Reviewer {
 
     private Environment env;
+    private CertificationCriterionDAO certificationCriterionDAO;
+    private ErrorMessageUtil errorMessageUtil;
+
     private List<RequiredCriteriaDependency> requiredCriteriaDependencies;
+    private Map<Long, CertificationCriterionDTO> criteria = new HashMap<Long, CertificationCriterionDTO>();
 
     @Autowired
-    public DependentCriteriaReviewer(Environment env) {
+    public DependentCriteriaReviewer(Environment env, CertificationCriterionDAO certificationCriterionDAO,
+            ErrorMessageUtil errorMessageUtil) {
         this.env = env;
+        this.certificationCriterionDAO = certificationCriterionDAO;
+        this.errorMessageUtil = errorMessageUtil;
     }
 
     @PostConstruct
@@ -62,7 +75,8 @@ public class DependentCriteriaReviewer implements Reviewer {
 
         requiredCriteria.stream()
                 .forEach(requiredCriteriId -> {
-                    Optional<String> err = validateDependentCriterion(attestedToCriteriaIds, dependentCertificationResult,
+                    Optional<String> err = validateDependentCriterion(attestedToCriteriaIds,
+                            dependentCertificationResult.getCriterion().getId(),
                             requiredCriteriId);
                     if (err.isPresent()) {
                         errorMessages.add(err.get());
@@ -73,12 +87,16 @@ public class DependentCriteriaReviewer implements Reviewer {
     }
 
     private Optional<String> validateDependentCriterion(List<Long> attestedToCriteriaId,
-            PendingCertificationResultDTO dependentCertificationResult, Long requiredCriterionId) {
+            Long dependentCriterionId, Long requiredCriterionId) {
         if (attestedToCriteriaId.contains(requiredCriterionId)) {
             return Optional.empty();
         } else {
+
             return Optional
-                    .of("This is the temporary error message - " + dependentCertificationResult.getCriterion().getNumber());
+                    .of(errorMessageUtil.getMessage(
+                            "listing.criteria.dependentCriteriaRequired",
+                            getCertificationCriterion(dependentCriterionId).getNumber(),
+                            getCertificationCriterion(requiredCriterionId).getNumber()));
 
         }
     }
@@ -109,6 +127,25 @@ public class DependentCriteriaReviewer implements Reviewer {
             return null;
         }
         return requiredCriteriaDependencies;
+    }
+
+    private CertificationCriterionDTO getCertificationCriterion(Long criterionId) {
+        // Did we already look this one up before?
+        if (criteria.containsKey(criterionId)) {
+            return criteria.get(criterionId);
+        } else {
+            // Get the criterion from the db, put it in the map and return it.
+            try {
+                CertificationCriterionDTO dto = certificationCriterionDAO.getById(criterionId);
+                criteria.put(criterionId, dto);
+                return dto;
+            } catch (EntityRetrievalException e) {
+                LOGGER.error("Could not retrieve criterion with id: " + criterionId, e);
+                CertificationCriterionDTO dto = new CertificationCriterionDTO();
+                dto.setNumber("UNKNOWN");
+                return dto;
+            }
+        }
     }
 
     @Data
