@@ -49,13 +49,13 @@ Open Nonconformities,Yes,<int>,"The total number of open (unresolved) non-confor
 170.315 (b)(10): Clinical Information export,Yes,TRUE; FALSE,Clinical Information export
 170.315 (c)(1): Clinical Quality Measures - Record and Export,Yes,TRUE; FALSE,Clinical Quality Measures - Record and Export
 170.315 (c)(2): Clincial Quality Measures - Import and Calculate,Yes,TRUE; FALSE,Clincial Quality Measures - Import and Calculate
-170.315 (c)(3): Clinical Quality Measures - Report (Cures Update),Yes,TRUE; FALSE,Clinical Quality Measures - Report 
-170.315 (c)(3): Clinical Quality Measures - Report,Yes,TRUE; FALSE,Clinical Quality Measures - Report (Cures Update)
+170.315 (c)(3): Clinical Quality Measures - Report (Cures Update),Yes,TRUE; FALSE,Clinical Quality Measures - Report (Cures Update)
+170.315 (c)(3): Clinical Quality Measures - Report,Yes,TRUE; FALSE,Clinical Quality Measures - Report
 170.315 (c)(4): Clinical Quality Measures - Filter,Yes,TRUE; FALSE,Clinical Quality Measures - Filter
 "170.315 (d)(1): Authentication, Access Control, Authorization",Yes,TRUE; FALSE,"Authentication, Access Control, Authorization"
-170.315 (d)(2): Auditable Events and Tamper-Resistance (Cures Update),Yes,TRUE; FALSE,Auditable Events and Tamper-Resistance
+170.315 (d)(2): Auditable Events and Tamper-Resistance (Cures Update),Yes,TRUE; FALSE,Auditable Events and Tamper-Resistance (Cures Update)
 170.315 (d)(2): Auditable Events and Tamper-Resistance,Yes,TRUE; FALSE,Auditable Events and Tamper-Resistance
-170.315 (d)(3): Audit Report(s) (Cures Update),Yes,TRUE; FALSE,Audit Report(s)
+170.315 (d)(3): Audit Report(s) (Cures Update),Yes,TRUE; FALSE,Audit Report(s) (Cures Update)
 170.315 (d)(3): Audit Report(s),Yes,TRUE; FALSE,Audit Report(s)
 170.315 (d)(4): Amendments,Yes,TRUE; FALSE,Amendments
 170.315 (d)(5): Automatic Access Time-out,Yes,TRUE; FALSE,Automatic Access Time-out
