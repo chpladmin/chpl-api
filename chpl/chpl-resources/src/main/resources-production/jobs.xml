@@ -12,12 +12,12 @@
     </pre-processing-commands>
     <schedule>
         <!-- Delete from here to "DELETE END MARKER" after PROD push -->
-        <!-- Remove v17 Upload Template Job -->
+        <!--  Updates all MACRA measures to based on new requirements -->
         <job>
-            <name>removeV17UploadTemplateJob</name>
+            <name>updateMacraMeasuresJob</name>
             <group>systemJobs</group>
-            <description>Marks v17 upload template as deleted</description>
-            <job-class>gov.healthit.chpl.scheduler.job.RemoveV17UploadTemplate</job-class>
+            <description>Updates all MACRA measures to based on new requirements</description>
+            <job-class>gov.healthit.chpl.scheduler.job.UpdateMacraMeasuresJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>
@@ -27,12 +27,12 @@
                 </entry>
             </job-data-map>
         </job>
-        <!-- Job used to create Test Tools-->
+        <!--  Add V18 Upload Template -->
         <job>
-            <name>createTestToolJob</name>
+            <name>addV18UploadTemplateJob</name>
             <group>systemJobs</group>
-            <description>Create Test Tool(s)</description>
-            <job-class>gov.healthit.chpl.scheduler.job.CreateTestToolJob</job-class>
+            <description>Makes 2015 V18 Upload Template Available</description>
+            <job-class>gov.healthit.chpl.scheduler.job.AddV18UploadTemplateJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>
@@ -41,21 +41,6 @@
                     <value>ROLE_ADMIN;ROLE_ONC</value>
                 </entry>
             </job-data-map>
-        </job>
-        <job>
-            <name>modifyTestFunctionalityJob</name>
-            <group>systemJobs</group>
-            <description>Modifies a specific test functionality's number and name</description>
-            <job-class>gov.healthit.chpl.scheduler.job.ModifyTestFunctionalityJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC</value>
-                </entry>
-            </job-data-map>
-        </job>
-        <!-- DELETE END MARKER -->
+        </job>        <!-- DELETE END MARKER -->
     </schedule>
 </job-scheduling-data>

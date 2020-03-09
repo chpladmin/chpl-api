@@ -32,7 +32,7 @@ public class UrlCallerAsync {
      */
     @Async("jobAsyncDataExecutor")
     public Future<Integer> getUrlResponseCode(
-            final UrlResult urlToCheck, final AsyncHttpClient httpClient, final Logger logger) throws Exception {
+            UrlResult urlToCheck, final AsyncHttpClient httpClient, Logger logger) throws Exception {
         logger.info("Checking URL " + urlToCheck.getUrl());
         Request getRequest = new RequestBuilder(HttpConstants.Methods.GET)
                 .setFollowRedirect(false)
@@ -47,23 +47,23 @@ public class UrlCallerAsync {
              * to continue handling the request.
              */
             @Override
-            public State onStatusReceived(final HttpResponseStatus responseStatus) throws Exception {
+            public State onStatusReceived(HttpResponseStatus responseStatus) throws Exception {
                 this.responseCode = responseStatus.getStatusCode();
                 return AsyncHandler.State.ABORT;
             }
 
             @Override
-            public State onHeadersReceived(final HttpHeaders headers) throws Exception {
+            public State onHeadersReceived(HttpHeaders headers) throws Exception {
                 return AsyncHandler.State.CONTINUE;
             }
 
             @Override
-            public State onBodyPartReceived(final HttpResponseBodyPart bodyPart) throws Exception {
+            public State onBodyPartReceived(HttpResponseBodyPart bodyPart) throws Exception {
                 return AsyncHandler.State.CONTINUE;
             }
 
             @Override
-            public void onThrowable(final Throwable t) {
+            public void onThrowable(Throwable t) {
             }
 
             @Override

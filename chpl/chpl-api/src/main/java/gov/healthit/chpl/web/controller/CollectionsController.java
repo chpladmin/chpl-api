@@ -105,7 +105,9 @@ public class CollectionsController {
 
                 // if the field is not required, set it to null
                 // assumes standard java bean getter/setter names
-                if (!isSearchResultFieldRequired && !searchResultField.getName().equalsIgnoreCase("serialVersionUID")) {
+                if (!isSearchResultFieldRequired
+                        && !searchResultField.getName().equalsIgnoreCase("serialVersionUID")
+                        && !searchResultField.getName().equalsIgnoreCase("CERTS_SPLIT_CHAR")) {
                     // what type is the field? String? Long?
                     Class searchResultFieldTypeClazz = searchResultField.getType();
                     // find the setter method that accepts the correct type

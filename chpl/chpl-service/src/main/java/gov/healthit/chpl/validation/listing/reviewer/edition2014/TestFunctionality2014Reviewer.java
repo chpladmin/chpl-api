@@ -82,18 +82,16 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
             errors.add(getTestFunctionalityPracticeTypeErrorMessage(crtf, cr, listing));
         }
 
-        String criterionNumber = cr.getNumber();
-        if (!isTestFunctionalityCritierionValid(criterionNumber, tf, edition.getYear())) {
+        if (!isTestFunctionalityCritierionValid(cr.getCriterion().getId(), tf, edition.getYear())) {
             errors.add(getTestFunctionalityCriterionErrorMessage(crtf, cr, listing, edition));
         }
         return errors;
     }
 
-    private Boolean isTestFunctionalityCritierionValid(final String criteriaNumber,
-            final TestFunctionalityDTO tf, final String year) {
+    private Boolean isTestFunctionalityCritierionValid(Long criteriaId, TestFunctionalityDTO tf, String year) {
 
         List<TestFunctionalityDTO> validTestFunctionalityForCriteria =
-                testFunctionalityManager.getTestFunctionalityCriteriaMap2014().get(criteriaNumber);
+                testFunctionalityManager.getTestFunctionalityCriteriaMap2014().get(criteriaId);
 
         //Is the TestFunctionalityDTO in the valid list (relies on the TestFunctionalityDTO.equals()
         if (validTestFunctionalityForCriteria == null) {

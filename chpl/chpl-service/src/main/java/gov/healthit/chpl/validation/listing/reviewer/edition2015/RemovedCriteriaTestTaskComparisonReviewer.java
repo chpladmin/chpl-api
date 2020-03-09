@@ -87,7 +87,7 @@ public class RemovedCriteriaTestTaskComparisonReviewer implements ComparisonRevi
         for (CertificationCriterion updatedCriterion : updatedCriteria) {
             boolean existsInOriginal = false;
             for (CertificationCriterion originalCriterion : originalCriteria) {
-                if (updatedCriterion.getNumber().equals(originalCriterion.getNumber())) {
+                if (updatedCriterion.getId().equals(originalCriterion.getId())) {
                     existsInOriginal = true;
                 }
             }

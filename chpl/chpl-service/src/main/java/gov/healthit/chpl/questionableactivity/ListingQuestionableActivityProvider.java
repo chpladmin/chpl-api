@@ -49,7 +49,7 @@ public class ListingQuestionableActivityProvider {
 
     /**
      * Create questionable activity if the listing was a 2011 listing.
-     * 
+     *
      * @param origListing
      *            original listing
      * @param newListing
@@ -71,7 +71,7 @@ public class ListingQuestionableActivityProvider {
 
     /**
      * Create questionable activity if the listing was a 2014 listing.
-     * 
+     *
      * @param origListing
      *            original listing
      * @param newListing
@@ -96,7 +96,7 @@ public class ListingQuestionableActivityProvider {
 
     /**
      * Create questionable activity if the current certification status was updated.
-     * 
+     *
      * @param origListing
      *            original listing
      * @param newListing
@@ -124,7 +124,7 @@ public class ListingQuestionableActivityProvider {
      * status events by date, earliest first, then compares them, incrementing through them with the "earlier" date
      * getting moved up. If both are equal both move. Does not compare "latest" events, as those are the "current"
      * values, and compared in other functions.
-     * 
+     *
      * @param origListing
      *            original listing
      * @param newListing
@@ -230,7 +230,7 @@ public class ListingQuestionableActivityProvider {
 
     /**
      * Create questionable activity if the current certification status event date was updated.
-     * 
+     *
      * @param origListing
      *            original listing
      * @param newListing
@@ -258,7 +258,7 @@ public class ListingQuestionableActivityProvider {
 
     /**
      * questionable only if the certification status has updated to the supplied updateTo value.
-     * 
+     *
      * @param updateTo
      *            status to check against
      * @param origListing
@@ -285,7 +285,7 @@ public class ListingQuestionableActivityProvider {
 
     /**
      * Create questionable activity if CQMs were added.
-     * 
+     *
      * @param origListing
      *            original listing
      * @param newListing
@@ -337,7 +337,7 @@ public class ListingQuestionableActivityProvider {
 
     /**
      * Create questionable activity if CQMs were removed.
-     * 
+     *
      * @param origListing
      *            original listing
      * @param newListing
@@ -398,7 +398,7 @@ public class ListingQuestionableActivityProvider {
 
     /**
      * Create questionable activity if certification criteria were added.
-     * 
+     *
      * @param origListing
      *            original listing
      * @param newListing
@@ -415,12 +415,12 @@ public class ListingQuestionableActivityProvider {
             // based on number and compare the success boolean to see if one was added
             for (CertificationResult origCertResult : origListing.getCertificationResults()) {
                 for (CertificationResult newCertResult : newListing.getCertificationResults()) {
-                    if (origCertResult.getNumber().equals(newCertResult.getNumber())) {
+                    if (origCertResult.getCriterion().getId().equals(newCertResult.getCriterion().getId())) {
                         if (!origCertResult.isSuccess() && newCertResult.isSuccess()) {
                             // orig did not have this cert result but new does so it was added
                             QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
                             activity.setBefore(null);
-                            activity.setAfter(newCertResult.getNumber());
+                            activity.setAfter(newCertResult.getCriterion().formatCriteriaNumber());
                             certAddedActivities.add(activity);
                         }
                         break;
@@ -434,7 +434,7 @@ public class ListingQuestionableActivityProvider {
 
     /**
      * Create questionable activity if it has removal of certification criteria.
-     * 
+     *
      * @param origListing
      *            original listing
      * @param newListing
@@ -451,11 +451,11 @@ public class ListingQuestionableActivityProvider {
             // based on number and compare the success boolean to see if one was removed
             for (CertificationResult origCertResult : origListing.getCertificationResults()) {
                 for (CertificationResult newCertResult : newListing.getCertificationResults()) {
-                    if (origCertResult.getNumber().equals(newCertResult.getNumber())) {
+                    if (origCertResult.getCriterion().getId().equals(newCertResult.getCriterion().getId())) {
                         if (origCertResult.isSuccess() && !newCertResult.isSuccess()) {
                             // orig did have this cert result but new does not so it was removed
                             QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
-                            activity.setBefore(origCertResult.getNumber());
+                            activity.setBefore(origCertResult.getCriterion().formatCriteriaNumber());
                             activity.setAfter(null);
                             certRemovedActivities.add(activity);
                         }
@@ -469,7 +469,7 @@ public class ListingQuestionableActivityProvider {
 
     /**
      * Check to see if activity has has deletion of surveillance.
-     * 
+     *
      * @param origListing
      *            original listing
      * @param newListing
@@ -493,7 +493,7 @@ public class ListingQuestionableActivityProvider {
 
     /**
      * Check to see if activity has any changes in ATLs.
-     * 
+     *
      * @param origListing
      *            original listing
      * @param newListing

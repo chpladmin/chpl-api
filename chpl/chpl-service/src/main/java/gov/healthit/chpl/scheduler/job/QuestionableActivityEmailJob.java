@@ -31,7 +31,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.dao.QuestionableActivityDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
+import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityCertificationResultDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityDeveloperDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
@@ -72,7 +74,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
 
     /**
      * Constructor that initializes the QuestionableActivityEmailJob object.
-     * 
+     *
      * @throws Exception
      *             if thrown
      */
@@ -175,6 +177,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(temp),
                     Charset.forName("UTF-8").newEncoder());
                     CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
+                writer.write('\ufeff');
                 csvPrinter.printRecord(getHeaderRow());
                 for (List<String> rowValue : rows) {
                     csvPrinter.printRecord(rowValue);
@@ -489,7 +492,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             if (!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; ";
             }
-            currActivityRowValue += activity.getCertResult().getNumber() + ": from " + activity.getBefore() + " to "
+            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": from " + activity.getBefore() + " to "
                     + activity.getAfter();
             currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
         } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G1_MEASURE_ADDED
@@ -498,7 +501,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             if (!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; ";
             }
-            currActivityRowValue += activity.getCertResult().getNumber() + ": " + activity.getAfter();
+            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": " + activity.getAfter();
             currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
         } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G1_MEASURE_REMOVED
                 .getName())) {
@@ -506,7 +509,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             if (!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; ";
             }
-            currActivityRowValue += activity.getCertResult().getNumber() + ": " + activity.getBefore();
+            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": " + activity.getBefore();
             currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
         } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G2_SUCCESS_EDITED
                 .getName())) {
@@ -514,7 +517,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             if (!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; ";
             }
-            currActivityRowValue += activity.getCertResult().getNumber() + ": from " + activity.getBefore() + " to "
+            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": from " + activity.getBefore() + " to "
                     + activity.getAfter();
             currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
         } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G2_MEASURE_ADDED
@@ -523,7 +526,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             if (!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; ";
             }
-            currActivityRowValue += activity.getCertResult().getNumber() + ": " + activity.getAfter();
+            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": " + activity.getAfter();
             currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
         } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G2_MEASURE_REMOVED
                 .getName())) {
@@ -531,14 +534,14 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             if (!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; ";
             }
-            currActivityRowValue += activity.getCertResult().getNumber() + ": " + activity.getBefore();
+            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": " + activity.getBefore();
             currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
         } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.GAP_EDITED.getName())) {
             String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
             if (!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; ";
             }
-            currActivityRowValue += activity.getCertResult().getNumber() + " from " + activity.getBefore() + " to "
+            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + " from " + activity.getBefore() + " to "
                     + activity.getAfter();
             currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
         }
@@ -681,6 +684,14 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             }
             rangeInDays = Range.between(min, max);
         }
+    }
+
+    private String formatCriteriaNumber(CertificationResultDetailsDTO certResult) {
+        CertificationCriterion criterion = new CertificationCriterion();
+        criterion.setNumber(certResult.getNumber());
+        criterion.setTitle(certResult.getTitle());
+        criterion.setId(certResult.getCertificationCriterionId());
+        return criterion.formatCriteriaNumber();
     }
 
     private static class ActivityDateTriggerGroup {

@@ -128,6 +128,7 @@ public final class Util {
         if (ret != 0) {
             return ret;
         }
+
         ret = compareInts(m1.group(NUMBER_PARA_2), m2.group(NUMBER_PARA_2));
         if (ret != 0) {
             return ret;
