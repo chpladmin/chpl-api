@@ -1,5 +1,26 @@
 # Release Notes
 
+## Version 24.0.0
+_9 March 2020_
+
+### Breaking Change
+* Update various endpoints to return ID instead of Number for criteria
+
+### Features
+* Update job to remove more macra measures
+* Expand quartz job to cover more data related to new Cures specific criteria
+* Update quartz job to modify test functionality related to e1
+* Allow upload of v18 2015 listing template with b3, d12, d13
+* Allow edit and view of Cures revised criteria
+
+### Flagged Feature
+* Restrict surveillance editing for things removed from the Program
+
+### Bug Fixed
+* Add BOM to allow for display of extended characters in CSV files
+
+---
+
 ## Version 23.1.0
 _20 February 2020_
 
