@@ -139,9 +139,6 @@ public class ActivityController {
     public ActivityMetadataPage metadataForListings(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
-        if (!ff4j.check(FeatureList.ENHANCED_REPORTS)) {
-            throw new NotImplementedException();
-        }
         return pagedMetadataManager.getActivityMetadataByConcept(
                 ActivityConcept.CERTIFIED_PRODUCT, start, end, pageNum, pageSize);
     }
