@@ -230,7 +230,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
         parseUniqueId(pendingCertifiedProduct, record);
         parseRecordStatus(pendingCertifiedProduct, record);
         parseDeveloperProductVersion(pendingCertifiedProduct, record);
-        parseDeveloperAddress(pendingCertifiedProduct, record);
+        parseDeveloperDetails(pendingCertifiedProduct, record);
         parseEdition("2015", pendingCertifiedProduct, record);
         parseAcbCertificationId(pendingCertifiedProduct, record);
         parseAcb(pendingCertifiedProduct, record);

@@ -63,12 +63,12 @@ public class TemplateColumnIndexMap2015Version3 extends TemplateColumnIndexMap {
     }
 
     @Override
-    public int getDeveloperAddressStartIndex() {
+    public int getDeveloperStartIndex() {
         return 10;
     }
 
     @Override
-    public int getDeveloperAddressEndIndex() {
+    public int getDeveloperEndIndex() {
         return 17;
     }
 
@@ -120,11 +120,6 @@ public class TemplateColumnIndexMap2015Version3 extends TemplateColumnIndexMap {
     @Override
     public int getK2Index() {
         return 27;
-    }
-
-    @Override
-    public int getSelfDeveloperIndex() {
-        return -1;
     }
 
     @Override

@@ -86,10 +86,6 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
     protected void parseDeveloperProductVersion(final PendingCertifiedProductEntity pendingCertifiedProduct,
             final CSVRecord record) {
         String developer = record.get(getColumnIndexMap().getDeveloperIndex()).trim();
-        if (getColumnIndexMap().getSelfDeveloperIndex() >= 0) {
-            String selfDeveloperStr = record.get(getColumnIndexMap().getSelfDeveloperIndex()).trim();
-            pendingCertifiedProduct.setSelfDeveloper(asBoolean(selfDeveloperStr));
-        }
         String product = record.get(getColumnIndexMap().getProductIndex()).trim();
         String productVersion = record.get(getColumnIndexMap().getVersionIndex()).trim();
         pendingCertifiedProduct.setDeveloperName(developer);
@@ -115,17 +111,17 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         }
     }
 
-    protected void parseDeveloperAddress(final PendingCertifiedProductEntity pendingCertifiedProduct,
-            final CSVRecord record) {
-        int devAddressIndex = getColumnIndexMap().getDeveloperAddressStartIndex();
-        String developerStreetAddress = record.get(devAddressIndex++).trim();
-        String developerState = record.get(devAddressIndex++).trim();
-        String developerCity = record.get(devAddressIndex++).trim();
-        String developerZipcode = record.get(devAddressIndex++).trim();
-        String developerWebsite = record.get(devAddressIndex++).trim();
-        String developerEmail = record.get(devAddressIndex++).trim();
-        String developerPhone = record.get(devAddressIndex++).trim();
-        String developerContactName = record.get(devAddressIndex++).trim();
+    protected void parseDeveloperDetails(PendingCertifiedProductEntity pendingCertifiedProduct,
+            CSVRecord record) {
+        int devStartIndex = getColumnIndexMap().getDeveloperStartIndex();
+        String developerStreetAddress = record.get(devStartIndex++).trim();
+        String developerState = record.get(devStartIndex++).trim();
+        String developerCity = record.get(devStartIndex++).trim();
+        String developerZipcode = record.get(devStartIndex++).trim();
+        String developerWebsite = record.get(devStartIndex++).trim();
+        String developerEmail = record.get(devStartIndex++).trim();
+        String developerPhone = record.get(devStartIndex++).trim();
+        String developerContactName = record.get(devStartIndex++).trim();
         pendingCertifiedProduct.setDeveloperStreetAddress(developerStreetAddress);
         pendingCertifiedProduct.setDeveloperCity(developerCity);
         pendingCertifiedProduct.setDeveloperState(developerState);

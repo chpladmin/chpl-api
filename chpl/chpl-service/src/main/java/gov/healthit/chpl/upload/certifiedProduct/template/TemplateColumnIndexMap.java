@@ -22,8 +22,8 @@ public abstract class TemplateColumnIndexMap {
     public abstract int getAtlIndex();
     public abstract int getProductClassificationIndex();
     public abstract int getCertificationDateIndex();
-    public abstract int getDeveloperAddressStartIndex();
-    public abstract int getDeveloperAddressEndIndex();
+    public abstract int getDeveloperStartIndex();
+    public abstract int getDeveloperEndIndex();
     public abstract int getTargetedUserStartIndex();
     public abstract int getTargetedUserEndIndex();
     public abstract int getQmsStartIndex();
@@ -34,7 +34,6 @@ public abstract class TemplateColumnIndexMap {
     public abstract int getAccessibilityStandardIndex();
     public abstract int getK1Index();
     public abstract int getK2Index();
-    public abstract int getSelfDeveloperIndex();
     public abstract int getCqmStartIndex();
     public abstract int getCqmEndIndex();
     public abstract int getSedStartIndex();
