@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
 
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
+
 public class Validator2014 extends Validator {
 
     private int inpatientCqmCount = 0;
@@ -95,7 +97,7 @@ public class Validator2014 extends Validator {
         this.counts.put("criteriaRequired", REQUIRED_CRITERIA.size());
         boolean criteriaValid = true;
         for (String crit : REQUIRED_CRITERIA) {
-            if (null == criteriaMet.get(crit)) {
+            if (!criteriaMetContainsCriterion(crit)) {
                 criteriaValid = false;
                 missingAnd.add(crit);
             } else {
@@ -144,8 +146,8 @@ public class Validator2014 extends Validator {
                 TreeMap<String, ArrayList<String>> missingCoreAmbulatory = new TreeMap<String, ArrayList<String>>();
                 missingCoreAmbulatory.put(missing, (ArrayList<String>) this.AMBULATORY_CORE_CQMS);
                 missingXOr.add(missingCoreAmbulatory);
-            } else if (((this.counts.get("cqmsAmbulatoryRequiredMet") + this.counts.get("cqmsAmbulatoryCoreRequiredMet")) < (this.counts
-                    .get("cqmsAmbulatoryRequired") + this.counts.get("cqmsAmbulatoryCoreRequired")))) {
+            } else if (((this.counts.get("cqmsAmbulatoryRequiredMet") + this.counts.get("cqmsAmbulatoryCoreRequiredMet"))
+                    < (this.counts.get("cqmsAmbulatoryRequired") + this.counts.get("cqmsAmbulatoryCoreRequired")))) {
                 String missing = String.valueOf((this.counts.get("cqmsAmbulatoryCoreRequired") + this.counts
                         .get("cqmsAmbulatoryRequired")) - (coreAmbulatory + nonCoreAmbulatory));
                 TreeMap<String, ArrayList<String>> missingAmbulatory = new TreeMap<String, ArrayList<String>>();
@@ -209,8 +211,8 @@ public class Validator2014 extends Validator {
         this.counts.put("cqmsAmbulatoryCoreRequiredMet", coreAmbulatory);
 
         return (this.counts.get("cqmsAmbulatoryCoreRequiredMet") >= this.counts.get("cqmsAmbulatoryCoreRequired"))
-                && ((this.counts.get("cqmsAmbulatoryRequiredMet") + this.counts.get("cqmsAmbulatoryCoreRequiredMet")) >= (this.counts
-                        .get("cqmsAmbulatoryRequired") + this.counts.get("cqmsAmbulatoryCoreRequired")));
+                && ((this.counts.get("cqmsAmbulatoryRequiredMet") + this.counts.get("cqmsAmbulatoryCoreRequiredMet"))
+                        >= (this.counts.get("cqmsAmbulatoryRequired") + this.counts.get("cqmsAmbulatoryCoreRequired")));
     }
 
     // **********************************************************************
@@ -221,7 +223,7 @@ public class Validator2014 extends Validator {
     // **********************************************************************
     protected boolean isCPOEValid() {
         for (String crit : CPOE_CRITERIA) {
-            if (null != criteriaMet.get(crit)) {
+            if (criteriaMetContainsCriterion(crit)) {
                 this.counts.put("criteriaCpoeRequiredMet", 1);
                 return true;
             }
@@ -238,38 +240,38 @@ public class Validator2014 extends Validator {
     protected boolean isTOCValid() {
 
         // 170.314(b)(1) and 170.314(b)(2) and 170.314(b)(8) and 170.314(h)(1)
-        if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")
-                && this.criteriaMet.containsKey("170.314 (b)(8)") && this.criteriaMet.containsKey("170.314 (h)(1)")) {
+        if (criteriaMetContainsCriterion("170.314 (b)(1)") && criteriaMetContainsCriterion("170.314 (b)(2)")
+                && criteriaMetContainsCriterion("170.314 (b)(8)") && criteriaMetContainsCriterion("170.314 (h)(1)")) {
             this.counts.put("criteriaTocRequiredMet", 4);
             this.counts.put("criteriaTocRequired", 4);
             return true;
         }
 
         // 170.314(b)(1) and 170.314(b)(2) and 170.314(h)(1)
-        if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")
-                && this.criteriaMet.containsKey("170.314 (h)(1)")) {
+        if (criteriaMetContainsCriterion("170.314 (b)(1)") && criteriaMetContainsCriterion("170.314 (b)(2)")
+                && criteriaMetContainsCriterion("170.314 (h)(1)")) {
             this.counts.put("criteriaTocRequiredMet", 3);
             this.counts.put("criteriaTocRequired", 3);
             return true;
         }
 
         // 170.314(b)(1) and 170.314(b)(2) and 170.314(b)(8)
-        if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")
-                && this.criteriaMet.containsKey("170.314 (b)(8)")) {
+        if (criteriaMetContainsCriterion("170.314 (b)(1)") && criteriaMetContainsCriterion("170.314 (b)(2)")
+                && criteriaMetContainsCriterion("170.314 (b)(8)")) {
             this.counts.put("criteriaTocRequiredMet", 3);
             this.counts.put("criteriaTocRequired", 3);
             return true;
         }
 
         // 170.314(b)(8) and 170.314(h)(1)
-        if (this.criteriaMet.containsKey("170.314 (b)(8)") && this.criteriaMet.containsKey("170.314 (h)(1)")) {
+        if (criteriaMetContainsCriterion("170.314 (b)(8)") && this.criteriaMetContainsCriterion("170.314 (h)(1)")) {
             this.counts.put("criteriaTocRequiredMet", 2);
             this.counts.put("criteriaTocRequired", 2);
             return true;
         }
 
         // 170.314(b)(1) and 170.314(b)(2)
-        if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")) {
+        if (criteriaMetContainsCriterion("170.314 (b)(1)") && criteriaMetContainsCriterion("170.314 (b)(2)")) {
             this.counts.put("criteriaTocRequiredMet", 2);
             this.counts.put("criteriaTocRequired", 2);
             return true;
