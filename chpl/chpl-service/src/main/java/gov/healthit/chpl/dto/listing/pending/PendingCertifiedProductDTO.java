@@ -50,8 +50,16 @@ import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTargetedU
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTestingLabMapEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCqmCriterionEntity;
 import gov.healthit.chpl.util.Util;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.Singular;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PendingCertifiedProductDTO implements Serializable {
     private static final long serialVersionUID = 8778880570983282001L;
     private Long id;
@@ -65,8 +73,10 @@ public class PendingCertifiedProductDTO implements Serializable {
     private Long productClassificationId;
     private Boolean deleted;
     private Long lastModifiedUser;
-    private Set<String> errorMessages;
-    private Set<String> warningMessages;
+    @Builder.Default
+    private Set<String> errorMessages = new HashSet<String>();
+    @Builder.Default
+    private Set<String> warningMessages = new HashSet<String>();
 
     private String uniqueId;
     private String recordStatus;
@@ -98,29 +108,31 @@ public class PendingCertifiedProductDTO implements Serializable {
     private TransparencyAttestationDTO transparencyAttestation;
     private String transparencyAttestationUrl;
 
-    private List<PendingCertifiedProductTestingLabDTO> testingLabs;
-    private List<CertifiedProductDetailsDTO> icsParents;
-    private List<CertifiedProductDetailsDTO> icsChildren;
-    private List<PendingCertificationResultDTO> certificationCriterion;
-    private List<PendingCqmCriterionDTO> cqmCriterion;
-    private List<PendingCertifiedProductQmsStandardDTO> qmsStandards;
-    private List<PendingCertifiedProductTargetedUserDTO> targetedUsers;
-    private List<PendingCertifiedProductAccessibilityStandardDTO> accessibilityStandards;
+    @Singular
+    private List<PendingCertifiedProductTestingLabDTO> testingLabs = new ArrayList<PendingCertifiedProductTestingLabDTO>();
+
+    @Singular
+    private List<CertifiedProductDetailsDTO> icsParents = new ArrayList<CertifiedProductDetailsDTO>();
+
+    @Singular
+    private List<CertifiedProductDetailsDTO> icsChildren = new ArrayList<CertifiedProductDetailsDTO>();
+
+    @Singular("certificationCriterionSingle")
+    private List<PendingCertificationResultDTO> certificationCriterion = new ArrayList<PendingCertificationResultDTO>();
+
+    @Singular("cqmCriterionSingle")
+    private List<PendingCqmCriterionDTO> cqmCriterion = new ArrayList<PendingCqmCriterionDTO>();
+
+    @Singular
+    private List<PendingCertifiedProductQmsStandardDTO> qmsStandards = new ArrayList<PendingCertifiedProductQmsStandardDTO>();
+
+    @Singular
+    private List<PendingCertifiedProductTargetedUserDTO> targetedUsers = new ArrayList<PendingCertifiedProductTargetedUserDTO>();
+
+    @Singular
+    private List<PendingCertifiedProductAccessibilityStandardDTO> accessibilityStandards = new ArrayList<PendingCertifiedProductAccessibilityStandardDTO>();
 
     private Date uploadDate;
-
-    public PendingCertifiedProductDTO() {
-        this.errorMessages = new HashSet<String>();
-        this.warningMessages = new HashSet<String>();
-        this.testingLabs = new ArrayList<PendingCertifiedProductTestingLabDTO>();
-        this.icsParents = new ArrayList<CertifiedProductDetailsDTO>();
-        this.icsChildren = new ArrayList<CertifiedProductDetailsDTO>();
-        this.certificationCriterion = new ArrayList<PendingCertificationResultDTO>();
-        this.cqmCriterion = new ArrayList<PendingCqmCriterionDTO>();
-        this.qmsStandards = new ArrayList<PendingCertifiedProductQmsStandardDTO>();
-        this.targetedUsers = new ArrayList<PendingCertifiedProductTargetedUserDTO>();
-        this.accessibilityStandards = new ArrayList<PendingCertifiedProductAccessibilityStandardDTO>();
-    }
 
     public PendingCertifiedProductDTO(PendingCertifiedProductDetails details) {
         this();
