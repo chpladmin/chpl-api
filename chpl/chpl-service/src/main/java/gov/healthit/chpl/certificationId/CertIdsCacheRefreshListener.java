@@ -9,15 +9,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.CacheRefreshListener;
 import gov.healthit.chpl.caching.updater.CertIdsCacheUpdater;
-import gov.healthit.chpl.domain.SimpleCertificationId;
-import gov.healthit.chpl.dto.CertificationIdDTO;
-import gov.healthit.chpl.util.PropertyUtil;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
 
 /**
  * Listener that determines when to update the cache of certification IDs.
@@ -37,7 +30,7 @@ public class CertIdsCacheRefreshListener extends CacheRefreshListener {
      * @param year the year of the certification ID
      */
     @AfterReturning(
-            pointcut = "execution(* gov.healthit.chpl.manager.impl.CertificationIdManagerImpl.create(..)) && "
+            pointcut = "execution(* gov.healthit.chpl.manager.CertificationIdManager.create(..)) && "
             + "args(productIds,year,..)")
     public void afterCertificationIdCreated(final List<Long> productIds, final String year) {
         LOGGER.debug("A certification ID was created. Refreshing certification ID caches. ");
