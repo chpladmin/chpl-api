@@ -73,9 +73,9 @@ public class PendingCertifiedProductDTO implements Serializable {
     private Long productClassificationId;
     private Boolean deleted;
     private Long lastModifiedUser;
-    @Builder.Default
+    @Singular
     private Set<String> errorMessages = new HashSet<String>();
-    @Builder.Default
+    @Singular
     private Set<String> warningMessages = new HashSet<String>();
 
     private String uniqueId;

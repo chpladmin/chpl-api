@@ -2,6 +2,8 @@ package gov.healthit.chpl.validation.pendingListing.reviewer.edition2015;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.HashSet;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -57,6 +59,7 @@ public class DependentCriteriaReviewerTest {
                                 .build())
                         .build())
                 .build();
+        listing.setErrorMessages(new HashSet<String>());
 
         dependentCriteriaReviewer.review(listing);
 
@@ -74,6 +77,7 @@ public class DependentCriteriaReviewerTest {
                                 .build())
                         .build())
                 .build();
+        listing.setErrorMessages(new HashSet<String>());
 
         dependentCriteriaReviewer.review(listing);
 
@@ -98,6 +102,7 @@ public class DependentCriteriaReviewerTest {
                                 .build())
                         .build())
                 .build();
+        listing.setErrorMessages(new HashSet<String>());
 
         dependentCriteriaReviewer.review(listing);
 
@@ -129,6 +134,7 @@ public class DependentCriteriaReviewerTest {
                                 .build())
                         .build())
                 .build();
+        listing.setErrorMessages(new HashSet<String>());
 
         dependentCriteriaReviewer.review(listing);
 
