@@ -17,8 +17,6 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
-import gov.healthit.chpl.permissions.ResourcePermissions;
-import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
 import lombok.Data;
 import lombok.ToString;
@@ -30,17 +28,12 @@ public class TestFunctionalityAllowedByRoleReviewer implements Reviewer {
 
     private FF4j ff4j;
     private Environment env;
-    private ErrorMessageUtil errorMessages;
-    private ResourcePermissions permissions;
     private List<RestrictedCriteriaTestFunctionality> restrictedCriteriaTestFunctionality;
 
     @Autowired
-    public TestFunctionalityAllowedByRoleReviewer(FF4j ff4j, Environment env, ResourcePermissions permissions,
-            ErrorMessageUtil errorMessages) {
+    public TestFunctionalityAllowedByRoleReviewer(FF4j ff4j, Environment env) {
         this.ff4j = ff4j;
         this.env = env;
-        this.errorMessages = errorMessages;
-        this.permissions = permissions;
     }
 
     @PostConstruct
