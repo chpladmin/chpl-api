@@ -36,7 +36,7 @@ public class SurveillanceCsvPresenter {
 
     /**
      * Constructor with properties.
-     * 
+     *
      * @param props
      *            the properties
      */
@@ -48,7 +48,7 @@ public class SurveillanceCsvPresenter {
 
     /**
      * Write out surveillance details to CSV file.
-     * 
+     *
      * @param file
      *            the output file
      * @param cpList
@@ -57,6 +57,7 @@ public class SurveillanceCsvPresenter {
     public void presentAsFile(final File file, final List<CertifiedProductSearchDetails> cpList) {
         try (FileWriter writer = new FileWriter(file);
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
+            writer.write('\ufeff');
             csvPrinter.printRecord(generateHeaderValues());
             for (CertifiedProductSearchDetails cp : cpList) {
                 if (cp.getSurveillance() != null && cp.getSurveillance().size() > 0) {
@@ -207,7 +208,9 @@ public class SurveillanceCsvPresenter {
         } else {
             reqRow.add("");
         }
-        if (req.getRequirement() != null) {
+        if (req.getCriterion() != null) {
+            reqRow.add(req.getCriterion().formatCriteriaNumber());
+        } else if (req.getRequirement() != null) {
             reqRow.add(req.getRequirement());
         } else {
             reqRow.add("");
@@ -222,7 +225,9 @@ public class SurveillanceCsvPresenter {
 
     protected List<String> generateNonconformityRowValues(final SurveillanceNonconformity nc) {
         List<String> ncRow = new ArrayList<String>();
-        if (nc.getNonconformityType() != null) {
+        if (nc.getCriterion() != null) {
+            ncRow.add(nc.getCriterion().formatCriteriaNumber());
+        } else if (nc.getNonconformityType() != null) {
             ncRow.add(nc.getNonconformityType());
         } else {
             ncRow.add("");

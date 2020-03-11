@@ -12,10 +12,12 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.StringUtils;
 
+import gov.healthit.chpl.domain.CertificationCriterion;
+
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SurveillanceRequirement implements Serializable {
-    private static final long serialVersionUID = -4406043308588618231L;
+    private static long serialVersionUID = -4406043308588618231L;
 
     /**
      * Surveilled requirement internal ID
@@ -36,6 +38,13 @@ public class SurveillanceRequirement implements Serializable {
      */
     @XmlElement(required = true)
     private String requirement;
+
+    /**
+     * If the surveilled requirement is a certified capability
+     * then this field will have the criterion details (number, title, etc).
+     */
+    @XmlElement(required = false)
+    private CertificationCriterion criterion;
 
     /**
      * The result for surveillance conducted on each surveillance requirement.
@@ -121,6 +130,15 @@ public class SurveillanceRequirement implements Serializable {
                 && !this.requirement.equalsIgnoreCase(anotherRequirement.requirement)) {
             return false;
         }
+
+        if ((this.getCriterion() == null && anotherRequirement.getCriterion() != null)
+                || (this.getCriterion() != null && anotherRequirement.getCriterion() == null)) {
+            return false;
+        } else if (this.getCriterion() != null && anotherRequirement.getCriterion() != null
+                && !this.getCriterion().getId().equals(anotherRequirement.getCriterion().getId())) {
+            return false;
+        }
+
         if (this.type == null && anotherRequirement.type != null
                 || this.type != null && anotherRequirement.type == null) {
             return false;
@@ -142,7 +160,7 @@ public class SurveillanceRequirement implements Serializable {
         return id;
     }
 
-    public void setId(final Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -150,7 +168,7 @@ public class SurveillanceRequirement implements Serializable {
         return type;
     }
 
-    public void setType(final SurveillanceRequirementType type) {
+    public void setType(SurveillanceRequirementType type) {
         this.type = type;
     }
 
@@ -158,15 +176,23 @@ public class SurveillanceRequirement implements Serializable {
         return requirement;
     }
 
-    public void setRequirement(final String requirement) {
+    public void setRequirement(String requirement) {
         this.requirement = requirement;
+    }
+
+    public CertificationCriterion getCriterion() {
+        return criterion;
+    }
+
+    public void setCriterion(CertificationCriterion criterion) {
+        this.criterion = criterion;
     }
 
     public SurveillanceResultType getResult() {
         return result;
     }
 
-    public void setResult(final SurveillanceResultType result) {
+    public void setResult(SurveillanceResultType result) {
         this.result = result;
     }
 
@@ -174,7 +200,7 @@ public class SurveillanceRequirement implements Serializable {
         return nonconformities;
     }
 
-    public void setNonconformities(final List<SurveillanceNonconformity> nonconformities) {
+    public void setNonconformities(List<SurveillanceNonconformity> nonconformities) {
         this.nonconformities = nonconformities;
     }
 
@@ -199,7 +225,17 @@ public class SurveillanceRequirement implements Serializable {
                 || (this.getRequirement() != null && anotherReq.getRequirement() == null)) {
             return false;
         }
-        return this.getRequirement().equals(anotherReq.getRequirement());
+        if ((this.getCriterion() == null && anotherReq.getCriterion() != null)
+                || (this.getCriterion() != null && anotherReq.getCriterion() == null)) {
+            return false;
+        }
+
+        boolean requirementsMatch = this.getRequirement().equals(anotherReq.getRequirement());
+        if (this.getCriterion() != null && anotherReq.getCriterion() != null) {
+            requirementsMatch = requirementsMatch
+                    && this.getCriterion().getId().equals(anotherReq.getCriterion().getId());
+        }
+        return requirementsMatch;
     }
 
     @Override
@@ -207,6 +243,9 @@ public class SurveillanceRequirement implements Serializable {
         if (this.getRequirement() == null) {
             return -1;
         }
-        return this.getRequirement().hashCode();
+        if (this.getCriterion() == null) {
+            return this.getRequirement().hashCode();
+        }
+        return this.getCriterion().getId().hashCode();
     }
 }

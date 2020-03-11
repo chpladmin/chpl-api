@@ -27,23 +27,29 @@ public final class CertifiedProductUploadHandlerFactory {
     private CertifiedProductHandler2015Version1 handler2015Version1;
     private CertifiedProductHandler2015Version2 handler2015Version2;
     private CertifiedProductHandler2015Version3 handler2015Version3;
+    private CertifiedProductHandler2015Version4 handler2015Version4;
+    private CertifiedProductHandler2015Version5 handler2015Version5;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
     public CertifiedProductUploadHandlerFactory(
             final UploadTemplateVersionDAO templateVersionDao,
-            @Qualifier("certifiedProductHandler2014Version1") final CertifiedProductHandler2014Version1 handler2014Version1,
-            @Qualifier("certifiedProductHandler2014Version2") final CertifiedProductHandler2014Version2 handler2014Version2,
-            @Qualifier("certifiedProductHandler2015Version1") final CertifiedProductHandler2015Version1 handler2015Version1,
-            @Qualifier("certifiedProductHandler2015Version2") final CertifiedProductHandler2015Version2 handler2015Version2,
-            @Qualifier("certifiedProductHandler2015Version3") final CertifiedProductHandler2015Version3 handler2015Version3,
-            final ErrorMessageUtil msgUtil) {
+            @Qualifier("certifiedProductHandler2014Version1") CertifiedProductHandler2014Version1 handler2014Version1,
+            @Qualifier("certifiedProductHandler2014Version2") CertifiedProductHandler2014Version2 handler2014Version2,
+            @Qualifier("certifiedProductHandler2015Version1") CertifiedProductHandler2015Version1 handler2015Version1,
+            @Qualifier("certifiedProductHandler2015Version2") CertifiedProductHandler2015Version2 handler2015Version2,
+            @Qualifier("certifiedProductHandler2015Version3") CertifiedProductHandler2015Version3 handler2015Version3,
+            @Qualifier("certifiedProductHandler2015Version4") CertifiedProductHandler2015Version4 handler2015Version4,
+            @Qualifier("certifiedProductHandler2015Version5") CertifiedProductHandler2015Version5 handler2015Version5,
+            ErrorMessageUtil msgUtil) {
         this.templateVersionDao = templateVersionDao;
         this.handler2014Version1 = handler2014Version1;
         this.handler2014Version2 = handler2014Version2;
         this.handler2015Version1 = handler2015Version1;
         this.handler2015Version2 = handler2015Version2;
         this.handler2015Version3 = handler2015Version3;
+        this.handler2015Version4 = handler2015Version4;
+        this.handler2015Version5 = handler2015Version5;
         this.msgUtil = msgUtil;
     }
 
@@ -130,6 +136,10 @@ public final class CertifiedProductUploadHandlerFactory {
             handler = handler2015Version2;
         } else if (templateVersion.getName().equals(UploadTemplateVersion.EDITION_2015_VERSION_3.getName())) {
             handler = handler2015Version3;
+        } else if (templateVersion.getName().equals(UploadTemplateVersion.EDITION_2015_VERSION_4.getName())) {
+            handler = handler2015Version4;
+        } else if (templateVersion.getName().equals(UploadTemplateVersion.EDITION_2015_VERSION_5.getName())) {
+            handler = handler2015Version5;
         }
 
         if (handler != null)  {

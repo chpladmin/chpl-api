@@ -26,6 +26,7 @@ import gov.healthit.chpl.certificationId.Validator;
 import gov.healthit.chpl.certificationId.ValidatorFactory;
 import gov.healthit.chpl.domain.SimpleCertificationId;
 import gov.healthit.chpl.dto.CQMMetDTO;
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationIdDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.CertificationIdException;
@@ -231,8 +232,8 @@ public class CertificationIdController {
                     Validator validator = this.validatorFactory.getValidator(certDto.getYear());
 
                     // Lookup Criteria for Validating
-                    List<String> criteriaDtos = certificationIdManager
-                            .getCriteriaNumbersMetByCertifiedProductIds(certProductIds);
+                    List<CertificationCriterionDTO> criteriaDtos = certificationIdManager
+                            .getCriteriaMetByCertifiedProductIds(certProductIds);
 
                     // Lookup CQMs for Validating
                     List<CQMMetDTO> cqmDtos = certificationIdManager.getCqmsMetByCertifiedProductIds(certProductIds);
@@ -328,7 +329,7 @@ public class CertificationIdController {
         Validator validator = this.validatorFactory.getValidator(year);
 
         // Lookup Criteria for Validating
-        List<String> criteriaDtos = certificationIdManager.getCriteriaNumbersMetByCertifiedProductIds(productIdList);
+        List<CertificationCriterionDTO> criteriaDtos = certificationIdManager.getCriteriaMetByCertifiedProductIds(productIdList);
 
         // Lookup CQMs for Validating
         List<CQMMetDTO> cqmDtos = certificationIdManager.getCqmsMetByCertifiedProductIds(productIdList);

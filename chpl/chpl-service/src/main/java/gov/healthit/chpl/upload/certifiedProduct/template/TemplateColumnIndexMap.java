@@ -1,9 +1,14 @@
 package gov.healthit.chpl.upload.certifiedProduct.template;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.StringUtils;
 
 public abstract class TemplateColumnIndexMap {
     protected static final String CRITERIA_COL_HEADING_BEGIN = "CRITERIA_";
+    protected static final String CRITERIA_CURES_COL_HEADING = "CURES";
 
     public abstract int getUniqueIdIndex();
     public abstract int getRecordStatusIndex();
@@ -17,8 +22,8 @@ public abstract class TemplateColumnIndexMap {
     public abstract int getAtlIndex();
     public abstract int getProductClassificationIndex();
     public abstract int getCertificationDateIndex();
-    public abstract int getDeveloperAddressStartIndex();
-    public abstract int getDeveloperAddressEndIndex();
+    public abstract int getDeveloperStartIndex();
+    public abstract int getDeveloperEndIndex();
     public abstract int getTargetedUserStartIndex();
     public abstract int getTargetedUserEndIndex();
     public abstract int getQmsStartIndex();
@@ -152,6 +157,38 @@ public abstract class TemplateColumnIndexMap {
         return 2;
     }
 
+    public String getExportDocumentationColumnLabel() {
+        return "EXPORT DOCUMENTATION";
+    }
+
+    public int getExportDocumentationColumnCount() {
+        return 1;
+    }
+
+    public String getAttestationAnswerColumnLabel() {
+        return "ATTESTATION ANSWER";
+    }
+
+    public int getAttestationAnswerColumnCount() {
+        return 1;
+    }
+
+    public String getDocumentationUrlColumnLabel() {
+        return "DOCUMENTATION URL";
+    }
+
+    public int getDocumentationUrlColumnCount() {
+        return 1;
+    }
+
+    public String getUseCasesColumnLabel() {
+        return "USE CASES";
+    }
+
+    public int getUseCasesColumnCount() {
+        return 1;
+    }
+
     public int getLastIndexForCriteria(CSVRecord heading, int beginIndex) {
         int criteriaBeginIndex = beginIndex;
         int criteriaEndIndex = criteriaBeginIndex + 1;
@@ -160,7 +197,7 @@ public abstract class TemplateColumnIndexMap {
             colTitle = heading.get(criteriaEndIndex).toString();
             while (criteriaEndIndex <= getCriteriaEndIndex() && !colTitle.startsWith(CRITERIA_COL_HEADING_BEGIN)) {
                 criteriaEndIndex++;
-                if (criteriaEndIndex <= getCriteriaEndIndex()) {
+                if (criteriaEndIndex < getCriteriaEndIndex()) {
                     colTitle = heading.get(criteriaEndIndex).toString();
                 }
             }
@@ -168,5 +205,28 @@ public abstract class TemplateColumnIndexMap {
             return -1;
         }
         return criteriaEndIndex - 1;
+    }
+
+    public String parseCriteriaNumberFromHeading(String headingVal) {
+        if (StringUtils.isEmpty(headingVal)) {
+            return null;
+        }
+        headingVal = headingVal.trim().toUpperCase();
+        String criterionNumber = null;
+        String pattern = "CRITERIA_(\\d+)_(\\d+)_([A-Z])_([0-9]+)([A-Z])?(_CURES)?__C";
+        Pattern r = Pattern.compile(pattern);
+        Matcher m = r.matcher(headingVal);
+        if (m.find()) {
+            criterionNumber = m.group(1) + "." + m.group(2)
+                + " (" + m.group(3).toLowerCase() + ")(" + m.group(4) + ")";
+            if (m.group(5) != null) {
+                criterionNumber += "(" + m.group(5).toUpperCase() + ")";
+            }
+         }
+        return criterionNumber;
+    }
+
+    public boolean isCriteriaNumberHeadingCures(String headingVal) {
+        return headingVal.toUpperCase().contains(CRITERIA_CURES_COL_HEADING);
     }
 }

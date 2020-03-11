@@ -25,6 +25,7 @@ import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationId.Validator;
 import gov.healthit.chpl.certificationId.ValidatorFactory;
 import gov.healthit.chpl.dto.CQMMetDTO;
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.manager.CertificationIdManager;
 import junit.framework.TestCase;
 
@@ -63,7 +64,7 @@ public class CertificationIdTest extends TestCase {
         Validator validator = validatorFactory.getValidator("2014");
 
         // Lookup Criteria for Validating
-        List<String> criteriaDtos = certificationIdManager.getCriteriaNumbersMetByCertifiedProductIds(productIdList);
+        List<CertificationCriterionDTO> criteriaDtos = certificationIdManager.getCriteriaMetByCertifiedProductIds(productIdList);
 
         // Lookup CQMs for Validating
         List<CQMMetDTO> cqmDtos = certificationIdManager.getCqmsMetByCertifiedProductIds(productIdList);
@@ -85,7 +86,7 @@ public class CertificationIdTest extends TestCase {
         Validator validator = validatorFactory.getValidator("2015");
 
         // Lookup Criteria for Validating
-        List<String> criteriaDtos = certificationIdManager.getCriteriaNumbersMetByCertifiedProductIds(productIdList);
+        List<CertificationCriterionDTO> criteriaDtos = certificationIdManager.getCriteriaMetByCertifiedProductIds(productIdList);
 
         // Lookup CQMs for Validating
         List<CQMMetDTO> cqmDtos = certificationIdManager.getCqmsMetByCertifiedProductIds(productIdList);
@@ -108,7 +109,7 @@ public class CertificationIdTest extends TestCase {
         Validator validator = validatorFactory.getValidator("2014/2015");
 
         // Lookup Criteria for Validating
-        List<String> criteriaDtos = certificationIdManager.getCriteriaNumbersMetByCertifiedProductIds(productIdList);
+        List<CertificationCriterionDTO> criteriaDtos = certificationIdManager.getCriteriaMetByCertifiedProductIds(productIdList);
 
         // Lookup CQMs for Validating
         List<CQMMetDTO> cqmDtos = certificationIdManager.getCqmsMetByCertifiedProductIds(productIdList);

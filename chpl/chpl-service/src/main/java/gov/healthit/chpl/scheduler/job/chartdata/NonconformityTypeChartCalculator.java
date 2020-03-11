@@ -2,11 +2,7 @@ package gov.healthit.chpl.scheduler.job.chartdata;
 
 import java.util.List;
 
-import gov.healthit.chpl.dao.statistics.NonconformityTypeStatisticsDAO;
-import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
-import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
-import gov.healthit.chpl.exception.EntityRetrievalException;
-
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +11,11 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
+import gov.healthit.chpl.dao.statistics.NonconformityTypeStatisticsDAO;
+import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
+import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Component("nonconformityTypeChartCalculator")
 @EnableAsync
@@ -33,7 +34,12 @@ public class NonconformityTypeChartCalculator {
 
     public void logCounts(List<NonconformityTypeStatisticsDTO> dtos) {
         for (NonconformityTypeStatisticsDTO dto : dtos) {
-            LOGGER.info("Criteria: " + dto.getNonconformityType() + " Number of NCs: " + dto.getNonconformityCount());
+            if (!StringUtils.isEmpty(dto.getNonconformityType())) {
+                LOGGER.info("Criteria: " + dto.getNonconformityType() + " Number of NCs: " + dto.getNonconformityCount());
+            } else if (dto.getCriterion() != null) {
+                LOGGER.info("Criteria: " + dto.getCriterion().getNumber()
+                        + "(" + dto.getCriterion().getTitle() + ") " + " Number of NCs: " + dto.getNonconformityCount());
+            }
         }
     }
 

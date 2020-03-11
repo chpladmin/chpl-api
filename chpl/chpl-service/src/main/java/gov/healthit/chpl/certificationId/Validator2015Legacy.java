@@ -51,7 +51,7 @@ public class Validator2015Legacy extends Validator {
         this.counts.put("criteriaRequired", REQUIRED_CRITERIA.size());
         boolean criteriaValid = true;
         for (String crit : REQUIRED_CRITERIA) {
-            if (null == criteriaMet.get(crit)) {
+            if (!criteriaMetContainsCriterion(crit)) {
                 missingAnd.add(crit);
                 criteriaValid = false;
             } else {
@@ -100,7 +100,7 @@ public class Validator2015Legacy extends Validator {
     // **********************************************************************
     protected boolean isCPOEValid() {
         for (String crit : CPOE_CRITERIA_OR) {
-            if (null != criteriaMet.get(crit)) {
+            if (criteriaMetContainsCriterion(crit)) {
                 this.counts.put("criteriaCpoeRequiredMet", 1);
                 return true;
             }
@@ -121,13 +121,13 @@ public class Validator2015Legacy extends Validator {
         boolean met = false;
 
         // 170.315 (h)(1)
-        if (this.criteriaMet.containsKey("170.315 (h)(1)")) {
+        if (criteriaMetContainsCriterion("170.315 (h)(1)")) {
             this.counts.put("criteriaDpRequiredMet", 1);
             met = true;
         }
 
         // 170.315 (h)(2)
-        if (this.criteriaMet.containsKey("170.315 (h)(2)")) {
+        if (criteriaMetContainsCriterion("170.315 (h)(2)")) {
             this.counts.put("criteriaDpRequiredMet", 1);
             met = true;
         }

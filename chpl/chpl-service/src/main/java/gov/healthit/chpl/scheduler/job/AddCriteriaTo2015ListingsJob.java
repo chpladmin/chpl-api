@@ -28,7 +28,9 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
+import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
@@ -38,6 +40,7 @@ import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestFunctionalityCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
+import gov.healthit.chpl.entity.CertificationEditionEntity;
 import gov.healthit.chpl.entity.MacraMeasureEntity;
 import gov.healthit.chpl.entity.TestDataCriteriaMapEntity;
 import gov.healthit.chpl.entity.TestDataEntity;
@@ -72,6 +75,9 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
             + "170.315 (b)(9):Care Plan (Cures Update);"
             + "170.315 (b)(10):Clinical Information Export;"
             + "170.315 (c)(3):Clinical Quality Measures - Report (Cures Update);"
+            + "170.315 (d)(2):Auditable Events and Tamper-Resistance (Cures Update);"
+            + "170.315 (d)(3):Audit Report(s) (Cures Update);"
+            + "170.315 (d)(10):Auditing Actions on Health Information (Cures Update);"
             + "170.315 (d)(12):Encrypt Authentication Credentials;"
             + "170.315 (d)(13):Multi-Factor Authentication;"
             + "170.315 (e)(1):View, Download, and Transmit to 3rd Party (Cures Update);"
@@ -79,6 +85,8 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
             + "170.315 (g)(6):Consolidated CDA Creation (Cures Update);"
             + "170.315 (g)(9):Application Access - All Data Request (Cures Update);"
             + "170.315 (g)(10):Standardized API for Patient and Population Services;";
+    private static final String EDITION_2015 = "2015";
+    private static final Long EDITION_2015_ID = 3L;
 
     @Autowired
     private CertificationCriterionDAO criterionDAO;
@@ -111,6 +119,9 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
     private PendingCertifiedProductManager pcpManager;
 
     @Autowired
+    private TestFunctionalityDAO testFunctionalityDAO;
+
+    @Autowired
     private TestingFunctionalityManager testFuncManager;
 
     @Autowired
@@ -126,6 +137,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         addCriteria();
         addTestDataMaps();
         addTestProcedureMaps();
+        addTestFunctionalities();
         addTestFunctionalityMaps();
         addMacraMeasureMaps();
 
@@ -175,6 +187,9 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         add2015Criterion("170.315 (b)(9)", "Care Plan (Cures Update)");
         add2015Criterion("170.315 (b)(10)", "Clinical Information Export");
         add2015Criterion("170.315 (c)(3)", "Clinical Quality Measures - Report (Cures Update)");
+        add2015Criterion("170.315 (d)(2)", "Auditable Events and Tamper-Resistance (Cures Update)");
+        add2015Criterion("170.315 (d)(3)", "Audit Report(s) (Cures Update)");
+        add2015Criterion("170.315 (d)(10)", "Auditing Actions on Health Information (Cures Update)");
         add2015Criterion("170.315 (d)(12)", "Encrypt Authentication Credentials");
         add2015Criterion("170.315 (d)(13)", "Multi-Factor Authentication");
         add2015Criterion("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)");
@@ -182,7 +197,6 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         add2015Criterion("170.315 (g)(6)", "Consolidated CDA Creation (Cures Update)");
         add2015Criterion("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)");
         add2015Criterion("170.315 (g)(10)", "Standardized API for Patient and Population Services");
-
     }
 
     private void add2015Criterion(String number, String title) {
@@ -387,6 +401,9 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         addTestProcedureMap("170.315 (b)(10)", "Clinical Information Export", "ONC Test Method");
         addTestProcedureMap("170.315 (c)(3)", "Clinical Quality Measures - Report (Cures Update)", "ONC Test Method");
         addTestProcedureMap("170.315 (c)(3)", "Clinical Quality Measures - Report (Cures Update)", "NCQA eCQM Test Method");
+        addTestProcedureMap("170.315 (d)(2)", "Auditable Events and Tamper-Resistance (Cures Update)", "ONC Test Method");
+        addTestProcedureMap("170.315 (d)(3)", "Audit Report(s) (Cures Update)", "ONC Test Method");
+        addTestProcedureMap("170.315 (d)(10)", "Auditing Actions on Health Information (Cures Update)", "ONC Test Method");
         addTestProcedureMap("170.315 (d)(12)", "Encrypt Authentication Credentials", "ONC Test Method");
         addTestProcedureMap("170.315 (d)(13)", "Multi-Factor Authentication", "ONC Test Method");
         addTestProcedureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "ONC Test Method");
@@ -425,6 +442,20 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
     }
 
     @SuppressWarnings({"checkstyle:linelength"})
+    private void addTestFunctionalities() {
+        addTestFunctionality("(b)(3)(ii)(B)(1)", "Create and respond to new prescriptions (NewRxRequest, NewRxResponseDenied)");
+        addTestFunctionality("(b)(3)(ii)(B)(2)", "Receive fill status notifications (RxFillIndicator)");
+        addTestFunctionality("(b)(3)(ii)(B)(3)", "Ask the Mailbox if there are any transactions (GetMessage)");
+        addTestFunctionality("(b)(3)(ii)(B)(4)", "Request to send an additional supply of medication (Resupply)");
+        addTestFunctionality("(b)(3)(ii)(B)(5)", "Communicate drug administration events (DrugAdministration)");
+        addTestFunctionality("(b)(3)(ii)(B)(6)", "Request and respond to transfer one or more prescriptions between pharmacies (RxTransferRequest, RxTransferResponse, RxTransferConfirm)");
+        addTestFunctionality("(b)(3)(ii)(B)(7)", "Recertify the continued administration of a medication order (Recertification)");
+        addTestFunctionality("(b)(3)(ii)(B)(8)", "Complete Risk Evaluation and Mitigation Strategy (REMS) transactions (REMSInitiationRequest, REMSInitiationResponse, REMSRequest, and REMSResponse)");
+        addTestFunctionality("(b)(3)(ii)(B)(9)", "Electronic prior authorization transactions (PAInitiationRequest, PAInitiationResponse, PARequest, PAResponse, PAAppealRequest, PAAppealResponse,  PACancelRequest, and PACancelResponse).");
+        addTestFunctionality("(b)(3)(ii)(D)", "Optional: 170.315(b)(3)(ii)(D) For each transaction listed in paragraph (b)(3)(ii)(C) of this section, the technology must be able to receive and transmit the reason for the prescription using the <IndicationforUse> element in the SIG segment");
+    }
+
+    @SuppressWarnings({"checkstyle:linelength"})
     private void addTestFunctionalityMaps() {
         addTestFunctionalityMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "(b)(1)(ii)(A)(5)(i)");
         addTestFunctionalityMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "(b)(1)(ii)(A)(5)(ii)");
@@ -435,7 +466,16 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         addTestFunctionalityMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "170.102(19)(i)");
         addTestFunctionalityMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "170.102(19)(ii)");
 
-        addTestFunctionalityMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "(b)(3)(iii)");
+        addTestFunctionalityMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "(b)(3)(ii)(B)(1)");
+        addTestFunctionalityMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "(b)(3)(ii)(B)(2)");
+        addTestFunctionalityMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "(b)(3)(ii)(B)(3)");
+        addTestFunctionalityMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "(b)(3)(ii)(B)(4)");
+        addTestFunctionalityMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "(b)(3)(ii)(B)(5)");
+        addTestFunctionalityMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "(b)(3)(ii)(B)(6)");
+        addTestFunctionalityMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "(b)(3)(ii)(B)(7)");
+        addTestFunctionalityMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "(b)(3)(ii)(B)(8)");
+        addTestFunctionalityMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "(b)(3)(ii)(B)(9)");
+        addTestFunctionalityMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "(b)(3)(ii)(D)");
 
         addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "(e)(1)(i)(A)(2)");
         addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "(e)(1)(i)(A)(3)");
@@ -460,6 +500,17 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         addTestFunctionalityMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "170.102(19)(ii)");
     }
 
+    private void addTestFunctionality(String number, String title) {
+        if (!testFunctionalityExists(number)) {
+                insertableTestFuncDao.create(number, title);
+                LOGGER.info("Added test functionality for number " + number
+                        + " with title: " + title);
+       } else {
+            LOGGER.info("Test functionality for number " + number
+                    + " with title: " + title + " already exists");
+        }
+    }
+
     private void addTestFunctionalityMap(String criterionNumber, String criterionTitle, String testFuncNumber) {
         if (!testFunctionalityMapExists(criterionNumber, criterionTitle, testFuncNumber)) {
             TestFunctionalityDTO testFunc = insertableTestFuncDao.getTestFunctionalityByNumberAndEdition(testFuncNumber,
@@ -472,7 +523,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
                 LOGGER.error("Could not find criterion " + criterionNumber + ":" + criterionTitle);
             }
             if (testFunc != null && criterion != null) {
-                insertableTestFuncDao.create(testFunc, criterion);
+                insertableTestFuncDao.createMapping(testFunc, criterion);
                 LOGGER.info("Added test functionality mapping from " + criterionNumber
                         + ":" + criterionTitle + " to " + testFunc.getNumber());
             }
@@ -480,6 +531,11 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
             LOGGER.info("Test functionality mapping from " + criterionNumber
                     + ":" + criterionTitle + " to " + testFuncNumber + " already exists.");
         }
+    }
+
+    private boolean testFunctionalityExists(String number) {
+        TestFunctionalityDTO dto = testFunctionalityDAO.getByNumberAndEdition(number, EDITION_2015_ID);
+        return dto != null;
     }
 
     private boolean testFunctionalityMapExists(String criterionNumber, String criterionTitle, String testFuncNumber) {
@@ -740,6 +796,9 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
     @Component("insertableTestFunctionalityDao")
     private static class InsertableTestFunctionalityDao extends BaseDAOImpl {
 
+        @Autowired
+        private CertificationEditionDAO editionDAO;
+
         @SuppressWarnings("unused")
         InsertableTestFunctionalityDao() {
             super();
@@ -794,7 +853,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         }
 
         @Transactional
-        public void create(TestFunctionalityDTO testFuncDto, CertificationCriterionDTO criterion) {
+        public void createMapping(TestFunctionalityDTO testFuncDto, CertificationCriterionDTO criterion) {
             TestFunctionalityCriteriaMapEntity toInsert = new TestFunctionalityCriteriaMapEntity();
             toInsert.setCertificationCriterionId(criterion.getId());
             toInsert.setCreationDate(new Date());
@@ -803,6 +862,22 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
             toInsert.setLastModifiedUser(AuthUtil.getAuditId());
             toInsert.setTestFunctionalityId(testFuncDto.getId());
             super.create(toInsert);
+        }
+
+        @Transactional
+        public void create(String number, String name) {
+            TestFunctionalityEntity toCreate = new TestFunctionalityEntity();
+            CertificationEditionEntity edition = new CertificationEditionEntity(editionDAO.getByYear(EDITION_2015).getId());
+
+            toCreate.setNumber(number);
+            toCreate.setName(name);
+            toCreate.setCertificationEdition(edition);
+            toCreate.setCertificationEditionId(edition.getId());
+            toCreate.setCreationDate(new Date());
+            toCreate.setDeleted(false);
+            toCreate.setLastModifiedDate(new Date());
+            toCreate.setLastModifiedUser(AuthUtil.getAuditId());
+            super.create(toCreate);
         }
     }
 

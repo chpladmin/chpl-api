@@ -66,19 +66,6 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
     @Autowired
     private ErrorMessageUtil msgUtil;
     private TemplateColumnIndexMap templateColumnIndexMap;
-    private String[] criteriaNames = {
-            "170.315 (a)(1)", "170.315 (a)(2)", "170.315 (a)(3)", "170.315 (a)(4)", "170.315 (a)(5)", "170.315 (a)(6)",
-            "170.315 (a)(7)", "170.315 (a)(8)", "170.315 (a)(9)", "170.315 (a)(10)", "170.315 (a)(11)",
-            "170.315 (a)(12)", "170.315 (a)(13)", "170.315 (a)(14)", "170.315 (a)(15)", "170.315 (b)(1)",
-            "170.315 (b)(2)", "170.315 (b)(3)", "170.315 (b)(4)", "170.315 (b)(5)", "170.315 (b)(6)", "170.315 (b)(7)",
-            "170.315 (b)(8)", "170.315 (b)(9)", "170.315 (c)(1)", "170.315 (c)(2)", "170.315 (c)(3)", "170.315 (c)(4)",
-            "170.315 (d)(1)", "170.315 (d)(2)", "170.315 (d)(3)", "170.315 (d)(4)", "170.315 (d)(5)", "170.315 (d)(6)",
-            "170.315 (d)(7)", "170.315 (d)(8)", "170.315 (d)(9)", "170.315 (d)(10)", "170.315 (d)(11)",
-            "170.315 (e)(1)", "170.315 (e)(2)", "170.315 (e)(3)", "170.315 (f)(1)", "170.315 (f)(2)", "170.315 (f)(3)",
-            "170.315 (f)(4)", "170.315 (f)(5)", "170.315 (f)(6)", "170.315 (f)(7)", "170.315 (g)(1)", "170.315 (g)(2)",
-            "170.315 (g)(3)", "170.315 (g)(4)", "170.315 (g)(5)", "170.315 (g)(6)", "170.315 (g)(7)", "170.315 (g)(8)",
-            "170.315 (g)(9)", "170.315 (h)(1)", "170.315 (h)(2)"
-    };
 
     // we will ignore g1 and g2 macra measures for (g)(7) criteria for now
     // they shouldn't be there but it's hard for users to change the spreadsheet
@@ -96,11 +83,6 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
 
     public TemplateColumnIndexMap getColumnIndexMap() {
         return templateColumnIndexMap;
-    }
-
-    @Override
-    public String[] getCriteriaNames() {
-        return this.criteriaNames;
     }
 
     public PendingCertifiedProductEntity handle() throws InvalidArgumentsException {
@@ -215,14 +197,19 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
             }
 
             int criteriaBeginIndex = getColumnIndexMap().getCriteriaStartIndex();
-            for (int i = 0; i < getCriteriaNames().length; i++) {
-                String criteriaName = getCriteriaNames()[i];
-                int criteriaEndIndex = getColumnIndexMap().getLastIndexForCriteria(getHeading(), criteriaBeginIndex);
+            int criteriaEndIndex = getColumnIndexMap().getLastIndexForCriteria(getHeading(), criteriaBeginIndex);
+            while (criteriaEndIndex > 0 && criteriaEndIndex <= getColumnIndexMap().getCriteriaEndIndex()) {
                 PendingCertificationResultEntity certEntity = parseCriteria(pendingCertifiedProduct,
-                        criteriaName, firstRow, criteriaBeginIndex, criteriaEndIndex);
-                pendingCertifiedProduct.getCertificationCriterion().add(certEntity);
-                allCriteriaMap.put(certEntity.getMappedCriterion().getId(), Boolean.TRUE);
-                criteriaBeginIndex = criteriaEndIndex + 1;
+                        firstRow, criteriaBeginIndex, criteriaEndIndex);
+                if (certEntity != null) {
+                    pendingCertifiedProduct.getCertificationCriterion().add(certEntity);
+                    if (certEntity.getMappedCriterion() != null) {
+                        allCriteriaMap.put(certEntity.getMappedCriterion().getId(), Boolean.TRUE);
+                    }
+                }
+
+                criteriaBeginIndex = Math.min(getColumnIndexMap().getCriteriaEndIndex(), criteriaEndIndex + 1);
+                criteriaEndIndex = getColumnIndexMap().getLastIndexForCriteria(getHeading(), criteriaBeginIndex);
             }
 
             // add certification results for any criteria that are part of the
@@ -243,7 +230,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
         parseUniqueId(pendingCertifiedProduct, record);
         parseRecordStatus(pendingCertifiedProduct, record);
         parseDeveloperProductVersion(pendingCertifiedProduct, record);
-        parseDeveloperAddress(pendingCertifiedProduct, record);
+        parseDeveloperDetails(pendingCertifiedProduct, record);
         parseEdition("2015", pendingCertifiedProduct, record);
         parseAcbCertificationId(pendingCertifiedProduct, record);
         parseAcb(pendingCertifiedProduct, record);
@@ -423,12 +410,24 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
     }
 
     protected PendingCertificationResultEntity parseCriteria(
-            PendingCertifiedProductEntity pendingCertifiedProduct, String criteriaNumber,
+            PendingCertifiedProductEntity pendingCertifiedProduct,
             CSVRecord firstRow, int beginIndex, int endIndex) {
         int currIndex = beginIndex;
         PendingCertificationResultEntity cert = null;
         try {
-            cert = getCertificationResult(criteriaNumber, firstRow.get(currIndex++).toString());
+            String criterionHeading = getHeading().get(currIndex).trim();
+            String criterionNumber = getColumnIndexMap().parseCriteriaNumberFromHeading(criterionHeading);
+            boolean isCures = getColumnIndexMap().isCriteriaNumberHeadingCures(criterionHeading);
+            if (criterionNumber != null && isCures) {
+                cert = getCertificationResultCures(criterionNumber, firstRow.get(currIndex++).toString());
+            } else if (criterionNumber != null && !isCures) {
+                cert = getCertificationResult(criterionNumber, firstRow.get(currIndex++).toString());
+            } else {
+                LOGGER.warn("Unable to find a criteria for the header value " + criterionHeading);
+                pendingCertifiedProduct.getErrorMessages().add("Unable to find a criteria for the header value " + criterionHeading);
+                currIndex = (endIndex+1);
+            }
+
             while (currIndex <= endIndex) {
                 String colTitle = getHeading().get(currIndex).trim();
                 if (!StringUtils.isEmpty(colTitle)) {
@@ -444,6 +443,19 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                     } else if (colTitle.equalsIgnoreCase(getColumnIndexMap().getApiDocumentationColumnLabel())) {
                         cert.setApiDocumentation(firstRow.get(currIndex).trim());
                         currIndex += getColumnIndexMap().getApiDocumentationColumnCount();
+                    }  else if (colTitle.equalsIgnoreCase(getColumnIndexMap().getExportDocumentationColumnLabel())) {
+                        cert.setExportDocumentation(firstRow.get(currIndex).trim());
+                        currIndex += getColumnIndexMap().getExportDocumentationColumnCount();
+                    } else if (colTitle.equalsIgnoreCase(getColumnIndexMap().getAttestationAnswerColumnLabel())) {
+                        cert.setAttestationAnswer(asBoolean(firstRow.get(currIndex).trim()));
+                        currIndex += getColumnIndexMap().getAttestationAnswerColumnCount();
+                    } else if (colTitle
+                            .equalsIgnoreCase(getColumnIndexMap().getDocumentationUrlColumnLabel())) {
+                        cert.setDocumentationUrl(firstRow.get(currIndex).trim());
+                        currIndex += getColumnIndexMap().getDocumentationUrlColumnCount();
+                    } else if (colTitle.equalsIgnoreCase(getColumnIndexMap().getUseCasesColumnLabel())) {
+                        cert.setUseCases(firstRow.get(currIndex).trim());
+                        currIndex += getColumnIndexMap().getUseCasesColumnCount();
                     } else if (colTitle.equalsIgnoreCase(getColumnIndexMap().getTestStandardsColumnLabel())) {
                         parseTestStandards(pendingCertifiedProduct, cert, currIndex);
                         currIndex += getColumnIndexMap().getTestStandardsColumnCount();

@@ -23,7 +23,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 
     /**
      * Constructor with properties.
-     * 
+     *
      * @param props
      *            the properties
      */
@@ -174,7 +174,11 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
             final SurveillanceNonconformity nc) {
         List<String> ncFields = new ArrayList<String>();
         ncFields.add("Y");
-        ncFields.add(nc.getNonconformityType());
+        if (nc.getCriterion() != null) {
+            ncFields.add(nc.getCriterion().formatCriteriaNumber());
+        } else if (nc.getNonconformityType() != null) {
+            ncFields.add(nc.getNonconformityType());
+        }
         LocalDateTime ncDeterminationDate = null;
         if (nc.getDateOfDetermination() != null) {
             ncDeterminationDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getDateOfDetermination().getTime()),
