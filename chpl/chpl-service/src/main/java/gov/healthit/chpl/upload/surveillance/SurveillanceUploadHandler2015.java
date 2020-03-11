@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
@@ -14,8 +15,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
@@ -24,6 +27,7 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
+import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -37,17 +41,21 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
     private static final String FIRST_ROW_REGEX = "^NEW|UPDATE$";
     private static final String SUBSEQUENT_ROW = "SUBELEMENT";
 
-    @Autowired
-    CertifiedProductDAO cpDao;
-    @Autowired
-    SurveillanceDAO survDao;
+    private CertifiedProductDAO cpDao;
+    private CertificationResultDetailsDAO certResultDetailsDao;
+    private SurveillanceDAO survDao;
 
     protected SimpleDateFormat dateFormatter;
     private List<CSVRecord> record;
     private CSVRecord heading;
     private int lastDataIndex;
 
-    public SurveillanceUploadHandler2015() {
+    @Autowired
+    public SurveillanceUploadHandler2015(CertifiedProductDAO cpDao, SurveillanceDAO survDao,
+            CertificationResultDetailsDAO certResultDetailsDao) {
+        this.cpDao = cpDao;
+        this.survDao = survDao;
+        this.certResultDetailsDao = certResultDetailsDao;
         dateFormatter = new SimpleDateFormat(DATE_FORMAT);
     }
 
@@ -56,30 +64,33 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         Surveillance surv = new Surveillance();
 
         // get things that are only in the first row of the surveillance
-        for (CSVRecord record : getRecord()) {
-            String statusStr = record.get(0).trim();
+        for (CSVRecord csvRecord : getRecord()) {
+            String statusStr = csvRecord.get(0).trim();
             if (!StringUtils.isEmpty(statusStr) && statusStr.toUpperCase().matches(FIRST_ROW_REGEX)) {
-                parseSurveillanceDetails(record, surv, statusStr.equalsIgnoreCase("UPDATE"));
+                parseSurveillanceDetails(csvRecord, surv, statusStr.equalsIgnoreCase("UPDATE"));
             }
         }
+
+        List<CertificationResultDetailsDTO> certResults =
+                certResultDetailsDao.getCertificationResultsForSurveillanceListing(surv);
 
         // if we got errors here, don't parse the rest of it
         if (surv.getErrorMessages() == null || surv.getErrorMessages().size() == 0) {
             // get surveilled requirements
-            for (CSVRecord record : getRecord()) {
-                String statusStr = record.get(0).trim();
+            for (CSVRecord csvRecord : getRecord()) {
+                String statusStr = csvRecord.get(0).trim();
                 if (!StringUtils.isEmpty(statusStr) && (statusStr.toUpperCase().matches(FIRST_ROW_REGEX)
                         || statusStr.toUpperCase().equalsIgnoreCase(SUBSEQUENT_ROW))) {
-                    parseSurveilledRequirements(record, surv);
+                    parseSurveilledRequirements(csvRecord, surv, certResults);
                 }
             }
 
             // get nonconformities
-            for (CSVRecord record : getRecord()) {
-                String statusStr = record.get(0).trim();
+            for (CSVRecord csvRecord : getRecord()) {
+                String statusStr = csvRecord.get(0).trim();
                 if (!StringUtils.isEmpty(statusStr) && (statusStr.toUpperCase().matches(FIRST_ROW_REGEX)
                         || statusStr.toUpperCase().equalsIgnoreCase(SUBSEQUENT_ROW))) {
-                    parseNonconformities(record, surv);
+                    parseNonconformities(csvRecord, surv, certResults);
                 }
             }
         }
@@ -187,12 +198,13 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         }
     }
 
-    public void parseSurveilledRequirements(CSVRecord record, Surveillance surv) {
+    public void parseSurveilledRequirements(CSVRecord csvRecord, Surveillance surv,
+            List<CertificationResultDetailsDTO> certResults) {
         SurveillanceRequirement req = new SurveillanceRequirement();
 
         int colIndex = 7;
         // requirement type
-        String requirementTypeStr = record.get(colIndex++).trim();
+        String requirementTypeStr = csvRecord.get(colIndex++).trim();
         if (!StringUtils.isEmpty(requirementTypeStr)) {
             SurveillanceRequirementType requirementType = new SurveillanceRequirementType();
             requirementType.setName(requirementTypeStr);
@@ -200,11 +212,21 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         }
 
         // the requirement
-        String requirementStr = record.get(colIndex++).trim();
+        String requirementStr = csvRecord.get(colIndex++).trim();
         req.setRequirement(requirementStr);
+        //look at cert results to determine if/which criterion
+        if (certResults != null && certResults.size() > 0) {
+            Optional<CertificationResultDetailsDTO> attestedCertResult =
+                    certResults.stream()
+                    .filter(certResult -> isCriteriaAttestedTo(certResult, req.getRequirement()))
+                    .findFirst();
+            if (attestedCertResult.isPresent()) {
+                req.setCriterion(new CertificationCriterion(attestedCertResult.get().getCriterion()));
+            }
+        }
 
         // surveillance result
-        String resultTypeStr = record.get(colIndex++).trim();
+        String resultTypeStr = csvRecord.get(colIndex++).trim();
         if (!StringUtils.isEmpty(resultTypeStr)) {
             SurveillanceResultType resultType = new SurveillanceResultType();
             resultType.setName(resultTypeStr);
@@ -213,7 +235,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         surv.getRequirements().add(req);
     }
 
-    public void parseNonconformities(CSVRecord record, Surveillance surv) {
+    public void parseNonconformities(CSVRecord record, Surveillance surv, List<CertificationResultDetailsDTO> certResults) {
         int ncBeginIndex = 10;
         // if the first nonconformity cell is blank, forget it
         if (StringUtils.isEmpty(record.get(ncBeginIndex).trim())) {
@@ -241,6 +263,16 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         // nonconformity type
         String ncTypeStr = record.get(colIndex++).trim();
         nc.setNonconformityType(ncTypeStr);
+        //look at cert results to determine if/which criterion
+        if (certResults != null && certResults.size() > 0) {
+            Optional<CertificationResultDetailsDTO> attestedCertResult =
+                    certResults.stream()
+                    .filter(certResult -> isCriteriaAttestedTo(certResult, nc.getNonconformityType()))
+                    .findFirst();
+            if (attestedCertResult.isPresent()) {
+                nc.setCriterion(new CertificationCriterion(attestedCertResult.get().getCriterion()));
+            }
+        }
 
         // nonconformity status
         String ncStatusStr = record.get(colIndex++).trim();
@@ -348,6 +380,12 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         }
     }
 
+    private boolean isCriteriaAttestedTo(CertificationResultDetailsDTO certResult, String criterionNumber) {
+        return !StringUtils.isEmpty(certResult.getNumber())
+                && certResult.getSuccess() != null
+                && certResult.getSuccess().booleanValue()
+                && certResult.getNumber().equals(criterionNumber);
+    }
     public List<CSVRecord> getRecord() {
         return record;
     }

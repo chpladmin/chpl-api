@@ -13,6 +13,4 @@ public final class FeatureList {
     /** Ability to have Developers as User. */
     public static final String ROLE_DEVELOPER = "role-developer";
     public static final String RULE_PUBLISH_DATE_PLUS_THIRTY_DAYS = "rule-publish-date-plus-thirty-days";
-    /** Add paging to activity reports API. */
-    public static final String ENHANCED_REPORTS = "enhanced-reports";
 }

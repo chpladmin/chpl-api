@@ -153,6 +153,9 @@ public class PendingCertifiedProductEntity {
     @Column(name = "vendor_phone")
     private String developerPhoneNumber;
 
+    @Column(name = "self_developer")
+    private Boolean selfDeveloper;
+
     @Column(name = "test_report_url")
     private String reportFileLocation;
 
@@ -243,7 +246,7 @@ public class PendingCertifiedProductEntity {
      * Constructor with id.
      * @param id the id
      */
-    public PendingCertifiedProductEntity(final Long id) {
+    public PendingCertifiedProductEntity(Long id) {
         this();
         this.id = id;
     }
@@ -257,7 +260,7 @@ public class PendingCertifiedProductEntity {
         return id;
     }
 
-    public void setId(final Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -265,7 +268,7 @@ public class PendingCertifiedProductEntity {
         return practiceTypeId;
     }
 
-    public void setPracticeTypeId(final Long practiceTypeId) {
+    public void setPracticeTypeId(Long practiceTypeId) {
         this.practiceTypeId = practiceTypeId;
     }
 
@@ -273,7 +276,7 @@ public class PendingCertifiedProductEntity {
         return developerId;
     }
 
-    public void setDeveloperId(final Long developerId) {
+    public void setDeveloperId(Long developerId) {
         this.developerId = developerId;
     }
 
@@ -281,7 +284,7 @@ public class PendingCertifiedProductEntity {
         return productId;
     }
 
-    public void setProductId(final Long productId) {
+    public void setProductId(Long productId) {
         this.productId = productId;
     }
 
@@ -289,7 +292,7 @@ public class PendingCertifiedProductEntity {
         return productVersionId;
     }
 
-    public void setProductVersionId(final Long productVersionId) {
+    public void setProductVersionId(Long productVersionId) {
         this.productVersionId = productVersionId;
     }
 
@@ -297,7 +300,7 @@ public class PendingCertifiedProductEntity {
         return certificationEditionId;
     }
 
-    public void setCertificationEditionId(final Long certificationEditionId) {
+    public void setCertificationEditionId(Long certificationEditionId) {
         this.certificationEditionId = certificationEditionId;
     }
 
@@ -305,7 +308,7 @@ public class PendingCertifiedProductEntity {
         return certificationBodyId;
     }
 
-    public void setCertificationBodyId(final Long certificationBodyId) {
+    public void setCertificationBodyId(Long certificationBodyId) {
         this.certificationBodyId = certificationBodyId;
     }
 
@@ -313,7 +316,7 @@ public class PendingCertifiedProductEntity {
         return productClassificationId;
     }
 
-    public void setProductClassificationId(final Long productClassificationId) {
+    public void setProductClassificationId(Long productClassificationId) {
         this.productClassificationId = productClassificationId;
     }
 
@@ -321,7 +324,7 @@ public class PendingCertifiedProductEntity {
         return uniqueId;
     }
 
-    public void setUniqueId(final String uniqueId) {
+    public void setUniqueId(String uniqueId) {
         this.uniqueId = uniqueId;
     }
 
@@ -329,7 +332,7 @@ public class PendingCertifiedProductEntity {
         return recordStatus;
     }
 
-    public void setRecordStatus(final String recordStatus) {
+    public void setRecordStatus(String recordStatus) {
         this.recordStatus = recordStatus;
     }
 
@@ -337,7 +340,7 @@ public class PendingCertifiedProductEntity {
         return practiceType;
     }
 
-    public void setPracticeType(final String practiceType) {
+    public void setPracticeType(String practiceType) {
         this.practiceType = practiceType;
     }
 
@@ -345,7 +348,7 @@ public class PendingCertifiedProductEntity {
         return developerName;
     }
 
-    public void setDeveloperName(final String developerName) {
+    public void setDeveloperName(String developerName) {
         this.developerName = developerName;
     }
 
@@ -353,7 +356,7 @@ public class PendingCertifiedProductEntity {
         return productName;
     }
 
-    public void setProductName(final String productName) {
+    public void setProductName(String productName) {
         this.productName = productName;
     }
 
@@ -361,7 +364,7 @@ public class PendingCertifiedProductEntity {
         return productVersion;
     }
 
-    public void setProductVersion(final String productVersion) {
+    public void setProductVersion(String productVersion) {
         this.productVersion = productVersion;
     }
 
@@ -369,7 +372,7 @@ public class PendingCertifiedProductEntity {
         return certificationEdition;
     }
 
-    public void setCertificationEdition(final String certificationEdition) {
+    public void setCertificationEdition(String certificationEdition) {
         this.certificationEdition = certificationEdition;
     }
 
@@ -377,7 +380,7 @@ public class PendingCertifiedProductEntity {
         return acbCertificationId;
     }
 
-    public void setAcbCertificationId(final String acbCertificationId) {
+    public void setAcbCertificationId(String acbCertificationId) {
         this.acbCertificationId = acbCertificationId;
     }
 
@@ -385,7 +388,7 @@ public class PendingCertifiedProductEntity {
         return certificationBodyName;
     }
 
-    public void setCertificationBodyName(final String certificationBodyName) {
+    public void setCertificationBodyName(String certificationBodyName) {
         this.certificationBodyName = certificationBodyName;
     }
 
@@ -393,7 +396,7 @@ public class PendingCertifiedProductEntity {
         return productClassificationName;
     }
 
-    public void setProductClassificationName(final String productClassificationName) {
+    public void setProductClassificationName(String productClassificationName) {
         this.productClassificationName = productClassificationName;
     }
 
@@ -401,7 +404,7 @@ public class PendingCertifiedProductEntity {
         return Util.getNewDate(certificationDate);
     }
 
-    public void setCertificationDate(final Date certificationDate) {
+    public void setCertificationDate(Date certificationDate) {
         this.certificationDate = Util.getNewDate(certificationDate);
     }
 
@@ -409,7 +412,7 @@ public class PendingCertifiedProductEntity {
         return developerStreetAddress;
     }
 
-    public void setDeveloperStreetAddress(final String developerStreetAddress) {
+    public void setDeveloperStreetAddress(String developerStreetAddress) {
         this.developerStreetAddress = developerStreetAddress;
     }
 
@@ -417,7 +420,7 @@ public class PendingCertifiedProductEntity {
         return developerCity;
     }
 
-    public void setDeveloperCity(final String developerCity) {
+    public void setDeveloperCity(String developerCity) {
         this.developerCity = developerCity;
     }
 
@@ -425,7 +428,7 @@ public class PendingCertifiedProductEntity {
         return developerState;
     }
 
-    public void setDeveloperState(final String developerState) {
+    public void setDeveloperState(String developerState) {
         this.developerState = developerState;
     }
 
@@ -433,7 +436,7 @@ public class PendingCertifiedProductEntity {
         return developerZipCode;
     }
 
-    public void setDeveloperZipCode(final String developerZipCode) {
+    public void setDeveloperZipCode(String developerZipCode) {
         this.developerZipCode = developerZipCode;
     }
 
@@ -441,7 +444,7 @@ public class PendingCertifiedProductEntity {
         return developerWebsite;
     }
 
-    public void setDeveloperWebsite(final String developerWebsite) {
+    public void setDeveloperWebsite(String developerWebsite) {
         this.developerWebsite = developerWebsite;
     }
 
@@ -449,7 +452,7 @@ public class PendingCertifiedProductEntity {
         return developerEmail;
     }
 
-    public void setDeveloperEmail(final String developerEmail) {
+    public void setDeveloperEmail(String developerEmail) {
         this.developerEmail = developerEmail;
     }
 
@@ -457,7 +460,7 @@ public class PendingCertifiedProductEntity {
         return reportFileLocation;
     }
 
-    public void setReportFileLocation(final String reportFileLocation) {
+    public void setReportFileLocation(String reportFileLocation) {
         this.reportFileLocation = reportFileLocation;
     }
 
@@ -465,7 +468,7 @@ public class PendingCertifiedProductEntity {
         return certificationCriterion;
     }
 
-    public void setCertificationCriterion(final Set<PendingCertificationResultEntity> certificationCriterion) {
+    public void setCertificationCriterion(Set<PendingCertificationResultEntity> certificationCriterion) {
         this.certificationCriterion = certificationCriterion;
     }
 
@@ -473,7 +476,7 @@ public class PendingCertifiedProductEntity {
         return cqmCriterion;
     }
 
-    public void setCqmCriterion(final Set<PendingCqmCriterionEntity> cqmCriterion) {
+    public void setCqmCriterion(Set<PendingCqmCriterionEntity> cqmCriterion) {
         this.cqmCriterion = cqmCriterion;
     }
 
@@ -481,7 +484,7 @@ public class PendingCertifiedProductEntity {
         return developerAddress;
     }
 
-    public void setDeveloperAddress(final AddressEntity developerAddress) {
+    public void setDeveloperAddress(AddressEntity developerAddress) {
         this.developerAddress = developerAddress;
     }
 
@@ -489,7 +492,7 @@ public class PendingCertifiedProductEntity {
         return Util.getNewDate(lastModifiedDate);
     }
 
-    public void setLastModifiedDate(final Date lastModifiedDate) {
+    public void setLastModifiedDate(Date lastModifiedDate) {
         this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
@@ -497,7 +500,7 @@ public class PendingCertifiedProductEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(final Long lastModifiedUser) {
+    public void setLastModifiedUser(Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -505,7 +508,7 @@ public class PendingCertifiedProductEntity {
         return Util.getNewDate(creationDate);
     }
 
-    public void setCreationDate(final Date creationDate) {
+    public void setCreationDate(Date creationDate) {
         this.creationDate = Util.getNewDate(creationDate);
     }
 
@@ -513,7 +516,7 @@ public class PendingCertifiedProductEntity {
         return deleted;
     }
 
-    public void setDeleted(final Boolean deleted) {
+    public void setDeleted(Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -521,7 +524,7 @@ public class PendingCertifiedProductEntity {
         return ics;
     }
 
-    public void setIcs(final Boolean ics) {
+    public void setIcs(Boolean ics) {
         this.ics = ics;
     }
 
@@ -529,7 +532,7 @@ public class PendingCertifiedProductEntity {
         return developerContactName;
     }
 
-    public void setDeveloperContactName(final String developerContactName) {
+    public void setDeveloperContactName(String developerContactName) {
         this.developerContactName = developerContactName;
     }
 
@@ -537,7 +540,7 @@ public class PendingCertifiedProductEntity {
         return developerPhoneNumber;
     }
 
-    public void setDeveloperPhoneNumber(final String developerPhoneNumber) {
+    public void setDeveloperPhoneNumber(String developerPhoneNumber) {
         this.developerPhoneNumber = developerPhoneNumber;
     }
 
@@ -545,7 +548,7 @@ public class PendingCertifiedProductEntity {
         return sedReportFileLocation;
     }
 
-    public void setSedReportFileLocation(final String sedReportFileLocation) {
+    public void setSedReportFileLocation(String sedReportFileLocation) {
         this.sedReportFileLocation = sedReportFileLocation;
     }
 
@@ -553,7 +556,7 @@ public class PendingCertifiedProductEntity {
         return qmsStandards;
     }
 
-    public void setQmsStandards(final Set<PendingCertifiedProductQmsStandardEntity> qmsStandards) {
+    public void setQmsStandards(Set<PendingCertifiedProductQmsStandardEntity> qmsStandards) {
         this.qmsStandards = qmsStandards;
     }
 
@@ -561,7 +564,7 @@ public class PendingCertifiedProductEntity {
         return hasQms;
     }
 
-    public void setHasQms(final Boolean hasQms) {
+    public void setHasQms(Boolean hasQms) {
         this.hasQms = hasQms;
     }
 
@@ -569,7 +572,7 @@ public class PendingCertifiedProductEntity {
         return transparencyAttestation;
     }
 
-    public void setTransparencyAttestation(final AttestationType transparencyAttestation) {
+    public void setTransparencyAttestation(AttestationType transparencyAttestation) {
         this.transparencyAttestation = transparencyAttestation;
     }
 
@@ -577,7 +580,7 @@ public class PendingCertifiedProductEntity {
         return developerContactId;
     }
 
-    public void setDeveloperContactId(final Long developerContactId) {
+    public void setDeveloperContactId(Long developerContactId) {
         this.developerContactId = developerContactId;
     }
 
@@ -585,7 +588,7 @@ public class PendingCertifiedProductEntity {
         return transparencyAttestationUrl;
     }
 
-    public void setTransparencyAttestationUrl(final String transparencyAttestationUrl) {
+    public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
         this.transparencyAttestationUrl = transparencyAttestationUrl;
     }
 
@@ -593,7 +596,7 @@ public class PendingCertifiedProductEntity {
         return errorMessages;
     }
 
-    public void setErrorMessages(final List<String> errorMessages) {
+    public void setErrorMessages(List<String> errorMessages) {
         this.errorMessages = errorMessages;
     }
 
@@ -601,7 +604,7 @@ public class PendingCertifiedProductEntity {
         return accessibilityCertified;
     }
 
-    public void setAccessibilityCertified(final Boolean accessibilityCertified) {
+    public void setAccessibilityCertified(Boolean accessibilityCertified) {
         this.accessibilityCertified = accessibilityCertified;
     }
 
@@ -609,7 +612,7 @@ public class PendingCertifiedProductEntity {
         return testingLabs;
     }
 
-    public void setTestingLabs(final Set<PendingCertifiedProductTestingLabMapEntity> testingLabs) {
+    public void setTestingLabs(Set<PendingCertifiedProductTestingLabMapEntity> testingLabs) {
         this.testingLabs = testingLabs;
     }
 
@@ -617,7 +620,7 @@ public class PendingCertifiedProductEntity {
         return targetedUsers;
     }
 
-    public void setTargetedUsers(final Set<PendingCertifiedProductTargetedUserEntity> targetedUsers) {
+    public void setTargetedUsers(Set<PendingCertifiedProductTargetedUserEntity> targetedUsers) {
         this.targetedUsers = targetedUsers;
     }
 
@@ -634,7 +637,7 @@ public class PendingCertifiedProductEntity {
         return sedIntendedUserDescription;
     }
 
-    public void setSedIntendedUserDescription(final String sedIntendedUserDescription) {
+    public void setSedIntendedUserDescription(String sedIntendedUserDescription) {
         this.sedIntendedUserDescription = sedIntendedUserDescription;
     }
 
@@ -642,7 +645,7 @@ public class PendingCertifiedProductEntity {
         return Util.getNewDate(sedTestingEnd);
     }
 
-    public void setSedTestingEnd(final Date sedTestingEnd) {
+    public void setSedTestingEnd(Date sedTestingEnd) {
         this.sedTestingEnd = Util.getNewDate(sedTestingEnd);
     }
 
@@ -650,7 +653,7 @@ public class PendingCertifiedProductEntity {
         return parentListings;
     }
 
-    public void setParentListings(final Set<PendingCertifiedProductParentListingEntity> parentListings) {
+    public void setParentListings(Set<PendingCertifiedProductParentListingEntity> parentListings) {
         this.parentListings = parentListings;
     }
 
@@ -658,7 +661,7 @@ public class PendingCertifiedProductEntity {
         return errorCount;
     }
 
-    public void setErrorCount(final Integer errorCount) {
+    public void setErrorCount(Integer errorCount) {
         this.errorCount = errorCount;
     }
 
@@ -666,7 +669,15 @@ public class PendingCertifiedProductEntity {
         return warningCount;
     }
 
-    public void setWarningCount(final Integer warningCount) {
+    public void setWarningCount(Integer warningCount) {
         this.warningCount = warningCount;
+    }
+
+    public Boolean getSelfDeveloper() {
+        return selfDeveloper;
+    }
+
+    public void setSelfDeveloper(Boolean selfDeveloper) {
+        this.selfDeveloper = selfDeveloper;
     }
 }

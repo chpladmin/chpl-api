@@ -1,7 +1,5 @@
 package gov.healthit.chpl.entity.surveillance;
 
-import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,12 +11,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Immutable;
+
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
-import gov.healthit.chpl.util.Util;
 
 @Entity
-@Table(name = "nonconformity_type_statistics")
-public class NonconformityTypeStatisticsEntity {
+@Immutable
+@Table(name = "aggregated_nonconformity_statistics")
+public class NonconformityAggregatedStatisticsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +30,7 @@ public class NonconformityTypeStatisticsEntity {
     private Long nonconformityCount;
 
     @Basic(optional = false)
-    @Column(name = "nonconformity_type", nullable = false)
+    @Column(name = "non_criterion_type", nullable = false)
     private String nonconformityType;
 
     @Column(name = "certification_criterion_id")
@@ -39,18 +39,6 @@ public class NonconformityTypeStatisticsEntity {
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "certification_criterion_id", insertable = false, updatable = false)
     private CertificationCriterionEntity certificationCriterionEntity;
-
-    @Column(name = "deleted")
-    private Boolean deleted;
-
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
-
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
 
     public Long getId() {
         return id;
@@ -74,38 +62,6 @@ public class NonconformityTypeStatisticsEntity {
 
     public void setNonconformityType(String nonconformityType) {
         this.nonconformityType = nonconformityType;
-    }
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
     }
 
     public Long getCertificationCriterionId() {

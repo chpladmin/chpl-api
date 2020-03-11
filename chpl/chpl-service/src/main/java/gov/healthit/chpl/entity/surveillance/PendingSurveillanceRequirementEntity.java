@@ -11,9 +11,12 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.util.Util;
 
 @Entity
@@ -33,6 +36,13 @@ public class PendingSurveillanceRequirementEntity {
 
     @Column(name = "requirement")
     private String surveilledRequirement;
+
+    @Column(name = "certification_criterion_id")
+    private Long certificationCriterionId;
+
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "certification_criterion_id", insertable = false, updatable = false)
+    private CertificationCriterionEntity certificationCriterionEntity;
 
     @Column(name = "result_value")
     private String result;
@@ -58,7 +68,7 @@ public class PendingSurveillanceRequirementEntity {
         return id;
     }
 
-    public void setId(final Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -66,7 +76,7 @@ public class PendingSurveillanceRequirementEntity {
         return pendingSurveillanceId;
     }
 
-    public void setPendingSurveillanceId(final Long pendingSurveillanceId) {
+    public void setPendingSurveillanceId(Long pendingSurveillanceId) {
         this.pendingSurveillanceId = pendingSurveillanceId;
     }
 
@@ -74,7 +84,7 @@ public class PendingSurveillanceRequirementEntity {
         return requirementType;
     }
 
-    public void setRequirementType(final String requirementType) {
+    public void setRequirementType(String requirementType) {
         this.requirementType = requirementType;
     }
 
@@ -82,7 +92,7 @@ public class PendingSurveillanceRequirementEntity {
         return surveilledRequirement;
     }
 
-    public void setSurveilledRequirement(final String surveilledRequirement) {
+    public void setSurveilledRequirement(String surveilledRequirement) {
         this.surveilledRequirement = surveilledRequirement;
     }
 
@@ -90,7 +100,7 @@ public class PendingSurveillanceRequirementEntity {
         return result;
     }
 
-    public void setResult(final String result) {
+    public void setResult(String result) {
         this.result = result;
     }
 
@@ -98,7 +108,7 @@ public class PendingSurveillanceRequirementEntity {
         return Util.getNewDate(creationDate);
     }
 
-    public void setCreationDate(final Date creationDate) {
+    public void setCreationDate(Date creationDate) {
         this.creationDate = Util.getNewDate(creationDate);
     }
 
@@ -106,7 +116,7 @@ public class PendingSurveillanceRequirementEntity {
         return deleted;
     }
 
-    public void setDeleted(final Boolean deleted) {
+    public void setDeleted(Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -114,7 +124,7 @@ public class PendingSurveillanceRequirementEntity {
         return Util.getNewDate(lastModifiedDate);
     }
 
-    public void setLastModifiedDate(final Date lastModifiedDate) {
+    public void setLastModifiedDate(Date lastModifiedDate) {
         this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
@@ -122,7 +132,7 @@ public class PendingSurveillanceRequirementEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(final Long lastModifiedUser) {
+    public void setLastModifiedUser(Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -130,7 +140,23 @@ public class PendingSurveillanceRequirementEntity {
         return nonconformities;
     }
 
-    public void setNonconformities(final Set<PendingSurveillanceNonconformityEntity> nonconformities) {
+    public void setNonconformities(Set<PendingSurveillanceNonconformityEntity> nonconformities) {
         this.nonconformities = nonconformities;
+    }
+
+    public Long getCertificationCriterionId() {
+        return certificationCriterionId;
+    }
+
+    public void setCertificationCriterionId(Long certificationCriterionId) {
+        this.certificationCriterionId = certificationCriterionId;
+    }
+
+    public CertificationCriterionEntity getCertificationCriterionEntity() {
+        return certificationCriterionEntity;
+    }
+
+    public void setCertificationCriterionEntity(CertificationCriterionEntity certificationCriterionEntity) {
+        this.certificationCriterionEntity = certificationCriterionEntity;
     }
 }
