@@ -10,6 +10,7 @@ public class NonconformityTypeStatistics {
     private Long id;
     private Long nonconformityCount;
     private String nonconformityType;
+    private CertificationCriterion criterion;
     private Boolean deleted;
     private Long lastModifiedUser;
     private Date creationDate;
@@ -18,6 +19,9 @@ public class NonconformityTypeStatistics {
     public NonconformityTypeStatistics(NonconformityTypeStatisticsDTO dto) {
         this.nonconformityCount = dto.getNonconformityCount();
         this.nonconformityType = dto.getNonconformityType();
+        if (dto.getCriterion() != null) {
+            this.criterion = new CertificationCriterion(dto.getCriterion());
+        }
         this.setCreationDate(dto.getCreationDate());
         this.setDeleted(dto.getDeleted());
         this.setLastModifiedUser(dto.getLastModifiedUser());
@@ -78,5 +82,13 @@ public class NonconformityTypeStatistics {
 
     public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public CertificationCriterion getCriterion() {
+        return criterion;
+    }
+
+    public void setCriterion(CertificationCriterion criterion) {
+        this.criterion = criterion;
     }
 }
