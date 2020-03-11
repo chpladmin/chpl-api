@@ -34,6 +34,7 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredCriteri
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestFunctionality2015Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestFunctionalityAllowedByRoleReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestTool2015Reviewer;
 
 @Component
@@ -142,6 +143,10 @@ public class Edition2015ListingValidator extends Validator {
     @Qualifier("attestedCriteriaCqmReviewer")
     private AttestedCriteriaCqmReviewer attestedCriteriaCqmReviewer;
 
+    @Autowired
+    @Qualifier("testFunctionalityAllowedByRoleReviewer")
+    private TestFunctionalityAllowedByRoleReviewer testFunctionalityAllowedByRoleReviewer;
+
     private List<Reviewer> reviewers;
     private List<ComparisonReviewer> comparisonReviewers;
 
@@ -183,6 +188,7 @@ public class Edition2015ListingValidator extends Validator {
             comparisonReviewers.add(criteriaComparisonReviewer);
             comparisonReviewers.add(testTaskCriteriaComparisonReviewer);
             comparisonReviewers.add(ucdCriteriaComparisonReviewer);
+            comparisonReviewers.add(testFunctionalityAllowedByRoleReviewer);
         }
         return comparisonReviewers;
     }

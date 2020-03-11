@@ -6,7 +6,13 @@ import java.util.Date;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.util.Util;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CertificationCriterionDTO implements Serializable {
     private static final long serialVersionUID = -1129602624256345286L;
     private Long id;
@@ -23,9 +29,6 @@ public class CertificationCriterionDTO implements Serializable {
     private Boolean requiresSed;
     private String title;
     private Boolean removed;
-
-    public CertificationCriterionDTO() {
-    }
 
     public CertificationCriterionDTO(final CertificationCriterionEntity entity) {
 

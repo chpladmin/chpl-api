@@ -50,11 +50,11 @@ public class ResourcePermissions {
     private DeveloperDAO developerDAO;
 
     @Autowired
-    public ResourcePermissions(final PermissionEvaluator permissionEvaluator,
-            final UserCertificationBodyMapDAO userCertificationBodyMapDAO,
-            final UserDeveloperMapDAO userDeveloperMapDAO, final CertificationBodyDAO acbDAO,
-            final UserTestingLabMapDAO userTestingLabMapDAO, final TestingLabDAO atlDAO,
-            final ErrorMessageUtil errorMessageUtil, final UserDAO userDAO, final DeveloperDAO developerDAO) {
+    public ResourcePermissions(PermissionEvaluator permissionEvaluator,
+            UserCertificationBodyMapDAO userCertificationBodyMapDAO,
+            UserDeveloperMapDAO userDeveloperMapDAO, CertificationBodyDAO acbDAO,
+            UserTestingLabMapDAO userTestingLabMapDAO, TestingLabDAO atlDAO,
+            ErrorMessageUtil errorMessageUtil, UserDAO userDAO, DeveloperDAO developerDAO) {
         this.permissionEvaluator = permissionEvaluator;
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
         this.acbDAO = acbDAO;
@@ -67,7 +67,7 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
-    public boolean isDeveloperActive(final Long developerId) {
+    public boolean isDeveloperActive(Long developerId) {
         try {
             DeveloperDTO developerDto = developerDAO.getById(developerId);
             if (developerDto != null && developerDto.getStatus() != null && developerDto.getStatus().getStatus()
@@ -82,12 +82,12 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
-    public UserDTO getUserByName(final String userName) throws UserRetrievalException {
+    public UserDTO getUserByName(String userName) throws UserRetrievalException {
         return userDAO.getByName(userName);
     }
 
     @Transactional(readOnly = true)
-    public List<UserDTO> getAllUsersOnAcb(final CertificationBodyDTO acb) {
+    public List<UserDTO> getAllUsersOnAcb(CertificationBodyDTO acb) {
         List<UserDTO> userDtos = new ArrayList<UserDTO>();
         List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByAcbId(acb.getId());
 
@@ -99,7 +99,7 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
-    public List<UserDTO> getAllUsersOnAtl(final TestingLabDTO atl) {
+    public List<UserDTO> getAllUsersOnAtl(TestingLabDTO atl) {
         List<UserDTO> userDtos = new ArrayList<UserDTO>();
         List<UserTestingLabMapDTO> dtos = userTestingLabMapDAO.getByAtlId(atl.getId());
 
@@ -111,7 +111,7 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
-    public List<UserDTO> getAllUsersOnDeveloper(final DeveloperDTO dev) {
+    public List<UserDTO> getAllUsersOnDeveloper(DeveloperDTO dev) {
         List<UserDTO> userDtos = new ArrayList<UserDTO>();
         List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByDeveloperId(dev.getId());
 
@@ -141,7 +141,7 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
-    public List<CertificationBodyDTO> getAllAcbsForUser(final Long userID) {
+    public List<CertificationBodyDTO> getAllAcbsForUser(Long userID) {
         List<CertificationBodyDTO> acbs = new ArrayList<CertificationBodyDTO>();
         List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByUserId(userID);
         for (UserCertificationBodyMapDTO dto : dtos) {
@@ -169,7 +169,7 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
-    public List<TestingLabDTO> getAllAtlsForUser(final Long userId) {
+    public List<TestingLabDTO> getAllAtlsForUser(Long userId) {
         List<TestingLabDTO> atls = new ArrayList<TestingLabDTO>();
         List<UserTestingLabMapDTO> dtos = userTestingLabMapDAO.getByUserId(userId);
         for (UserTestingLabMapDTO dto : dtos) {
@@ -197,7 +197,7 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
-    public List<DeveloperDTO> getAllDevelopersForUser(final Long userId) {
+    public List<DeveloperDTO> getAllDevelopersForUser(Long userId) {
         List<DeveloperDTO> devs = new ArrayList<DeveloperDTO>();
         List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByUserId(userId);
         for (UserDeveloperMapDTO dto : dtos) {
@@ -207,7 +207,7 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
-    public CertificationBodyDTO getAcbIfPermissionById(final Long id) throws EntityRetrievalException {
+    public CertificationBodyDTO getAcbIfPermissionById(Long id) throws EntityRetrievalException {
         try {
             acbDAO.getById(id);
         } catch (final EntityRetrievalException ex) {
@@ -230,7 +230,7 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
-    public TestingLabDTO getAtlIfPermissionById(final Long id) throws EntityRetrievalException {
+    public TestingLabDTO getAtlIfPermissionById(Long id) throws EntityRetrievalException {
         try {
             atlDAO.getById(id);
         } catch (final EntityRetrievalException ex) {
@@ -253,7 +253,7 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
-    public DeveloperDTO getDeveloperIfPermissionById(final Long id) throws EntityRetrievalException {
+    public DeveloperDTO getDeveloperIfPermissionById(Long id) throws EntityRetrievalException {
         try {
             developerDAO.getById(id);
         } catch (final EntityRetrievalException ex) {
@@ -276,7 +276,7 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
-    public UserPermissionDTO getRoleByUserId(final Long userId) {
+    public UserPermissionDTO getRoleByUserId(Long userId) {
         try {
             UserDTO user = userDAO.getById(userId);
             return user.getPermission();
@@ -286,7 +286,7 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
-    public boolean hasPermissionOnUser(final Long userId) {
+    public boolean hasPermissionOnUser(Long userId) {
         UserDTO user = null;
         try {
             user = userDAO.getById(userId);
@@ -297,19 +297,17 @@ public class ResourcePermissions {
     }
 
     /**
-     * Determines if the current user has permissions to access the account of
-     * the passed-in user. Rules are: Admin and Onc can access all users. Acb
-     * can access any other ROLE_ACB user who is also on their ACB. Atl can
-     * access any other ROLE_ATL user who is also on their ATL. Developer Admin
-     * can access any other ROLE_DEVELOPER user who is also on their developer.
-     * All users can access themselves.
+     * Determines if the current user has permissions to access the account of the passed-in user. Rules are: Admin and
+     * Onc can access all users. Acb can access any other ROLE_ACB user who is also on their ACB. Atl can access any
+     * other ROLE_ATL user who is also on their ATL. Developer Admin can access any other ROLE_DEVELOPER user who is
+     * also on their developer. All users can access themselves.
      * 
      * @param user
      *            user to check permissions on
      * @return
      */
     @Transactional(readOnly = true)
-    public boolean hasPermissionOnUser(final UserDTO user) {
+    public boolean hasPermissionOnUser(UserDTO user) {
         if (isUserRoleAdmin() || isUserRoleOnc()
                 || permissionEvaluator.hasPermission(AuthUtil.getCurrentUser(), user, BasePermission.ADMINISTRATION)) {
             return true;
@@ -393,7 +391,16 @@ public class ResourcePermissions {
         return AuthUtil.getCurrentUser() == null;
     }
 
-    private boolean doesUserHaveRole(final String authority) {
+    public boolean doesUserHaveRole(List<String> authorities) {
+        for (String authority : authorities) {
+            if (doesUserHaveRole(authority)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean doesUserHaveRole(String authority) {
         User user = AuthUtil.getCurrentUser();
         if (user == null) {
             return false;
@@ -406,7 +413,7 @@ public class ResourcePermissions {
         return role.getAuthority().equalsIgnoreCase(authority);
     }
 
-    private boolean doesAuthenticationHaveRole(final String authority) {
+    private boolean doesAuthenticationHaveRole(String authority) {
         Authentication auth = AuthUtil.getCurrentAuthentication();
         if (auth == null) {
             return false;
