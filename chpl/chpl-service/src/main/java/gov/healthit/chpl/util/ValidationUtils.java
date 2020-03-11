@@ -20,6 +20,7 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 
 /**
  * Utilities used to validate various basic elements of CHPL domain objects.
+ * 
  * @author alarned
  *
  */
@@ -32,7 +33,9 @@ public final class ValidationUtils {
 
     /**
      * Check to see if input string has either Windows or *nix flavored new line character.
-     * @param input string to check
+     * 
+     * @param input
+     *            string to check
      * @return true iff string contains "\n" or "\r\n"
      */
     public static boolean hasNewline(final String input) {
@@ -45,7 +48,9 @@ public final class ValidationUtils {
 
     /**
      * Validate that input string is a well formed URL.
-     * @param input URL to check
+     * 
+     * @param input
+     *            URL to check
      * @return true iff input is a valid URL. Will return false for empty/null string
      */
     public static boolean isWellFormedUrl(final String input) {
@@ -53,12 +58,15 @@ public final class ValidationUtils {
     }
 
     /**
-     * Validation utility to check if a part of the chpl product number
-     * matches a specific regex. Useful to determine if any other than the
-     * allowed characters are present.
-     * @param chplProductNumber the chpl product number to test
-     * @param partIndex the index, 0-8
-     * @param regexToMatch regex like ^[0-9]$
+     * Validation utility to check if a part of the chpl product number matches a specific regex. Useful to determine if
+     * any other than the allowed characters are present.
+     * 
+     * @param chplProductNumber
+     *            the chpl product number to test
+     * @param partIndex
+     *            the index, 0-8
+     * @param regexToMatch
+     *            regex like ^[0-9]$
      * @return true of the part matches the regex and false otherwise
      */
     public static boolean chplNumberPartIsValid(final String chplProductNumber,
@@ -76,7 +84,9 @@ public final class ValidationUtils {
 
     /**
      * Check that input string is in the default charset.
-     * @param input string to check
+     * 
+     * @param input
+     *            string to check
      * @return true iff string is in default charset
      */
     public static boolean isValidUtf8(final String input) {
@@ -85,8 +95,11 @@ public final class ValidationUtils {
 
     /**
      * Check that input string is in the passed in charset.
-     * @param inputCharset charset to check
-     * @param input string to check
+     * 
+     * @param inputCharset
+     *            charset to check
+     * @param input
+     *            string to check
      * @return true iff input is in inputCharset
      */
     public static boolean isValidUtf8(final Charset inputCharset, final String input) {
@@ -102,10 +115,10 @@ public final class ValidationUtils {
     }
 
     /**
-     * This method could be called if the encoding in which input is received IS
-     * UTF-8.
+     * This method could be called if the encoding in which input is received IS UTF-8.
      *
-     * @param input string to check
+     * @param input
+     *            string to check
      * @return true iff input string contains \uFFFD
      */
     public static boolean hasUtf8ReplacementCharacter(final String input) {
@@ -116,10 +129,10 @@ public final class ValidationUtils {
     }
 
     /**
-     * This method could be called if the encoding in which input is received is
-     * NOT already UTF-8.
+     * This method could be called if the encoding in which input is received is NOT already UTF-8.
      *
-     * @param input string to check
+     * @param input
+     *            string to check
      * @return true iff input has non UTF-8 character
      */
     public static boolean hasNonUtf8Character(final byte[] input) {
@@ -162,8 +175,11 @@ public final class ValidationUtils {
 
     /**
      * Check to see if the input certification is in the list of certifications.
-     * @param certNumber certification to look for
-     * @param allCerts certifications to check in
+     * 
+     * @param certNumber
+     *            certification to look for
+     * @param allCerts
+     *            certifications to check in
      * @return true iff certNumber found in allCerts
      */
     public static boolean hasCert(String certNumber, List<CertificationCriterion> allCerts) {
@@ -197,15 +213,21 @@ public final class ValidationUtils {
     }
 
     /**
-     * Look for required complimentary criteria; if any one of the
-     * criterionToCheck is present in allCriteriaMet then all of the
-     * complimentaryCertNumbers must be present in allCriteriaMet.
+     * DEPLRECATED - Look for required complimentary criteria; if any one of the criterionToCheck is present in
+     * allCriteriaMet then all of the complimentaryCertNumbers must be present in allCriteriaMet.
+     * 
+     * This method will not handle differentiating between criteria with the criteria number, as is the case with some
+     * new Cures criteria.
      *
-     * @param criterionToCheck criteria to check
-     * @param allCriteriaMet criteria to check against
-     * @param complimentaryCertNumbers complimentary criteria that must be present
+     * @param criterionToCheck
+     *            criteria to check
+     * @param allCriteriaMet
+     *            criteria to check against
+     * @param complimentaryCertNumbers
+     *            complimentary criteria that must be present
      * @return a list of error messages
      */
+    @Deprecated
     public static List<String> checkComplimentaryCriteriaAllRequired(List<String> criterionToCheck,
             List<String> complimentaryCertNumbers, List<CertificationCriterion> allCriteriaMet) {
         List<String> errors = new ArrayList<String>();
@@ -232,13 +254,15 @@ public final class ValidationUtils {
     }
 
     /**
-     * Look for required complimentary criteria; if any one of the
-     * criterionToCheck is present in allCriteriaMet, then any one
-     * of the complimentaryCertNumbers must also be present in allCriteriaMet.
+     * Look for required complimentary criteria; if any one of the criterionToCheck is present in allCriteriaMet, then
+     * any one of the complimentaryCertNumbers must also be present in allCriteriaMet.
      *
-     * @param criterionToCheck criteria to check
-     * @param allCriteriaMet criteria to check against
-     * @param complimentaryCertNumbers complimentary criteria of which at least one must be present
+     * @param criterionToCheck
+     *            criteria to check
+     * @param allCriteriaMet
+     *            criteria to check against
+     * @param complimentaryCertNumbers
+     *            complimentary criteria of which at least one must be present
      * @return a list of error messages
      */
     public static List<String> checkComplimentaryCriteriaAnyRequired(List<String> criterionToCheck,
@@ -274,8 +298,11 @@ public final class ValidationUtils {
 
     /**
      * Returns true if any of the passed in certs are present.
-     * @param certsToCheck criteria to check
-     * @param allCerts criteria to check against
+     * 
+     * @param certsToCheck
+     *            criteria to check
+     * @param allCerts
+     *            criteria to check against
      * @return true iff at least one of certsToCheck is in allCerts
      */
     public static boolean hasAnyCert(List<String> certsToCheck, List<CertificationCriterion> allCerts) {
@@ -290,8 +317,11 @@ public final class ValidationUtils {
 
     /**
      * Returns true if any of the passed in certs are present.
-     * @param certToCompare criteria to check
-     * @param certs criteria to check against
+     * 
+     * @param certToCompare
+     *            criteria to check
+     * @param certs
+     *            criteria to check against
      * @return true iff at least one of certToCompare is in certs
      */
     public static boolean containsCert(final PendingCertificationResultDTO certToCompare, final String[] certs) {
@@ -307,8 +337,11 @@ public final class ValidationUtils {
 
     /**
      * Returns true if any of the passed in certs are present.
-     * @param certToCompare criteria to check
-     * @param certs criteria to check against
+     * 
+     * @param certToCompare
+     *            criteria to check
+     * @param certs
+     *            criteria to check against
      * @return true iff at least one of certToCompare is in certs
      */
     public static boolean containsCert(final CertificationResult certToCompare, final String[] certs) {
@@ -322,12 +355,15 @@ public final class ValidationUtils {
     }
 
     /**
-     * look for required complimentary certs when one of the criteria met is a
-     * certain class of cert... such as 170.315 (a)(*)
+     * look for required complimentary certs when one of the criteria met is a certain class of cert... such as 170.315
+     * (a)(*)
      *
-     * @param criterionNumberStart class of criteria to check
-     * @param allCriteriaMet all criteria met
-     * @param complimentaryCertNumbers complimentary criteria that must be met
+     * @param criterionNumberStart
+     *            class of criteria to check
+     * @param allCriteriaMet
+     *            all criteria met
+     * @param complimentaryCertNumbers
+     *            complimentary criteria that must be met
      * @return list of errors
      */
     public static List<String> checkClassOfCriteriaForErrors(String criterionNumberStart,
@@ -336,8 +372,8 @@ public final class ValidationUtils {
         List<CertificationCriterion> presentAttestedCriteriaInClass = allCriteriaMet.stream()
                 .filter(certResult -> certResult.getNumber().startsWith(criterionNumberStart)
                         && (certResult.getRemoved() == null
-                        || certResult.getRemoved().equals(Boolean.FALSE)))
-                .collect(Collectors.<CertificationCriterion>toList());
+                                || certResult.getRemoved().equals(Boolean.FALSE)))
+                .collect(Collectors.<CertificationCriterion> toList());
 
         if (presentAttestedCriteriaInClass != null && presentAttestedCriteriaInClass.size() > 0) {
             for (String currRequiredCriteria : complimentaryCertNumbers) {
@@ -363,16 +399,16 @@ public final class ValidationUtils {
         List<CertificationCriterion> removedAttestedCriteriaInClass = allCriteriaMet.stream()
                 .filter(certResult -> certResult.getNumber().startsWith(criterionNumberStart)
                         && (certResult.getRemoved() == null
-                        || certResult.getRemoved().equals(Boolean.TRUE)))
-                .collect(Collectors.<CertificationCriterion>toList());
+                                || certResult.getRemoved().equals(Boolean.TRUE)))
+                .collect(Collectors.<CertificationCriterion> toList());
         List<CertificationCriterion> presentAttestedCriteriaInClass = allCriteriaMet.stream()
                 .filter(certResult -> certResult.getNumber().startsWith(criterionNumberStart)
                         && (certResult.getRemoved() == null
-                        || certResult.getRemoved().equals(Boolean.FALSE)))
-                .collect(Collectors.<CertificationCriterion>toList());
+                                || certResult.getRemoved().equals(Boolean.FALSE)))
+                .collect(Collectors.<CertificationCriterion> toList());
 
-        //if the only attested criteria in the "class" of criteria are marked as removed
-        //then the lack of a complimentary criteria is only a warning
+        // if the only attested criteria in the "class" of criteria are marked as removed
+        // then the lack of a complimentary criteria is only a warning
         if (removedAttestedCriteriaInClass != null && removedAttestedCriteriaInClass.size() > 0
                 && (presentAttestedCriteriaInClass == null || presentAttestedCriteriaInClass.size() == 0)) {
             for (String currRequiredCriteria : complimentaryCertNumbers) {
@@ -393,12 +429,14 @@ public final class ValidationUtils {
     }
 
     /**
-     * Look for a required complimentary criteria when a specific criteria has
-     * been met.
+     * Look for a required complimentary criteria when a specific criteria has been met.
      *
-     * @param criterionNumber criteria to check
-     * @param allCriteriaMet all criteria met
-     * @param complimentaryCertNumbers complimentary criteria that must be met
+     * @param criterionNumber
+     *            criteria to check
+     * @param allCriteriaMet
+     *            all criteria met
+     * @param complimentaryCertNumbers
+     *            complimentary criteria that must be met
      * @return list of errors
      */
     public static List<String> checkSpecificCriteriaForErrors(final String criterionNumber,
@@ -431,7 +469,7 @@ public final class ValidationUtils {
     public static List<CertificationCriterion> getAttestedCriteria(CertifiedProductSearchDetails listing) {
         List<CertificationResult> attestedCertificationResults = listing.getCertificationResults().stream()
                 .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess().equals(Boolean.TRUE))
-                .collect(Collectors.<CertificationResult>toList());
+                .collect(Collectors.<CertificationResult> toList());
 
         List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
         for (CertificationResult cr : attestedCertificationResults) {
@@ -443,7 +481,7 @@ public final class ValidationUtils {
     public static List<CertificationCriterion> getAttestedCriteria(PendingCertifiedProductDTO listing) {
         List<PendingCertificationResultDTO> attestedCertificationResults = listing.getCertificationCriterion().stream()
                 .filter(certResult -> certResult.getMeetsCriteria() != null && certResult.getMeetsCriteria().equals(Boolean.TRUE))
-                .collect(Collectors.<PendingCertificationResultDTO>toList());
+                .collect(Collectors.<PendingCertificationResultDTO> toList());
 
         List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
         for (PendingCertificationResultDTO cr : attestedCertificationResults) {
