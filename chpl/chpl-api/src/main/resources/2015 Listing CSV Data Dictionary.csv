@@ -48,7 +48,7 @@ Open Nonconformities,Yes,<int>,"The total number of open (unresolved) non-confor
 170.315 (b)(9): Care Plan,Yes,TRUE; FALSE,Care Plan
 170.315 (b)(10): Clinical Information export,Yes,TRUE; FALSE,Clinical Information export
 170.315 (c)(1): Clinical Quality Measures - Record and Export,Yes,TRUE; FALSE,Clinical Quality Measures - Record and Export
-170.315 (c)(2): Clincial Quality Measures - Import and Calculate,Yes,TRUE; FALSE,Clincial Quality Measures - Import and Calculate
+170.315 (c)(2): Clinical Quality Measures - Import and Calculate,Yes,TRUE; FALSE,Clinical Quality Measures - Import and Calculate
 170.315 (c)(3): Clinical Quality Measures - Report (Cures Update),Yes,TRUE; FALSE,Clinical Quality Measures - Report (Cures Update)
 170.315 (c)(3): Clinical Quality Measures - Report,Yes,TRUE; FALSE,Clinical Quality Measures - Report
 170.315 (c)(4): Clinical Quality Measures - Filter,Yes,TRUE; FALSE,Clinical Quality Measures - Filter
@@ -65,7 +65,7 @@ Open Nonconformities,Yes,<int>,"The total number of open (unresolved) non-confor
 170.315 (d)(9): Trusted Connection,Yes,TRUE; FALSE,Trusted Connection
 170.315 (d)(10): Auditing Actions on Health Information (Cures Update),Yes,TRUE; FALSE,Auditing Actions on Health Information (Cures Update)
 170.315 (d)(10): Auditing Actions on Health Information,Yes,TRUE; FALSE,Auditing Actions on Health Information
-170.315 (d)(11): Accouting of Disclosures,Yes,TRUE; FALSE,Accouting of Disclosures
+170.315 (d)(11): Accounting of Disclosures,Yes,TRUE; FALSE,Accounting of Disclosures
 170.315 (d)(12): Encrypt authentication credentials,Yes,TRUE; FALSE,Encrypt authentication credentials
 170.315 (d)(13): Multi-factor authentication,Yes,TRUE; FALSE,Multi-factor authentication
 "170.315 (e)(1): View, Download, and Transmit to 3rd Party (Cures Update)",Yes,TRUE; FALSE,"View, Download, and Transmit to 3rd Party (Cures Update)"
@@ -75,7 +75,7 @@ Open Nonconformities,Yes,<int>,"The total number of open (unresolved) non-confor
 170.315 (f)(1): Transmission to Immunization Registries,Yes,TRUE; FALSE,Transmission to Immunization Registries
 170.315 (f)(2): Transmission to Public Health Agencies - Syndromic Surveillance,Yes,TRUE; FALSE,Transmission to Public Health Agencies - Syndromic Surveillance
 170.315 (f)(3): Transmission to Public Health Agencies - Reportable Laboratory Tests and Values/Results,Yes,TRUE; FALSE,Transmission to Public Health Agencies - Reportable Laboratory Tests and Values/Results
-170.315 (f)(4): Transmission ti Cancer Registries,Yes,TRUE; FALSE,Transmission ti Cancer Registries
+170.315 (f)(4): Transmission to Cancer Registries,Yes,TRUE; FALSE,Transmission to Cancer Registries
 170.315 (f)(5): Transmission to Public Health Agencies - Electronic Case Reporting (Cures Update),Yes,TRUE; FALSE,Transmission to Public Health Agencies - Electronic Case Reporting (Cures Update)
 170.315 (f)(5): Transmission to Public Health Agencies - Electronic Case Reporting,Yes,TRUE; FALSE,Transmission to Public Health Agencies - Electronic Case Reporting
 170.315 (f)(6): Transmission to Public Health Agencies - Antimicrobial Use and Resistance Reporting,Yes,TRUE; FALSE,Transmission to Public Health Agencies - Antimicrobial Use and Resistance Reporting
