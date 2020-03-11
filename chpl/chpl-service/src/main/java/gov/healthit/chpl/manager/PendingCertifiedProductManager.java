@@ -132,6 +132,7 @@ public class PendingCertifiedProductManager extends SecuredManager {
         PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(pendingCp);
         addAllVersionsToCmsCriterion(pcpDetails);
         addAllMeasuresToCertificationCriteria(pcpDetails);
+        addAvailableTestFunctionalities(pcpDetails);
         return pcpDetails;
     }
 

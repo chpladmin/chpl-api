@@ -72,6 +72,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
         developer.setDeveloperId(dto.getDeveloperId());
         developer.setName(dto.getDeveloperName());
         developer.setWebsite(dto.getDeveloperWebsite());
+        developer.setSelfDeveloper(dto.getSelfDeveloper());
 
         Contact developerContact = new Contact();
         developerContact.setFullName(dto.getDeveloperContactName());
