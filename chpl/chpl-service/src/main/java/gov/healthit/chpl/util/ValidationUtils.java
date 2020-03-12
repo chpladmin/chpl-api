@@ -253,6 +253,30 @@ public final class ValidationUtils {
         return errors;
     }
 
+    public static List<String> checkSubordinateCriteriaAllRequired(List<Long> subordinateCriteriaIds,
+            List<Long> requiredCriteriaIds, List<CertificationCriterion> attestedToCriteria, ErrorMessageUtil errorMessageUtil) {
+        List<String> errors = new ArrayList<String>();
+
+        List<Long> attestedToCriteriaIds = attestedToCriteria.stream()
+                .map(criterion -> criterion.getId())
+                .collect(Collectors.toList());
+
+        for (Long attestedToCriterionId : attestedToCriteriaIds) {
+            if (subordinateCriteriaIds.contains(attestedToCriterionId)) {
+                for (Long requiredCriterionId : requiredCriteriaIds) {
+                    if (!attestedToCriteriaIds.contains(requiredCriterionId)) {
+                        errors.add(errorMessageUtil.getMessage(
+                                "listing.criteria.dependentCriteriaRequired",
+                                attestedToCriterionId,
+                                requiredCriterionId));
+                    }
+                }
+            }
+        }
+
+        return errors;
+    }
+
     /**
      * Look for required complimentary criteria; if any one of the criterionToCheck is present in allCriteriaMet, then
      * any one of the complimentaryCertNumbers must also be present in allCriteriaMet.

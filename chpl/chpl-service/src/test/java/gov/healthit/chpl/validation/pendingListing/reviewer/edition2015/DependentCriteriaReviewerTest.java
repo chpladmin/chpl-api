@@ -23,7 +23,7 @@ public class DependentCriteriaReviewerTest {
     private ErrorMessageUtil errorMessageUtil;
     private CertificationCriterionDAO certificationCriterionDAO;
 
-    private DependentCriteriaReviewer dependentCriteriaReviewer;
+    private PrivacyAndSecurityCriteriaReviewer dependentCriteriaReviewer;
 
     @Before
     public void before() throws EntityRetrievalException {
@@ -43,7 +43,7 @@ public class DependentCriteriaReviewerTest {
         Mockito.when(certificationCriterionDAO.getById(166L)).thenReturn(getCriterion(166l, "170.315 (d)(12)"));
         Mockito.when(certificationCriterionDAO.getById(167L)).thenReturn(getCriterion(167l, "170.315 (d)(13)"));
 
-        dependentCriteriaReviewer = new DependentCriteriaReviewer(env, certificationCriterionDAO, errorMessageUtil);
+        dependentCriteriaReviewer = new PrivacyAndSecurityCriteriaReviewer(env, certificationCriterionDAO, errorMessageUtil);
         // Force call the postconstruct method
         dependentCriteriaReviewer.postConstruct();
     }
