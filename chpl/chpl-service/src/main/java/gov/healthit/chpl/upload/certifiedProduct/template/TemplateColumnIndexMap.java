@@ -4,6 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.StringUtils;
 
 public abstract class TemplateColumnIndexMap {
     protected static final String CRITERIA_COL_HEADING_BEGIN = "CRITERIA_";
@@ -21,8 +22,8 @@ public abstract class TemplateColumnIndexMap {
     public abstract int getAtlIndex();
     public abstract int getProductClassificationIndex();
     public abstract int getCertificationDateIndex();
-    public abstract int getDeveloperAddressStartIndex();
-    public abstract int getDeveloperAddressEndIndex();
+    public abstract int getDeveloperStartIndex();
+    public abstract int getDeveloperEndIndex();
     public abstract int getTargetedUserStartIndex();
     public abstract int getTargetedUserEndIndex();
     public abstract int getQmsStartIndex();
@@ -156,6 +157,14 @@ public abstract class TemplateColumnIndexMap {
         return 2;
     }
 
+    public String getExportDocumentationColumnLabel() {
+        return "EXPORT DOCUMENTATION";
+    }
+
+    public int getExportDocumentationColumnCount() {
+        return 1;
+    }
+
     public String getAttestationAnswerColumnLabel() {
         return "ATTESTATION ANSWER";
     }
@@ -199,8 +208,12 @@ public abstract class TemplateColumnIndexMap {
     }
 
     public String parseCriteriaNumberFromHeading(String headingVal) {
+        if (StringUtils.isEmpty(headingVal)) {
+            return null;
+        }
+        headingVal = headingVal.trim().toUpperCase();
         String criterionNumber = null;
-        String pattern = "CRITERIA_(\\d+)_(\\d+)_([A-Z])_([0-9]+)([A-Z])?(_Cures)?__C";
+        String pattern = "CRITERIA_(\\d+)_(\\d+)_([A-Z])_([0-9]+)([A-Z])?(_CURES)?__C";
         Pattern r = Pattern.compile(pattern);
         Matcher m = r.matcher(headingVal);
         if (m.find()) {

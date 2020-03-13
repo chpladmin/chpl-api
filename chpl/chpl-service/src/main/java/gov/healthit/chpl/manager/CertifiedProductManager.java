@@ -439,6 +439,7 @@ public class CertifiedProductManager extends SecuredManager {
             }
             newDeveloper.setName(pendingCp.getDeveloperName());
             newDeveloper.setWebsite(pendingCp.getDeveloperWebsite());
+            newDeveloper.setSelfDeveloper(pendingCp.getSelfDeveloper() == null ? Boolean.FALSE : pendingCp.getSelfDeveloper());
             DeveloperACBMapDTO transparencyMap = new DeveloperACBMapDTO();
             transparencyMap.setAcbId(pendingCp.getCertificationBodyId());
             transparencyMap.setAcbName(pendingCp.getCertificationBodyName());

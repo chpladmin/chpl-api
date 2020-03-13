@@ -5,11 +5,15 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.util.Util;
 
 @Entity
@@ -28,6 +32,13 @@ public class NonconformityTypeStatisticsEntity {
     @Basic(optional = false)
     @Column(name = "nonconformity_type", nullable = false)
     private String nonconformityType;
+
+    @Column(name = "certification_criterion_id")
+    private Long certificationCriterionId;
+
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "certification_criterion_id", insertable = false, updatable = false)
+    private CertificationCriterionEntity certificationCriterionEntity;
 
     @Column(name = "deleted")
     private Boolean deleted;
@@ -95,5 +106,21 @@ public class NonconformityTypeStatisticsEntity {
 
     public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public Long getCertificationCriterionId() {
+        return certificationCriterionId;
+    }
+
+    public void setCertificationCriterionId(Long certificationCriterionId) {
+        this.certificationCriterionId = certificationCriterionId;
+    }
+
+    public CertificationCriterionEntity getCertificationCriterionEntity() {
+        return certificationCriterionEntity;
+    }
+
+    public void setCertificationCriterionEntity(CertificationCriterionEntity certificationCriterionEntity) {
+        this.certificationCriterionEntity = certificationCriterionEntity;
     }
 }

@@ -141,7 +141,7 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
         parseRecordStatus(pendingCertifiedProduct, record);
         parsePracticeType(pendingCertifiedProduct, record);
         parseDeveloperProductVersion(pendingCertifiedProduct, record);
-        parseDeveloperAddress(pendingCertifiedProduct, record);
+        parseDeveloperDetails(pendingCertifiedProduct, record);
         parseEdition("2014", pendingCertifiedProduct, record);
         parseAcbCertificationId(pendingCertifiedProduct, record);
         parseAcb(pendingCertifiedProduct, record);

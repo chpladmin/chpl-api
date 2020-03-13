@@ -70,8 +70,7 @@ public class PendingCertifiedProductManager extends SecuredManager {
             UserDAO userDAO,
             CQMCriterionDAO cqmCriterionDAO,
             MacraMeasureDAO macraDao,
-            ActivityManager activityManager
-            ) {
+            ActivityManager activityManager) {
 
         this.certRules = certRules;
         this.validatorFactory = validatorFactory;
@@ -92,7 +91,6 @@ public class PendingCertifiedProductManager extends SecuredManager {
         loadCQMCriteria();
         loadCriteriaMacraMeasures();
     }
-
 
     @Transactional(readOnly = true)
     @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
@@ -115,7 +113,6 @@ public class PendingCertifiedProductManager extends SecuredManager {
         return getById(id, true);
     }
 
-
     @Transactional(readOnly = true)
     @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions).GET_DETAILS_BY_ID,"
@@ -132,9 +129,9 @@ public class PendingCertifiedProductManager extends SecuredManager {
         PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(pendingCp);
         addAllVersionsToCmsCriterion(pcpDetails);
         addAllMeasuresToCertificationCriteria(pcpDetails);
+        addAvailableTestFunctionalities(pcpDetails);
         return pcpDetails;
     }
-
 
     @Transactional(readOnly = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
@@ -145,7 +142,6 @@ public class PendingCertifiedProductManager extends SecuredManager {
         List<PendingCertifiedProductMetadataDTO> products = pcpDao.getAllMetadata();
         return products;
     }
-
 
     @Transactional(readOnly = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
@@ -176,7 +172,6 @@ public class PendingCertifiedProductManager extends SecuredManager {
 
         return products;
     }
-
 
     @Transactional(rollbackFor = {
             EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class
@@ -211,7 +206,6 @@ public class PendingCertifiedProductManager extends SecuredManager {
         return pendingCpDto;
     }
 
-
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions).DELETE, #pendingProductId)")
@@ -220,7 +214,7 @@ public class PendingCertifiedProductManager extends SecuredManager {
             JsonProcessingException, ObjectMissingValidationException {
 
         PendingCertifiedProductDTO pendingCp = pcpDao.findById(pendingProductId, true);
-        //dao throws entity not found exception if bad id
+        // dao throws entity not found exception if bad id
         if (pendingCp != null) {
             if (isPendingListingAvailableForUpdate(pendingCp)) {
                 pcpDao.delete(pendingProductId);
@@ -230,7 +224,6 @@ public class PendingCertifiedProductManager extends SecuredManager {
             }
         }
     }
-
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
@@ -245,7 +238,6 @@ public class PendingCertifiedProductManager extends SecuredManager {
                 activityMsg, pendingCp, pendingCp);
 
     }
-
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
@@ -327,7 +319,8 @@ public class PendingCertifiedProductManager extends SecuredManager {
                     certResult.setApiDocumentation("");
                 }
 
-                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.EXPORT_DOCUMENTATION)) {
+                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(),
+                        CertificationResultRules.EXPORT_DOCUMENTATION)) {
                     certResult.setExportDocumentation(null);
                 } else if (certResult.getExportDocumentation() == null) {
                     certResult.setExportDocumentation("");
@@ -351,7 +344,8 @@ public class PendingCertifiedProductManager extends SecuredManager {
                     certResult.setPrivacySecurityFramework("");
                 }
 
-                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.ATTESTATION_ANSWER)) {
+                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(),
+                        CertificationResultRules.ATTESTATION_ANSWER)) {
                     certResult.setAttestationAnswer(null);
                 } else if (certResult.getAttestationAnswer() == null) {
                     certResult.setAttestationAnswer(Boolean.FALSE);
@@ -366,10 +360,12 @@ public class PendingCertifiedProductManager extends SecuredManager {
                 if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.UCD_FIELDS)) {
                     certResult.setUcdProcesses(null);
                 }
-                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
+                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(),
+                        CertificationResultRules.ADDITIONAL_SOFTWARE)) {
                     certResult.setAdditionalSoftware(null);
                 }
-                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
+                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(),
+                        CertificationResultRules.FUNCTIONALITY_TESTED)) {
                     certResult.setTestFunctionality(null);
                 }
                 if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.STANDARDS_TESTED)) {
@@ -446,11 +442,10 @@ public class PendingCertifiedProductManager extends SecuredManager {
         }
     }
 
-
     public void addAllVersionsToCmsCriterion(final PendingCertifiedProductDetails pcpDetails) {
         // now add allVersions for CMSs
-        String certificationEdition =
-                pcpDetails.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
+        String certificationEdition = pcpDetails.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY)
+                .toString();
         if (!certificationEdition.startsWith("2011")) {
             List<CQMCriterion> cqms = getAvailableCQMVersions();
             for (CQMCriterion cqm : cqms) {
@@ -477,7 +472,6 @@ public class PendingCertifiedProductManager extends SecuredManager {
         }
     }
 
-
     public void addAllMeasuresToCertificationCriteria(final PendingCertifiedProductDetails pcpDetails) {
         // now add allMeasures for criteria
         for (CertificationResult cert : pcpDetails.getCertificationResults()) {
@@ -489,12 +483,10 @@ public class PendingCertifiedProductManager extends SecuredManager {
         }
     }
 
-
     public void addAvailableTestFunctionalities(final PendingCertifiedProductDetails pcpDetails) {
         // now add allMeasures for criteria
         for (CertificationResult cert : pcpDetails.getCertificationResults()) {
-            String edition =
-                    pcpDetails.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
+            String edition = pcpDetails.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
             Long practiceTypeId = null;
             if (pcpDetails.getPracticeType().containsKey("id")) {
                 if (pcpDetails.getPracticeType().get("id") != null) {

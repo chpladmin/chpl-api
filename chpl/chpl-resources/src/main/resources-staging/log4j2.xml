@@ -290,7 +290,18 @@
                 <TimeBasedTriggeringPolicy
                     interval="1" modulate="true" />
             </Policies>
-        </RollingFile>        
+        </RollingFile>
+        <RollingFile name="addV19UploadTemplateJob"
+            fileName="${logDir}/scheduler/addV19UploadTemplateJob.log"
+            filePattern="${logDir}/scheduler/history/addV19UploadTemplateJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
         <RollingFile name="createTestToolJob"
             fileName="${logDir}/scheduler/createTestToolJob.log"
             filePattern="${logDir}/scheduler/history/createTestToolJob-%d{yyyy-MM-dd}.log">
@@ -472,6 +483,10 @@
         <Logger name="addV18UploadTemplateJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="addV18UploadTemplateJob" />
+        </Logger>
+        <Logger name="addV19UploadTemplateJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="addV19UploadTemplateJob" />
         </Logger>
         <Logger name="createTestToolJobLogger" level="INFO"
             additivity="false">

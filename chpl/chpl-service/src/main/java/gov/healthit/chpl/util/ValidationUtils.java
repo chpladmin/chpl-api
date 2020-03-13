@@ -213,11 +213,11 @@ public final class ValidationUtils {
     }
 
     /**
-     * DEPLRECATED - Look for required complimentary criteria; if any one of the criterionToCheck is present in
+     * DEPRECATED - Look for required complimentary criteria; if any one of the criterionToCheck is present in
      * allCriteriaMet then all of the complimentaryCertNumbers must be present in allCriteriaMet.
      * 
-     * This method will not handle differentiating between criteria with the criteria number, as is the case with some
-     * new Cures criteria.
+     * This method will not handle differentiating between criteria with the same criteria number, as is the case with
+     * some new Cures criteria.
      *
      * @param criterionToCheck
      *            criteria to check
@@ -289,7 +289,6 @@ public final class ValidationUtils {
                 .filter(c -> c.getId().equals(criteriaId))
                 .findFirst()
                 .orElse(null);
-
     }
 
     /**
