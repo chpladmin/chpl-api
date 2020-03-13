@@ -253,13 +253,14 @@ public final class ValidationUtils {
         return errors;
     }
 
-    public static List<String> checkSubordinateCriteriaAllRequired(List<Long> subordinateCriteriaIds,
-            List<Long> requiredCriteriaIds, List<CertificationCriterion> attestedToCriteria, ErrorMessageUtil errorMessageUtil) {
+    public static List<String> checkSubordinateCriteriaAllRequired(List<CertificationCriterion> subordinateCriteria,
+            List<CertificationCriterion> requiredCriteria, List<CertificationCriterion> attestedToCriteria,
+            ErrorMessageUtil errorMessageUtil) {
         List<String> errors = new ArrayList<String>();
 
-        List<Long> attestedToCriteriaIds = attestedToCriteria.stream()
-                .map(criterion -> criterion.getId())
-                .collect(Collectors.toList());
+        List<Long> attestedToCriteriaIds = getCertificationCriteriaIds(attestedToCriteria);
+        List<Long> subordinateCriteriaIds = getCertificationCriteriaIds(subordinateCriteria);
+        List<Long> requiredCriteriaIds = getCertificationCriteriaIds(requiredCriteria);
 
         for (Long attestedToCriterionId : attestedToCriteriaIds) {
             if (subordinateCriteriaIds.contains(attestedToCriterionId)) {
@@ -267,14 +268,28 @@ public final class ValidationUtils {
                     if (!attestedToCriteriaIds.contains(requiredCriterionId)) {
                         errors.add(errorMessageUtil.getMessage(
                                 "listing.criteria.dependentCriteriaRequired",
-                                attestedToCriterionId,
-                                requiredCriterionId));
+                                findCertificationCriterion(attestedToCriteria, attestedToCriterionId).getNumber(),
+                                findCertificationCriterion(requiredCriteria, requiredCriterionId).getNumber()));
                     }
                 }
             }
         }
 
         return errors;
+    }
+
+    private static List<Long> getCertificationCriteriaIds(List<CertificationCriterion> criteria) {
+        return criteria.stream()
+                .map(criterion -> criterion.getId())
+                .collect(Collectors.toList());
+    }
+
+    private static CertificationCriterion findCertificationCriterion(List<CertificationCriterion> criteria, Long criteriaId) {
+        return criteria.stream()
+                .filter(c -> c.getId().equals(criteriaId))
+                .findFirst()
+                .orElse(null);
+
     }
 
     /**
