@@ -5,7 +5,6 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -114,14 +113,9 @@ public class CertificationCriterion implements Serializable {
         this.removed = removed;
     }
 
-    @XmlTransient
-    public boolean isCures() {
-        return getTitle() != null && getTitle().contains(CURES_TITLE);
-    }
-
     public String formatCriteriaNumber() {
         String result = getNumber();
-        if (isCures()) {
+        if (getTitle() != null && getTitle().contains(CURES_TITLE)) {
             result += CURES_SUFFIX;
         }
         return result;

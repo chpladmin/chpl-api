@@ -375,7 +375,7 @@ public class ComplaintsWorksheetBuilder {
                     row = workbook.getRow(sheet, rowNum++);
                     addedRows++;
                 }
-                String criterionStr = criterion.getNumber() + (criterion.isCures() ? CURES_UPDATE_STR : "");
+                String criterionStr = criterion.formatCriteriaNumber();
                 addDataCell(workbook, row, COL_CRITERIA_ID, criterionStr);
                 //nothing to show in the rest of the cells since they are all listing/surv specific
                 addDataCell(workbook, row, COL_CHPL_ID, "");
