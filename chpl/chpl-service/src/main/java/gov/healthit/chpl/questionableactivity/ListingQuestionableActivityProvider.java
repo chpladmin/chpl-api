@@ -11,6 +11,9 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,13 +24,16 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 /**
  * Parses activity on Listings to see if there are questionable activities.
@@ -37,14 +43,29 @@ public class ListingQuestionableActivityProvider {
     private static Logger LOGGER = LogManager.getLogger(ListingQuestionableActivityProvider.class);
     private static String B3_CHANGE_DATE = "questionableActivity.b3ChangeDate";
     private static String B3_CRITERIA_NUMER = "170.315 (b)(3)";
+    private CertificationCriterion d2Criterion;
+    private CertificationCriterion d3Criterion;
+    private CertificationCriterion d10Criterion;
 
     private FF4j ff4j;
     private Environment env;
+    private CertificationCriterionDAO certificationCriterionDAO;
 
     @Autowired
-    public ListingQuestionableActivityProvider(FF4j ff4j, Environment env) {
+    public ListingQuestionableActivityProvider(CertificationCriterionDAO certificationCriterionDAO, FF4j ff4j, Environment env) {
+        this.certificationCriterionDAO = certificationCriterionDAO;
         this.ff4j = ff4j;
         this.env = env;
+    }
+
+    @PostConstruct
+    public void postConstruct() throws EntityRetrievalException {
+        d2Criterion = new CertificationCriterion(
+                certificationCriterionDAO.getById(Long.parseLong(env.getProperty("criterion.170_315_d_2"))));
+        d3Criterion = new CertificationCriterion(
+                certificationCriterionDAO.getById(Long.parseLong(env.getProperty("criterion.170_315_d_3"))));
+        d10Criterion = new CertificationCriterion(
+                certificationCriterionDAO.getById(Long.parseLong(env.getProperty("criterion.170_315_d_10"))));
     }
 
     /**
@@ -663,12 +684,27 @@ public class ListingQuestionableActivityProvider {
     }
 
     public QuestionableActivityListingDTO checkInvalidCriteriaOnCreate(CertifiedProductSearchDetails newListing) {
+        QuestionableActivityListingDTO activity = null;
         if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
-            //If ICS=0 and they attested to D2, D3, or D10
-            if (! newListing.getIcs().getInherits()) {
-                Boolean criteriaFound = newListing.getCertificationResults()
+            // If ICS=0 and they attested to D2, D3, or D10
+            if (!newListing.getIcs().getInherits()) {
+                List<CertificationResult> matchingCertResults = newListing.getCertificationResults().stream()
+                        .filter(cr -> cr.isSuccess() &&
+                                (cr.getCriterion().getId().equals(d2Criterion.getId())
+                                        || cr.getCriterion().getId().equals(d3Criterion.getId())
+                                        || cr.getCriterion().getId().equals(d10Criterion.getId())))
+                        .collect(Collectors.toList());
+
+                if (matchingCertResults.size() > 0) {
+                    String criteriaNumbers = matchingCertResults.stream()
+                            .map(cr -> cr.getCriterion().getNumber())
+                            .collect(Collectors.joining(", "));
+                    activity = new QuestionableActivityListingDTO();
+                    activity.setAfter(criteriaNumbers);
+                }
             }
         }
+        return activity;
     }
 
     static class CertificationStatusEventComparator implements Comparator<CertificationStatusEvent>, Serializable {
