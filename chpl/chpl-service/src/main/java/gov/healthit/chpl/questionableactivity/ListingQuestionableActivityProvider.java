@@ -662,6 +662,15 @@ public class ListingQuestionableActivityProvider {
         }
     }
 
+    public QuestionableActivityListingDTO checkInvalidCriteriaOnCreate(CertifiedProductSearchDetails newListing) {
+        if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
+            //If ICS=0 and they attested to D2, D3, or D10
+            if (! newListing.getIcs().getInherits()) {
+                Boolean criteriaFound = newListing.getCertificationResults()
+            }
+        }
+    }
+
     static class CertificationStatusEventComparator implements Comparator<CertificationStatusEvent>, Serializable {
         private static long serialVersionUID = 1315674742856524797L;
 
