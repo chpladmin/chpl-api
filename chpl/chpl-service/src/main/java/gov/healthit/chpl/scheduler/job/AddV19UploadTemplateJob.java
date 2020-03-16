@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.Query;
 import javax.transaction.Transactional;
 
 import org.apache.logging.log4j.LogManager;
@@ -51,8 +52,15 @@ public class AddV19UploadTemplateJob implements Job {
                 .findFirst();
 
             if (existingTemplate.isPresent()) {
-                LOGGER.info("Template " + UploadTemplateVersion.EDITION_2015_VERSION_5.getName() + " already exists.");
+                LOGGER.info("Template " + UploadTemplateVersion.EDITION_2015_VERSION_5.getName() + " exists and will be updated.");
+                UploadTemplateVersionDTO newUploadTemplate = new UploadTemplateVersionDTO();
+                newUploadTemplate.setAvailableAsOf(new Date());
+                newUploadTemplate.setDeprecated(Boolean.FALSE);
+                newUploadTemplate.setHeaderCsv(CSV_HEADER);
+                newUploadTemplate.setName(UploadTemplateVersion.EDITION_2015_VERSION_5.getName());
+                insertableUploadTemplateDao.update(newUploadTemplate);
             } else {
+                LOGGER.info("Template " + UploadTemplateVersion.EDITION_2015_VERSION_5.getName() + " does not exist and will be added.");
                 UploadTemplateVersionDTO newUploadTemplate = new UploadTemplateVersionDTO();
                 newUploadTemplate.setAvailableAsOf(new Date());
                 newUploadTemplate.setDeprecated(Boolean.FALSE);
@@ -88,6 +96,34 @@ public class AddV19UploadTemplateJob implements Job {
             toInsert.setLastModifiedUser(AuthUtil.getAuditId());
             toInsert.setName(dto.getName());
             super.create(toInsert);
+        }
+
+        @Transactional
+        public void update(UploadTemplateVersionDTO dto) {
+            UploadTemplateVersionEntity toUpdate = getByName(dto.getName());
+            if (toUpdate != null) {
+                toUpdate.setAvailableAsOfDate(dto.getAvailableAsOf());
+                toUpdate.setDeleted(Boolean.FALSE);
+                toUpdate.setDeprecated(dto.getDeprecated());
+                toUpdate.setHeaderCsv(dto.getHeaderCsv());
+                toUpdate.setLastModifiedDate(new Date());
+                toUpdate.setLastModifiedUser(AuthUtil.getAuditId());
+                super.update(toUpdate);
+            }
+        }
+
+        private UploadTemplateVersionEntity getByName(String name) {
+            Query query = entityManager.createQuery("SELECT entity "
+                    + "FROM UploadTemplateVersionEntity entity "
+                    + "WHERE (NOT entity.deleted = true) "
+                    + "AND entity.name = :name", UploadTemplateVersionEntity.class);
+            query.setParameter("name", name);
+
+            List<UploadTemplateVersionEntity> entities = query.getResultList();
+            if (entities == null || entities.size() == 0) {
+                return null;
+            }
+            return entities.get(0);
         }
     }
 }
