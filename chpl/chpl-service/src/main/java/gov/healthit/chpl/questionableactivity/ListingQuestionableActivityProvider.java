@@ -35,9 +35,6 @@ import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
-/**
- * Parses activity on Listings to see if there are questionable activities.
- */
 @Component
 public class ListingQuestionableActivityProvider {
     private static Logger LOGGER = LogManager.getLogger(ListingQuestionableActivityProvider.class);
@@ -68,15 +65,6 @@ public class ListingQuestionableActivityProvider {
                 certificationCriterionDAO.getById(Long.parseLong(env.getProperty("criterion.170_315_d_10"))));
     }
 
-    /**
-     * Create questionable activity if the listing was a 2011 listing.
-     *
-     * @param origListing
-     *            original listing
-     * @param newListing
-     *            new listing
-     * @return questionable activity, if it exists
-     */
     public QuestionableActivityListingDTO check2011EditionUpdated(
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
@@ -90,15 +78,6 @@ public class ListingQuestionableActivityProvider {
         return activity;
     }
 
-    /**
-     * Create questionable activity if the listing was a 2014 listing.
-     *
-     * @param origListing
-     *            original listing
-     * @param newListing
-     *            new listing
-     * @return questionable activity, if it exists
-     */
     public QuestionableActivityListingDTO check2014EditionUpdated(
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         if (!ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
@@ -115,15 +94,6 @@ public class ListingQuestionableActivityProvider {
         return activity;
     }
 
-    /**
-     * Create questionable activity if the current certification status was updated.
-     *
-     * @param origListing
-     *            original listing
-     * @param newListing
-     *            new listing
-     * @return questionable activity if it exists
-     */
     public QuestionableActivityListingDTO checkCertificationStatusUpdated(
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
@@ -140,18 +110,6 @@ public class ListingQuestionableActivityProvider {
         return activity;
     }
 
-    /**
-     * Create questionable activity if the historical certification statuses or dates were updated. Sorts certification
-     * status events by date, earliest first, then compares them, incrementing through them with the "earlier" date
-     * getting moved up. If both are equal both move. Does not compare "latest" events, as those are the "current"
-     * values, and compared in other functions.
-     *
-     * @param origListing
-     *            original listing
-     * @param newListing
-     *            new listing
-     * @return questionable activity if it exists
-     */
     public QuestionableActivityListingDTO checkCertificationStatusHistoryUpdated(
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
@@ -249,15 +207,6 @@ public class ListingQuestionableActivityProvider {
         return activity;
     }
 
-    /**
-     * Create questionable activity if the current certification status event date was updated.
-     *
-     * @param origListing
-     *            original listing
-     * @param newListing
-     *            new listing
-     * @return questionable activity if it exists
-     */
     public QuestionableActivityListingDTO checkCertificationStatusDateUpdated(
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
@@ -277,17 +226,6 @@ public class ListingQuestionableActivityProvider {
         return activity;
     }
 
-    /**
-     * questionable only if the certification status has updated to the supplied updateTo value.
-     *
-     * @param updateTo
-     *            status to check against
-     * @param origListing
-     *            original listing
-     * @param newListing
-     *            new listing
-     * @return activity if it is questionable
-     */
     public QuestionableActivityListingDTO checkCertificationStatusUpdated(
             CertificationStatusType updateTo, CertifiedProductSearchDetails origListing,
             CertifiedProductSearchDetails newListing) {
@@ -304,15 +242,6 @@ public class ListingQuestionableActivityProvider {
         return activity;
     }
 
-    /**
-     * Create questionable activity if CQMs were added.
-     *
-     * @param origListing
-     *            original listing
-     * @param newListing
-     *            new listing
-     * @return questionable activity, if it exists
-     */
     public List<QuestionableActivityListingDTO> checkCqmsAdded(
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
@@ -356,15 +285,6 @@ public class ListingQuestionableActivityProvider {
         return cqmAddedActivities;
     }
 
-    /**
-     * Create questionable activity if CQMs were removed.
-     *
-     * @param origListing
-     *            original listing
-     * @param newListing
-     *            new listing
-     * @return questionable activity, if it exists
-     */
     public List<QuestionableActivityListingDTO> checkCqmsRemoved(
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
@@ -417,15 +337,6 @@ public class ListingQuestionableActivityProvider {
         return cqmRemovedActivities;
     }
 
-    /**
-     * Create questionable activity if certification criteria were added.
-     *
-     * @param origListing
-     *            original listing
-     * @param newListing
-     *            new listing
-     * @return questionable activity, if it exists
-     */
     public List<QuestionableActivityListingDTO> checkCertificationsAdded(
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
@@ -453,15 +364,6 @@ public class ListingQuestionableActivityProvider {
         return certAddedActivities;
     }
 
-    /**
-     * Create questionable activity if it has removal of certification criteria.
-     *
-     * @param origListing
-     *            original listing
-     * @param newListing
-     *            new listing
-     * @return questionable activity, if it is
-     */
     public List<QuestionableActivityListingDTO> checkCertificationsRemoved(
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
@@ -488,15 +390,6 @@ public class ListingQuestionableActivityProvider {
         return certRemovedActivities;
     }
 
-    /**
-     * Check to see if activity has has deletion of surveillance.
-     *
-     * @param origListing
-     *            original listing
-     * @param newListing
-     *            new listing
-     * @return activity if it is questionable
-     */
     public QuestionableActivityListingDTO checkSurveillanceDeleted(
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
@@ -512,15 +405,6 @@ public class ListingQuestionableActivityProvider {
         return activity;
     }
 
-    /**
-     * Check to see if activity has any changes in ATLs.
-     *
-     * @param origListing
-     *            original listing
-     * @param newListing
-     *            new listing
-     * @return activity if it is questionable
-     */
     public QuestionableActivityListingDTO checkTestingLabChanged(
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         QuestionableActivityListingDTO activity = null;
