@@ -51,22 +51,18 @@ public class AddV19UploadTemplateJob implements Job {
                 .filter(currTemplate -> currTemplate.getName().equals(UploadTemplateVersion.EDITION_2015_VERSION_5.getName()))
                 .findFirst();
 
+            UploadTemplateVersionDTO newUploadTemplate = new UploadTemplateVersionDTO();
+            newUploadTemplate.setAvailableAsOf(new Date());
+            newUploadTemplate.setDeprecated(Boolean.FALSE);
+            newUploadTemplate.setHeaderCsv(CSV_HEADER);
+            newUploadTemplate.setName(UploadTemplateVersion.EDITION_2015_VERSION_5.getName());
+
             if (existingTemplate.isPresent()) {
                 LOGGER.info("Template " + UploadTemplateVersion.EDITION_2015_VERSION_5.getName() + " exists and will be updated.");
-                UploadTemplateVersionDTO newUploadTemplate = new UploadTemplateVersionDTO();
-                newUploadTemplate.setAvailableAsOf(new Date());
-                newUploadTemplate.setDeprecated(Boolean.FALSE);
-                newUploadTemplate.setHeaderCsv(CSV_HEADER);
-                newUploadTemplate.setName(UploadTemplateVersion.EDITION_2015_VERSION_5.getName());
                 insertableUploadTemplateDao.update(newUploadTemplate);
                 LOGGER.info("Updated " + UploadTemplateVersion.EDITION_2015_VERSION_5.getName() + " template.");
             } else {
                 LOGGER.info("Template " + UploadTemplateVersion.EDITION_2015_VERSION_5.getName() + " does not exist and will be added.");
-                UploadTemplateVersionDTO newUploadTemplate = new UploadTemplateVersionDTO();
-                newUploadTemplate.setAvailableAsOf(new Date());
-                newUploadTemplate.setDeprecated(Boolean.FALSE);
-                newUploadTemplate.setHeaderCsv(CSV_HEADER);
-                newUploadTemplate.setName(UploadTemplateVersion.EDITION_2015_VERSION_5.getName());
                 insertableUploadTemplateDao.create(newUploadTemplate);
                 LOGGER.info("Created " + UploadTemplateVersion.EDITION_2015_VERSION_5.getName() + " template.");
             }
