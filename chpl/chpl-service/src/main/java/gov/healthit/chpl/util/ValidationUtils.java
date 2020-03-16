@@ -18,12 +18,6 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 
-/**
- * Utilities used to validate various basic elements of CHPL domain objects.
- * 
- * @author alarned
- *
- */
 public final class ValidationUtils {
     private static final Logger LOGGER = LogManager.getLogger(ValidationUtils.class);
     private static UrlValidator urlValidator = new UrlValidator();
@@ -31,13 +25,6 @@ public final class ValidationUtils {
     private ValidationUtils() {
     }
 
-    /**
-     * Check to see if input string has either Windows or *nix flavored new line character.
-     * 
-     * @param input
-     *            string to check
-     * @return true iff string contains "\n" or "\r\n"
-     */
     public static boolean hasNewline(final String input) {
         // check both windows and unix line separator chars
         if (input == null || StringUtils.isEmpty(input)) {
@@ -46,29 +33,10 @@ public final class ValidationUtils {
         return input.contains("\n") || input.contains("\r\n");
     }
 
-    /**
-     * Validate that input string is a well formed URL.
-     * 
-     * @param input
-     *            URL to check
-     * @return true iff input is a valid URL. Will return false for empty/null string
-     */
     public static boolean isWellFormedUrl(final String input) {
         return urlValidator.isValid(input);
     }
 
-    /**
-     * Validation utility to check if a part of the chpl product number matches a specific regex. Useful to determine if
-     * any other than the allowed characters are present.
-     * 
-     * @param chplProductNumber
-     *            the chpl product number to test
-     * @param partIndex
-     *            the index, 0-8
-     * @param regexToMatch
-     *            regex like ^[0-9]$
-     * @return true of the part matches the regex and false otherwise
-     */
     public static boolean chplNumberPartIsValid(final String chplProductNumber,
             final int partIndex, final String regexToMatch) {
         String[] uniqueIdParts = chplProductNumber.split("\\.");
@@ -82,26 +50,10 @@ public final class ValidationUtils {
         return true;
     }
 
-    /**
-     * Check that input string is in the default charset.
-     * 
-     * @param input
-     *            string to check
-     * @return true iff string is in default charset
-     */
     public static boolean isValidUtf8(final String input) {
         return isValidUtf8(Charset.defaultCharset(), input);
     }
 
-    /**
-     * Check that input string is in the passed in charset.
-     * 
-     * @param inputCharset
-     *            charset to check
-     * @param input
-     *            string to check
-     * @return true iff input is in inputCharset
-     */
     public static boolean isValidUtf8(final Charset inputCharset, final String input) {
         if (input == null || StringUtils.isEmpty(input)) {
             return true;
@@ -114,13 +66,6 @@ public final class ValidationUtils {
         }
     }
 
-    /**
-     * This method could be called if the encoding in which input is received IS UTF-8.
-     *
-     * @param input
-     *            string to check
-     * @return true iff input string contains \uFFFD
-     */
     public static boolean hasUtf8ReplacementCharacter(final String input) {
         if (input.contains("\uFFFD")) {
             return true;
@@ -128,13 +73,6 @@ public final class ValidationUtils {
         return false;
     }
 
-    /**
-     * This method could be called if the encoding in which input is received is NOT already UTF-8.
-     *
-     * @param input
-     *            string to check
-     * @return true iff input has non UTF-8 character
-     */
     public static boolean hasNonUtf8Character(final byte[] input) {
         int i = 0;
         // Check for BOM
@@ -173,15 +111,6 @@ public final class ValidationUtils {
         return true;
     }
 
-    /**
-     * Check to see if the input certification is in the list of certifications.
-     * 
-     * @param certNumber
-     *            certification to look for
-     * @param allCerts
-     *            certifications to check in
-     * @return true iff certNumber found in allCerts
-     */
     public static boolean hasCert(String certNumber, List<CertificationCriterion> allCerts) {
         boolean hasCert = false;
         for (int i = 0; i < allCerts.size() && !hasCert; i++) {
@@ -213,19 +142,8 @@ public final class ValidationUtils {
     }
 
     /**
-     * DEPRECATED - Look for required complimentary criteria; if any one of the criterionToCheck is present in
-     * allCriteriaMet then all of the complimentaryCertNumbers must be present in allCriteriaMet.
-     * 
      * This method will not handle differentiating between criteria with the same criteria number, as is the case with
      * some new Cures criteria.
-     *
-     * @param criterionToCheck
-     *            criteria to check
-     * @param allCriteriaMet
-     *            criteria to check against
-     * @param complimentaryCertNumbers
-     *            complimentary criteria that must be present
-     * @return a list of error messages
      */
     @Deprecated
     public static List<String> checkComplimentaryCriteriaAllRequired(List<String> criterionToCheck,
@@ -291,18 +209,6 @@ public final class ValidationUtils {
                 .orElse(null);
     }
 
-    /**
-     * Look for required complimentary criteria; if any one of the criterionToCheck is present in allCriteriaMet, then
-     * any one of the complimentaryCertNumbers must also be present in allCriteriaMet.
-     *
-     * @param criterionToCheck
-     *            criteria to check
-     * @param allCriteriaMet
-     *            criteria to check against
-     * @param complimentaryCertNumbers
-     *            complimentary criteria of which at least one must be present
-     * @return a list of error messages
-     */
     public static List<String> checkComplimentaryCriteriaAnyRequired(List<String> criterionToCheck,
             List<String> complimentaryCertNumbers, List<CertificationCriterion> allCriteriaMet) {
         List<String> errors = new ArrayList<String>();
@@ -334,15 +240,6 @@ public final class ValidationUtils {
         return errors;
     }
 
-    /**
-     * Returns true if any of the passed in certs are present.
-     * 
-     * @param certsToCheck
-     *            criteria to check
-     * @param allCerts
-     *            criteria to check against
-     * @return true iff at least one of certsToCheck is in allCerts
-     */
     public static boolean hasAnyCert(List<String> certsToCheck, List<CertificationCriterion> allCerts) {
         boolean result = false;
         for (String currCertToCheck : certsToCheck) {
@@ -353,15 +250,6 @@ public final class ValidationUtils {
         return result;
     }
 
-    /**
-     * Returns true if any of the passed in certs are present.
-     * 
-     * @param certToCompare
-     *            criteria to check
-     * @param certs
-     *            criteria to check against
-     * @return true iff at least one of certToCompare is in certs
-     */
     public static boolean containsCert(final PendingCertificationResultDTO certToCompare, final String[] certs) {
         boolean hasCert = false;
         for (String cert : certs) {
@@ -373,15 +261,6 @@ public final class ValidationUtils {
         return hasCert;
     }
 
-    /**
-     * Returns true if any of the passed in certs are present.
-     * 
-     * @param certToCompare
-     *            criteria to check
-     * @param certs
-     *            criteria to check against
-     * @return true iff at least one of certToCompare is in certs
-     */
     public static boolean containsCert(final CertificationResult certToCompare, final String[] certs) {
         boolean hasCert = false;
         for (String cert : certs) {
@@ -392,18 +271,6 @@ public final class ValidationUtils {
         return hasCert;
     }
 
-    /**
-     * look for required complimentary certs when one of the criteria met is a certain class of cert... such as 170.315
-     * (a)(*)
-     *
-     * @param criterionNumberStart
-     *            class of criteria to check
-     * @param allCriteriaMet
-     *            all criteria met
-     * @param complimentaryCertNumbers
-     *            complimentary criteria that must be met
-     * @return list of errors
-     */
     public static List<String> checkClassOfCriteriaForErrors(String criterionNumberStart,
             List<CertificationCriterion> allCriteriaMet, List<String> complimentaryCertNumbers) {
         List<String> errors = new ArrayList<String>();
@@ -466,17 +333,6 @@ public final class ValidationUtils {
         return warnings;
     }
 
-    /**
-     * Look for a required complimentary criteria when a specific criteria has been met.
-     *
-     * @param criterionNumber
-     *            criteria to check
-     * @param allCriteriaMet
-     *            all criteria met
-     * @param complimentaryCertNumbers
-     *            complimentary criteria that must be met
-     * @return list of errors
-     */
     public static List<String> checkSpecificCriteriaForErrors(final String criterionNumber,
             final List<CertificationCriterion> allCriteriaMet, final List<String> complimentaryCertNumbers) {
         List<String> errors = new ArrayList<String>();
