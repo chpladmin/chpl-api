@@ -2,39 +2,25 @@ package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
 import java.util.Optional;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.validation.InvalidCriteriaCombination;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
 @Component("invalidCriteriaCombinationReviewer")
-public class InvalidCriteriaCombinationReviewer implements Reviewer {
-
-    @Value("${criterion.170_315_b_6}")
-    private Integer criteriaB6Id;
-
-    @Value("${criterion.170_315_b_10}")
-    private Integer criteriaB10Id;
-
-    @Value("${criterion.170_315_g_8}")
-    private Integer criteriaG8Id;
-
-    @Value("${criterion.170_315_g_10}")
-    private Integer criteriaG10Id;
-
-    private ErrorMessageUtil msgUtil;
-    private FF4j ff4j;
-
+public class InvalidCriteriaCombinationReviewer extends InvalidCriteriaCombination implements Reviewer {
     @Autowired
     public InvalidCriteriaCombinationReviewer(ErrorMessageUtil msgUtil, FF4j ff4j) {
-        this.msgUtil = msgUtil;
-        this.ff4j = ff4j;
+        super(msgUtil, ff4j);
     }
 
     @Override
@@ -42,24 +28,31 @@ public class InvalidCriteriaCombinationReviewer implements Reviewer {
         if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
             checkForInvalidCriteriaCombination(listing, criteriaB6Id, criteriaB10Id);
             checkForInvalidCriteriaCombination(listing, criteriaG8Id, criteriaG10Id);
+
+            initializeOldAndNewCriteriaPairs();
+            for (Pair<Integer, Integer> pair : oldAndNewcriteriaIdPairs) {
+                final Integer oldCriteriaId = pair.getLeft();
+                final Integer newCriteriaId = pair.getRight();
+                checkForInvalidCriteriaCombination(listing, oldCriteriaId, newCriteriaId);
+            }
         }
     }
 
     private void checkForInvalidCriteriaCombination(CertifiedProductSearchDetails listing, Integer criteriaIdA,
             Integer criteriaIdB) {
-
-        Optional<CertificationResult> certResultA = findCerificationResult(listing, criteriaIdA);
-        Optional<CertificationResult> certResultB = findCerificationResult(listing, criteriaIdB);
+        Optional<CertificationResult> certResultA = findCertificationResult(listing, criteriaIdA);
+        Optional<CertificationResult> certResultB = findCertificationResult(listing, criteriaIdB);
 
         if (certResultA.isPresent() && certResultB.isPresent()) {
+            final CertificationCriterion critA = certResultA.get().getCriterion();
+            final CertificationCriterion critB = certResultB.get().getCriterion();
             listing.getErrorMessages()
                     .add(msgUtil.getMessage("listing.criteria.invalidCombination",
-                            certResultA.get().getCriterion().getNumber(),
-                            certResultB.get().getCriterion().getNumber()));
+                            Util.formatCriteriaNumber(critA), Util.formatCriteriaNumber(critB)));
         }
     }
 
-    private Optional<CertificationResult> findCerificationResult(CertifiedProductSearchDetails listing,
+    private Optional<CertificationResult> findCertificationResult(CertifiedProductSearchDetails listing,
             Integer criteriaId) {
         return listing.getCertificationResults().stream()
                 .filter(cr -> cr.getCriterion().getId().equals(Long.valueOf(criteriaId)) && cr.isSuccess())

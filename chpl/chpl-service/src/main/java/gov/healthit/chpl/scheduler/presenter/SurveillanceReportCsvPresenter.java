@@ -14,6 +14,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
+import gov.healthit.chpl.util.Util;
 
 /**
  * Write out surveillance report with values related to time between dates.
@@ -175,7 +176,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
         List<String> ncFields = new ArrayList<String>();
         ncFields.add("Y");
         if (nc.getCriterion() != null) {
-            ncFields.add(nc.getCriterion().formatCriteriaNumber());
+            ncFields.add(Util.formatCriteriaNumber(nc.getCriterion()));
         } else if (nc.getNonconformityType() != null) {
             ncFields.add(nc.getNonconformityType());
         }
