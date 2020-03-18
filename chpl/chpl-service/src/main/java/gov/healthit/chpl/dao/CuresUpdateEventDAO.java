@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.springframework.stereotype.Repository;
+
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.CuresUpdateEventDTO;
 import gov.healthit.chpl.entity.listing.CuresUpdateEventEntity;
@@ -12,6 +14,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
 
+@Repository("curesUpdateEventDAO")
 public class CuresUpdateEventDAO  extends BaseDAOImpl {
 
     public CuresUpdateEventDTO create(CuresUpdateEventDTO dto)
