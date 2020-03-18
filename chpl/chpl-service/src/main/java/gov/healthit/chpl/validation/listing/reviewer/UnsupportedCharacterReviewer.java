@@ -20,6 +20,7 @@ import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
 
 @Component("unsupportedCharacterReviewer")
@@ -238,11 +239,13 @@ public class UnsupportedCharacterReviewer implements Reviewer {
             final CertificationResult criteria, final String input, final String fieldName) {
         if (!ValidationUtils.isValidUtf8(input)) {
             listing.getWarningMessages().add(
-                    msgUtil.getMessage("listing.criteria.badCharacterFound", criteria.getNumber(), fieldName));
+                    msgUtil.getMessage("listing.criteria.badCharacterFound",
+                            Util.formatCriteriaNumber(criteria.getCriterion()), fieldName));
         }
         if (ValidationUtils.hasNewline(input)) {
             listing.getWarningMessages().add(
-                    msgUtil.getMessage("listing.criteria.newlineCharacterFound", criteria.getNumber(), fieldName));
+                    msgUtil.getMessage("listing.criteria.newlineCharacterFound",
+                            Util.formatCriteriaNumber(criteria.getCriterion()), fieldName));
         }
     }
 }

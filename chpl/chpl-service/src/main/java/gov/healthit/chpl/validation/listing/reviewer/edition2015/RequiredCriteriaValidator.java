@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
 @Component
@@ -46,7 +47,8 @@ public class RequiredCriteriaValidator implements Reviewer {
         Optional<CertificationResult> certResult = findCertificationResult(listing, criterionId);
         if (certResult.isPresent() && !certResult.get().isSuccess()) {
             listing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.criteria.required", certResult.get().getCriterion().getNumber()));
+                    msgUtil.getMessage("listing.criteria.required",
+                            Util.formatCriteriaNumber(certResult.get().getCriterion())));
 
         }
     }

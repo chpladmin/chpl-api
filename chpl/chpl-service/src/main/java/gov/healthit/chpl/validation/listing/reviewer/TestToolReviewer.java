@@ -13,6 +13,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 
 /**
  * Makes sure a valid test tool was entered by the user - otherwise removes it and includes an error.
@@ -42,16 +43,16 @@ public class TestToolReviewer extends PermissionBasedReviewer {
                         CertificationResultTestTool testTool = testToolIter.next();
                         if (StringUtils.isEmpty(testTool.getTestToolName())) {
                             addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestToolName",
-                                    cert.getNumber());
+                                    Util.formatCriteriaNumber(cert.getCriterion()));
                         } else {
                             TestToolDTO tt = testToolDao.getByName(testTool.getTestToolName());
                             if (tt != null && tt.isRetired()) {
                                 listing.getWarningMessages()
                                         .add(msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed",
-                                                testTool.getTestToolName(), cert.getNumber()));
+                                                testTool.getTestToolName(), Util.formatCriteriaNumber(cert.getCriterion())));
                             } else if (tt == null) {
                                 addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.testToolNotFound",
-                                        cert.getNumber(), testTool.getTestToolName());
+                                        Util.formatCriteriaNumber(cert.getCriterion()), testTool.getTestToolName());
                             }
                         }
                     }
