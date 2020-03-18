@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
@@ -25,6 +26,7 @@ import gov.healthit.chpl.domain.TestData;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.UcdProcess;
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
@@ -94,16 +96,18 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     private TestFunctionalityDAO testFuncDao;
     private TestProcedureDAO testProcDao;
     private TestDataDAO testDataDao;
+    private CertificationCriterionDAO criteriaDao;
 
     @Autowired
     public RequiredData2015Reviewer(CertificationResultRules certRules, ErrorMessageUtil msgUtil, MacraMeasureDAO macraDao,
             TestFunctionalityDAO testFuncDao, TestProcedureDAO testProcDao, TestDataDAO testDataDao,
-            ResourcePermissions resourcePermissions) {
+            CertificationCriterionDAO criteriaDao, ResourcePermissions resourcePermissions) {
         super(certRules, msgUtil, resourcePermissions);
         this.macraDao = macraDao;
         this.testFuncDao = testFuncDao;
         this.testProcDao = testProcDao;
         this.testDataDao = testDataDao;
+        this.criteriaDao = criteriaDao;
 
         e2e3Criterion.add("170.315 (e)(2)");
         e2e3Criterion.add("170.315 (e)(3)");
@@ -625,14 +629,13 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 .collect(Collectors.<CertificationCriterion>toList());
         boolean hasG3 = ValidationUtils.hasCert("170.315 (g)(3)", attestedCriteria);
 
-        String msg = "170.315 (g)(3) is required but was not found.";
         if (presentAttestedUcdCriteria != null && presentAttestedUcdCriteria.size() > 0 && !hasG3) {
-            listing.getErrorMessages().add(msg);
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.g3Required"));
         }
         if (removedAttestedUcdCriteria != null && removedAttestedUcdCriteria.size() > 0
                 && (presentAttestedUcdCriteria == null || presentAttestedUcdCriteria.size() == 0)
                 && !hasG3) {
-            addListingWarningByPermission(listing, msg);
+            addListingWarningByPermission(listing, msgUtil.getMessage("listing.g3Required"));
         }
     }
 
@@ -644,10 +647,9 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 .collect(Collectors.<CertificationCriterion>toList());
         boolean hasG3 = ValidationUtils.hasCert("170.315 (g)(3)", attestedCriteria);
 
-        String msg = "170.315 (g)(3) is not allowed but was found.";
         if ((presentAttestedUcdCriteria == null || presentAttestedUcdCriteria.size() == 0)
                 && hasG3) {
-            listing.getErrorMessages().add(msg);
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.g3NotAllowed"));
         }
     }
 
@@ -663,14 +665,22 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 .collect(Collectors.<CertificationCriterion>toList());
         boolean hasG6 = ValidationUtils.hasCert("170.315 (g)(6)", attestedCriteria);
 
-        String msg = "170.315 (g)(6) is required but was not found.";
+        List<CertificationCriterionDTO> g6Criteria = criteriaDao.getAllByNumber("170.315 (g)(6)");
+        String g6Numbers = "";
+        for (CertificationCriterionDTO g6Criterion : g6Criteria) {
+            if (!StringUtils.isEmpty(g6Numbers)) {
+                g6Numbers += " or ";
+            }
+            g6Numbers += Util.formatCriteriaNumber(g6Criterion);
+        }
+
         if (presentAttestedG6Criteria != null && presentAttestedG6Criteria.size() > 0 && !hasG6) {
-            listing.getErrorMessages().add(msg);
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.g6Required", g6Numbers));
         }
         if (removedAttestedG6Criteria != null && removedAttestedG6Criteria.size() > 0
                 && (presentAttestedG6Criteria == null || presentAttestedG6Criteria.size() == 0)
                 && !hasG6) {
-            addListingWarningByPermission(listing, msg);
+            addListingWarningByPermission(listing, msgUtil.getMessage("listing.g6Required", g6Numbers));
         }
     }
 
