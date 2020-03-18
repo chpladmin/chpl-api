@@ -544,7 +544,11 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + " from " + activity.getBefore() + " to "
                     + activity.getAfter();
             currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.NON_CURES_AUDIT_CRITERIA_NEW_LISTING.getName())) {
+            currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getAfter());
         }
+
         currRow.set(ACTIVITY_REASON_COL, activity.getReason());
     }
 
