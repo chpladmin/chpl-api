@@ -286,6 +286,12 @@ public class QuestionableActivityManager implements EnvironmentAware {
             createListingActivity(activity, newListing.getId(), activityDate, activityUser,
                     QuestionableActivityTriggerConcept.CRITERIA_B3_ADDED_TO_NEW_LISTING, null);
         }
+
+        activity = listingQuestionableActivityProvider.checkInvalidCriteriaOnCreate(newListing);
+        if (activity != null) {
+            createListingActivity(activity, newListing.getId(), activityDate, activityUser,
+                    QuestionableActivityTriggerConcept.NON_CURES_CRITERIA_TO_NEW_LISTING, null);
+        }
     }
 
     public void checkCertificationResultQuestionableActivity(CertificationResult origCertResult,
