@@ -469,7 +469,15 @@ public class QuestionableActivityEmailJob extends QuartzJob {
                 .getName())) {
             currRow.set(ACTIVITY_DESCRIPTION_COL, "From " + activity.getBefore() + " to " + activity.getAfter());
             currRow.set(ACTIVITY_CERT_STATUS_CHANGE_REASON_COL, activity.getCertificationStatusChangeReason());
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.NON_CURES_AUDIT_CRITERIA_NEW_LISTING.getName())) {
+            currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getAfter());
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.NON_CURES_AUDIT_CRITERIA_EXISTING_LISTING.getName())) {
+            currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getAfter());
+            currRow.set(ACTIVITY_CERT_STATUS_CHANGE_REASON_COL, activity.getCertificationStatusChangeReason());
         }
+
         currRow.set(ACTIVITY_REASON_COL, activity.getReason());
     }
 
@@ -544,9 +552,6 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + " from " + activity.getBefore() + " to "
                     + activity.getAfter();
             currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-        } else if (activity.getTrigger().getName()
-                .equals(QuestionableActivityTriggerConcept.NON_CURES_AUDIT_CRITERIA_NEW_LISTING.getName())) {
-            currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getAfter());
         }
 
         currRow.set(ACTIVITY_REASON_COL, activity.getReason());
