@@ -237,6 +237,11 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
     private List<CertificationStatusEvent> certificationEvents = new ArrayList<CertificationStatusEvent>();
 
     /**
+     * Whether or not the listing meets the definition of "Cures Update".
+     */
+    private Boolean curesUpdate;
+
+    /**
      * All current and historical values of meaningful use users for this listing along with the dates each meaningful
      * use user count was valid. Dates are given in milliseconds since epoch.
      */
@@ -668,5 +673,13 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
 
     public void setCertificationStatus(LegacyCertificationStatus certificationStatus) {
         this.certificationStatus = certificationStatus;
+    }
+
+    public Boolean getCuresUpdate() {
+        return curesUpdate;
+    }
+
+    public void setCuresUpdate(Boolean curesUpdate) {
+        this.curesUpdate = curesUpdate;
     }
 }

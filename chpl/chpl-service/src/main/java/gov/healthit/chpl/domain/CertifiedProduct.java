@@ -12,10 +12,18 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Data
 public class CertifiedProduct implements Serializable {
     private static final long serialVersionUID = -6634520925641244762L;
 
@@ -57,8 +65,11 @@ public class CertifiedProduct implements Serializable {
     @XmlElement(required = false, nillable = true)
     private String certificationStatus;
 
-    public CertifiedProduct() {
-    }
+    /**
+     * Whether the Listing is consider "Cures Update" or not
+     */
+    @XmlElement(required = false, nillable = true)
+    private Boolean curesUpdate;
 
     public CertifiedProduct(final CertifiedProductDetailsDTO dto) {
         this.id = dto.getId();
@@ -74,6 +85,7 @@ public class CertifiedProduct implements Serializable {
         this.edition = dto.getYear();
         this.certificationDate = (dto.getCertificationDate() != null ? dto.getCertificationDate().getTime() : -1);
         this.certificationStatus = dto.getCertificationStatusName();
+        this.curesUpdate = dto.getCuresUpdate();
     }
 
     /**
@@ -92,53 +104,5 @@ public class CertifiedProduct implements Serializable {
             return true;
         }
         return false;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getChplProductNumber() {
-        return chplProductNumber;
-    }
-
-    public void setChplProductNumber(final String chplProductNumber) {
-        this.chplProductNumber = chplProductNumber;
-    }
-
-    public Long getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(Long lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
-
-    public String getEdition() {
-        return edition;
-    }
-
-    public void setEdition(final String edition) {
-        this.edition = edition;
-    }
-
-    public long getCertificationDate() {
-        return certificationDate;
-    }
-
-    public void setCertificationDate(final long certificationDate) {
-        this.certificationDate = certificationDate;
-    }
-
-    public String getCertificationStatus() {
-        return certificationStatus;
-    }
-
-    public void setCertificationStatus(String certificationStatus) {
-        this.certificationStatus = certificationStatus;
     }
 }
