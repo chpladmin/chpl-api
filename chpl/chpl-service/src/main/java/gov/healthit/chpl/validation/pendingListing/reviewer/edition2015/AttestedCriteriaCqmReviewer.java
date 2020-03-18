@@ -15,6 +15,7 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCqmCertificationCriterionDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCqmCriterionDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
 
@@ -50,7 +51,7 @@ public class AttestedCriteriaCqmReviewer implements Reviewer {
                 //is there a cqm with this criterion?
                 if (!isCriterionIncludedInCqms(criterion, listing.getCqmCriterion())) {
                     listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingCqmForCriteria",
-                            criterion.getNumber()));
+                            Util.formatCriteriaNumber(criterion)));
                 }
             }
         }

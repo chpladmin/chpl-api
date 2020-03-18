@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
 
 @Component("pendingRequiredCriteriaValidator")
@@ -45,7 +46,8 @@ public class RequiredCriteriaValidator implements Reviewer {
         Optional<PendingCertificationResultDTO> certResult = findCertificationResult(listing, criterionId);
         if (certResult.isPresent() && !certResult.get().getMeetsCriteria()) {
             listing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.criteria.required", certResult.get().getCriterion().getNumber()));
+                    msgUtil.getMessage("listing.criteria.required",
+                            Util.formatCriteriaNumber(certResult.get().getCriterion())));
 
         }
     }

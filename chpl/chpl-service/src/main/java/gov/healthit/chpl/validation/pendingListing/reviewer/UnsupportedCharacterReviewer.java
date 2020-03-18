@@ -19,6 +19,7 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTargetedUser
 import gov.healthit.chpl.dto.listing.pending.PendingTestParticipantDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingTestTaskDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
 
 @Component("pendingUnsupportedCharacterReviewer")
@@ -213,11 +214,13 @@ public class UnsupportedCharacterReviewer implements Reviewer {
             final PendingCertificationResultDTO criteria, final String input, final String fieldName) {
         if (!ValidationUtils.isValidUtf8(input)) {
             listing.getWarningMessages().add(
-                    msgUtil.getMessage("listing.criteria.badCharacterFound", criteria.getCriterion().getNumber(), fieldName));
+                    msgUtil.getMessage("listing.criteria.badCharacterFound",
+                            Util.formatCriteriaNumber(criteria.getCriterion()), fieldName));
         }
         if (ValidationUtils.hasNewline(input)) {
             listing.getWarningMessages().add(
-                    msgUtil.getMessage("listing.criteria.newlineCharacterFound", criteria.getCriterion().getNumber(), fieldName));
+                    msgUtil.getMessage("listing.criteria.newlineCharacterFound",
+                            Util.formatCriteriaNumber(criteria.getCriterion()), fieldName));
         }
     }
 }

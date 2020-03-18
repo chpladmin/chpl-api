@@ -8,6 +8,7 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
 
 /**
@@ -67,7 +68,8 @@ public class UrlReviewer extends PermissionBasedReviewer {
             if (ValidationUtils.hasNewline(input)
                     || !ValidationUtils.isWellFormedUrl(input)) {
                 addErrorOrWarningByPermission(listing, cert,
-                        "listing.criteria.invalidUrlFound", fieldName, cert.getCriterion().getNumber());
+                        "listing.criteria.invalidUrlFound", fieldName,
+                        Util.formatCriteriaNumber(cert.getCriterion()));
             }
         }
     }
