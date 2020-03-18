@@ -18,9 +18,10 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 
 @Component
-public class NewSurveillanceRemovedCriteriaReviewer implements Reviewer {
+public class NewSurveillanceRemovedCriteriaReviewer extends Reviewer {
 
     private CertificationCriterionDAO certDao;
     private ErrorMessageUtil msgUtil;
@@ -61,12 +62,11 @@ public class NewSurveillanceRemovedCriteriaReviewer implements Reviewer {
         if (req.getType() != null && !StringUtils.isEmpty(req.getType().getName())
                 && req.getType().getName().equalsIgnoreCase(SurveillanceRequirementType.CERTIFIED_CAPABILITY)) {
                 CertificationCriterionDTO criterion = certDao.getAllByNumber(req.getRequirement()).get(0);
-                //TODO Fix this as part of OCD-3220
                 if (criterion != null && criterion.getRemoved() != null
                         && criterion.getRemoved().booleanValue()) {
                     surv.getErrorMessages().add(
                             msgUtil.getMessage("surveillance.requirementNotAddedForRemovedCriteria",
-                            req.getRequirement()));
+                                    Util.formatCriteriaNumber(criterion)));
                 }
         }
     }
@@ -78,7 +78,7 @@ public class NewSurveillanceRemovedCriteriaReviewer implements Reviewer {
             if (requirement != null && requirement.equalsIgnoreCase(RequirementTypeEnum.K2.getName())) {
                 surv.getErrorMessages().add(
                         msgUtil.getMessage("surveillance.requirementNotAddedForRemovedRequirement",
-                                req.getRequirement()));
+                                getRequirementName(req)));
             }
         }
     }
@@ -86,14 +86,13 @@ public class NewSurveillanceRemovedCriteriaReviewer implements Reviewer {
     private void checkNonconformityForRemovedCriteria(Surveillance surv, SurveillanceNonconformity nc) {
         if (!StringUtils.isEmpty(nc.getNonconformityType())) {
             List<CertificationCriterionDTO> criteria = certDao.getAllByNumber(nc.getNonconformityType());
-            //TODO Fix this as part of OCD-3220
             if (criteria != null && criteria.size() > 0) {
                 CertificationCriterionDTO criterion = criteria.get(0);
                 if (criterion != null && criterion.getRemoved() != null
                         && criterion.getRemoved().booleanValue()) {
                     surv.getErrorMessages().add(
                             msgUtil.getMessage("surveillance.nonconformityNotAddedForRemovedCriteria",
-                                    nc.getNonconformityType()));
+                                    Util.formatCriteriaNumber(criterion)));
                 }
             }
         }

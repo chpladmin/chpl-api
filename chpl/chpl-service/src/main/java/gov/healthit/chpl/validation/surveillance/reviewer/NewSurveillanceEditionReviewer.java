@@ -15,7 +15,7 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
-public class NewSurveillanceEditionReviewer implements Reviewer {
+public class NewSurveillanceEditionReviewer extends Reviewer {
     private CertifiedProductDAO listingDao;
     private ErrorMessageUtil msgUtil;
     private ResourcePermissions resourcePermissions;

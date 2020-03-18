@@ -9,7 +9,7 @@ import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
-public class AuthorityReviewer implements Reviewer {
+public class AuthorityReviewer extends Reviewer {
     private ErrorMessageUtil msgUtil;
 
     @Autowired

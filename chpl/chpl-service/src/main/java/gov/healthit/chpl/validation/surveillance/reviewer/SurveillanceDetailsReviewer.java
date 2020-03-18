@@ -18,7 +18,7 @@ import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
-public class SurveillanceDetailsReviewer implements Reviewer {
+public class SurveillanceDetailsReviewer extends Reviewer {
 
     private ErrorMessageUtil msgUtil;
     private CertifiedProductDAO cpDao;
