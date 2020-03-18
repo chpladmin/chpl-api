@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 
@@ -567,7 +568,7 @@ public class ListingQuestionableActivityProvider {
         }
     }
 
-    public QuestionableActivityListingDTO checkInvalidCriteriaOnCreate(CertifiedProductSearchDetails newListing) {
+    public QuestionableActivityListingDTO checkNonCuresAuditCriteriaOnCreate(CertifiedProductSearchDetails newListing) {
         QuestionableActivityListingDTO activity = null;
         if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
             // If ICS=0 and they attested to D2, D3, or D10
@@ -589,6 +590,45 @@ public class ListingQuestionableActivityProvider {
             }
         }
         return activity;
+    }
+
+    public QuestionableActivityListingDTO checkNonCuresAuditCriteriaOnEdit(CertifiedProductSearchDetails origListing,
+            CertifiedProductSearchDetails newListing) {
+        QuestionableActivityListingDTO activity = null;
+        if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
+            List<String> matchingCriteriaNumbers = new ArrayList<String>();
+            if (hasCriteriaChangedToAttestedTo(d2Criterion, newListing, origListing)) {
+                matchingCriteriaNumbers.add(d2Criterion.getNumber());
+            }
+            if (hasCriteriaChangedToAttestedTo(d3Criterion, newListing, origListing)) {
+                matchingCriteriaNumbers.add(d3Criterion.getNumber());
+            }
+            if (hasCriteriaChangedToAttestedTo(d10Criterion, newListing, origListing)) {
+                matchingCriteriaNumbers.add(d10Criterion.getNumber());
+            }
+
+            if (matchingCriteriaNumbers.size() > 0) {
+                String criteriaNumbers = matchingCriteriaNumbers.stream()
+                        .collect(Collectors.joining(", "));
+                activity = new QuestionableActivityListingDTO();
+                activity.setAfter(criteriaNumbers);
+            }
+        }
+        return activity;
+    }
+
+    private Boolean hasCriteriaChangedToAttestedTo(CertificationCriterion criteriaToCheck,
+            CertifiedProductSearchDetails newListing, CertifiedProductSearchDetails origListing) {
+
+        Optional<CertificationResult> newCertResult = newListing.getCertificationResults().stream()
+                .filter(certResult -> certResult.isSuccess() && certResult.getCriterion().getId().equals(criteriaToCheck.getId()))
+                .findAny();
+        Optional<CertificationResult> origCertResult = origListing.getCertificationResults().stream()
+                .filter(certResult -> !certResult.isSuccess()
+                        && certResult.getCriterion().getId().equals(criteriaToCheck.getId()))
+                .findAny();
+
+        return newCertResult.isPresent() && origCertResult.isPresent();
     }
 
     static class CertificationStatusEventComparator implements Comparator<CertificationStatusEvent>, Serializable {

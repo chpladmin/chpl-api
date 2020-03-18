@@ -212,10 +212,10 @@ public class QuestionableActivityManager implements EnvironmentAware {
                 createListingActivity(activity, origListing.getId(), activityDate, activityUser,
                         QuestionableActivityTriggerConcept.CRITERIA_B3_ADDED_TO_EXISTING_LISTING_WITH_ICS, activityReason);
             }
-            activity = listingQuestionableActivityProvider.checkIcsChangedWithCriteriaB3OnEdit(origListing, newListing);
+            activity = listingQuestionableActivityProvider.checkNonCuresAuditCriteriaOnEdit(origListing, newListing);
             if (activity != null) {
                 createListingActivity(activity, origListing.getId(), activityDate, activityUser,
-                        QuestionableActivityTriggerConcept.ICS_ADDED_TO_EXISTING_LISTING_WITH_CRITERIA_B3, activityReason);
+                        QuestionableActivityTriggerConcept.NON_CURES_AUDIT_CRITERIA_EXISTING_LISTING, activityReason);
             }
 
             // finally check for other changes that are only questionable
@@ -287,7 +287,7 @@ public class QuestionableActivityManager implements EnvironmentAware {
                     QuestionableActivityTriggerConcept.CRITERIA_B3_ADDED_TO_NEW_LISTING, null);
         }
 
-        activity = listingQuestionableActivityProvider.checkInvalidCriteriaOnCreate(newListing);
+        activity = listingQuestionableActivityProvider.checkNonCuresAuditCriteriaOnCreate(newListing);
         if (activity != null) {
             createListingActivity(activity, newListing.getId(), activityDate, activityUser,
                     QuestionableActivityTriggerConcept.NON_CURES_AUDIT_CRITERIA_NEW_LISTING, null);
