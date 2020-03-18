@@ -49,6 +49,7 @@ import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
+import gov.healthit.chpl.dao.CuresUpdateEventDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.FuzzyChoicesDAO;
@@ -109,6 +110,7 @@ import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
 import gov.healthit.chpl.dto.ContactDTO;
+import gov.healthit.chpl.dto.CuresUpdateEventDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
@@ -189,6 +191,7 @@ public class CertifiedProductManager extends SecuredManager {
     private ProductManager productManager;
     private ProductVersionManager versionManager;
     private CertificationStatusEventDAO statusEventDao;
+    private CuresUpdateEventDAO curesUpdateDao;
     private MeaningfulUseUserDAO muuDao;
     private CertificationResultManager certResultManager;
     private TestToolDAO testToolDao;
@@ -231,6 +234,7 @@ public class CertifiedProductManager extends SecuredManager {
             DeveloperDAO developerDao, DeveloperStatusDAO devStatusDao,
             @Lazy DeveloperManager developerManager, ProductManager productManager,
             ProductVersionManager versionManager, CertificationStatusEventDAO statusEventDao,
+            CuresUpdateEventDAO curesUpdateDao,
             MeaningfulUseUserDAO muuDao, CertificationResultManager certResultManager,
             TestToolDAO testToolDao, TestStandardDAO testStandardDao,
             TestProcedureDAO testProcDao, TestDataDAO testDataDao,
@@ -263,6 +267,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.productManager = productManager;
         this.versionManager = versionManager;
         this.statusEventDao = statusEventDao;
+        this.curesUpdateDao = curesUpdateDao;
         this.muuDao = muuDao;
         this.certResultManager = certResultManager;
         this.testToolDao = testToolDao;
@@ -993,6 +998,15 @@ public class CertifiedProductManager extends SecuredManager {
         certEvent.setCertifiedProductId(newCertifiedProduct.getId());
         statusEventDao.create(certEvent);
 
+        CuresUpdateEventDTO curesEvent = new CuresUpdateEventDTO();
+        curesEvent.setCreationDate(new Date());
+        curesEvent.setDeleted(false);
+        curesEvent.setEventDate(certificationDate);
+        //TODO: this:
+        curesEvent.setCuresUpdate(false);
+        curesEvent.setCertifiedProductId(newCertifiedProduct.getId());
+        curesUpdateDao.create(curesEvent);
+
         return newCertifiedProduct;
     }
 
@@ -1148,6 +1162,8 @@ public class CertifiedProductManager extends SecuredManager {
                 new Date(updatedListing.getCertificationDate()));
         updateCertificationStatusEvents(updatedListing.getId(), existingListing.getCertificationEvents(),
                 updatedListing.getCertificationEvents());
+        updateCuresUpdateEvents(updatedListing.getId(), existingListing.getCuresUpdate(),
+                updatedListing.getCertificationResults());
         updateMeaningfulUseUserHistory(updatedListing.getId(), existingListing.getMeaningfulUseUserHistory(),
                 updatedListing.getMeaningfulUseUserHistory());
         updateCertifications(existingListing, updatedListing,
@@ -1856,6 +1872,19 @@ public class CertifiedProductManager extends SecuredManager {
         for (Long idToRemove : idsToRemove) {
             statusEventDao.delete(idToRemove);
         }
+        return numChanges;
+    }
+
+    private int updateCuresUpdateEvents(Long listingId, Boolean existingCuresUpdate,
+            List<CertificationResult> updatedCertifications) {
+        int numChanges = 0;
+        /**
+         * pseudocode:
+         * get "cures update" status as of service check from updatedCertifications list
+         * if "new value" !== existingCuresUpdate
+         *   add new cures update entity; set numChanges to "1"
+         */
+        //TODO: Add lots of logic
         return numChanges;
     }
 

@@ -46,6 +46,8 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
         this.setWarningMessages(dto.getWarningMessages());
         this.setRecordStatus(dto.getRecordStatus());
         this.setChplProductNumber(dto.getUniqueId());
+        //TODO: Use some sort of utility to fill this data in
+        this.setCuresUpdate(false);
         this.setHasQms(dto.getHasQms());
         this.setReportFileLocation(dto.getReportFileLocation());
         this.setSedReportFileLocation(dto.getSedReportFileLocation());
