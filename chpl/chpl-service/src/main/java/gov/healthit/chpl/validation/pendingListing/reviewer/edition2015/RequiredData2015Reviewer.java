@@ -16,7 +16,6 @@ import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
@@ -92,6 +91,9 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
     private static final String G1_CRITERIA_NUMBER = "170.315 (g)(1)";
     private static final String G2_CRITERIA_NUMBER = "170.315 (g)(2)";
+    private static final String G3_CRITERIA_NUMBER = "170.315 (g)(3)";
+    private static final String G6_CRITERIA_NUMBER = "170.315 (g)(6)";
+
     private static final int MINIMIMUM_PARTICIPANTS = 10;
     private List<String> e2e3Criterion = new ArrayList<String>();
     private List<String> g7g8g9Criterion = new ArrayList<String>();
@@ -102,12 +104,13 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     private TestProcedureDAO testProcDao;
     private TestDataDAO testDataDao;
     private CertificationCriterionDAO criteriaDao;
+    private ValidationUtils validationUtils;
 
     @Autowired
     public RequiredData2015Reviewer(MacraMeasureDAO macraDao, TestFunctionalityDAO testFuncDao,
             TestProcedureDAO testProcDao, TestDataDAO testDataDao, CertificationCriterionDAO criteriaDao,
             ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
-            CertificationResultRules certRules) {
+            CertificationResultRules certRules, ValidationUtils validationUtils) {
         super(msgUtil, resourcePermissions, certRules);
 
         this.macraDao = macraDao;
@@ -115,6 +118,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         this.testProcDao = testProcDao;
         this.testDataDao = testDataDao;
         this.criteriaDao = criteriaDao;
+        this.validationUtils = validationUtils;
 
         e2e3Criterion.add("170.315 (e)(2)");
         e2e3Criterion.add("170.315 (e)(3)");
@@ -131,65 +135,65 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     public void review(final PendingCertifiedProductDTO listing) {
         super.review(listing);
 
-        List<CertificationCriterion> attestedCriteria = ValidationUtils.getAttestedCriteria(listing);
-        List<String> errors = ValidationUtils.checkClassOfCriteriaForErrors("170.315 (a)", attestedCriteria,
+        List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
+        List<String> errors = validationUtils.checkClassOfCriteriaForErrors("170.315 (a)", attestedCriteria,
                 Arrays.asList(A_RELATED_CERTS));
         listing.getErrorMessages().addAll(errors);
-        List<String> warnings = ValidationUtils.checkClassOfCriteriaForWarnings("170.315 (a)", attestedCriteria,
+        List<String> warnings = validationUtils.checkClassOfCriteriaForWarnings("170.315 (a)", attestedCriteria,
                 Arrays.asList(A_RELATED_CERTS));
         addListingWarningsByPermission(listing, warnings);
 
-        errors = ValidationUtils.checkClassOfCriteriaForErrors("170.315 (b)", attestedCriteria,
+        errors = validationUtils.checkClassOfCriteriaForErrors("170.315 (b)", attestedCriteria,
                 Arrays.asList(B_RELATED_CERTS));
         listing.getErrorMessages().addAll(errors);
-        warnings = ValidationUtils.checkClassOfCriteriaForWarnings("170.315 (b)", attestedCriteria,
+        warnings = validationUtils.checkClassOfCriteriaForWarnings("170.315 (b)", attestedCriteria,
                 Arrays.asList(B_RELATED_CERTS));
         addListingWarningsByPermission(listing, warnings);
 
-        errors = ValidationUtils.checkClassOfCriteriaForErrors("170.315 (c)", attestedCriteria,
+        errors = validationUtils.checkClassOfCriteriaForErrors("170.315 (c)", attestedCriteria,
                 Arrays.asList(C_RELATED_CERTS));
         listing.getErrorMessages().addAll(errors);
-        warnings = ValidationUtils.checkClassOfCriteriaForWarnings("170.315 (c)", attestedCriteria,
+        warnings = validationUtils.checkClassOfCriteriaForWarnings("170.315 (c)", attestedCriteria,
                 Arrays.asList(C_RELATED_CERTS));
         addListingWarningsByPermission(listing, warnings);
 
-        errors = ValidationUtils.checkClassOfCriteriaForErrors("170.315 (f)", attestedCriteria,
+        errors = validationUtils.checkClassOfCriteriaForErrors("170.315 (f)", attestedCriteria,
                 Arrays.asList(F_RELATED_CERTS));
         listing.getErrorMessages().addAll(errors);
-        warnings = ValidationUtils.checkClassOfCriteriaForWarnings("170.315 (f)", attestedCriteria,
+        warnings = validationUtils.checkClassOfCriteriaForWarnings("170.315 (f)", attestedCriteria,
                 Arrays.asList(F_RELATED_CERTS));
         addListingWarningsByPermission(listing, warnings);
 
-        errors = ValidationUtils.checkClassOfCriteriaForErrors("170.315 (h)", attestedCriteria,
+        errors = validationUtils.checkClassOfCriteriaForErrors("170.315 (h)", attestedCriteria,
                 Arrays.asList(H_RELATED_CERTS));
         listing.getErrorMessages().addAll(errors);
-        warnings = ValidationUtils.checkClassOfCriteriaForWarnings("170.315 (h)", attestedCriteria,
+        warnings = validationUtils.checkClassOfCriteriaForWarnings("170.315 (h)", attestedCriteria,
                 Arrays.asList(H_RELATED_CERTS));
         addListingWarningsByPermission(listing, warnings);
 
-        errors = ValidationUtils.checkSpecificCriteriaForErrors("170.315 (e)(1)", attestedCriteria,
+        errors = validationUtils.checkSpecificCriteriaForErrors("170.315 (e)(1)", attestedCriteria,
                 Arrays.asList(E1_RELATED_CERTS));
         listing.getErrorMessages().addAll(errors);
 
         // check for (e)(2) or (e)(3) required complimentary certs
         List<String> e2e3ComplimentaryErrors =
-                ValidationUtils.checkComplimentaryCriteriaAllRequired(e2e3Criterion,
+                validationUtils.checkComplimentaryCriteriaAllRequired(e2e3Criterion,
                         Arrays.asList(E2E3_RELATED_CERTS), attestedCriteria);
         listing.getErrorMessages().addAll(e2e3ComplimentaryErrors);
 
         // check for (g)(7) or (g)(8) or (g)(9) required complimentary certs
         List<String> g7g8g9ComplimentaryErrors =
-                ValidationUtils.checkComplimentaryCriteriaAllRequired(g7g8g9Criterion,
+                validationUtils.checkComplimentaryCriteriaAllRequired(g7g8g9Criterion,
                         Arrays.asList(G7G8G9_RELATED_CERTS), attestedCriteria);
         listing.getErrorMessages().addAll(g7g8g9ComplimentaryErrors);
 
         //if g7, g8, or g9 is found then one of d2 or d10 is required
         g7g8g9ComplimentaryErrors =
-                ValidationUtils.checkComplimentaryCriteriaAnyRequired(g7g8g9Criterion, d2d10Criterion, attestedCriteria);
+                validationUtils.checkComplimentaryCriteriaAnyRequired(g7g8g9Criterion, d2d10Criterion, attestedCriteria);
         listing.getErrorMessages().addAll(g7g8g9ComplimentaryErrors);
 
         //g1 macra check
-        if (ValidationUtils.hasCert(G1_CRITERIA_NUMBER, attestedCriteria)) {
+        if (validationUtils.hasCert(G1_CRITERIA_NUMBER, attestedCriteria)) {
             //must have at least one criteria with g1 macras listed
             boolean hasG1Macra = false;
             for (int i = 0; i < listing.getCertificationCriterion().size() && !hasG1Macra; i++) {
@@ -207,7 +211,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         }
 
         //g2 macra check
-        if (ValidationUtils.hasCert(G2_CRITERIA_NUMBER, attestedCriteria)) {
+        if (validationUtils.hasCert(G2_CRITERIA_NUMBER, attestedCriteria)) {
             //must have at least one criteria with g2 macras listed
             boolean hasG2Macra = false;
             for (int i = 0; i < listing.getCertificationCriterion().size() && !hasG2Macra; i++) {
@@ -226,7 +230,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
         // g3 checks
         for (int i = 0; i < UCD_RELATED_CERTS.length; i++) {
-            if (ValidationUtils.hasCert(UCD_RELATED_CERTS[i], attestedCriteria)) {
+            if (validationUtils.hasCert(UCD_RELATED_CERTS[i], attestedCriteria)) {
                 // check for full set of UCD data
                 for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
                     if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria().equals(Boolean.TRUE)
@@ -613,13 +617,13 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         validateG6Inverse(listing);
 
         // g4 check
-        boolean hasG4 = ValidationUtils.hasCert("170.315 (g)(4)", attestedCriteria);
+        boolean hasG4 = validationUtils.hasCert("170.315 (g)(4)", attestedCriteria);
         if (!hasG4) {
             listing.getErrorMessages().add("170.315 (g)(4) is required but was not found.");
         }
 
         // g5 check
-        boolean hasG5 = ValidationUtils.hasCert("170.315 (g)(5)", attestedCriteria);
+        boolean hasG5 = validationUtils.hasCert("170.315 (g)(5)", attestedCriteria);
         if (!hasG5) {
             listing.getErrorMessages().add("170.315 (g)(5) is required but was not found.");
         }
@@ -627,9 +631,9 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         // TODO: detailed G6 check; waiting on rule from ONC
 
         // h1 plus b1
-        boolean hasH1 = ValidationUtils.hasCert("170.315 (h)(1)", attestedCriteria);
+        boolean hasH1 = validationUtils.hasCert("170.315 (h)(1)", attestedCriteria);
         if (hasH1) {
-            boolean hasB1 = ValidationUtils.hasCert("170.315 (b)(1)", attestedCriteria);
+            boolean hasB1 = validationUtils.hasCert("170.315 (b)(1)", attestedCriteria);
             if (!hasB1) {
                 listing.getErrorMessages()
                 .add("170.315 (h)(1) was found so 170.315 (b)(1) is required but was not found.");
@@ -888,7 +892,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     }
 
     private void validateG3(PendingCertifiedProductDTO listing) {
-        List<CertificationCriterion> attestedCriteria = ValidationUtils.getAttestedCriteria(listing);
+        List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
         List<CertificationCriterion> presentAttestedUcdCriteria = attestedCriteria.stream()
                 .filter(cert -> cert.getRemoved() == null || cert.getRemoved().equals(Boolean.FALSE))
                 .filter(cert -> certNumberIsInCertList(cert, UCD_RELATED_CERTS))
@@ -897,7 +901,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 .filter(cert -> cert.getRemoved() != null && cert.getRemoved().equals(Boolean.TRUE))
                 .filter(cert -> certNumberIsInCertList(cert, UCD_RELATED_CERTS))
                 .collect(Collectors.<CertificationCriterion>toList());
-        boolean hasG3 = ValidationUtils.hasCert("170.315 (g)(3)", attestedCriteria);
+        boolean hasG3 = validationUtils.hasCert(G3_CRITERIA_NUMBER, attestedCriteria);
 
         if (presentAttestedUcdCriteria != null && presentAttestedUcdCriteria.size() > 0 && !hasG3) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.g3Required"));
@@ -910,12 +914,12 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     }
 
     private void validateG3Inverse(PendingCertifiedProductDTO listing) {
-        List<CertificationCriterion> attestedCriteria = ValidationUtils.getAttestedCriteria(listing);
+        List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
         List<CertificationCriterion> presentAttestedUcdCriteria = attestedCriteria.stream()
                 .filter(cert -> cert.getRemoved() == null || cert.getRemoved().equals(Boolean.FALSE))
                 .filter(cert -> certNumberIsInCertList(cert, UCD_RELATED_CERTS))
                 .collect(Collectors.<CertificationCriterion>toList());
-        boolean hasG3 = ValidationUtils.hasCert("170.315 (g)(3)", attestedCriteria);
+        boolean hasG3 = validationUtils.hasCert(G3_CRITERIA_NUMBER, attestedCriteria);
 
         if ((presentAttestedUcdCriteria == null || presentAttestedUcdCriteria.size() == 0)
                 && hasG3) {
@@ -924,7 +928,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     }
 
     private void validateG6(PendingCertifiedProductDTO listing) {
-        List<CertificationCriterion> attestedCriteria = ValidationUtils.getAttestedCriteria(listing);
+        List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
         List<CertificationCriterion> presentAttestedG6Criteria = attestedCriteria.stream()
                 .filter(cert -> cert.getRemoved() == null || cert.getRemoved().equals(Boolean.FALSE))
                 .filter(cert -> certNumberIsInCertList(cert, CERTS_REQUIRING_G6))
@@ -933,9 +937,9 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 .filter(cert -> cert.getRemoved() != null && cert.getRemoved().equals(Boolean.TRUE))
                 .filter(cert -> certNumberIsInCertList(cert, CERTS_REQUIRING_G6))
                 .collect(Collectors.<CertificationCriterion>toList());
-        boolean hasG6 = ValidationUtils.hasCert("170.315 (g)(6)", attestedCriteria);
+        boolean hasG6 = validationUtils.hasCert(G6_CRITERIA_NUMBER, attestedCriteria);
 
-        String g6Numbers = getG6CriteriaNumbers();
+        String g6Numbers = validationUtils.getAllCriteriaWithNumber(G6_CRITERIA_NUMBER);
         if (presentAttestedG6Criteria != null && presentAttestedG6Criteria.size() > 0 && !hasG6) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.g6Required", g6Numbers));
         }
@@ -947,7 +951,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     }
 
     private void validateG6Inverse(PendingCertifiedProductDTO listing) {
-        List<CertificationCriterion> attestedCriteria = ValidationUtils.getAttestedCriteria(listing);
+        List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
         List<CertificationCriterion> presentAttestedG6Criteria = attestedCriteria.stream()
                 .filter(cert -> cert.getRemoved() == null || cert.getRemoved().equals(Boolean.FALSE))
                 .filter(cert -> certNumberIsInCertList(cert, CERTS_REQUIRING_G6))
@@ -956,9 +960,9 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 .filter(cert -> cert.getRemoved() != null && cert.getRemoved().equals(Boolean.TRUE))
                 .filter(cert -> certNumberIsInCertList(cert, CERTS_REQUIRING_G6))
                 .collect(Collectors.<CertificationCriterion>toList());
-        boolean hasG6 = ValidationUtils.hasCert("170.315 (g)(6)", attestedCriteria);
+        boolean hasG6 = validationUtils.hasCert(G6_CRITERIA_NUMBER, attestedCriteria);
 
-        String g6Numbers = getG6CriteriaNumbers();
+        String g6Numbers = validationUtils.getAllCriteriaWithNumber(G6_CRITERIA_NUMBER);
         if ((presentAttestedG6Criteria == null || presentAttestedG6Criteria.size() == 0)
                 && (removedAttestedG6Criteria == null || removedAttestedG6Criteria.size() == 0)
                 && hasG6) {
@@ -969,18 +973,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 && hasG6) {
             addListingWarningByPermission(listing, msgUtil.getMessage("listing.g6NotAllowed", g6Numbers));
         }
-    }
-
-    private String getG6CriteriaNumbers() {
-        List<CertificationCriterionDTO> g6Criteria = criteriaDao.getAllByNumber("170.315 (g)(6)");
-        String g6Numbers = "";
-        for (CertificationCriterionDTO g6Criterion : g6Criteria) {
-            if (!StringUtils.isEmpty(g6Numbers)) {
-                g6Numbers += " or ";
-            }
-            g6Numbers += Util.formatCriteriaNumber(g6Criterion);
-        }
-        return g6Numbers;
     }
 
     private boolean certNumberIsInCertList(CertificationCriterion cert, String[] certNumberList) {

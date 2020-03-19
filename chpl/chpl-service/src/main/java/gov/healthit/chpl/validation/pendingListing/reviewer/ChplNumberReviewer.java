@@ -37,18 +37,20 @@ public class ChplNumberReviewer implements Reviewer {
     private CertificationBodyDAO acbDao;
     private DeveloperDAO developerDao;
     private CertificationEditionDAO certEditionDao;
+    private ValidationUtils validationUtils;
     private ChplProductNumberUtil chplProductNumberUtil;
     private ErrorMessageUtil msgUtil;
     private FF4j ff4j;
 
     @Autowired
     public ChplNumberReviewer(TestingLabDAO atlDao, CertificationBodyDAO acbDao, DeveloperDAO developerDao,
-            CertificationEditionDAO certEditionDao, ChplProductNumberUtil chplProductNumberUtil, ErrorMessageUtil msgUtil,
-            FF4j ff4j) {
+            CertificationEditionDAO certEditionDao, ValidationUtils validationUtils,
+            ChplProductNumberUtil chplProductNumberUtil, ErrorMessageUtil msgUtil, FF4j ff4j) {
         this.atlDao = atlDao;
         this.acbDao = acbDao;
         this.developerDao = developerDao;
         this.certEditionDao = certEditionDao;
+        this.validationUtils = validationUtils;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.msgUtil = msgUtil;
         this.ff4j = ff4j;
@@ -187,7 +189,7 @@ public class ChplNumberReviewer implements Reviewer {
             listing.getErrorMessages().add(ex.getMessage());
         }
 
-        if (!ValidationUtils.chplNumberPartIsValid(listing.getUniqueId(),
+        if (!validationUtils.chplNumberPartIsValid(listing.getUniqueId(),
                 ChplProductNumberUtil.PRODUCT_CODE_INDEX,
                 ChplProductNumberUtil.PRODUCT_CODE_REGEX)) {
             listing.getErrorMessages()
@@ -195,7 +197,7 @@ public class ChplNumberReviewer implements Reviewer {
                             ChplProductNumberUtil.PRODUCT_CODE_LENGTH));
         }
 
-        if (!ValidationUtils.chplNumberPartIsValid(listing.getUniqueId(),
+        if (!validationUtils.chplNumberPartIsValid(listing.getUniqueId(),
                 ChplProductNumberUtil.VERSION_CODE_INDEX,
                 ChplProductNumberUtil.VERSION_CODE_REGEX)) {
             listing.getErrorMessages()
@@ -203,7 +205,7 @@ public class ChplNumberReviewer implements Reviewer {
                             ChplProductNumberUtil.VERSION_CODE_LENGTH));
         }
 
-        if (!ValidationUtils.chplNumberPartIsValid(listing.getUniqueId(),
+        if (!validationUtils.chplNumberPartIsValid(listing.getUniqueId(),
                 ChplProductNumberUtil.ICS_CODE_INDEX,
                 ChplProductNumberUtil.ICS_CODE_REGEX)) {
             listing.getErrorMessages()
@@ -224,7 +226,7 @@ public class ChplNumberReviewer implements Reviewer {
             }
         }
 
-        if (!ValidationUtils.chplNumberPartIsValid(listing.getUniqueId(),
+        if (!validationUtils.chplNumberPartIsValid(listing.getUniqueId(),
                 ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_INDEX,
                 ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_REGEX)) {
             listing.getErrorMessages()
@@ -256,7 +258,7 @@ public class ChplNumberReviewer implements Reviewer {
             }
         }
 
-        if (!ValidationUtils.chplNumberPartIsValid(listing.getUniqueId(),
+        if (!validationUtils.chplNumberPartIsValid(listing.getUniqueId(),
                 ChplProductNumberUtil.CERTIFIED_DATE_CODE_INDEX,
                 ChplProductNumberUtil.CERTIFIED_DATE_CODE_REGEX)) {
             listing.getErrorMessages()

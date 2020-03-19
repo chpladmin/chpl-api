@@ -26,8 +26,14 @@ import gov.healthit.chpl.util.ValidationUtils;
 @Component("unsupportedCharacterReviewer")
 public class UnsupportedCharacterReviewer implements Reviewer {
 
+    private ValidationUtils validationUtils;
+    private ErrorMessageUtil msgUtil;
+
     @Autowired
-    ErrorMessageUtil msgUtil;
+    public UnsupportedCharacterReviewer(ValidationUtils validationUtils, ErrorMessageUtil msgUtil) {
+        this.validationUtils = validationUtils;
+        this.msgUtil = msgUtil;
+    }
 
     public void review(CertifiedProductSearchDetails listing) {
         // check all string fields at the listing level
@@ -225,11 +231,11 @@ public class UnsupportedCharacterReviewer implements Reviewer {
 
     private void addListingWarningIfNotValid(final CertifiedProductSearchDetails listing,
             final String input, final String fieldName) {
-        if (!ValidationUtils.isValidUtf8(input)) {
+        if (!validationUtils.isValidUtf8(input)) {
             listing.getWarningMessages().add(
                     msgUtil.getMessage("listing.badCharacterFound", fieldName));
         }
-        if (ValidationUtils.hasNewline(input)) {
+        if (validationUtils.hasNewline(input)) {
             listing.getWarningMessages().add(
                     msgUtil.getMessage("listing.newlineCharacterFound", fieldName));
         }
@@ -237,12 +243,12 @@ public class UnsupportedCharacterReviewer implements Reviewer {
 
     private void addCriteriaWarningIfNotValid(final CertifiedProductSearchDetails listing,
             final CertificationResult criteria, final String input, final String fieldName) {
-        if (!ValidationUtils.isValidUtf8(input)) {
+        if (!validationUtils.isValidUtf8(input)) {
             listing.getWarningMessages().add(
                     msgUtil.getMessage("listing.criteria.badCharacterFound",
                             Util.formatCriteriaNumber(criteria.getCriterion()), fieldName));
         }
-        if (ValidationUtils.hasNewline(input)) {
+        if (validationUtils.hasNewline(input)) {
             listing.getWarningMessages().add(
                     msgUtil.getMessage("listing.criteria.newlineCharacterFound",
                             Util.formatCriteriaNumber(criteria.getCriterion()), fieldName));

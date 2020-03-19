@@ -19,9 +19,13 @@ import gov.healthit.chpl.util.ValidationUtils;
 @Component("urlReviewer")
 public class UrlReviewer extends PermissionBasedReviewer {
 
+    private ValidationUtils validationUtils;
+
     @Autowired
-    public UrlReviewer(ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
+    public UrlReviewer(ValidationUtils validationUtils, ErrorMessageUtil msgUtil,
+            ResourcePermissions resourcePermissions) {
         super(msgUtil, resourcePermissions);
+        this.validationUtils = validationUtils;
     }
 
     @Override
@@ -48,10 +52,10 @@ public class UrlReviewer extends PermissionBasedReviewer {
     private void addListingErrorIfNotValid(final CertifiedProductSearchDetails listing,
             final String input, final String fieldName) {
         if (!StringUtils.isEmpty(input)) {
-            if (ValidationUtils.hasNewline(input)) {
+            if (validationUtils.hasNewline(input)) {
                 listing.getErrorMessages().add(
                         msgUtil.getMessage("listing.invalidUrlFound", fieldName));
-            } else if (!ValidationUtils.isWellFormedUrl(input)) {
+            } else if (!validationUtils.isWellFormedUrl(input)) {
                 listing.getErrorMessages().add(
                         msgUtil.getMessage("listing.invalidUrlFound", fieldName));
             }
@@ -61,7 +65,7 @@ public class UrlReviewer extends PermissionBasedReviewer {
     private void addCriteriaErrorIfNotValid(final CertifiedProductSearchDetails listing,
             final CertificationResult cert, final String input, final String fieldName) {
         if (!StringUtils.isEmpty(input)) {
-            if (ValidationUtils.hasNewline(input) || !ValidationUtils.isWellFormedUrl(input)) {
+            if (validationUtils.hasNewline(input) || !validationUtils.isWellFormedUrl(input)) {
                 addCriterionErrorOrWarningByPermission(listing, cert,
                         "listing.criteria.invalidUrlFound", fieldName,
                         Util.formatCriteriaNumber(cert.getCriterion()));

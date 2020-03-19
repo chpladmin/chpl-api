@@ -9,8 +9,11 @@ import java.util.stream.Collectors;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -23,11 +26,16 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
  * @author alarned
  *
  */
-public final class ValidationUtils {
+@Component
+public class ValidationUtils {
     private static final Logger LOGGER = LogManager.getLogger(ValidationUtils.class);
-    private static UrlValidator urlValidator = new UrlValidator();
+    private UrlValidator urlValidator;
+    private CertificationCriterionDAO criteriaDao;
 
-    private ValidationUtils() {
+    @Autowired
+    public ValidationUtils(CertificationCriterionDAO criteriaDao) {
+        urlValidator = new UrlValidator();
+        this.criteriaDao = criteriaDao;
     }
 
     /**
@@ -35,7 +43,7 @@ public final class ValidationUtils {
      * @param input string to check
      * @return true iff string contains "\n" or "\r\n"
      */
-    public static boolean hasNewline(final String input) {
+    public boolean hasNewline(String input) {
         // check both windows and unix line separator chars
         if (input == null || StringUtils.isEmpty(input)) {
             return false;
@@ -48,7 +56,7 @@ public final class ValidationUtils {
      * @param input URL to check
      * @return true iff input is a valid URL. Will return false for empty/null string
      */
-    public static boolean isWellFormedUrl(final String input) {
+    public boolean isWellFormedUrl(String input) {
         return urlValidator.isValid(input);
     }
 
@@ -61,8 +69,8 @@ public final class ValidationUtils {
      * @param regexToMatch regex like ^[0-9]$
      * @return true of the part matches the regex and false otherwise
      */
-    public static boolean chplNumberPartIsValid(final String chplProductNumber,
-            final int partIndex, final String regexToMatch) {
+    public boolean chplNumberPartIsValid(String chplProductNumber,
+            int partIndex, String regexToMatch) {
         String[] uniqueIdParts = chplProductNumber.split("\\.");
         if (uniqueIdParts.length == ChplProductNumberUtil.CHPL_PRODUCT_ID_PARTS) {
             String chplNumberPart = uniqueIdParts[partIndex];
@@ -79,7 +87,7 @@ public final class ValidationUtils {
      * @param input string to check
      * @return true iff string is in default charset
      */
-    public static boolean isValidUtf8(final String input) {
+    public boolean isValidUtf8(String input) {
         return isValidUtf8(Charset.defaultCharset(), input);
     }
 
@@ -89,7 +97,7 @@ public final class ValidationUtils {
      * @param input string to check
      * @return true iff input is in inputCharset
      */
-    public static boolean isValidUtf8(final Charset inputCharset, final String input) {
+    public boolean isValidUtf8(Charset inputCharset, String input) {
         if (input == null || StringUtils.isEmpty(input)) {
             return true;
         }
@@ -108,7 +116,7 @@ public final class ValidationUtils {
      * @param input string to check
      * @return true iff input string contains \uFFFD
      */
-    public static boolean hasUtf8ReplacementCharacter(final String input) {
+    public boolean hasUtf8ReplacementCharacter(String input) {
         if (input.contains("\uFFFD")) {
             return true;
         }
@@ -122,7 +130,7 @@ public final class ValidationUtils {
      * @param input string to check
      * @return true iff input has non UTF-8 character
      */
-    public static boolean hasNonUtf8Character(final byte[] input) {
+    public boolean hasNonUtf8Character(byte[] input) {
         int i = 0;
         // Check for BOM
         if (input.length >= 3 && (input[0] & 0xFF) == 0xEF && (input[1] & 0xFF) == 0xBB & (input[2] & 0xFF) == 0xBF) {
@@ -166,7 +174,7 @@ public final class ValidationUtils {
      * @param allCerts certifications to check in
      * @return true iff certNumber found in allCerts
      */
-    public static boolean hasCert(String certNumber, List<CertificationCriterion> allCerts) {
+    public boolean hasCert(String certNumber, List<CertificationCriterion> allCerts) {
         boolean hasCert = false;
         for (int i = 0; i < allCerts.size() && !hasCert; i++) {
             if (allCerts.get(i).getNumber().equals(certNumber)) {
@@ -176,7 +184,7 @@ public final class ValidationUtils {
         return hasCert;
     }
 
-    public static boolean hasCert(CertificationCriterion criterion, List<CertificationCriterion> allCerts) {
+    public boolean hasCert(CertificationCriterion criterion, List<CertificationCriterion> allCerts) {
         boolean hasCert = false;
         for (int i = 0; i < allCerts.size() && !hasCert; i++) {
             if (allCerts.get(i).getId().equals(criterion.getId())) {
@@ -186,7 +194,7 @@ public final class ValidationUtils {
         return hasCert;
     }
 
-    public static CertificationCriterion getCert(String certNumber, List<CertificationCriterion> allCerts) {
+    public CertificationCriterion getCert(String certNumber, List<CertificationCriterion> allCerts) {
         CertificationCriterion cert = null;
         for (int i = 0; i < allCerts.size() && cert == null; i++) {
             if (allCerts.get(i).getNumber().equals(certNumber)) {
@@ -206,7 +214,7 @@ public final class ValidationUtils {
      * @param complimentaryCertNumbers complimentary criteria that must be present
      * @return a list of error messages
      */
-    public static List<String> checkComplimentaryCriteriaAllRequired(List<String> criterionToCheck,
+    public List<String> checkComplimentaryCriteriaAllRequired(List<String> criterionToCheck,
             List<String> complimentaryCertNumbers, List<CertificationCriterion> allCriteriaMet) {
         List<String> errors = new ArrayList<String>();
         boolean hasAnyCert = hasAnyCert(criterionToCheck, allCriteriaMet);
@@ -221,10 +229,10 @@ public final class ValidationUtils {
                         if (i > 0) {
                             criteriaBuffer.append(" or ");
                         }
-                        criteriaBuffer.append(checkedCriteria);
+                        criteriaBuffer.append(getAllCriteriaWithNumber(checkedCriteria));
                     }
                     errors.add("Certification criterion " + criteriaBuffer.toString() + " was found so "
-                            + complimentaryCert + " is required but was not found.");
+                            + getAllCriteriaWithNumber(complimentaryCert) + " is required but was not found.");
                 }
             }
         }
@@ -241,7 +249,7 @@ public final class ValidationUtils {
      * @param complimentaryCertNumbers complimentary criteria of which at least one must be present
      * @return a list of error messages
      */
-    public static List<String> checkComplimentaryCriteriaAnyRequired(List<String> criterionToCheck,
+    public List<String> checkComplimentaryCriteriaAnyRequired(List<String> criterionToCheck,
             List<String> complimentaryCertNumbers, List<CertificationCriterion> allCriteriaMet) {
         List<String> errors = new ArrayList<String>();
         boolean hasAnyCert = hasAnyCert(criterionToCheck, allCriteriaMet);
@@ -254,7 +262,7 @@ public final class ValidationUtils {
                     if (i > 0) {
                         criteriaBuffer.append(" or ");
                     }
-                    criteriaBuffer.append(checkedCriteria);
+                    criteriaBuffer.append(getAllCriteriaWithNumber(checkedCriteria));
                 }
 
                 StringBuffer complementaryBuffer = new StringBuffer();
@@ -263,7 +271,7 @@ public final class ValidationUtils {
                     if (i > 0) {
                         complementaryBuffer.append(" or ");
                     }
-                    complementaryBuffer.append(complimentaryCriteria);
+                    complementaryBuffer.append(getAllCriteriaWithNumber(complimentaryCriteria));
                 }
                 errors.add("Certification criterion " + criteriaBuffer.toString() + " was found so "
                         + complementaryBuffer.toString() + " is required but was not found.");
@@ -278,7 +286,7 @@ public final class ValidationUtils {
      * @param allCerts criteria to check against
      * @return true iff at least one of certsToCheck is in allCerts
      */
-    public static boolean hasAnyCert(List<String> certsToCheck, List<CertificationCriterion> allCerts) {
+    public boolean hasAnyCert(List<String> certsToCheck, List<CertificationCriterion> allCerts) {
         boolean result = false;
         for (String currCertToCheck : certsToCheck) {
             if (hasCert(currCertToCheck, allCerts)) {
@@ -294,7 +302,7 @@ public final class ValidationUtils {
      * @param certs criteria to check against
      * @return true iff at least one of certToCompare is in certs
      */
-    public static boolean containsCert(final PendingCertificationResultDTO certToCompare, final String[] certs) {
+    public boolean containsCert(PendingCertificationResultDTO certToCompare, String[] certs) {
         boolean hasCert = false;
         for (String cert : certs) {
             if (certToCompare.getCriterion() != null
@@ -311,7 +319,7 @@ public final class ValidationUtils {
      * @param certs criteria to check against
      * @return true iff at least one of certToCompare is in certs
      */
-    public static boolean containsCert(final CertificationResult certToCompare, final String[] certs) {
+    public boolean containsCert(CertificationResult certToCompare, String[] certs) {
         boolean hasCert = false;
         for (String cert : certs) {
             if (certToCompare.getNumber().equals(cert)) {
@@ -330,7 +338,7 @@ public final class ValidationUtils {
      * @param complimentaryCertNumbers complimentary criteria that must be met
      * @return list of errors
      */
-    public static List<String> checkClassOfCriteriaForErrors(String criterionNumberStart,
+    public List<String> checkClassOfCriteriaForErrors(String criterionNumberStart,
             List<CertificationCriterion> allCriteriaMet, List<String> complimentaryCertNumbers) {
         List<String> errors = new ArrayList<String>();
         List<CertificationCriterion> presentAttestedCriteriaInClass = allCriteriaMet.stream()
@@ -350,14 +358,14 @@ public final class ValidationUtils {
 
                 if (!hasComplimentaryCert) {
                     errors.add("Certification criterion " + criterionNumberStart + "(*) was found " + "so "
-                            + currRequiredCriteria + " is required but was not found.");
+                            + getAllCriteriaWithNumber(currRequiredCriteria) + " is required but was not found.");
                 }
             }
         }
         return errors;
     }
 
-    public static List<String> checkClassOfCriteriaForWarnings(String criterionNumberStart,
+    public List<String> checkClassOfCriteriaForWarnings(String criterionNumberStart,
             List<CertificationCriterion> allCriteriaMet, List<String> complimentaryCertNumbers) {
         List<String> warnings = new ArrayList<String>();
         List<CertificationCriterion> removedAttestedCriteriaInClass = allCriteriaMet.stream()
@@ -385,7 +393,7 @@ public final class ValidationUtils {
 
                 if (!hasComplimentaryCert) {
                     warnings.add("Certification criterion " + criterionNumberStart + "(*) was found " + "so "
-                            + currRequiredCriteria + " is required but was not found.");
+                            + getAllCriteriaWithNumber(currRequiredCriteria) + " is required but was not found.");
                 }
             }
         }
@@ -401,8 +409,8 @@ public final class ValidationUtils {
      * @param complimentaryCertNumbers complimentary criteria that must be met
      * @return list of errors
      */
-    public static List<String> checkSpecificCriteriaForErrors(final String criterionNumber,
-            final List<CertificationCriterion> allCriteriaMet, final List<String> complimentaryCertNumbers) {
+    public List<String> checkSpecificCriteriaForErrors(String criterionNumber,
+            List<CertificationCriterion> allCriteriaMet, List<String> complimentaryCertNumbers) {
         List<String> errors = new ArrayList<String>();
         boolean hasCriterion = false;
         for (CertificationCriterion currCriteria : allCriteriaMet) {
@@ -413,22 +421,34 @@ public final class ValidationUtils {
         if (hasCriterion) {
             for (String currRequiredCriteria : complimentaryCertNumbers) {
                 boolean hasComplimentaryCert = false;
-                for (String certCriteria : complimentaryCertNumbers) {
-                    if (certCriteria.equals(currRequiredCriteria)) {
+                for (CertificationCriterion certCriteria : allCriteriaMet) {
+                    if (certCriteria.getNumber().equals(currRequiredCriteria)) {
                         hasComplimentaryCert = true;
                     }
                 }
 
                 if (!hasComplimentaryCert) {
-                    errors.add("Certification criterion " + criterionNumber + "(*) was found " + "so "
-                            + currRequiredCriteria + " is required but was not found.");
+                    errors.add("Certification criterion " + criterionNumber + " was found so "
+                            + getAllCriteriaWithNumber(currRequiredCriteria) + " is required but was not found.");
                 }
             }
         }
         return errors;
     }
 
-    public static List<CertificationCriterion> getAttestedCriteria(CertifiedProductSearchDetails listing) {
+    public String getAllCriteriaWithNumber(String criterionNumber) {
+        List<CertificationCriterionDTO> allCriteriaWithNumber = criteriaDao.getAllByNumber(criterionNumber);
+        String criteriaNumbers = "";
+        for (CertificationCriterionDTO criterion : allCriteriaWithNumber) {
+            if (!StringUtils.isEmpty(criteriaNumbers)) {
+                criteriaNumbers += " or ";
+            }
+            criteriaNumbers += Util.formatCriteriaNumber(criterion);
+        }
+        return criteriaNumbers;
+    }
+
+    public List<CertificationCriterion> getAttestedCriteria(CertifiedProductSearchDetails listing) {
         List<CertificationResult> attestedCertificationResults = listing.getCertificationResults().stream()
                 .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess().equals(Boolean.TRUE))
                 .collect(Collectors.<CertificationResult>toList());
@@ -440,7 +460,7 @@ public final class ValidationUtils {
         return criteria;
     }
 
-    public static List<CertificationCriterion> getAttestedCriteria(PendingCertifiedProductDTO listing) {
+    public List<CertificationCriterion> getAttestedCriteria(PendingCertifiedProductDTO listing) {
         List<PendingCertificationResultDTO> attestedCertificationResults = listing.getCertificationCriterion().stream()
                 .filter(certResult -> certResult.getMeetsCriteria() != null && certResult.getMeetsCriteria().equals(Boolean.TRUE))
                 .collect(Collectors.<PendingCertificationResultDTO>toList());

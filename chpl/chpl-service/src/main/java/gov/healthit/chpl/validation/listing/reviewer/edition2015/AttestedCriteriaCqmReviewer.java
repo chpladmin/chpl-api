@@ -21,6 +21,7 @@ import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
 @Component("attestedCriteriaCqmReviewer")
 public class AttestedCriteriaCqmReviewer implements Reviewer {
+    private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
     private CertificationCriterionDAO criteriaDao;
 
@@ -29,7 +30,9 @@ public class AttestedCriteriaCqmReviewer implements Reviewer {
     };
 
     @Autowired
-    public AttestedCriteriaCqmReviewer(CertificationCriterionDAO criteriaDao, ErrorMessageUtil msgUtil) {
+    public AttestedCriteriaCqmReviewer(ValidationUtils validationUtils, CertificationCriterionDAO criteriaDao,
+            ErrorMessageUtil msgUtil) {
+        this.validationUtils = validationUtils;
         this.criteriaDao = criteriaDao;
         this.msgUtil = msgUtil;
     }
@@ -45,7 +48,7 @@ public class AttestedCriteriaCqmReviewer implements Reviewer {
         }
 
         //any attested criteria that is eligible for CQM must have a CQM that references it
-        List<CertificationCriterion> attestedCriteria = ValidationUtils.getAttestedCriteria(listing);
+        List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
         for (CertificationCriterion criterion : attestedCriteria) {
             if (isCriteriaEligibleForCqm(criterion, cqmEligibleCritera)) {
                 //is there a cqm with this criterion?
