@@ -1,5 +1,6 @@
 package gov.healthit.chpl.validation.pendingListing.reviewer.edition2015;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 
@@ -7,12 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.SpecialProperties;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
+import lombok.extern.log4j.Log4j2;
 
 @Component("pendingRequiredCriteriaValidator")
+@Log4j2
 public class RequiredCriteriaValidator implements Reviewer {
 
     @Value("${criterion.170_315_d_12}")
@@ -21,10 +25,15 @@ public class RequiredCriteriaValidator implements Reviewer {
     @Value("${criterion.170_315_d_13}")
     private Integer criteriaD13Id;
 
-    @Value("#{new java.text.SimpleDateFormat(\"MM/dd/yyyy\").parse(\"${cures.ruleEffectiveDate}\")}")
-    private Date ruleEffectiveDate;
-
+    private SpecialProperties specialProperties;
+    private SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
     private ErrorMessageUtil msgUtil;
+
+    @Autowired
+    public RequiredCriteriaValidator(ErrorMessageUtil msgUtil, SpecialProperties specialProperties) {
+        this.msgUtil = msgUtil;
+        this.specialProperties = specialProperties;
+    }
 
     @Autowired
     public RequiredCriteriaValidator(ErrorMessageUtil msgUtil) {
@@ -34,8 +43,10 @@ public class RequiredCriteriaValidator implements Reviewer {
     @Override
     public void review(PendingCertifiedProductDTO listing) {
         // These criterion are only required after effective rule date
-        if (listing.getCertificationDate().after(ruleEffectiveDate)
-                || listing.getCertificationDate().equals(ruleEffectiveDate)) {
+        Date effectiveRuleDate = specialProperties.getEffectiveRuleDate();
+        LOGGER.info("Effecitve Rule Date: " + sdf.format(effectiveRuleDate));
+        if (listing.getCertificationDate().after(effectiveRuleDate)
+                || listing.getCertificationDate().equals(effectiveRuleDate)) {
             checkRequiredCriterionExist(listing, criteriaD12Id);
             checkRequiredCriterionExist(listing, criteriaD13Id);
         }
