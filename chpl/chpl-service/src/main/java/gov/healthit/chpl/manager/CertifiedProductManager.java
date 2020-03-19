@@ -161,6 +161,7 @@ import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.service.CuresUpdateService;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
@@ -210,6 +211,7 @@ public class CertifiedProductManager extends SecuredManager {
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
     private ActivityManager activityManager;
     private ListingValidatorFactory validatorFactory;
+    private CuresUpdateService curesUpdateService;
 
     private static final int PROD_CODE_LOC = 4;
     private static final int VER_CODE_LOC = 5;
@@ -218,7 +220,6 @@ public class CertifiedProductManager extends SecuredManager {
     private static final int DATE_CODE_LOC = 8;
 
     public CertifiedProductManager() {
-
     }
 
     @Autowired
@@ -244,7 +245,8 @@ public class CertifiedProductManager extends SecuredManager {
             FuzzyChoicesDAO fuzzyChoicesDao, ResourcePermissions resourcePermissions,
             CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
-            ActivityManager activityManager, ListingValidatorFactory validatorFactory) {
+            ActivityManager activityManager, ListingValidatorFactory validatorFactory,
+            CuresUpdateService curesUpdateService) {
 
         this.msgUtil = msgUtil;
         this.cpDao = cpDao;
@@ -286,6 +288,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
         this.activityManager = activityManager;
         this.validatorFactory = validatorFactory;
+        this.curesUpdateService = curesUpdateService;
     }
 
     @Transactional(readOnly = true)
@@ -1002,8 +1005,7 @@ public class CertifiedProductManager extends SecuredManager {
         curesEvent.setCreationDate(new Date());
         curesEvent.setDeleted(false);
         curesEvent.setEventDate(certificationDate);
-        //TODO: this:
-        curesEvent.setCuresUpdate(false);
+        curesEvent.setCuresUpdate(curesUpdateService.isCuresUpdate(pendingCp));
         curesEvent.setCertifiedProductId(newCertifiedProduct.getId());
         curesUpdateDao.create(curesEvent);
 
@@ -1163,7 +1165,7 @@ public class CertifiedProductManager extends SecuredManager {
         updateCertificationStatusEvents(updatedListing.getId(), existingListing.getCertificationEvents(),
                 updatedListing.getCertificationEvents());
         updateCuresUpdateEvents(updatedListing.getId(), existingListing.getCuresUpdate(),
-                updatedListing.getCertificationResults());
+                updatedListing);
         updateMeaningfulUseUserHistory(updatedListing.getId(), existingListing.getMeaningfulUseUserHistory(),
                 updatedListing.getMeaningfulUseUserHistory());
         updateCertifications(existingListing, updatedListing,
@@ -1876,15 +1878,13 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     private int updateCuresUpdateEvents(Long listingId, Boolean existingCuresUpdate,
-            List<CertificationResult> updatedCertifications) {
+            CertifiedProductSearchDetails updatedListing) {
         int numChanges = 0;
-        /**
-         * pseudocode:
-         * get "cures update" status as of service check from updatedCertifications list
-         * if "new value" !== existingCuresUpdate
-         *   add new cures update entity; set numChanges to "1"
-         */
-        //TODO: Add lots of logic
+        Boolean isCuresUpdate = curesUpdateService.isCuresUpdate(updatedListing);
+        if (existingCuresUpdate != isCuresUpdate) {
+            //TODO: Insert new row
+            numChanges += 1;
+        }
         return numChanges;
     }
 
