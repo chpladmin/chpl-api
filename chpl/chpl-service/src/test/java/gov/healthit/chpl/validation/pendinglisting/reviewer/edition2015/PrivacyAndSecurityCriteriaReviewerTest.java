@@ -2,6 +2,9 @@ package gov.healthit.chpl.validation.pendinglisting.reviewer.edition2015;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 
 import org.junit.Before;
@@ -10,6 +13,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
+import gov.healthit.chpl.SpecialProperties;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
@@ -23,6 +27,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
     private CertificationCriterionDAO certificationCriterionDAO;
     private Environment env;
     private ErrorMessageUtil errorMessageUtil;
+    private SpecialProperties specialProperties;
 
     @Before
     public void before() throws EntityRetrievalException {
@@ -43,6 +48,10 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
                 .thenAnswer(i -> String.format("Attesting to Criteria %s requires that Criteria %s must also be attested to.",
                         i.getArgument(1), i.getArgument(2)));
 
+        specialProperties = Mockito.mock(SpecialProperties.class);
+        Mockito.when(specialProperties.getEffectiveRuleDate())
+                .thenReturn(new GregorianCalendar(2020, Calendar.MARCH, 01).getTime());
+
     }
 
     @Test
@@ -51,6 +60,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
 
         // Setup
         PendingCertifiedProductDTO listing = PendingCertifiedProductDTO.builder()
+                .certificationDate(new Date())
                 .certificationCriterionSingle(PendingCertificationResultDTO.builder()
                         .meetsCriteria(true)
                         .criterion(getCriterionDTO(1L, "170.315 (a)(1)"))
@@ -67,7 +77,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
         listing.setErrorMessages(new HashSet<String>());
 
         PrivacyAndSecurityCriteriaReviewer reviewer = new PrivacyAndSecurityCriteriaReviewer(certificationCriterionDAO, env,
-                errorMessageUtil);
+                errorMessageUtil, specialProperties);
         reviewer.postConstruct();
 
         // Test
@@ -83,6 +93,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
 
         // Setup
         PendingCertifiedProductDTO listing = PendingCertifiedProductDTO.builder()
+                .certificationDate(new Date())
                 .certificationCriterionSingle(PendingCertificationResultDTO.builder()
                         .meetsCriteria(true)
                         .criterion(getCriterionDTO(1L, "170.315 (a)(1)"))
@@ -103,7 +114,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
         listing.setErrorMessages(new HashSet<String>());
 
         PrivacyAndSecurityCriteriaReviewer reviewer = new PrivacyAndSecurityCriteriaReviewer(certificationCriterionDAO, env,
-                errorMessageUtil);
+                errorMessageUtil, specialProperties);
         reviewer.postConstruct();
 
         // Test
