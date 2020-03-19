@@ -35,11 +35,6 @@ public class RequiredCriteriaValidator implements Reviewer {
         this.specialProperties = specialProperties;
     }
 
-    @Autowired
-    public RequiredCriteriaValidator(ErrorMessageUtil msgUtil) {
-        this.msgUtil = msgUtil;
-    }
-
     @Override
     public void review(PendingCertifiedProductDTO listing) {
         // These criterion are only required after effective rule date
