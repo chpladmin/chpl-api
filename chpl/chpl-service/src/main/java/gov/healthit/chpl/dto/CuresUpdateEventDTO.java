@@ -3,7 +3,6 @@ package gov.healthit.chpl.dto;
 import java.io.Serializable;
 import java.util.Date;
 
-import gov.healthit.chpl.entity.listing.CertificationStatusEventEntity;
 import gov.healthit.chpl.entity.listing.CuresUpdateEventEntity;
 import gov.healthit.chpl.util.Util;
 import lombok.AccessLevel;
