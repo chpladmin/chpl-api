@@ -12,7 +12,13 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
+@AllArgsConstructor
+@Builder
+@Data
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -69,14 +75,14 @@ public class CertifiedProduct implements Serializable {
     public CertifiedProduct(final CertifiedProductDetailsDTO dto) {
         this.id = dto.getId();
         if (!StringUtils.isEmpty(dto.getChplProductNumber())) {
-            this.setChplProductNumber(dto.getChplProductNumber());
+            this.chplProductNumber = dto.getChplProductNumber();
         } else {
-            this.setChplProductNumber(dto.getYearCode() + "." + dto.getTestingLabCode() + "."
+            this.chplProductNumber = dto.getYearCode() + "." + dto.getTestingLabCode() + "."
                     + dto.getCertificationBodyCode() + "." + dto.getDeveloper().getDeveloperCode() + "."
                     + dto.getProductCode() + "." + dto.getVersionCode() + "." + dto.getIcsCode() + "."
-                    + dto.getAdditionalSoftwareCode() + "." + dto.getCertifiedDateCode());
+                    + dto.getAdditionalSoftwareCode() + "." + dto.getCertifiedDateCode();
         }
-        this.setLastModifiedDate(dto.getLastModifiedDate() != null ? dto.getLastModifiedDate().getTime() : null);
+        this.lastModifiedDate = dto.getLastModifiedDate() != null ? dto.getLastModifiedDate().getTime() : null;
         this.edition = dto.getYear();
         this.certificationDate = (dto.getCertificationDate() != null ? dto.getCertificationDate().getTime() : -1);
         this.certificationStatus = dto.getCertificationStatusName();
@@ -99,61 +105,5 @@ public class CertifiedProduct implements Serializable {
             return true;
         }
         return false;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getChplProductNumber() {
-        return chplProductNumber;
-    }
-
-    public void setChplProductNumber(final String chplProductNumber) {
-        this.chplProductNumber = chplProductNumber;
-    }
-
-    public Long getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(Long lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
-
-    public String getEdition() {
-        return edition;
-    }
-
-    public void setEdition(final String edition) {
-        this.edition = edition;
-    }
-
-    public long getCertificationDate() {
-        return certificationDate;
-    }
-
-    public void setCertificationDate(final long certificationDate) {
-        this.certificationDate = certificationDate;
-    }
-
-    public String getCertificationStatus() {
-        return certificationStatus;
-    }
-
-    public void setCertificationStatus(String certificationStatus) {
-        this.certificationStatus = certificationStatus;
-    }
-
-    public Boolean getCuresUpdate() {
-        return curesUpdate;
-    }
-
-    public void setCuresUpdate(Boolean curesUpdate) {
-        this.curesUpdate = curesUpdate;
     }
 }
