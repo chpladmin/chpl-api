@@ -38,19 +38,28 @@ public class CuresUpdateService {
     private Boolean isCuresUpdate(List<CuresUpdateCriterion> criteria) {
         try {
             // add flag check for ERD
-            return meetsB6Requirement(criteria)
-                    && hasNoRevisedCriteria(criteria)
-                    && (meetsD12D13Requirement(criteria) && meetsG8Requirement(criteria)
-                            || !meetsD12D13Requirement(criteria)
-                            && (hasNoCuresCriteria(criteria)
-                                    || (!hasNoCuresCriteria(criteria) && passesOnlyDependentCriteriaRule(criteria))));
+            if (!meetsB6RequirementForCuresUpdate(criteria)) {
+                return false;
+            }
+            if (!passRevisedCriteriaRequirement(criteria)) {
+                return false;
+            }
+            if (meetsD12D13RequirementForCuresUpdate(criteria)) {
+                return meetsG8RequirementForCuresUpdate(criteria);
+            } else {
+                if (hasNoCuresCriteria(criteria)) {
+                    return passesOnlyDependentCriteriaRule(criteria);
+                } else {
+                    return false;
+                }
+            }
         } catch (Exception e) {
             LOGGER.error("Invalid state - " + e.getMessage());
         }
         return false;
     }
 
-    private Boolean meetsB6Requirement(List<CuresUpdateCriterion> criteria) throws Exception {
+    private Boolean meetsB6RequirementForCuresUpdate(List<CuresUpdateCriterion> criteria) throws Exception {
         if (hasB6Criterion(criteria)) {
             if (isPast24Months()) {
                 if (isPast36Months()) {
@@ -68,7 +77,7 @@ public class CuresUpdateService {
                 .findFirst().get().getSuccess();
     }
 
-    private Boolean hasNoRevisedCriteria(List<CuresUpdateCriterion> criteria) throws Exception {
+    private Boolean passRevisedCriteriaRequirement(List<CuresUpdateCriterion> criteria) throws Exception {
         if (hasRevisedCriteria(criteria)) {
             if (isPast24Months()) {
                 throw new Exception("Listing is not valid");
@@ -101,7 +110,7 @@ public class CuresUpdateService {
                 .count() > 0;
     }
 
-    private Boolean meetsD12D13Requirement(List<CuresUpdateCriterion> criteria) {
+    private Boolean meetsD12D13RequirementForCuresUpdate(List<CuresUpdateCriterion> criteria) {
         if (hasD12D13Criteria(criteria)) {
             return true;
         }
@@ -118,7 +127,7 @@ public class CuresUpdateService {
                 .count() == 2;
     }
 
-    private Boolean meetsG8Requirement(List<CuresUpdateCriterion> criteria) throws Exception {
+    private Boolean meetsG8RequirementForCuresUpdate(List<CuresUpdateCriterion> criteria) throws Exception {
         if (hasG8Criteria(criteria)) {
             if (isPast24Months()) {
                 throw new Exception("Listing is not valid");
