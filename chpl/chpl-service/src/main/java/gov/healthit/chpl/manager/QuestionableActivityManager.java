@@ -217,6 +217,11 @@ public class QuestionableActivityManager implements EnvironmentAware {
                 createListingActivity(activity, origListing.getId(), activityDate, activityUser,
                         QuestionableActivityTriggerConcept.NON_CURES_CRITERIA_ADDED_TO_EXISTING_LISTING, activityReason);
             }
+            activity = listingQuestionableActivityProvider.checkNonCuresAuditCriteriaAndAddedIcsOnEdit(origListing, newListing);
+            if (activity != null) {
+                createListingActivity(activity, origListing.getId(), activityDate, activityUser,
+                        QuestionableActivityTriggerConcept.NON_CURES_CRITERIA_AND_ICS_ADDED_TO_EXISTING_LISTING, activityReason);
+            }
 
             // finally check for other changes that are only questionable
             // outside of the acceptable activity threshold

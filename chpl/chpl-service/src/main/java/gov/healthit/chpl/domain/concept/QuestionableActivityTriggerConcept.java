@@ -39,6 +39,9 @@ public enum QuestionableActivityTriggerConcept implements Serializable {
     NON_CURES_CRITERIA_ADDED_TO_EXISTING_LISTING(
             "Old version of Certification Criteria added for existing listing"
     ),
+    NON_CURES_CRITERIA_AND_ICS_ADDED_TO_EXISTING_LISTING(
+            "Old version of Certification Criteria changed to ICS"
+    ),
     G1_SUCCESS_EDITED(
             "Measure Successfully Tested for 170.314 (g)(1) Edited"
     ),

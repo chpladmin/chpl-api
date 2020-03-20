@@ -617,6 +617,56 @@ public class ListingQuestionableActivityProvider {
         return activity;
     }
 
+    public QuestionableActivityListingDTO checkNonCuresAuditCriteriaAndAddedIcsOnEdit(CertifiedProductSearchDetails origListing,
+            CertifiedProductSearchDetails newListing) {
+        QuestionableActivityListingDTO activity = null;
+        if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
+            if (!origListing.getIcs().getInherits() && newListing.getIcs().getInherits()) { // ICS has been added
+                List<String> matchingNewCriteriaNumbers = new ArrayList<String>();
+                List<String> matchingOldCriteriaNumbers = new ArrayList<String>();
+                // Does the new listing attest to one of the listing in question?
+                if (isCriteriaAttestedTo(d2Criterion, newListing)) {
+                    matchingNewCriteriaNumbers.add(d2Criterion.getNumber());
+                }
+                if (isCriteriaAttestedTo(d3Criterion, newListing)) {
+                    matchingNewCriteriaNumbers.add(d3Criterion.getNumber());
+                }
+                if (isCriteriaAttestedTo(d10Criterion, newListing)) {
+                    matchingNewCriteriaNumbers.add(d10Criterion.getNumber());
+                }
+                if (matchingNewCriteriaNumbers.size() > 0) {
+                    // Need these for the "before" data
+                    if (isCriteriaAttestedTo(d2Criterion, origListing)) {
+                        matchingOldCriteriaNumbers.add(d2Criterion.getNumber());
+                    }
+                    if (isCriteriaAttestedTo(d3Criterion, origListing)) {
+                        matchingOldCriteriaNumbers.add(d3Criterion.getNumber());
+                    }
+                    if (isCriteriaAttestedTo(d10Criterion, origListing)) {
+                        matchingOldCriteriaNumbers.add(d10Criterion.getNumber());
+                    }
+
+                    String newCriteriaNumbers = matchingNewCriteriaNumbers.stream()
+                            .collect(Collectors.joining(", "));
+                    String oldCriteriaNumbers = matchingOldCriteriaNumbers.stream()
+                            .collect(Collectors.joining(", "));
+                    activity = new QuestionableActivityListingDTO();
+                    activity.setBefore("ICS = 0, Criteria Numbers: " + oldCriteriaNumbers);
+                    activity.setAfter("ICS = 1, Criteria Numbers: " + newCriteriaNumbers);
+                }
+            }
+        }
+
+        return activity;
+    }
+
+    private Boolean isCriteriaAttestedTo(CertificationCriterion criteriaToCheck, CertifiedProductSearchDetails listing) {
+        return listing.getCertificationResults().stream()
+                .filter(cr -> cr.getCriterion().getId().equals(criteriaToCheck.getId()))
+                .findAny()
+                .isPresent();
+    }
+
     private Boolean hasCriteriaChangedToAttestedTo(CertificationCriterion criteriaToCheck,
             CertifiedProductSearchDetails newListing, CertifiedProductSearchDetails origListing) {
 
