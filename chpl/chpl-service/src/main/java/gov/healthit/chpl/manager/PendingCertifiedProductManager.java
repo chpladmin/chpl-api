@@ -42,6 +42,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
+import gov.healthit.chpl.service.CuresUpdateService;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.PendingValidator;
@@ -58,6 +59,7 @@ public class PendingCertifiedProductManager extends SecuredManager {
     private CQMCriterionDAO cqmCriterionDAO;
     private MacraMeasureDAO macraDao;
     private ActivityManager activityManager;
+    private CuresUpdateService curesUpdateService;
 
     private List<CQMCriterion> cqmCriteria = new ArrayList<CQMCriterion>();
     private List<MacraMeasure> macraMeasures = new ArrayList<MacraMeasure>();
@@ -70,7 +72,8 @@ public class PendingCertifiedProductManager extends SecuredManager {
             UserDAO userDAO,
             CQMCriterionDAO cqmCriterionDAO,
             MacraMeasureDAO macraDao,
-            ActivityManager activityManager) {
+            ActivityManager activityManager,
+            CuresUpdateService curesUpdateService) {
 
         this.certRules = certRules;
         this.validatorFactory = validatorFactory;
@@ -80,6 +83,7 @@ public class PendingCertifiedProductManager extends SecuredManager {
         this.cqmCriterionDAO = cqmCriterionDAO;
         this.macraDao = macraDao;
         this.activityManager = activityManager;
+        this.curesUpdateService = curesUpdateService;
 
         refreshData();
     }
@@ -127,6 +131,7 @@ public class PendingCertifiedProductManager extends SecuredManager {
         validate(pendingCp);
 
         PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(pendingCp);
+        pcpDetails.setCuresUpdate(curesUpdateService.isCuresUpdate(pcpDetails));
         addAllVersionsToCmsCriterion(pcpDetails);
         addAllMeasuresToCertificationCriteria(pcpDetails);
         addAvailableTestFunctionalities(pcpDetails);
