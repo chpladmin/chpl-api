@@ -32,7 +32,7 @@ public class CuresUpdateEventEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cures_update_event_id")
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "certified_product_id")
