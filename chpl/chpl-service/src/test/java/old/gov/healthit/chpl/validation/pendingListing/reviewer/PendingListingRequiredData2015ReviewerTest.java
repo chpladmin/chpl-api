@@ -30,6 +30,7 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.RequiredData2015Reviewer;
 import old.gov.healthit.chpl.TestingUsers;
 import old.gov.healthit.chpl.util.ListingMockUtil;
@@ -61,6 +62,9 @@ public class PendingListingRequiredData2015ReviewerTest extends TestingUsers {
     @Autowired
     private CertificationResultRules certRules;
 
+    @Autowired
+    private ValidationUtils validationUtils;
+
     @Mock
     private ResourcePermissions resourcePermissions;
 
@@ -75,7 +79,7 @@ public class PendingListingRequiredData2015ReviewerTest extends TestingUsers {
         setupForAcbUser(resourcePermissions);
 
         reviewer = new RequiredData2015Reviewer(macraMeasureDAO, testFuncDao, testProcDao,
-                testDataDao, msgUtil, resourcePermissions, certRules);
+                testDataDao, msgUtil, resourcePermissions, certRules, validationUtils);
 
         Mockito.doAnswer(new Answer<String>() {
             @Override

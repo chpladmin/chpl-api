@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
@@ -103,12 +102,11 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     private TestFunctionalityDAO testFuncDao;
     private TestProcedureDAO testProcDao;
     private TestDataDAO testDataDao;
-    private CertificationCriterionDAO criteriaDao;
     private ValidationUtils validationUtils;
 
     @Autowired
     public RequiredData2015Reviewer(MacraMeasureDAO macraDao, TestFunctionalityDAO testFuncDao,
-            TestProcedureDAO testProcDao, TestDataDAO testDataDao, CertificationCriterionDAO criteriaDao,
+            TestProcedureDAO testProcDao, TestDataDAO testDataDao,
             ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
             CertificationResultRules certRules, ValidationUtils validationUtils) {
         super(msgUtil, resourcePermissions, certRules);
@@ -117,7 +115,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         this.testFuncDao = testFuncDao;
         this.testProcDao = testProcDao;
         this.testDataDao = testDataDao;
-        this.criteriaDao = criteriaDao;
         this.validationUtils = validationUtils;
 
         e2e3Criterion.add("170.315 (e)(2)");
