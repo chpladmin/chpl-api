@@ -5,8 +5,11 @@ import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.ff4j.FF4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
@@ -17,8 +20,11 @@ import lombok.Data;
 @Component
 public class CuresUpdateService {
     private static final Logger LOGGER = LogManager.getLogger(CuresUpdateService.class);
+    private FF4j ff4j;
 
-    public CuresUpdateService() {
+    @Autowired
+    public CuresUpdateService(FF4j ff4j) {
+        this.ff4j = ff4j;
     }
 
     public Boolean isCuresUpdate(CertifiedProductSearchDetails listing) {
@@ -37,7 +43,9 @@ public class CuresUpdateService {
 
     private Boolean isCuresUpdate(List<CuresUpdateCriterion> criteria) {
         try {
-            // add flag check for ERD
+            if (!ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
+                return false;
+            }
             if (!meetsB6RequirementForCuresUpdate(criteria)) {
                 return false;
             }
@@ -172,29 +180,29 @@ public class CuresUpdateService {
                             || criterion.getCuresNumber().equalsIgnoreCase("170.315 (a)(13)")
                             || criterion.getCuresNumber().equalsIgnoreCase("170.315 (a)(14)")
                             || criterion.getCuresNumber().equalsIgnoreCase("170.315 (a)(15)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (b)(1) Cures Update")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (b)(2) Cures Update")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (b)(3) Cures Update")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (b)(7) Cures Update")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (b)(8) Cures Update")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (b)(9) Cures Update")
+                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (b)(1) (Cures Update)")
+                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (b)(2) (Cures Update)")
+                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (b)(3) (Cures Update)")
+                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (b)(7) (Cures Update)")
+                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (b)(8) (Cures Update)")
+                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (b)(9) (Cures Update)")
                             || criterion.getCuresNumber().equalsIgnoreCase("170.315 (c)(1)")
                             || criterion.getCuresNumber().equalsIgnoreCase("170.315 (c)(2)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (c)(3) Cures Update")
+                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (c)(3) (Cures Update)")
                             || criterion.getCuresNumber().equalsIgnoreCase("170.315 (c)(4)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (e)(1) Cures Update")
+                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (e)(1) (Cures Update)")
                             || criterion.getCuresNumber().equalsIgnoreCase("170.315 (e)(2)")
                             || criterion.getCuresNumber().equalsIgnoreCase("170.315 (e)(3)")
                             || criterion.getCuresNumber().equalsIgnoreCase("170.315 (f)(1)")
                             || criterion.getCuresNumber().equalsIgnoreCase("170.315 (f)(2)")
                             || criterion.getCuresNumber().equalsIgnoreCase("170.315 (f)(3)")
                             || criterion.getCuresNumber().equalsIgnoreCase("170.315 (f)(4)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (f)(5) Cures Update")
+                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (f)(5) (Cures Update)")
                             || criterion.getCuresNumber().equalsIgnoreCase("170.315 (f)(6)")
                             || criterion.getCuresNumber().equalsIgnoreCase("170.315 (f)(7)")
                             || criterion.getCuresNumber().equalsIgnoreCase("170.315 (g)(7)")
                             || criterion.getCuresNumber().equalsIgnoreCase("170.315 (g)(8)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (g)(9) Cures Update")
+                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (g)(9) (Cures Update)")
                             || criterion.getCuresNumber().equalsIgnoreCase("170.315 (h)(1)")
                             || criterion.getCuresNumber().equalsIgnoreCase("170.315 (h)(2)");
                 })
@@ -214,8 +222,8 @@ public class CuresUpdateService {
                 .filter(criterion -> {
                     return !criterion.getCuresNumber().equalsIgnoreCase("170.315 (b)(10)")
                             && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (d)(1)")
-                            && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (d)(2) Cures Update")
-                            && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (d)(3) Cures Update")
+                            && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (d)(2) (Cures Update)")
+                            && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (d)(3) (Cures Update)")
                             && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (d)(4)")
                             && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (d)(5)")
                             && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (d)(6)")
@@ -229,9 +237,9 @@ public class CuresUpdateService {
                             && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (g)(3)")
                             && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (g)(4)")
                             && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (g)(5)")
-                            && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (g)(6) Cures Update")
-                            && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (d)(10) Cures Update") // not sure about this one
-                            && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (g)(10)"); // not sure about this one
+                            && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (g)(6) (Cures Update)")
+                            && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (d)(10) (Cures Update)") // maybe
+                            && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (g)(10)"); // maybe
                 })
                 .count() == 0;
     }
