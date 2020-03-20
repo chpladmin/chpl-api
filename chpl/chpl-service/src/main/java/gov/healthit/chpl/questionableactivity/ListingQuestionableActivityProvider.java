@@ -35,6 +35,7 @@ import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.Util;
 
 @Component
 public class ListingQuestionableActivityProvider {
@@ -353,7 +354,7 @@ public class ListingQuestionableActivityProvider {
                             // orig did not have this cert result but new does so it was added
                             QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
                             activity.setBefore(null);
-                            activity.setAfter(newCertResult.getCriterion().formatCriteriaNumber());
+                            activity.setAfter(Util.formatCriteriaNumber(newCertResult.getCriterion()));
                             certAddedActivities.add(activity);
                         }
                         break;
@@ -379,7 +380,7 @@ public class ListingQuestionableActivityProvider {
                         if (origCertResult.isSuccess() && !newCertResult.isSuccess()) {
                             // orig did have this cert result but new does not so it was removed
                             QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
-                            activity.setBefore(origCertResult.getCriterion().formatCriteriaNumber());
+                            activity.setBefore(Util.formatCriteriaNumber(origCertResult.getCriterion()));
                             activity.setAfter(null);
                             certRemovedActivities.add(activity);
                         }
