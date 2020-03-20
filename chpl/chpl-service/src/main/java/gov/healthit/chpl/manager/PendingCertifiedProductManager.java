@@ -198,8 +198,10 @@ public class PendingCertifiedProductManager extends SecuredManager {
             validate(pendingCpDto);
         } catch (Exception ex) {
             // something unexpected happened on upload make sure the user gets an appropriate error message
-            EntityCreationException toThrow = new EntityCreationException(
-                    "An unexpected error occurred. Please review the information in your upload file. The CHPL team has been notified.");
+            String message = "An unexpected error occurred. "
+                    + "Please review the information in your upload file. The CHPL team has been notified.";
+            LOGGER.error(message);
+            EntityCreationException toThrow = new EntityCreationException(message);
             toThrow.setStackTrace(ex.getStackTrace());
             throw toThrow;
         }

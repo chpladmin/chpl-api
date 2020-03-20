@@ -63,7 +63,7 @@ public class CuresUpdateService {
         if (hasB6Criterion(criteria)) {
             if (isPast24Months()) {
                 if (isPast36Months()) {
-                    throw new Exception("Listing is not valid");
+                    throw new Exception("Listing is not valid; fails B6 Requirement past 36 months");
                 } else {
                     return false;
                 }
@@ -80,7 +80,7 @@ public class CuresUpdateService {
     private Boolean passRevisedCriteriaRequirement(List<CuresUpdateCriterion> criteria) throws Exception {
         if (hasRevisedCriteria(criteria)) {
             if (isPast24Months()) {
-                throw new Exception("Listing is not valid");
+                throw new Exception("Listing is not valid; has revised criteria past 24 months");
             } else {
                 return false;
             }
@@ -130,7 +130,7 @@ public class CuresUpdateService {
     private Boolean meetsG8RequirementForCuresUpdate(List<CuresUpdateCriterion> criteria) throws Exception {
         if (hasG8Criteria(criteria)) {
             if (isPast24Months()) {
-                throw new Exception("Listing is not valid");
+                throw new Exception("Listing is not valid; fails g8 requirement past 24 months");
             } else {
                 return false;
             }
@@ -149,7 +149,7 @@ public class CuresUpdateService {
     private Boolean hasNoCuresCriteria(List<CuresUpdateCriterion> criteria) throws Exception {
         if (hasCuresCriteria(criteria)) {
             if (isPast24Months()) {
-                throw new Exception("Listing is not valid");
+                throw new Exception("Listing is not valid; doesn't have d12/d13 and is past 24 months");
             } else {
                 return false;
             }
