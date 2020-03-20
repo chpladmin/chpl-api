@@ -1,7 +1,11 @@
 package gov.healthit.chpl.service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,6 +18,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.Util;
 import lombok.Data;
 
@@ -21,23 +26,85 @@ import lombok.Data;
 public class CuresUpdateService {
     private static final Logger LOGGER = LogManager.getLogger(CuresUpdateService.class);
     private FF4j ff4j;
+    private CertificationCriterionService criteriaService;
+
+    List<String> curesCriteriaNumbers = new ArrayList<String>();
+    List<String> revisedCriteriaNumbers = new ArrayList<String>();
 
     @Autowired
-    public CuresUpdateService(FF4j ff4j) {
+    public CuresUpdateService(FF4j ff4j, CertificationCriterionService criteriaService) {
         this.ff4j = ff4j;
+        this.criteriaService = criteriaService;
+    }
+
+    @PostConstruct
+    public void postConstruct() {
+        this.curesCriteriaNumbers = new ArrayList<String>(Arrays.asList(
+                criteriaService.get(Criteria2015.A_1).getNumber(),
+                criteriaService.get(Criteria2015.A_2).getNumber(),
+                criteriaService.get(Criteria2015.A_3).getNumber(),
+                criteriaService.get(Criteria2015.A_4).getNumber(),
+                criteriaService.get(Criteria2015.A_5).getNumber(),
+                criteriaService.get(Criteria2015.A_9).getNumber(),
+                criteriaService.get(Criteria2015.A_10).getNumber(),
+                criteriaService.get(Criteria2015.A_12).getNumber(),
+                criteriaService.get(Criteria2015.A_13).getNumber(),
+                criteriaService.get(Criteria2015.A_14).getNumber(),
+                criteriaService.get(Criteria2015.A_15).getNumber(),
+                criteriaService.get(Criteria2015.B_1).getNumber(),
+                criteriaService.get(Criteria2015.B_2).getNumber(),
+                criteriaService.get(Criteria2015.B_3_REVISED).getNumber(),
+                criteriaService.get(Criteria2015.B_7_REVISED).getNumber(),
+                criteriaService.get(Criteria2015.B_8_REVISED).getNumber(),
+                criteriaService.get(Criteria2015.B_9_REVISED).getNumber(),
+                criteriaService.get(Criteria2015.C_1).getNumber(),
+                criteriaService.get(Criteria2015.C_2).getNumber(),
+                criteriaService.get(Criteria2015.C_3_REVISED).getNumber(),
+                criteriaService.get(Criteria2015.C_4).getNumber(),
+                criteriaService.get(Criteria2015.E_1_REVISED).getNumber(),
+                criteriaService.get(Criteria2015.E_2).getNumber(),
+                criteriaService.get(Criteria2015.E_3).getNumber(),
+                criteriaService.get(Criteria2015.F_1).getNumber(),
+                criteriaService.get(Criteria2015.F_2).getNumber(),
+                criteriaService.get(Criteria2015.F_3).getNumber(),
+                criteriaService.get(Criteria2015.F_4).getNumber(),
+                criteriaService.get(Criteria2015.F_5_REVISED).getNumber(),
+                criteriaService.get(Criteria2015.F_6).getNumber(),
+                criteriaService.get(Criteria2015.F_7).getNumber(),
+                criteriaService.get(Criteria2015.G_7).getNumber(),
+                criteriaService.get(Criteria2015.G_8).getNumber(),
+                criteriaService.get(Criteria2015.G_9_REVISED).getNumber(),
+                criteriaService.get(Criteria2015.H_1).getNumber(),
+                criteriaService.get(Criteria2015.H_2).getNumber()));
+
+        revisedCriteriaNumbers = new ArrayList<String>(Arrays.asList(
+                criteriaService.get(Criteria2015.B_1).getNumber(),
+                criteriaService.get(Criteria2015.B_2).getNumber(),
+                criteriaService.get(Criteria2015.B_3).getNumber(),
+                criteriaService.get(Criteria2015.B_7).getNumber(),
+                criteriaService.get(Criteria2015.B_8).getNumber(),
+                criteriaService.get(Criteria2015.B_9).getNumber(),
+                criteriaService.get(Criteria2015.C_3).getNumber(),
+                criteriaService.get(Criteria2015.D_2).getNumber(),
+                criteriaService.get(Criteria2015.D_3).getNumber(),
+                criteriaService.get(Criteria2015.D_10).getNumber(),
+                criteriaService.get(Criteria2015.E_1).getNumber(),
+                criteriaService.get(Criteria2015.F_5).getNumber(),
+                criteriaService.get(Criteria2015.G_6).getNumber(),
+                criteriaService.get(Criteria2015.G_9).getNumber()));
     }
 
     public Boolean isCuresUpdate(CertifiedProductSearchDetails listing) {
         List<CuresUpdateCriterion> criteria = listing.getCertificationResults().stream()
                 .map(criterion -> new CuresUpdateCriterion(criterion))
-                .collect(Collectors.<CuresUpdateCriterion>toList());
+                .collect(Collectors.<CuresUpdateCriterion> toList());
         return isCuresUpdate(criteria);
     }
 
     public Boolean isCuresUpdate(PendingCertifiedProductDTO listing) {
         List<CuresUpdateCriterion> criteria = listing.getCertificationCriterion().stream()
                 .map(criterion -> new CuresUpdateCriterion(criterion))
-                .collect(Collectors.<CuresUpdateCriterion>toList());
+                .collect(Collectors.<CuresUpdateCriterion> toList());
         return isCuresUpdate(criteria);
     }
 
@@ -79,9 +146,11 @@ public class CuresUpdateService {
         }
         return true;
     }
+
     private Boolean hasB6Criterion(List<CuresUpdateCriterion> criteria) {
         return criteria.stream()
-                .filter(criterion -> criterion.getCuresNumber().equalsIgnoreCase("170.315 (b)(6)"))
+                .filter(criterion -> criterion.getCuresNumber()
+                        .equalsIgnoreCase(criteriaService.get(Criteria2015.B_6).getNumber()))
                 .findFirst().get().getSuccess();
     }
 
@@ -98,24 +167,9 @@ public class CuresUpdateService {
 
     private Boolean hasRevisedCriteria(List<CuresUpdateCriterion> criteria) {
         return criteria.stream()
-                .filter(criterion -> criterion.getSuccess())
-                .filter(criterion -> {
-                    return criterion.getCuresNumber().equalsIgnoreCase("170.315 (b)(1)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (b)(2)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (b)(3)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (b)(7)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (b)(8)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (b)(9)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (c)(3)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (d)(2)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (d)(3)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (d)(10)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (e)(1)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (f)(5)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (g)(6)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (g)(9)");
-                })
-                .count() > 0;
+                .filter(criterion -> criterion.getSuccess() && revisedCriteriaNumbers.contains(criterion.getCuresNumber()))
+                .findAny()
+                .isPresent();
     }
 
     private Boolean meetsD12D13RequirementForCuresUpdate(List<CuresUpdateCriterion> criteria) {
@@ -129,8 +183,8 @@ public class CuresUpdateService {
         return criteria.stream()
                 .filter(criterion -> criterion.getSuccess())
                 .filter(criterion -> {
-                    return criterion.getCuresNumber().equalsIgnoreCase("170.315 (d)(12)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (d)(13)");
+                    return criterion.getCuresNumber().equalsIgnoreCase(criteriaService.get(Criteria2015.D_12).getNumber())
+                            || criterion.getCuresNumber().equalsIgnoreCase(criteriaService.get(Criteria2015.D_13).getNumber());
                 })
                 .count() == 2;
     }
@@ -149,10 +203,10 @@ public class CuresUpdateService {
     private Boolean hasG8Criteria(List<CuresUpdateCriterion> criteria) {
         return criteria.stream()
                 .filter(criterion -> criterion.getSuccess())
-                .filter(criterion -> criterion.getCuresNumber().equalsIgnoreCase("170.315 (g)(8)"))
+                .filter(criterion -> criterion.getCuresNumber()
+                        .equalsIgnoreCase(criteriaService.get(Criteria2015.G_8).getNumber()))
                 .count() == 1;
     }
-
 
     private Boolean hasNoCuresCriteria(List<CuresUpdateCriterion> criteria) throws Exception {
         if (hasCuresCriteria(criteria)) {
@@ -167,51 +221,15 @@ public class CuresUpdateService {
 
     private Boolean hasCuresCriteria(List<CuresUpdateCriterion> criteria) {
         return criteria.stream()
-                .filter(criterion -> criterion.getSuccess())
-                .filter(criterion -> {
-                    return criterion.getCuresNumber().equalsIgnoreCase("170.315 (a)(1)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (a)(2)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (a)(3)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (a)(4)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (a)(5)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (a)(9)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (a)(10)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (a)(12)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (a)(13)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (a)(14)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (a)(15)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (b)(1) (Cures Update)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (b)(2) (Cures Update)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (b)(3) (Cures Update)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (b)(7) (Cures Update)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (b)(8) (Cures Update)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (b)(9) (Cures Update)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (c)(1)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (c)(2)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (c)(3) (Cures Update)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (c)(4)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (e)(1) (Cures Update)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (e)(2)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (e)(3)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (f)(1)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (f)(2)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (f)(3)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (f)(4)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (f)(5) (Cures Update)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (f)(6)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (f)(7)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (g)(7)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (g)(8)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (g)(9) (Cures Update)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (h)(1)")
-                            || criterion.getCuresNumber().equalsIgnoreCase("170.315 (h)(2)");
-                })
-                .count() > 0;
+                .filter(criterion -> criterion.getSuccess() && curesCriteriaNumbers.contains(criterion.getCuresNumber()))
+                .findAny()
+                .isPresent();
+
     }
 
     private Boolean passesOnlyDependentCriteriaRule(List<CuresUpdateCriterion> criteria) throws Exception {
         if (hasOnlyDependentCriteria(criteria)) {
-           return true;
+            return true;
         }
         throw new Exception("In \"no\" state on last check. Results are unpredictable");
     }
@@ -220,29 +238,33 @@ public class CuresUpdateService {
         return criteria.stream()
                 .filter(criterion -> criterion.getSuccess())
                 .filter(criterion -> {
-                    return !criterion.getCuresNumber().equalsIgnoreCase("170.315 (b)(10)")
-                            && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (d)(1)")
-                            && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (d)(2) (Cures Update)")
-                            && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (d)(3) (Cures Update)")
-                            && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (d)(4)")
-                            && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (d)(5)")
-                            && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (d)(6)")
-                            && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (d)(7)")
-                            && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (d)(8)")
-                            && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (d)(9)")
-                            && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (d)(10)")
-                            && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (d)(11)")
-                            && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (g)(1)")
-                            && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (g)(2)")
-                            && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (g)(3)")
-                            && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (g)(4)")
-                            && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (g)(5)")
-                            && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (g)(6) (Cures Update)")
+                    return !criterion.getCuresNumber().equalsIgnoreCase(criteriaService.get(Criteria2015.B_10).getNumber())
+                            && !criterion.getCuresNumber().equalsIgnoreCase(criteriaService.get(Criteria2015.D_1).getNumber())
+                            && !criterion.getCuresNumber()
+                                    .equalsIgnoreCase(criteriaService.get(Criteria2015.D_2_REVISED).getNumber())
+                            && !criterion.getCuresNumber()
+                                    .equalsIgnoreCase(criteriaService.get(Criteria2015.D_3_REVISED).getNumber())
+                            && !criterion.getCuresNumber().equalsIgnoreCase(criteriaService.get(Criteria2015.D_4).getNumber())
+                            && !criterion.getCuresNumber().equalsIgnoreCase(criteriaService.get(Criteria2015.D_5).getNumber())
+                            && !criterion.getCuresNumber().equalsIgnoreCase(criteriaService.get(Criteria2015.D_6).getNumber())
+                            && !criterion.getCuresNumber().equalsIgnoreCase(criteriaService.get(Criteria2015.D_7).getNumber())
+                            && !criterion.getCuresNumber().equalsIgnoreCase(criteriaService.get(Criteria2015.D_8).getNumber())
+                            && !criterion.getCuresNumber().equalsIgnoreCase(criteriaService.get(Criteria2015.D_9).getNumber())
+                            && !criterion.getCuresNumber().equalsIgnoreCase(criteriaService.get(Criteria2015.D_10).getNumber())
+                            && !criterion.getCuresNumber().equalsIgnoreCase(criteriaService.get(Criteria2015.D_11).getNumber())
+                            && !criterion.getCuresNumber().equalsIgnoreCase(criteriaService.get(Criteria2015.G_1).getNumber())
+                            && !criterion.getCuresNumber().equalsIgnoreCase(criteriaService.get(Criteria2015.G_2).getNumber())
+                            && !criterion.getCuresNumber().equalsIgnoreCase(criteriaService.get(Criteria2015.G_3).getNumber())
+                            && !criterion.getCuresNumber().equalsIgnoreCase(criteriaService.get(Criteria2015.G_4).getNumber())
+                            && !criterion.getCuresNumber().equalsIgnoreCase(criteriaService.get(Criteria2015.G_5).getNumber())
+                            && !criterion.getCuresNumber()
+                                    .equalsIgnoreCase(criteriaService.get(Criteria2015.G_6_REVISED).getNumber())
                             && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (d)(10) (Cures Update)") // maybe
-                            && !criterion.getCuresNumber().equalsIgnoreCase("170.315 (g)(10)"); // maybe
+                            && !criterion.getCuresNumber().equalsIgnoreCase(criteriaService.get(Criteria2015.G_10).getNumber()); // maybe
                 })
                 .count() == 0;
     }
+
     private Boolean isPast24Months() {
         return false;
     }
