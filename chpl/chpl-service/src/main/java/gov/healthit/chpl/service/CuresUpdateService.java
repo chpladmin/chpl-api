@@ -28,8 +28,8 @@ public class CuresUpdateService {
     private FF4j ff4j;
     private CertificationCriterionService criteriaService;
 
-    List<String> curesCriteriaNumbers = new ArrayList<String>();
-    List<String> revisedCriteriaNumbers = new ArrayList<String>();
+    List<Long> curesCriteriaIds = new ArrayList<Long>();
+    List<Long> revisedCriteriaIds = new ArrayList<Long>();
 
     @Autowired
     public CuresUpdateService(FF4j ff4j, CertificationCriterionService criteriaService) {
@@ -39,59 +39,59 @@ public class CuresUpdateService {
 
     @PostConstruct
     public void postConstruct() {
-        this.curesCriteriaNumbers = new ArrayList<String>(Arrays.asList(
-                criteriaService.get(Criteria2015.A_1).getNumber(),
-                criteriaService.get(Criteria2015.A_2).getNumber(),
-                criteriaService.get(Criteria2015.A_3).getNumber(),
-                criteriaService.get(Criteria2015.A_4).getNumber(),
-                criteriaService.get(Criteria2015.A_5).getNumber(),
-                criteriaService.get(Criteria2015.A_9).getNumber(),
-                criteriaService.get(Criteria2015.A_10).getNumber(),
-                criteriaService.get(Criteria2015.A_12).getNumber(),
-                criteriaService.get(Criteria2015.A_13).getNumber(),
-                criteriaService.get(Criteria2015.A_14).getNumber(),
-                criteriaService.get(Criteria2015.A_15).getNumber(),
-                criteriaService.get(Criteria2015.B_1).getNumber(),
-                criteriaService.get(Criteria2015.B_2).getNumber(),
-                criteriaService.get(Criteria2015.B_3_REVISED).getNumber(),
-                criteriaService.get(Criteria2015.B_7_REVISED).getNumber(),
-                criteriaService.get(Criteria2015.B_8_REVISED).getNumber(),
-                criteriaService.get(Criteria2015.B_9_REVISED).getNumber(),
-                criteriaService.get(Criteria2015.C_1).getNumber(),
-                criteriaService.get(Criteria2015.C_2).getNumber(),
-                criteriaService.get(Criteria2015.C_3_REVISED).getNumber(),
-                criteriaService.get(Criteria2015.C_4).getNumber(),
-                criteriaService.get(Criteria2015.E_1_REVISED).getNumber(),
-                criteriaService.get(Criteria2015.E_2).getNumber(),
-                criteriaService.get(Criteria2015.E_3).getNumber(),
-                criteriaService.get(Criteria2015.F_1).getNumber(),
-                criteriaService.get(Criteria2015.F_2).getNumber(),
-                criteriaService.get(Criteria2015.F_3).getNumber(),
-                criteriaService.get(Criteria2015.F_4).getNumber(),
-                criteriaService.get(Criteria2015.F_5_REVISED).getNumber(),
-                criteriaService.get(Criteria2015.F_6).getNumber(),
-                criteriaService.get(Criteria2015.F_7).getNumber(),
-                criteriaService.get(Criteria2015.G_7).getNumber(),
-                criteriaService.get(Criteria2015.G_8).getNumber(),
-                criteriaService.get(Criteria2015.G_9_REVISED).getNumber(),
-                criteriaService.get(Criteria2015.H_1).getNumber(),
-                criteriaService.get(Criteria2015.H_2).getNumber()));
+        this.curesCriteriaIds = new ArrayList<Long>(Arrays.asList(
+                criteriaService.get(Criteria2015.A_1).getId(),
+                criteriaService.get(Criteria2015.A_2).getId(),
+                criteriaService.get(Criteria2015.A_3).getId(),
+                criteriaService.get(Criteria2015.A_4).getId(),
+                criteriaService.get(Criteria2015.A_5).getId(),
+                criteriaService.get(Criteria2015.A_9).getId(),
+                criteriaService.get(Criteria2015.A_10).getId(),
+                criteriaService.get(Criteria2015.A_12).getId(),
+                criteriaService.get(Criteria2015.A_13).getId(),
+                criteriaService.get(Criteria2015.A_14).getId(),
+                criteriaService.get(Criteria2015.A_15).getId(),
+                criteriaService.get(Criteria2015.B_1).getId(),
+                criteriaService.get(Criteria2015.B_2).getId(),
+                criteriaService.get(Criteria2015.B_3_REVISED).getId(),
+                criteriaService.get(Criteria2015.B_7_REVISED).getId(),
+                criteriaService.get(Criteria2015.B_8_REVISED).getId(),
+                criteriaService.get(Criteria2015.B_9_REVISED).getId(),
+                criteriaService.get(Criteria2015.C_1).getId(),
+                criteriaService.get(Criteria2015.C_2).getId(),
+                criteriaService.get(Criteria2015.C_3_REVISED).getId(),
+                criteriaService.get(Criteria2015.C_4).getId(),
+                criteriaService.get(Criteria2015.E_1_REVISED).getId(),
+                criteriaService.get(Criteria2015.E_2).getId(),
+                criteriaService.get(Criteria2015.E_3).getId(),
+                criteriaService.get(Criteria2015.F_1).getId(),
+                criteriaService.get(Criteria2015.F_2).getId(),
+                criteriaService.get(Criteria2015.F_3).getId(),
+                criteriaService.get(Criteria2015.F_4).getId(),
+                criteriaService.get(Criteria2015.F_5_REVISED).getId(),
+                criteriaService.get(Criteria2015.F_6).getId(),
+                criteriaService.get(Criteria2015.F_7).getId(),
+                criteriaService.get(Criteria2015.G_7).getId(),
+                criteriaService.get(Criteria2015.G_8).getId(),
+                criteriaService.get(Criteria2015.G_9_REVISED).getId(),
+                criteriaService.get(Criteria2015.H_1).getId(),
+                criteriaService.get(Criteria2015.H_2).getId()));
 
-        revisedCriteriaNumbers = new ArrayList<String>(Arrays.asList(
-                criteriaService.get(Criteria2015.B_1).getNumber(),
-                criteriaService.get(Criteria2015.B_2).getNumber(),
-                criteriaService.get(Criteria2015.B_3).getNumber(),
-                criteriaService.get(Criteria2015.B_7).getNumber(),
-                criteriaService.get(Criteria2015.B_8).getNumber(),
-                criteriaService.get(Criteria2015.B_9).getNumber(),
-                criteriaService.get(Criteria2015.C_3).getNumber(),
-                criteriaService.get(Criteria2015.D_2).getNumber(),
-                criteriaService.get(Criteria2015.D_3).getNumber(),
-                criteriaService.get(Criteria2015.D_10).getNumber(),
-                criteriaService.get(Criteria2015.E_1).getNumber(),
-                criteriaService.get(Criteria2015.F_5).getNumber(),
-                criteriaService.get(Criteria2015.G_6).getNumber(),
-                criteriaService.get(Criteria2015.G_9).getNumber()));
+        revisedCriteriaIds = new ArrayList<Long>(Arrays.asList(
+                criteriaService.get(Criteria2015.B_1).getId(),
+                criteriaService.get(Criteria2015.B_2).getId(),
+                criteriaService.get(Criteria2015.B_3).getId(),
+                criteriaService.get(Criteria2015.B_7).getId(),
+                criteriaService.get(Criteria2015.B_8).getId(),
+                criteriaService.get(Criteria2015.B_9).getId(),
+                criteriaService.get(Criteria2015.C_3).getId(),
+                criteriaService.get(Criteria2015.D_2).getId(),
+                criteriaService.get(Criteria2015.D_3).getId(),
+                criteriaService.get(Criteria2015.D_10).getId(),
+                criteriaService.get(Criteria2015.E_1).getId(),
+                criteriaService.get(Criteria2015.F_5).getId(),
+                criteriaService.get(Criteria2015.G_6).getId(),
+                criteriaService.get(Criteria2015.G_9).getId()));
     }
 
     public Boolean isCuresUpdate(CertifiedProductSearchDetails listing) {
@@ -167,7 +167,7 @@ public class CuresUpdateService {
 
     private Boolean hasRevisedCriteria(List<CuresUpdateCriterion> criteria) {
         return criteria.stream()
-                .filter(criterion -> criterion.getSuccess() && revisedCriteriaNumbers.contains(criterion.getCuresNumber()))
+                .filter(criterion -> criterion.getSuccess() && revisedCriteriaIds.contains(criterion.getCriterionId()))
                 .findAny()
                 .isPresent();
     }
@@ -221,7 +221,7 @@ public class CuresUpdateService {
 
     private Boolean hasCuresCriteria(List<CuresUpdateCriterion> criteria) {
         return criteria.stream()
-                .filter(criterion -> criterion.getSuccess() && curesCriteriaNumbers.contains(criterion.getCuresNumber()))
+                .filter(criterion -> criterion.getSuccess() && curesCriteriaIds.contains(criterion.getCriterionId()))
                 .findAny()
                 .isPresent();
 
@@ -277,15 +277,18 @@ public class CuresUpdateService {
     private class CuresUpdateCriterion {
         private String curesNumber;
         private Boolean success;
+        private Long criterionId;
 
         CuresUpdateCriterion(CertificationResult result) {
             this.curesNumber = Util.formatCriteriaNumber(result.getCriterion());
             this.success = result.isSuccess();
+            this.criterionId = result.getCriterion().getId();
         }
 
         CuresUpdateCriterion(PendingCertificationResultDTO result) {
             this.curesNumber = Util.formatCriteriaNumber(result.getCriterion());
             this.success = result.getMeetsCriteria();
+            this.criterionId = result.getCriterion().getId();
         }
     }
 }
