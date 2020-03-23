@@ -19,7 +19,7 @@ import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
-public class SurveillanceRequirementReviewer extends Reviewer {
+public class SurveillanceRequirementReviewer implements Reviewer {
     private CertificationResultDetailsDAO certResultDetailsDao;
     private SurveillanceDAO survDao;
     private ErrorMessageUtil msgUtil;
@@ -55,7 +55,7 @@ public class SurveillanceRequirementReviewer extends Reviewer {
                 }
             } else {
                 surv.getErrorMessages()
-                        .add(msgUtil.getMessage("surveillance.requirementMustHaveValue", getRequirementName(req)));
+                        .add(msgUtil.getMessage("surveillance.requirementMustHaveValue", req.getRequirementName()));
             }
 
             checkResultExistsIfSurveillanceClosed(surv, req);
@@ -72,13 +72,13 @@ public class SurveillanceRequirementReviewer extends Reviewer {
     private void checkRequirementTypeExists(Surveillance surv, SurveillanceRequirement req) {
         if (req.getType() == null) {
             surv.getErrorMessages()
-                    .add(msgUtil.getMessage("surveillance.typeMissingForRequirement", getRequirementName(req)));
+                    .add(msgUtil.getMessage("surveillance.typeMissingForRequirement", req.getRequirementName()));
         } else if (req.getType().getId() == null || req.getType().getId().longValue() <= 0) {
             SurveillanceRequirementType reqType = survDao
                     .findSurveillanceRequirementType(req.getType().getName());
             if (reqType == null) {
                 surv.getErrorMessages().add(msgUtil.getMessage("surveillance.typeNameMissingForRequirement",
-                        req.getType().getName(), getRequirementName(req)));
+                        req.getType().getName(), req.getRequirementName()));
             } else {
                 req.setType(reqType);
             }
@@ -87,7 +87,7 @@ public class SurveillanceRequirementReviewer extends Reviewer {
                     .findSurveillanceRequirementType(req.getType().getId());
             if (reqType == null) {
                 surv.getErrorMessages().add(msgUtil.getMessage("surveillance.typeIdMissingForRequirement",
-                        req.getType().getId(), getRequirementName(req)));
+                        req.getType().getId(), req.getRequirementName()));
             } else {
                 req.setType(reqType);
             }
@@ -99,7 +99,7 @@ public class SurveillanceRequirementReviewer extends Reviewer {
         if (req.getCriterion() == null) {
             surv.getErrorMessages().add(
                     msgUtil.getMessage("surveillance.requirementInvalidForRequirementType",
-                            getRequirementName(req), req.getType().getName()));
+                            req.getRequirementName(), req.getType().getName()));
             return;
         }
         req.setRequirement(req.getCriterion().getNumber());
@@ -113,7 +113,7 @@ public class SurveillanceRequirementReviewer extends Reviewer {
             if (!attestedCertResult.isPresent()) {
                 surv.getErrorMessages().add(
                         msgUtil.getMessage("surveillance.requirementInvalidForRequirementType",
-                                getRequirementName(req), req.getType().getName()));
+                                req.getRequirementName(), req.getType().getName()));
             }
         }
     }
@@ -133,7 +133,7 @@ public class SurveillanceRequirementReviewer extends Reviewer {
                 && !RequirementTypeEnum.K2.getName().equals(req.getRequirement())) {
             surv.getErrorMessages()
                     .add(msgUtil.getMessage("surveillance.requirementInvalidForTransparencyType",
-                            getRequirementName(req), req.getType().getName(),
+                            req.getRequirementName(), req.getType().getName(),
                             RequirementTypeEnum.K1.getName(), RequirementTypeEnum.K2.getName()));
         }
     }
@@ -142,7 +142,7 @@ public class SurveillanceRequirementReviewer extends Reviewer {
         if (surv.getEndDate() != null) {
             if (req.getResult() == null) {
                 surv.getErrorMessages()
-                        .add(msgUtil.getMessage("surveillance.resultNotFound", getRequirementName(req)));
+                        .add(msgUtil.getMessage("surveillance.resultNotFound", req.getRequirementName()));
             }
         }
     }
@@ -153,7 +153,7 @@ public class SurveillanceRequirementReviewer extends Reviewer {
             SurveillanceResultType resType = survDao.findSurveillanceResultType(req.getResult().getName());
             if (resType == null) {
                 surv.getErrorMessages().add(msgUtil.getMessage("surveillance.resultWithNameNotFound",
-                        req.getResult().getName(), getRequirementName(req)));
+                        req.getResult().getName(), req.getRequirementName()));
             } else {
                 req.setResult(resType);
             }
@@ -161,7 +161,7 @@ public class SurveillanceRequirementReviewer extends Reviewer {
             SurveillanceResultType resType = survDao.findSurveillanceResultType(req.getResult().getId());
             if (resType == null) {
                 surv.getErrorMessages().add(msgUtil.getMessage("surveillance.resultWithIdNotFound",
-                        req.getResult().getId(), getRequirementName(req)));
+                        req.getResult().getId(), req.getRequirementName()));
             } else {
                 req.setResult(resType);
             }

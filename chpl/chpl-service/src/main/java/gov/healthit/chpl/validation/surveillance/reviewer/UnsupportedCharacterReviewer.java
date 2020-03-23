@@ -10,7 +10,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
 @Component("surveillanceUnsupportedCharacterReviewer")
-public class UnsupportedCharacterReviewer extends Reviewer {
+public class UnsupportedCharacterReviewer implements Reviewer {
     private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
 

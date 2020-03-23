@@ -20,7 +20,7 @@ import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
-public class SurveillanceNonconformityReviewer extends Reviewer {
+public class SurveillanceNonconformityReviewer implements Reviewer {
     private CertificationResultDetailsDAO certResultDetailsDao;
     private SurveillanceDAO survDao;
     private ErrorMessageUtil msgUtil;
@@ -49,7 +49,7 @@ public class SurveillanceNonconformityReviewer extends Reviewer {
                 // there should be nonconformities
                 if (req.getNonconformities() == null || req.getNonconformities().size() == 0) {
                     surv.getErrorMessages()
-                            .add(msgUtil.getMessage("surveillance.nonConformityNotFound", getRequirementName(req)));
+                            .add(msgUtil.getMessage("surveillance.nonConformityNotFound", req.getRequirementName()));
                 } else {
                     for (SurveillanceNonconformity nc : req.getNonconformities()) {
                         checkNonconformityTypeValidity(surv, req, nc, certResults);
@@ -67,7 +67,7 @@ public class SurveillanceNonconformityReviewer extends Reviewer {
                 if (req.getNonconformities() != null && req.getNonconformities().size() > 0) {
                     surv.getErrorMessages().add(
                             msgUtil.getMessage("surveillance.requirementNonConformityMismatch",
-                                    getRequirementName(req)));
+                                    req.getRequirementName()));
                 }
             }
         }
@@ -78,7 +78,7 @@ public class SurveillanceNonconformityReviewer extends Reviewer {
         if (StringUtils.isEmpty(nc.getNonconformityType()) && nc.getCriterion() == null) {
             surv.getErrorMessages().add(
                     msgUtil.getMessage("surveillance.nonConformityTypeRequired",
-                            getRequirementName(req)));
+                            req.getRequirementName()));
         } else if (nc.getCriterion() != null) {
             nc.setNonconformityType(nc.getCriterion().getNumber());
             Optional<CertificationResultDetailsDTO> attestedCertResult =
@@ -88,7 +88,7 @@ public class SurveillanceNonconformityReviewer extends Reviewer {
             if (!attestedCertResult.isPresent()) {
                 surv.getErrorMessages().add(
                         msgUtil.getMessage("surveillance.nonConformityTypeMatchException",
-                                getNonconformityTypeName(nc),
+                                nc.getNonconformityTypeName(),
                                 NonconformityType.K1.getName(), NonconformityType.K2.getName(),
                                 NonconformityType.L.getName(), NonconformityType.OTHER.getName()));
             }
@@ -102,7 +102,7 @@ public class SurveillanceNonconformityReviewer extends Reviewer {
                     && !NonconformityType.OTHER.getName().equals(nc.getNonconformityType())) {
                 surv.getErrorMessages()
                         .add(msgUtil.getMessage("surveillance.nonConformityTypeMatchException",
-                                getNonconformityTypeName(nc), NonconformityType.K1.getName(),
+                                nc.getNonconformityTypeName(), NonconformityType.K1.getName(),
                                 NonconformityType.K2.getName(), NonconformityType.L.getName(),
                                 NonconformityType.OTHER.getName()));
             }
@@ -120,8 +120,8 @@ public class SurveillanceNonconformityReviewer extends Reviewer {
             SurveillanceRequirement req, SurveillanceNonconformity nc) {
         if (nc.getStatus() == null) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.nonConformityStatusNotFound",
-                    getRequirementName(req),
-                    getNonconformityTypeName(nc)));
+                    req.getRequirementName(),
+                    nc.getNonconformityTypeName()));
         } else if (nc.getStatus().getId() == null || nc.getStatus().getId().longValue() <= 0) {
             SurveillanceNonconformityStatus ncStatus = survDao
                     .findSurveillanceNonconformityStatusType(nc.getStatus().getName());
@@ -129,8 +129,8 @@ public class SurveillanceNonconformityReviewer extends Reviewer {
                 surv.getErrorMessages()
                         .add(msgUtil.getMessage("surveillance.nonConformityStatusWithNameNotFound",
                                 nc.getStatus().getName(),
-                                getRequirementName(req),
-                                getNonconformityTypeName(nc)));
+                                req.getRequirementName(),
+                                nc.getNonconformityTypeName()));
             } else {
                 nc.setStatus(ncStatus);
             }
@@ -141,8 +141,8 @@ public class SurveillanceNonconformityReviewer extends Reviewer {
                 surv.getErrorMessages()
                         .add(msgUtil.getMessage("surveillance.nonConformityStatusWithIdNotFound",
                                 nc.getStatus().getId(),
-                                getRequirementName(req),
-                                getNonconformityTypeName(nc)));
+                                req.getRequirementName(),
+                                nc.getNonconformityTypeName()));
             } else {
                 nc.setStatus(ncStatus);
             }
@@ -154,28 +154,28 @@ public class SurveillanceNonconformityReviewer extends Reviewer {
         if (!StringUtils.isEmpty(nc.getCapApprovalDate())
                 && StringUtils.isEmpty(nc.getCapMustCompleteDate())) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.dateCAPMustCompleteIsRequired",
-                    getRequirementName(req),
-                    getNonconformityTypeName(nc)));
+                    req.getRequirementName(),
+                    nc.getNonconformityTypeName()));
         }
 
         if (!StringUtils.isEmpty(nc.getCapEndDate()) && StringUtils.isEmpty(nc.getCapStartDate())) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.dateCAPStartIsRequired",
-                    getRequirementName(req),
-                    getNonconformityTypeName(nc)));
+                    req.getRequirementName(),
+                    nc.getNonconformityTypeName()));
         }
 
         if (!StringUtils.isEmpty(nc.getCapEndDate()) && StringUtils.isEmpty(nc.getCapApprovalDate())) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.dateCAPApprovalIsRequired",
-                    getRequirementName(req),
-                    getNonconformityTypeName(nc)));
+                    req.getRequirementName(),
+                    nc.getNonconformityTypeName()));
         }
 
         if (!StringUtils.isEmpty(nc.getCapEndDate()) && !StringUtils.isEmpty(nc.getCapStartDate())
                 && nc.getCapEndDate().compareTo(nc.getCapStartDate()) < 0) {
             surv.getErrorMessages()
                     .add(msgUtil.getMessage("surveillance.dateCAPEndNotGreaterThanDateCAPStart",
-                            getRequirementName(req),
-                            getNonconformityTypeName(nc)));
+                            req.getRequirementName(),
+                            nc.getNonconformityTypeName()));
         }
     }
 
@@ -183,8 +183,8 @@ public class SurveillanceNonconformityReviewer extends Reviewer {
             SurveillanceNonconformity nc) {
         if (nc.getDateOfDetermination() == null) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.dateOfDeterminationIsRequired",
-                    getRequirementName(req),
-                    getNonconformityTypeName(nc)));
+                    req.getRequirementName(),
+                    nc.getNonconformityTypeName()));
         }
     }
 
@@ -192,8 +192,8 @@ public class SurveillanceNonconformityReviewer extends Reviewer {
             SurveillanceNonconformity nc) {
         if (StringUtils.isEmpty(nc.getSummary())) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.summaryIsRequired",
-                    getRequirementName(req),
-                    getNonconformityTypeName(nc)));
+                    req.getRequirementName(),
+                    nc.getNonconformityTypeName()));
         }
     }
 
@@ -201,8 +201,8 @@ public class SurveillanceNonconformityReviewer extends Reviewer {
             SurveillanceNonconformity nc) {
         if (StringUtils.isEmpty(nc.getFindings())) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.findingsAreRequired",
-                    getRequirementName(req),
-                    getNonconformityTypeName(nc)));
+                    req.getRequirementName(),
+                    nc.getNonconformityTypeName()));
         }
     }
 
@@ -213,28 +213,28 @@ public class SurveillanceNonconformityReviewer extends Reviewer {
             if (nc.getSitesPassed() == null || nc.getSitesPassed().intValue() < 0) {
                 surv.getErrorMessages()
                         .add(msgUtil.getMessage("surveillance.numberOfSitesPassedIsRequired",
-                                getRequirementName(req),
-                                getNonconformityTypeName(nc)));
+                                req.getRequirementName(),
+                                nc.getNonconformityTypeName()));
             }
 
             if (nc.getTotalSites() == null || nc.getTotalSites().intValue() < 0) {
                 surv.getErrorMessages()
                         .add(msgUtil.getMessage("surveillance.totalNumberOfSitesIsRequired",
-                                getRequirementName(req),
-                                getNonconformityTypeName(nc)));
+                                req.getRequirementName(),
+                                nc.getNonconformityTypeName()));
             }
 
             if (nc.getSitesPassed() != null && nc.getTotalSites() != null
                     && nc.getSitesPassed() > nc.getTotalSites()) {
                 surv.getErrorMessages().add(msgUtil.getMessage("surveillance.tooManySitesPassed",
-                        getRequirementName(req),
-                        getNonconformityTypeName(nc)));
+                        req.getRequirementName(),
+                        nc.getNonconformityTypeName()));
             }
 
             if (nc.getTotalSites() > surv.getRandomizedSitesUsed()) {
                 surv.getErrorMessages().add(msgUtil.getMessage("surveillance.tooManyTotalSites",
-                        getRequirementName(req),
-                        getNonconformityTypeName(nc)));
+                        req.getRequirementName(),
+                        nc.getNonconformityTypeName()));
             }
         }
     }
@@ -246,15 +246,15 @@ public class SurveillanceNonconformityReviewer extends Reviewer {
             if (nc.getSitesPassed() != null && nc.getSitesPassed().intValue() >= 0) {
                 surv.getErrorMessages()
                         .add(msgUtil.getMessage("surveillance.numberOfSitesPassedNotApplicable",
-                                getRequirementName(req),
-                                getNonconformityTypeName(nc)));
+                                req.getRequirementName(),
+                                nc.getNonconformityTypeName()));
             }
 
             if (nc.getTotalSites() != null && nc.getTotalSites().intValue() >= 0) {
                 surv.getErrorMessages()
                         .add(msgUtil.getMessage("surveillance.totalNumberOfSitesNotApplicable",
-                                getRequirementName(req),
-                                getNonconformityTypeName(nc)));
+                                req.getRequirementName(),
+                                nc.getNonconformityTypeName()));
             }
         }
     }
@@ -266,16 +266,16 @@ public class SurveillanceNonconformityReviewer extends Reviewer {
             if (StringUtils.isEmpty(nc.getResolution())) {
                 surv.getErrorMessages()
                         .add(msgUtil.getMessage("surveillance.resolutionDescriptionIsRequired",
-                                getRequirementName(req),
-                                getNonconformityTypeName(nc)));
+                                req.getRequirementName(),
+                                nc.getNonconformityTypeName()));
             }
         } else if (nc.getStatus() != null && nc.getStatus().getName() != null
                 && nc.getStatus().getName().equalsIgnoreCase("Open")) {
             if (!StringUtils.isEmpty(nc.getResolution())) {
                 surv.getErrorMessages()
                         .add(msgUtil.getMessage("surveillance.resolutionDescriptionNotApplicable",
-                                getRequirementName(req),
-                                getNonconformityTypeName(nc)));
+                                req.getRequirementName(),
+                                nc.getNonconformityTypeName()));
             }
         }
     }

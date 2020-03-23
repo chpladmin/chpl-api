@@ -21,7 +21,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 
 @Component
-public class NewSurveillanceRemovedCriteriaReviewer extends Reviewer {
+public class NewSurveillanceRemovedCriteriaReviewer implements Reviewer {
 
     private CertificationCriterionDAO certDao;
     private ErrorMessageUtil msgUtil;
@@ -78,7 +78,7 @@ public class NewSurveillanceRemovedCriteriaReviewer extends Reviewer {
             if (requirement != null && requirement.equalsIgnoreCase(RequirementTypeEnum.K2.getName())) {
                 surv.getErrorMessages().add(
                         msgUtil.getMessage("surveillance.requirementNotAddedForRemovedRequirement",
-                                getRequirementName(req)));
+                                req.getRequirementName()));
             }
         }
     }
