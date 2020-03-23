@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.SpecialProperties;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationCriterion;
@@ -49,12 +50,15 @@ public class ListingQuestionableActivityProvider {
     private FF4j ff4j;
     private Environment env;
     private CertificationCriterionDAO certificationCriterionDAO;
+    private SpecialProperties specialProperties;
 
     @Autowired
-    public ListingQuestionableActivityProvider(CertificationCriterionDAO certificationCriterionDAO, FF4j ff4j, Environment env) {
+    public ListingQuestionableActivityProvider(CertificationCriterionDAO certificationCriterionDAO, FF4j ff4j, Environment env,
+            SpecialProperties specialProperties) {
         this.certificationCriterionDAO = certificationCriterionDAO;
         this.ff4j = ff4j;
         this.env = env;
+        this.specialProperties = specialProperties;
     }
 
     @PostConstruct
@@ -571,7 +575,10 @@ public class ListingQuestionableActivityProvider {
 
     public QuestionableActivityListingDTO checkNonCuresAuditCriteriaOnCreate(CertifiedProductSearchDetails newListing) {
         QuestionableActivityListingDTO activity = null;
-        if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
+        Date certificationDate = new Date(newListing.getCertificationDate());
+
+        if (certificationDate.equals(specialProperties.getEffectiveRuleDate())
+                || certificationDate.after(specialProperties.getEffectiveRuleDate())) {
             // If ICS=0 and they attested to D2, D3, or D10
             if (!newListing.getIcs().getInherits()) {
                 List<CertificationResult> matchingCertResults = newListing.getCertificationResults().stream()
