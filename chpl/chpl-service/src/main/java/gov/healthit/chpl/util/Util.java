@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 
 public final class Util {
@@ -23,6 +24,9 @@ public final class Util {
     private static final int NUMBER_PARA_1 = 2;
     private static final int NUMBER_PARA_2 = 3;
     private static final int NUMBER_PARA_3 = 4;
+
+    private static final String CURES_TITLE = "Cures Update";
+    public static final String CURES_SUFFIX = " (" + CURES_TITLE + ")";
 
     private Util() {
 
@@ -166,5 +170,29 @@ public final class Util {
         Integer i1 = Integer.parseInt(s1.substring(1, s1.length() - 1));
         Integer i2 = Integer.parseInt(s2.substring(1, s2.length() - 1));
         return i1.compareTo(i2);
+    }
+
+    public static boolean isCures(CertificationCriterion criterion) {
+        return criterion.getTitle() != null && criterion.getTitle().contains(CURES_TITLE);
+    }
+
+    public static String formatCriteriaNumber(CertificationCriterion criterion) {
+        String result = criterion.getNumber();
+        if (isCures(criterion)) {
+            result += CURES_SUFFIX;
+        }
+        return result;
+    }
+
+    public static boolean isCures(CertificationCriterionDTO criterion) {
+        return criterion.getTitle() != null && criterion.getTitle().contains(CURES_TITLE);
+    }
+
+    public static String formatCriteriaNumber(CertificationCriterionDTO criterion) {
+        String result = criterion.getNumber();
+        if (isCures(criterion)) {
+            result += CURES_SUFFIX;
+        }
+        return result;
     }
 }

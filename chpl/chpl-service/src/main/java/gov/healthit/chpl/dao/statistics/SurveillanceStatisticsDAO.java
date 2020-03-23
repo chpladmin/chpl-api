@@ -10,7 +10,9 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.DateRange;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
+import gov.healthit.chpl.entity.surveillance.NonconformityAggregatedStatisticsEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 
 @Repository("surveillanceStatisticsDAO")
@@ -220,25 +222,27 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
 
     /**
      * Examine nonconformities to get a count of how many of each type of NC there are.
-     * 
+     *
      * @return a list of the DTOs that hold the counts
      */
     public List<NonconformityTypeStatisticsDTO> getAllNonconformitiesByCriterion() {
-        String hql = "SELECT COUNT(sne.type), sne.type "
-                + "FROM SurveillanceNonconformityEntity sne "
-                + "LEFT JOIN sne.certificationCriterionEntity cce "
-                + "WHERE sne.deleted = false "
-                + "AND ((cce is not NULL AND cce.removed = false) OR cce is NULL) "
-                + "GROUP BY sne.type";
-        Query query = entityManager.createQuery(hql);
+        Query query = entityManager.createQuery("SELECT data "
+                + "FROM NonconformityAggregatedStatisticsEntity data "
+                + "LEFT OUTER JOIN FETCH data.certificationCriterionEntity cce "
+                + "LEFT OUTER JOIN FETCH cce.certificationEdition ",
+                NonconformityAggregatedStatisticsEntity.class);
 
-        List<Object[]> entities = query.getResultList();
+        List<NonconformityAggregatedStatisticsEntity> entities = query.getResultList();
 
         List<NonconformityTypeStatisticsDTO> dtos = new ArrayList<NonconformityTypeStatisticsDTO>();
-        for (Object[] entity : entities) {
+        for (NonconformityAggregatedStatisticsEntity entity : entities) {
             NonconformityTypeStatisticsDTO dto = new NonconformityTypeStatisticsDTO();
-            dto.setNonconformityCount(Long.valueOf(entity[0].toString()));
-            dto.setNonconformityType(entity[1].toString());
+            dto.setNonconformityCount(entity.getNonconformityCount());
+            dto.setNonconformityType(entity.getNonconformityType());
+            if (entity.getCertificationCriterionId() != null && entity.getCertificationCriterionEntity() != null) {
+                CertificationCriterionDTO criterion = new CertificationCriterionDTO(entity.getCertificationCriterionEntity());
+                dto.setCriterion(criterion);
+            }
             dtos.add(dto);
         }
 

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
+
 /**
  * Validator for CMS EHR ID generation for 2015 Edition, post Cures rule.
  * @author alarned
@@ -12,7 +14,10 @@ import java.util.List;
 public class Validator2015 extends Validator {
 
     protected static final List<String> REQUIRED_CRITERIA = new ArrayList<String>(Arrays.asList("170.315 (a)(5)",
-            "170.315 (a)(9)", "170.315 (a)(14)", "170.315 (b)(1)", "170.315 (c)(1)", "170.315 (g)(7)", "170.315 (g)(9)"));
+            "170.315 (a)(9)", "170.315 (a)(14)", "170.315 (c)(1)", "170.315 (g)(7)"));
+
+    protected static final List<String> CURES_REQUIRED_CRITERIA = new ArrayList<String>(Arrays.asList("170.315 (b)(1)",
+            "170.315 (g)(9)"));
 
     protected static final List<String> AA_CRITERIA_OR = new ArrayList<String>(Arrays.asList("170.315 (g)(8)",
             "170.315 (g)(10)"));
@@ -27,7 +32,7 @@ public class Validator2015 extends Validator {
      * Starting data for validator.
      */
     public Validator2015() {
-        this.counts.put("criteriaRequired", REQUIRED_CRITERIA.size());
+        this.counts.put("criteriaRequired", REQUIRED_CRITERIA.size() + CURES_REQUIRED_CRITERIA.size());
         this.counts.put("criteriaRequiredMet", 0);
         this.counts.put("criteriaAaRequired", 1);
         this.counts.put("criteriaAaRequiredMet", 0);
@@ -50,17 +55,36 @@ public class Validator2015 extends Validator {
     }
 
     protected boolean isCriteriaValid() {
-        this.counts.put("criteriaRequired", REQUIRED_CRITERIA.size());
+        this.counts.put("criteriaRequired", REQUIRED_CRITERIA.size() + CURES_REQUIRED_CRITERIA.size());
         boolean criteriaValid = true;
         for (String crit : REQUIRED_CRITERIA) {
-            if (criteriaMet.containsKey(crit)) {
+            if (criteriaMetContainsCriterion(crit)) {
                 this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
             } else {
                 missingAnd.add(crit);
                 criteriaValid = false;
             }
         }
-
+        for (String crit : CURES_REQUIRED_CRITERIA) {
+            Boolean foundOriginal = false;
+            Boolean foundRevised = false;
+            for (CertificationCriterionDTO cert : criteriaMet.keySet()) {
+                if (cert.getNumber().equalsIgnoreCase(crit)) {
+                    if (cert.getTitle().contains("Cures Update")) {
+                        foundRevised = true;
+                    } else {
+                        foundOriginal = true;
+                    }
+                }
+            }
+            if (foundOriginal || foundRevised) {
+                this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            } else {
+                missingOr.add(new ArrayList<String>(new ArrayList<String>(Arrays.asList(crit,
+                        crit + " (Cures Update)"))));
+                criteriaValid = false;
+            }
+        }
         boolean aaValid = isAAValid();
         boolean cpoeValid = isCPOEValid();
         boolean dpValid = isDPValid();
@@ -79,7 +103,7 @@ public class Validator2015 extends Validator {
 
     protected boolean isAAValid() {
         for (String crit : AA_CRITERIA_OR) {
-            if (criteriaMet.containsKey(crit)) {
+            if (criteriaMetContainsCriterion(crit)) {
                 this.counts.put("criteriaAaRequiredMet", 1);
                 return true;
             }
@@ -90,7 +114,7 @@ public class Validator2015 extends Validator {
 
     protected boolean isCPOEValid() {
         for (String crit : CPOE_CRITERIA_OR) {
-            if (criteriaMet.containsKey(crit)) {
+            if (criteriaMetContainsCriterion(crit)) {
                 this.counts.put("criteriaCpoeRequiredMet", 1);
                 return true;
             }
@@ -101,7 +125,7 @@ public class Validator2015 extends Validator {
 
     protected boolean isDPValid() {
         for (String crit : DP_CRITERIA_OR) {
-            if (criteriaMet.containsKey(crit)) {
+            if (criteriaMetContainsCriterion(crit)) {
                 this.counts.put("criteriaDpRequiredMet", 1);
                 return true;
             }

@@ -691,7 +691,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         criterion.setNumber(certResult.getNumber());
         criterion.setTitle(certResult.getTitle());
         criterion.setId(certResult.getCertificationCriterionId());
-        return criterion.formatCriteriaNumber();
+        return Util.formatCriteriaNumber(criterion);
     }
 
     private static class ActivityDateTriggerGroup {

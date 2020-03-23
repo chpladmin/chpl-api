@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<GraphParameters>
-<GraphParameter name="openchpl_password" value="database password"/>
-<GraphParameter name="openchpl_db_url" value="database url"/>
-<GraphParameter name="openchpl_user" value="database user"/>
-</GraphParameters>

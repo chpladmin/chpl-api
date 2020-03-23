@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
@@ -63,7 +64,7 @@ public class SurveillanceRequirementReviewer implements Reviewer {
     }
 
     private void checkRequirementExists(Surveillance surv, SurveillanceRequirement req) {
-        if (StringUtils.isEmpty(req.getRequirement())) {
+        if (StringUtils.isEmpty(req.getRequirement()) && req.getCriterion() == null) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.requirementIsRequired"));
         }
     }
@@ -95,16 +96,19 @@ public class SurveillanceRequirementReviewer implements Reviewer {
 
     private void checkCriterionRequirementTypeValidity(Surveillance surv, SurveillanceRequirement req,
             List<CertificationResultDetailsDTO> certResults) {
-        if (StringUtils.isEmpty(req.getRequirement())) {
+        if (req.getCriterion() == null) {
+            surv.getErrorMessages().add(
+                    msgUtil.getMessage("surveillance.requirementInvalidForRequirementType",
+                            req.getRequirement(), req.getType().getName()));
             return;
         }
-        req.setRequirement(
-                gov.healthit.chpl.util.Util.coerceToCriterionNumberFormat(req.getRequirement()));
+        req.setRequirement(req.getCriterion().getNumber());
+
         // see if the requirement type is a criterion that the product has attested to
         if (certResults != null && certResults.size() > 0) {
             Optional<CertificationResultDetailsDTO> attestedCertResult =
                     certResults.stream()
-                    .filter(certResult -> isCriteriaAttestedTo(certResult, req.getRequirement()))
+                    .filter(certResult -> isCriteriaAttestedTo(certResult, req.getCriterion()))
                     .findFirst();
             if (!attestedCertResult.isPresent()) {
                 surv.getErrorMessages().add(
@@ -114,11 +118,11 @@ public class SurveillanceRequirementReviewer implements Reviewer {
         }
     }
 
-    private boolean isCriteriaAttestedTo(CertificationResultDetailsDTO certResult, String criterionNumber) {
-        return !StringUtils.isEmpty(certResult.getNumber())
+    private boolean isCriteriaAttestedTo(CertificationResultDetailsDTO certResult, CertificationCriterion criterion ) {
+        return certResult.getCriterion() != null
                 && certResult.getSuccess() != null
                 && certResult.getSuccess().booleanValue()
-                && certResult.getNumber().equals(criterionNumber);
+                && certResult.getCriterion().getId().equals(criterion.getId());
     }
 
     private void checkTransparencyRequirementTypeValidity(Surveillance surv, SurveillanceRequirement req) {

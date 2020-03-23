@@ -21,6 +21,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
+import gov.healthit.chpl.util.Util;
 
 /**
  * Writes out all surveillance for all products in the system.
@@ -36,7 +37,7 @@ public class SurveillanceCsvPresenter {
 
     /**
      * Constructor with properties.
-     * 
+     *
      * @param props
      *            the properties
      */
@@ -48,7 +49,7 @@ public class SurveillanceCsvPresenter {
 
     /**
      * Write out surveillance details to CSV file.
-     * 
+     *
      * @param file
      *            the output file
      * @param cpList
@@ -208,7 +209,9 @@ public class SurveillanceCsvPresenter {
         } else {
             reqRow.add("");
         }
-        if (req.getRequirement() != null) {
+        if (req.getCriterion() != null) {
+            reqRow.add(Util.formatCriteriaNumber(req.getCriterion()));
+        } else if (req.getRequirement() != null) {
             reqRow.add(req.getRequirement());
         } else {
             reqRow.add("");
@@ -223,7 +226,9 @@ public class SurveillanceCsvPresenter {
 
     protected List<String> generateNonconformityRowValues(final SurveillanceNonconformity nc) {
         List<String> ncRow = new ArrayList<String>();
-        if (nc.getNonconformityType() != null) {
+        if (nc.getCriterion() != null) {
+            ncRow.add(Util.formatCriteriaNumber(nc.getCriterion()));
+        } else if (nc.getNonconformityType() != null) {
             ncRow.add(nc.getNonconformityType());
         } else {
             ncRow.add("");

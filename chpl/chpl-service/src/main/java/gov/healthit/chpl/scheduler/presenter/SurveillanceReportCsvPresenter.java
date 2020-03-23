@@ -14,6 +14,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
+import gov.healthit.chpl.util.Util;
 
 /**
  * Write out surveillance report with values related to time between dates.
@@ -23,7 +24,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 
     /**
      * Constructor with properties.
-     * 
+     *
      * @param props
      *            the properties
      */
@@ -174,7 +175,11 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
             final SurveillanceNonconformity nc) {
         List<String> ncFields = new ArrayList<String>();
         ncFields.add("Y");
-        ncFields.add(nc.getNonconformityType());
+        if (nc.getCriterion() != null) {
+            ncFields.add(Util.formatCriteriaNumber(nc.getCriterion()));
+        } else if (nc.getNonconformityType() != null) {
+            ncFields.add(nc.getNonconformityType());
+        }
         LocalDateTime ncDeterminationDate = null;
         if (nc.getDateOfDetermination() != null) {
             ncDeterminationDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getDateOfDetermination().getTime()),

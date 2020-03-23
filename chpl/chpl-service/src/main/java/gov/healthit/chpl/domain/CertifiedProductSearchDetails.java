@@ -23,6 +23,10 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.util.Util;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.Singular;
 
 /**
  * Certified Product Search Details entity.
@@ -30,6 +34,9 @@ import gov.healthit.chpl.util.Util;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class CertifiedProductSearchDetails implements Serializable {
 
     private static final long serialVersionUID = 2903219171127034775L;
@@ -278,6 +285,7 @@ public class CertifiedProductSearchDetails implements Serializable {
      */
     @XmlElementWrapper(name = "certificationResults", nillable = true, required = false)
     @XmlElement(name = "certificationResult")
+    @Singular
     private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 
     /**
@@ -320,20 +328,15 @@ public class CertifiedProductSearchDetails implements Serializable {
      * All data related to safety-enhanced design for this listing.
      */
     @XmlElement(name = "sed", nillable = true, required = false)
-    private CertifiedProductSed sed;
+    private CertifiedProductSed sed = new CertifiedProductSed();
 
+    @Builder.Default
     @XmlTransient
     private Set<String> warningMessages = new HashSet<String>();
 
+    @Builder.Default
     @XmlTransient
     private Set<String> errorMessages = new HashSet<String>();
-
-    /**
-     * Default constructor.
-     */
-    public CertifiedProductSearchDetails() {
-        sed = new CertifiedProductSed();
-    }
 
     public Long getId() {
         return id;

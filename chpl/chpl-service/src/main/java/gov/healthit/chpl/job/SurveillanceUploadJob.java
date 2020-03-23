@@ -169,7 +169,7 @@ public class SurveillanceUploadJob extends RunnableJob {
                         }
 
                         // add the last object
-                        if (i == records.size() - 1 && !rows.isEmpty()) {
+                        if (i == records.size() && !rows.isEmpty()) {
                             try {
                                 SurveillanceUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
                                 Surveillance pendingSurv = handler.handle();
