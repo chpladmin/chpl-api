@@ -580,7 +580,7 @@ public class ListingQuestionableActivityProvider {
         if (certificationDate.equals(specialProperties.getEffectiveRuleDate())
                 || certificationDate.after(specialProperties.getEffectiveRuleDate())) {
             // If ICS=0 and they attested to D2, D3, or D10
-            if (!newListing.getIcs().getInherits()) {
+            if (!hasICS(newListing)) {
                 List<CertificationResult> matchingCertResults = newListing.getCertificationResults().stream()
                         .filter(cr -> cr.isSuccess() &&
                                 (cr.getCriterion().getId().equals(d2Criterion.getId())
@@ -629,7 +629,7 @@ public class ListingQuestionableActivityProvider {
             CertifiedProductSearchDetails newListing) {
         QuestionableActivityListingDTO activity = null;
         if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
-            if (!origListing.getIcs().getInherits() && newListing.getIcs().getInherits()) { // ICS has been added
+            if (!hasICS(origListing) && hasICS(newListing)) { // ICS has been added
                 List<String> matchingNewCriteriaNumbers = new ArrayList<String>();
                 List<String> matchingOldCriteriaNumbers = new ArrayList<String>();
                 // Does the new listing attest to one of the listing in question?
