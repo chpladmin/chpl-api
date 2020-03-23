@@ -1880,16 +1880,21 @@ public class CertifiedProductManager extends SecuredManager {
     private int updateCuresUpdateEvents(Long listingId, Boolean existingCuresUpdate,
             CertifiedProductSearchDetails updatedListing) throws EntityCreationException, EntityRetrievalException {
         int numChanges = 0;
-        Boolean isCuresUpdate = curesUpdateService.isCuresUpdate(updatedListing);
-        if (existingCuresUpdate != isCuresUpdate) {
-            CuresUpdateEventDTO curesEvent = new CuresUpdateEventDTO();
-            curesEvent.setCreationDate(new Date());
-            curesEvent.setDeleted(false);
-            curesEvent.setEventDate(new Date());
-            curesEvent.setCuresUpdate(isCuresUpdate);
-            curesEvent.setCertifiedProductId(listingId);
-            curesUpdateDao.create(curesEvent);
-            numChanges += 1;
+        String currentStatus = updatedListing.getCurrentStatus().getStatus().getName();
+        if (currentStatus.equalsIgnoreCase(CertificationStatusType.Active.getName())
+                || currentStatus.equalsIgnoreCase(CertificationStatusType.SuspendedByAcb.getName())
+                || currentStatus.equalsIgnoreCase(CertificationStatusType.SuspendedByOnc.getName())) {
+            Boolean isCuresUpdate = curesUpdateService.isCuresUpdate(updatedListing);
+            if (existingCuresUpdate != isCuresUpdate) {
+                CuresUpdateEventDTO curesEvent = new CuresUpdateEventDTO();
+                curesEvent.setCreationDate(new Date());
+                curesEvent.setDeleted(false);
+                curesEvent.setEventDate(new Date());
+                curesEvent.setCuresUpdate(isCuresUpdate);
+                curesEvent.setCertifiedProductId(listingId);
+                curesUpdateDao.create(curesEvent);
+                numChanges += 1;
+            }
         }
         return numChanges;
     }
