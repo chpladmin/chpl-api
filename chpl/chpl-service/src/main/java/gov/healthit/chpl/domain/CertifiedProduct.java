@@ -64,7 +64,7 @@ public class CertifiedProduct implements Serializable {
     private String certificationStatus;
 
     /**
-    }        * Whether the Listing is consider "Cures Update" or not
+     * Whether the Listing is consider "Cures Update" or not
      */
     @XmlElement(required = false, nillable = true)
     private Boolean curesUpdate;
