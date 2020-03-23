@@ -901,12 +901,12 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         boolean hasG3 = validationUtils.hasCert(G3_CRITERIA_NUMBER, attestedCriteria);
 
         if (presentAttestedUcdCriteria != null && presentAttestedUcdCriteria.size() > 0 && !hasG3) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.g3Required"));
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteriaRequired", G3_CRITERIA_NUMBER));
         }
         if (removedAttestedUcdCriteria != null && removedAttestedUcdCriteria.size() > 0
                 && (presentAttestedUcdCriteria == null || presentAttestedUcdCriteria.size() == 0)
                 && !hasG3) {
-            addListingWarningByPermission(listing, msgUtil.getMessage("listing.g3Required"));
+            addListingWarningByPermission(listing, msgUtil.getMessage("listing.criteriaRequired", G3_CRITERIA_NUMBER));
         }
     }
 
@@ -938,12 +938,12 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
         String g6Numbers = validationUtils.getAllCriteriaWithNumber(G6_CRITERIA_NUMBER);
         if (presentAttestedG6Criteria != null && presentAttestedG6Criteria.size() > 0 && !hasG6) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.g6Required", g6Numbers));
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteriaRequired", g6Numbers));
         }
         if (removedAttestedG6Criteria != null && removedAttestedG6Criteria.size() > 0
                 && (presentAttestedG6Criteria == null || presentAttestedG6Criteria.size() == 0)
                 && !hasG6) {
-            addListingWarningByPermission(listing, msgUtil.getMessage("listing.g6Required", g6Numbers));
+            addListingWarningByPermission(listing, msgUtil.getMessage("listing.criteriaRequired", g6Numbers));
         }
     }
 

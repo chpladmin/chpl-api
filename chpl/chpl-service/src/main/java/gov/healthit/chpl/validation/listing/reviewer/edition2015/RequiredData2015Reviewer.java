@@ -85,6 +85,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
     private static final String G1_CRITERIA_NUMBER = "170.315 (g)(1)";
     private static final String G2_CRITERIA_NUMBER = "170.315 (g)(2)";
+    private static final String G3_CRITERIA_NUMBER = "170.315 (g)(3)";
     private static final String G6_CRITERIA_NUMBER = "170.315 (g)(6)";
 
     private List<String> e2e3Criterion = new ArrayList<String>();
@@ -630,15 +631,15 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 .filter(cert -> cert.getRemoved() != null && cert.getRemoved().equals(Boolean.TRUE))
                 .filter(cert -> certNumberIsInCertList(cert, UCD_RELATED_CERTS))
                 .collect(Collectors.<CertificationCriterion>toList());
-        boolean hasG3 = validationUtils.hasCert("170.315 (g)(3)", attestedCriteria);
+        boolean hasG3 = validationUtils.hasCert(G3_CRITERIA_NUMBER, attestedCriteria);
 
         if (presentAttestedUcdCriteria != null && presentAttestedUcdCriteria.size() > 0 && !hasG3) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.g3Required"));
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteriaRequired", G3_CRITERIA_NUMBER));
         }
         if (removedAttestedUcdCriteria != null && removedAttestedUcdCriteria.size() > 0
                 && (presentAttestedUcdCriteria == null || presentAttestedUcdCriteria.size() == 0)
                 && !hasG3) {
-            addListingWarningByPermission(listing, msgUtil.getMessage("listing.g3Required"));
+            addListingWarningByPermission(listing, msgUtil.getMessage("listing.criteriaRequired", G3_CRITERIA_NUMBER));
         }
     }
 
@@ -648,7 +649,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 .filter(cert -> cert.getRemoved() == null || cert.getRemoved().equals(Boolean.FALSE))
                 .filter(cert -> certNumberIsInCertList(cert, UCD_RELATED_CERTS))
                 .collect(Collectors.<CertificationCriterion>toList());
-        boolean hasG3 = validationUtils.hasCert("170.315 (g)(3)", attestedCriteria);
+        boolean hasG3 = validationUtils.hasCert(G3_CRITERIA_NUMBER, attestedCriteria);
 
         if ((presentAttestedUcdCriteria == null || presentAttestedUcdCriteria.size() == 0)
                 && hasG3) {
@@ -671,12 +672,12 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
        String g6Numbers = validationUtils.getAllCriteriaWithNumber(G6_CRITERIA_NUMBER);
 
         if (presentAttestedG6Criteria != null && presentAttestedG6Criteria.size() > 0 && !hasG6) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.g6Required", g6Numbers));
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteriaRequired", g6Numbers));
         }
         if (removedAttestedG6Criteria != null && removedAttestedG6Criteria.size() > 0
                 && (presentAttestedG6Criteria == null || presentAttestedG6Criteria.size() == 0)
                 && !hasG6) {
-            addListingWarningByPermission(listing, msgUtil.getMessage("listing.g6Required", g6Numbers));
+            addListingWarningByPermission(listing, msgUtil.getMessage("listing.criteriaRequired", g6Numbers));
         }
     }
 
