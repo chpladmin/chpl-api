@@ -438,14 +438,10 @@ public class ValidationUtils {
 
     public String getAllCriteriaWithNumber(String criterionNumber) {
         List<CertificationCriterionDTO> allCriteriaWithNumber = criteriaDao.getAllByNumber(criterionNumber);
-        String criteriaNumbers = "";
-        for (CertificationCriterionDTO criterion : allCriteriaWithNumber) {
-            if (!StringUtils.isEmpty(criteriaNumbers)) {
-                criteriaNumbers += " or ";
-            }
-            criteriaNumbers += Util.formatCriteriaNumber(criterion);
-        }
-        return criteriaNumbers;
+        List<String> allCriteriaNumbers = allCriteriaWithNumber.stream()
+                .map(criterion -> criterion.getNumber())
+                .collect(Collectors.toList());
+        return allCriteriaNumbers.stream().collect(Collectors.joining(" or "));
     }
 
     public List<CertificationCriterion> getAttestedCriteria(CertifiedProductSearchDetails listing) {
