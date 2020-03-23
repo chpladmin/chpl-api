@@ -56,7 +56,7 @@ public class CertificationCriterionService {
         public static final String A_7 = "criterion.170_315_a_7";
         public static final String A_8 = "criterion.170_315_a_8";
         public static final String A_9 = "criterion.170_315_a_9";
-        public static final String A_10 = "criterion.170_315_a_1";
+        public static final String A_10 = "criterion.170_315_a_10";
         public static final String A_11 = "criterion.170_315_a_11";
         public static final String A_12 = "criterion.170_315_a_12";
         public static final String A_13 = "criterion.170_315_a_13";
