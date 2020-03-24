@@ -439,7 +439,7 @@ public class ValidationUtils {
     public String getAllCriteriaWithNumber(String criterionNumber) {
         List<CertificationCriterionDTO> allCriteriaWithNumber = criteriaDao.getAllByNumber(criterionNumber);
         List<String> allCriteriaNumbers = allCriteriaWithNumber.stream()
-                .map(criterion -> criterion.getNumber())
+                .map(criterion -> Util.formatCriteriaNumber(criterion))
                 .collect(Collectors.toList());
         return allCriteriaNumbers.stream().collect(Collectors.joining(" or "));
     }
