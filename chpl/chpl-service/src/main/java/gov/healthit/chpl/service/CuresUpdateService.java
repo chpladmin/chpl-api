@@ -74,6 +74,7 @@ public class CuresUpdateService {
                 criteriaService.get(Criteria2015.G_7).getId(),
                 criteriaService.get(Criteria2015.G_8).getId(),
                 criteriaService.get(Criteria2015.G_9_CURES).getId(),
+                criteriaService.get(Criteria2015.G_10).getId(),
                 criteriaService.get(Criteria2015.H_1).getId(),
                 criteriaService.get(Criteria2015.H_2).getId()));
 
@@ -104,16 +105,14 @@ public class CuresUpdateService {
                 criteriaService.get(Criteria2015.D_7).getId(),
                 criteriaService.get(Criteria2015.D_8).getId(),
                 criteriaService.get(Criteria2015.D_9).getId(),
-                criteriaService.get(Criteria2015.D_10_OLD).getId(),
+                criteriaService.get(Criteria2015.D_10_CURES).getId(),
                 criteriaService.get(Criteria2015.D_11).getId(),
                 criteriaService.get(Criteria2015.G_1).getId(),
                 criteriaService.get(Criteria2015.G_2).getId(),
                 criteriaService.get(Criteria2015.G_3).getId(),
                 criteriaService.get(Criteria2015.G_4).getId(),
                 criteriaService.get(Criteria2015.G_5).getId(),
-                criteriaService.get(Criteria2015.G_6_CURES).getId(),
-                criteriaService.get(Criteria2015.D_10_CURES).getId(), // maybe
-                criteriaService.get(Criteria2015.G_10).getId())); // maybe
+                criteriaService.get(Criteria2015.G_6_CURES).getId()));
     }
 
     public Boolean isCuresUpdate(CertifiedProductSearchDetails listing) {
@@ -249,12 +248,19 @@ public class CuresUpdateService {
         if (hasOnlyDependentCriteria(criteria)) {
             return true;
         }
-        throw new Exception("In \"no\" state on last check. Results are unpredictable");
+        if (isPast24Months()) {
+            throw new Exception("Listing is not valid; has criteria that require P&S framework and is past 24 months");
+        } else {
+            return false;
+        }
     }
 
     private Boolean hasOnlyDependentCriteria(List<CuresUpdateCriterion> criteria) {
         return criteria.stream()
-                .filter(criterion -> criterion.getSuccess() && !dependentCriteriaIds.contains(criterion.getCriterionId()))
+                .filter(criterion ->
+                criterion.getSuccess()
+                && !criterion.getRemoved()
+                && !dependentCriteriaIds.contains(criterion.getCriterionId()))
                 .count() == 0;
     }
 
@@ -269,15 +275,18 @@ public class CuresUpdateService {
     @Data
     private class CuresUpdateCriterion {
         private Boolean success;
+        private Boolean removed;
         private Long criterionId;
 
         CuresUpdateCriterion(CertificationResult result) {
             this.success = result.isSuccess();
+            this.removed = result.getCriterion().getRemoved();
             this.criterionId = result.getCriterion().getId();
         }
 
         CuresUpdateCriterion(PendingCertificationResultDTO result) {
             this.success = result.getMeetsCriteria();
+            this.removed = result.getCriterion().getRemoved();
             this.criterionId = result.getCriterion().getId();
         }
     }
