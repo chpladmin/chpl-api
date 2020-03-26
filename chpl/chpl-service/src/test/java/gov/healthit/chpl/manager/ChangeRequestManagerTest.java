@@ -22,7 +22,6 @@ import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsFactor
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsService;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestStatusService;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
-import gov.healthit.chpl.changerequest.manager.ChangeRequestManagerImpl;
 import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationFactory;
 import gov.healthit.chpl.changerequest.validation.WebsiteValidation;
 import gov.healthit.chpl.domain.CertificationBody;
@@ -32,7 +31,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
-public class ChangeRequestManagerImplTest {
+public class ChangeRequestManagerTest {
 
     @Test
     public void getChangeRequest_ValidCrId_ReturnsValidObject() throws EntityRetrievalException {
@@ -41,7 +40,7 @@ public class ChangeRequestManagerImplTest {
         Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong()))
                 .thenReturn(getBasicChangeRequest());
 
-        ChangeRequestManager changeRequestManager = new ChangeRequestManagerImpl(changeRequestDAO,
+        ChangeRequestManager changeRequestManager = new ChangeRequestManager(changeRequestDAO,
                 null, null, null, null, null, null, null, null, null, null, null);
 
         // Run
@@ -60,7 +59,7 @@ public class ChangeRequestManagerImplTest {
         Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong()))
                 .thenThrow(EntityRetrievalException.class);
 
-        ChangeRequestManager changeRequestManager = new ChangeRequestManagerImpl(changeRequestDAO,
+        ChangeRequestManager changeRequestManager = new ChangeRequestManager(changeRequestDAO,
                 null, null, null, null, null, null, null, null, null, null, null);
 
         // Run
@@ -77,7 +76,7 @@ public class ChangeRequestManagerImplTest {
         Mockito.when(changeRequestDAO.getAll())
                 .thenReturn(Arrays.asList(getBasicChangeRequest(), getBasicChangeRequest(), getBasicChangeRequest()));
 
-        ChangeRequestManager changeRequestManager = new ChangeRequestManagerImpl(changeRequestDAO,
+        ChangeRequestManager changeRequestManager = new ChangeRequestManager(changeRequestDAO,
                 null, null, null, null, null, null, null, null, null, null, null);
 
         // Run
@@ -110,7 +109,7 @@ public class ChangeRequestManagerImplTest {
         Mockito.when(crStatusService.updateChangeRequestStatus(ArgumentMatchers.any(ChangeRequest.class)))
                 .thenAnswer(i -> i.getArgument(0));
 
-        ChangeRequestManager changeRequestManager = new ChangeRequestManagerImpl(changeRequestDAO,
+        ChangeRequestManager changeRequestManager = new ChangeRequestManager(changeRequestDAO,
                 null,
                 null,
                 null,
@@ -144,7 +143,7 @@ public class ChangeRequestManagerImplTest {
         Mockito.when(websiteValidation.getMessages()).thenReturn(Arrays.asList("Error Message"));
         Mockito.when(crValidationFactory.getRule(ArgumentMatchers.anyString())).thenReturn(websiteValidation);
 
-        ChangeRequestManager changeRequestManager = new ChangeRequestManagerImpl(changeRequestDAO,
+        ChangeRequestManager changeRequestManager = new ChangeRequestManager(changeRequestDAO,
                 null,
                 null,
                 null,
@@ -187,7 +186,7 @@ public class ChangeRequestManagerImplTest {
         Mockito.when(crStatusService.updateChangeRequestStatus(ArgumentMatchers.any(ChangeRequest.class)))
                 .thenAnswer(i -> i.getArgument(0));
 
-        ChangeRequestManager changeRequestManager = new ChangeRequestManagerImpl(changeRequestDAO,
+        ChangeRequestManager changeRequestManager = new ChangeRequestManager(changeRequestDAO,
                 null,
                 null,
                 null,
@@ -231,7 +230,7 @@ public class ChangeRequestManagerImplTest {
         Mockito.when(crStatusService.updateChangeRequestStatus(ArgumentMatchers.any(ChangeRequest.class)))
                 .thenAnswer(i -> i.getArgument(0));
 
-        ChangeRequestManager changeRequestManager = new ChangeRequestManagerImpl(changeRequestDAO,
+        ChangeRequestManager changeRequestManager = new ChangeRequestManager(changeRequestDAO,
                 null,
                 null,
                 null,
