@@ -670,7 +670,7 @@ public class ListingQuestionableActivityProvider {
 
     private Boolean isCriteriaAttestedTo(CertificationCriterion criteriaToCheck, CertifiedProductSearchDetails listing) {
         return listing.getCertificationResults().stream()
-                .filter(cr -> cr.getCriterion().getId().equals(criteriaToCheck.getId()))
+                .filter(cr -> cr.getCriterion().getId().equals(criteriaToCheck.getId()) && cr.isSuccess())
                 .findAny()
                 .isPresent();
     }
