@@ -238,7 +238,6 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
 
     private void sendEmail(JobExecutionContext jobContext, List<List<String>> csvRows, List<CertificationBodyDTO> acbs)
             throws MessagingException {
-
         LOGGER.info("Sending email to {} with contents {} and a total of {} pending change requests",
                 getEmailRecipients(jobContext).get(0), getHtmlMessage(csvRows.size()), csvRows.size());
 
@@ -246,8 +245,17 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         emailBuilder.recipients(getEmailRecipients(jobContext))
                 .subject(env.getProperty("pendingChangeRequestEmailSubject"))
                 .htmlMessage(getHtmlMessage(csvRows.size()))
-                .fileAttachments(Arrays.asList(getCsvFile(csvRows, acbs)))
+                .fileAttachments(getAttachments(csvRows, acbs))
                 .sendEmail();
+    }
+
+    private List<File> getAttachments(List<List<String>> csvRows, List<CertificationBodyDTO> acbs) {
+        List<File> attachments = new ArrayList<File>();
+        File csvFile = getCsvFile(csvRows, acbs);
+        if (csvFile != null) {
+            attachments.add(csvFile);
+        }
+        return attachments;
     }
 
     private File getCsvFile(List<List<String>> csvRows, List<CertificationBodyDTO> acbs) {
