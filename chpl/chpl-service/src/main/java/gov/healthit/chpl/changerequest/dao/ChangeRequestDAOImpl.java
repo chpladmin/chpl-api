@@ -64,14 +64,14 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
         return getEntities().stream()
                 .map(entity -> ChangeRequestConverter.convert(entity))
                 .map(cr -> populateDependentObjects(cr))
-                .collect(Collectors.<ChangeRequest>toList());
+                .collect(Collectors.<ChangeRequest> toList());
     }
 
     @Override
     public List<ChangeRequest> getAllPending() throws EntityRetrievalException {
         return getAll().stream()
                 .filter(cr -> getUpdatableStatuses().contains(cr.getCurrentStatus().getChangeRequestStatusType().getId()))
-                .collect(Collectors.<ChangeRequest>toList());
+                .collect(Collectors.<ChangeRequest> toList());
     }
 
     @Override
@@ -81,7 +81,7 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
         return getEntitiesByDevelopers(developers).stream()
                 .map(entity -> ChangeRequestConverter.convert(entity))
                 .map(cr -> populateDependentObjects(cr))
-                .collect(Collectors.<ChangeRequest>toList());
+                .collect(Collectors.<ChangeRequest> toList());
     }
 
     private ChangeRequestEntity getEntityById(final Long id) throws EntityRetrievalException {
@@ -134,6 +134,7 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
                 + "JOIN FETCH dev.contact "
                 + "JOIN FETCH dev.statusEvents statuses "
                 + "JOIN FETCH statuses.developerStatus "
+                + "JOIN FETCH dev.developerCertificationStatuses "
                 + "WHERE cr.deleted = false ";
 
         List<ChangeRequestEntity> results = entityManager
@@ -159,7 +160,7 @@ public class ChangeRequestDAOImpl extends BaseDAOImpl implements ChangeRequestDA
                 .setParameter("changeRequestId", changeRequestId)
                 .getResultList().stream()
                 .map(ChangeRequestConverter::convert)
-                .collect(Collectors.<ChangeRequestStatus>toList());
+                .collect(Collectors.<ChangeRequestStatus> toList());
 
         if (statuses.size() > 0) {
             return statuses.get(0);
