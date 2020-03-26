@@ -1,5 +1,41 @@
 # Release Notes
 
+## Version 25.0.0
+_23 March 2020_
+
+### Breaking Change
+* Handle duplicate criteria numbers in CMS ID generation
+
+### Features
+* Remove the ability for ONC-ACBs to add/edit values for the test functionality field from (c)(3)
+* Update quartz job to handle new criteria
+* Add V19 Upload Template scheduled job.
+* Add criterion objects to surveillance reqs and nonconformities
+* Update job to add new Test Functionalities as required
+
+### Flagged Features
+* Return errors when attesting to both old and new criteria
+* Add d2, d3, and d10 revised to 2015 CSV Definition file
+* Add new CSV definition file with updated fields for new and removed criteria
+* Update transparency attestations to work in accordance to new Cures rule
+* Disallow generation of CMS EHR IDs containing any 2014 Edition Listings
+* Mark any modification of 2014 Edition Listings as "Questionable Activity"
+  * Requires a "Reason for change" for any such edits, in a similar fashion to existing functionality with 2011 Edition Listings
+* Update 2015 CMS EHR ID generation to handle removed and added criteria
+* Restrict ONC-ACB Users from modifying any 2014 Edition listings
+* Add schedulable job to update 2014 listing status
+* Add new error to Inheritance Errors Report when ICS=0 and Gap=1 for any criteria and certification date after Cures rule effective date
+* Restrict ONC-ACB Users from adding, editing, or removing any criteria marked as removed
+* Restrict ACBs from altering Transparency Attestation
+  * Restrict ACBs from altering Transparency Attestation in all locations found
+  * Externalize developer validations
+  * Return all attestations no matter who is logged in
+* Stop allowing ONC-ACBs to add/edit surveillance and/or non-conformities associated to 2014 Edition Criteria
+* Update requirements on required criteria
+* Change validation based on criteria relationships
+
+---
+
 ## Version 24.0.0
 _9 March 2020_
 
