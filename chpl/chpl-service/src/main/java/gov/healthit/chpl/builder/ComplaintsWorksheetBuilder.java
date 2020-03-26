@@ -40,6 +40,7 @@ import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.ComplaintManager;
+import gov.healthit.chpl.util.Util;
 
 @Component
 public class ComplaintsWorksheetBuilder {
@@ -48,7 +49,6 @@ public class ComplaintsWorksheetBuilder {
 
     private static final String BOOLEAN_YES = "Yes";
     private static final String BOOLEAN_NO = "No";
-    private static final String CURES_UPDATE_STR = " (Cures Update)";
 
     private static final int COL_COMPLAINT_DATE = 1;
     private static final int COL_ACB_COMPLAINT_ID = 2;
@@ -375,8 +375,7 @@ public class ComplaintsWorksheetBuilder {
                     row = workbook.getRow(sheet, rowNum++);
                     addedRows++;
                 }
-                String criterionStr = criterion.formatCriteriaNumber();
-                addDataCell(workbook, row, COL_CRITERIA_ID, criterionStr);
+                addDataCell(workbook, row, COL_CRITERIA_ID, Util.formatCriteriaNumber(criterion));
                 //nothing to show in the rest of the cells since they are all listing/surv specific
                 addDataCell(workbook, row, COL_CHPL_ID, "");
                 addDataCell(workbook, row, COL_SURV_ID, "");

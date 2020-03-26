@@ -20,8 +20,6 @@ import lombok.Builder;
 @AllArgsConstructor
 public class CertificationCriterion implements Serializable {
     private static final long serialVersionUID = 5732322243572571895L;
-    private static final String CURES_TITLE = "Cures Update";
-    private static final String CURES_SUFFIX = " (Cures Update)";
 
     @XmlElement(required = false, nillable = true)
     private Long id;
@@ -111,13 +109,5 @@ public class CertificationCriterion implements Serializable {
 
     public void setRemoved(final Boolean removed) {
         this.removed = removed;
-    }
-
-    public String formatCriteriaNumber() {
-        String result = getNumber();
-        if (getTitle() != null && getTitle().contains(CURES_TITLE)) {
-            result += CURES_SUFFIX;
-        }
-        return result;
     }
 }

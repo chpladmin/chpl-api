@@ -21,6 +21,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
+import gov.healthit.chpl.util.Util;
 
 /**
  * Writes out all surveillance for all products in the system.
@@ -209,7 +210,7 @@ public class SurveillanceCsvPresenter {
             reqRow.add("");
         }
         if (req.getCriterion() != null) {
-            reqRow.add(req.getCriterion().formatCriteriaNumber());
+            reqRow.add(Util.formatCriteriaNumber(req.getCriterion()));
         } else if (req.getRequirement() != null) {
             reqRow.add(req.getRequirement());
         } else {
@@ -226,7 +227,7 @@ public class SurveillanceCsvPresenter {
     protected List<String> generateNonconformityRowValues(final SurveillanceNonconformity nc) {
         List<String> ncRow = new ArrayList<String>();
         if (nc.getCriterion() != null) {
-            ncRow.add(nc.getCriterion().formatCriteriaNumber());
+            ncRow.add(Util.formatCriteriaNumber(nc.getCriterion()));
         } else if (nc.getNonconformityType() != null) {
             ncRow.add(nc.getNonconformityType());
         } else {
