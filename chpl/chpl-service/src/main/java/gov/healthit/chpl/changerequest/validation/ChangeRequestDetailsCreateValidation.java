@@ -13,12 +13,21 @@ public class ChangeRequestDetailsCreateValidation extends ValidationRule<ChangeR
     @Value("${changerequest.website}")
     private Long websiteChangeRequestType;
 
+    @Value("${changerequest.developerDetails}")
+    private Long developerDetailsChangeRequestType;
+
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
         if (context.getChangeRequest().getChangeRequestType().getId().equals(websiteChangeRequestType)
                 && (context.getChangeRequest().getDetails() == null
                         || !isChangeRequestWebsiteValid((HashMap) context.getChangeRequest().getDetails()))) {
             getMessages().add(getErrorMessage("changeRequest.details.website.invalid"));
+            return false;
+        } else if (context.getChangeRequest().getChangeRequestType().getId().equals(developerDetailsChangeRequestType)
+                && (context.getChangeRequest().getDetails() == null
+                        //|| TODO validity check
+                )) {
+            //TODO add error message
             return false;
         }
 

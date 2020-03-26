@@ -34,6 +34,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class ChangeRequestManager extends SecurityManager {
@@ -55,6 +56,7 @@ public class ChangeRequestManager extends SecurityManager {
     private ChangeRequestDetailsFactory crDetailsFactory;
     private ActivityManager activityManager;
     private ResourcePermissions resourcePermissions;
+    private ErrorMessageUtil msgUtil;
 
     @Autowired
     public ChangeRequestManager(ChangeRequestDAO changeRequestDAO,
@@ -64,7 +66,7 @@ public class ChangeRequestManager extends SecurityManager {
             ChangeRequestStatusTypeDAO crStatusTypeDAO, ChangeRequestStatusService crStatusHelper,
             ChangeRequestValidationFactory crValidationFactory, ChangeRequestWebsiteService crWebsiteHelper,
             ChangeRequestDetailsFactory crDetailsFactory, ActivityManager activityManager,
-            ResourcePermissions resourcePermissions) {
+            ResourcePermissions resourcePermissions, ErrorMessageUtil msgUtil) {
         this.changeRequestDAO = changeRequestDAO;
         this.changeRequestTypeDAO = changeRequestTypeDAO;
         this.changeRequestStatusTypeDAO = changeRequestStatusTypeDAO;
@@ -73,6 +75,7 @@ public class ChangeRequestManager extends SecurityManager {
         this.crDetailsFactory = crDetailsFactory;
         this.activityManager = activityManager;
         this.resourcePermissions = resourcePermissions;
+        this.msgUtil = msgUtil;
     }
 
 
@@ -95,29 +98,19 @@ public class ChangeRequestManager extends SecurityManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
             + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).CREATE, #cr)")
-    public ChangeRequest createChangeRequest(ChangeRequest cr)
+    public List<ChangeRequest> createChangeRequests(ChangeRequest parentChangeRequest)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
-        ValidationException validationException = new ValidationException();
-        validationException.getErrorMessages().addAll(runCreateValidations(cr));
-        if (validationException.getErrorMessages().size() > 0) {
-            throw validationException;
+        List<ChangeRequest> changeRequestsByType = splitByChangeRequestType(parentChangeRequest);
+        if (changeRequestsByType == null || changeRequestsByType.size() == 0) {
+            throw new ValidationException(msgUtil.getMessage("changeRequest.noChanges"));
         }
 
-        // Save the base change request
-        ChangeRequest newCr = createBaseChangeRequest(cr);
-        // Carry over the details to the new object, so we have ids necessary
-        // for saving any dependent objects
-        newCr.setDetails(cr.getDetails());
-        // Save the change request details
-        newCr = crDetailsFactory.get(newCr.getChangeRequestType().getId()).create(newCr);
-        // Get the new change request as it exists in DB
-        newCr = getChangeRequest(newCr.getId());
-
-        activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, newCr.getId(), "Change request created", null,
-                newCr);
-        return newCr;
+        List<ChangeRequest> createdCrs = new ArrayList<ChangeRequest>();
+        for (ChangeRequest cr : changeRequestsByType) {
+            createdCrs.add(createChangeRequest(cr));
+        }
+        return createdCrs;
     }
-
 
     @Transactional(readOnly = true)
     @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
@@ -125,7 +118,6 @@ public class ChangeRequestManager extends SecurityManager {
     public ChangeRequest getChangeRequest(Long changeRequestId) throws EntityRetrievalException {
         return changeRequestDAO.get(changeRequestId);
     }
-
 
     @Transactional(readOnly = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
@@ -135,7 +127,6 @@ public class ChangeRequestManager extends SecurityManager {
     public List<ChangeRequest> getAllChangeRequestsForUser() throws EntityRetrievalException {
         return changeRequestDAO.getAll();
     }
-
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
@@ -160,6 +151,34 @@ public class ChangeRequestManager extends SecurityManager {
         }
 
         ChangeRequest newCr = getChangeRequest(cr.getId());
+        return newCr;
+    }
+
+    private List<ChangeRequest> splitByChangeRequestType(ChangeRequest parentChangeRequest) {
+        //TODO
+        return null;
+    }
+
+    private ChangeRequest createChangeRequest(ChangeRequest cr)
+            throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
+        ValidationException validationException = new ValidationException();
+        validationException.getErrorMessages().addAll(runCreateValidations(cr));
+        if (validationException.getErrorMessages().size() > 0) {
+            throw validationException;
+        }
+
+        // Save the base change request
+        ChangeRequest newCr = createBaseChangeRequest(cr);
+        // Carry over the details to the new object, so we have ids necessary
+        // for saving any dependent objects
+        newCr.setDetails(cr.getDetails());
+        // Save the change request details
+        newCr = crDetailsFactory.get(newCr.getChangeRequestType().getId()).create(newCr);
+        // Get the new change request as it exists in DB
+        newCr = getChangeRequest(newCr.getId());
+
+        activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, newCr.getId(), "Change request created", null,
+                newCr);
         return newCr;
     }
 
