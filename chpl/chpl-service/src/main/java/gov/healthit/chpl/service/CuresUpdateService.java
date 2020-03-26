@@ -14,12 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.FeatureList;
-import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
-import lombok.Data;
 
 @Component
 public class CuresUpdateService {
@@ -27,8 +24,11 @@ public class CuresUpdateService {
     private FF4j ff4j;
     private CertificationCriterionService criteriaService;
 
-    private List<Long> curesCriteriaIds = new ArrayList<Long>();
+    private Long b6Id;
+    private Long g8Id;
     private List<Long> originalCriteriaIds = new ArrayList<Long>();
+    private List<Long> newPnSCriteria = new ArrayList<Long>();
+    private List<Long> curesCriteriaIds = new ArrayList<Long>();
     private List<Long> dependentCriteriaIds = new ArrayList<Long>();
 
     @Autowired
@@ -39,6 +39,29 @@ public class CuresUpdateService {
 
     @PostConstruct
     public void postConstruct() {
+        b6Id = criteriaService.get(Criteria2015.B_6).getId();
+        g8Id = criteriaService.get(Criteria2015.G_8).getId();
+
+        originalCriteriaIds = new ArrayList<Long>(Arrays.asList(
+                criteriaService.get(Criteria2015.B_1_OLD).getId(),
+                criteriaService.get(Criteria2015.B_2_OLD).getId(),
+                criteriaService.get(Criteria2015.B_3_OLD).getId(),
+                criteriaService.get(Criteria2015.B_7_OLD).getId(),
+                criteriaService.get(Criteria2015.B_8_OLD).getId(),
+                criteriaService.get(Criteria2015.B_9_OLD).getId(),
+                criteriaService.get(Criteria2015.C_3_OLD).getId(),
+                criteriaService.get(Criteria2015.D_2_OLD).getId(),
+                criteriaService.get(Criteria2015.D_3_OLD).getId(),
+                criteriaService.get(Criteria2015.D_10_OLD).getId(),
+                criteriaService.get(Criteria2015.E_1_OLD).getId(),
+                criteriaService.get(Criteria2015.F_5_OLD).getId(),
+                criteriaService.get(Criteria2015.G_6_OLD).getId(),
+                criteriaService.get(Criteria2015.G_9_OLD).getId()));
+
+        newPnSCriteria = new ArrayList<Long>(Arrays.asList(
+                criteriaService.get(Criteria2015.D_12).getId(),
+                criteriaService.get(Criteria2015.D_13).getId()));
+
         curesCriteriaIds = new ArrayList<Long>(Arrays.asList(
                 criteriaService.get(Criteria2015.A_1).getId(),
                 criteriaService.get(Criteria2015.A_2).getId(),
@@ -78,22 +101,6 @@ public class CuresUpdateService {
                 criteriaService.get(Criteria2015.H_1).getId(),
                 criteriaService.get(Criteria2015.H_2).getId()));
 
-        originalCriteriaIds = new ArrayList<Long>(Arrays.asList(
-                criteriaService.get(Criteria2015.B_1_OLD).getId(),
-                criteriaService.get(Criteria2015.B_2_OLD).getId(),
-                criteriaService.get(Criteria2015.B_3_OLD).getId(),
-                criteriaService.get(Criteria2015.B_7_OLD).getId(),
-                criteriaService.get(Criteria2015.B_8_OLD).getId(),
-                criteriaService.get(Criteria2015.B_9_OLD).getId(),
-                criteriaService.get(Criteria2015.C_3_OLD).getId(),
-                criteriaService.get(Criteria2015.D_2_OLD).getId(),
-                criteriaService.get(Criteria2015.D_3_OLD).getId(),
-                criteriaService.get(Criteria2015.D_10_OLD).getId(),
-                criteriaService.get(Criteria2015.E_1_OLD).getId(),
-                criteriaService.get(Criteria2015.F_5_OLD).getId(),
-                criteriaService.get(Criteria2015.G_6_OLD).getId(),
-                criteriaService.get(Criteria2015.G_9_OLD).getId()));
-
         dependentCriteriaIds = new ArrayList<Long>(Arrays.asList(
                 criteriaService.get(Criteria2015.B_10).getId(),
                 criteriaService.get(Criteria2015.D_1).getId(),
@@ -116,35 +123,37 @@ public class CuresUpdateService {
     }
 
     public Boolean isCuresUpdate(CertifiedProductSearchDetails listing) {
-        List<CuresUpdateCriterion> criteria = listing.getCertificationResults().stream()
-                .map(criterion -> new CuresUpdateCriterion(criterion))
-                .collect(Collectors.<CuresUpdateCriterion>toList());
-        return isCuresUpdate(criteria);
+        List<Long> criteriaIds = listing.getCertificationResults().stream()
+                .filter(criterion -> criterion.isSuccess() && !criterion.getCriterion().getRemoved())
+                .map(criterion -> criterion.getCriterion().getId())
+                .collect(Collectors.toList());
+        return isCuresUpdate(criteriaIds);
     }
 
     public Boolean isCuresUpdate(PendingCertifiedProductDTO listing) {
-        List<CuresUpdateCriterion> criteria = listing.getCertificationCriterion().stream()
-                .map(criterion -> new CuresUpdateCriterion(criterion))
-                .collect(Collectors.<CuresUpdateCriterion>toList());
-        return isCuresUpdate(criteria);
+        List<Long> criteriaIds = listing.getCertificationCriterion().stream()
+                .filter(criterion -> criterion.getMeetsCriteria() && !criterion.getCriterion().getRemoved())
+                .map(criterion -> criterion.getCriterion().getId())
+                .collect(Collectors.toList());
+        return isCuresUpdate(criteriaIds);
     }
 
-    private Boolean isCuresUpdate(List<CuresUpdateCriterion> criteria) {
+    private Boolean isCuresUpdate(List<Long> criteriaIds) {
         try {
             if (!ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
                 return false;
             }
-            if (!meetsB6RequirementForCuresUpdate(criteria)) {
+            if (!meetsB6RequirementForCuresUpdate(criteriaIds)) {
                 return false;
             }
-            if (!passOriginalCriteriaRequirement(criteria)) {
+            if (!passOriginalCriteriaRequirement(criteriaIds)) {
                 return false;
             }
-            if (meetsD12D13RequirementForCuresUpdate(criteria)) {
-                return meetsG8RequirementForCuresUpdate(criteria);
+            if (meetsD12D13RequirementForCuresUpdate(criteriaIds)) {
+                return meetsG8RequirementForCuresUpdate(criteriaIds);
             } else {
-                if (hasNoCuresCriteria(criteria)) {
-                    return passesOnlyDependentCriteriaRule(criteria);
+                if (hasNoCuresCriteria(criteriaIds)) {
+                    return passesOnlyDependentCriteriaRule(criteriaIds);
                 } else {
                     return false;
                 }
@@ -155,8 +164,8 @@ public class CuresUpdateService {
         return false;
     }
 
-    private Boolean meetsB6RequirementForCuresUpdate(List<CuresUpdateCriterion> criteria) throws Exception {
-        if (hasB6Criterion(criteria)) {
+    private Boolean meetsB6RequirementForCuresUpdate(List<Long> criteriaIds) throws Exception {
+        if (hasB6Criterion(criteriaIds)) {
             if (isPast24Months()) {
                 if (isPast36Months()) {
                     throw new Exception("Listing is not valid; fails B6 Requirement past 36 months");
@@ -168,14 +177,15 @@ public class CuresUpdateService {
         return true;
     }
 
-    private Boolean hasB6Criterion(List<CuresUpdateCriterion> criteria) {
-        return criteria.stream()
-                .filter(criterion -> criterion.getCriterionId() == criteriaService.get(Criteria2015.B_6).getId())
-                .findFirst().get().getSuccess();
+    private Boolean hasB6Criterion(List<Long> criteriaIds) {
+        return criteriaIds.stream()
+                .filter(id -> id == b6Id)
+                .findAny()
+                .isPresent();
     }
 
-    private Boolean passOriginalCriteriaRequirement(List<CuresUpdateCriterion> criteria) throws Exception {
-        if (hasOriginalCriteria(criteria)) {
+    private Boolean passOriginalCriteriaRequirement(List<Long> criteriaIds) throws Exception {
+        if (hasOriginalCriteria(criteriaIds)) {
             if (isPast24Months()) {
                 throw new Exception("Listing is not valid; has revised criteria past 24 months");
             } else {
@@ -185,30 +195,28 @@ public class CuresUpdateService {
         return true;
     }
 
-    private Boolean hasOriginalCriteria(List<CuresUpdateCriterion> criteria) {
-        return criteria.stream()
-                .filter(criterion -> criterion.getSuccess() && originalCriteriaIds.contains(criterion.getCriterionId()))
+    private Boolean hasOriginalCriteria(List<Long> criteriaIds) {
+        return criteriaIds.stream()
+                .filter(id -> originalCriteriaIds.contains(id))
                 .findAny()
                 .isPresent();
     }
 
-    private Boolean meetsD12D13RequirementForCuresUpdate(List<CuresUpdateCriterion> criteria) {
-        if (hasD12D13Criteria(criteria)) {
+    private Boolean meetsD12D13RequirementForCuresUpdate(List<Long> criteriaIds) {
+        if (hasD12D13Criteria(criteriaIds)) {
             return true;
         }
         return false;
     }
 
-    private Boolean hasD12D13Criteria(List<CuresUpdateCriterion> criteria) {
-        return criteria.stream()
-                .filter(criterion -> criterion.getSuccess()
-                        && (criterion.getCriterionId() == criteriaService.get(Criteria2015.D_12).getId()
-                                || criterion.getCriterionId() == criteriaService.get(Criteria2015.D_13).getId()))
+    private Boolean hasD12D13Criteria(List<Long> criteriaIds) {
+        return criteriaIds.stream()
+                .filter(id -> newPnSCriteria.contains(id))
                 .count() == 2;
     }
 
-    private Boolean meetsG8RequirementForCuresUpdate(List<CuresUpdateCriterion> criteria) throws Exception {
-        if (hasG8Criteria(criteria)) {
+    private Boolean meetsG8RequirementForCuresUpdate(List<Long> criteriaIds) throws Exception {
+        if (hasG8Criteria(criteriaIds)) {
             if (isPast24Months()) {
                 throw new Exception("Listing is not valid; fails g8 requirement past 24 months");
             } else {
@@ -218,15 +226,15 @@ public class CuresUpdateService {
         return true;
     }
 
-    private Boolean hasG8Criteria(List<CuresUpdateCriterion> criteria) {
-        return criteria.stream()
-                .filter(criterion -> criterion.getSuccess()
-                        && criterion.getCriterionId() == criteriaService.get(Criteria2015.G_8).getId())
-                .count() == 1;
+    private Boolean hasG8Criteria(List<Long> criteriaIds) {
+        return criteriaIds.stream()
+                .filter(id -> id == g8Id)
+                .findAny()
+                .isPresent();
     }
 
-    private Boolean hasNoCuresCriteria(List<CuresUpdateCriterion> criteria) throws Exception {
-        if (hasCuresCriteria(criteria)) {
+    private Boolean hasNoCuresCriteria(List<Long> criteriaIds) throws Exception {
+        if (hasCuresCriteria(criteriaIds)) {
             if (isPast24Months()) {
                 throw new Exception("Listing is not valid; doesn't have d12/d13 and is past 24 months");
             } else {
@@ -236,16 +244,15 @@ public class CuresUpdateService {
         return true;
     }
 
-    private Boolean hasCuresCriteria(List<CuresUpdateCriterion> criteria) {
-        return criteria.stream()
-                .filter(criterion -> criterion.getSuccess() && curesCriteriaIds.contains(criterion.getCriterionId()))
+    private Boolean hasCuresCriteria(List<Long> criteriaIds) {
+        return criteriaIds.stream()
+                .filter(id -> curesCriteriaIds.contains(id))
                 .findAny()
                 .isPresent();
-
     }
 
-    private Boolean passesOnlyDependentCriteriaRule(List<CuresUpdateCriterion> criteria) throws Exception {
-        if (hasOnlyDependentCriteria(criteria)) {
+    private Boolean passesOnlyDependentCriteriaRule(List<Long> criteriaIds) throws Exception {
+        if (hasOnlyDependentCriteria(criteriaIds)) {
             return true;
         }
         if (isPast24Months()) {
@@ -255,12 +262,9 @@ public class CuresUpdateService {
         }
     }
 
-    private Boolean hasOnlyDependentCriteria(List<CuresUpdateCriterion> criteria) {
-        return criteria.stream()
-                .filter(criterion ->
-                criterion.getSuccess()
-                && !criterion.getRemoved()
-                && !dependentCriteriaIds.contains(criterion.getCriterionId()))
+    private Boolean hasOnlyDependentCriteria(List<Long> criteriaIds) {
+        return criteriaIds.stream()
+                .filter(id -> !dependentCriteriaIds.contains(id))
                 .count() == 0;
     }
 
@@ -270,24 +274,5 @@ public class CuresUpdateService {
 
     private Boolean isPast36Months() {
         return false;
-    }
-
-    @Data
-    private class CuresUpdateCriterion {
-        private Boolean success;
-        private Boolean removed;
-        private Long criterionId;
-
-        CuresUpdateCriterion(CertificationResult result) {
-            this.success = result.isSuccess();
-            this.removed = result.getCriterion().getRemoved();
-            this.criterionId = result.getCriterion().getId();
-        }
-
-        CuresUpdateCriterion(PendingCertificationResultDTO result) {
-            this.success = result.getMeetsCriteria();
-            this.removed = result.getCriterion().getRemoved();
-            this.criterionId = result.getCriterion().getId();
-        }
     }
 }
