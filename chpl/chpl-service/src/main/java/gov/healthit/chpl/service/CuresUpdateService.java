@@ -179,7 +179,7 @@ public class CuresUpdateService {
 
     private Boolean hasB6Criterion(List<Long> criteriaIds) {
         return criteriaIds.stream()
-                .filter(id -> id == b6Id)
+                .filter(id -> id.equals(b6Id))
                 .findAny()
                 .isPresent();
     }
@@ -212,7 +212,7 @@ public class CuresUpdateService {
     private Boolean hasD12D13Criteria(List<Long> criteriaIds) {
         return criteriaIds.stream()
                 .filter(id -> newPnSCriteria.contains(id))
-                .count() == 2;
+                .count() == 2L;
     }
 
     private Boolean meetsG8RequirementForCuresUpdate(List<Long> criteriaIds) throws Exception {
@@ -228,7 +228,7 @@ public class CuresUpdateService {
 
     private Boolean hasG8Criteria(List<Long> criteriaIds) {
         return criteriaIds.stream()
-                .filter(id -> id == g8Id)
+                .filter(id -> id.equals(g8Id))
                 .findAny()
                 .isPresent();
     }
@@ -265,7 +265,7 @@ public class CuresUpdateService {
     private Boolean hasOnlyDependentCriteria(List<Long> criteriaIds) {
         return criteriaIds.stream()
                 .filter(id -> !dependentCriteriaIds.contains(id))
-                .count() == 0;
+                .count() == 0L;
     }
 
     private Boolean isPast24Months() {
