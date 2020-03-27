@@ -643,24 +643,11 @@ public class ListingQuestionableActivityProvider {
                     matchingNewCriteriaNumbers.add(d10Criterion.getNumber());
                 }
                 if (matchingNewCriteriaNumbers.size() > 0) {
-                    // Need these for the "before" data
-                    if (isCriteriaAttestedTo(d2Criterion, origListing)) {
-                        matchingOldCriteriaNumbers.add(d2Criterion.getNumber());
-                    }
-                    if (isCriteriaAttestedTo(d3Criterion, origListing)) {
-                        matchingOldCriteriaNumbers.add(d3Criterion.getNumber());
-                    }
-                    if (isCriteriaAttestedTo(d10Criterion, origListing)) {
-                        matchingOldCriteriaNumbers.add(d10Criterion.getNumber());
-                    }
 
                     String newCriteriaNumbers = matchingNewCriteriaNumbers.stream()
                             .collect(Collectors.joining(", "));
-                    String oldCriteriaNumbers = matchingOldCriteriaNumbers.stream()
-                            .collect(Collectors.joining(", "));
                     activity = new QuestionableActivityListingDTO();
-                    activity.setBefore("ICS = 0, Criteria Numbers: " + oldCriteriaNumbers);
-                    activity.setAfter("ICS = 1, Criteria Numbers: " + newCriteriaNumbers);
+                    activity.setAfter(newCriteriaNumbers);
                 }
             }
         }
