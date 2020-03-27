@@ -7,6 +7,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.ContactDTO;
@@ -82,6 +85,49 @@ public class Contact implements Serializable {
         this.email = dto.getEmail();
         this.phoneNumber = dto.getPhoneNumber();
         this.title = dto.getTitle();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Contact)) {
+            return false;
+        }
+        Contact anotherContact = (Contact) obj;
+        if (this.contactId != null && anotherContact.contactId != null
+                && this.contactId.longValue() == anotherContact.contactId.longValue()) {
+            return true;
+        } else if (this.contactId == null && anotherContact.contactId == null) {
+            return ObjectUtils.equals(this.fullName, anotherContact.fullName)
+                    && ObjectUtils.equals(this.friendlyName, anotherContact.friendlyName)
+                    && ObjectUtils.equals(this.email, anotherContact.email)
+                    && ObjectUtils.equals(this.phoneNumber, anotherContact.phoneNumber)
+                    && ObjectUtils.equals(this.title, anotherContact.title);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        if (this.contactId != null) {
+            return this.contactId.hashCode();
+        }
+        int hashCode = 0;
+        if (!StringUtils.isEmpty(this.fullName)) {
+            hashCode += this.fullName.hashCode();
+        }
+        if (!StringUtils.isEmpty(this.friendlyName)) {
+            hashCode += this.friendlyName.hashCode();
+        }
+        if (!StringUtils.isEmpty(this.email)) {
+            hashCode += this.email.hashCode();
+        }
+        if (!StringUtils.isEmpty(this.phoneNumber)) {
+            hashCode += this.phoneNumber.hashCode();
+        }
+        if (!StringUtils.isEmpty(this.title)) {
+            hashCode += this.title.hashCode();
+        }
+        return hashCode;
     }
 
     public Long getContactId() {

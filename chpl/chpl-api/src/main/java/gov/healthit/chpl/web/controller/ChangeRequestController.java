@@ -20,6 +20,7 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.web.controller.results.ChangeRequestResults;
 import io.swagger.annotations.Api;
@@ -68,7 +69,9 @@ public class ChangeRequestController {
             notes = "Security Restrictions: ROLE_DEVELOPER can create change requests where they have administrative authority based on the developer.")
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public ChangeRequestResults createChangeRequest(@RequestBody final ChangeRequest cr ) throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
+    public ChangeRequestResults createChangeRequest(@RequestBody final ChangeRequest cr )
+            throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException {
         if (!ff4j.check(FeatureList.CHANGE_REQUEST)) {
             throw new NotImplementedException();
         }

@@ -7,6 +7,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.entity.AddressEntity;
 
@@ -89,6 +92,53 @@ public class Address implements Serializable {
         this.state = entity.getState();
         this.zipcode = entity.getZipcode();
         this.country = entity.getCountry();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Address)) {
+            return false;
+        }
+        Address anotherAddress = (Address) obj;
+        if (this.addressId != null && anotherAddress.addressId != null
+                && this.addressId.longValue() == anotherAddress.addressId.longValue()) {
+            return true;
+        } else if (this.addressId == null && anotherAddress.addressId == null) {
+            return ObjectUtils.equals(this.line1, anotherAddress.line1)
+                    && ObjectUtils.equals(this.line2, anotherAddress.line2)
+                    && ObjectUtils.equals(this.city, anotherAddress.city)
+                    && ObjectUtils.equals(this.state, anotherAddress.state)
+                    && ObjectUtils.equals(this.zipcode, anotherAddress.zipcode)
+                    && ObjectUtils.equals(this.country, anotherAddress.country);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        if (this.addressId != null) {
+            return this.addressId.hashCode();
+        }
+        int hashCode = 0;
+        if (!StringUtils.isEmpty(this.line1)) {
+            hashCode += this.line1.hashCode();
+        }
+        if (!StringUtils.isEmpty(this.line2)) {
+            hashCode += this.line2.hashCode();
+        }
+        if (!StringUtils.isEmpty(this.city)) {
+            hashCode += this.city.hashCode();
+        }
+        if (!StringUtils.isEmpty(this.state)) {
+            hashCode += this.state.hashCode();
+        }
+        if (!StringUtils.isEmpty(this.zipcode)) {
+            hashCode += this.zipcode.hashCode();
+        }
+        if (!StringUtils.isEmpty(this.country)) {
+            hashCode += this.country.hashCode();
+        }
+        return hashCode;
     }
 
     public Long getAddressId() {
