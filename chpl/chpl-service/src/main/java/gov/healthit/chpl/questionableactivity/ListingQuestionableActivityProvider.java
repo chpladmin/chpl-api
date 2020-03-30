@@ -10,7 +10,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,42 +25,52 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.SpecialProperties;
+import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.Util;
 
-/**
- * Parses activity on Listings to see if there are questionable activities.
- */
 @Component
 public class ListingQuestionableActivityProvider {
     private static Logger LOGGER = LogManager.getLogger(ListingQuestionableActivityProvider.class);
     private static String B3_CHANGE_DATE = "questionableActivity.b3ChangeDate";
     private static String B3_CRITERIA_NUMER = "170.315 (b)(3)";
+    private CertificationCriterion d2Criterion;
+    private CertificationCriterion d3Criterion;
+    private CertificationCriterion d10Criterion;
 
     private FF4j ff4j;
     private Environment env;
+    private CertificationCriterionDAO certificationCriterionDAO;
+    private SpecialProperties specialProperties;
 
     @Autowired
-    public ListingQuestionableActivityProvider(FF4j ff4j, Environment env) {
+    public ListingQuestionableActivityProvider(CertificationCriterionDAO certificationCriterionDAO, FF4j ff4j, Environment env,
+            SpecialProperties specialProperties) {
+        this.certificationCriterionDAO = certificationCriterionDAO;
         this.ff4j = ff4j;
         this.env = env;
+        this.specialProperties = specialProperties;
     }
 
-    /**
-     * Create questionable activity if the listing was a 2011 listing.
-     *
-     * @param origListing
-     *            original listing
-     * @param newListing
-     *            new listing
-     * @return questionable activity, if it exists
-     */
+    @PostConstruct
+    public void postConstruct() throws EntityRetrievalException {
+        d2Criterion = new CertificationCriterion(
+                certificationCriterionDAO.getById(Long.parseLong(env.getProperty("criterion.170_315_d_2"))));
+        d3Criterion = new CertificationCriterion(
+                certificationCriterionDAO.getById(Long.parseLong(env.getProperty("criterion.170_315_d_3"))));
+        d10Criterion = new CertificationCriterion(
+                certificationCriterionDAO.getById(Long.parseLong(env.getProperty("criterion.170_315_d_10"))));
+    }
+
     public QuestionableActivityListingDTO check2011EditionUpdated(
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
@@ -70,15 +84,6 @@ public class ListingQuestionableActivityProvider {
         return activity;
     }
 
-    /**
-     * Create questionable activity if the listing was a 2014 listing.
-     *
-     * @param origListing
-     *            original listing
-     * @param newListing
-     *            new listing
-     * @return questionable activity, if it exists
-     */
     public QuestionableActivityListingDTO check2014EditionUpdated(
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         if (!ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
@@ -95,15 +100,6 @@ public class ListingQuestionableActivityProvider {
         return activity;
     }
 
-    /**
-     * Create questionable activity if the current certification status was updated.
-     *
-     * @param origListing
-     *            original listing
-     * @param newListing
-     *            new listing
-     * @return questionable activity if it exists
-     */
     public QuestionableActivityListingDTO checkCertificationStatusUpdated(
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
@@ -120,18 +116,6 @@ public class ListingQuestionableActivityProvider {
         return activity;
     }
 
-    /**
-     * Create questionable activity if the historical certification statuses or dates were updated. Sorts certification
-     * status events by date, earliest first, then compares them, incrementing through them with the "earlier" date
-     * getting moved up. If both are equal both move. Does not compare "latest" events, as those are the "current"
-     * values, and compared in other functions.
-     *
-     * @param origListing
-     *            original listing
-     * @param newListing
-     *            new listing
-     * @return questionable activity if it exists
-     */
     public QuestionableActivityListingDTO checkCertificationStatusHistoryUpdated(
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
@@ -229,15 +213,6 @@ public class ListingQuestionableActivityProvider {
         return activity;
     }
 
-    /**
-     * Create questionable activity if the current certification status event date was updated.
-     *
-     * @param origListing
-     *            original listing
-     * @param newListing
-     *            new listing
-     * @return questionable activity if it exists
-     */
     public QuestionableActivityListingDTO checkCertificationStatusDateUpdated(
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
@@ -257,17 +232,6 @@ public class ListingQuestionableActivityProvider {
         return activity;
     }
 
-    /**
-     * questionable only if the certification status has updated to the supplied updateTo value.
-     *
-     * @param updateTo
-     *            status to check against
-     * @param origListing
-     *            original listing
-     * @param newListing
-     *            new listing
-     * @return activity if it is questionable
-     */
     public QuestionableActivityListingDTO checkCertificationStatusUpdated(
             CertificationStatusType updateTo, CertifiedProductSearchDetails origListing,
             CertifiedProductSearchDetails newListing) {
@@ -284,15 +248,6 @@ public class ListingQuestionableActivityProvider {
         return activity;
     }
 
-    /**
-     * Create questionable activity if CQMs were added.
-     *
-     * @param origListing
-     *            original listing
-     * @param newListing
-     *            new listing
-     * @return questionable activity, if it exists
-     */
     public List<QuestionableActivityListingDTO> checkCqmsAdded(
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
@@ -336,15 +291,6 @@ public class ListingQuestionableActivityProvider {
         return cqmAddedActivities;
     }
 
-    /**
-     * Create questionable activity if CQMs were removed.
-     *
-     * @param origListing
-     *            original listing
-     * @param newListing
-     *            new listing
-     * @return questionable activity, if it exists
-     */
     public List<QuestionableActivityListingDTO> checkCqmsRemoved(
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
@@ -397,15 +343,6 @@ public class ListingQuestionableActivityProvider {
         return cqmRemovedActivities;
     }
 
-    /**
-     * Create questionable activity if certification criteria were added.
-     *
-     * @param origListing
-     *            original listing
-     * @param newListing
-     *            new listing
-     * @return questionable activity, if it exists
-     */
     public List<QuestionableActivityListingDTO> checkCertificationsAdded(
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
@@ -433,15 +370,6 @@ public class ListingQuestionableActivityProvider {
         return certAddedActivities;
     }
 
-    /**
-     * Create questionable activity if it has removal of certification criteria.
-     *
-     * @param origListing
-     *            original listing
-     * @param newListing
-     *            new listing
-     * @return questionable activity, if it is
-     */
     public List<QuestionableActivityListingDTO> checkCertificationsRemoved(
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
@@ -468,15 +396,6 @@ public class ListingQuestionableActivityProvider {
         return certRemovedActivities;
     }
 
-    /**
-     * Check to see if activity has has deletion of surveillance.
-     *
-     * @param origListing
-     *            original listing
-     * @param newListing
-     *            new listing
-     * @return activity if it is questionable
-     */
     public QuestionableActivityListingDTO checkSurveillanceDeleted(
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
@@ -492,15 +411,6 @@ public class ListingQuestionableActivityProvider {
         return activity;
     }
 
-    /**
-     * Check to see if activity has any changes in ATLs.
-     *
-     * @param origListing
-     *            original listing
-     * @param newListing
-     *            new listing
-     * @return activity if it is questionable
-     */
     public QuestionableActivityListingDTO checkTestingLabChanged(
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         QuestionableActivityListingDTO activity = null;
@@ -661,6 +571,109 @@ public class ListingQuestionableActivityProvider {
         } else {
             return false;
         }
+    }
+
+    public QuestionableActivityListingDTO checkNonCuresAuditCriteriaOnCreate(CertifiedProductSearchDetails newListing) {
+        QuestionableActivityListingDTO activity = null;
+        Date certificationDate = new Date(newListing.getCertificationDate());
+
+        if (certificationDate.equals(specialProperties.getEffectiveRuleDate())
+                || certificationDate.after(specialProperties.getEffectiveRuleDate())) {
+            // If ICS=0 and they attested to D2, D3, or D10
+            if (!hasICS(newListing)) {
+                List<CertificationResult> matchingCertResults = newListing.getCertificationResults().stream()
+                        .filter(cr -> cr.isSuccess() &&
+                                (cr.getCriterion().getId().equals(d2Criterion.getId())
+                                        || cr.getCriterion().getId().equals(d3Criterion.getId())
+                                        || cr.getCriterion().getId().equals(d10Criterion.getId())))
+                        .collect(Collectors.toList());
+
+                if (matchingCertResults.size() > 0) {
+                    String criteriaNumbers = matchingCertResults.stream()
+                            .map(cr -> cr.getCriterion().getNumber())
+                            .collect(Collectors.joining(", "));
+                    activity = new QuestionableActivityListingDTO();
+                    activity.setAfter(criteriaNumbers);
+                }
+            }
+        }
+        return activity;
+    }
+
+    public QuestionableActivityListingDTO checkNonCuresAuditCriteriaOnEdit(CertifiedProductSearchDetails origListing,
+            CertifiedProductSearchDetails newListing) {
+        QuestionableActivityListingDTO activity = null;
+        if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
+            List<String> matchingCriteriaNumbers = new ArrayList<String>();
+            if (hasCriteriaChangedToAttestedTo(d2Criterion, newListing, origListing)) {
+                matchingCriteriaNumbers.add(d2Criterion.getNumber());
+            }
+            if (hasCriteriaChangedToAttestedTo(d3Criterion, newListing, origListing)) {
+                matchingCriteriaNumbers.add(d3Criterion.getNumber());
+            }
+            if (hasCriteriaChangedToAttestedTo(d10Criterion, newListing, origListing)) {
+                matchingCriteriaNumbers.add(d10Criterion.getNumber());
+            }
+
+            if (matchingCriteriaNumbers.size() > 0) {
+                String criteriaNumbers = matchingCriteriaNumbers.stream()
+                        .collect(Collectors.joining(", "));
+                activity = new QuestionableActivityListingDTO();
+                activity.setAfter(criteriaNumbers);
+            }
+        }
+        return activity;
+    }
+
+    public QuestionableActivityListingDTO checkNonCuresAuditCriteriaAndAddedIcsOnEdit(CertifiedProductSearchDetails origListing,
+            CertifiedProductSearchDetails newListing) {
+        QuestionableActivityListingDTO activity = null;
+        if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
+            if (!hasICS(origListing) && hasICS(newListing)) { // ICS has been added
+                List<String> matchingNewCriteriaNumbers = new ArrayList<String>();
+                List<String> matchingOldCriteriaNumbers = new ArrayList<String>();
+                // Does the new listing attest to one of the listing in question?
+                if (isCriteriaAttestedTo(d2Criterion, newListing)) {
+                    matchingNewCriteriaNumbers.add(d2Criterion.getNumber());
+                }
+                if (isCriteriaAttestedTo(d3Criterion, newListing)) {
+                    matchingNewCriteriaNumbers.add(d3Criterion.getNumber());
+                }
+                if (isCriteriaAttestedTo(d10Criterion, newListing)) {
+                    matchingNewCriteriaNumbers.add(d10Criterion.getNumber());
+                }
+                if (matchingNewCriteriaNumbers.size() > 0) {
+
+                    String newCriteriaNumbers = matchingNewCriteriaNumbers.stream()
+                            .collect(Collectors.joining(", "));
+                    activity = new QuestionableActivityListingDTO();
+                    activity.setAfter(newCriteriaNumbers);
+                }
+            }
+        }
+
+        return activity;
+    }
+
+    private Boolean isCriteriaAttestedTo(CertificationCriterion criteriaToCheck, CertifiedProductSearchDetails listing) {
+        return listing.getCertificationResults().stream()
+                .filter(cr -> cr.getCriterion().getId().equals(criteriaToCheck.getId()) && cr.isSuccess())
+                .findAny()
+                .isPresent();
+    }
+
+    private Boolean hasCriteriaChangedToAttestedTo(CertificationCriterion criteriaToCheck,
+            CertifiedProductSearchDetails newListing, CertifiedProductSearchDetails origListing) {
+
+        Optional<CertificationResult> newCertResult = newListing.getCertificationResults().stream()
+                .filter(certResult -> certResult.isSuccess() && certResult.getCriterion().getId().equals(criteriaToCheck.getId()))
+                .findAny();
+        Optional<CertificationResult> origCertResult = origListing.getCertificationResults().stream()
+                .filter(certResult -> !certResult.isSuccess()
+                        && certResult.getCriterion().getId().equals(criteriaToCheck.getId()))
+                .findAny();
+
+        return newCertResult.isPresent() && origCertResult.isPresent();
     }
 
     static class CertificationStatusEventComparator implements Comparator<CertificationStatusEvent>, Serializable {
