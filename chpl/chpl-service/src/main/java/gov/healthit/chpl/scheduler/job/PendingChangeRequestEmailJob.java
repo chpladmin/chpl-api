@@ -243,10 +243,18 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
 
         EmailBuilder emailBuilder = new EmailBuilder(env);
         emailBuilder.recipients(getEmailRecipients(jobContext))
-                .subject(env.getProperty("pendingChangeRequestEmailSubject"))
+                .subject(getSubject(jobContext))
                 .htmlMessage(getHtmlMessage(csvRows.size()))
                 .fileAttachments(getAttachments(csvRows, acbs))
                 .sendEmail();
+    }
+
+    private String getSubject(JobExecutionContext jobContext) {
+        if (jobContext.getMergedJobDataMap().getBooleanValue("acbSpecific")) {
+            return env.getProperty("pendingChangeRequestEmailAcbSubject");
+        } else {
+            return env.getProperty("pendingChangeRequestEmailSubject");
+        }
     }
 
     private List<File> getAttachments(List<List<String>> csvRows, List<CertificationBodyDTO> acbs) {
