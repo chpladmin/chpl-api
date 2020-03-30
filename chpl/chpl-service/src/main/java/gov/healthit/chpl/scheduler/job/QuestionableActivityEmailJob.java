@@ -469,7 +469,19 @@ public class QuestionableActivityEmailJob extends QuartzJob {
                 .getName())) {
             currRow.set(ACTIVITY_DESCRIPTION_COL, "From " + activity.getBefore() + " to " + activity.getAfter());
             currRow.set(ACTIVITY_CERT_STATUS_CHANGE_REASON_COL, activity.getCertificationStatusChangeReason());
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.NON_CURES_CRITERIA_ADDED_TO_NEW_LISTING.getName())) {
+            currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getAfter());
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.NON_CURES_CRITERIA_ADDED_TO_EXISTING_LISTING.getName())) {
+            currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getAfter());
+            currRow.set(ACTIVITY_CERT_STATUS_CHANGE_REASON_COL, activity.getCertificationStatusChangeReason());
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.NON_CURES_CRITERIA_AND_ICS_ADDED_TO_EXISTING_LISTING.getName())) {
+            currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getAfter());
+            currRow.set(ACTIVITY_CERT_STATUS_CHANGE_REASON_COL, activity.getCertificationStatusChangeReason());
         }
+
         currRow.set(ACTIVITY_REASON_COL, activity.getReason());
     }
 
@@ -545,6 +557,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
                     + activity.getAfter();
             currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
         }
+
         currRow.set(ACTIVITY_REASON_COL, activity.getReason());
     }
 
