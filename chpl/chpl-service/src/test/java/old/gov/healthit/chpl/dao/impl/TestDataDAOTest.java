@@ -45,7 +45,7 @@ public class TestDataDAOTest extends TestCase {
     public void findTestDataByCriteria() {
         String criteria = "170.314 (a)(1)";
         try {
-            List<TestDataDTO> testData = tdDao.getByCriteriaNumber(criteria);
+            List<TestDataDTO> testData = tdDao.getByCriterionId(1L);
             assertNotNull(testData);
             assertEquals(1, testData.size());
             assertEquals("ONC Test Method", testData.get(0).getName());
@@ -60,7 +60,7 @@ public class TestDataDAOTest extends TestCase {
     public void findMultipleTestDataByCriteria() {
         String criteria = "170.315 (c)(2)";
         try {
-            List<TestDataDTO> testData = tdDao.getByCriteriaNumber(criteria);
+            List<TestDataDTO> testData = tdDao.getByCriterionId(2L);
             assertNotNull(testData);
             assertEquals(2, testData.size());
         } catch (Exception ex) {
@@ -75,7 +75,7 @@ public class TestDataDAOTest extends TestCase {
         String criteria = "170.314 (a)(1)";
         String tdName = "ONC Test Method";
         try {
-            TestDataDTO testData = tdDao.getByCriteriaNumberAndValue(criteria, tdName);
+            TestDataDTO testData = tdDao.getByCriterionAndValue(3L, tdName);
             assertNotNull(testData);
             assertEquals(tdName, testData.getName());
         } catch (Exception ex) {
@@ -88,7 +88,7 @@ public class TestDataDAOTest extends TestCase {
     @Transactional
     public void findNoTestDataByCriteria() {
         String criteria = "BOGUS";
-        List<TestDataDTO> testData = tdDao.getByCriteriaNumber(criteria);
+        List<TestDataDTO> testData = tdDao.getByCriterionId(1L);
         assertTrue(testData == null || testData.size() == 0);
     }
 
@@ -97,7 +97,7 @@ public class TestDataDAOTest extends TestCase {
     public void findNoTestDataByCriteriaAndName() {
         String criteria = "170.314 (a)(1)";
         String tdName = "BOGUS";
-        TestDataDTO testData = tdDao.getByCriteriaNumberAndValue(criteria, tdName);
+        TestDataDTO testData = tdDao.getByCriterionAndValue(2L, tdName);
         assertNull(testData);
     }
 

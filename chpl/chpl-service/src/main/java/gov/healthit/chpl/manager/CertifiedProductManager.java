@@ -704,8 +704,8 @@ public class CertifiedProductManager extends SecuredManager {
                                 testDto.setTestData(testData.getTestData());
                                 certDao.addTestDataMapping(testDto);
                             } else if (testData.getTestData() != null) {
-                                TestDataDTO foundTestData = testDataDao.getByCriteriaNumberAndValue(
-                                        certResult.getCriterion().getNumber(), testData.getTestData().getName());
+                                TestDataDTO foundTestData = testDataDao.getByCriterionAndValue(
+                                        certResult.getCriterion().getId(), testData.getTestData().getName());
                                 if (foundTestData == null) {
                                     LOGGER.error("Could not find test data for " + certResult.getCriterion().getNumber()
                                             + " and test data name " + testData.getTestData().getName());
@@ -763,8 +763,8 @@ public class CertifiedProductManager extends SecuredManager {
                                 // check again for a matching test procedure
                                 // because
                                 // the user could have edited it since upload
-                                TestProcedureDTO foundTp = testProcDao.getByCriteriaNumberAndValue(
-                                        certResult.getCriterion().getNumber(), proc.getTestProcedure().getName());
+                                TestProcedureDTO foundTp = testProcDao.getByCriterionIdAndValue(
+                                        certResult.getCriterion().getId(), proc.getTestProcedure().getName());
                                 if (foundTp == null) {
                                     LOGGER.error("Could not find test procedure for " + certResult.getCriterion().getNumber()
                                             + " and test procedure name " + proc.getTestProcedure().getName());

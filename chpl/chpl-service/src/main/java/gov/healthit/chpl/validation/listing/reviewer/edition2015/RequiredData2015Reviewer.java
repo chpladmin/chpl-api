@@ -489,7 +489,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     "listing.criteria.missingTestProcedureName", cert.getNumber());
                         }
                         if (crTestProc.getTestProcedure() != null && crTestProc.getTestProcedure().getId() == null) {
-                            TestProcedureDTO foundTestProc = testProcDao.getByCriteriaNumberAndValue(cert.getNumber(),
+                            TestProcedureDTO foundTestProc = testProcDao.getByCriterionIdAndValue(cert.getCriterion().getId(),
                                     crTestProc.getTestProcedure().getName());
                             if (foundTestProc == null || foundTestProc.getId() == null) {
                                 addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.badTestProcedureName",
@@ -514,19 +514,19 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                         if (crTestData.getTestData() == null) {
                             listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.missingTestDataName",
                                     cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA));
-                            TestDataDTO foundTestData = testDataDao.getByCriteriaNumberAndValue(cert.getNumber(),
+                            TestDataDTO foundTestData = testDataDao.getByCriterionAndValue(cert.getCriterion().getId(),
                                     TestDataDTO.DEFALUT_TEST_DATA);
                             TestData foundTestDataDomain = new TestData(foundTestData.getId(), foundTestData.getName());
                             crTestData.setTestData(foundTestDataDomain);
                         } else if (crTestData.getTestData() != null && crTestData.getTestData().getId() == null) {
-                            TestDataDTO foundTestData = testDataDao.getByCriteriaNumberAndValue(cert.getNumber(),
+                            TestDataDTO foundTestData = testDataDao.getByCriterionAndValue(cert.getCriterion().getId(),
                                     crTestData.getTestData().getName());
                             if (foundTestData == null || foundTestData.getId() == null) {
                                 listing.getWarningMessages()
                                 .add(msgUtil.getMessage("listing.criteria.badTestDataName",
                                         crTestData.getTestData().getName(), cert.getNumber(),
                                         TestDataDTO.DEFALUT_TEST_DATA));
-                                foundTestData = testDataDao.getByCriteriaNumberAndValue(cert.getNumber(),
+                                foundTestData = testDataDao.getByCriterionAndValue(cert.getCriterion().getId(),
                                         TestDataDTO.DEFALUT_TEST_DATA);
                                 crTestData.getTestData().setId(foundTestData.getId());
                             } else {

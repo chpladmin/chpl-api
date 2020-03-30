@@ -60,7 +60,7 @@ public class MacraMeasureDaoTest extends TestCase {
     @Test
     @Transactional
     public void getMeasuresForCertificationCriteriaSingleResult() {
-        List<MacraMeasureDTO> results = macraDao.getByCriteriaNumber("170.315 (a)(1)");
+        List<MacraMeasureDTO> results = macraDao.getByCriterionId(1L);
         assertNotNull(results);
         assertEquals(MEASURE_COUNT_FOR_315_A1, results.size());
     }
@@ -68,7 +68,7 @@ public class MacraMeasureDaoTest extends TestCase {
     @Test
     @Transactional
     public void getMeasuresForCertificationCriteriaMultipleResults() {
-        List<MacraMeasureDTO> results = macraDao.getByCriteriaNumber("170.315 (b)(1)");
+        List<MacraMeasureDTO> results = macraDao.getByCriterionId(2L);
         assertNotNull(results);
         assertEquals(MEASURE_COUNT_FOR_315_B1, results.size());
     }
@@ -76,7 +76,7 @@ public class MacraMeasureDaoTest extends TestCase {
     @Test
     @Transactional
     public void getMeasureForCriteriaAndValue() {
-        MacraMeasureDTO result = macraDao.getByCriteriaNumberAndValue("170.315 (b)(1)", "RT8 EP Stage 3");
+        MacraMeasureDTO result = macraDao.getByCriterionAndValue(2L, "RT8 EP Stage 3");
         assertNotNull(result);
         assertEquals("RT8 EP Stage 3", result.getValue());
     }
@@ -84,7 +84,7 @@ public class MacraMeasureDaoTest extends TestCase {
     @Test
     @Transactional
     public void getNoMeasureForCriteriaAndValue() {
-        MacraMeasureDTO result = macraDao.getByCriteriaNumberAndValue("170.315 (b)(1)", "Junk Value");
+        MacraMeasureDTO result = macraDao.getByCriterionAndValue(2L, "Junk Value");
         assertNull(result);
     }
 }
