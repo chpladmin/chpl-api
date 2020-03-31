@@ -26,7 +26,6 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsFactory;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestStatusService;
-import gov.healthit.chpl.changerequest.domain.service.ChangeRequestWebsiteService;
 import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationContext;
 import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationFactory;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
@@ -81,8 +80,8 @@ public class ChangeRequestManager extends SecurityManager {
             ChangeRequestTypeDAO changeRequestTypeDAO,
             ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO,
             CertifiedProductDAO certifiedProductDAO, CertificationBodyDAO certificationBodyDAO,
-            ChangeRequestStatusTypeDAO crStatusTypeDAO, ChangeRequestStatusService crStatusHelper,
-            ChangeRequestValidationFactory crValidationFactory, ChangeRequestWebsiteService crWebsiteHelper,
+            ChangeRequestStatusService crStatusHelper,
+            ChangeRequestValidationFactory crValidationFactory,
             ChangeRequestDetailsFactory crDetailsFactory, DeveloperManager devManager,
             ActivityManager activityManager, ResourcePermissions resourcePermissions, ErrorMessageUtil msgUtil) {
         this.changeRequestDAO = changeRequestDAO;

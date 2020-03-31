@@ -62,7 +62,7 @@ public class ChangeRequestValidationFactoryTest {
     @Test
     public void getRule() {
         assertTrue(factory.getRule(
-                ChangeRequestValidationFactory.CHANGE_REQUEST_DETAILS_CREATE) instanceof ChangeRequestCreateValidation);
+                ChangeRequestValidationFactory.CHANGE_REQUEST_CREATE) instanceof ChangeRequestCreateValidation);
         assertTrue(factory.getRule(
                 ChangeRequestValidationFactory.CHANGE_REQUEST_DETAILS_UPDATE) instanceof ChangeRequestDetailsUpdateValidation);
 
@@ -79,7 +79,7 @@ public class ChangeRequestValidationFactoryTest {
                 ChangeRequestValidationFactory.DEVELOPER_ACTIVE) instanceof DeveloperActiveValidation);
 
         assertTrue(factory.getRule(
-                ChangeRequestValidationFactory.CHANGE_REQUEST_DETAILS_CREATE) instanceof ChangeRequestCreateValidation);
+                ChangeRequestValidationFactory.CHANGE_REQUEST_CREATE) instanceof ChangeRequestCreateValidation);
 
         assertTrue(factory.getRule(
                 ChangeRequestValidationFactory.CHANGE_REQUEST_DETAILS_UPDATE) instanceof ChangeRequestDetailsUpdateValidation);

@@ -114,13 +114,13 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 null,
-                null,
                 crStatusService,
                 crValidationFactory,
-                null,
                 crDetailsFactory,
                 null,
-                resourcePermissions);
+                null,
+                resourcePermissions,
+                null);
 
         // Run
         changeRequestManager.updateChangeRequest(getBasicChangeRequest());
@@ -149,8 +149,8 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 null,
-                null,
                 crValidationFactory,
+                null,
                 null,
                 null,
                 null,
@@ -191,13 +191,13 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 null,
-                null,
                 crStatusService,
                 crValidationFactory,
-                null,
                 crDetailsFactory,
                 null,
-                resourcePermissions);
+                null,
+                resourcePermissions,
+                null);
 
         // Run
         changeRequestManager.updateChangeRequest(getBasicChangeRequest());
@@ -235,13 +235,13 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 null,
-                null,
                 crStatusService,
                 crValidationFactory,
-                null,
                 crDetailsFactory,
                 null,
-                resourcePermissions);
+                null,
+                resourcePermissions,
+                null);
 
         // Run
         ChangeRequest cr = getBasicChangeRequest();
