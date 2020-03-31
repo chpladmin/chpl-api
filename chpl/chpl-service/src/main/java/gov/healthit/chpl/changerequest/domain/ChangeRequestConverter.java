@@ -1,11 +1,14 @@
 package gov.healthit.chpl.changerequest.domain;
 
+import gov.healthit.chpl.changerequest.entity.ChangeRequestDeveloperDetailsEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusTypeEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestTypeEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestWebsiteEntity;
+import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.auth.UserPermission;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -14,21 +17,21 @@ import gov.healthit.chpl.dto.auth.UserPermissionDTO;
 
 public class ChangeRequestConverter {
 
-    public static ChangeRequestStatusType convert(final ChangeRequestStatusTypeEntity entity) {
+    public static ChangeRequestStatusType convert(ChangeRequestStatusTypeEntity entity) {
         ChangeRequestStatusType status = new ChangeRequestStatusType();
         status.setId(entity.getId());
         status.setName(entity.getName());
         return status;
     }
 
-    public static ChangeRequestType convert(final ChangeRequestTypeEntity entity) {
+    public static ChangeRequestType convert(ChangeRequestTypeEntity entity) {
         ChangeRequestType status = new ChangeRequestType();
         status.setId(entity.getId());
         status.setName(entity.getName());
         return status;
     }
 
-    public static ChangeRequest convert(final ChangeRequestEntity entity) {
+    public static ChangeRequest convert(ChangeRequestEntity entity) {
         ChangeRequest cr = new ChangeRequest();
         cr.setId(entity.getId());
         cr.setChangeRequestType(convert(entity.getChangeRequestType()));
@@ -55,5 +58,25 @@ public class ChangeRequestConverter {
         crWebsite.setId(entity.getId());
         crWebsite.setWebsite(entity.getWebsite());
         return crWebsite;
+    }
+
+    public static ChangeRequestDeveloperDetails convert(ChangeRequestDeveloperDetailsEntity entity) {
+        ChangeRequestDeveloperDetails crDev = new ChangeRequestDeveloperDetails();
+        crDev.setId(entity.getId());
+        crDev.setSelfDeveloper(entity.getSelfDeveloper());
+        Address address = new Address();
+        address.setLine1(entity.getStreetLine1());
+        address.setLine2(entity.getStreetLine2());
+        address.setCity(entity.getCity());
+        address.setState(entity.getState());
+        address.setZipcode(entity.getZipcode());
+        address.setCountry(entity.getCountry());
+        crDev.setAddress(address);
+        Contact contact = new Contact();
+        contact.setFullName(entity.getContactFullName());
+        contact.setEmail(entity.getContactEmail());
+        contact.setPhoneNumber(entity.getContactPhoneNumber());
+        contact.setTitle(entity.getContactTitle());
+        return crDev;
     }
 }

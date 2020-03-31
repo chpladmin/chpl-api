@@ -29,7 +29,7 @@ public class WebsiteValidation extends ValidationRule<ChangeRequestValidationCon
                 // Is the website valid?
                 if (!ValidationUtils.isWellFormedUrl(
                         ((HashMap) context.getChangeRequest().getDetails()).get("website").toString())) {
-                    getMessages().add(getErrorMessage("changeRequest.details.website.invalid"));
+                    getMessages().add(getErrorMessage("changeRequest.details.website.invalidFormat"));
                     return false;
                 }
             }
@@ -37,8 +37,8 @@ public class WebsiteValidation extends ValidationRule<ChangeRequestValidationCon
         return true;
     }
 
-    private boolean isChangeRequestWebsiteValid(HashMap<String, String> map) {
+    private boolean isChangeRequestWebsiteValid(HashMap<String, Object> map) {
         // The only value that should be present...
-        return map.containsKey("website") && !StringUtils.isEmpty(map.get("website"));
+        return map.containsKey("website") && !StringUtils.isEmpty(map.get("website").toString());
     }
 }

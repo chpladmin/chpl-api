@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,8 +17,9 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
-import gov.healthit.chpl.changerequest.dao.ChangeRequestWebsiteDAO;
+import gov.healthit.chpl.changerequest.dao.ChangeRequestDeveloperDetailsDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDetails;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestWebsite;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
@@ -33,10 +35,10 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.util.EmailBuilder;
 
 @Component
-public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<ChangeRequestWebsite> {
+public class ChangeRequestDeveloperDetailsService implements ChangeRequestDetailsService<ChangeRequestDeveloperDetails> {
 
     private ChangeRequestDAO crDAO;
-    private ChangeRequestWebsiteDAO crWebsiteDAO;
+    private ChangeRequestDeveloperDetailsDAO crDeveloperDetailsDao;
     private DeveloperDAO developerDAO;
     private DeveloperManager developerManager;
     private UserDeveloperMapDAO userDeveloperMapDAO;
@@ -77,12 +79,12 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
     private String pendingDeveloperActionEmailBody;
 
     @Autowired
-    public ChangeRequestWebsiteService(ChangeRequestDAO crDAO, ChangeRequestWebsiteDAO crWebsiteDAO,
+    public ChangeRequestDeveloperDetailsService(ChangeRequestDAO crDAO, ChangeRequestDeveloperDetailsDAO crDeveloperDetailsDao,
             DeveloperDAO developerDAO, DeveloperManager developerManager,
             UserDeveloperMapDAO userDeveloperMapDAO, ActivityManager activityManager,
             Environment env) {
         this.crDAO = crDAO;
-        this.crWebsiteDAO = crWebsiteDAO;
+        this.crDeveloperDetailsDao = crDeveloperDetailsDao;
         this.developerDAO = developerDAO;
         this.developerManager = developerManager;
         this.userDeveloperMapDAO = userDeveloperMapDAO;
@@ -91,14 +93,14 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
     }
 
     @Override
-    public ChangeRequestWebsite getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
-        return crWebsiteDAO.getByChangeRequestId(changeRequestId);
+    public ChangeRequestDeveloperDetails getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
+        return crDeveloperDetailsDao.getByChangeRequestId(changeRequestId);
     }
 
     @Override
     public ChangeRequest create(ChangeRequest cr) {
         try {
-            crWebsiteDAO.create(cr, getDetailsFromHashMap((HashMap<String, Object>) cr.getDetails()));
+            crDeveloperDetailsDao.create(cr, getDetailsFromHashMap((HashMap<String, Object>) cr.getDetails()));
             return crDAO.get(cr.getId());
         } catch (EntityRetrievalException e) {
             throw new RuntimeException(e);
@@ -112,7 +114,7 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
             ChangeRequest crFromDb = crDAO.get(cr.getId());
             // Convert the map of key/value pairs to a ChangeRequestWebsite
             // object
-            ChangeRequestWebsite crWebsite = getDetailsFromHashMap((HashMap<String, Object>) cr.getDetails());
+            ChangeRequestDeveloperDetails crWebsite = getDetailsFromHashMap((HashMap<String, Object>) cr.getDetails());
             // Use the id from the DB, not the object. Client could have changed
             // the id.
             crWebsite.setId(((ChangeRequestWebsite) crFromDb.getDetails()).getId());
@@ -120,7 +122,7 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
 
             if (!((ChangeRequestWebsite) cr.getDetails()).getWebsite()
                     .equals(((ChangeRequestWebsite) crFromDb.getDetails()).getWebsite())) {
-                cr.setDetails(crWebsiteDAO.update((ChangeRequestWebsite) cr.getDetails()));
+                cr.setDetails(crDeveloperDetailsDao.update((ChangeRequestDeveloperDetails) cr.getDetails()));
 
                 activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, cr.getId(),
                         "Change request details updated",
@@ -207,15 +209,16 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
                 .sendEmail();
     }
 
-    private ChangeRequestWebsite getDetailsFromHashMap(HashMap<String, Object> map) {
-        ChangeRequestWebsite crWebsite = new ChangeRequestWebsite();
+    private ChangeRequestDeveloperDetails getDetailsFromHashMap(HashMap<String, Object> map) {
+        ChangeRequestDeveloperDetails crDevDetails = new ChangeRequestDeveloperDetails();
         if (map.containsKey("id") && StringUtils.isNumeric(map.get("id").toString())) {
-            crWebsite.setId(new Long(map.get("id").toString()));
+            crDevDetails.setId(new Long(map.get("id").toString()));
         }
-        if (map.containsKey("website")) {
-            crWebsite.setWebsite(map.get("website").toString());
+        if (map.containsKey("selfDeveloper")) {
+            crDevDetails.setSelfDeveloper(BooleanUtils.toBooleanObject(map.get("selfDeveloper").toString()));
         }
-        return crWebsite;
+        //TODO other fields
+        return crDevDetails;
     }
 
     private String getApprovalBody(ChangeRequest cr) {

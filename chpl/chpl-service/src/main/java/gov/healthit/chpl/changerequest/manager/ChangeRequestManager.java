@@ -188,12 +188,22 @@ public class ChangeRequestManager extends SecurityManager {
         if (isWebsiteChangeRequest(parentChangeRequest)) {
             ChangeRequestType websiteChangeRequestType = new ChangeRequestType();
             websiteChangeRequestType.setId(websiteChangeRequestTypeId);
-            parentChangeRequest.setChangeRequestType(websiteChangeRequestType);
+            ChangeRequest websiteChangeRequest = new ChangeRequest();
+            websiteChangeRequest.setChangeRequestType(websiteChangeRequestType);
+            websiteChangeRequest.setDeveloper(parentChangeRequest.getDeveloper());
+            websiteChangeRequest.setSubmittedDate(parentChangeRequest.getSubmittedDate());
+            websiteChangeRequest.setDetails(extractWebsiteChangesFromDetails(parentChangeRequest));
+            changeRequests.add(websiteChangeRequest);
         }
         if (isDeveloperDetailsChangeRequest(parentChangeRequest)) {
             ChangeRequestType devDetailsChangeRequestType = new ChangeRequestType();
             devDetailsChangeRequestType.setId(developerDetailsChangeRequestTypeId);
-            parentChangeRequest.setChangeRequestType(devDetailsChangeRequestType);
+            ChangeRequest developerDetailsChangeRequest = new ChangeRequest();
+            developerDetailsChangeRequest.setChangeRequestType(devDetailsChangeRequestType);
+            developerDetailsChangeRequest.setDeveloper(parentChangeRequest.getDeveloper());
+            developerDetailsChangeRequest.setSubmittedDate(parentChangeRequest.getSubmittedDate());
+            developerDetailsChangeRequest.setDetails(extractDeveloperChangesFromDetails(parentChangeRequest));
+            changeRequests.add(developerDetailsChangeRequest);
         }
         return changeRequests;
     }
@@ -258,6 +268,40 @@ public class ChangeRequestManager extends SecurityManager {
         return false;
     }
 
+    private Object extractWebsiteChangesFromDetails(ChangeRequest cr) {
+        HashMap<String, Object> websiteDetails = new HashMap<String, Object>();
+        HashMap<String, Object> crDetails = (HashMap) cr.getDetails();
+        if (crDetails.containsKey("id")) {
+            websiteDetails.put("id", crDetails.get("id"));
+        }
+
+        if (isWebsiteChanged(cr)) {
+            if (crDetails.containsKey("website")) {
+                websiteDetails.put("website", crDetails.get("website").toString());
+            }
+        }
+        return websiteDetails;
+    }
+
+    private Object extractDeveloperChangesFromDetails(ChangeRequest cr) {
+        HashMap<String, Object> devDetails = new HashMap<String, Object>();
+        HashMap<String, Object> crDetails = (HashMap) cr.getDetails();
+        if (crDetails.containsKey("id")) {
+            devDetails.put("id", crDetails.get("id"));
+        }
+
+        if (isSelfDeveloperChanged(cr)) {
+            devDetails.put("selfDeveloper", crDetails.get("selfDeveloper"));
+        }
+        if (isAddressChanged(cr)) {
+            devDetails.put("address", crDetails.get("address"));
+        }
+        if (isContactChanged(cr)) {
+            devDetails.put("contact", crDetails.get("contact"));
+        }
+        return devDetails;
+    }
+
     private ChangeRequest createChangeRequest(ChangeRequest cr)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
         ValidationException validationException = new ValidationException();
@@ -299,20 +343,23 @@ public class ChangeRequestManager extends SecurityManager {
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_IN_PROCESS));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.DEVELOPER_EXISTENCE));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.DEVELOPER_ACTIVE));
-        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_DETAILS_CREATE));
         return runValidations(rules, cr);
     }
 
     private List<String> runWebsiteValidations(ChangeRequest cr) {
         List<ValidationRule<ChangeRequestValidationContext>> rules = new ArrayList<ValidationRule<ChangeRequestValidationContext>>();
+        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_WEBSITE_CREATE));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.WEBSITE_VALID));
         return runValidations(rules, cr);
     }
 
     private List<String> runDeveloperDetailsValidations(ChangeRequest cr) {
         List<ValidationRule<ChangeRequestValidationContext>> rules = new ArrayList<ValidationRule<ChangeRequestValidationContext>>();
-        //TODO
-        //rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.WEBSITE_VALID));
+        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_DEVELOPER_DETAILS_CREATE));
+        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.SELF_DEVELOPER_VALID));
+        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.ADDRESS_VALID));
+        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CONTACT_VALID));
+
         return runValidations(rules, cr);
     }
 

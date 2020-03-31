@@ -9,12 +9,9 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
 @Component
-public class ChangeRequestDetailsCreateValidation extends ValidationRule<ChangeRequestValidationContext> {
+public class ChangeRequestWebsiteCreateValidation extends ValidationRule<ChangeRequestValidationContext> {
     @Value("${changerequest.website}")
     private Long websiteChangeRequestType;
-
-    @Value("${changerequest.developerDetails}")
-    private Long developerDetailsChangeRequestType;
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
@@ -23,19 +20,11 @@ public class ChangeRequestDetailsCreateValidation extends ValidationRule<ChangeR
                         || !isChangeRequestWebsiteValid((HashMap) context.getChangeRequest().getDetails()))) {
             getMessages().add(getErrorMessage("changeRequest.details.website.invalid"));
             return false;
-        } else if (context.getChangeRequest().getChangeRequestType().getId().equals(developerDetailsChangeRequestType)
-                && (context.getChangeRequest().getDetails() == null
-                        //|| TODO validity check
-                )) {
-            //TODO add error message
-            return false;
         }
-
         return true;
     }
 
-    private boolean isChangeRequestWebsiteValid(HashMap<String, String> map) {
-        // The only value that should be present...
-        return map.containsKey("website") && !StringUtils.isEmpty(map.get("website"));
+    private boolean isChangeRequestWebsiteValid(HashMap<String, Object> map) {
+        return map.containsKey("website") && !StringUtils.isEmpty(map.get("website").toString());
     }
 }

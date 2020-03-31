@@ -12,15 +12,20 @@ public class ChangeRequestValidationFactory {
     public final static String CHANGE_REQUEST_IN_PROCESS = "CHANGE_REQUEST_IN_PROCESS";
     public final static String DEVELOPER_EXISTENCE = "DEVELOPER_EXISTENCE";
     public final static String DEVELOPER_ACTIVE = "DEVELOPER_ACTIVE";
-    public final static String CHANGE_REQUEST_DETAILS_CREATE = "CHANGE_REQUEST_DETAILS_CREATE";
+    public final static String CHANGE_REQUEST_WEBSITE_CREATE = "CHANGE_REQUEST_WEBSITE_CREATE";
+    public final static String CHANGE_REQUEST_DEVELOPER_DETAILS_CREATE = "CHANGE_REQUEST_DEVELOPER_DETAILS_CREATE";
     public final static String CHANGE_REQUEST_DETAILS_UPDATE = "CHANGE_REQUEST_DETAILS_UPDATE";
     public final static String STATUS_TYPE = "STATUS_TYPE";
     public final static String STATUS_NOT_UPDATABLE = "STATUS_NOT_UPDATABLE";
     public final static String COMMENT_REQUIRED = "COMMENT_REQUIRED";
     public final static String MULTIPLE_ACBS = "MULTIPLE_ACBS";
     public final static String WEBSITE_VALID = "WEBSITE_VALID";
+    public final static String SELF_DEVELOPER_VALID = "SELF_DEVELOPER_VALID";
+    public final static String ADDRESS_VALID = "ADDRESS_VALID";
+    public final static String CONTACT_VALID = "CONTACT_VALID";
 
-    private ChangeRequestDetailsCreateValidation changeRequestDetailsCreateValidation;
+    private ChangeRequestWebsiteCreateValidation changeRequestWebsiteCreateValidation;
+    private ChangeRequestDeveloperDetailsCreateValidation changeRequestDeveloperDetailsCreateValidation;
     private ChangeRequestDetailsUpdateValidation changeRequestDetailsUpdateValidation;
     private ChangeRequestTypeValidation changeRequestTypeValidation;
     private CurrentStatusValidation currentStatusValidation;
@@ -31,22 +36,30 @@ public class ChangeRequestValidationFactory {
     private CommentRequiredValidation commentRequiredValidation;
     private RoleAcbHasMultipleCertificationBodiesValidation roleAcbHasMultipleCertificationBodiesValidation;
     private WebsiteValidation websiteValidation;
+    private SelfDeveloperValidation selfDeveloperValidation;
+    private AddressValidation addressValidation;
+    private ContactValidation contactValidation;
 
     @Autowired
     public ChangeRequestValidationFactory(
-            final ChangeRequestDetailsCreateValidation changeRequestDetailsCreateValidation,
-            final ChangeRequestDetailsUpdateValidation changeRequestDetailsUpdateValidation,
-            final ChangeRequestTypeValidation changeRequestTypeValidation,
-            final CurrentStatusValidation currentStatusValidation,
-            final DeveloperExistenceValidation developerExistenceValidation,
-            final DeveloperActiveValidation developerActiveValidation,
-            final ChangeRequestNotUpdatableDueToStatusValidation changeRequestNotUpdatableDueToStatusValidation,
-            final ChangeRequestTypeInProcessValidation changeRequestTypeInProcessValidation,
-            final CommentRequiredValidation commentRequiredValidation,
-            final RoleAcbHasMultipleCertificationBodiesValidation roleAcbHasMultipleCertificationBodiesValidation,
-            final WebsiteValidation websiteValidation) {
+            ChangeRequestWebsiteCreateValidation changeRequestWebsiteCreateValidation,
+            ChangeRequestDeveloperDetailsCreateValidation changeRequestDeveloperDetailsCreateValidation,
+            ChangeRequestDetailsUpdateValidation changeRequestDetailsUpdateValidation,
+            ChangeRequestTypeValidation changeRequestTypeValidation,
+            CurrentStatusValidation currentStatusValidation,
+            DeveloperExistenceValidation developerExistenceValidation,
+            DeveloperActiveValidation developerActiveValidation,
+            ChangeRequestNotUpdatableDueToStatusValidation changeRequestNotUpdatableDueToStatusValidation,
+            ChangeRequestTypeInProcessValidation changeRequestTypeInProcessValidation,
+            CommentRequiredValidation commentRequiredValidation,
+            RoleAcbHasMultipleCertificationBodiesValidation roleAcbHasMultipleCertificationBodiesValidation,
+            WebsiteValidation websiteValidation,
+            SelfDeveloperValidation selfDeveloperValidation,
+            AddressValidation addressValidation,
+            ContactValidation contactValidation) {
 
-        this.changeRequestDetailsCreateValidation = changeRequestDetailsCreateValidation;
+        this.changeRequestWebsiteCreateValidation = changeRequestWebsiteCreateValidation;
+        this.changeRequestDeveloperDetailsCreateValidation = changeRequestDeveloperDetailsCreateValidation;
         this.changeRequestDetailsUpdateValidation = changeRequestDetailsUpdateValidation;
         this.changeRequestTypeValidation = changeRequestTypeValidation;
         this.currentStatusValidation = currentStatusValidation;
@@ -57,6 +70,9 @@ public class ChangeRequestValidationFactory {
         this.commentRequiredValidation = commentRequiredValidation;
         this.roleAcbHasMultipleCertificationBodiesValidation = roleAcbHasMultipleCertificationBodiesValidation;
         this.websiteValidation = websiteValidation;
+        this.selfDeveloperValidation = selfDeveloperValidation;
+        this.addressValidation = addressValidation;
+        this.contactValidation = contactValidation;
     }
 
     public ValidationRule<ChangeRequestValidationContext> getRule(String name) {
@@ -69,8 +85,10 @@ public class ChangeRequestValidationFactory {
             return developerExistenceValidation;
         case DEVELOPER_ACTIVE:
             return developerActiveValidation;
-        case CHANGE_REQUEST_DETAILS_CREATE:
-            return changeRequestDetailsCreateValidation;
+        case CHANGE_REQUEST_WEBSITE_CREATE:
+            return changeRequestWebsiteCreateValidation;
+        case CHANGE_REQUEST_DEVELOPER_DETAILS_CREATE:
+            return changeRequestDeveloperDetailsCreateValidation;
         case CHANGE_REQUEST_DETAILS_UPDATE:
             return changeRequestDetailsUpdateValidation;
         case STATUS_TYPE:
@@ -83,6 +101,12 @@ public class ChangeRequestValidationFactory {
             return roleAcbHasMultipleCertificationBodiesValidation;
         case WEBSITE_VALID:
             return websiteValidation;
+        case SELF_DEVELOPER_VALID:
+            return selfDeveloperValidation;
+        case ADDRESS_VALID:
+            return addressValidation;
+        case CONTACT_VALID:
+            return contactValidation;
         default:
             return null;
         }
