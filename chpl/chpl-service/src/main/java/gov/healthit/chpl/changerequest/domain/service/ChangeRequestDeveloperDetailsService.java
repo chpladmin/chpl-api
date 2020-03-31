@@ -1,8 +1,8 @@
 package gov.healthit.chpl.changerequest.domain.service;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.util.HashMap;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
@@ -23,59 +23,49 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDetails;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestWebsite;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
+import gov.healthit.chpl.domain.Address;
+import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.dto.AddressDTO;
+import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.util.EmailBuilder;
+import gov.healthit.chpl.util.JSONUtils;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component
-public class ChangeRequestDeveloperDetailsService implements ChangeRequestDetailsService<ChangeRequestDeveloperDetails> {
+public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsService<ChangeRequestDeveloperDetails> {
 
     private ChangeRequestDAO crDAO;
     private ChangeRequestDeveloperDetailsDAO crDeveloperDetailsDao;
     private DeveloperDAO developerDAO;
     private DeveloperManager developerManager;
-    private UserDeveloperMapDAO userDeveloperMapDAO;
     private ActivityManager activityManager;
     private Environment env;
 
-    @Value("${changerequest.status.pendingdeveloperaction}")
-    private Long pendingDeveloperActionStatus;
-
-    @Value("${changerequest.status.accepted}")
-    private Long acceptedStatus;
-
-    @Value("${changerequest.status.rejected}")
-    private Long rejectedStatus;
-
-    @Value("${user.permission.onc}")
-    private Long oncPermission;
-
-    @Value("${user.permission.admin}")
-    private Long adminPermission;
-
-    @Value("${changeRequest.website.approval.subject}")
+    @Value("${changeRequest.developerDetails.approval.subject}")
     private String approvalEmailSubject;
 
-    @Value("${changeRequest.website.approval.body}")
+    @Value("${changeRequest.developerDetails.approval.body}")
     private String approvalEmailBody;
 
-    @Value("${changeRequest.website.rejected.subject}")
+    @Value("${changeRequest.developerDetails.rejected.subject}")
     private String rejectedEmailSubject;
 
-    @Value("${changeRequest.website.rejected.body}")
+    @Value("${changeRequest.developerDetails.rejected.body}")
     private String rejectedEmailBody;
 
-    @Value("${changeRequest.website.pendingDeveloperAction.subject}")
+    @Value("${changeRequest.developerDetails.pendingDeveloperAction.subject}")
     private String pendingDeveloperActionEmailSubject;
 
-    @Value("${changeRequest.website.pendingDeveloperAction.body}")
+    @Value("${changeRequest.developerDetails.pendingDeveloperAction.body}")
     private String pendingDeveloperActionEmailBody;
 
     @Autowired
@@ -83,11 +73,11 @@ public class ChangeRequestDeveloperDetailsService implements ChangeRequestDetail
             DeveloperDAO developerDAO, DeveloperManager developerManager,
             UserDeveloperMapDAO userDeveloperMapDAO, ActivityManager activityManager,
             Environment env) {
+        super(userDeveloperMapDAO);
         this.crDAO = crDAO;
         this.crDeveloperDetailsDao = crDeveloperDetailsDao;
         this.developerDAO = developerDAO;
         this.developerManager = developerManager;
-        this.userDeveloperMapDAO = userDeveloperMapDAO;
         this.activityManager = activityManager;
         this.env = env;
     }
@@ -102,13 +92,14 @@ public class ChangeRequestDeveloperDetailsService implements ChangeRequestDetail
         try {
             crDeveloperDetailsDao.create(cr, getDetailsFromHashMap((HashMap<String, Object>) cr.getDetails()));
             return crDAO.get(cr.getId());
-        } catch (EntityRetrievalException e) {
+        } catch (IOException | EntityRetrievalException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
     public ChangeRequest update(ChangeRequest cr) {
+        //TODO
         try {
             // Get the current cr to determine if the website changed
             ChangeRequest crFromDb = crDAO.get(cr.getId());
@@ -135,27 +126,31 @@ public class ChangeRequestDeveloperDetailsService implements ChangeRequestDetail
     }
 
     @Override
-    public ChangeRequest postStatusChangeProcessing(ChangeRequest cr) {
-        try {
-            if (cr.getCurrentStatus().getChangeRequestStatusType().getId().equals(pendingDeveloperActionStatus)) {
-                sendPendingDeveloperActionEmail(cr);
-            } else if (cr.getCurrentStatus().getChangeRequestStatusType().getId().equals(rejectedStatus)) {
-                sendRejectedEmail(cr);
-            } else if (cr.getCurrentStatus().getChangeRequestStatusType().getId().equals(acceptedStatus)) {
-                cr = execute(cr);
-                sendApprovalEmail(cr);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return cr;
-    }
-
-    private ChangeRequest execute(ChangeRequest cr)
+    protected ChangeRequest execute(ChangeRequest cr)
             throws EntityRetrievalException, EntityCreationException {
-        ChangeRequestWebsite crWebsite = (ChangeRequestWebsite) cr.getDetails();
+        ChangeRequestDeveloperDetails crDevDetails = (ChangeRequestDeveloperDetails) cr.getDetails();
         DeveloperDTO developer = developerDAO.getById(cr.getDeveloper().getDeveloperId());
-        developer.setWebsite(crWebsite.getWebsite());
+        if (crDevDetails.getSelfDeveloper() != null) {
+            developer.setSelfDeveloper(crDevDetails.getSelfDeveloper());
+        }
+        if (crDevDetails.getAddress() != null) {
+            AddressDTO address = developer.getAddress() != null ? developer.getAddress() : new AddressDTO();
+            address.setStreetLineOne(crDevDetails.getAddress().getLine1());
+            address.setStreetLineTwo(crDevDetails.getAddress().getLine2());
+            address.setCity(crDevDetails.getAddress().getCity());
+            address.setState(crDevDetails.getAddress().getState());
+            address.setZipcode(crDevDetails.getAddress().getZipcode());
+            address.setCountry(crDevDetails.getAddress().getCountry());
+            developer.setAddress(address);
+        }
+        if (crDevDetails.getContact() != null) {
+            ContactDTO contact = developer.getContact() != null ? developer.getContact() : new ContactDTO();
+            contact.setFullName(crDevDetails.getContact().getFullName());
+            contact.setEmail(crDevDetails.getContact().getEmail());
+            contact.setPhoneNumber(crDevDetails.getContact().getPhoneNumber());
+            contact.setTitle(crDevDetails.getContact().getTitle());
+            developer.setContact(contact);
+        }
         try {
             DeveloperDTO updatedDeveloper = developerManager.update(developer, false);
             cr.setDeveloper(new Developer(updatedDeveloper));
@@ -165,7 +160,8 @@ public class ChangeRequestDeveloperDetailsService implements ChangeRequestDetail
         }
     }
 
-    private void sendApprovalEmail(ChangeRequest cr) throws MessagingException {
+    @Override
+    protected void sendApprovalEmail(ChangeRequest cr) throws MessagingException {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         new EmailBuilder(env)
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
@@ -174,12 +170,13 @@ public class ChangeRequestDeveloperDetailsService implements ChangeRequestDetail
                 .subject(approvalEmailSubject)
                 .htmlMessage(String.format(approvalEmailBody,
                         df.format(cr.getSubmittedDate()),
-                        cr.getDeveloper().getWebsite(),
+                        formatDeveloperHtml(cr.getDeveloper()),
                         getApprovalBody(cr)))
                 .sendEmail();
     }
 
-    private void sendPendingDeveloperActionEmail(ChangeRequest cr) throws MessagingException {
+    @Override
+    protected void sendPendingDeveloperActionEmail(ChangeRequest cr) throws MessagingException {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         new EmailBuilder(env)
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
@@ -188,13 +185,14 @@ public class ChangeRequestDeveloperDetailsService implements ChangeRequestDetail
                 .subject(pendingDeveloperActionEmailSubject)
                 .htmlMessage(String.format(pendingDeveloperActionEmailBody,
                         df.format(cr.getSubmittedDate()),
-                        ((ChangeRequestWebsite) cr.getDetails()).getWebsite(),
+                        formatDetailsHtml((HashMap) cr.getDetails()),
                         getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))
                 .sendEmail();
     }
 
-    private void sendRejectedEmail(ChangeRequest cr) throws MessagingException {
+    @Override
+    protected void sendRejectedEmail(ChangeRequest cr) throws MessagingException {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         new EmailBuilder(env)
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
@@ -203,13 +201,14 @@ public class ChangeRequestDeveloperDetailsService implements ChangeRequestDetail
                 .subject(rejectedEmailSubject)
                 .htmlMessage(String.format(rejectedEmailBody,
                         df.format(cr.getSubmittedDate()),
-                        ((ChangeRequestWebsite) cr.getDetails()).getWebsite(),
+                        formatDetailsHtml((HashMap) cr.getDetails()),
                         getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))
                 .sendEmail();
     }
 
-    private ChangeRequestDeveloperDetails getDetailsFromHashMap(HashMap<String, Object> map) {
+    private ChangeRequestDeveloperDetails getDetailsFromHashMap(HashMap<String, Object> map)
+        throws IOException {
         ChangeRequestDeveloperDetails crDevDetails = new ChangeRequestDeveloperDetails();
         if (map.containsKey("id") && StringUtils.isNumeric(map.get("id").toString())) {
             crDevDetails.setId(new Long(map.get("id").toString()));
@@ -217,26 +216,97 @@ public class ChangeRequestDeveloperDetailsService implements ChangeRequestDetail
         if (map.containsKey("selfDeveloper")) {
             crDevDetails.setSelfDeveloper(BooleanUtils.toBooleanObject(map.get("selfDeveloper").toString()));
         }
-        //TODO other fields
+        if (map.containsKey("address")) {
+            try {
+                Address address = JSONUtils.fromJSON(map.get("address").toString(), Address.class);
+                crDevDetails.setAddress(address);
+            } catch (IOException ex) {
+                LOGGER.error("Could not parse " + map.get("address") + " as an Address object.", ex);
+                throw ex;
+            }
+        }
+        if (map.containsKey("contact")) {
+            try {
+                Contact contact = JSONUtils.fromJSON(map.get("contact").toString(), Contact.class);
+                crDevDetails.setContact(contact);
+            } catch (IOException ex) {
+                LOGGER.error("Could not parse " + map.get("contact") + " as an Contact object.", ex);
+                throw ex;
+            }
+        }
         return crDevDetails;
     }
 
-    private String getApprovalBody(ChangeRequest cr) {
-        if (cr.getCurrentStatus().getCertificationBody() != null) {
-            return cr.getCurrentStatus().getCertificationBody().getName();
-        } else if (cr.getCurrentStatus().getUserPermission().getId().equals(adminPermission)) {
-            return "the CHPL Admin";
-        } else if (cr.getCurrentStatus().getUserPermission().getId().equals(oncPermission)) {
-            return "ONC";
-        } else {
-            return "";
+    private String formatDeveloperHtml(Developer dev) {
+        String devHtml = "Self-Developer: " + dev.getSelfDeveloper();
+        if (dev.getAddress() != null) {
+            devHtml += "<p>Address:<br/>" + formatAddressHtml(dev.getAddress()) + "</p>";
         }
+        if (dev.getContact() != null) {
+            devHtml += "<p>Contact:<br/>" + formatContactHtml(dev.getContact()) + "</p>";
+        }
+        return devHtml;
     }
 
-    private List<UserDTO> getUsersForDeveloper(Long developerId) {
-        return userDeveloperMapDAO.getByDeveloperId(developerId).stream()
-                .map(userDeveloperMap -> userDeveloperMap.getUser())
-                .collect(Collectors.<UserDTO> toList());
+    private String formatAddressHtml(Address addr) {
+        String addrHtml = addr.getLine1();
+        if (!StringUtils.isEmpty(addr.getLine2())) {
+            addrHtml += "<br/>" + addr.getLine2();
+        }
+        addrHtml += "<br/>" + addr.getCity() + ", " + addr.getState() + " " + addr.getZipcode();
+        if (!StringUtils.isEmpty(addr.getCountry())) {
+            addrHtml += "<br/>" + addr.getCountry();
+        }
+        return addrHtml;
     }
 
+    private String formatContactHtml(Contact contact) {
+        String contactHtml = "";
+        if (!StringUtils.isEmpty(contact.getFullName())) {
+            contactHtml += "Name: " + contact.getFullName();
+        }
+        if (!StringUtils.isEmpty(contact.getEmail())) {
+            if (contactHtml.length() > 0) {
+                contactHtml += "<br/>";
+            }
+            contactHtml += "Email: " + contact.getEmail();
+        }
+        if (!StringUtils.isEmpty(contact.getPhoneNumber())) {
+            if (contactHtml.length() > 0) {
+                contactHtml += "<br/>";
+            }
+            contactHtml += "Phone Number: " + contact.getPhoneNumber();
+        }
+        if (!StringUtils.isEmpty(contact.getTitle())) {
+            if (contactHtml.length() > 0) {
+                contactHtml += "<br/>";
+            }
+            contactHtml += "Title: " + contact.getTitle();
+        }
+        return contactHtml;
+    }
+
+    private String formatDetailsHtml(HashMap<String, Object> map) {
+        String detailsHtml = "";
+        if (map.containsKey("selfDeveloper")) {
+            detailsHtml += "Self-Developer: " + map.get("selfDeveloper").toString();
+        }
+        if (map.containsKey("address")) {
+            try {
+                Address address = JSONUtils.fromJSON(map.get("address").toString(), Address.class);
+                detailsHtml += "<p>Address:<br/>" + formatAddressHtml(address) + "</p>";
+            } catch (IOException ex) {
+                LOGGER.error("Could not parse " + map.get("address") + " as an Address object.", ex);
+            }
+        }
+        if (map.containsKey("contact")) {
+            try {
+                Contact contact = JSONUtils.fromJSON(map.get("contact").toString(), Contact.class);
+                detailsHtml += "<p>Contact:<br/>" + formatContactHtml(contact) + "</p>";
+            } catch (IOException ex) {
+                LOGGER.error("Could not parse " + map.get("contact") + " as an Contact object.", ex);
+            }
+        }
+        return detailsHtml;
+    }
 }

@@ -8,7 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import gov.healthit.chpl.changerequest.validation.ChangeRequestWebsiteCreateValidation;
+import gov.healthit.chpl.changerequest.validation.ChangeRequestCreateValidation;
 import gov.healthit.chpl.changerequest.validation.ChangeRequestDetailsUpdateValidation;
 import gov.healthit.chpl.changerequest.validation.ChangeRequestNotUpdatableDueToStatusValidation;
 import gov.healthit.chpl.changerequest.validation.ChangeRequestTypeInProcessValidation;
@@ -22,7 +22,7 @@ import gov.healthit.chpl.changerequest.validation.RoleAcbHasMultipleCertificatio
 
 public class ChangeRequestValidationFactoryTest {
     @Mock
-    private ChangeRequestWebsiteCreateValidation changeRequestDetailsCreateValidation;
+    private ChangeRequestCreateValidation changeRequestDetailsCreateValidation;
 
     @Mock
     private ChangeRequestDetailsUpdateValidation changeRequestDetailsUpdateValidation;
@@ -62,7 +62,7 @@ public class ChangeRequestValidationFactoryTest {
     @Test
     public void getRule() {
         assertTrue(factory.getRule(
-                ChangeRequestValidationFactory.CHANGE_REQUEST_DETAILS_CREATE) instanceof ChangeRequestWebsiteCreateValidation);
+                ChangeRequestValidationFactory.CHANGE_REQUEST_DETAILS_CREATE) instanceof ChangeRequestCreateValidation);
         assertTrue(factory.getRule(
                 ChangeRequestValidationFactory.CHANGE_REQUEST_DETAILS_UPDATE) instanceof ChangeRequestDetailsUpdateValidation);
 
@@ -79,7 +79,7 @@ public class ChangeRequestValidationFactoryTest {
                 ChangeRequestValidationFactory.DEVELOPER_ACTIVE) instanceof DeveloperActiveValidation);
 
         assertTrue(factory.getRule(
-                ChangeRequestValidationFactory.CHANGE_REQUEST_DETAILS_CREATE) instanceof ChangeRequestWebsiteCreateValidation);
+                ChangeRequestValidationFactory.CHANGE_REQUEST_DETAILS_CREATE) instanceof ChangeRequestCreateValidation);
 
         assertTrue(factory.getRule(
                 ChangeRequestValidationFactory.CHANGE_REQUEST_DETAILS_UPDATE) instanceof ChangeRequestDetailsUpdateValidation);

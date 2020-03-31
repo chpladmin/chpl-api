@@ -343,19 +343,18 @@ public class ChangeRequestManager extends SecurityManager {
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_IN_PROCESS));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.DEVELOPER_EXISTENCE));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.DEVELOPER_ACTIVE));
+        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_CREATE));
         return runValidations(rules, cr);
     }
 
     private List<String> runWebsiteValidations(ChangeRequest cr) {
         List<ValidationRule<ChangeRequestValidationContext>> rules = new ArrayList<ValidationRule<ChangeRequestValidationContext>>();
-        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_WEBSITE_CREATE));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.WEBSITE_VALID));
         return runValidations(rules, cr);
     }
 
     private List<String> runDeveloperDetailsValidations(ChangeRequest cr) {
         List<ValidationRule<ChangeRequestValidationContext>> rules = new ArrayList<ValidationRule<ChangeRequestValidationContext>>();
-        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_DEVELOPER_DETAILS_CREATE));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.SELF_DEVELOPER_VALID));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.ADDRESS_VALID));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CONTACT_VALID));

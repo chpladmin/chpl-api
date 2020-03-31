@@ -12,8 +12,7 @@ public class ChangeRequestValidationFactory {
     public final static String CHANGE_REQUEST_IN_PROCESS = "CHANGE_REQUEST_IN_PROCESS";
     public final static String DEVELOPER_EXISTENCE = "DEVELOPER_EXISTENCE";
     public final static String DEVELOPER_ACTIVE = "DEVELOPER_ACTIVE";
-    public final static String CHANGE_REQUEST_WEBSITE_CREATE = "CHANGE_REQUEST_WEBSITE_CREATE";
-    public final static String CHANGE_REQUEST_DEVELOPER_DETAILS_CREATE = "CHANGE_REQUEST_DEVELOPER_DETAILS_CREATE";
+    public final static String CHANGE_REQUEST_CREATE = "CHANGE_REQUEST_CREATE";
     public final static String CHANGE_REQUEST_DETAILS_UPDATE = "CHANGE_REQUEST_DETAILS_UPDATE";
     public final static String STATUS_TYPE = "STATUS_TYPE";
     public final static String STATUS_NOT_UPDATABLE = "STATUS_NOT_UPDATABLE";
@@ -24,8 +23,7 @@ public class ChangeRequestValidationFactory {
     public final static String ADDRESS_VALID = "ADDRESS_VALID";
     public final static String CONTACT_VALID = "CONTACT_VALID";
 
-    private ChangeRequestWebsiteCreateValidation changeRequestWebsiteCreateValidation;
-    private ChangeRequestDeveloperDetailsCreateValidation changeRequestDeveloperDetailsCreateValidation;
+    private ChangeRequestCreateValidation changeRequestCreateValidation;
     private ChangeRequestDetailsUpdateValidation changeRequestDetailsUpdateValidation;
     private ChangeRequestTypeValidation changeRequestTypeValidation;
     private CurrentStatusValidation currentStatusValidation;
@@ -42,8 +40,7 @@ public class ChangeRequestValidationFactory {
 
     @Autowired
     public ChangeRequestValidationFactory(
-            ChangeRequestWebsiteCreateValidation changeRequestWebsiteCreateValidation,
-            ChangeRequestDeveloperDetailsCreateValidation changeRequestDeveloperDetailsCreateValidation,
+            ChangeRequestCreateValidation changeRequestCreateValidation,
             ChangeRequestDetailsUpdateValidation changeRequestDetailsUpdateValidation,
             ChangeRequestTypeValidation changeRequestTypeValidation,
             CurrentStatusValidation currentStatusValidation,
@@ -58,8 +55,7 @@ public class ChangeRequestValidationFactory {
             AddressValidation addressValidation,
             ContactValidation contactValidation) {
 
-        this.changeRequestWebsiteCreateValidation = changeRequestWebsiteCreateValidation;
-        this.changeRequestDeveloperDetailsCreateValidation = changeRequestDeveloperDetailsCreateValidation;
+        this.changeRequestCreateValidation = changeRequestCreateValidation;
         this.changeRequestDetailsUpdateValidation = changeRequestDetailsUpdateValidation;
         this.changeRequestTypeValidation = changeRequestTypeValidation;
         this.currentStatusValidation = currentStatusValidation;
@@ -85,10 +81,8 @@ public class ChangeRequestValidationFactory {
             return developerExistenceValidation;
         case DEVELOPER_ACTIVE:
             return developerActiveValidation;
-        case CHANGE_REQUEST_WEBSITE_CREATE:
-            return changeRequestWebsiteCreateValidation;
-        case CHANGE_REQUEST_DEVELOPER_DETAILS_CREATE:
-            return changeRequestDeveloperDetailsCreateValidation;
+        case CHANGE_REQUEST_CREATE:
+            return changeRequestCreateValidation;
         case CHANGE_REQUEST_DETAILS_UPDATE:
             return changeRequestDetailsUpdateValidation;
         case STATUS_TYPE:

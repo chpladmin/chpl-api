@@ -13,7 +13,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
-import gov.healthit.chpl.changerequest.validation.ChangeRequestWebsiteCreateValidation;
+import gov.healthit.chpl.changerequest.validation.ChangeRequestCreateValidation;
 import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationContext;
 import old.gov.healthit.chpl.changerequest.builders.ChangeRequestBuilder;
 import old.gov.healthit.chpl.changerequest.builders.ChangeRequestTypeBuilder;
@@ -21,7 +21,7 @@ import old.gov.healthit.chpl.changerequest.builders.ChangeRequestTypeBuilder;
 public class ChangeRequestDetailsCreateValidationTest {
 
     @InjectMocks
-    private ChangeRequestWebsiteCreateValidation validator;
+    private ChangeRequestCreateValidation validator;
 
     @Before
     public void setup() {
