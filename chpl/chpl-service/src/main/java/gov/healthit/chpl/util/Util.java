@@ -114,7 +114,7 @@ public final class Util {
         Integer index = certificationResultSortOrder().indexOf(criteriaNumber);
         if (index.equals(-1)) {
             // This is case when the criteria number is not in the array, just make it last...
-            index = 10000;
+            index = Integer.MAX_VALUE;
         }
         return index;
     }
