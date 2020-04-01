@@ -1,6 +1,5 @@
 package gov.healthit.chpl.changerequest.manager;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +44,6 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.util.JSONUtils;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -115,7 +113,7 @@ public class ChangeRequestManager extends SecurityManager {
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
-            + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).CREATE, #cr)")
+            + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).CREATE, #parentChangeRequest)")
     public List<ChangeRequest> createChangeRequests(ChangeRequest parentChangeRequest)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException,
             InvalidArgumentsException {
@@ -242,12 +240,9 @@ public class ChangeRequestManager extends SecurityManager {
         HashMap<String, Object> crMap = (HashMap) cr.getDetails();
 
         if (crMap.containsKey("address")) {
-            try {
-                Address crAddress = JSONUtils.fromJSON(crMap.get("address").toString(), Address.class);
-                return !crAddress.equals(existingDeveloper.getAddress());
-            } catch (IOException ex) {
-                LOGGER.error("Could not parse " + crMap.get("address") + " as an Address object.", ex);
-            }
+            HashMap<String, Object> addrMap = (HashMap) crMap.get("address");
+            Address address = new Address(addrMap);
+            return !address.equals(existingDeveloper.getAddress());
         }
         return false;
     }
@@ -257,12 +252,9 @@ public class ChangeRequestManager extends SecurityManager {
         HashMap<String, Object> crMap = (HashMap) cr.getDetails();
 
         if (crMap.containsKey("contact")) {
-            try {
-                Contact crContact = JSONUtils.fromJSON(crMap.get("contact").toString(), Contact.class);
-                return !crContact.equals(existingDeveloper.getContact());
-            } catch (IOException ex) {
-                LOGGER.error("Could not parse " + crMap.get("contact") + " as a Contact object.", ex);
-            }
+            HashMap<String, Object> contactMap = (HashMap) crMap.get("contact");
+            Contact contact = new Contact(contactMap);
+            return !contact.equals(existingDeveloper.getContact());
         }
         return false;
     }

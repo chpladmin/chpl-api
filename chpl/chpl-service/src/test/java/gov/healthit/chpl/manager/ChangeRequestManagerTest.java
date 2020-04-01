@@ -32,7 +32,6 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
 public class ChangeRequestManagerTest {
-
     @Test
     public void getChangeRequest_ValidCrId_ReturnsValidObject() throws EntityRetrievalException {
         // Setup

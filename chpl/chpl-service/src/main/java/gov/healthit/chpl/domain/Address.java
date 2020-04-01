@@ -1,6 +1,7 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -12,7 +13,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.entity.AddressEntity;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Address implements Serializable {
@@ -92,6 +95,34 @@ public class Address implements Serializable {
         this.state = entity.getState();
         this.zipcode = entity.getZipcode();
         this.country = entity.getCountry();
+    }
+
+    public Address(HashMap<String, Object> map) {
+        if (map.containsKey("addressId") && map.get("addressId") != null) {
+            try {
+                this.addressId = Long.parseLong(map.get("addressId").toString());
+            } catch (NumberFormatException ex) {
+                LOGGER.warn("addressId in map = '" + map.get("addressId") + "' is not parseable into a Long");
+            }
+        }
+        if (map.containsKey("line1") && map.get("line1") != null) {
+            this.line1 = map.get("line1").toString();
+        }
+        if (map.containsKey("line2") && map.get("line2") != null) {
+            this.line2 = map.get("line2").toString();
+        }
+        if (map.containsKey("city") && map.get("city") != null) {
+            this.city = map.get("city").toString();
+        }
+        if (map.containsKey("state") && map.get("state") != null) {
+            this.state = map.get("state").toString();
+        }
+        if (map.containsKey("zipcode") && map.get("zipcode") != null) {
+            this.zipcode = map.get("zipcode").toString();
+        }
+        if (map.containsKey("country") && map.get("country") != null) {
+            this.country = map.get("country").toString();
+        }
     }
 
     @Override

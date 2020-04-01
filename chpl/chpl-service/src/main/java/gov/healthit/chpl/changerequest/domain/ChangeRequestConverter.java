@@ -64,19 +64,29 @@ public class ChangeRequestConverter {
         ChangeRequestDeveloperDetails crDev = new ChangeRequestDeveloperDetails();
         crDev.setId(entity.getId());
         crDev.setSelfDeveloper(entity.getSelfDeveloper());
-        Address address = new Address();
-        address.setLine1(entity.getStreetLine1());
-        address.setLine2(entity.getStreetLine2());
-        address.setCity(entity.getCity());
-        address.setState(entity.getState());
-        address.setZipcode(entity.getZipcode());
-        address.setCountry(entity.getCountry());
+        Address address = null;
+        if (entity.getStreetLine1() != null || entity.getStreetLine2() != null
+                || entity.getCity() != null || entity.getState() != null
+                || entity.getZipcode() != null || entity.getCountry() != null) {
+            address = new Address();
+            address.setLine1(entity.getStreetLine1());
+            address.setLine2(entity.getStreetLine2());
+            address.setCity(entity.getCity());
+            address.setState(entity.getState());
+            address.setZipcode(entity.getZipcode());
+            address.setCountry(entity.getCountry());
+        }
         crDev.setAddress(address);
-        Contact contact = new Contact();
-        contact.setFullName(entity.getContactFullName());
-        contact.setEmail(entity.getContactEmail());
-        contact.setPhoneNumber(entity.getContactPhoneNumber());
-        contact.setTitle(entity.getContactTitle());
+        Contact contact = null;
+        if (entity.getContactFullName() != null || entity.getContactEmail() != null
+                || entity.getContactPhoneNumber() != null || entity.getContactTitle() != null) {
+            contact = new Contact();
+            contact.setFullName(entity.getContactFullName());
+            contact.setEmail(entity.getContactEmail());
+            contact.setPhoneNumber(entity.getContactPhoneNumber());
+            contact.setTitle(entity.getContactTitle());
+        }
+        crDev.setContact(contact);
         return crDev;
     }
 }

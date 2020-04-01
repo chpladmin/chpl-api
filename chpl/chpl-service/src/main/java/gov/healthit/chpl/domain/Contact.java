@@ -1,6 +1,7 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -13,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.ContactDTO;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * Domain object representing a Contact. Can be used as either contact information for a product / developer, or as
@@ -20,6 +22,7 @@ import gov.healthit.chpl.dto.ContactDTO;
  * @author alarned
  *
  */
+@Log4j2
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -78,13 +81,38 @@ public class Contact implements Serializable {
      * Constructed from a DTO.
      * @param dto the DTO
      */
-    public Contact(final ContactDTO dto) {
+    public Contact(ContactDTO dto) {
         this.contactId = dto.getId();
         this.fullName = dto.getFullName();
         this.friendlyName = dto.getFriendlyName();
         this.email = dto.getEmail();
         this.phoneNumber = dto.getPhoneNumber();
         this.title = dto.getTitle();
+    }
+
+    public Contact(HashMap<String, Object> map) {
+        if (map.containsKey("contactId") && map.get("contactId") != null) {
+            try {
+                this.contactId = Long.parseLong(map.get("contactId").toString());
+            } catch (NumberFormatException ex) {
+                LOGGER.warn("contactId in map = '" + map.get("contactId") + "' is not parseable into a Long");
+            }
+        }
+        if (map.containsKey("fullName") && map.get("fullName") != null) {
+            this.fullName = map.get("fullName").toString();
+        }
+        if (map.containsKey("friendlyName") && map.get("friendlyName") != null) {
+            this.friendlyName = map.get("friendlyName").toString();
+        }
+        if (map.containsKey("email") && map.get("email") != null) {
+            this.email = map.get("email").toString();
+        }
+        if (map.containsKey("phoneNumber") && map.get("phoneNumber") != null) {
+            this.phoneNumber = map.get("phoneNumber").toString();
+        }
+        if (map.containsKey("title") && map.get("title") != null) {
+            this.title = map.get("title").toString();
+        }
     }
 
     @Override
