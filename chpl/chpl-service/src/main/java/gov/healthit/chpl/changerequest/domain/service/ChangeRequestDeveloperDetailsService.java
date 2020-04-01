@@ -36,7 +36,6 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.util.EmailBuilder;
-import gov.healthit.chpl.util.JSONUtils;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -282,20 +281,12 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
             detailsHtml += "Self-Developer: " + map.get("selfDeveloper").toString();
         }
         if (map.containsKey("address")) {
-            try {
-                Address address = JSONUtils.fromJSON(map.get("address").toString(), Address.class);
-                detailsHtml += "<p>Address:<br/>" + formatAddressHtml(address) + "</p>";
-            } catch (IOException ex) {
-                LOGGER.error("Could not parse " + map.get("address") + " as an Address object.", ex);
-            }
+            Address address = new Address((HashMap<String, Object>) map.get("address"));
+            detailsHtml += "<p>Address:<br/>" + formatAddressHtml(address) + "</p>";
         }
         if (map.containsKey("contact")) {
-            try {
-                Contact contact = JSONUtils.fromJSON(map.get("contact").toString(), Contact.class);
-                detailsHtml += "<p>Contact:<br/>" + formatContactHtml(contact) + "</p>";
-            } catch (IOException ex) {
-                LOGGER.error("Could not parse " + map.get("contact") + " as an Contact object.", ex);
-            }
+            Contact contact = new Contact((HashMap<String, Object>) map.get("contact"));
+            detailsHtml += "<p>Contact:<br/>" + formatContactHtml(contact) + "</p>";
         }
         return detailsHtml;
     }
