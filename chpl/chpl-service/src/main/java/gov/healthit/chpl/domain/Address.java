@@ -10,16 +10,17 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.entity.AddressEntity;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Address implements Serializable {
     private static final long serialVersionUID = 7978604053959537664L;
+    private static final Logger LOGGER = LogManager.getLogger(Address.class);
 
     /**
      * Address internal ID.

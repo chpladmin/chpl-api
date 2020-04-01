@@ -10,11 +10,12 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.ContactDTO;
-import lombok.extern.log4j.Log4j2;
 
 /**
  * Domain object representing a Contact. Can be used as either contact information for a product / developer, or as
@@ -22,12 +23,12 @@ import lombok.extern.log4j.Log4j2;
  * @author alarned
  *
  */
-@Log4j2
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Contact implements Serializable {
     private static final long serialVersionUID = 5378524206189674741L;
+    private static final Logger LOGGER = LogManager.getLogger(Contact.class);
 
     /**
      * Contact internal ID
