@@ -122,10 +122,9 @@ public class Contact implements Serializable {
             return false;
         }
         Contact anotherContact = (Contact) obj;
-        if (this.contactId != null && anotherContact.contactId != null
-                && this.contactId.longValue() == anotherContact.contactId.longValue()) {
-            return true;
-        } else if (this.contactId == null && anotherContact.contactId == null) {
+        if ((this.contactId != null && anotherContact.contactId != null
+                && this.contactId.longValue() == anotherContact.contactId.longValue())
+                || (this.contactId == null && anotherContact.contactId == null)) {
             return ObjectUtils.equals(this.fullName, anotherContact.fullName)
                     && ObjectUtils.equals(this.friendlyName, anotherContact.friendlyName)
                     && ObjectUtils.equals(this.email, anotherContact.email)

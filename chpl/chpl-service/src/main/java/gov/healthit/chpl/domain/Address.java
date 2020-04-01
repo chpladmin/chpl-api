@@ -132,10 +132,9 @@ public class Address implements Serializable {
             return false;
         }
         Address anotherAddress = (Address) obj;
-        if (this.addressId != null && anotherAddress.addressId != null
-                && this.addressId.longValue() == anotherAddress.addressId.longValue()) {
-            return true;
-        } else if (this.addressId == null && anotherAddress.addressId == null) {
+        if ((this.addressId != null && anotherAddress.addressId != null
+                && this.addressId.longValue() == anotherAddress.addressId.longValue())
+                || (this.addressId == null && anotherAddress.addressId == null)) {
             return ObjectUtils.equals(this.line1, anotherAddress.line1)
                     && ObjectUtils.equals(this.line2, anotherAddress.line2)
                     && ObjectUtils.equals(this.city, anotherAddress.city)

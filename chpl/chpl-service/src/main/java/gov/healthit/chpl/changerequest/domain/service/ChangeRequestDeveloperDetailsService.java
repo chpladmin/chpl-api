@@ -217,22 +217,12 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
             crDevDetails.setSelfDeveloper(BooleanUtils.toBooleanObject(map.get("selfDeveloper").toString()));
         }
         if (map.containsKey("address")) {
-            try {
-                Address address = JSONUtils.fromJSON(map.get("address").toString(), Address.class);
-                crDevDetails.setAddress(address);
-            } catch (IOException ex) {
-                LOGGER.error("Could not parse " + map.get("address") + " as an Address object.", ex);
-                throw ex;
-            }
+            Address address = new Address((HashMap<String, Object>) map.get("address"));
+            crDevDetails.setAddress(address);
         }
         if (map.containsKey("contact")) {
-            try {
-                Contact contact = JSONUtils.fromJSON(map.get("contact").toString(), Contact.class);
-                crDevDetails.setContact(contact);
-            } catch (IOException ex) {
-                LOGGER.error("Could not parse " + map.get("contact") + " as an Contact object.", ex);
-                throw ex;
-            }
+            Contact contact = new Contact((HashMap<String, Object>) map.get("contact"));
+            crDevDetails.setContact(contact);
         }
         return crDevDetails;
     }
