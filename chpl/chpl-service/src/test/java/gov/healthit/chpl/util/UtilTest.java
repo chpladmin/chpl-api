@@ -48,13 +48,6 @@ public class UtilTest {
     }
 
     @Test
-    public void sortCriteria_WithThreeParagraphs_SortCorrectly() {
-        criterionDto.setNumber("170.314 (d)(3)(B)");
-        criterionDto2.setNumber("170.314 (d)(3)(A)");
-        assertTrue("B should be after A", Util.sortCriteria(criterionDto, criterionDto2) > 0);
-    }
-
-    @Test
     public void sortCriteria_WithDifferingParagraphComponentCount_SortCorrectly() {
         criterionDto.setNumber("170.314 (d)(3)");
         criterionDto2.setNumber("170.314 (d)(3)(A)");

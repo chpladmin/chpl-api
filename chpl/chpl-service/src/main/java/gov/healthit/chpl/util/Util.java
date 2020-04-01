@@ -105,75 +105,18 @@ public final class Util {
     }
 
     public static int sortCriteria(CertificationCriterionDTO c1, CertificationCriterionDTO c2) {
-        String valueA = c1.getNumber();
-        String valueB = c2.getNumber();
-        if (Util.isCures(c1)) {
-            valueA += "(Cures Update)";
-        }
-        if (Util.isCures(c2)) {
-            valueB += "(Cures Update)";
-        }
+        String valueA = Util.formatCriteriaNumber(c1);
+        String valueB = Util.formatCriteriaNumber(c2);
         return Util.getCertificationResultSortIndex(valueA) - Util.getCertificationResultSortIndex(valueB);
-
-        // Pattern pattern = Pattern.compile(
-        // "^(\\d{3}\\.\\d{3})\\s{1}" // captures "170.314"
-        // + "(\\([a-z]{1}\\))" // captures "(b)"
-        // + "(\\([0-9]{1,2}\\))?" // captures "(5)" or "(12)"
-        // + "(\\([A-Z]{1}\\))?$" // captures "(A)"
-        // );
-        // Matcher m1 = pattern.matcher(c1.getNumber());
-        // Matcher m2 = pattern.matcher(c2.getNumber());
-        // int ret = 0;
-        // if (!m1.matches() || !m2.matches()) {
-        // return ret;
-        // }
-        // ret = compareStrings(m1.group(NUMBER_TITLE), m2.group(NUMBER_TITLE));
-        // if (ret != 0) {
-        // return ret;
-        // }
-        // ret = compareStrings(m1.group(NUMBER_PARA_1), m2.group(NUMBER_PARA_1));
-        // if (ret != 0) {
-        // return ret;
-        // }
-        //
-        // ret = compareInts(m1.group(NUMBER_PARA_2), m2.group(NUMBER_PARA_2));
-        // if (ret != 0) {
-        // return ret;
-        // }
-        // ret = compareStrings(m1.group(NUMBER_PARA_3), m2.group(NUMBER_PARA_3));
-        // if (ret != 0) {
-        // return ret;
-        // }
-        // return c1.getTitle().compareTo(c2.getTitle());
-
     }
 
-    private static int compareStrings(String s1, String s2) {
-        if (s1 == null && s2 == null) {
-            return 0;
+    private static Integer getCertificationResultSortIndex(String criteriaNumber) {
+        Integer index = certificationResultSortOrder().indexOf(criteriaNumber);
+        if (index.equals(-1)) {
+            // This is case when the criteria number is not in the array, just make it last...
+            index = 10000;
         }
-        if (s1 == null) {
-            return -1;
-        }
-        if (s2 == null) {
-            return 1;
-        }
-        return s1.compareTo(s2);
-    }
-
-    private static int compareInts(String s1, String s2) {
-        if (s1 == null && s2 == null) {
-            return 0;
-        }
-        if (s1 == null) {
-            return -1;
-        }
-        if (s2 == null) {
-            return 1;
-        }
-        Integer i1 = Integer.parseInt(s1.substring(1, s1.length() - 1));
-        Integer i2 = Integer.parseInt(s2.substring(1, s2.length() - 1));
-        return i1.compareTo(i2);
+        return index;
     }
 
     public static boolean isCures(CertificationCriterion criterion) {
@@ -198,15 +141,6 @@ public final class Util {
             result += CURES_SUFFIX;
         }
         return result;
-    }
-
-    private static Integer getCertificationResultSortIndex(String criteriaNumber) {
-        Integer index = certificationResultSortOrder().indexOf(criteriaNumber);
-        if (index.equals(-1)) {
-            index = 10000;
-        }
-        LOGGER.info(criteriaNumber + " = " + index);
-        return index;
     }
 
     private static List<String> certificationResultSortOrder() {
