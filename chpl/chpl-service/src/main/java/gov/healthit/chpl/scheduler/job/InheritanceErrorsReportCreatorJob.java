@@ -1,6 +1,5 @@
 package gov.healthit.chpl.scheduler.job;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.SpecialProperties;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.scheduler.InheritanceErrorsReportDAO;
 import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
@@ -62,6 +62,9 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private SpecialProperties specialProperties;
 
     private Date curesRuleEffectiveDate;
 
@@ -230,15 +233,10 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
     }
 
     private Date getCuresRuleEffectiveDate() {
-        String dateFromPropertiesFile = env.getProperty("cures.ruleEffectiveDate");
-        LOGGER.info("cures.ruleEffectiveDate = " + dateFromPropertiesFile);
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-        try {
-            return sdf.parse(dateFromPropertiesFile);
-        } catch (ParseException e) {
-            LOGGER.error("Could not parse: " + dateFromPropertiesFile, e);
-            return null;
-        }
+        Date effectiveRuleDate = specialProperties.getEffectiveRuleDate();
+        LOGGER.info("cures.ruleEffectiveDate = " + sdf.format(effectiveRuleDate));
+        return effectiveRuleDate;
     }
 
     private Integer getThreadCountForJob() throws NumberFormatException {
