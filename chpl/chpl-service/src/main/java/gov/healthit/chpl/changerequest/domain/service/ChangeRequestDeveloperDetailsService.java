@@ -35,7 +35,6 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.util.EmailBuilder;
-import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsService<ChangeRequestDeveloperDetails> {
@@ -45,7 +44,6 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
     private DeveloperManager developerManager;
     private ActivityManager activityManager;
     private Environment env;
-    private ErrorMessageUtil msgUtil;
 
     @Value("${changeRequest.developerDetails.approval.subject}")
     private String approvalEmailSubject;
@@ -68,14 +66,13 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
     @Autowired
     public ChangeRequestDeveloperDetailsService(ChangeRequestDAO crDAO, ChangeRequestDeveloperDetailsDAO crDeveloperDetailsDao,
             DeveloperManager developerManager, UserDeveloperMapDAO userDeveloperMapDAO,
-            ActivityManager activityManager, Environment env, ErrorMessageUtil msgUtil) {
+            ActivityManager activityManager, Environment env) {
         super(userDeveloperMapDAO);
         this.crDAO = crDAO;
         this.crDeveloperDetailsDao = crDeveloperDetailsDao;
         this.developerManager = developerManager;
         this.activityManager = activityManager;
         this.env = env;
-        this.msgUtil = msgUtil;
     }
 
     @Override
@@ -114,7 +111,7 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
                         "Change request details updated",
                         crFromDb, cr);
             } else {
-                throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.noChanges"));
+                return null;
             }
             return cr;
         } catch (Exception e) {
@@ -182,7 +179,7 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
                 .subject(pendingDeveloperActionEmailSubject)
                 .htmlMessage(String.format(pendingDeveloperActionEmailBody,
                         df.format(cr.getSubmittedDate()),
-                        formatDetailsHtml((HashMap) cr.getDetails()),
+                        formatDetailsHtml((ChangeRequestDeveloperDetails) cr.getDetails()),
                         getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))
                 .sendEmail();
@@ -198,7 +195,7 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
                 .subject(rejectedEmailSubject)
                 .htmlMessage(String.format(rejectedEmailBody,
                         df.format(cr.getSubmittedDate()),
-                        formatDetailsHtml((HashMap) cr.getDetails()),
+                        formatDetailsHtml((ChangeRequestDeveloperDetails) cr.getDetails()),
                         getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))
                 .sendEmail();
@@ -210,14 +207,14 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
         if (map.containsKey("id") && StringUtils.isNumeric(map.get("id").toString())) {
             crDevDetails.setId(new Long(map.get("id").toString()));
         }
-        if (map.containsKey("selfDeveloper")) {
+        if (map.containsKey("selfDeveloper") && map.get("selfDeveloper") != null) {
             crDevDetails.setSelfDeveloper(BooleanUtils.toBooleanObject(map.get("selfDeveloper").toString()));
         }
-        if (map.containsKey("address")) {
+        if (map.containsKey("address") && map.get("address") != null) {
             Address address = new Address((HashMap<String, Object>) map.get("address"));
             crDevDetails.setAddress(address);
         }
-        if (map.containsKey("contact")) {
+        if (map.containsKey("contact") && map.get("contact") != null) {
             Contact contact = new Contact((HashMap<String, Object>) map.get("contact"));
             crDevDetails.setContact(contact);
         }
@@ -273,18 +270,16 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
         return contactHtml;
     }
 
-    private String formatDetailsHtml(HashMap<String, Object> map) {
+    private String formatDetailsHtml(ChangeRequestDeveloperDetails details) {
         String detailsHtml = "";
-        if (map.containsKey("selfDeveloper")) {
-            detailsHtml += "Self-Developer: " + map.get("selfDeveloper").toString();
+        if (details.getSelfDeveloper() != null) {
+            detailsHtml += "<p>Self-Developer: " + details.getSelfDeveloper() + "</p>";
         }
-        if (map.containsKey("address")) {
-            Address address = new Address((HashMap<String, Object>) map.get("address"));
-            detailsHtml += "<p>Address:<br/>" + formatAddressHtml(address) + "</p>";
+        if (details.getAddress() != null) {
+            detailsHtml += "<p>Address:<br/>" + formatAddressHtml(details.getAddress()) + "</p>";
         }
-        if (map.containsKey("contact")) {
-            Contact contact = new Contact((HashMap<String, Object>) map.get("contact"));
-            detailsHtml += "<p>Contact:<br/>" + formatContactHtml(contact) + "</p>";
+        if (details.getContact() != null) {
+            detailsHtml += "<p>Contact:<br/>" + formatContactHtml(details.getContact()) + "</p>";
         }
         return detailsHtml;
     }

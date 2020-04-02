@@ -168,13 +168,20 @@ public class ChangeRequestManager extends SecurityManager {
             throw validationException;
         }
 
+        ChangeRequest updatedDetails = null, updatedStatus = null;
         // Update the details, if the user is of role developer
         if (resourcePermissions.isUserRoleDeveloperAdmin() && cr.getDetails() != null) {
-            crDetailsFactory.get(crFromDb.getChangeRequestType().getId()).update(cr);
+            updatedDetails =
+                    crDetailsFactory.get(crFromDb.getChangeRequestType().getId()).update(cr);
         }
+
         // Update the status
         if (ChangeRequestStatusService.doesCurrentStatusExist(cr)) {
-            crStatusService.updateChangeRequestStatus(cr);
+            updatedStatus = crStatusService.updateChangeRequestStatus(cr);
+        }
+
+        if (updatedDetails == null && updatedStatus == null) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.noChanges"));
         }
 
         ChangeRequest newCr = getChangeRequest(cr.getId());
@@ -267,10 +274,8 @@ public class ChangeRequestManager extends SecurityManager {
             websiteDetails.put("id", crDetails.get("id"));
         }
 
-        if (isWebsiteChanged(cr)) {
-            if (crDetails.containsKey("website")) {
-                websiteDetails.put("website", crDetails.get("website").toString());
-            }
+        if (crDetails.containsKey("website") && crDetails.get("website") != null) {
+            websiteDetails.put("website", crDetails.get("website").toString());
         }
         return websiteDetails;
     }
@@ -282,13 +287,13 @@ public class ChangeRequestManager extends SecurityManager {
             devDetails.put("id", crDetails.get("id"));
         }
 
-        if (isSelfDeveloperChanged(cr)) {
+        if (crDetails.containsKey("selfDeveloper")) {
             devDetails.put("selfDeveloper", crDetails.get("selfDeveloper"));
         }
-        if (isAddressChanged(cr)) {
+        if (crDetails.containsKey("address")) {
             devDetails.put("address", crDetails.get("address"));
         }
-        if (isContactChanged(cr)) {
+        if (crDetails.containsKey("contact")) {
             devDetails.put("contact", crDetails.get("contact"));
         }
         return devDetails;

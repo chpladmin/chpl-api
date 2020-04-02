@@ -32,8 +32,10 @@ public @Data class ChangeRequestDeveloperDetails implements Serializable {
                 && this.id.longValue() == anotherCr.id.longValue())
                 || (this.id == null && anotherCr.id == null)) {
             return ObjectUtils.equals(this.selfDeveloper, anotherCr.selfDeveloper)
-                    && this.address.equals(anotherCr.address)
-                    && this.contact.equals(anotherCr.contact);
+                    && ((this.address == null && anotherCr.address == null)
+                            || this.address.equals(anotherCr.address))
+                    && ((this.contact == null && anotherCr.contact == null)
+                            || this.contact.equals(anotherCr.contact));
         }
         return false;
     }

@@ -29,7 +29,6 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.util.EmailBuilder;
-import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class ChangeRequestWebsiteService extends ChangeRequestDetailsService<ChangeRequestWebsite> {
@@ -39,7 +38,6 @@ public class ChangeRequestWebsiteService extends ChangeRequestDetailsService<Cha
     private DeveloperManager developerManager;
     private ActivityManager activityManager;
     private Environment env;
-    private ErrorMessageUtil msgUtil;
 
     @Value("${changeRequest.website.approval.subject}")
     private String approvalEmailSubject;
@@ -62,14 +60,13 @@ public class ChangeRequestWebsiteService extends ChangeRequestDetailsService<Cha
     @Autowired
     public ChangeRequestWebsiteService(ChangeRequestDAO crDAO, ChangeRequestWebsiteDAO crWebsiteDAO,
             DeveloperManager developerManager, UserDeveloperMapDAO userDeveloperMapDAO,
-            ActivityManager activityManager, Environment env, ErrorMessageUtil msgUtil) {
+            ActivityManager activityManager, Environment env) {
         super(userDeveloperMapDAO);
         this.crDAO = crDAO;
         this.crWebsiteDAO = crWebsiteDAO;
         this.developerManager = developerManager;
         this.activityManager = activityManager;
         this.env = env;
-        this.msgUtil = msgUtil;
     }
 
     @Override
@@ -108,7 +105,7 @@ public class ChangeRequestWebsiteService extends ChangeRequestDetailsService<Cha
                         "Change request details updated",
                         crFromDb, cr);
             } else {
-                throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.noChanges"));
+                return null;
             }
             return cr;
         } catch (Exception e) {
