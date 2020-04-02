@@ -69,7 +69,7 @@ public class ChangeRequestController {
             notes = "Security Restrictions: ROLE_DEVELOPER can create change requests where they have administrative authority based on the developer.")
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public ChangeRequestResults createChangeRequest(@RequestBody final ChangeRequest cr )
+    public synchronized ChangeRequestResults createChangeRequest(@RequestBody final ChangeRequest cr )
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException,
             InvalidArgumentsException {
         if (!ff4j.check(FeatureList.CHANGE_REQUEST)) {
@@ -88,7 +88,7 @@ public class ChangeRequestController {
                     + "change requests where they have administrative authority based on the developer.")
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public ChangeRequest updateChangeRequest(@RequestBody final ChangeRequest cr)
+    public synchronized ChangeRequest updateChangeRequest(@RequestBody final ChangeRequest cr)
             throws EntityRetrievalException, ValidationException, EntityCreationException,
             JsonProcessingException, InvalidArgumentsException {
         if (!ff4j.check(FeatureList.CHANGE_REQUEST)) {
