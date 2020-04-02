@@ -14,6 +14,7 @@ import org.quartz.InterruptableJob;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.UnableToInterruptJobException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -23,25 +24,31 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProduct2014CsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductCsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductXmlPresenter;
-import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.service.CertificationCriterionService;
 
 /**
  * Quartz job to generate download files by edition.
+ * 
  * @author alarned
  *
  */
 @DisallowConcurrentExecution
 public class CertifiedProductDownloadableResourceCreatorJob
-extends DownloadableResourceCreatorJob implements InterruptableJob {
+        extends DownloadableResourceCreatorJob implements InterruptableJob {
     private static final Logger LOGGER = LogManager.getLogger("certifiedProductDownloadableResourceCreatorJobLogger");
     private static final int MILLIS_PER_SECOND = 1000;
     private static final int SECONDS_PER_MINUTE = 60;
     private String edition;
     private boolean interrupted;
 
+    @Autowired
+    private CertificationCriterionService criterionService;
+
     /**
      * Default constructor.
-     * @throws Exception if issue with context
+     * 
+     * @throws Exception
+     *             if issue with context
      */
     public CertifiedProductDownloadableResourceCreatorJob() throws Exception {
         super(LOGGER);
@@ -62,8 +69,7 @@ extends DownloadableResourceCreatorJob implements InterruptableJob {
                 CertifiedProductCsvPresenter csvPresenter = getCsvPresenter()) {
 
             List<CertifiedProductDetailsDTO> listings = getRelevantListings();
-            List<Future<CertifiedProductSearchDetails>> futures =
-                    getCertifiedProductSearchDetailsFutures(listings);
+            List<Future<CertifiedProductSearchDetails>> futures = getCertifiedProductSearchDetailsFutures(listings);
 
             initializeWritingToFiles(xmlPresenter, csvPresenter);
             for (Future<CertifiedProductSearchDetails> future : futures) {
@@ -76,7 +82,7 @@ extends DownloadableResourceCreatorJob implements InterruptableJob {
                 csvPresenter.add(details);
             }
 
-            //Closing of xmlPresenter and csvPresenter happen due to try-with-resources
+            // Closing of xmlPresenter and csvPresenter happen due to try-with-resources
 
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -106,8 +112,8 @@ extends DownloadableResourceCreatorJob implements InterruptableJob {
         List<CertificationCriterionDTO> criteria = getCriteriaDao().findByCertificationEditionYear(edition)
                 .stream()
                 .filter(cr -> !cr.getRemoved())
-                .sorted((crA, crB) -> Util.sortCriteria(crA, crB))
-                .collect(Collectors.<CertificationCriterionDTO>toList());
+                .sorted((crA, crB) -> criterionService.sortCriteria(crA, crB))
+                .collect(Collectors.<CertificationCriterionDTO> toList());
         csvPresenter.setApplicableCriteria(criteria);
         csvPresenter.open(getCsvFile());
     }
@@ -147,7 +153,7 @@ extends DownloadableResourceCreatorJob implements InterruptableJob {
     }
 
     private String getFileName(final String path, final String timeStamp, final String extension) {
-        return path + File.separator + "chpl-" + edition  + "-" + timeStamp + "." + extension;
+        return path + File.separator + "chpl-" + edition + "-" + timeStamp + "." + extension;
     }
 
     private File getFile(final String fileName) throws IOException {

@@ -36,7 +36,7 @@ import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.service.CertificationCriterionService;
 
 @Component
 public class ListingQuestionableActivityProvider {
@@ -51,14 +51,16 @@ public class ListingQuestionableActivityProvider {
     private Environment env;
     private CertificationCriterionDAO certificationCriterionDAO;
     private SpecialProperties specialProperties;
+    private CertificationCriterionService criterionService;
 
     @Autowired
     public ListingQuestionableActivityProvider(CertificationCriterionDAO certificationCriterionDAO, FF4j ff4j, Environment env,
-            SpecialProperties specialProperties) {
+            SpecialProperties specialProperties, CertificationCriterionService criterionService) {
         this.certificationCriterionDAO = certificationCriterionDAO;
         this.ff4j = ff4j;
         this.env = env;
         this.specialProperties = specialProperties;
+        this.criterionService = criterionService;
     }
 
     @PostConstruct
@@ -358,7 +360,7 @@ public class ListingQuestionableActivityProvider {
                             // orig did not have this cert result but new does so it was added
                             QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
                             activity.setBefore(null);
-                            activity.setAfter(Util.formatCriteriaNumber(newCertResult.getCriterion()));
+                            activity.setAfter(criterionService.formatCriteriaNumber(newCertResult.getCriterion()));
                             certAddedActivities.add(activity);
                         }
                         break;
@@ -384,7 +386,7 @@ public class ListingQuestionableActivityProvider {
                         if (origCertResult.isSuccess() && !newCertResult.isSuccess()) {
                             // orig did have this cert result but new does not so it was removed
                             QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
-                            activity.setBefore(Util.formatCriteriaNumber(origCertResult.getCriterion()));
+                            activity.setBefore(criterionService.formatCriteriaNumber(origCertResult.getCriterion()));
                             activity.setAfter(null);
                             certRemovedActivities.add(activity);
                         }

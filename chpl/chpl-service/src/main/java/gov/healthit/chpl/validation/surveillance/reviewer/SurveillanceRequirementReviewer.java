@@ -16,6 +16,7 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
@@ -23,13 +24,15 @@ public class SurveillanceRequirementReviewer implements Reviewer {
     private CertificationResultDetailsDAO certResultDetailsDao;
     private SurveillanceDAO survDao;
     private ErrorMessageUtil msgUtil;
+    private CertificationCriterionService criterionService;
 
     @Autowired
     public SurveillanceRequirementReviewer(SurveillanceDAO survDao, CertificationResultDetailsDAO certResultDetailsDao,
-            ErrorMessageUtil msgUtil) {
+            ErrorMessageUtil msgUtil, CertificationCriterionService criterionService) {
         this.survDao = survDao;
         this.certResultDetailsDao = certResultDetailsDao;
         this.msgUtil = msgUtil;
+        this.criterionService = criterionService;
     }
 
     @Override
@@ -40,8 +43,8 @@ public class SurveillanceRequirementReviewer implements Reviewer {
             return;
         }
 
-        List<CertificationResultDetailsDTO> certResults =
-                certResultDetailsDao.getCertificationResultsForSurveillanceListing(surv);
+        List<CertificationResultDetailsDTO> certResults = certResultDetailsDao
+                .getCertificationResultsForSurveillanceListing(surv);
 
         for (SurveillanceRequirement req : surv.getRequirements()) {
             checkRequirementExists(surv, req);
@@ -106,8 +109,7 @@ public class SurveillanceRequirementReviewer implements Reviewer {
 
         // see if the requirement type is a criterion that the product has attested to
         if (certResults != null && certResults.size() > 0) {
-            Optional<CertificationResultDetailsDTO> attestedCertResult =
-                    certResults.stream()
+            Optional<CertificationResultDetailsDTO> attestedCertResult = certResults.stream()
                     .filter(certResult -> isCriteriaAttestedTo(certResult, req.getCriterion()))
                     .findFirst();
             if (!attestedCertResult.isPresent()) {
@@ -118,7 +120,7 @@ public class SurveillanceRequirementReviewer implements Reviewer {
         }
     }
 
-    private boolean isCriteriaAttestedTo(CertificationResultDetailsDTO certResult, CertificationCriterion criterion ) {
+    private boolean isCriteriaAttestedTo(CertificationResultDetailsDTO certResult, CertificationCriterion criterion) {
         return certResult.getCriterion() != null
                 && certResult.getSuccess() != null
                 && certResult.getSuccess().booleanValue()
@@ -127,8 +129,7 @@ public class SurveillanceRequirementReviewer implements Reviewer {
 
     private void checkTransparencyRequirementTypeValidity(Surveillance surv, SurveillanceRequirement req) {
         // requirement has to be one of 170.523 (k)(1) or (k)(2)
-        req.setRequirement(
-                gov.healthit.chpl.util.Util.coerceToCriterionNumberFormat(req.getRequirement()));
+        req.setRequirement(criterionService.coerceToCriterionNumberFormat(req.getRequirement()));
         if (!RequirementTypeEnum.K1.getName().equals(req.getRequirement())
                 && !RequirementTypeEnum.K2.getName().equals(req.getRequirement())) {
             surv.getErrorMessages()
