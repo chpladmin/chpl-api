@@ -21,7 +21,6 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestDeveloperDetailsDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDetails;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestWebsite;
-import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.Contact;
@@ -44,7 +43,6 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
 
     private ChangeRequestDAO crDAO;
     private ChangeRequestDeveloperDetailsDAO crDeveloperDetailsDao;
-    private DeveloperDAO developerDAO;
     private DeveloperManager developerManager;
     private ActivityManager activityManager;
     private Environment env;
@@ -69,13 +67,11 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
 
     @Autowired
     public ChangeRequestDeveloperDetailsService(ChangeRequestDAO crDAO, ChangeRequestDeveloperDetailsDAO crDeveloperDetailsDao,
-            DeveloperDAO developerDAO, DeveloperManager developerManager,
-            UserDeveloperMapDAO userDeveloperMapDAO, ActivityManager activityManager,
-            Environment env) {
+            DeveloperManager developerManager, UserDeveloperMapDAO userDeveloperMapDAO,
+            ActivityManager activityManager, Environment env) {
         super(userDeveloperMapDAO);
         this.crDAO = crDAO;
         this.crDeveloperDetailsDao = crDeveloperDetailsDao;
-        this.developerDAO = developerDAO;
         this.developerManager = developerManager;
         this.activityManager = activityManager;
         this.env = env;
@@ -128,7 +124,7 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
     protected ChangeRequest execute(ChangeRequest cr)
             throws EntityRetrievalException, EntityCreationException {
         ChangeRequestDeveloperDetails crDevDetails = (ChangeRequestDeveloperDetails) cr.getDetails();
-        DeveloperDTO developer = developerDAO.getById(cr.getDeveloper().getDeveloperId());
+        DeveloperDTO developer = developerManager.getById(cr.getDeveloper().getDeveloperId());
         if (crDevDetails.getSelfDeveloper() != null) {
             developer.setSelfDeveloper(crDevDetails.getSelfDeveloper());
         }
@@ -227,7 +223,7 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
     }
 
     private String formatDeveloperHtml(Developer dev) {
-        String devHtml = "Self-Developer: " + dev.getSelfDeveloper();
+        String devHtml = "<p>Self-Developer: " + dev.getSelfDeveloper() + "</p>";
         if (dev.getAddress() != null) {
             devHtml += "<p>Address:<br/>" + formatAddressHtml(dev.getAddress()) + "</p>";
         }

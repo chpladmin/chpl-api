@@ -22,16 +22,16 @@ public class SelfDeveloperValidation extends ValidationRule<ChangeRequestValidat
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
         if (resourcePermissions.isUserRoleDeveloperAdmin()) {
-            if (!isChangeRequestSelfDeveloperValid((HashMap) context.getChangeRequest().getDetails())) {
-                    getMessages().add(getErrorMessage("changeRequest.details.selfDeveloper.invalid"));
-                    return false;
+            HashMap<String, Object> map = (HashMap) context.getChangeRequest().getDetails();
+            if (map.containsKey("selfDeveloper") && !isChangeRequestSelfDeveloperValid(map)) {
+                getMessages().add(getErrorMessage("changeRequest.details.selfDeveloper.invalid"));
+                return false;
             }
         }
         return true;
     }
 
     private boolean isChangeRequestSelfDeveloperValid(HashMap<String, Object> map) {
-        return map.containsKey("selfDeveloper")
-                && BooleanUtils.toBooleanObject(map.get("selfDeveloper").toString()) != null;
+        return BooleanUtils.toBooleanObject(map.get("selfDeveloper").toString()) != null;
     }
 }

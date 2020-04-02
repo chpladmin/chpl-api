@@ -18,7 +18,6 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestWebsiteDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestWebsite;
-import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
@@ -35,7 +34,6 @@ public class ChangeRequestWebsiteService extends ChangeRequestDetailsService<Cha
 
     private ChangeRequestDAO crDAO;
     private ChangeRequestWebsiteDAO crWebsiteDAO;
-    private DeveloperDAO developerDAO;
     private DeveloperManager developerManager;
     private ActivityManager activityManager;
     private Environment env;
@@ -60,13 +58,11 @@ public class ChangeRequestWebsiteService extends ChangeRequestDetailsService<Cha
 
     @Autowired
     public ChangeRequestWebsiteService(ChangeRequestDAO crDAO, ChangeRequestWebsiteDAO crWebsiteDAO,
-            DeveloperDAO developerDAO, DeveloperManager developerManager,
-            UserDeveloperMapDAO userDeveloperMapDAO, ActivityManager activityManager,
-            Environment env) {
+            DeveloperManager developerManager, UserDeveloperMapDAO userDeveloperMapDAO,
+            ActivityManager activityManager, Environment env) {
         super(userDeveloperMapDAO);
         this.crDAO = crDAO;
         this.crWebsiteDAO = crWebsiteDAO;
-        this.developerDAO = developerDAO;
         this.developerManager = developerManager;
         this.activityManager = activityManager;
         this.env = env;
@@ -118,7 +114,7 @@ public class ChangeRequestWebsiteService extends ChangeRequestDetailsService<Cha
     protected ChangeRequest execute(ChangeRequest cr)
             throws EntityRetrievalException, EntityCreationException {
         ChangeRequestWebsite crWebsite = (ChangeRequestWebsite) cr.getDetails();
-        DeveloperDTO developer = developerDAO.getById(cr.getDeveloper().getDeveloperId());
+        DeveloperDTO developer = developerManager.getById(cr.getDeveloper().getDeveloperId());
         developer.setWebsite(crWebsite.getWebsite());
         try {
             DeveloperDTO updatedDeveloper = developerManager.update(developer, false);
