@@ -24,74 +24,74 @@ public abstract class InvalidCriteriaCombination {
     @Value("${criterion.170_315_g_10}")
     protected Integer criteriaG10Id;
 
-    @Value("${criterion.170_315_b_1}")
+    @Value("${criterion.170_315_b_1_old}")
     protected Integer criteriaB1Id;
-    @Value("${criterion.170_315_b_1_revised}")
+    @Value("${criterion.170_315_b_1_cures}")
     protected Integer criteriaB1RevisedId;
 
-    @Value("${criterion.170_315_b_2}")
+    @Value("${criterion.170_315_b_2_old}")
     protected Integer criteriaB2Id;
-    @Value("${criterion.170_315_b_2_revised}")
+    @Value("${criterion.170_315_b_2_cures}")
     protected Integer criteriaB2RevisedId;
 
-    @Value("${criterion.170_315_b_3}")
+    @Value("${criterion.170_315_b_3_old}")
     protected Integer criteriaB3Id;
-    @Value("${criterion.170_315_b_3_revised}")
+    @Value("${criterion.170_315_b_3_cures}")
     protected Integer criteriaB3RevisedId;
 
-    @Value("${criterion.170_315_b_7}")
+    @Value("${criterion.170_315_b_7_old}")
     protected Integer criteriaB7Id;
-    @Value("${criterion.170_315_b_7_revised}")
+    @Value("${criterion.170_315_b_7_cures}")
     protected Integer criteriaB7RevisedId;
 
-    @Value("${criterion.170_315_b_8}")
+    @Value("${criterion.170_315_b_8_old}")
     protected Integer criteriaB8Id;
-    @Value("${criterion.170_315_b_8_revised}")
+    @Value("${criterion.170_315_b_8_cures}")
     protected Integer criteriaB8RevisedId;
 
-    @Value("${criterion.170_315_b_9}")
+    @Value("${criterion.170_315_b_9_old}")
     protected Integer criteriaB9Id;
-    @Value("${criterion.170_315_b_9_revised}")
+    @Value("${criterion.170_315_b_9_cures}")
     protected Integer criteriaB9RevisedId;
 
-    @Value("${criterion.170_315_c_3}")
+    @Value("${criterion.170_315_c_3_old}")
     protected Integer criteriaC3Id;
-    @Value("${criterion.170_315_c_3_revised}")
+    @Value("${criterion.170_315_c_3_cures}")
     protected Integer criteriaC3RevisedId;
 
-    @Value("${criterion.170_315_e_1}")
+    @Value("${criterion.170_315_e_1_old}")
     protected Integer criteriaE1Id;
-    @Value("${criterion.170_315_e_1_revised}")
+    @Value("${criterion.170_315_e_1_cures}")
     protected Integer criteriaE1RevisedId;
 
-    @Value("${criterion.170_315_f_5}")
+    @Value("${criterion.170_315_f_5_old}")
     protected Integer criteriaF5Id;
-    @Value("${criterion.170_315_f_5_revised}")
+    @Value("${criterion.170_315_f_5_cures}")
     protected Integer criteriaF5RevisedId;
 
-    @Value("${criterion.170_315_g_6}")
+    @Value("${criterion.170_315_g_6_old}")
     protected Integer criteriaG6Id;
-    @Value("${criterion.170_315_g_6_revised}")
+    @Value("${criterion.170_315_g_6_cures}")
     protected Integer criteriaG6RevisedId;
 
-    @Value("${criterion.170_315_g_9}")
+    @Value("${criterion.170_315_g_9_old}")
     protected Integer criteriaG9Id;
-    @Value("${criterion.170_315_g_9_revised}")
+    @Value("${criterion.170_315_g_9_cures}")
     protected Integer criteriaG9RevisedId;
 
-    @Value("${criterion.170_315_d_2}")
+    @Value("${criterion.170_315_d_2_old}")
     protected Integer criteriaD2Id;
-    @Value("${criterion.170_315_d_2_revised}")
+    @Value("${criterion.170_315_d_2_cures}")
     protected Integer criteriaD2RevisedId;
 
-    @Value("${criterion.170_315_d_3}")
+    @Value("${criterion.170_315_d_3_old}")
     protected Integer criteriaD3Id;
-    @Value("${criterion.170_315_d_3_revised}")
+    @Value("${criterion.170_315_d_3_cures}")
     protected Integer criteriaD3RevisedId;
 
-    @Value("${criterion.170_315_d_10}")
+    @Value("${criterion.170_315_d_10_old}")
     protected Integer criteriaD10Id;
-    @Value("${criterion.170_315_d_10_revised}")
+    @Value("${criterion.170_315_d_10_cures}")
     protected Integer criteriaD10RevisedId;
 
     protected ErrorMessageUtil msgUtil;

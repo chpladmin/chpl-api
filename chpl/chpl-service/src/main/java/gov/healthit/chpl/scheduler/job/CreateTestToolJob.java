@@ -23,6 +23,7 @@ import net.sf.ehcache.CacheManager;
 public class CreateTestToolJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("createTestToolJobLogger");
     private static final String TEST_TOOL = "Inferno";
+    private static final Long ADMIN_ID = -2L;
 
     @Autowired
     private TestToolDAO testToolDao;
@@ -75,7 +76,7 @@ public class CreateTestToolJob extends QuartzJob {
     private void setSecurityContext() {
         JWTAuthenticatedUser adminUser = new JWTAuthenticatedUser();
         adminUser.setFullName("Administrator");
-        adminUser.setId(-2L);
+        adminUser.setId(ADMIN_ID);
         adminUser.setFriendlyName("Admin");
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
