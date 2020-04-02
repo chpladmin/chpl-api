@@ -28,6 +28,7 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
@@ -87,7 +88,7 @@ public class ChangeRequestManagerTest {
 
     @Test
     public void updateChangeRequest_ValidCr_ReturnsUpdatedCr()
-            throws EntityRetrievalException, ValidationException, EntityCreationException, JsonProcessingException {
+            throws EntityRetrievalException, ValidationException, EntityCreationException, JsonProcessingException, InvalidArgumentsException {
         // Setup
         ChangeRequestDAO changeRequestDAO = Mockito.mock(ChangeRequestDAO.class);
         Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong())).thenReturn(getBasicChangeRequest());
@@ -131,7 +132,7 @@ public class ChangeRequestManagerTest {
 
     @Test(expected = ValidationException.class)
     public void updateChangeRequest_InvalidData_ThrowsException()
-            throws EntityRetrievalException, ValidationException, EntityCreationException, JsonProcessingException {
+            throws EntityRetrievalException, ValidationException, EntityCreationException, JsonProcessingException, InvalidArgumentsException {
         // Setup
         ChangeRequestDAO changeRequestDAO = Mockito.mock(ChangeRequestDAO.class);
         Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong())).thenReturn(getBasicChangeRequest());
@@ -164,7 +165,7 @@ public class ChangeRequestManagerTest {
 
     @Test
     public void updateChangeRequest_UserIsNotDeveloper_CrDetailsAreNotUpdate()
-            throws EntityRetrievalException, ValidationException, EntityCreationException, JsonProcessingException {
+            throws EntityRetrievalException, ValidationException, EntityCreationException, JsonProcessingException, InvalidArgumentsException {
         // Setup
         ChangeRequestDAO changeRequestDAO = Mockito.mock(ChangeRequestDAO.class);
         Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong())).thenReturn(getBasicChangeRequest());
@@ -208,7 +209,7 @@ public class ChangeRequestManagerTest {
 
     @Test
     public void updateChangeRequest_CrStatusIsNull_CrStatusIsNotUpdated()
-            throws EntityRetrievalException, ValidationException, EntityCreationException, JsonProcessingException {
+            throws EntityRetrievalException, ValidationException, EntityCreationException, JsonProcessingException, InvalidArgumentsException {
         // Setup
         ChangeRequestDAO changeRequestDAO = Mockito.mock(ChangeRequestDAO.class);
         Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong())).thenReturn(getBasicChangeRequest());

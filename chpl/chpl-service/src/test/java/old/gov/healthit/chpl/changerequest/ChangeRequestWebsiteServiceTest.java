@@ -28,6 +28,7 @@ import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import old.gov.healthit.chpl.changerequest.builders.ChangeRequestBuilder;
@@ -123,7 +124,7 @@ public class ChangeRequestWebsiteServiceTest {
     }
 
     @Test
-    public void update_Success() throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+    public void update_Success() throws EntityRetrievalException, JsonProcessingException, EntityCreationException, InvalidArgumentsException {
         // Setup
         Mockito.when(crDAO.get(ArgumentMatchers.anyLong()))
                 .thenReturn(new ChangeRequestBuilder()
@@ -164,7 +165,7 @@ public class ChangeRequestWebsiteServiceTest {
 
     @Test
     public void update_WebsiteNotChanged()
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, InvalidArgumentsException {
         // Setup
         Mockito.when(crDAO.get(ArgumentMatchers.anyLong()))
                 .thenReturn(new ChangeRequestBuilder()
@@ -204,7 +205,7 @@ public class ChangeRequestWebsiteServiceTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void update_Exception_CouldNotFindCr() throws EntityRetrievalException {
+    public void update_Exception_CouldNotFindCr() throws EntityRetrievalException, InvalidArgumentsException {
         // Setup
         Mockito.when(crDAO.get(ArgumentMatchers.anyLong()))
                 .thenThrow(EntityRetrievalException.class);
