@@ -20,7 +20,6 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDeveloperDetailsDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDetails;
-import gov.healthit.chpl.changerequest.domain.ChangeRequestWebsite;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.Contact;
@@ -31,13 +30,13 @@ import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.util.EmailBuilder;
-import lombok.extern.log4j.Log4j2;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
-@Log4j2
 @Component
 public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsService<ChangeRequestDeveloperDetails> {
 
@@ -46,6 +45,7 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
     private DeveloperManager developerManager;
     private ActivityManager activityManager;
     private Environment env;
+    private ErrorMessageUtil msgUtil;
 
     @Value("${changeRequest.developerDetails.approval.subject}")
     private String approvalEmailSubject;
@@ -68,13 +68,14 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
     @Autowired
     public ChangeRequestDeveloperDetailsService(ChangeRequestDAO crDAO, ChangeRequestDeveloperDetailsDAO crDeveloperDetailsDao,
             DeveloperManager developerManager, UserDeveloperMapDAO userDeveloperMapDAO,
-            ActivityManager activityManager, Environment env) {
+            ActivityManager activityManager, Environment env, ErrorMessageUtil msgUtil) {
         super(userDeveloperMapDAO);
         this.crDAO = crDAO;
         this.crDeveloperDetailsDao = crDeveloperDetailsDao;
         this.developerManager = developerManager;
         this.activityManager = activityManager;
         this.env = env;
+        this.msgUtil = msgUtil;
     }
 
     @Override
@@ -93,26 +94,27 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
     }
 
     @Override
-    public ChangeRequest update(ChangeRequest cr) {
-        //TODO
+    public ChangeRequest update(ChangeRequest cr) throws InvalidArgumentsException {
         try {
-            // Get the current cr to determine if the website changed
+            // Get the current cr to determine if the developer details changed
             ChangeRequest crFromDb = crDAO.get(cr.getId());
-            // Convert the map of key/value pairs to a ChangeRequestWebsite
+            // Convert the map of key/value pairs to a ChangeRequestDeveloperDetails
             // object
-            ChangeRequestDeveloperDetails crWebsite = getDetailsFromHashMap((HashMap<String, Object>) cr.getDetails());
+            ChangeRequestDeveloperDetails crDevDetails = getDetailsFromHashMap((HashMap<String, Object>) cr.getDetails());
             // Use the id from the DB, not the object. Client could have changed
             // the id.
-            crWebsite.setId(((ChangeRequestWebsite) crFromDb.getDetails()).getId());
-            cr.setDetails(crWebsite);
+            crDevDetails.setId(((ChangeRequestDeveloperDetails) crFromDb.getDetails()).getId());
+            cr.setDetails(crDevDetails);
 
-            if (!((ChangeRequestWebsite) cr.getDetails()).getWebsite()
-                    .equals(((ChangeRequestWebsite) crFromDb.getDetails()).getWebsite())) {
+            if (!((ChangeRequestDeveloperDetails) cr.getDetails())
+                    .equals(((ChangeRequestDeveloperDetails) crFromDb.getDetails()))) {
                 cr.setDetails(crDeveloperDetailsDao.update((ChangeRequestDeveloperDetails) cr.getDetails()));
 
                 activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, cr.getId(),
                         "Change request details updated",
                         crFromDb, cr);
+            } else {
+                throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.noChanges"));
             }
             return cr;
         } catch (Exception e) {

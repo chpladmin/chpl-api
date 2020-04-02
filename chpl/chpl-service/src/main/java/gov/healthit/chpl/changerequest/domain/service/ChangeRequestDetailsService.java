@@ -13,6 +13,7 @@ import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
 
 public abstract class ChangeRequestDetailsService<T> {
 
@@ -58,7 +59,7 @@ public abstract class ChangeRequestDetailsService<T> {
 
     public abstract ChangeRequest create(ChangeRequest cr);
 
-    public abstract ChangeRequest update(ChangeRequest cr);
+    public abstract ChangeRequest update(ChangeRequest cr) throws InvalidArgumentsException;
 
     protected abstract ChangeRequest execute(ChangeRequest cr) throws EntityRetrievalException, EntityCreationException;
     protected abstract void sendApprovalEmail(ChangeRequest cr) throws MessagingException;

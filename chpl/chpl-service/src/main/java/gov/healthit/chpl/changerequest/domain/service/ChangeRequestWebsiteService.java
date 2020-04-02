@@ -24,10 +24,12 @@ import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.util.EmailBuilder;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class ChangeRequestWebsiteService extends ChangeRequestDetailsService<ChangeRequestWebsite> {
@@ -37,6 +39,7 @@ public class ChangeRequestWebsiteService extends ChangeRequestDetailsService<Cha
     private DeveloperManager developerManager;
     private ActivityManager activityManager;
     private Environment env;
+    private ErrorMessageUtil msgUtil;
 
     @Value("${changeRequest.website.approval.subject}")
     private String approvalEmailSubject;
@@ -59,13 +62,14 @@ public class ChangeRequestWebsiteService extends ChangeRequestDetailsService<Cha
     @Autowired
     public ChangeRequestWebsiteService(ChangeRequestDAO crDAO, ChangeRequestWebsiteDAO crWebsiteDAO,
             DeveloperManager developerManager, UserDeveloperMapDAO userDeveloperMapDAO,
-            ActivityManager activityManager, Environment env) {
+            ActivityManager activityManager, Environment env, ErrorMessageUtil msgUtil) {
         super(userDeveloperMapDAO);
         this.crDAO = crDAO;
         this.crWebsiteDAO = crWebsiteDAO;
         this.developerManager = developerManager;
         this.activityManager = activityManager;
         this.env = env;
+        this.msgUtil = msgUtil;
     }
 
     @Override
@@ -84,7 +88,7 @@ public class ChangeRequestWebsiteService extends ChangeRequestDetailsService<Cha
     }
 
     @Override
-    public ChangeRequest update(ChangeRequest cr) {
+    public ChangeRequest update(ChangeRequest cr) throws InvalidArgumentsException {
         try {
             // Get the current cr to determine if the website changed
             ChangeRequest crFromDb = crDAO.get(cr.getId());
@@ -103,6 +107,8 @@ public class ChangeRequestWebsiteService extends ChangeRequestDetailsService<Cha
                 activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, cr.getId(),
                         "Change request details updated",
                         crFromDb, cr);
+            } else {
+                throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.noChanges"));
             }
             return cr;
         } catch (Exception e) {

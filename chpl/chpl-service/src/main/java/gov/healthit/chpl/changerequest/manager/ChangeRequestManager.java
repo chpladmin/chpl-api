@@ -158,7 +158,8 @@ public class ChangeRequestManager extends SecurityManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
             + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).UPDATE, #cr)")
     public ChangeRequest updateChangeRequest(ChangeRequest cr)
-            throws EntityRetrievalException, ValidationException, EntityCreationException, JsonProcessingException {
+            throws EntityRetrievalException, ValidationException, EntityCreationException,
+            JsonProcessingException, InvalidArgumentsException {
         ChangeRequest crFromDb = getChangeRequest(cr.getId());
 
         ValidationException validationException = new ValidationException();

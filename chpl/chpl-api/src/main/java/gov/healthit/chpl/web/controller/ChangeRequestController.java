@@ -88,7 +88,9 @@ public class ChangeRequestController {
                     + "change requests where they have administrative authority based on the developer.")
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public ChangeRequest updateChangeRequest(@RequestBody final ChangeRequest cr) throws EntityRetrievalException, ValidationException, EntityCreationException, JsonProcessingException {
+    public ChangeRequest updateChangeRequest(@RequestBody final ChangeRequest cr)
+            throws EntityRetrievalException, ValidationException, EntityCreationException,
+            JsonProcessingException, InvalidArgumentsException {
         if (!ff4j.check(FeatureList.CHANGE_REQUEST)) {
             throw new NotImplementedException();
         }
