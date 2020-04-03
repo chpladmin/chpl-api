@@ -97,6 +97,9 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "last_certification_status_change")
     private Date certificationStatusDate;
 
+    @Column(name = "cures_update")
+    private Boolean curesUpdate;
+
     @Column(name = "certification_edition_id")
     private Long certificationEditionId;
 
@@ -156,7 +159,7 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "last_vendor_status_change")
     private Date developerStatusDate;
 
-    @Column(name="self_developer")
+    @Column(name = "self_developer")
     private Boolean selfDeveloper;
 
     @Column(name = "address_id")
@@ -462,6 +465,14 @@ public class CertifiedProductDetailsEntity {
 
     public void setCertificationStatusName(final String certificationStatusName) {
         this.certificationStatusName = certificationStatusName;
+    }
+
+    public Boolean getCuresUpdate() {
+        return curesUpdate;
+    }
+
+    public void setCuresUpdate(Boolean curesUpdate) {
+        this.curesUpdate = curesUpdate;
     }
 
     public String getProductCode() {
