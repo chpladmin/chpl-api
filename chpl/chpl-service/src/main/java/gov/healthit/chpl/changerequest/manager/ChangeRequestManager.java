@@ -95,6 +95,13 @@ public class ChangeRequestManager extends SecurityManager {
     }
 
     @Transactional(readOnly = true)
+    public Set<KeyValueModel> getChangeRequestTypes() {
+        return changeRequestTypeDAO.getChangeRequestTypes().stream()
+                .map(crType -> new KeyValueModel(crType.getId(), crType.getName()))
+                .collect(Collectors.<KeyValueModel> toSet());
+    }
+
+    @Transactional(readOnly = true)
     public Set<KeyValueModel> getChangeRequestStatusTypes() {
         return changeRequestStatusTypeDAO.getChangeRequestStatusTypes().stream()
                 .map(crStatusType -> new KeyValueModel(crStatusType.getId(), crStatusType.getName()))
