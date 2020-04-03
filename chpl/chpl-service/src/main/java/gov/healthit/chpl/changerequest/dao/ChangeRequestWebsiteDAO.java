@@ -17,7 +17,6 @@ import gov.healthit.chpl.util.AuthUtil;
 @Repository("changeRequestWebsiteDAO")
 public class ChangeRequestWebsiteDAO extends BaseDAOImpl {
 
-
     public ChangeRequestWebsite create(ChangeRequest cr, ChangeRequestWebsite crWebsite)
             throws EntityRetrievalException {
         ChangeRequestWebsiteEntity entity = getNewEntity(cr, crWebsite);
@@ -25,11 +24,9 @@ public class ChangeRequestWebsiteDAO extends BaseDAOImpl {
         return ChangeRequestConverter.convert(getEntity(entity.getId()));
     }
 
-
     public ChangeRequestWebsite getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
         return ChangeRequestConverter.convert(getEntityByChangeRequestId(changeRequestId));
     }
-
 
     public ChangeRequestWebsite update(ChangeRequestWebsite crWebsite) throws EntityRetrievalException {
         ChangeRequestWebsiteEntity entity = getEntity(crWebsite.getId());
@@ -50,8 +47,7 @@ public class ChangeRequestWebsiteDAO extends BaseDAOImpl {
         return entity;
     }
 
-    private ChangeRequestWebsiteEntity getEntity(Long changeRequestWebsiteId)
-            throws EntityRetrievalException {
+    private ChangeRequestWebsiteEntity getEntity(Long changeRequestWebsiteId) throws EntityRetrievalException {
         String hql = "FROM ChangeRequestWebsiteEntity crWebsite "
                 + "JOIN FETCH crWebsite.changeRequest "
                 + "WHERE (NOT crWebsite.deleted = true) "
@@ -76,8 +72,7 @@ public class ChangeRequestWebsiteDAO extends BaseDAOImpl {
         return result.get(0);
     }
 
-    private ChangeRequestWebsiteEntity getEntityByChangeRequestId(Long changeRequestId)
-            throws EntityRetrievalException {
+    private ChangeRequestWebsiteEntity getEntityByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
         String hql = "FROM ChangeRequestWebsiteEntity crWebsite "
                 + "JOIN FETCH crWebsite.changeRequest "
                 + "WHERE (NOT crWebsite.deleted = true) "

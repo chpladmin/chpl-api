@@ -14,19 +14,15 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 @Repository("changeRequestStatusTypeDAO")
 public class ChangeRequestStatusTypeDAO extends BaseDAOImpl {
 
-
     public ChangeRequestStatusType getChangeRequestStatusTypeById(Long changeRequestStatusTypeId)
             throws EntityRetrievalException {
         return ChangeRequestConverter.convert(getChangeRequestStatusTypeEntity(changeRequestStatusTypeId));
-
     }
-
 
     public List<ChangeRequestStatusType> getChangeRequestStatusTypes() {
         return getChangeRequestStatusTypeEntities().stream()
                 .map(ChangeRequestConverter::convert)
                 .collect(Collectors.<ChangeRequestStatusType> toList());
-
     }
 
     private List<ChangeRequestStatusTypeEntity> getChangeRequestStatusTypeEntities() {

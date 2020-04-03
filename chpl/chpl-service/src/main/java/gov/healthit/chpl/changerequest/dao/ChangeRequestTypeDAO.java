@@ -14,13 +14,11 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 @Repository("changeRequestTypeDAO")
 public class ChangeRequestTypeDAO extends BaseDAOImpl {
 
-
     public ChangeRequestType getChangeRequestTypeById(Long changeRequestTypeId)
             throws EntityRetrievalException {
         return ChangeRequestConverter.convert(getChangeRequestTypeEntity(changeRequestTypeId));
 
     }
-
 
     public List<ChangeRequestType> getChangeRequestTypes() {
         List<ChangeRequestTypeEntity> entities = getChangeRequestTypeEntities();

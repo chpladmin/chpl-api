@@ -21,14 +21,12 @@ import gov.healthit.chpl.util.AuthUtil;
 @Repository("changeRequestStatusDAO")
 public class ChangeRequestStatusDAO extends BaseDAOImpl {
 
-
     public ChangeRequestStatus create(ChangeRequest cr, ChangeRequestStatus crStatus)
             throws EntityRetrievalException {
         ChangeRequestStatusEntity entity = getNewEntity(cr, crStatus);
         create(entity);
         return ChangeRequestConverter.convert(getEntityById(entity.getId()));
     }
-
 
     public List<ChangeRequestStatus> getByChangeRequestId(Long changeRequestId) {
         String hql = "SELECT crStatus "

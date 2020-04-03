@@ -94,22 +94,12 @@ public class ChangeRequestManager extends SecurityManager {
         this.msgUtil = msgUtil;
     }
 
-
-    @Transactional(readOnly = true)
-    public Set<KeyValueModel> getChangeRequestTypes() {
-        return changeRequestTypeDAO.getChangeRequestTypes().stream()
-                .map(crType -> new KeyValueModel(crType.getId(), crType.getName()))
-                .collect(Collectors.<KeyValueModel> toSet());
-    }
-
-
     @Transactional(readOnly = true)
     public Set<KeyValueModel> getChangeRequestStatusTypes() {
         return changeRequestStatusTypeDAO.getChangeRequestStatusTypes().stream()
                 .map(crStatusType -> new KeyValueModel(crStatusType.getId(), crStatusType.getName()))
                 .collect(Collectors.<KeyValueModel> toSet());
     }
-
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
@@ -164,6 +154,12 @@ public class ChangeRequestManager extends SecurityManager {
 
         ValidationException validationException = new ValidationException();
         validationException.getErrorMessages().addAll(runUpdateValidations(cr));
+        if (cr.getChangeRequestType().getId().equals(websiteChangeRequestTypeId)) {
+            validationException.getErrorMessages().addAll(runWebsiteValidations(cr));
+        } else if (cr.getChangeRequestType().getId().equals(developerDetailsChangeRequestTypeId)) {
+            validationException.getErrorMessages().addAll(runDeveloperDetailsValidations(cr));
+        }
+
         if (validationException.getErrorMessages().size() > 0) {
             throw validationException;
         }
@@ -355,7 +351,6 @@ public class ChangeRequestManager extends SecurityManager {
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.SELF_DEVELOPER_VALID));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.ADDRESS_VALID));
         rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CONTACT_VALID));
-
         return runValidations(rules, cr);
     }
 

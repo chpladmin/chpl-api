@@ -14,7 +14,6 @@ import gov.healthit.chpl.dto.DeveloperDTO;
 @Repository
 public class DeveloperCertificationBodyMapDAO extends BaseDAOImpl {
 
-
     public List<CertificationBody> getCertificationBodiesForDeveloper(Long developerId) {
         String hql = "FROM DeveloperCertificationBodyMapEntity main "
                 + "JOIN FETCH main.developer dev "
@@ -23,7 +22,6 @@ public class DeveloperCertificationBodyMapDAO extends BaseDAOImpl {
                 + "JOIN FETCH dev.contact "
                 + "JOIN FETCH cb.address "
                 + "WHERE dev.id = :developerId";
-
         return entityManager
                 .createQuery(hql, DeveloperCertificationBodyMapEntity.class)
                 .setParameter("developerId", developerId)

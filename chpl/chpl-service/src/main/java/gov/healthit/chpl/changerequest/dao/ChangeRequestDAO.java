@@ -45,20 +45,16 @@ public class ChangeRequestDAO extends BaseDAOImpl {
         this.changeRequestDetailsFactory = changeRequestDetailsFactory;
     }
 
-
     public ChangeRequest create(ChangeRequest cr) throws EntityRetrievalException {
         ChangeRequestEntity entity = getNewEntity(cr);
         create(entity);
         return ChangeRequestConverter.convert(getEntityById(entity.getId()));
     }
 
-
     public ChangeRequest get(Long changeRequestId) throws EntityRetrievalException {
         ChangeRequest cr = ChangeRequestConverter.convert(getEntityById(changeRequestId));
-
         return populateDependentObjects(cr);
     }
-
 
     public List<ChangeRequest> getAll() throws EntityRetrievalException {
         return getEntities().stream()
@@ -66,7 +62,6 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 .map(cr -> populateDependentObjects(cr))
                 .collect(Collectors.<ChangeRequest>toList());
     }
-
 
     public List<ChangeRequest> getAllPending() throws EntityRetrievalException {
         return getAll().stream()
@@ -134,6 +129,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 + "JOIN FETCH dev.contact "
                 + "JOIN FETCH dev.statusEvents statuses "
                 + "JOIN FETCH statuses.developerStatus "
+                + "JOIN FETCH dev.developerCertificationStatuses "
                 + "WHERE cr.deleted = false ";
 
         List<ChangeRequestEntity> results = entityManager
