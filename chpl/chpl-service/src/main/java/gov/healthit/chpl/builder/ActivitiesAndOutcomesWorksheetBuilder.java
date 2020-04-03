@@ -435,7 +435,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
             if (determineIfSurveillanceHappenedDuringQuarter("Q4", quarterlyReports, surv)) {
                 addDataCell(workbook, row, COL_Q4, "X");
             }
-            addDataCell(workbook, row, COL_CERT_EDITION, listing.getCertificationEdition().get("name").toString());
+            addDataCell(workbook, row, COL_CERT_EDITION, listing.getCertificationEdition().get("name").toString() + (listing.getCuresUpdate() ? " Cures Update" : ""));
             addDataCell(workbook, row, COL_DEVELOPER_NAME, listing.getDeveloper().getName());
             addDataCell(workbook, row, COL_PRODUCT_NAME, listing.getProduct().getName());
             addDataCell(workbook, row, COL_PRODUCT_VERSION, listing.getVersion().getVersion());
@@ -537,7 +537,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
             completeListingDetails.setChplProductNumber(listingDetails.getChplProductNumber());
             Map<String, Object> editionMap = new HashMap<String, Object>();
             editionMap.put("id", listingDetails.getCertificationEditionId());
-            editionMap.put("name", listingDetails.getYear());
+            editionMap.put("name", listingDetails.getYear() + (listingDetails.getCuresUpdate() ? " Cures Update" : ""));
             completeListingDetails.setCertificationEdition(editionMap);
             Developer dev = new Developer();
             dev.setDeveloperId(listingDetails.getDeveloper().getId());
