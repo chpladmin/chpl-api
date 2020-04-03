@@ -21,7 +21,7 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestStatusService;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestWebsiteService;
-import gov.healthit.chpl.changerequest.manager.ChangeRequestManagerImpl;
+import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationFactory;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -68,7 +68,7 @@ public class ChangeRequestManagerImplTest {
     private ChangeRequestValidationFactory crValidationFactory;
 
     @InjectMocks
-    private ChangeRequestManagerImpl changeRequestManager;
+    private ChangeRequestManager changeRequestManager;
 
     private Long pendingAcbActionStatus = 1l;
 

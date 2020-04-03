@@ -7,9 +7,11 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
@@ -65,59 +67,43 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
 
     private static final long MILLIS_PER_DAY = 1000 * 60 * 60 * 24;
 
+    private static final String SPLIT_CHAR = "\u263A";
+
     public PendingChangeRequestEmailJob() throws Exception {
         super();
     }
 
     @Override
-    public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+    public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Pending Change Request job. *********");
         LOGGER.info(
                 "Creating pending change request email for: " + jobContext.getMergedJobDataMap().getString("email"));
 
-        List<CertificationBodyDTO> activeAcbs = certificationBodyDAO.findAllActive();
-        Date currentDate = new Date();
-        List<List<String>> csvRows;
         try {
-            csvRows = getAppropriateActivities(activeAcbs, currentDate);
-            String to = jobContext.getMergedJobDataMap().getString("email");
-            String subject = env.getProperty("pendingChangeRequestEmailSubject");
-            String htmlMessage = null;
-            List<File> files = null;
-            if (csvRows.size() > 0) {
-                htmlMessage = String.format(env.getProperty("pendingChangeRequestHasDataEmailBody"),
-                        csvRows.size());
-                String filename = env.getProperty("pendingChangeRequestReportFilename");
-                File output = null;
-                files = new ArrayList<File>();
-                if (csvRows.size() > 0) {
-                    output = getOutputFile(csvRows, filename, activeAcbs);
-                    files.add(output);
-                }
-            } else {
-                htmlMessage = String.format(env.getProperty("pendingChangeRequestNoDataEmailBody"));
-            }
-
-            LOGGER.info("Sending email to {} with contents {} and a total of {} pending change requests",
-                    to, htmlMessage, csvRows.size());
-
-            List<String> recipients = new ArrayList<String>();
-            recipients.add(to);
-
-            EmailBuilder emailBuilder = new EmailBuilder(env);
-            emailBuilder.recipients(recipients)
-                    .subject(subject)
-                    .htmlMessage(htmlMessage)
-                    .fileAttachments(files)
-                    .sendEmail();
-
-        } catch (MessagingException e) {
-            LOGGER.error(e);
-        } catch (EntityRetrievalException e) {
-            LOGGER.error(e);
+            List<CertificationBodyDTO> acbs = getAppropriateAcbs(jobContext);
+            Date currentDate = new Date();
+            List<List<String>> csvRows = getAppropriateActivities(acbs, currentDate);
+            sendEmail(jobContext, csvRows, acbs);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
         }
         LOGGER.info("********* Completed the Pending Change Request Email job. *********");
+    }
+
+    private List<CertificationBodyDTO> getAppropriateAcbs(JobExecutionContext jobContext) {
+        List<CertificationBodyDTO> acbs = certificationBodyDAO.findAllActive();
+        if (jobContext.getMergedJobDataMap().getBooleanValue("acbSpecific")) {
+            List<String> acbsFromJob = getAcbsFromJobContext(jobContext);
+            acbs = acbs.stream()
+                    .filter(acb -> acbsFromJob.contains(acb.getName()))
+                    .collect(Collectors.toList());
+        }
+        return acbs;
+    }
+
+    private List<String> getAcbsFromJobContext(JobExecutionContext jobContext) {
+        return Arrays.asList(jobContext.getMergedJobDataMap().getString("acb").split(SPLIT_CHAR));
     }
 
     private List<List<String>> getAppropriateActivities(final List<CertificationBodyDTO> activeAcbs,
@@ -143,7 +129,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
                     csvPrinter.printRecord(rowValue);
                 }
             } catch (IOException e) {
-                LOGGER.error(e);
+                LOGGER.error(e.getMessage(), e);
             }
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
@@ -175,9 +161,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
             final Date currentDate)
             throws EntityRetrievalException {
         LOGGER.debug("Getting change website requests");
-        List<ChangeRequest> requests = changeRequestDAO.getAllPending().stream()
-                .sorted((cr1, cr2) -> cr1.getSubmittedDate().compareTo(cr2.getSubmittedDate()))
-                .collect(Collectors.<ChangeRequest> toList());
+        List<ChangeRequest> requests = getChangeRequestsFilteredByACBs(activeAcbs);
         LOGGER.debug("Found " + requests.size() + "pending change requests");
 
         List<List<String>> activityCsvRows = new ArrayList<List<String>>();
@@ -187,6 +171,20 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
             activityCsvRows.add(currRow);
         }
         return activityCsvRows;
+    }
+
+    private List<ChangeRequest> getChangeRequestsFilteredByACBs(List<CertificationBodyDTO> acbs) throws EntityRetrievalException {
+        List<Long> activeAcbIds = acbs.stream()
+                .map(CertificationBodyDTO::getId)
+                .collect(Collectors.toList());
+
+        Predicate<ChangeRequest> doesCrHaveAppropriateAcb = cr -> cr.getCertificationBodies().stream()
+                .anyMatch(acb -> activeAcbIds.contains(acb.getId()));
+
+        return changeRequestDAO.getAllPending().stream()
+                .filter(doesCrHaveAppropriateAcb)
+                .sorted((cr1, cr2) -> cr1.getSubmittedDate().compareTo(cr2.getSubmittedDate()))
+                .collect(Collectors.<ChangeRequest> toList());
     }
 
     private void putChangeWebsiteActivityInRow(final ChangeRequest activity,
@@ -236,5 +234,58 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
                 DateFormat.LONG,
                 DateFormat.LONG,
                 Locale.US);
+    }
+
+    private void sendEmail(JobExecutionContext jobContext, List<List<String>> csvRows, List<CertificationBodyDTO> acbs)
+            throws MessagingException {
+        LOGGER.info("Sending email to {} with contents {} and a total of {} pending change requests",
+                getEmailRecipients(jobContext).get(0), getHtmlMessage(csvRows.size()), csvRows.size());
+
+        EmailBuilder emailBuilder = new EmailBuilder(env);
+        emailBuilder.recipients(getEmailRecipients(jobContext))
+                .subject(getSubject(jobContext))
+                .htmlMessage(getHtmlMessage(csvRows.size()))
+                .fileAttachments(getAttachments(csvRows, acbs))
+                .sendEmail();
+    }
+
+    private String getSubject(JobExecutionContext jobContext) {
+        if (jobContext.getMergedJobDataMap().getBooleanValue("acbSpecific")) {
+            return env.getProperty("pendingChangeRequestEmailAcbSubject");
+        } else {
+            return env.getProperty("pendingChangeRequestEmailSubject");
+        }
+    }
+
+    private List<File> getAttachments(List<List<String>> csvRows, List<CertificationBodyDTO> acbs) {
+        List<File> attachments = new ArrayList<File>();
+        File csvFile = getCsvFile(csvRows, acbs);
+        if (csvFile != null) {
+            attachments.add(csvFile);
+        }
+        return attachments;
+    }
+
+    private File getCsvFile(List<List<String>> csvRows, List<CertificationBodyDTO> acbs) {
+        File csvFile = null;
+        if (csvRows.size() > 0) {
+            String filename = env.getProperty("pendingChangeRequestReportFilename");
+            if (csvRows.size() > 0) {
+                csvFile = getOutputFile(csvRows, filename, acbs);
+            }
+        }
+        return csvFile;
+    }
+
+    private String getHtmlMessage(Integer rowCount) {
+        if (rowCount > 0) {
+            return String.format(env.getProperty("pendingChangeRequestHasDataEmailBody"), rowCount);
+        } else {
+            return String.format(env.getProperty("pendingChangeRequestNoDataEmailBody"));
+        }
+    }
+
+    private List<String> getEmailRecipients(JobExecutionContext jobContext) {
+        return Arrays.asList(jobContext.getMergedJobDataMap().getString("email"));
     }
 }
