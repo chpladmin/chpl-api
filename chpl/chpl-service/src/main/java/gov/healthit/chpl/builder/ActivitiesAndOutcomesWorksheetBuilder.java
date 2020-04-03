@@ -262,7 +262,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         }
 
         //apply the borders after the sheet has been created
-        pt.drawBorders(new CellRangeAddress(1, getLastDataRow(), 1, LAST_DATA_COLUMN-1),
+        pt.drawBorders(new CellRangeAddress(1, getLastDataRow(), 1, LAST_DATA_COLUMN - 1),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
         pt.applyBorders(sheet);
         return sheet;
