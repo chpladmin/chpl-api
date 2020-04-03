@@ -110,7 +110,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
     protected List<String> generateRowValue(final CertifiedProductSearchDetails data) {
         List<String> result = new ArrayList<String>();
         String edition = data.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
-        if (data.getCuresUpdate()) {
+        if (data.getCuresUpdate() != null && data.getCuresUpdate()) {
             edition = edition + " Cures Update";
         }
         result.add(edition);

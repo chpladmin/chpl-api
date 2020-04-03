@@ -435,7 +435,11 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
             if (determineIfSurveillanceHappenedDuringQuarter("Q4", quarterlyReports, surv)) {
                 addDataCell(workbook, row, COL_Q4, "X");
             }
-            addDataCell(workbook, row, COL_CERT_EDITION, listing.getCertificationEdition().get("name").toString() + (listing.getCuresUpdate() ? " Cures Update" : ""));
+            String edition = listing.getCertificationEdition().get("name").toString();
+            if (listing.getCuresUpdate() != null && listing.getCuresUpdate()) {
+                edition += " Cures Update";
+            }
+            addDataCell(workbook, row, COL_CERT_EDITION, edition);
             addDataCell(workbook, row, COL_DEVELOPER_NAME, listing.getDeveloper().getName());
             addDataCell(workbook, row, COL_PRODUCT_NAME, listing.getProduct().getName());
             addDataCell(workbook, row, COL_PRODUCT_VERSION, listing.getVersion().getVersion());
@@ -535,9 +539,13 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
             CertifiedProductSearchDetails completeListingDetails = new CertifiedProductSearchDetails();
             completeListingDetails.setId(listingDetails.getId());
             completeListingDetails.setChplProductNumber(listingDetails.getChplProductNumber());
+            String edition = listingDetails.getYear();
+            if (listingDetails.getCuresUpdate() != null && listingDetails.getCuresUpdate()) {
+                edition += " Cures Update";
+            }
             Map<String, Object> editionMap = new HashMap<String, Object>();
             editionMap.put("id", listingDetails.getCertificationEditionId());
-            editionMap.put("name", listingDetails.getYear() + (listingDetails.getCuresUpdate() ? " Cures Update" : ""));
+            editionMap.put("name",  edition);
             completeListingDetails.setCertificationEdition(editionMap);
             Developer dev = new Developer();
             dev.setDeveloperId(listingDetails.getDeveloper().getId());
