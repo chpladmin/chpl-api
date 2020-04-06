@@ -18,6 +18,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
@@ -65,6 +66,9 @@ public class PendingListingRequiredData2015ReviewerTest extends TestingUsers {
     @Autowired
     private ValidationUtils validationUtils;
 
+    @Autowired
+    private CertificationCriterionDAO criterionDao;
+
     @Mock
     private ResourcePermissions resourcePermissions;
 
@@ -79,7 +83,7 @@ public class PendingListingRequiredData2015ReviewerTest extends TestingUsers {
         setupForAcbUser(resourcePermissions);
 
         reviewer = new RequiredData2015Reviewer(macraMeasureDAO, testFuncDao, testProcDao,
-                testDataDao, msgUtil, resourcePermissions, certRules, validationUtils);
+                testDataDao, criterionDao, msgUtil, resourcePermissions, certRules, validationUtils);
 
         Mockito.doAnswer(new Answer<String>() {
             @Override
