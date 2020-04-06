@@ -1,6 +1,7 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -12,14 +13,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @AllArgsConstructor
-@EqualsAndHashCode
 public class CertificationCriterion implements Serializable {
     private static final long serialVersionUID = 5732322243572571895L;
 
@@ -111,5 +110,26 @@ public class CertificationCriterion implements Serializable {
 
     public void setRemoved(final Boolean removed) {
         this.removed = removed;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(certificationEdition, certificationEditionId, description, id, number, removed, title);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        CertificationCriterion other = (CertificationCriterion) obj;
+        return Objects.equals(certificationEdition, other.certificationEdition)
+                && Objects.equals(certificationEditionId, other.certificationEditionId)
+                && Objects.equals(description, other.description) && Objects.equals(id, other.id)
+                && Objects.equals(number, other.number) && Objects.equals(removed, other.removed)
+                && Objects.equals(title, other.title);
     }
 }
