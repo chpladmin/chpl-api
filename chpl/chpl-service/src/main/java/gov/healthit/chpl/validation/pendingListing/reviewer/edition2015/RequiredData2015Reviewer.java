@@ -4,17 +4,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
@@ -88,10 +91,12 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
             "170.315 (g)(9)"
     };
 
+    private static final String B1_CRITERIA_NUMBER = "170.315 (b)(1)";
     private static final String G1_CRITERIA_NUMBER = "170.315 (g)(1)";
     private static final String G2_CRITERIA_NUMBER = "170.315 (g)(2)";
     private static final String G3_CRITERIA_NUMBER = "170.315 (g)(3)";
     private static final String G6_CRITERIA_NUMBER = "170.315 (g)(6)";
+    private static final String H1_CRITERIA_NUMBER = "170.315 (h)(1)";
 
     private static final int MINIMIMUM_PARTICIPANTS = 10;
     private List<String> e2e3Criterion = new ArrayList<String>();
@@ -102,11 +107,12 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     private TestFunctionalityDAO testFuncDao;
     private TestProcedureDAO testProcDao;
     private TestDataDAO testDataDao;
+    private CertificationCriterionDAO criteriaDao;
     private ValidationUtils validationUtils;
 
     @Autowired
     public RequiredData2015Reviewer(MacraMeasureDAO macraDao, TestFunctionalityDAO testFuncDao,
-            TestProcedureDAO testProcDao, TestDataDAO testDataDao,
+            TestProcedureDAO testProcDao, TestDataDAO testDataDao, CertificationCriterionDAO criteriaDao,
             ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
             CertificationResultRules certRules, ValidationUtils validationUtils) {
         super(msgUtil, resourcePermissions, certRules);
@@ -115,6 +121,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         this.testFuncDao = testFuncDao;
         this.testProcDao = testProcDao;
         this.testDataDao = testDataDao;
+        this.criteriaDao = criteriaDao;
         this.validationUtils = validationUtils;
 
         e2e3Criterion.add("170.315 (e)(2)");
@@ -627,15 +634,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
         // TODO: detailed G6 check; waiting on rule from ONC
 
-        // h1 plus b1
-        boolean hasH1 = validationUtils.hasCert("170.315 (h)(1)", attestedCriteria);
-        if (hasH1) {
-            boolean hasB1 = validationUtils.hasCert("170.315 (b)(1)", attestedCriteria);
-            if (!hasB1) {
-                listing.getErrorMessages()
-                .add("170.315 (h)(1) was found so 170.315 (b)(1) is required but was not found.");
-            }
-        }
+        validateH1PlusB1(listing);
 
         if (listing.getQmsStandards() == null || listing.getQmsStandards().size() == 0) {
             listing.getErrorMessages().add("QMS Standards are required.");
@@ -888,6 +887,28 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         }
     }
 
+    private void validateH1PlusB1(PendingCertifiedProductDTO listing) {
+        List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
+
+        boolean hasH1 = validationUtils.hasCert("170.315 (h)(1)", attestedCriteria);
+        if (hasH1) {
+            List<CertificationCriterionDTO> b1Criteria = criteriaDao.getAllByNumber(B1_CRITERIA_NUMBER);
+            List<Long> b1Ids = b1Criteria.stream().map(b1Criterion -> b1Criterion.getId())
+                    .collect(Collectors.toList());
+            Optional<CertificationCriterion> b1AttestedCriterion =
+                    attestedCriteria.stream().filter(
+                            attestedCriterion -> certIdIsInCertList(attestedCriterion, b1Ids))
+                    .findAny();
+            if (!b1AttestedCriterion.isPresent()) {
+                listing.getErrorMessages().add(
+                        validationUtils.getAllCriteriaWithNumber(H1_CRITERIA_NUMBER)
+                        + " was found so "
+                        + validationUtils.getAllCriteriaWithNumber(B1_CRITERIA_NUMBER)
+                        + " is required but was not found.");
+            }
+        }
+    }
+
     private void validateG3(PendingCertifiedProductDTO listing) {
         List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
         List<CertificationCriterion> presentAttestedUcdCriteria = attestedCriteria.stream()
@@ -976,6 +997,16 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         boolean result = false;
         for (String currCertNumber : certNumberList) {
             if (currCertNumber.equals(cert.getNumber())) {
+                result = true;
+            }
+        }
+        return result;
+    }
+
+    private boolean certIdIsInCertList(CertificationCriterion cert, List<Long> certIdList) {
+        boolean result = false;
+        for (Long currCertId : certIdList) {
+            if (currCertId.equals(cert.getId())) {
                 result = true;
             }
         }
