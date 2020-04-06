@@ -26,12 +26,6 @@ import gov.healthit.chpl.scheduler.presenter.CertifiedProductCsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductXmlPresenter;
 import gov.healthit.chpl.service.CertificationCriterionService;
 
-/**
- * Quartz job to generate download files by edition.
- * 
- * @author alarned
- *
- */
 @DisallowConcurrentExecution
 public class CertifiedProductDownloadableResourceCreatorJob
         extends DownloadableResourceCreatorJob implements InterruptableJob {
@@ -44,12 +38,6 @@ public class CertifiedProductDownloadableResourceCreatorJob
     @Autowired
     private CertificationCriterionService criterionService;
 
-    /**
-     * Default constructor.
-     * 
-     * @throws Exception
-     *             if issue with context
-     */
     public CertifiedProductDownloadableResourceCreatorJob() throws Exception {
         super(LOGGER);
         edition = "";
@@ -113,7 +101,7 @@ public class CertifiedProductDownloadableResourceCreatorJob
                 .stream()
                 .filter(cr -> !cr.getRemoved())
                 .sorted((crA, crB) -> criterionService.sortCriteria(crA, crB))
-                .collect(Collectors.<CertificationCriterionDTO> toList());
+                .collect(Collectors.<CertificationCriterionDTO>toList());
         csvPresenter.setApplicableCriteria(criteria);
         csvPresenter.open(getCsvFile());
     }
