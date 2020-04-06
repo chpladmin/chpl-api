@@ -62,17 +62,17 @@ public class CertificationCriterionService {
         return getCertificationResultSortIndex(valueA) - getCertificationResultSortIndex(valueB);
     }
 
-    public boolean isCures(CertificationCriterion criterion) {
+    public boolean hasCuresInTitle(CertificationCriterion criterion) {
         return criterion.getTitle() != null && criterion.getTitle().contains(CURES_TITLE);
     }
 
-    public boolean isCures(CertificationCriterionDTO criterion) {
-        return isCures(new CertificationCriterion(criterion));
+    public boolean hasCuresInTitle(CertificationCriterionDTO criterion) {
+        return hasCuresInTitle(new CertificationCriterion(criterion));
     }
 
     public String formatCriteriaNumber(CertificationCriterion criterion) {
         String result = criterion.getNumber();
-        if (isCures(criterion)) {
+        if (hasCuresInTitle(criterion)) {
             result += CURES_SUFFIX;
         }
         return result;

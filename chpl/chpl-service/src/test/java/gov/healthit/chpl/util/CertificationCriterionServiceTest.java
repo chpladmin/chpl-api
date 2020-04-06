@@ -84,31 +84,31 @@ public class CertificationCriterionServiceTest {
     }
 
     @Test
-    public void isCures_CertificationCriterionWithoutCuresSuffixInTitle_IsNotCures() {
+    public void hasCuresInTitle_CertificationCriterionWithoutCuresSuffixInTitle_IsNotCures() {
         criterion.setTitle("170.315(b)(7)");
         assertFalse("The criterion Should be identified as NOT CURES but was instead identfied as CURES",
-                service.isCures(criterion));
+                service.hasCuresInTitle(criterion));
     }
 
     @Test
-    public void isCures_CertificationCriterionWithCuresSuffixInTitle_IsCures() {
+    public void hasCuresInTitle_CertificationCriterionWithCuresSuffixInTitle_IsCures() {
         criterion.setTitle("170.315(b)(7)" + CertificationCriterionService.CURES_SUFFIX);
         assertTrue("The criterion Should be identified as CURES but was instead identfied as NOT CURES",
-                service.isCures(criterion));
+                service.hasCuresInTitle(criterion));
     }
 
     @Test
-    public void isCures_CertificationCriterionDtoWithoutCuresSuffixInTitle_IsNotCures() {
+    public void hasCuresInTitle_CertificationCriterionDtoWithoutCuresSuffixInTitle_IsNotCures() {
         criterion.setTitle("170.315(c)(3)");
         assertFalse("The criterion Should be identified as NOT CURES but was instead identfied as CURES",
-                service.isCures(criterion));
+                service.hasCuresInTitle(criterion));
     }
 
     @Test
-    public void isCures_CertificationResultDtoWithCuresSuffixInTitle_IsCures() {
+    public void hasCuresInTitle_CertificationResultDtoWithCuresSuffixInTitle_IsCures() {
         criterion.setTitle("170.315(c)(3)" + CertificationCriterionService.CURES_SUFFIX);
         assertTrue("The criterion Should be identified as CURES but was instead identfied as NOT CURES",
-                service.isCures(criterion));
+                service.hasCuresInTitle(criterion));
     }
 
     @Test
