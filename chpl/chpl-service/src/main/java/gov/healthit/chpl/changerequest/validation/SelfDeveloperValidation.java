@@ -32,6 +32,7 @@ public class SelfDeveloperValidation extends ValidationRule<ChangeRequestValidat
     }
 
     private boolean isChangeRequestSelfDeveloperValid(HashMap<String, Object> map) {
-        return BooleanUtils.toBooleanObject(map.get("selfDeveloper").toString()) != null;
+        return map.get("selfDeveloper") != null
+                && BooleanUtils.toBooleanObject(map.get("selfDeveloper").toString()) != null;
     }
 }

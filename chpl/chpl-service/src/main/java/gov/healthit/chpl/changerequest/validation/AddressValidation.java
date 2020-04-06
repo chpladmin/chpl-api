@@ -18,7 +18,7 @@ public class AddressValidation extends ValidationRule<ChangeRequestValidationCon
     private ResourcePermissions resourcePermissions;
 
     @Autowired
-    public AddressValidation(final ResourcePermissions resourcePermissions) {
+    public AddressValidation(ResourcePermissions resourcePermissions) {
         this.resourcePermissions = resourcePermissions;
     }
 
