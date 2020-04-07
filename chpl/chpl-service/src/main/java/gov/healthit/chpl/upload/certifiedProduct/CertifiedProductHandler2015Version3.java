@@ -61,7 +61,7 @@ public class CertifiedProductHandler2015Version3 extends CertifiedProductHandler
                 tpEntity.setVersion(tpVersion);
                 tpEntity.setTestProcedureName(tpName);
                 List<TestProcedureDTO> allowedTestProcedures =
-                        testProcedureDao.getByCriteriaNumber(cert.getMappedCriterion().getNumber());
+                        testProcedureDao.getByCriterionId(cert.getMappedCriterion().getId());
                 if (allowedTestProcedures != null && allowedTestProcedures.size() > 0) {
                     for (TestProcedureDTO allowedTp : allowedTestProcedures) {
                         if (allowedTp.getName().equalsIgnoreCase(tpName)) {
@@ -91,7 +91,7 @@ public class CertifiedProductHandler2015Version3 extends CertifiedProductHandler
                 PendingCertificationResultTestDataEntity tdEntity = new PendingCertificationResultTestDataEntity();
                 tdEntity.setTestDataName(tdName);
                 List<TestDataDTO> allowedTestData =
-                        testDataDao.getByCriteriaNumber(cert.getMappedCriterion().getNumber());
+                        testDataDao.getByCriterionId(cert.getMappedCriterion().getId());
                 if (allowedTestData != null && allowedTestData.size() > 0) {
                     for (TestDataDTO allowedTd : allowedTestData) {
                         if (allowedTd.getName().equalsIgnoreCase(tdName)) {

@@ -31,6 +31,7 @@ public class PrivacyAndSecurityCriteriaReviewer implements ComparisonReviewer {
     private ErrorMessageUtil errorMessageUtil;
     private CertificationCriterionDAO certificationCriterionDao;
     private FF4j ff4j;
+    private ValidationUtils validationUtils;
 
     private List<CertificationCriterion> privacyAndSecurityCriteria = new ArrayList<CertificationCriterion>();
     private List<CertificationCriterion> privacyAndSecurityRequiredCriteria = new ArrayList<CertificationCriterion>();
@@ -49,11 +50,12 @@ public class PrivacyAndSecurityCriteriaReviewer implements ComparisonReviewer {
 
     @Autowired
     public PrivacyAndSecurityCriteriaReviewer(CertificationCriterionDAO certificationCriterionDao, Environment env,
-            ErrorMessageUtil errorMessageUtil, FF4j ff4j) {
+            ErrorMessageUtil errorMessageUtil, FF4j ff4j, ValidationUtils validationUtils) {
         this.certificationCriterionDao = certificationCriterionDao;
         this.env = env;
         this.errorMessageUtil = errorMessageUtil;
         this.ff4j = ff4j;
+        this.validationUtils = validationUtils;
     }
 
     @Override
@@ -61,8 +63,8 @@ public class PrivacyAndSecurityCriteriaReviewer implements ComparisonReviewer {
         if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
             try {
                 if (isActiveOrSuspendedCertificationStatusType(updatedListing)) {
-                    List<CertificationCriterion> existingAttestedToCriteria = ValidationUtils.getAttestedCriteria(existingListing);
-                    List<CertificationCriterion> updatedAttestedToCriteria = ValidationUtils.getAttestedCriteria(updatedListing);
+                    List<CertificationCriterion> existingAttestedToCriteria = validationUtils.getAttestedCriteria(existingListing);
+                    List<CertificationCriterion> updatedAttestedToCriteria = validationUtils.getAttestedCriteria(updatedListing);
 
                     List<CertificationCriterion> addedCriteria = new ArrayList<CertificationCriterion>(updatedAttestedToCriteria);
                     addedCriteria.removeAll(existingAttestedToCriteria);
@@ -70,7 +72,7 @@ public class PrivacyAndSecurityCriteriaReviewer implements ComparisonReviewer {
                     if (!addedCriteria.isEmpty()) {
                         LOGGER.info("Criteria of some kind were added");
                         updatedListing.getErrorMessages()
-                                .addAll(ValidationUtils.checkSubordinateCriteriaAllRequired(
+                                .addAll(validationUtils.checkSubordinateCriteriaAllRequired(
                                         privacyAndSecurityCriteria, privacyAndSecurityRequiredCriteria,
                                         updatedAttestedToCriteria, errorMessageUtil));
                     } else {

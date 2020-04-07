@@ -49,6 +49,7 @@ import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
+import gov.healthit.chpl.dao.CuresUpdateEventDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.FuzzyChoicesDAO;
@@ -109,6 +110,7 @@ import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
 import gov.healthit.chpl.dto.ContactDTO;
+import gov.healthit.chpl.dto.CuresUpdateEventDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
@@ -159,6 +161,7 @@ import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.service.CuresUpdateService;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
@@ -189,6 +192,7 @@ public class CertifiedProductManager extends SecuredManager {
     private ProductManager productManager;
     private ProductVersionManager versionManager;
     private CertificationStatusEventDAO statusEventDao;
+    private CuresUpdateEventDAO curesUpdateDao;
     private MeaningfulUseUserDAO muuDao;
     private CertificationResultManager certResultManager;
     private TestToolDAO testToolDao;
@@ -207,6 +211,7 @@ public class CertifiedProductManager extends SecuredManager {
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
     private ActivityManager activityManager;
     private ListingValidatorFactory validatorFactory;
+    private CuresUpdateService curesUpdateService;
 
     private static final int PROD_CODE_LOC = 4;
     private static final int VER_CODE_LOC = 5;
@@ -215,7 +220,6 @@ public class CertifiedProductManager extends SecuredManager {
     private static final int DATE_CODE_LOC = 8;
 
     public CertifiedProductManager() {
-
     }
 
     @Autowired
@@ -231,6 +235,7 @@ public class CertifiedProductManager extends SecuredManager {
             DeveloperDAO developerDao, DeveloperStatusDAO devStatusDao,
             @Lazy DeveloperManager developerManager, ProductManager productManager,
             ProductVersionManager versionManager, CertificationStatusEventDAO statusEventDao,
+            CuresUpdateEventDAO curesUpdateDao,
             MeaningfulUseUserDAO muuDao, CertificationResultManager certResultManager,
             TestToolDAO testToolDao, TestStandardDAO testStandardDao,
             TestProcedureDAO testProcDao, TestDataDAO testDataDao,
@@ -240,7 +245,8 @@ public class CertifiedProductManager extends SecuredManager {
             FuzzyChoicesDAO fuzzyChoicesDao, ResourcePermissions resourcePermissions,
             CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
-            ActivityManager activityManager, ListingValidatorFactory validatorFactory) {
+            ActivityManager activityManager, ListingValidatorFactory validatorFactory,
+            CuresUpdateService curesUpdateService) {
 
         this.msgUtil = msgUtil;
         this.cpDao = cpDao;
@@ -263,6 +269,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.productManager = productManager;
         this.versionManager = versionManager;
         this.statusEventDao = statusEventDao;
+        this.curesUpdateDao = curesUpdateDao;
         this.muuDao = muuDao;
         this.certResultManager = certResultManager;
         this.testToolDao = testToolDao;
@@ -281,6 +288,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
         this.activityManager = activityManager;
         this.validatorFactory = validatorFactory;
+        this.curesUpdateService = curesUpdateService;
     }
 
     @Transactional(readOnly = true)
@@ -704,8 +712,8 @@ public class CertifiedProductManager extends SecuredManager {
                                 testDto.setTestData(testData.getTestData());
                                 certDao.addTestDataMapping(testDto);
                             } else if (testData.getTestData() != null) {
-                                TestDataDTO foundTestData = testDataDao.getByCriteriaNumberAndValue(
-                                        certResult.getCriterion().getNumber(), testData.getTestData().getName());
+                                TestDataDTO foundTestData = testDataDao.getByCriterionAndValue(
+                                        certResult.getCriterion().getId(), testData.getTestData().getName());
                                 if (foundTestData == null) {
                                     LOGGER.error("Could not find test data for " + certResult.getCriterion().getNumber()
                                             + " and test data name " + testData.getTestData().getName());
@@ -763,8 +771,8 @@ public class CertifiedProductManager extends SecuredManager {
                                 // check again for a matching test procedure
                                 // because
                                 // the user could have edited it since upload
-                                TestProcedureDTO foundTp = testProcDao.getByCriteriaNumberAndValue(
-                                        certResult.getCriterion().getNumber(), proc.getTestProcedure().getName());
+                                TestProcedureDTO foundTp = testProcDao.getByCriterionIdAndValue(
+                                        certResult.getCriterion().getId(), proc.getTestProcedure().getName());
                                 if (foundTp == null) {
                                     LOGGER.error("Could not find test procedure for " + certResult.getCriterion().getNumber()
                                             + " and test procedure name " + proc.getTestProcedure().getName());
@@ -993,6 +1001,14 @@ public class CertifiedProductManager extends SecuredManager {
         certEvent.setCertifiedProductId(newCertifiedProduct.getId());
         statusEventDao.create(certEvent);
 
+        CuresUpdateEventDTO curesEvent = new CuresUpdateEventDTO();
+        curesEvent.setCreationDate(new Date());
+        curesEvent.setDeleted(false);
+        curesEvent.setEventDate(certificationDate);
+        curesEvent.setCuresUpdate(curesUpdateService.isCuresUpdate(pendingCp));
+        curesEvent.setCertifiedProductId(newCertifiedProduct.getId());
+        curesUpdateDao.create(curesEvent);
+
         return newCertifiedProduct;
     }
 
@@ -1148,6 +1164,8 @@ public class CertifiedProductManager extends SecuredManager {
                 new Date(updatedListing.getCertificationDate()));
         updateCertificationStatusEvents(updatedListing.getId(), existingListing.getCertificationEvents(),
                 updatedListing.getCertificationEvents());
+        updateCuresUpdateEvents(updatedListing.getId(), existingListing.getCuresUpdate(),
+                updatedListing);
         updateMeaningfulUseUserHistory(updatedListing.getId(), existingListing.getMeaningfulUseUserHistory(),
                 updatedListing.getMeaningfulUseUserHistory());
         updateCertifications(existingListing, updatedListing,
@@ -1855,6 +1873,28 @@ public class CertifiedProductManager extends SecuredManager {
 
         for (Long idToRemove : idsToRemove) {
             statusEventDao.delete(idToRemove);
+        }
+        return numChanges;
+    }
+
+    private int updateCuresUpdateEvents(Long listingId, Boolean existingCuresUpdate,
+            CertifiedProductSearchDetails updatedListing) throws EntityCreationException, EntityRetrievalException {
+        int numChanges = 0;
+        String currentStatus = updatedListing.getCurrentStatus().getStatus().getName();
+        if (currentStatus.equalsIgnoreCase(CertificationStatusType.Active.getName())
+                || currentStatus.equalsIgnoreCase(CertificationStatusType.SuspendedByAcb.getName())
+                || currentStatus.equalsIgnoreCase(CertificationStatusType.SuspendedByOnc.getName())) {
+            Boolean isCuresUpdate = curesUpdateService.isCuresUpdate(updatedListing);
+            if (existingCuresUpdate != isCuresUpdate) {
+                CuresUpdateEventDTO curesEvent = new CuresUpdateEventDTO();
+                curesEvent.setCreationDate(new Date());
+                curesEvent.setDeleted(false);
+                curesEvent.setEventDate(new Date());
+                curesEvent.setCuresUpdate(isCuresUpdate);
+                curesEvent.setCertifiedProductId(listingId);
+                curesUpdateDao.create(curesEvent);
+                numChanges += 1;
+            }
         }
         return numChanges;
     }

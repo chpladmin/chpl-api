@@ -25,6 +25,7 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 
 public class PrivacyAndSecurityCriteriaReviewerTest {
 
@@ -32,7 +33,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
     private Environment env;
     private ErrorMessageUtil errorMessageUtil;
     private FF4j ff4j;
-
+    private ValidationUtils validationUtils;
 
     @Before
     public void before() throws EntityRetrievalException {
@@ -49,6 +50,8 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
 
         ff4j = Mockito.mock(FF4j.class);
+
+        validationUtils = new ValidationUtils(certificationCriterionDao);
     }
 
     @Test
@@ -59,7 +62,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
         CertifiedProductSearchDetails updatedListing = Mockito.mock(CertifiedProductSearchDetails.class);
 
         PrivacyAndSecurityCriteriaReviewer reviewer = new PrivacyAndSecurityCriteriaReviewer(certificationCriterionDao,
-                env, errorMessageUtil, ff4j);
+                env, errorMessageUtil, ff4j, validationUtils);
         reviewer.postConstruct();
 
         // Test
@@ -79,7 +82,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
         updatedListing.setCertificationEvents(getCertificationStatusEvents(CertificationStatusType.Retired.toString()));
 
         PrivacyAndSecurityCriteriaReviewer reviewer = new PrivacyAndSecurityCriteriaReviewer(certificationCriterionDao,
-                env, errorMessageUtil, ff4j);
+                env, errorMessageUtil, ff4j, validationUtils);
         reviewer.postConstruct();
 
         // Test
@@ -110,7 +113,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
         updatedListing.setCertificationResults(updatedListingCertificationResults);
 
         PrivacyAndSecurityCriteriaReviewer reviewer = new PrivacyAndSecurityCriteriaReviewer(certificationCriterionDao,
-                env, errorMessageUtil, ff4j);
+                env, errorMessageUtil, ff4j, validationUtils);
         reviewer.postConstruct();
 
         // Test
@@ -142,7 +145,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
         updatedListing.setCertificationResults(updatedListingCertificationResults);
 
         PrivacyAndSecurityCriteriaReviewer reviewer = new PrivacyAndSecurityCriteriaReviewer(certificationCriterionDao,
-                env, errorMessageUtil, ff4j);
+                env, errorMessageUtil, ff4j, validationUtils);
         reviewer.postConstruct();
 
         // Test
@@ -175,7 +178,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
         updatedListing.setErrorMessages(new HashSet<String>());
 
         PrivacyAndSecurityCriteriaReviewer reviewer = new PrivacyAndSecurityCriteriaReviewer(certificationCriterionDao,
-                env, errorMessageUtil, ff4j);
+                env, errorMessageUtil, ff4j, validationUtils);
         reviewer.postConstruct();
 
         // Test
@@ -206,7 +209,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
         updatedListing.setCertificationResults(updatedListingCertificationResults);
 
         PrivacyAndSecurityCriteriaReviewer reviewer = new PrivacyAndSecurityCriteriaReviewer(certificationCriterionDao,
-                env, errorMessageUtil, ff4j);
+                env, errorMessageUtil, ff4j, validationUtils);
         reviewer.postConstruct();
 
         // Test
@@ -237,7 +240,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
         updatedListing.setCertificationResults(updatedListingCertificationResults);
 
         PrivacyAndSecurityCriteriaReviewer reviewer = new PrivacyAndSecurityCriteriaReviewer(certificationCriterionDao,
-                env, errorMessageUtil, ff4j);
+                env, errorMessageUtil, ff4j, validationUtils);
         reviewer.postConstruct();
 
         // Test
@@ -269,7 +272,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
         updatedListing.setCertificationResults(updatedListingCertificationResults);
 
         PrivacyAndSecurityCriteriaReviewer reviewer = new PrivacyAndSecurityCriteriaReviewer(certificationCriterionDao,
-                env, errorMessageUtil, ff4j);
+                env, errorMessageUtil, ff4j, validationUtils);
         reviewer.postConstruct();
 
         // Test
@@ -300,7 +303,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
         updatedListing.setCertificationResults(updatedListingCertificationResults);
 
         PrivacyAndSecurityCriteriaReviewer reviewer = new PrivacyAndSecurityCriteriaReviewer(certificationCriterionDao,
-                env, errorMessageUtil, ff4j);
+                env, errorMessageUtil, ff4j, validationUtils);
         reviewer.postConstruct();
 
         // Test

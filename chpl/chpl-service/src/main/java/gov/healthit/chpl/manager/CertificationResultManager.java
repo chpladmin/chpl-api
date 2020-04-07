@@ -453,7 +453,7 @@ public class CertificationResultManager extends SecuredManager {
             // fill in potentially missing macra measure id info
             for (MacraMeasure updatedItem : updatedMeasures) {
                 if (updatedItem != null && updatedItem.getId() == null && !StringUtils.isEmpty(updatedItem.getName())) {
-                    MacraMeasureDTO foundMeasure = mmDao.getByCriteriaNumberAndValue(certResult.getNumber(),
+                    MacraMeasureDTO foundMeasure = mmDao.getByCriterionAndValue(certResult.getCriterion().getId(),
                             updatedItem.getName());
                     updatedItem.setId(foundMeasure.getId());
                 }

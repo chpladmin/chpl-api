@@ -13,6 +13,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 
 @Component("validDataReviewer")
 public class ValidDataReviewer extends PermissionBasedReviewer {
@@ -37,7 +38,8 @@ public class ValidDataReviewer extends PermissionBasedReviewer {
                             .getValue(formattedPrivacyAndSecurityFramework);
                     if (foundPrivacyAndSecurityFramework == null) {
                         addCriterionErrorOrWarningByPermission(listing, cert,
-                                "listing.criteria.invalidPrivacySecurityFramework", cert.getNumber(),
+                                "listing.criteria.invalidPrivacySecurityFramework",
+                                Util.formatCriteriaNumber(cert.getCriterion()),
                                 formattedPrivacyAndSecurityFramework, PrivacyAndSecurityFrameworkConcept.getFormattedValues());
                     }
                 }
@@ -51,7 +53,7 @@ public class ValidDataReviewer extends PermissionBasedReviewer {
                                 if (!exists) {
                                     addCriterionErrorOrWarningByPermission(listing, cert,
                                             "listing.criteria.invalidAdditionalSoftware", asDto.getCertifiedProductNumber(),
-                                            cert.getNumber());
+                                            Util.formatCriteriaNumber(cert.getCriterion()));
                                 }
                             } catch (EntityRetrievalException e) {
                             }

@@ -8,6 +8,7 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
 
 /**
@@ -18,9 +19,13 @@ import gov.healthit.chpl.util.ValidationUtils;
 @Component("pendingUrlReviewer")
 public class UrlReviewer extends PermissionBasedReviewer {
 
+    private ValidationUtils validationUtils;
+
     @Autowired
-    public UrlReviewer(ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
+    public UrlReviewer(ValidationUtils validationUtils, ErrorMessageUtil msgUtil,
+            ResourcePermissions resourcePermissions) {
         super(msgUtil, resourcePermissions);
+        this.validationUtils = validationUtils;
     }
 
     @Override
@@ -51,10 +56,10 @@ public class UrlReviewer extends PermissionBasedReviewer {
     private void addListingErrorIfNotValid(final PendingCertifiedProductDTO listing,
             final String input, final String fieldName) {
         if (!StringUtils.isEmpty(input)) {
-            if (ValidationUtils.hasNewline(input)) {
+            if (validationUtils.hasNewline(input)) {
                 listing.getErrorMessages().add(
                         msgUtil.getMessage("listing.invalidUrlFound", fieldName));
-            }  else if (!ValidationUtils.isWellFormedUrl(input)) {
+            }  else if (!validationUtils.isWellFormedUrl(input)) {
                 listing.getErrorMessages().add(
                         msgUtil.getMessage("listing.invalidUrlFound", fieldName));
             }
@@ -64,10 +69,11 @@ public class UrlReviewer extends PermissionBasedReviewer {
     private void addCriteriaErrorIfNotValid(final PendingCertifiedProductDTO listing,
             final PendingCertificationResultDTO cert, final String input, final String fieldName) {
         if (!StringUtils.isEmpty(input)) {
-            if (ValidationUtils.hasNewline(input)
-                    || !ValidationUtils.isWellFormedUrl(input)) {
+            if (validationUtils.hasNewline(input)
+                    || !validationUtils.isWellFormedUrl(input)) {
                 addErrorOrWarningByPermission(listing, cert,
-                        "listing.criteria.invalidUrlFound", fieldName, cert.getCriterion().getNumber());
+                        "listing.criteria.invalidUrlFound", fieldName,
+                        Util.formatCriteriaNumber(cert.getCriterion()));
             }
         }
     }
