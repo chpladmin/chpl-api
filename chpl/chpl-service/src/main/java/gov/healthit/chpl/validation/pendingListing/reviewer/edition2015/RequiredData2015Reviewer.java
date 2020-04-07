@@ -718,7 +718,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     cert.getCriterion().getNumber(), crTestProc.getEnteredName());
                         } else if (crTestProc.getTestProcedure() != null && crTestProc.getTestProcedure().getId() == null) {
                             TestProcedureDTO foundTestProc =
-                                    testProcDao.getByCriteriaNumberAndValue(cert.getCriterion().getNumber(),
+                                    testProcDao.getByCriterionIdAndValue(cert.getCriterion().getId(),
                                             crTestProc.getTestProcedure().getName());
                             if (foundTestProc == null || foundTestProc.getId() == null) {
                                 addErrorOrWarningByPermission(listing, cert, "listing.criteria.badTestProcedureName",
@@ -743,18 +743,18 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     msgUtil.getMessage("listing.criteria.badTestDataName",
                                             crTestData.getEnteredName(), cert.getCriterion().getNumber(), TestDataDTO.DEFALUT_TEST_DATA));
                             TestDataDTO foundTestData =
-                                    testDataDao.getByCriteriaNumberAndValue(cert.getCriterion().getNumber(), TestDataDTO.DEFALUT_TEST_DATA);
+                                    testDataDao.getByCriterionAndValue(cert.getCriterion().getId(), TestDataDTO.DEFALUT_TEST_DATA);
                             crTestData.setTestData(foundTestData);
                         } else if (crTestData.getTestData() != null && crTestData.getTestData().getId() == null) {
                             TestDataDTO foundTestData =
-                                    testDataDao.getByCriteriaNumberAndValue(cert.getCriterion().getNumber(), crTestData.getTestData().getName());
+                                    testDataDao.getByCriterionAndValue(cert.getCriterion().getId(), crTestData.getTestData().getName());
                             if (foundTestData == null || foundTestData.getId() == null) {
                                 listing.getWarningMessages().add(
                                         msgUtil.getMessage("listing.criteria.badTestDataName",
                                                 crTestData.getTestData().getName(), cert.getCriterion().getNumber(),
                                                 TestDataDTO.DEFALUT_TEST_DATA));
                                 foundTestData =
-                                        testDataDao.getByCriteriaNumberAndValue(cert.getCriterion().getNumber(), TestDataDTO.DEFALUT_TEST_DATA);
+                                        testDataDao.getByCriterionAndValue(cert.getCriterion().getId(), TestDataDTO.DEFALUT_TEST_DATA);
                                 crTestData.getTestData().setId(foundTestData.getId());
                             } else {
                                 crTestData.getTestData().setId(foundTestData.getId());
@@ -772,7 +772,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                         && cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
                     for (PendingCertificationResultMacraMeasureDTO pendingMeasureMap : cert.getG1MacraMeasures()) {
                         if (pendingMeasureMap.getMacraMeasureId() == null) {
-                            MacraMeasureDTO foundMeasure = macraDao.getByCriteriaNumberAndValue(cert.getCriterion().getNumber(),
+                            MacraMeasureDTO foundMeasure = macraDao.getByCriterionAndValue(cert.getCriterion().getId(),
                                     pendingMeasureMap.getEnteredValue());
                             if (foundMeasure == null || foundMeasure.getId() == null) {
                                 listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.invalidG1MacraMeasure",
@@ -805,7 +805,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                         && cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
                     for (PendingCertificationResultMacraMeasureDTO pendingMeasureMap : cert.getG2MacraMeasures()) {
                         if (pendingMeasureMap.getMacraMeasureId() == null) {
-                            MacraMeasureDTO foundMeasure = macraDao.getByCriteriaNumberAndValue(cert.getCriterion().getNumber(),
+                            MacraMeasureDTO foundMeasure = macraDao.getByCriterionAndValue(cert.getCriterion().getId(),
                                     pendingMeasureMap.getEnteredValue());
                             if (foundMeasure == null || foundMeasure.getId() == null) {
                                 listing.getErrorMessages().add(
