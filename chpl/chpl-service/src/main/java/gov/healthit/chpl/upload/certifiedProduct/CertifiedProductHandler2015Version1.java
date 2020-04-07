@@ -614,7 +614,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                 tpEntity.setVersion(tpValue);
                 tpEntity.setTestProcedureName(null);
                 List<TestProcedureDTO> allowedTestProcedures = testProcedureDao
-                        .getByCriteriaNumber(cert.getMappedCriterion().getNumber());
+                        .getByCriterionId(cert.getMappedCriterion().getId());
                 if (allowedTestProcedures != null && allowedTestProcedures.size() > 0) {
                     for (TestProcedureDTO allowedTp : allowedTestProcedures) {
                         if (allowedTp.getName().equalsIgnoreCase(TestProcedureDTO.DEFAULT_TEST_PROCEDURE)) {
@@ -636,7 +636,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                 PendingCertificationResultTestDataEntity tdEntity = new PendingCertificationResultTestDataEntity();
                 tdEntity.setTestDataName(null);
                 List<TestDataDTO> allowedTestData = testDataDao
-                        .getByCriteriaNumber(cert.getMappedCriterion().getNumber());
+                        .getByCriterionId(cert.getMappedCriterion().getId());
                 if (allowedTestData != null && allowedTestData.size() > 0) {
                     for (TestDataDTO allowedTd : allowedTestData) {
                         if (allowedTd.getName().equalsIgnoreCase(TestDataDTO.DEFALUT_TEST_DATA)) {
@@ -695,7 +695,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                     && !measureVal.equals("0")) {
                 PendingCertificationResultG1MacraMeasureEntity mmEntity = new PendingCertificationResultG1MacraMeasureEntity();
                 mmEntity.setEnteredValue(measureVal);
-                MacraMeasureDTO mmDto = macraDao.getByCriteriaNumberAndValue(cert.getMappedCriterion().getNumber(),
+                MacraMeasureDTO mmDto = macraDao.getByCriterionAndValue(cert.getMappedCriterion().getId(),
                         measureVal);
                 if (mmDto != null) {
                     mmEntity.setMacraId(mmDto.getId());
@@ -717,7 +717,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                     && !measureVal.equals("0")) {
                 PendingCertificationResultG2MacraMeasureEntity mmEntity = new PendingCertificationResultG2MacraMeasureEntity();
                 mmEntity.setEnteredValue(measureVal.trim());
-                MacraMeasureDTO mmDto = macraDao.getByCriteriaNumberAndValue(cert.getMappedCriterion().getNumber(),
+                MacraMeasureDTO mmDto = macraDao.getByCriterionAndValue(cert.getMappedCriterion().getId(),
                         measureVal);
                 if (mmDto != null) {
                     mmEntity.setMacraId(mmDto.getId());

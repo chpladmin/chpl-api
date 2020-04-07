@@ -25,6 +25,7 @@ import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.manager.TestingFunctionalityManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 
 /**
@@ -106,10 +107,10 @@ public class TestFunctionality2015Reviewer extends PermissionBasedReviewer {
 
         TestFunctionalityDTO tf = getTestFunctionality(crtf.getName(), edition.getId());
         return getTestFunctionalityCriterionErrorMessage(
-                cr.getNumber(),
+                Util.formatCriteriaNumber(cr.getCriterion()),
                 crtf.getName(),
                 getDelimitedListOfValidCriteriaNumbers(tf, edition),
-                cr.getNumber());
+                Util.formatCriteriaNumber(cr.getCriterion()));
     }
 
     private String getTestFunctionalityCriterionErrorMessage(final String criteriaNumber,
@@ -157,7 +158,7 @@ public class TestFunctionality2015Reviewer extends PermissionBasedReviewer {
 
         Iterator<CertificationCriterionDTO> iter = certDTOs.iterator();
         while (iter.hasNext()) {
-            criteria.append(iter.next().getNumber());
+            criteria.append(Util.formatCriteriaNumber(iter.next()));
             if (iter.hasNext()) {
                 criteria.append(", ");
             }

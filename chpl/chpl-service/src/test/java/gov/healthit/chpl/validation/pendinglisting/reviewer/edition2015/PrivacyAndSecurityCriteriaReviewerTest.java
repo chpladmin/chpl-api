@@ -20,6 +20,7 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.PrivacyAndSecurityCriteriaReviewer;
 
 public class PrivacyAndSecurityCriteriaReviewerTest {
@@ -28,6 +29,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
     private Environment env;
     private ErrorMessageUtil errorMessageUtil;
     private SpecialProperties specialProperties;
+    private ValidationUtils validationUtil;
 
     @Before
     public void before() throws EntityRetrievalException {
@@ -52,6 +54,8 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
         Mockito.when(specialProperties.getEffectiveRuleDate())
                 .thenReturn(new GregorianCalendar(2020, Calendar.MARCH, 01).getTime());
 
+        CertificationCriterionDAO criterionDao = Mockito.mock(CertificationCriterionDAO.class);
+        validationUtil = new ValidationUtils(criterionDao);
     }
 
     @Test
@@ -77,7 +81,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
         listing.setErrorMessages(new HashSet<String>());
 
         PrivacyAndSecurityCriteriaReviewer reviewer = new PrivacyAndSecurityCriteriaReviewer(certificationCriterionDAO, env,
-                errorMessageUtil, specialProperties);
+                errorMessageUtil, specialProperties, validationUtil);
         reviewer.postConstruct();
 
         // Test
@@ -114,7 +118,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
         listing.setErrorMessages(new HashSet<String>());
 
         PrivacyAndSecurityCriteriaReviewer reviewer = new PrivacyAndSecurityCriteriaReviewer(certificationCriterionDAO, env,
-                errorMessageUtil, specialProperties);
+                errorMessageUtil, specialProperties, validationUtil);
         reviewer.postConstruct();
 
         // Test

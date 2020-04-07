@@ -152,7 +152,7 @@ public class ChangeRequestWebsiteService implements ChangeRequestDetailsService<
     private ChangeRequest execute(final ChangeRequest cr)
             throws EntityRetrievalException, EntityCreationException {
         ChangeRequestWebsite crWebsite = (ChangeRequestWebsite) cr.getDetails();
-        DeveloperDTO developer = developerDAO.getById(cr.getDeveloper().getDeveloperId());
+        DeveloperDTO developer = developerManager.getById(cr.getDeveloper().getDeveloperId());
         developer.setWebsite(crWebsite.getWebsite());
         try {
             DeveloperDTO updatedDeveloper = developerManager.update(developer, false);

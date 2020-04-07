@@ -16,8 +16,17 @@ public class AmbulatoryRequiredTestToolReviewer implements Reviewer {
             "170.314 (g)(1)", "170.314 (g)(2)", "170.314 (f)(3)"
     };
 
-    @Autowired private ErrorMessageUtil msgUtil;
-    @Autowired private CertificationResultRules certRules;
+    private ValidationUtils validationUtils;
+    private ErrorMessageUtil msgUtil;
+    private CertificationResultRules certRules;
+
+    @Autowired
+    public AmbulatoryRequiredTestToolReviewer(ValidationUtils validationUtils, ErrorMessageUtil msgUtil,
+            CertificationResultRules certRules) {
+        this.validationUtils = validationUtils;
+        this.msgUtil = msgUtil;
+        this.certRules = certRules;
+    }
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
@@ -31,7 +40,7 @@ public class AmbulatoryRequiredTestToolReviewer implements Reviewer {
 
                 if (!gapEligibleAndTrue
                         && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
-                        && !ValidationUtils.containsCert(cert, TEST_TOOL_CHECK_CERTS)
+                        && !validationUtils.containsCert(cert, TEST_TOOL_CHECK_CERTS)
                         && (cert.getTestToolsUsed() == null || cert.getTestToolsUsed().size() == 0)) {
                     if (listing.getIcs() != null && listing.getIcs().getInherits() != null
                             && listing.getIcs().getInherits().booleanValue()) {

@@ -21,6 +21,7 @@ import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 import lombok.Data;
 import lombok.ToString;
@@ -67,7 +68,7 @@ public class TestFunctionalityAllowedByRoleReviewer implements ComparisonReviewe
                                         crtf.getTestFunctionalityId())) {
                                     updatedListing.getErrorMessages()
                                             .add(errorMessages.getMessage("listing.criteria.testFunctionalityPermissionError",
-                                                    crtf.getName(), updatedCr.getCriterion().getNumber()));
+                                                    crtf.getName(), Util.formatCriteriaNumber(updatedCr.getCriterion())));
                                 }
                             });
                 }
