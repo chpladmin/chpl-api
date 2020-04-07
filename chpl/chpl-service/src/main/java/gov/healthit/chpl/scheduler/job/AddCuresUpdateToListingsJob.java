@@ -3,6 +3,8 @@ package gov.healthit.chpl.scheduler.job;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +29,9 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.service.CuresUpdateService;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 public class AddCuresUpdateToListingsJob extends QuartzJob {
+    private static final Logger LOGGER = LogManager.getLogger("addCuresUpdateToListingsJobLogger");
 
     @Autowired
     private CuresUpdateService curesUpdateService;
