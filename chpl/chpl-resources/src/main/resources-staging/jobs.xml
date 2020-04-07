@@ -845,6 +845,21 @@
                 </entry>
             </job-data-map>
         </job>
+        <!--  Add V19 Upload Template -->
+        <job>
+            <name>addV19UploadTemplateJob</name>
+            <group>systemJobs</group>
+            <description>Makes 2015 V19 Upload Template Available</description>
+            <job-class>gov.healthit.chpl.scheduler.job.AddV19UploadTemplateJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+            </job-data-map>
+        </job>
         <!-- Job used to add criteria to 2015 Listings-->
         <job>
             <name>addCriteriaTo2015ListingsJob</name>
