@@ -45,7 +45,7 @@ public class TestProcedureDAOTest extends TestCase {
     public void findTestProcedureByCriteria() {
         String criteria = "170.314 (a)(1)";
         try {
-            List<TestProcedureDTO> testProcedures = tpDao.getByCriteriaNumber(criteria);
+            List<TestProcedureDTO> testProcedures = tpDao.getByCriterionId(1L);
             assertNotNull(testProcedures);
             assertEquals(1, testProcedures.size());
             assertEquals("ONC Test Method", testProcedures.get(0).getName());
@@ -60,7 +60,7 @@ public class TestProcedureDAOTest extends TestCase {
     public void findMultipleTestProceduresByCriteria() {
         String criteria = "170.315 (c)(2)";
         try {
-            List<TestProcedureDTO> testProcedures = tpDao.getByCriteriaNumber(criteria);
+            List<TestProcedureDTO> testProcedures = tpDao.getByCriterionId(1L);
             assertNotNull(testProcedures);
             assertEquals(2, testProcedures.size());
         } catch (Exception ex) {
@@ -75,7 +75,7 @@ public class TestProcedureDAOTest extends TestCase {
         String criteria = "170.314 (a)(1)";
         String tpName = "ONC Test Method";
         try {
-            TestProcedureDTO testProcedure = tpDao.getByCriteriaNumberAndValue(criteria, tpName);
+            TestProcedureDTO testProcedure = tpDao.getByCriterionIdAndValue(1L, tpName);
             assertNotNull(testProcedure);
             assertEquals(tpName, testProcedure.getName());
         } catch (Exception ex) {
@@ -88,7 +88,7 @@ public class TestProcedureDAOTest extends TestCase {
     @Transactional
     public void findNoTestProcedureByCriteria() {
         String criteria = "BOGUS";
-        List<TestProcedureDTO> testProcedures = tpDao.getByCriteriaNumber(criteria);
+        List<TestProcedureDTO> testProcedures = tpDao.getByCriterionId(1L);
         assertTrue(testProcedures == null || testProcedures.size() == 0);
     }
 
@@ -97,7 +97,7 @@ public class TestProcedureDAOTest extends TestCase {
     public void findNoTestProcedureByCriteriaAndName() {
         String criteria = "170.314 (a)(1)";
         String tpName = "BOGUS";
-        TestProcedureDTO testProcedure = tpDao.getByCriteriaNumberAndValue(criteria, tpName);
+        TestProcedureDTO testProcedure = tpDao.getByCriterionIdAndValue(1L, tpName);
         assertNull(testProcedure);
     }
 

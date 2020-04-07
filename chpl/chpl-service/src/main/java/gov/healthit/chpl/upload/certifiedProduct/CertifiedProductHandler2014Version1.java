@@ -368,7 +368,7 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
                 = new PendingCertificationResultTestProcedureEntity();
                 //there will only be 1 for 2014 entries
                 List<TestProcedureDTO> allowedTestProcedures =
-                        testProcedureDao.getByCriteriaNumber(cert.getMappedCriterion().getNumber());
+                        testProcedureDao.getByCriterionId(cert.getMappedCriterion().getId());
                 if (allowedTestProcedures.size() > 0) {
                     tpEntity.setTestProcedureId(allowedTestProcedures.get(0).getId());
                 }
@@ -385,7 +385,7 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
             if (!StringUtils.isEmpty(tdVersionValue)) {
                 PendingCertificationResultTestDataEntity tdEntity = new PendingCertificationResultTestDataEntity();
                 List<TestDataDTO> allowedTestData =
-                        testDataDao.getByCriteriaNumber(cert.getMappedCriterion().getNumber());
+                        testDataDao.getByCriterionId(cert.getMappedCriterion().getId());
                 if (allowedTestData.size() > 0) {
                     tdEntity.setTestDataId(allowedTestData.get(0).getId());
                 }
