@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.StringUtils;
@@ -439,5 +440,13 @@ public class SurveillanceNonconformity implements Serializable {
 
     public void setLastModifiedDate(Date lastModifiedDate) {
         this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
+    }
+
+    @XmlTransient
+    public String getNonconformityTypeName() {
+        if (getCriterion() == null) {
+            return getNonconformityType();
+        }
+        return Util.formatCriteriaNumber(getCriterion());
     }
 }

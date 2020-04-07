@@ -22,6 +22,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.listing.reviewer.ChplNumberReviewer;
 import old.gov.healthit.chpl.util.ListingMockUtil;
 
@@ -61,6 +62,9 @@ public class ChplNumberReviewerTest {
     private MessageSource messageSource;
 
     @Spy
+    private ValidationUtils validationUtils;
+
+    @Spy
     private ChplProductNumberUtil chplProductNumberUtil;
 
     @Spy
@@ -75,7 +79,7 @@ public class ChplNumberReviewerTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        chplNumberReviewer = new ChplNumberReviewer(certificationResultManager, chplProductNumberUtil, msgUtil);
+        chplNumberReviewer = new ChplNumberReviewer(certificationResultManager, chplProductNumberUtil, validationUtils, msgUtil);
 
         Mockito.doReturn(PRODUCT_CODE_ERROR)
                 .when(msgUtil).getMessage(

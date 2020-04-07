@@ -25,6 +25,7 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.pendingListing.reviewer.TestToolReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.AmbulatoryRequiredTestToolReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.TestTool2015Reviewer;
@@ -64,6 +65,8 @@ public class PendingListingTestToolReviewerTest extends TestingUsers {
     private ErrorMessageUtil msgUtil = new ErrorMessageUtil(messageSource);
     @Spy
     private CertificationResultRules certRules;
+    @Spy
+    private ValidationUtils validationUtils;
     @Mock
     private ResourcePermissions resourcePermissions;
 
@@ -78,7 +81,7 @@ public class PendingListingTestToolReviewerTest extends TestingUsers {
 
         testToolReviewer = new TestToolReviewer(testToolDao, msgUtil, productNumberUtil, resourcePermissions);
         testTool2015Reviewer = new TestTool2015Reviewer(msgUtil, resourcePermissions);
-        ambulatoryTestToolReviewier = new AmbulatoryRequiredTestToolReviewer(msgUtil, certRules);
+        ambulatoryTestToolReviewier = new AmbulatoryRequiredTestToolReviewer(validationUtils, msgUtil, certRules);
 
         Mockito.doReturn(NO_TEST_TOOL_ERROR).when(msgUtil)
                 .getMessage(ArgumentMatchers.eq("listing.criteria.missingTestTool"), ArgumentMatchers.anyString());

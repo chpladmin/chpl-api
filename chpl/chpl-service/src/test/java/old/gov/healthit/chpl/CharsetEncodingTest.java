@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,6 +25,9 @@ import junit.framework.TestCase;
 public class CharsetEncodingTest extends TestCase {
     private static final String INVALID_UTF8_FILENAME = "nonutf8text.txt";
     private static final String VALID_UTF8_FILENAME = "validutf8text.txt";
+
+    @Autowired
+    private ValidationUtils validationUtils;
 
     @Test
     public void testDetectInvalidUtf8TextInSystemDefaultCharset() {
@@ -57,7 +61,7 @@ public class CharsetEncodingTest extends TestCase {
             String readContents = readContentsBuf.toString();
             System.out.println("Read: " + readContents);
 
-            boolean result = ValidationUtils.isValidUtf8(Charset.defaultCharset(), readContents);
+            boolean result = validationUtils.isValidUtf8(Charset.defaultCharset(), readContents);
             System.out.println("Valid UTF-8? " + result);
             assertFalse(result);
         } catch (IOException ex) {
@@ -105,7 +109,7 @@ public class CharsetEncodingTest extends TestCase {
             String readContents = readContentsBuf.toString();
             System.out.println("Read: " + readContents);
 
-            boolean result = ValidationUtils.isValidUtf8(StandardCharsets.UTF_8, readContents);
+            boolean result = validationUtils.isValidUtf8(StandardCharsets.UTF_8, readContents);
             System.out.println("Valid UTF-8? " + result);
             assertFalse(result);
             reader.close();
@@ -152,7 +156,7 @@ public class CharsetEncodingTest extends TestCase {
             String readContents = readContentsBuf.toString();
             System.out.println("Read: " + readContents);
 
-            boolean result = ValidationUtils.isValidUtf8(Charset.defaultCharset(), readContents);
+            boolean result = validationUtils.isValidUtf8(Charset.defaultCharset(), readContents);
             System.out.println("Valid UTF-8? " + result);
             assertTrue(result);
         } catch (IOException ex) {
@@ -200,7 +204,7 @@ public class CharsetEncodingTest extends TestCase {
             String readContents = readContentsBuf.toString();
             System.out.println("Read: " + readContents);
 
-            boolean result = ValidationUtils.isValidUtf8(StandardCharsets.UTF_8, readContents);
+            boolean result = validationUtils.isValidUtf8(StandardCharsets.UTF_8, readContents);
             System.out.println("Valid UTF-8? " + result);
             assertTrue(result);
             reader.close();

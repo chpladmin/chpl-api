@@ -15,6 +15,7 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 
 @Component("pendingRequiredDataReviewer")
 public class RequiredDataReviewer extends PermissionBasedReviewer {
@@ -93,12 +94,14 @@ public class RequiredDataReviewer extends PermissionBasedReviewer {
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
             if (cert.getMeetsCriteria() == null) {
                 listing.getErrorMessages().add(
-                        msgUtil.getMessage("listing.criteria.metInvalid", cert.getCriterion().getNumber()));
+                        msgUtil.getMessage("listing.criteria.metInvalid",
+                                Util.formatCriteriaNumber(cert.getCriterion())));
             } else if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria().equals(Boolean.TRUE)) {
                 if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.GAP)
                         && cert.getGap() == null) {
                     addErrorOrWarningByPermission(listing, cert,
-                            "listing.criteria.missingGap", cert.getCriterion().getNumber());
+                            "listing.criteria.missingGap",
+                            Util.formatCriteriaNumber(cert.getCriterion()));
                 }
 
                 boolean gapEligibleAndTrue = false;
@@ -111,7 +114,8 @@ public class RequiredDataReviewer extends PermissionBasedReviewer {
                 if (!gapEligibleAndTrue
                         && certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.TEST_PROCEDURE)
                         && (cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
-                    addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestProcedure", cert.getCriterion().getNumber());
+                    addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestProcedure",
+                            Util.formatCriteriaNumber(cert.getCriterion()));
                 }
             }
 
@@ -120,7 +124,9 @@ public class RequiredDataReviewer extends PermissionBasedReviewer {
             if (cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 1) {
                 List<String> g1Warnings =
                         validateMacraMeasuresAreUniqueForCertificationResult(
-                                cert.getG1MacraMeasures(), cert.getCriterion().getNumber(), "listing.criteria.duplicateG1MacraMeasure");
+                                cert.getG1MacraMeasures(),
+                                Util.formatCriteriaNumber(cert.getCriterion()),
+                                "listing.criteria.duplicateG1MacraMeasure");
                 if (g1Warnings.size() > 0) {
                     listing.getWarningMessages().addAll(g1Warnings);
                     cert.setG1MacraMeasures(removeDuplicateMacraMeasures(cert.getG1MacraMeasures()));
@@ -130,7 +136,9 @@ public class RequiredDataReviewer extends PermissionBasedReviewer {
             if (cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 1) {
                 List<String> g2Warnings =
                         validateMacraMeasuresAreUniqueForCertificationResult(
-                                cert.getG2MacraMeasures(), cert.getCriterion().getNumber(), "listing.criteria.duplicateG2MacraMeasure");
+                                cert.getG2MacraMeasures(),
+                                Util.formatCriteriaNumber(cert.getCriterion()),
+                                "listing.criteria.duplicateG2MacraMeasure");
                 if (g2Warnings.size() > 0) {
                     listing.getWarningMessages().addAll(g2Warnings);
                     cert.setG2MacraMeasures(removeDuplicateMacraMeasures(cert.getG2MacraMeasures()));

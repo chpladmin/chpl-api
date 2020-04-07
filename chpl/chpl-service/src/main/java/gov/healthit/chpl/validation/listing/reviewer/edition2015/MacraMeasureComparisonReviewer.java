@@ -12,6 +12,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 
 /**
@@ -55,7 +56,8 @@ public class MacraMeasureComparisonReviewer implements ComparisonReviewer {
                         for (MacraMeasure addedG1Measure : addedG1Measures) {
                             if (addedG1Measure.getRemoved() != null && addedG1Measure.getRemoved().booleanValue()) {
                                 updatedListing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.removedG1MacraMeasure",
-                                        updatedCert.getNumber(), addedG1Measure.getAbbreviation()));
+                                       Util.formatCriteriaNumber(updatedCert.getCriterion()),
+                                       addedG1Measure.getAbbreviation()));
                             }
                         }
                     }
@@ -67,7 +69,8 @@ public class MacraMeasureComparisonReviewer implements ComparisonReviewer {
                         for (MacraMeasure addedG2Measure : addedG2Measures) {
                             if (addedG2Measure.getRemoved() != null && addedG2Measure.getRemoved().booleanValue()) {
                                 updatedListing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.removedG2MacraMeasure",
-                                        updatedCert.getNumber(), addedG2Measure.getAbbreviation()));
+                                       Util.formatCriteriaNumber(updatedCert.getCriterion()),
+                                       addedG2Measure.getAbbreviation()));
                             }
                         }
                     }
