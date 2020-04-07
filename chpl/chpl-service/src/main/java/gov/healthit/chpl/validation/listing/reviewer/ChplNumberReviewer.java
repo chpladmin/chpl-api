@@ -16,13 +16,16 @@ import gov.healthit.chpl.util.ValidationUtils;
 public class ChplNumberReviewer implements Reviewer {
     private CertificationResultManager certificationResultManager;
     private ChplProductNumberUtil chplProductNumberUtil;
+    private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public ChplNumberReviewer(final CertificationResultManager certificationResultManager,
-            final ChplProductNumberUtil chplProductNumberUtil, final ErrorMessageUtil msgUtil) {
+    public ChplNumberReviewer(CertificationResultManager certificationResultManager,
+            ChplProductNumberUtil chplProductNumberUtil, ValidationUtils validationUtils,
+            ErrorMessageUtil msgUtil) {
         this.certificationResultManager = certificationResultManager;
         this.chplProductNumberUtil = chplProductNumberUtil;
+        this.validationUtils = validationUtils;
         this.msgUtil = msgUtil;
     }
 
@@ -40,21 +43,21 @@ public class ChplNumberReviewer implements Reviewer {
             String additionalSoftwareCode = uniqueIdParts[ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_INDEX];
             String certifiedDateCode = uniqueIdParts[ChplProductNumberUtil.CERTIFIED_DATE_CODE_INDEX];
 
-            if (!ValidationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
+            if (!validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
                     ChplProductNumberUtil.PRODUCT_CODE_INDEX,
                     ChplProductNumberUtil.PRODUCT_CODE_REGEX)) {
                 listing.getErrorMessages()
                 .add(msgUtil.getMessage("listing.badProductCodeChars", ChplProductNumberUtil.PRODUCT_CODE_LENGTH));
             }
 
-            if (!ValidationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
+            if (!validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
                     ChplProductNumberUtil.VERSION_CODE_INDEX,
                     ChplProductNumberUtil.VERSION_CODE_REGEX)) {
                 listing.getErrorMessages()
                 .add(msgUtil.getMessage("listing.badVersionCodeChars", ChplProductNumberUtil.VERSION_CODE_LENGTH));
             }
 
-            if (!ValidationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
+            if (!validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
                     ChplProductNumberUtil.ICS_CODE_INDEX,
                     ChplProductNumberUtil.ICS_CODE_REGEX)) {
                 listing.getErrorMessages()
@@ -78,7 +81,7 @@ public class ChplNumberReviewer implements Reviewer {
                 }
             }
 
-            if (!ValidationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
+            if (!validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
                     ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_INDEX,
                     ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_REGEX)) {
                 listing.getErrorMessages()
@@ -93,7 +96,7 @@ public class ChplNumberReviewer implements Reviewer {
                 }
             }
 
-            if (!ValidationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
+            if (!validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
                     ChplProductNumberUtil.CERTIFIED_DATE_CODE_INDEX,
                     ChplProductNumberUtil.CERTIFIED_DATE_CODE_REGEX)) {
                 listing.getErrorMessages()

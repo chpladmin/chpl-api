@@ -10,15 +10,18 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 
 public class ValidationUtilsTest {
 
     private ErrorMessageUtil errorMessageUtil;
+    private ValidationUtils validationUtil;
 
     @Before
     public void before() {
-
+        CertificationCriterionDAO criterionDao = Mockito.mock(CertificationCriterionDAO.class);
+        validationUtil = new ValidationUtils(criterionDao);
     }
 
     @Test
@@ -59,7 +62,7 @@ public class ValidationUtilsTest {
                         .number("170.315 (d)(13)")
                         .build());
 
-        List<String> errors = ValidationUtils.checkSubordinateCriteriaAllRequired(subordinateCriteria, requiredCriteria,
+        List<String> errors = validationUtil.checkSubordinateCriteriaAllRequired(subordinateCriteria, requiredCriteria,
                 attestedToCriteria, errorMessageUtil);
 
         assertEquals(0, errors.size());
@@ -107,7 +110,7 @@ public class ValidationUtilsTest {
                         .number("170.315 (d)(13)")
                         .build());
 
-        List<String> errors = ValidationUtils.checkSubordinateCriteriaAllRequired(subordinateCriteria, requiredCriteria,
+        List<String> errors = validationUtil.checkSubordinateCriteriaAllRequired(subordinateCriteria, requiredCriteria,
                 attestedToCriteria, errorMessageUtil);
 
         assertEquals(0, errors.size());
@@ -151,7 +154,7 @@ public class ValidationUtilsTest {
                         .number("170.315 (d)(13)")
                         .build());
 
-        List<String> errors = ValidationUtils.checkSubordinateCriteriaAllRequired(subordinateCriteria, requiredCriteria,
+        List<String> errors = validationUtil.checkSubordinateCriteriaAllRequired(subordinateCriteria, requiredCriteria,
                 attestedToCriteria, errorMessageUtil);
 
         assertEquals(1, errors.size());

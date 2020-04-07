@@ -12,10 +12,12 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
 
 @Component("pendingCqmAttestedCriteriaReviewer")
 public class CqmAttestedCriteriaReviewer implements Reviewer {
+    private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public CqmAttestedCriteriaReviewer(ErrorMessageUtil msgUtil) {
+    public CqmAttestedCriteriaReviewer(ValidationUtils validationUtils, ErrorMessageUtil msgUtil) {
+        this.validationUtils = validationUtils;
         this.msgUtil = msgUtil;
     }
 
@@ -24,8 +26,8 @@ public class CqmAttestedCriteriaReviewer implements Reviewer {
         //any criteria that is applied to a cqm must also be attested to on the listing
         for (PendingCqmCriterionDTO cqm : listing.getCqmCriterion()) {
             for (PendingCqmCertificationCriterionDTO cqmCriterion : cqm.getCertifications()) {
-                if (!ValidationUtils.hasCert(cqmCriterion.getCertificationCriteriaNumber(),
-                        ValidationUtils.getAttestedCriteria(listing))) {
+                if (!validationUtils.hasCert(cqmCriterion.getCertificationCriteriaNumber(),
+                        validationUtils.getAttestedCriteria(listing))) {
                     listing.getErrorMessages().add(
                             msgUtil.getMessage("listing.criteria.missingCriteriaForCqm",
                                     cqm.getCmsId(), cqmCriterion.getCertificationCriteriaNumber()));
