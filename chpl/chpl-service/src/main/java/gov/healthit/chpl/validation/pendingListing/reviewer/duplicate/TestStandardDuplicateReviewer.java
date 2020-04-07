@@ -12,6 +12,7 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 
 @Component("testStandardDuplicateReviewer")
 public class TestStandardDuplicateReviewer {
@@ -36,7 +37,8 @@ public class TestStandardDuplicateReviewer {
 
         if (testStandardDuplicateResults.duplicatesExist()) {
             listing.getWarningMessages().addAll(
-                    getWarnings(testStandardDuplicateResults.getDuplicateList(), certificationResult.getCriterion().getNumber()));
+                    getWarnings(testStandardDuplicateResults.getDuplicateList(),
+                            Util.formatCriteriaNumber(certificationResult.getCriterion())));
             certificationResult.setTestStandards(testStandardDuplicateResults.getUniqueList());
         }
     }

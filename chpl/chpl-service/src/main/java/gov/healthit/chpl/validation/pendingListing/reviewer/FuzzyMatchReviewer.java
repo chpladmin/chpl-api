@@ -20,6 +20,7 @@ import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.manager.FuzzyChoicesManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 
 @Component("pendingFuzzyMatchReviewer")
 public class FuzzyMatchReviewer implements Reviewer {
@@ -52,7 +53,8 @@ public class FuzzyMatchReviewer implements Reviewer {
                                 ucd.setUcdProcessName(fuzzyMatchedUcd.getName());
                                 String warningMsg = msgUtil.getMessage("listing.criteria.fuzzyMatch",
                                         FuzzyType.UCD_PROCESS.fuzzyType(),
-                                        cert.getCriterion().getNumber(), origUcdProcessName, topChoice);
+                                        Util.formatCriteriaNumber(cert.getCriterion()),
+                                        origUcdProcessName, topChoice);
                                 listing.getWarningMessages().add(warningMsg);
 
                             }

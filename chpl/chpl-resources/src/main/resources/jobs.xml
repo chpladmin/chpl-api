@@ -568,7 +568,7 @@
                 </entry>
             </job-data-map>
         </job>
-        
+
         <!-- Job used to change status of 2014 listings to retired-->
         <job>
             <name>update2014ListingStatusJob</name>
@@ -698,6 +698,21 @@
             <group>systemJobs</group>
             <description>Makes 2015 V18 Upload Template Available</description>
             <job-class>gov.healthit.chpl.scheduler.job.AddV18UploadTemplateJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+            </job-data-map>
+        </job>
+        <!--  Add V19 Upload Template -->
+        <job>
+            <name>addV19UploadTemplateJob</name>
+            <group>systemJobs</group>
+            <description>Makes 2015 V19 Upload Template Available</description>
+            <job-class>gov.healthit.chpl.scheduler.job.AddV19UploadTemplateJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>

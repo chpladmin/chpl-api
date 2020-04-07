@@ -9,6 +9,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 
 @Component("requiredDataReviewer")
 public class RequiredDataReviewer extends PermissionBasedReviewer {
@@ -50,7 +51,8 @@ public class RequiredDataReviewer extends PermissionBasedReviewer {
             if (cert.isSuccess() != null && cert.isSuccess().equals(Boolean.TRUE)
                     && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
                     && cert.isGap() == null) {
-                addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingGap", cert.getNumber());
+                addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingGap",
+                        Util.formatCriteriaNumber(cert.getCriterion()));
             }
         }
     }

@@ -14,6 +14,7 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 
 /**
  * Checks test tool related requirements.
@@ -46,20 +47,25 @@ public class TestToolReviewer extends PermissionBasedReviewer {
                     while (testToolIter.hasNext()) {
                         PendingCertificationResultTestToolDTO testTool = testToolIter.next();
                         if (StringUtils.isEmpty(testTool.getName())) {
-                            addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestToolName", cert.getCriterion().getNumber());
+                            addErrorOrWarningByPermission(listing, cert,
+                                    "listing.criteria.missingTestToolName",
+                                    Util.formatCriteriaNumber(cert.getCriterion()));
                         } else {
                             TestToolDTO foundTestTool = testToolDao.getByName(testTool.getName());
                             if (foundTestTool != null) {
                                 // retired tools aren't allowed if there is ICS or an ICS Mismatch
                                 if (foundTestTool.isRetired()) {
                                     if (!hasIcs(listing) || hasIcsMismatch(listing)) {
-                                        addErrorOrWarningByPermission(listing, cert, "listing.criteria.retiredTestToolNoIcsNotAllowed",
-                                                        testTool.getName(), cert.getCriterion().getNumber());
+                                        addErrorOrWarningByPermission(listing, cert,
+                                                "listing.criteria.retiredTestToolNoIcsNotAllowed",
+                                                testTool.getName(),
+                                                Util.formatCriteriaNumber(cert.getCriterion()));
                                     }
                                 }
                             } else {
                                 addErrorOrWarningByPermission(listing, cert, "listing.criteria.testToolNotFoundAndRemoved",
-                                                cert.getCriterion().getNumber(), testTool.getName());
+                                        Util.formatCriteriaNumber(cert.getCriterion()),
+                                        testTool.getName());
                                 testToolIter.remove();
                             }
                         }

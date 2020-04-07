@@ -14,10 +14,12 @@ import gov.healthit.chpl.util.ValidationUtils;
 public class WebsiteValidation extends ValidationRule<ChangeRequestValidationContext> {
 
     private ResourcePermissions resourcePermissions;
+    private ValidationUtils validationUtils;
 
     @Autowired
-    public WebsiteValidation(final ResourcePermissions resourcePermissions) {
+    public WebsiteValidation(ResourcePermissions resourcePermissions, ValidationUtils validationUtils) {
         this.resourcePermissions = resourcePermissions;
+        this.validationUtils = validationUtils;
     }
 
     @Override
@@ -27,7 +29,7 @@ public class WebsiteValidation extends ValidationRule<ChangeRequestValidationCon
             // Is there a website?
             if (isChangeRequestWebsiteValid((HashMap) context.getChangeRequest().getDetails())) {
                 // Is the website valid?
-                if (!ValidationUtils.isWellFormedUrl(
+                if (!validationUtils.isWellFormedUrl(
                         ((HashMap) context.getChangeRequest().getDetails()).get("website").toString())) {
                     getMessages().add(getErrorMessage("changeRequest.details.website.invalidFormat"));
                     return false;
