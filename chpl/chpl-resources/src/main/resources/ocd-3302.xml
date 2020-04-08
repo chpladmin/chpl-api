@@ -7,7 +7,7 @@
     <schedule>
         <!--  Update 2015 listings as Cures Updated, where appropriate -->
         <job>
-            <name>addCuresUpdatedToListings</name>
+            <name>addCuresUpdateToListings</name>
             <group>systemJobs</group>
             <description>Updates existing 2015 listings as Cures Updated if they meet the necessary requirements</description>
             <job-class>gov.healthit.chpl.scheduler.job.AddCuresUpdateToListingsJob</job-class>
