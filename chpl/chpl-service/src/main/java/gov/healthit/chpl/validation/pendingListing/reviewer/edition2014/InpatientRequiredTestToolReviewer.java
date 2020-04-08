@@ -16,8 +16,17 @@ public class InpatientRequiredTestToolReviewer implements Reviewer {
             "170.314 (g)(1)", "170.314 (g)(2)"
     };
 
-    @Autowired private ErrorMessageUtil msgUtil;
-    @Autowired private CertificationResultRules certRules;
+    private ValidationUtils validationUtils;
+    private ErrorMessageUtil msgUtil;
+    private CertificationResultRules certRules;
+
+    @Autowired
+    public InpatientRequiredTestToolReviewer(ValidationUtils validationUtils, ErrorMessageUtil msgUtil,
+            CertificationResultRules certRules) {
+        this.validationUtils = validationUtils;
+        this.msgUtil = msgUtil;
+        this.certRules = certRules;
+    }
 
     @Override
     public void review(final PendingCertifiedProductDTO listing) {
@@ -31,7 +40,7 @@ public class InpatientRequiredTestToolReviewer implements Reviewer {
 
                 if (!gapEligibleAndTrue
                         && certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.TEST_TOOLS_USED)
-                        && !ValidationUtils.containsCert(cert, TEST_TOOL_CHECK_CERTS)
+                        && !validationUtils.containsCert(cert, TEST_TOOL_CHECK_CERTS)
                         && (cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
                     if (listing.getIcs() != null && listing.getIcs().booleanValue()) {
                         listing.getWarningMessages()

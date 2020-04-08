@@ -27,8 +27,10 @@ public class MacraMeasureDAO extends BaseDAOImpl {
 
     public List<MacraMeasureDTO> findAll() {
         Query query = entityManager.createQuery(
-                "from MacraMeasureEntity mme " + "LEFT OUTER JOIN FETCH mme.certificationCriterion cce "
-                        + "LEFT OUTER JOIN FETCH cce.certificationEdition " + "WHERE (NOT mme.deleted = true)",
+                "from MacraMeasureEntity mme "
+                        + "LEFT OUTER JOIN FETCH mme.certificationCriterion cce "
+                        + "LEFT OUTER JOIN FETCH cce.certificationEdition "
+                        + "WHERE (NOT mme.deleted = true)",
                 MacraMeasureEntity.class);
         List<MacraMeasureEntity> results = query.getResultList();
 
@@ -39,8 +41,8 @@ public class MacraMeasureDAO extends BaseDAOImpl {
         return dtos;
     }
 
-    public List<MacraMeasureDTO> getByCriteriaNumber(String criteriaNumber) {
-        List<MacraMeasureEntity> entities = getMeasuresByCertificationCriteria(criteriaNumber);
+    public List<MacraMeasureDTO> getByCriterionId(Long criterionId) {
+        List<MacraMeasureEntity> entities = getMeasuresByCertificationCriteria(criterionId);
         List<MacraMeasureDTO> dtos = new ArrayList<MacraMeasureDTO>();
 
         for (MacraMeasureEntity entity : entities) {
@@ -51,8 +53,8 @@ public class MacraMeasureDAO extends BaseDAOImpl {
 
     }
 
-    public MacraMeasureDTO getByCriteriaNumberAndValue(String criteriaNumber, String value) {
-        MacraMeasureEntity entity = getMeasureByCertificationCriteriaAndValue(criteriaNumber, value);
+    public MacraMeasureDTO getByCriterionAndValue(Long criterionId, String value) {
+        MacraMeasureEntity entity = getMeasureByCertificationCriteriaAndValue(criterionId, value);
         if (entity == null) {
             return null;
         }
@@ -68,14 +70,14 @@ public class MacraMeasureDAO extends BaseDAOImpl {
         entityManager.flush();
     }
 
-    private List<MacraMeasureEntity> getMeasuresByCertificationCriteria(String criteriaNumber) {
+    private List<MacraMeasureEntity> getMeasuresByCertificationCriteria(Long criterionId) {
         Query query = entityManager
                 .createQuery("FROM MacraMeasureEntity mme "
                         + "LEFT OUTER JOIN FETCH mme.certificationCriterion cce "
                         + "LEFT OUTER JOIN FETCH cce.certificationEdition "
                         + "WHERE (NOT mme.deleted = true) "
-                        + "AND (UPPER(cce.number) = :criteriaNumber)", MacraMeasureEntity.class);
-        query.setParameter("criteriaNumber", criteriaNumber.trim().toUpperCase());
+                        + "AND cce.id = :criterionId", MacraMeasureEntity.class);
+        query.setParameter("criterionId", criterionId);
         List<MacraMeasureEntity> result = query.getResultList();
         return result;
     }
@@ -92,16 +94,16 @@ public class MacraMeasureDAO extends BaseDAOImpl {
         return query.getResultList();
     }
 
-    private MacraMeasureEntity getMeasureByCertificationCriteriaAndValue(String criteriaNumber, String value) {
+    private MacraMeasureEntity getMeasureByCertificationCriteriaAndValue(Long criterionId, String value) {
         Query query = entityManager.createQuery(
                 "FROM MacraMeasureEntity mme "
                         + "LEFT OUTER JOIN FETCH mme.certificationCriterion cce "
                         + "LEFT OUTER JOIN FETCH cce.certificationEdition "
                         + "WHERE (NOT mme.deleted = true) "
-                        + "AND (UPPER(cce.number) = :criteriaNumber) "
+                        + "AND cce.id = :criterionId "
                         + "AND (UPPER(mme.value) = :value)",
                 MacraMeasureEntity.class);
-        query.setParameter("criteriaNumber", criteriaNumber.trim().toUpperCase());
+        query.setParameter("criterionId", criterionId);
         query.setParameter("value", value.trim().toUpperCase());
         List<MacraMeasureEntity> result = query.getResultList();
         if (result == null || result.size() == 0) {

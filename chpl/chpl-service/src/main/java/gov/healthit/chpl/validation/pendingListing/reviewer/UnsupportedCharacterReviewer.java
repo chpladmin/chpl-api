@@ -19,13 +19,20 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTargetedUser
 import gov.healthit.chpl.dto.listing.pending.PendingTestParticipantDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingTestTaskDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
 
 @Component("pendingUnsupportedCharacterReviewer")
 public class UnsupportedCharacterReviewer implements Reviewer {
 
+    private ValidationUtils validationUtils;
+    private ErrorMessageUtil msgUtil;
+
     @Autowired
-    ErrorMessageUtil msgUtil;
+    public UnsupportedCharacterReviewer(ValidationUtils validationUtils, ErrorMessageUtil msgUtil) {
+        this.validationUtils = validationUtils;
+        this.msgUtil = msgUtil;
+    }
 
     public void review(PendingCertifiedProductDTO listing) {
         // check all string fields at the listing level
@@ -198,12 +205,12 @@ public class UnsupportedCharacterReviewer implements Reviewer {
 
     private void addListingWarningIfNotValid(final PendingCertifiedProductDTO listing,
             final String input, final String fieldName) {
-        if (!ValidationUtils.isValidUtf8(input)) {
+        if (!validationUtils.isValidUtf8(input)) {
             listing.getWarningMessages().add(
                     msgUtil.getMessage("listing.badCharacterFound", fieldName));
         }
 
-        if (ValidationUtils.hasNewline(input)) {
+        if (validationUtils.hasNewline(input)) {
             listing.getWarningMessages().add(
                     msgUtil.getMessage("listing.newlineCharacterFound", fieldName));
         }
@@ -211,13 +218,15 @@ public class UnsupportedCharacterReviewer implements Reviewer {
 
     private void addCriteriaWarningIfNotValid(final PendingCertifiedProductDTO listing,
             final PendingCertificationResultDTO criteria, final String input, final String fieldName) {
-        if (!ValidationUtils.isValidUtf8(input)) {
+        if (!validationUtils.isValidUtf8(input)) {
             listing.getWarningMessages().add(
-                    msgUtil.getMessage("listing.criteria.badCharacterFound", criteria.getCriterion().getNumber(), fieldName));
+                    msgUtil.getMessage("listing.criteria.badCharacterFound",
+                            Util.formatCriteriaNumber(criteria.getCriterion()), fieldName));
         }
-        if (ValidationUtils.hasNewline(input)) {
+        if (validationUtils.hasNewline(input)) {
             listing.getWarningMessages().add(
-                    msgUtil.getMessage("listing.criteria.newlineCharacterFound", criteria.getCriterion().getNumber(), fieldName));
+                    msgUtil.getMessage("listing.criteria.newlineCharacterFound",
+                            Util.formatCriteriaNumber(criteria.getCriterion()), fieldName));
         }
     }
 }

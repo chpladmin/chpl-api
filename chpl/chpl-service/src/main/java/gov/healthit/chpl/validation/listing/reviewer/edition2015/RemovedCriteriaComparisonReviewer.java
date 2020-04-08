@@ -19,6 +19,7 @@ import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 
 /**
@@ -63,7 +64,8 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
                         && updatedCert.getNumber().equals(existingCert.getNumber())) {
                     if (isRemovedCertAdded(existingCert, updatedCert)) {
                         updatedListing.getErrorMessages().add(
-                                msgUtil.getMessage("listing.removedCriteriaAddNotAllowed", updatedCert.getNumber()));
+                                msgUtil.getMessage("listing.removedCriteriaAddNotAllowed",
+                                        Util.formatCriteriaNumber(updatedCert.getCriterion())));
                     } else if (isRemovedCertEdited(existingCert, updatedCert)) {
                         addErrorsForCertEdits(updatedListing, existingCert, updatedCert);
                     }
@@ -90,60 +92,73 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
             CertificationResult existingCert, CertificationResult updatedCert) {
         if (isGapChanged(existingCert, updatedCert)) {
             updatedListing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed", updatedCert.getNumber(), "Gap"));
+                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed",
+                            Util.formatCriteriaNumber(updatedCert.getCriterion()), "Gap"));
         }
         if (isG1SuccessChanged(existingCert, updatedCert)) {
             updatedListing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed", updatedCert.getNumber(), "G1 Success"));
+                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed",
+                            Util.formatCriteriaNumber(updatedCert.getCriterion()), "G1 Success"));
         }
         if (isG2SuccessChanged(existingCert, updatedCert)) {
             updatedListing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed", updatedCert.getNumber(), "G2 Success"));
+                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed",
+                            Util.formatCriteriaNumber(updatedCert.getCriterion()), "G2 Success"));
         }
         if (isAdditionalSoftwareChanged(existingCert, updatedCert)) {
             updatedListing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed", updatedCert.getNumber(), "Additional Software"));
+                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed",
+                            Util.formatCriteriaNumber(updatedCert.getCriterion()), "Additional Software"));
         }
         if (isFunctionalityTestedChanged(existingCert, updatedCert)) {
             updatedListing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed", updatedCert.getNumber(), "Functionality Tested"));
+                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed",
+                            Util.formatCriteriaNumber(updatedCert.getCriterion()), "Functionality Tested"));
         }
         if (isG1MacraMeasuresChanged(existingCert, updatedCert)) {
             updatedListing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed", updatedCert.getNumber(), "G1 Macra Measures"));
+                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed",
+                            Util.formatCriteriaNumber(updatedCert.getCriterion()), "G1 Macra Measures"));
         }
         if (isG2MacraMeasuresChanged(existingCert, updatedCert)) {
             updatedListing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed", updatedCert.getNumber(), "G2 Macra Measures"));
+                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed",
+                            Util.formatCriteriaNumber(updatedCert.getCriterion()), "G2 Macra Measures"));
         }
         if (isTestStandardsChanged(existingCert, updatedCert)) {
             updatedListing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed", updatedCert.getNumber(), "Test Standards"));
+                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed",
+                            Util.formatCriteriaNumber(updatedCert.getCriterion()), "Test Standards"));
         }
         if (isTestDataChanged(existingCert, updatedCert)) {
             updatedListing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed", updatedCert.getNumber(), "Test Data"));
+                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed",
+                            Util.formatCriteriaNumber(updatedCert.getCriterion()), "Test Data"));
         }
         if (isTestProceduresChanged(existingCert, updatedCert)) {
             updatedListing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed", updatedCert.getNumber(), "Test Procedures"));
+                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed",
+                            Util.formatCriteriaNumber(updatedCert.getCriterion()), "Test Procedures"));
         }
         if (isTestToolsChanged(existingCert, updatedCert)) {
             updatedListing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed", updatedCert.getNumber(), "Test Tools"));
+                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed",
+                            Util.formatCriteriaNumber(updatedCert.getCriterion()), "Test Tools"));
         }
         if (isApiDocumentationChanged(existingCert, updatedCert)) {
             updatedListing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed", updatedCert.getNumber(), "API Documentation"));
+                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed",
+                            Util.formatCriteriaNumber(updatedCert.getCriterion()), "API Documentation"));
         }
         if (isPrivacySecurityFrameworkChanged(existingCert, updatedCert)) {
             updatedListing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed", updatedCert.getNumber(),
-                            "Privacy and Security Framework"));
+                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed",
+                            Util.formatCriteriaNumber(updatedCert.getCriterion()), "Privacy and Security Framework"));
         }
         if (isSedChanged(existingCert, updatedCert)) {
             updatedListing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed", updatedCert.getNumber(), "SED"));
+                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed",
+                            Util.formatCriteriaNumber(updatedCert.getCriterion()), "SED"));
         }
     }
 

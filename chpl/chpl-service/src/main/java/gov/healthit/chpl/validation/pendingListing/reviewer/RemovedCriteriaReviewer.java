@@ -9,6 +9,7 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 
 /**
  * Determines if a removed criteria is allowed with this pending listing.
@@ -43,7 +44,8 @@ public class RemovedCriteriaReviewer implements Reviewer {
                         && (listing.getIcs() == null || !listing.getIcs().booleanValue())
                         && cert.getCriterion().getRemoved()) {
                     listing.getErrorMessages().add(
-                            msgUtil.getMessage("listing.removedCriteriaAddNotAllowed", cert.getCriterion().getNumber()));
+                            msgUtil.getMessage("listing.removedCriteriaAddNotAllowed",
+                                    Util.formatCriteriaNumber(cert.getCriterion())));
                 }
             }
         }

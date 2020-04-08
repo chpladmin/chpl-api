@@ -13,6 +13,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 
 /**
@@ -59,7 +60,7 @@ public class RemovedCriteriaTestTaskComparisonReviewer implements ComparisonRevi
                                 && addedCriterion.getRemoved().booleanValue()) {
                             updatedListing.getErrorMessages().add(
                                     msgUtil.getMessage("listing.testTask.removedCriteriaNotAllowed",
-                                    addedCriterion.getNumber(), updatedTestTask.getDescription()));
+                                            Util.formatCriteriaNumber(addedCriterion), updatedTestTask.getDescription()));
                         }
                     }
                 }
@@ -70,7 +71,7 @@ public class RemovedCriteriaTestTaskComparisonReviewer implements ComparisonRevi
                     if (criterion.getRemoved() != null && criterion.getRemoved().booleanValue()) {
                         updatedListing.getErrorMessages().add(
                                 msgUtil.getMessage("listing.testTask.removedCriteriaNotAllowed",
-                                criterion.getNumber(), updatedTestTask.getDescription()));
+                                Util.formatCriteriaNumber(criterion), updatedTestTask.getDescription()));
                     }
                 }
             }

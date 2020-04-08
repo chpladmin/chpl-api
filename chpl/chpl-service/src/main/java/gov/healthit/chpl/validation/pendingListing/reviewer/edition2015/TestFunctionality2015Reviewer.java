@@ -24,6 +24,7 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.manager.TestingFunctionalityManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.pendingListing.reviewer.PermissionBasedReviewer;
 
 /**
@@ -68,7 +69,7 @@ public class TestFunctionality2015Reviewer extends PermissionBasedReviewer {
                                 getTestFunctionality(crtf.getNumber(), getEditionDTO(listing.getCertificationEdition()));
                         if (tf == null) {
                             addErrorOrWarningByPermission(listing, cr, "listing.criteria.testFunctionalityNotFoundAndRemoved",
-                                            cr.getCriterion().getNumber(), crtf.getNumber());
+                                    Util.formatCriteriaNumber(cr.getCriterion()), crtf.getNumber());
                             crtfIter.remove();
                         } else {
                             Set<String> warnings = getTestingFunctionalityWarningMessages(crtf, cr, listing);
@@ -117,10 +118,10 @@ public class TestFunctionality2015Reviewer extends PermissionBasedReviewer {
 
         TestFunctionalityDTO tf = getTestFunctionality(crtf.getNumber(), edition.getId());
         return getMessage(
-                cr.getCriterion().getNumber(),
+                Util.formatCriteriaNumber(cr.getCriterion()),
                 crtf.getNumber(),
                 getDelimitedListOfValidCriteriaNumbers(tf, edition),
-                cr.getCriterion().getNumber());
+                Util.formatCriteriaNumber(cr.getCriterion()));
     }
 
     private String getMessage(final String criteriaNumber,
