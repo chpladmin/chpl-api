@@ -88,8 +88,7 @@ public class AddCuresUpdateToListingsJob extends QuartzJob {
         txTemplate.execute(new TransactionCallbackWithoutResult() {
 
             @Override
-            // can't use the manager method because we don't want to record activity
-            // so wrapping the dao call in a transaction
+            // Wrapping the dao call in a transaction, since we are not using managers for the txn
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try {
                     addCuresUpdateEvent(origListing.getId(), true, specialProperties.getEffectiveRuleDate());
