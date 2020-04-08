@@ -9,6 +9,7 @@ import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 
 /**
@@ -35,7 +36,7 @@ public class TestTool2015Reviewer extends PermissionBasedReviewer{
                             && StringUtils.isEmpty(testTool.getTestToolVersion())) {
                         // require test tool version if a test tool name was entered
                         addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestToolVersion",
-                                testTool.getTestToolName(), cert.getNumber());
+                                testTool.getTestToolName(), Util.formatCriteriaNumber(cert.getCriterion()));
                     }
                 }
             }

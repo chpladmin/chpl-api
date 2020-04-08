@@ -11,6 +11,7 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 
 @Component("pendingValidDataReviewer")
 public class ValidDataReviewer extends PermissionBasedReviewer {
@@ -31,8 +32,10 @@ public class ValidDataReviewer extends PermissionBasedReviewer {
                             .getValue(formattedPrivacyAndSecurityFramework);
                     if (foundPrivacyAndSecurityFramework == null) {
                         addErrorOrWarningByPermission(listing, cert,
-                                "listing.criteria.invalidPrivacySecurityFramework", cert.getCriterion().getNumber(),
-                                formattedPrivacyAndSecurityFramework, PrivacyAndSecurityFrameworkConcept.getFormattedValues());
+                                "listing.criteria.invalidPrivacySecurityFramework",
+                                Util.formatCriteriaNumber(cert.getCriterion()),
+                                formattedPrivacyAndSecurityFramework,
+                                PrivacyAndSecurityFrameworkConcept.getFormattedValues());
                     }
                 }
                 if (cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
@@ -40,7 +43,7 @@ public class ValidDataReviewer extends PermissionBasedReviewer {
                         if (!StringUtils.isEmpty(asDto.getChplId()) && asDto.getCertifiedProductId() == null) {
                             addErrorOrWarningByPermission(listing, cert,
                                     "listing.criteria.invalidAdditionalSoftware", asDto.getChplId(),
-                                    cert.getCriterion().getNumber());
+                                    Util.formatCriteriaNumber(cert.getCriterion()));
                         }
                     }
                 }

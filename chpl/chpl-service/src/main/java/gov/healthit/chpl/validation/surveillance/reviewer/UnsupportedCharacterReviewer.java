@@ -11,10 +11,12 @@ import gov.healthit.chpl.util.ValidationUtils;
 
 @Component("surveillanceUnsupportedCharacterReviewer")
 public class UnsupportedCharacterReviewer implements Reviewer {
+    private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public UnsupportedCharacterReviewer(ErrorMessageUtil msgUtil) {
+    public UnsupportedCharacterReviewer(ValidationUtils validationUtils, ErrorMessageUtil msgUtil) {
+        this.validationUtils = validationUtils;
         this.msgUtil = msgUtil;
     }
 
@@ -41,10 +43,10 @@ public class UnsupportedCharacterReviewer implements Reviewer {
     }
 
     private void addSurveillanceWarningForInvalidCharacters(Surveillance surv, String input, String fieldName) {
-        if (!ValidationUtils.isValidUtf8(input)) {
+        if (!validationUtils.isValidUtf8(input)) {
             surv.getWarningMessages().add(msgUtil.getMessage("surveillance.badCharacterFound", fieldName));
         }
-        if (ValidationUtils.hasNewline(input)) {
+        if (validationUtils.hasNewline(input)) {
             surv.getWarningMessages().add(msgUtil.getMessage("surveillance.newlineCharacterFound", fieldName));
         }
     }

@@ -48,13 +48,14 @@ public class ProductManager extends SecuredManager {
     private ChplProductNumberUtil chplProductNumberUtil;
     private ActivityManager activityManager;
     private ResourcePermissions resourcePermissions;
+    private ValidationUtils validationUtils;
 
     @Autowired
     public ProductManager(ErrorMessageUtil msgUtil, ProductDAO productDao,
             final ProductVersionDAO versionDao, final DeveloperDAO devDao, final CertifiedProductDAO cpDao,
             final CertifiedProductDetailsManager cpdManager,
             final ChplProductNumberUtil chplProductNumberUtil, final ActivityManager activityManager,
-            final ResourcePermissions resourcePermissions) {
+            final ResourcePermissions resourcePermissions, ValidationUtils validationUtils) {
         this.msgUtil = msgUtil;
         this.productDao = productDao;
         this.versionDao = versionDao;
@@ -64,6 +65,7 @@ public class ProductManager extends SecuredManager {
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.activityManager = activityManager;
         this.resourcePermissions = resourcePermissions;
+        this.validationUtils = validationUtils;
     }
 
 
@@ -239,7 +241,7 @@ public class ProductManager extends SecuredManager {
                     throw new EntityCreationException("Cannot update certified product " + chplNumber + " to "
                             + potentialChplNumber + " because a certified product with that CHPL ID already exists.");
                 }
-                if (!ValidationUtils.chplNumberPartIsValid(potentialChplNumber,
+                if (!validationUtils.chplNumberPartIsValid(potentialChplNumber,
                         ChplProductNumberUtil.PRODUCT_CODE_INDEX, ChplProductNumberUtil.PRODUCT_CODE_REGEX)) {
                     throw new EntityCreationException(msgUtil.getMessage("listing.badProductCodeChars",
                             ChplProductNumberUtil.PRODUCT_CODE_LENGTH));

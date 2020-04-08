@@ -80,6 +80,7 @@ public class DeveloperManager extends SecuredManager {
     private ErrorMessageUtil msgUtil;
     private ResourcePermissions resourcePermissions;
     private DeveloperValidationFactory developerValidationFactory;
+    private ValidationUtils validationUtils;
     private FF4j ff4j;
 
     @Autowired
@@ -88,7 +89,7 @@ public class DeveloperManager extends SecuredManager {
             CertifiedProductDetailsManager cpdManager, CertificationBodyDAO certificationBodyDao,
             CertifiedProductDAO certifiedProductDAO, ChplProductNumberUtil chplProductNumberUtil,
             ActivityManager activityManager, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
-            DeveloperValidationFactory developerValidationFactory, FF4j ff4j) {
+            DeveloperValidationFactory developerValidationFactory, ValidationUtils validationUtils, FF4j ff4j) {
         this.developerDao = developerDao;
         this.productManager = productManager;
         this.acbManager = acbManager;
@@ -101,6 +102,7 @@ public class DeveloperManager extends SecuredManager {
         this.msgUtil = msgUtil;
         this.resourcePermissions = resourcePermissions;
         this.developerValidationFactory = developerValidationFactory;
+        this.validationUtils = validationUtils;
         this.ff4j = ff4j;
     }
 
@@ -290,7 +292,7 @@ public class DeveloperManager extends SecuredManager {
          * Check to see that the Developer's website is valid.
          */
         if (!StringUtils.isEmpty(dto.getWebsite())) {
-            if (!ValidationUtils.isWellFormedUrl(dto.getWebsite())) {
+            if (!validationUtils.isWellFormedUrl(dto.getWebsite())) {
                 String msg = msgUtil.getMessage("developer.websiteIsInvalid");
                 throw new EntityCreationException(msg);
             }

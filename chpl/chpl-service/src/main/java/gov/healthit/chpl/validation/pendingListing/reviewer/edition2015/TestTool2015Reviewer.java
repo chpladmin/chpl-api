@@ -9,6 +9,7 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestToolD
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.pendingListing.reviewer.PermissionBasedReviewer;
 
 @Component("pendingTestTool2015Reviewer")
@@ -26,7 +27,7 @@ public class TestTool2015Reviewer extends PermissionBasedReviewer {
                 for (PendingCertificationResultTestToolDTO testTool : cert.getTestTools()) {
                         if (!StringUtils.isEmpty(testTool.getName()) && StringUtils.isEmpty(testTool.getVersion())) {
                             addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestToolVersion",
-                                testTool.getName(), cert.getCriterion().getNumber());
+                                testTool.getName(), Util.formatCriteriaNumber(cert.getCriterion()));
                     }
                 }
             }

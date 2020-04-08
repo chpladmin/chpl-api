@@ -1,5 +1,23 @@
 # Release Notes
 
+## Version 25.1.0
+_8 April 2020_
+
+### Features
+* Report on pending "Change website" requests for ONC-ACBs
+* Add Specific d2, d3, d10 Activity to Questionable Activity Report
+* Include '(Cures Update)' in criteria error/warning messages
+
+### Flagged Features
+* Update requirements for new certificates with respect to d12 and d13
+* Support display of Listing's Cures Update status
+
+### Bug Fixes
+* Lookup g1/g2 measures, test proc, test data by criterion ID
+* Fix bug preventing ACB from approving a change request
+
+---
+
 ## Version 25.0.0
 _23 March 2020_
 

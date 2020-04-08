@@ -745,6 +745,7 @@ public class CertifiedProductDetailsManager {
             searchDetails.setDecertificationDate(dto.getDecertificationDate().getTime());
         }
 
+        searchDetails.setCuresUpdate(dto.getCuresUpdate());
         searchDetails.setCertificationEdition(getCertifificationEdition(dto));
         searchDetails.setChplProductNumber(getChplProductNumber(dto));
         searchDetails.setCertifyingBody(getCertifyingBody(dto));

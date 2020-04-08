@@ -317,6 +317,13 @@ public class CertifiedProductSearchDetails implements Serializable {
     private List<CertificationStatusEvent> certificationEvents = new ArrayList<CertificationStatusEvent>();
 
     /**
+     * This variable identifies if the listing meets the definition of "Cures Update".
+     * It is a binary variable that takes value of true or false.
+     */
+    @XmlElement(required = false, nillable = true)
+    private Boolean curesUpdate;
+
+    /**
      * All current and historical values of meaningful use users for this listing along with the dates each meaningful
      * use user count was valid. Dates are given in milliseconds since epoch.
      */
@@ -464,6 +471,14 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     public void setCertificationEvents(final List<CertificationStatusEvent> certificationEvents) {
         this.certificationEvents = certificationEvents;
+    }
+
+    public void setCuresUpdate(Boolean curesUpdate) {
+        this.curesUpdate = curesUpdate;
+    }
+
+    public Boolean getCuresUpdate() {
+        return curesUpdate;
     }
 
     public Long getLastModifiedDate() {

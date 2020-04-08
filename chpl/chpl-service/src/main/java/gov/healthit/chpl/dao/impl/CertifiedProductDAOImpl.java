@@ -470,6 +470,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
             CertifiedProduct cp = new CertifiedProduct();
             cp.setCertificationDate(entity.getCertificationDate().getTime());
             cp.setCertificationStatus(entity.getCertificationStatusName());
+            cp.setCuresUpdate(entity.getCuresUpdate());
             cp.setChplProductNumber(entity.getChplProductNumber());
             cp.setEdition(entity.getYear());
             cp.setId(entity.getId());
@@ -532,6 +533,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
             CertifiedProduct cp = new CertifiedProduct();
             cp.setCertificationDate(result.getCertificationDate().getTime());
             cp.setCertificationStatus(result.getCertificationStatusName());
+            cp.setCuresUpdate(result.getCuresUpdate());
             cp.setChplProductNumber(result.getChplProductNumber());
             cp.setEdition(result.getYear());
             cp.setId(result.getId());
