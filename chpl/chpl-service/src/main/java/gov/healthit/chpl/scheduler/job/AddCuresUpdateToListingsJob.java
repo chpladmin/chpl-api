@@ -1,7 +1,9 @@
 package gov.healthit.chpl.scheduler.job;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -73,6 +75,8 @@ public class AddCuresUpdateToListingsJob extends QuartzJob {
             if (curesUpdateService.isCuresUpdate(listing)) {
                 LOGGER.info("************************** Updating " + cp.getId() + " as Cures Updated **************************");
                 updateListingAsCuresUpdated(listing);
+            } else {
+                updateListingAsNotCuresUpdated(listing);
             }
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -103,6 +107,31 @@ public class AddCuresUpdateToListingsJob extends QuartzJob {
         });
     }
 
+    private void updateListingAsNotCuresUpdated(CertifiedProductSearchDetails origListing)
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+
+        if (!doesListingHaveExistingCurrentCuresEventThatIsFalse(origListing)) {
+            TransactionTemplate txTemplate = new TransactionTemplate(txManager);
+            txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+            txTemplate.execute(new TransactionCallbackWithoutResult() {
+
+                @Override
+                // Wrapping the dao call in a transaction, since we are not using managers for the txn
+                protected void doInTransactionWithoutResult(TransactionStatus status) {
+                    try {
+                        addCuresUpdateEvent(origListing.getId(), false, specialProperties.getEffectiveRuleDate());
+                    } catch (Exception e) {
+                        LOGGER.error(
+                                "Error trying to mark listing " + origListing.getChplProductNumber() + "as NOT Cures updated. "
+                                        + e.getMessage(),
+                                e);
+                        status.setRollbackOnly();
+                    }
+                }
+            });
+        }
+    }
+
     private void addCuresUpdateActivity(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails updatedListing)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, origListing.getId(),
@@ -123,4 +152,18 @@ public class AddCuresUpdateToListingsJob extends QuartzJob {
         return certifiedProductDAO.findByEdition("2015");
     }
 
+    private Boolean doesListingHaveExistingCurrentCuresEventThatIsFalse(CertifiedProductSearchDetails listing) {
+        Optional<CuresUpdateEventDTO> curesUpdateEvent = getCurrentCuresEventForListing(listing);
+        if (curesUpdateEvent.isPresent()) {
+            return !curesUpdateEvent.get().getCuresUpdate();
+        } else {
+            return false;
+        }
+    }
+
+    private Optional<CuresUpdateEventDTO> getCurrentCuresEventForListing(CertifiedProductSearchDetails listing) {
+        return curesUpdateDao.findByCertifiedProductId(listing.getId()).stream()
+                .sorted(Comparator.comparing(CuresUpdateEventDTO::getEventDate))
+                .findFirst();
+    }
 }
