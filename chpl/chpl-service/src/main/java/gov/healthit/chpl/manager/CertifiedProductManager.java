@@ -1005,13 +1005,15 @@ public class CertifiedProductManager extends SecuredManager {
         certEvent.setCertifiedProductId(newCertifiedProduct.getId());
         statusEventDao.create(certEvent);
 
-        CuresUpdateEventDTO curesEvent = new CuresUpdateEventDTO();
-        curesEvent.setCreationDate(new Date());
-        curesEvent.setDeleted(false);
-        curesEvent.setEventDate(certificationDate);
-        curesEvent.setCuresUpdate(curesUpdateService.isCuresUpdate(pendingCp));
-        curesEvent.setCertifiedProductId(newCertifiedProduct.getId());
-        curesUpdateDao.create(curesEvent);
+        if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
+            CuresUpdateEventDTO curesEvent = new CuresUpdateEventDTO();
+            curesEvent.setCreationDate(new Date());
+            curesEvent.setDeleted(false);
+            curesEvent.setEventDate(certificationDate);
+            curesEvent.setCuresUpdate(curesUpdateService.isCuresUpdate(pendingCp));
+            curesEvent.setCertifiedProductId(newCertifiedProduct.getId());
+            curesUpdateDao.create(curesEvent);
+        }
 
         return newCertifiedProduct;
     }
