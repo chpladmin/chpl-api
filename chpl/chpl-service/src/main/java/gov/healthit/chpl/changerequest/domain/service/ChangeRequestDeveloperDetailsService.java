@@ -160,7 +160,7 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
         new EmailBuilder(env)
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())
-                        .collect(Collectors.<String> toList()))
+                        .collect(Collectors.<String>toList()))
                 .subject(approvalEmailSubject)
                 .htmlMessage(String.format(approvalEmailBody,
                         df.format(cr.getSubmittedDate()),
@@ -175,7 +175,7 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
         new EmailBuilder(env)
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())
-                        .collect(Collectors.<String> toList()))
+                        .collect(Collectors.<String>toList()))
                 .subject(pendingDeveloperActionEmailSubject)
                 .htmlMessage(String.format(pendingDeveloperActionEmailBody,
                         df.format(cr.getSubmittedDate()),
@@ -191,7 +191,7 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
         new EmailBuilder(env)
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())
-                        .collect(Collectors.<String> toList()))
+                        .collect(Collectors.<String>toList()))
                 .subject(rejectedEmailSubject)
                 .htmlMessage(String.format(rejectedEmailBody,
                         df.format(cr.getSubmittedDate()),
@@ -222,7 +222,7 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
     }
 
     private String formatDeveloperHtml(Developer dev) {
-        String devHtml = "<p>Self-Developer: " + dev.getSelfDeveloper() + "</p>";
+        String devHtml = "<p>Self-Developer: " + formatSelfDeveloperHtml(dev.getSelfDeveloper()) + "</p>";
         if (dev.getAddress() != null) {
             devHtml += "<p>Address:<br/>" + formatAddressHtml(dev.getAddress()) + "</p>";
         }
@@ -232,6 +232,13 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
         return devHtml;
     }
 
+    private String formatSelfDeveloperHtml(Boolean selfDeveloper) {
+        String result = "No";
+        if (selfDeveloper != null && selfDeveloper.equals(Boolean.TRUE)) {
+            result = "Yes";
+        }
+        return result;
+    }
     private String formatAddressHtml(Address addr) {
         String addrHtml = addr.getLine1();
         if (!StringUtils.isEmpty(addr.getLine2())) {
@@ -273,7 +280,7 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
     private String formatDetailsHtml(ChangeRequestDeveloperDetails details) {
         String detailsHtml = "";
         if (details.getSelfDeveloper() != null) {
-            detailsHtml += "<p>Self-Developer: " + details.getSelfDeveloper() + "</p>";
+            detailsHtml += "<p>Self-Developer: " + formatSelfDeveloperHtml(details.getSelfDeveloper()) + "</p>";
         }
         if (details.getAddress() != null) {
             detailsHtml += "<p>Address:<br/>" + formatAddressHtml(details.getAddress()) + "</p>";
