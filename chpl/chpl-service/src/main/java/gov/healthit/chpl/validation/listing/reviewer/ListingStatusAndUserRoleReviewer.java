@@ -35,10 +35,12 @@ public class ListingStatusAndUserRoleReviewer implements ComparisonReviewer {
             return;
         }
 
-        if (haveCriteriaBeenAdded(existingListing, updatedListing)
-                || haveCriteriaBeenRemoved(existingListing, updatedListing)) {
-            updatedListing.getErrorMessages().add(messages.getMessage("listing.criteria.userCannotAddOrRemove"));
+        if (!haveCriteriaBeenAdded(existingListing, updatedListing)
+                && !haveCriteriaBeenRemoved(existingListing, updatedListing)) {
+            return;
         }
+
+        updatedListing.getErrorMessages().add(messages.getMessage("listing.criteria.userCannotAddOrRemove"));
     }
 
     private boolean isListingCurrentStatusConsideredActive(CertifiedProductSearchDetails listing) {
