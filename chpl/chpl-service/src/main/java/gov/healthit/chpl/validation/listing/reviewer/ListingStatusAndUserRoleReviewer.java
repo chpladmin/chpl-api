@@ -28,7 +28,8 @@ public class ListingStatusAndUserRoleReviewer implements ComparisonReviewer {
     @Override
     public void review(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing) {
         if (!resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
-            if (!isListingCurrentStatusConsideredActive(updatedListing)) {
+            if (!isListingCurrentStatusConsideredActive(existingListing)
+                    || !isListingCurrentStatusConsideredActive(updatedListing)) {
                 if (haveCriteriaBeenAdded(existingListing, updatedListing)
                         || haveCriteriaBeenRemoved(existingListing, updatedListing)) {
                     updatedListing.getErrorMessages().add(messages.getMessage("listing.criteria.userCannotAddOrRemove"));
