@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version 25.1.1
+_10 April 2020_
+
+### Bug Fixes
+* Allow application startup despite missing criteria
+
+---
+
 ## Version 25.1.0
 _8 April 2020_
 
