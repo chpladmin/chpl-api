@@ -397,6 +397,40 @@ public class ListingStatusAndUserRoleReviewerTest {
 
     }
 
+    @Test
+    public void review_UserIsAcbAndListingIsUpdatedWithAChangedCriteria_ErrorMessageAdded() throws ParseException {
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+
+        CertifiedProductSearchDetails origListing = CertifiedProductSearchDetails.builder()
+                .id(1L)
+                .certificationEvent(getCertificationStatusEvent(1L, "01/01/2020", 2L, "Retired"))
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (a)(1)")
+                                .id(1L)
+                                .build())
+                        .build())
+                .build();
+        CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
+                .id(1L)
+                .certificationEvent(getCertificationStatusEvent(1L, "01/01/2020", 2L, "Retired"))
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (a)(2)")
+                                .id(2L)
+                                .build())
+                        .build())
+                .build();
+        updatedListing.setErrorMessages(new HashSet<String>());
+
+        reviewer.review(origListing, updatedListing);
+
+        assertEquals(1, updatedListing.getErrorMessages().size());
+    }
+
     private CertificationStatusEvent getCertificationStatusEvent(Long eventId, String date, Long statusId, String statusName)
             throws ParseException {
         return CertificationStatusEvent.builder()
