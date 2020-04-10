@@ -141,7 +141,6 @@ public class ListingStatusAndUserRoleReviewerTest {
         reviewer.review(origListing, updatedListing);
 
         assertEquals(0, updatedListing.getErrorMessages().size());
-
     }
 
     @Test
@@ -333,7 +332,6 @@ public class ListingStatusAndUserRoleReviewerTest {
         reviewer.review(origListing, updatedListing);
 
         assertEquals(1, updatedListing.getErrorMessages().size());
-
     }
 
     @Test
