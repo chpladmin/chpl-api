@@ -57,9 +57,16 @@ public class CuresUpdateService {
                 criteriaService.get(Criteria2015.G_8).getId(),
                 criteriaService.get(Criteria2015.G_9_OLD).getId()));
 
-        newPnSCriteria = new ArrayList<Long>(Arrays.asList(
-                criteriaService.get(Criteria2015.D_12).getId(),
-                criteriaService.get(Criteria2015.D_13).getId()));
+        // After ERD and new criteria are added all checks can be removed and items can be directly
+        // added to the list in the statement above.
+        if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
+            if (criteriaService.get(Criteria2015.D_12) != null) {
+                newPnSCriteria.add(criteriaService.get(Criteria2015.D_12).getId());
+            }
+            if (criteriaService.get(Criteria2015.D_13) != null) {
+                newPnSCriteria.add(criteriaService.get(Criteria2015.D_13).getId());
+            }
+        }
 
         requiresPnSCriteriaIds = new ArrayList<Long>(Arrays.asList(
                 criteriaService.get(Criteria2015.A_1).getId(),
@@ -73,53 +80,95 @@ public class CuresUpdateService {
                 criteriaService.get(Criteria2015.A_13).getId(),
                 criteriaService.get(Criteria2015.A_14).getId(),
                 criteriaService.get(Criteria2015.A_15).getId(),
-                criteriaService.get(Criteria2015.B_1_CURES).getId(),
-                criteriaService.get(Criteria2015.B_2_CURES).getId(),
-                criteriaService.get(Criteria2015.B_3_CURES).getId(),
                 criteriaService.get(Criteria2015.B_6).getId(),
-                criteriaService.get(Criteria2015.B_7_CURES).getId(),
-                criteriaService.get(Criteria2015.B_8_CURES).getId(),
-                criteriaService.get(Criteria2015.B_9_CURES).getId(),
                 criteriaService.get(Criteria2015.C_1).getId(),
                 criteriaService.get(Criteria2015.C_2).getId(),
-                criteriaService.get(Criteria2015.C_3_CURES).getId(),
                 criteriaService.get(Criteria2015.C_4).getId(),
-                criteriaService.get(Criteria2015.E_1_CURES).getId(),
                 criteriaService.get(Criteria2015.E_2).getId(),
                 criteriaService.get(Criteria2015.E_3).getId(),
                 criteriaService.get(Criteria2015.F_1).getId(),
                 criteriaService.get(Criteria2015.F_2).getId(),
                 criteriaService.get(Criteria2015.F_3).getId(),
                 criteriaService.get(Criteria2015.F_4).getId(),
-                criteriaService.get(Criteria2015.F_5_CURES).getId(),
                 criteriaService.get(Criteria2015.F_6).getId(),
                 criteriaService.get(Criteria2015.F_7).getId(),
                 criteriaService.get(Criteria2015.G_7).getId(),
                 criteriaService.get(Criteria2015.G_8).getId(),
-                criteriaService.get(Criteria2015.G_9_CURES).getId(),
-                criteriaService.get(Criteria2015.G_10).getId(),
                 criteriaService.get(Criteria2015.H_1).getId(),
                 criteriaService.get(Criteria2015.H_2).getId()));
 
+        // After ERD and new criteria are added all checks can be removed and items can be directly
+        // added to the list in the statement above.
+        if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
+            if (criteriaService.get(Criteria2015.B_1_CURES) != null) {
+                requiresPnSCriteriaIds.add(criteriaService.get(Criteria2015.B_1_CURES).getId());
+            }
+            if (criteriaService.get(Criteria2015.B_2_CURES) != null) {
+                requiresPnSCriteriaIds.add(criteriaService.get(Criteria2015.B_2_CURES).getId());
+            }
+            if (criteriaService.get(Criteria2015.B_3_CURES) != null) {
+                requiresPnSCriteriaIds.add(criteriaService.get(Criteria2015.B_3_CURES).getId());
+            }
+            if (criteriaService.get(Criteria2015.B_7_CURES) != null) {
+                requiresPnSCriteriaIds.add(criteriaService.get(Criteria2015.B_7_CURES).getId());
+            }
+            if (criteriaService.get(Criteria2015.B_8_CURES) != null) {
+                requiresPnSCriteriaIds.add(criteriaService.get(Criteria2015.B_8_CURES).getId());
+            }
+            if (criteriaService.get(Criteria2015.B_9_CURES) != null) {
+                requiresPnSCriteriaIds.add(criteriaService.get(Criteria2015.B_9_CURES).getId());
+            }
+            if (criteriaService.get(Criteria2015.C_3_CURES) != null) {
+                requiresPnSCriteriaIds.add(criteriaService.get(Criteria2015.C_3_CURES).getId());
+            }
+            if (criteriaService.get(Criteria2015.E_1_CURES) != null) {
+                requiresPnSCriteriaIds.add(criteriaService.get(Criteria2015.E_1_CURES).getId());
+            }
+            if (criteriaService.get(Criteria2015.F_5_CURES) != null) {
+                requiresPnSCriteriaIds.add(criteriaService.get(Criteria2015.F_5_CURES).getId());
+            }
+            if (criteriaService.get(Criteria2015.G_9_CURES) != null) {
+                requiresPnSCriteriaIds.add(criteriaService.get(Criteria2015.G_9_CURES).getId());
+            }
+            if (criteriaService.get(Criteria2015.G_10) != null) {
+                requiresPnSCriteriaIds.add(criteriaService.get(Criteria2015.G_10).getId());
+            }
+        }
+
         dependentCriteriaIds = new ArrayList<Long>(Arrays.asList(
-                criteriaService.get(Criteria2015.B_10).getId(),
                 criteriaService.get(Criteria2015.D_1).getId(),
-                criteriaService.get(Criteria2015.D_2_CURES).getId(),
-                criteriaService.get(Criteria2015.D_3_CURES).getId(),
                 criteriaService.get(Criteria2015.D_4).getId(),
                 criteriaService.get(Criteria2015.D_5).getId(),
                 criteriaService.get(Criteria2015.D_6).getId(),
                 criteriaService.get(Criteria2015.D_7).getId(),
                 criteriaService.get(Criteria2015.D_8).getId(),
                 criteriaService.get(Criteria2015.D_9).getId(),
-                criteriaService.get(Criteria2015.D_10_CURES).getId(),
                 criteriaService.get(Criteria2015.D_11).getId(),
                 criteriaService.get(Criteria2015.G_1).getId(),
                 criteriaService.get(Criteria2015.G_2).getId(),
                 criteriaService.get(Criteria2015.G_3).getId(),
                 criteriaService.get(Criteria2015.G_4).getId(),
-                criteriaService.get(Criteria2015.G_5).getId(),
-                criteriaService.get(Criteria2015.G_6_CURES).getId()));
+                criteriaService.get(Criteria2015.G_5).getId()));
+
+        // After ERD and new criteria are added all checks can be removed and items can be directly
+        // added to the list in the statement above.
+        if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
+            if (criteriaService.get(Criteria2015.B_10) != null) {
+                dependentCriteriaIds.add(criteriaService.get(Criteria2015.B_10).getId());
+            }
+            if (criteriaService.get(Criteria2015.D_2_CURES) != null) {
+                dependentCriteriaIds.add(criteriaService.get(Criteria2015.D_2_CURES).getId());
+            }
+            if (criteriaService.get(Criteria2015.D_3_CURES) != null) {
+                dependentCriteriaIds.add(criteriaService.get(Criteria2015.D_3_CURES).getId());
+            }
+            if (criteriaService.get(Criteria2015.D_10_CURES) != null) {
+                dependentCriteriaIds.add(criteriaService.get(Criteria2015.D_10_CURES).getId());
+            }
+            if (criteriaService.get(Criteria2015.G_6_CURES) != null) {
+                dependentCriteriaIds.add(criteriaService.get(Criteria2015.G_6_CURES).getId());
+            }
+        }
     }
 
     public Boolean isCuresUpdate(CertifiedProductSearchDetails listing) {
