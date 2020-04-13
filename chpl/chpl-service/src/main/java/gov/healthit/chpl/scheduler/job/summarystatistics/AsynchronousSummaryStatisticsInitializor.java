@@ -89,6 +89,7 @@ public class AsynchronousSummaryStatisticsInitializor {
         Future<Long> averageTimeToCloseSurveillance = null;
 
         Future<Long> uniqueDevelopersCountWithCuresUpdatedListings = null;
+        Future<Long> uniqueDevelopersCountWithCuresUpdatedActiveListings = null;
 
         if (dateRange == null) {
             totalActive2014Listings = asyncStats.getTotalActive2014Listings(listingStatisticsDAO, dateRange);
@@ -126,6 +127,8 @@ public class AsynchronousSummaryStatisticsInitializor {
 
             uniqueDevelopersCountWithCuresUpdatedListings = asyncStats
                     .getUniqueDevelopersCountWithCuresUpdatedListings(certifiedProductDAO);
+            uniqueDevelopersCountWithCuresUpdatedActiveListings = asyncStats
+                    .getUniqueDevelopersCountWithCuresUpdatedActiveListings(certifiedProductDAO);
         }
 
         // developers
