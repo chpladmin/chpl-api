@@ -29,6 +29,7 @@ public class PrivacyAndSecurityCriteriaReviewer implements Reviewer {
     private ErrorMessageUtil errorMessageUtil;
     private CertificationCriterionDAO certificationCriterionDao;
     private SpecialProperties specialProperties;
+    private ValidationUtils validationUtils;
 
     private List<CertificationCriterion> privacyAndSecurityCriteria = new ArrayList<CertificationCriterion>();
     private List<CertificationCriterion> privacyAndSecurityRequiredCriteria = new ArrayList<CertificationCriterion>();
@@ -47,11 +48,12 @@ public class PrivacyAndSecurityCriteriaReviewer implements Reviewer {
 
     @Autowired
     public PrivacyAndSecurityCriteriaReviewer(CertificationCriterionDAO certificationCriterionDao, Environment env,
-            ErrorMessageUtil errorMessageUtil, SpecialProperties specialProperties) {
+            ErrorMessageUtil errorMessageUtil, SpecialProperties specialProperties, ValidationUtils validationUtils) {
         this.certificationCriterionDao = certificationCriterionDao;
         this.env = env;
         this.errorMessageUtil = errorMessageUtil;
         this.specialProperties = specialProperties;
+        this.validationUtils = validationUtils;
     }
 
     @Override
@@ -63,7 +65,7 @@ public class PrivacyAndSecurityCriteriaReviewer implements Reviewer {
                     .collect(Collectors.toList());
 
             listing.getErrorMessages().addAll(
-                    ValidationUtils.checkSubordinateCriteriaAllRequired(
+                    validationUtils.checkSubordinateCriteriaAllRequired(
                             privacyAndSecurityCriteria,
                             privacyAndSecurityRequiredCriteria,
                             attestedToCriteria, errorMessageUtil));
