@@ -544,7 +544,7 @@ public class AsynchronousSummaryStatistics {
         private Long certificationBodyId;
         private SurveillanceNonconformityEntity nonconformity;
 
-        public NonconformanceStatistic(Long certificationBodyId, SurveillanceNonconformityEntity nonconformity) {
+        NonconformanceStatistic(Long certificationBodyId, SurveillanceNonconformityEntity nonconformity) {
             this.certificationBodyId = certificationBodyId;
             this.nonconformity = nonconformity;
         }
