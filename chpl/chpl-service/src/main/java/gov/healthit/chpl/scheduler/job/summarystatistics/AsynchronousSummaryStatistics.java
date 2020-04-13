@@ -540,7 +540,7 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Map<Long, Long>>(openCAPCountByAcb);
     }
 
-    class NonconformanceStatistic {
+    private class NonconformanceStatistic {
         private Long certificationBodyId;
         private SurveillanceNonconformityEntity nonconformity;
 

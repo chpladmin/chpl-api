@@ -3,6 +3,7 @@ package gov.healthit.chpl.dao.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
@@ -541,6 +542,18 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             resultDtos.add(new CertifiedProductSummaryDTO(entity));
         }
         return resultDtos;
+    }
+
+    public List<CertifiedProductDetailsDTO> getCuresUpdatedListings() {
+        String query = "SELECT cpd "
+                + "FROM CertifiedProductDetailsEntity cpd "
+                + "WHERE cpd.curesUpdate = true "
+                + "AND cpd.deleted = false";
+
+        return entityManager.createQuery(query, CertifiedProductDetailsEntity.class)
+                .getResultList().stream()
+                .map(entity -> new CertifiedProductDetailsDTO(entity))
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = false)

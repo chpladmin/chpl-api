@@ -292,4 +292,5 @@ public class ListingStatisticsDAO extends BaseDAOImpl {
         }
         return cbStats;
     }
+
 }
