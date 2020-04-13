@@ -109,7 +109,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
     private List<List<String>> getAppropriateActivities(final List<CertificationBodyDTO> activeAcbs,
             final Date currentDate) throws EntityRetrievalException {
         List<List<String>> activities = new ArrayList<List<String>>();
-        activities.addAll(createChangeWebsiteRows(activeAcbs, currentDate));
+        activities.addAll(createChangeRequestRows(activeAcbs, currentDate));
         return activities;
     }
 
@@ -157,17 +157,17 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         return row;
     }
 
-    private List<List<String>> createChangeWebsiteRows(final List<CertificationBodyDTO> activeAcbs,
+    private List<List<String>> createChangeRequestRows(final List<CertificationBodyDTO> activeAcbs,
             final Date currentDate)
             throws EntityRetrievalException {
-        LOGGER.debug("Getting change website requests");
+        LOGGER.debug("Getting pending change requests");
         List<ChangeRequest> requests = getChangeRequestsFilteredByACBs(activeAcbs);
         LOGGER.debug("Found " + requests.size() + "pending change requests");
 
         List<List<String>> activityCsvRows = new ArrayList<List<String>>();
         for (ChangeRequest changeRequest : requests) {
             List<String> currRow = createEmptyRow(activeAcbs);
-            putChangeWebsiteActivityInRow(changeRequest, currRow, activeAcbs, currentDate);
+            putChangeRequestActivityInRow(changeRequest, currRow, activeAcbs, currentDate);
             activityCsvRows.add(currRow);
         }
         return activityCsvRows;
@@ -187,7 +187,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
                 .collect(Collectors.<ChangeRequest> toList());
     }
 
-    private void putChangeWebsiteActivityInRow(final ChangeRequest activity,
+    private void putChangeRequestActivityInRow(final ChangeRequest activity,
             final List<String> currRow, final List<CertificationBodyDTO> activeAcbs, final Date currentDate) {
         // Straightforward data
         currRow.set(DEVELOPER_NAME, activity.getDeveloper().getName());
