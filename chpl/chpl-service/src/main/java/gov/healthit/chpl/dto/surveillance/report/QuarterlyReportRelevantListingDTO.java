@@ -12,13 +12,17 @@ import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.listing.ListingWithPrivilegedSurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.report.PrivilegedSurveillanceEntity;
+import lombok.Data;
+import lombok.Singular;
 
+@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class QuarterlyReportRelevantListingDTO extends CertifiedProductDetailsDTO {
     private static final long serialVersionUID = -2198910382314894675L;
     private QuarterlyReportDTO quarterlyReport;
     private boolean isExcluded;
     private String exclusionReason;
+    @Singular
     private List<PrivilegedSurveillanceDTO> surveillances;
 
     public QuarterlyReportRelevantListingDTO() {
@@ -50,6 +54,7 @@ public class QuarterlyReportRelevantListingDTO extends CertifiedProductDetailsDT
         this.setCertificationBodyName(entity.getCertificationBodyName());
         this.setCertificationBodyCode(entity.getCertificationBodyCode());
         this.setCertificationEditionId(entity.getCertificationEditionId());
+        this.setCuresUpdate(entity.getCuresUpdate());
         this.setYear(entity.getYear());
         this.setCertificationStatusId(entity.getCertificationStatusId());
         this.setCertificationStatusName(entity.getCertificationStatusName());
@@ -61,38 +66,6 @@ public class QuarterlyReportRelevantListingDTO extends CertifiedProductDetailsDT
                 this.surveillances.add(new PrivilegedSurveillanceDTO(entitySurv));
             }
         }
-    }
-
-    public boolean isExcluded() {
-        return isExcluded;
-    }
-
-    public void setExcluded(final boolean isExcluded) {
-        this.isExcluded = isExcluded;
-    }
-
-    public String getExclusionReason() {
-        return exclusionReason;
-    }
-
-    public void setExclusionReason(final String exclusionReason) {
-        this.exclusionReason = exclusionReason;
-    }
-
-    public List<PrivilegedSurveillanceDTO> getSurveillances() {
-        return surveillances;
-    }
-
-    public void setSurveillances(final List<PrivilegedSurveillanceDTO> surveillances) {
-        this.surveillances = surveillances;
-    }
-
-    public QuarterlyReportDTO getQuarterlyReport() {
-        return quarterlyReport;
-    }
-
-    public void setQuarterlyReport(final QuarterlyReportDTO quarterlyReport) {
-        this.quarterlyReport = quarterlyReport;
     }
 
     @Override

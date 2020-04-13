@@ -18,6 +18,7 @@ import javax.persistence.EntityNotFoundException;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.ff4j.FF4j;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -35,6 +36,7 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
@@ -212,6 +214,7 @@ public class CertifiedProductManager extends SecuredManager {
     private ActivityManager activityManager;
     private ListingValidatorFactory validatorFactory;
     private CuresUpdateService curesUpdateService;
+    private FF4j ff4j;
 
     private static final int PROD_CODE_LOC = 4;
     private static final int VER_CODE_LOC = 5;
@@ -246,7 +249,7 @@ public class CertifiedProductManager extends SecuredManager {
             CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
             ActivityManager activityManager, ListingValidatorFactory validatorFactory,
-            CuresUpdateService curesUpdateService) {
+            CuresUpdateService curesUpdateService, FF4j ff4j) {
 
         this.msgUtil = msgUtil;
         this.cpDao = cpDao;
@@ -289,6 +292,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.activityManager = activityManager;
         this.validatorFactory = validatorFactory;
         this.curesUpdateService = curesUpdateService;
+        this.ff4j = ff4j;
     }
 
     @Transactional(readOnly = true)
@@ -1001,13 +1005,15 @@ public class CertifiedProductManager extends SecuredManager {
         certEvent.setCertifiedProductId(newCertifiedProduct.getId());
         statusEventDao.create(certEvent);
 
-        CuresUpdateEventDTO curesEvent = new CuresUpdateEventDTO();
-        curesEvent.setCreationDate(new Date());
-        curesEvent.setDeleted(false);
-        curesEvent.setEventDate(certificationDate);
-        curesEvent.setCuresUpdate(curesUpdateService.isCuresUpdate(pendingCp));
-        curesEvent.setCertifiedProductId(newCertifiedProduct.getId());
-        curesUpdateDao.create(curesEvent);
+        if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
+            CuresUpdateEventDTO curesEvent = new CuresUpdateEventDTO();
+            curesEvent.setCreationDate(new Date());
+            curesEvent.setDeleted(false);
+            curesEvent.setEventDate(certificationDate);
+            curesEvent.setCuresUpdate(curesUpdateService.isCuresUpdate(pendingCp));
+            curesEvent.setCertifiedProductId(newCertifiedProduct.getId());
+            curesUpdateDao.create(curesEvent);
+        }
 
         return newCertifiedProduct;
     }
@@ -1880,6 +1886,9 @@ public class CertifiedProductManager extends SecuredManager {
     private int updateCuresUpdateEvents(Long listingId, Boolean existingCuresUpdate,
             CertifiedProductSearchDetails updatedListing) throws EntityCreationException, EntityRetrievalException {
         int numChanges = 0;
+        if (!ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
+            return numChanges;
+        }
         String currentStatus = updatedListing.getCurrentStatus().getStatus().getName();
         if (currentStatus.equalsIgnoreCase(CertificationStatusType.Active.getName())
                 || currentStatus.equalsIgnoreCase(CertificationStatusType.SuspendedByAcb.getName())
