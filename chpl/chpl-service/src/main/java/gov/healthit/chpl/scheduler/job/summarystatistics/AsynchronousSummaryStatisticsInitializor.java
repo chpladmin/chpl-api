@@ -90,6 +90,7 @@ public class AsynchronousSummaryStatisticsInitializor {
 
         Future<Long> uniqueDevelopersCountWithCuresUpdatedListings = null;
         Future<Long> uniqueDevelopersCountWithCuresUpdatedActiveListings = null;
+        Future<Long> uniqueDevelopersCountWithCuresUpdatedSuspendedListings = null;
 
         if (dateRange == null) {
             totalActive2014Listings = asyncStats.getTotalActive2014Listings(listingStatisticsDAO, dateRange);
@@ -129,6 +130,8 @@ public class AsynchronousSummaryStatisticsInitializor {
                     .getUniqueDevelopersCountWithCuresUpdatedListings(certifiedProductDAO);
             uniqueDevelopersCountWithCuresUpdatedActiveListings = asyncStats
                     .getUniqueDevelopersCountWithCuresUpdatedActiveListings(certifiedProductDAO);
+            uniqueDevelopersCountWithCuresUpdatedSuspendedListings = asyncStats
+                    .getUniqueDevelopersCountWithCuresUpdatedSuspendedListings(certifiedProductDAO);
         }
 
         // developers
@@ -201,6 +204,10 @@ public class AsynchronousSummaryStatisticsInitializor {
             stats.setAverageTimeToCloseSurveillance(averageTimeToCloseSurveillance.get());
 
             stats.setUniqueDevelopersCountWithCuresUpdatedListings(uniqueDevelopersCountWithCuresUpdatedListings.get());
+            stats.setUniqueDevelopersCountWithCuresUpdatedActiveListings(
+                    uniqueDevelopersCountWithCuresUpdatedActiveListings.get());
+            stats.setUniqueDevelopersCountWithCuresUpdatedSuspendedListings(
+                    uniqueDevelopersCountWithCuresUpdatedSuspendedListings.get());
         }
 
         // developers

@@ -563,6 +563,17 @@ public class AsynchronousSummaryStatistics {
                         .collect(Collectors.counting()));
     }
 
+    @Async("jobAsyncDataExecutor")
+    @Transactional
+    public Future<Long> getUniqueDevelopersCountWithCuresUpdatedSuspendedListings(CertifiedProductDAO certifiedProductDAO) {
+        return new AsyncResult<Long>(
+                certifiedProductDAO.findCuresUpdatedListings().stream()
+                        .filter(cp -> cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByAcb.getName())
+                                || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByOnc.getName()))
+                        .filter(distinctByKey(cp -> cp.getDeveloper().getId()))
+                        .collect(Collectors.counting()));
+    }
+
     private class NonconformanceStatistic {
         private Long certificationBodyId;
         private SurveillanceNonconformityEntity nonconformity;
