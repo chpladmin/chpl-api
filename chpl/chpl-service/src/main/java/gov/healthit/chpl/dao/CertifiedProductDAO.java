@@ -1,4 +1,4 @@
-package gov.healthit.chpl.dao.impl;
+package gov.healthit.chpl.dao;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,6 +16,7 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -544,7 +545,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         return resultDtos;
     }
 
-    public List<CertifiedProductDetailsDTO> getCuresUpdatedListings() {
+    public List<CertifiedProductDetailsDTO> findCuresUpdatedListings() {
         String query = "SELECT cpd "
                 + "FROM CertifiedProductDetailsEntity cpd "
                 + "WHERE cpd.curesUpdate = true "

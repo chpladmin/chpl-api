@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.statistics.DeveloperStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.ListingStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
@@ -45,17 +46,9 @@ public class AsynchronousSummaryStatisticsInitializor {
     @Autowired
     private SurveillanceStatisticsDAO surveillanceStatisticsDAO;
 
-    /**
-     * Actual call to get the statistics.
-     * 
-     * @param dateRange
-     *            range to find statistics in
-     * @return a Future of type Statistics
-     * @throws InterruptedException
-     *             if retrieval is interrupted
-     * @throws ExecutionException
-     *             if execution fails
-     */
+    @Autowired
+    private CertifiedProductDAO certifiedProductDAO;
+
     @Transactional
     @Async
     public Future<Statistics> getStatistics(DateRange dateRange)
@@ -95,6 +88,8 @@ public class AsynchronousSummaryStatisticsInitializor {
         Future<Map<Long, Long>> closedCAPCountByAcb = null;
         Future<Long> averageTimeToCloseSurveillance = null;
 
+        Future<Long> uniqueDevelopersCountWithCuresUpdatedListings = null;
+
         if (dateRange == null) {
             totalActive2014Listings = asyncStats.getTotalActive2014Listings(listingStatisticsDAO, dateRange);
             totalActive2015Listings = asyncStats.getTotalActive2015Listings(listingStatisticsDAO, dateRange);
@@ -128,6 +123,9 @@ public class AsynchronousSummaryStatisticsInitializor {
             openCAPCountByAcb = asyncStats.getOpenCAPCountByAcb(surveillanceStatisticsDAO);
             closedCAPCountByAcb = asyncStats.getClosedCAPCountByAcb(surveillanceStatisticsDAO);
             averageTimeToCloseSurveillance = asyncStats.getAverageTimeToCloseSurveillance(surveillanceStatisticsDAO);
+
+            uniqueDevelopersCountWithCuresUpdatedListings = asyncStats
+                    .getUniqueDevelopersCountWithCuresUpdatedListings(certifiedProductDAO);
         }
 
         // developers
@@ -155,6 +153,7 @@ public class AsynchronousSummaryStatisticsInitializor {
         Future<Long> total2014Listings = asyncStats.getTotal2014Listings(listingStatisticsDAO, dateRange);
         Future<Long> total2015Listings = asyncStats.getTotal2015Listings(listingStatisticsDAO, dateRange);
         Future<Long> total2011Listings = asyncStats.getTotal2011Listings(listingStatisticsDAO, dateRange);
+
         // surveillance
         Future<Long> totalSurveillanceActivities = asyncStats.getTotalSurveillanceActivities(surveillanceStatisticsDAO,
                 dateRange);
@@ -197,6 +196,8 @@ public class AsynchronousSummaryStatisticsInitializor {
             stats.setOpenCAPCountByAcb(openCAPCountByAcb.get());
             stats.setClosedCAPCountByAcb(closedCAPCountByAcb.get());
             stats.setAverageTimeToCloseSurveillance(averageTimeToCloseSurveillance.get());
+
+            stats.setUniqueDevelopersCountWithCuresUpdatedListings(uniqueDevelopersCountWithCuresUpdatedListings.get());
         }
 
         // developers

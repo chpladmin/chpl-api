@@ -5,7 +5,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -16,6 +19,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.statistics.DeveloperStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.ListingStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
@@ -540,6 +544,15 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Map<Long, Long>>(openCAPCountByAcb);
     }
 
+    @Async("jobAsyncDataExecutor")
+    @Transactional
+    public Future<Long> getUniqueDevelopersCountWithCuresUpdatedListings(CertifiedProductDAO certifiedProductDAO) {
+        return new AsyncResult<Long>(
+                certifiedProductDAO.findCuresUpdatedListings().stream()
+                        .filter(distinctByKey(cp -> cp.getDeveloper().getId()))
+                        .collect(Collectors.counting()));
+    }
+
     private class NonconformanceStatistic {
         private Long certificationBodyId;
         private SurveillanceNonconformityEntity nonconformity;
@@ -592,6 +605,11 @@ public class AsynchronousSummaryStatistics {
         return Math.abs(ChronoUnit.DAYS.between(
                 surveillance.getStartDate().toInstant(),
                 surveillance.getEndDate().toInstant()));
+    }
+
+    private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+        Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
 
     public void setLogger(Logger logger) {
