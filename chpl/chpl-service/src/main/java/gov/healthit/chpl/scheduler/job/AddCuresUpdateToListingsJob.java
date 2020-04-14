@@ -1,5 +1,6 @@
 package gov.healthit.chpl.scheduler.job;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -26,6 +27,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CuresUpdateEventDTO;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
@@ -56,10 +58,16 @@ public class AddCuresUpdateToListingsJob extends QuartzJob {
     @Autowired
     private JpaTransactionManager txManager;
 
+    private List<CertificationStatusType> activeCertificationStatusTypes = new ArrayList<CertificationStatusType>();
+
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Update Listing To Cures Updated job. *********");
+
+        activeCertificationStatusTypes.add(CertificationStatusType.Active);
+        activeCertificationStatusTypes.add(CertificationStatusType.SuspendedByAcb);
+        activeCertificationStatusTypes.add(CertificationStatusType.SuspendedByOnc);
 
         getAll2015Listings().stream()
                 .forEach(dto -> processListing(dto));
@@ -72,7 +80,7 @@ public class AddCuresUpdateToListingsJob extends QuartzJob {
         try {
             LOGGER.info("Retrieving listing information for  (" + cp.getId() + ") " + cp.getChplProductNumber());
             CertifiedProductSearchDetails listing = certifiedProductDetailsManager.getCertifiedProductDetails(cp.getId());
-            if (curesUpdateService.isCuresUpdate(listing)) {
+            if (isListingActive(listing) && curesUpdateService.isCuresUpdate(listing)) {
                 LOGGER.info("************************** Updating " + cp.getId() + " as Cures Updated **************************");
                 updateListingAsCuresUpdated(listing);
             } else {
@@ -81,7 +89,6 @@ public class AddCuresUpdateToListingsJob extends QuartzJob {
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-
     }
 
     private void updateListingAsCuresUpdated(CertifiedProductSearchDetails origListing)
@@ -146,6 +153,13 @@ public class AddCuresUpdateToListingsJob extends QuartzJob {
         dto.setCuresUpdate(curesUpdate);
         dto.setEventDate(eventDate);
         curesUpdateDao.create(dto);
+    }
+
+    private boolean isListingActive(CertifiedProductSearchDetails listing) {
+        return activeCertificationStatusTypes.stream()
+                .filter(status -> status.getName().equals(listing.getCurrentStatus().getStatus().getName()))
+                .findAny()
+                .isPresent();
     }
 
     private List<CertifiedProductDetailsDTO> getAll2015Listings() {
