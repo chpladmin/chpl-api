@@ -1,33 +1,27 @@
 package gov.healthit.chpl.scheduler.presenter;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 
-/**
- * Specific extension for 2014 CSV version of file.
- *
- * @author alarned
- *
- */
 public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresenter {
     @Override
     protected List<String> generateHeaderValues() {
         List<String> result = new ArrayList<String>();
         result.add("Certification Edition");
         result.add("CHPL ID");
+        result.add("Listing Database ID");
         result.add("ONC-ACB Certification ID");
         result.add("Certification Date");
+        result.add("Inactive As Of Date");
+        result.add("Decertified As Of Date");
         result.add("Certification Status");
         result.add("ACB Name");
         result.add("Previous ACB Name");
         result.add("Developer Name");
+        result.add("Developer Database ID");
         result.add("Vendor Street Address");
         result.add("Vendor City");
         result.add("Vendor State");
@@ -37,7 +31,9 @@ public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresent
         result.add("Vendor Contact Email");
         result.add("Vendor Contact Phone");
         result.add("Product Name");
+        result.add("Product Database ID");
         result.add("Version");
+        result.add("Version Database ID");
         result.add("Practice Type");
         result.add("Total Surveillance Activities");
         result.add("Total Nonconformities");
@@ -51,67 +47,33 @@ public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresent
     }
 
     @Override
-    protected List<String> generateRowValue(final CertifiedProductSearchDetails data) {
+    protected List<String> generateRowValue(CertifiedProductSearchDetails listing) {
         List<String> result = new ArrayList<String>();
-        result.add(data.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString());
-        result.add(data.getChplProductNumber());
-        result.add(data.getAcbCertificationId());
-        LocalDateTime date = LocalDateTime.ofInstant(Instant.ofEpochMilli(data.getCertificationDate()),
-                ZoneId.systemDefault());
-        result.add(DateTimeFormatter.ISO_LOCAL_DATE.format(date));
-        result.add(data.getCurrentStatus().getStatus().getName());
-        result.add(data.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
-        result.add(data.getOtherAcb());
-        result.add(data.getDeveloper().getName());
-        if (data.getDeveloper().getAddress() != null) {
-            if (data.getDeveloper().getAddress().getLine1() != null
-                    && data.getDeveloper().getAddress().getLine2() != null) {
-                result.add(data.getDeveloper().getAddress().getLine1()
-                        + data.getDeveloper().getAddress().getLine2());
-            } else {
-                result.add(data.getDeveloper().getAddress().getLine1() == null
-                        ? "" : data.getDeveloper().getAddress().getLine1());
-            }
-            result.add(data.getDeveloper().getAddress().getCity() == null
-                    ? "" : data.getDeveloper().getAddress().getCity());
-            result.add(data.getDeveloper().getAddress().getState() == null
-                    ? "" : data.getDeveloper().getAddress().getState());
-            result.add(data.getDeveloper().getAddress().getZipcode() == null
-                    ? "" : data.getDeveloper().getAddress().getZipcode());
-        } else {
-            result.add("");
-            result.add("");
-            result.add("");
-            result.add("");
-        }
-        result.add(data.getDeveloper().getWebsite() == null
-                ? "" : data.getDeveloper().getWebsite());
-        if (data.getProduct().getContact() != null) {
-            result.add(data.getProduct().getContact().getFullName() == null
-                    ? "" : data.getProduct().getContact().getFullName());
-            result.add(data.getProduct().getContact().getEmail() == null
-                    ? "" : data.getProduct().getContact().getEmail());
-            result.add(data.getProduct().getContact().getPhoneNumber() == null
-                    ? "" : data.getProduct().getContact().getPhoneNumber());
-        } else if (data.getDeveloper().getContact() != null) {
-            result.add(data.getDeveloper().getContact().getFullName() == null
-                    ? "" : data.getDeveloper().getContact().getFullName());
-            result.add(data.getDeveloper().getContact().getEmail() == null
-                    ? "" : data.getDeveloper().getContact().getEmail());
-            result.add(data.getDeveloper().getContact().getPhoneNumber() == null
-                    ? "" : data.getDeveloper().getContact().getPhoneNumber());
-        } else {
-            result.add("");
-            result.add("");
-            result.add("");
-        }
-        result.add(data.getProduct().getName());
-        result.add(data.getVersion().getVersion());
-        result.add(data.getPracticeType().get("name").toString());
-        result.add(data.getCountSurveillance().toString());
-        result.add((data.getCountOpenNonconformities() + data.getCountClosedNonconformities()) + "");
-        result.add(data.getCountOpenNonconformities().toString());
-        List<String> criteria = generateCriteriaValues(data);
+        result.add(formatEdition(listing));
+        result.add(listing.getChplProductNumber());
+        result.add(listing.getId().toString());
+        result.add(listing.getAcbCertificationId());
+        result.add(formatDate(listing.getCertificationDate()));
+        result.add(formatInactiveDate(listing));
+        result.add(formatDecertificationDate(listing));
+        result.add(listing.getCurrentStatus().getStatus().getName());
+        result.add(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
+        result.add(listing.getOtherAcb());
+        result.add(listing.getDeveloper().getName());
+        result.add(listing.getDeveloper().getDeveloperId().toString());
+        result.addAll(getDeveloperAddressCells(listing));
+        result.add(listing.getDeveloper().getWebsite() == null
+                ? "" : listing.getDeveloper().getWebsite());
+        result.addAll(getContactCells(listing));
+        result.add(listing.getProduct().getName());
+        result.add(listing.getProduct().getProductId().toString());
+        result.add(listing.getVersion().getVersion());
+        result.add(listing.getVersion().getVersionId().toString());
+        result.add(listing.getPracticeType().get("name").toString());
+        result.add(listing.getCountSurveillance().toString());
+        result.add((listing.getCountOpenNonconformities() + listing.getCountClosedNonconformities()) + "");
+        result.add(listing.getCountOpenNonconformities().toString());
+        List<String> criteria = generateCriteriaValues(listing);
         result.addAll(criteria);
         return result;
     }
