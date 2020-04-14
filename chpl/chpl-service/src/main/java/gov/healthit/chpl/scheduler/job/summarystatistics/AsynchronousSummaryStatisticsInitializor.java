@@ -89,7 +89,7 @@ public class AsynchronousSummaryStatisticsInitializor {
         Future<Long> averageTimeToCloseSurveillance = null;
 
         Future<List<CertifiedBodyStatistics>> uniqueDevelopersCountWithCuresUpdatedListingsByAcb = null;
-        Future<Long> uniqueDevelopersCountWithCuresUpdatedActiveListings = null;
+        Future<List<CertifiedBodyStatistics>> uniqueDevelopersCountWithCuresUpdatedActiveListingsByAcb = null;
         Future<Long> uniqueDevelopersCountWithCuresUpdatedSuspendedListings = null;
         Future<Long> uniqueProductsCountWithCuresUpdatedListings = null;
 
@@ -129,8 +129,8 @@ public class AsynchronousSummaryStatisticsInitializor {
 
             uniqueDevelopersCountWithCuresUpdatedListingsByAcb = asyncStats
                     .getUniqueDevelopersCountWithCuresUpdatedListingsByAcb(certifiedProductDAO);
-            uniqueDevelopersCountWithCuresUpdatedActiveListings = asyncStats
-                    .getUniqueDevelopersCountWithCuresUpdatedActiveListings(certifiedProductDAO);
+            uniqueDevelopersCountWithCuresUpdatedActiveListingsByAcb = asyncStats
+                    .getUniqueDevelopersCountWithCuresUpdatedActiveListingsByAcb(certifiedProductDAO);
             uniqueDevelopersCountWithCuresUpdatedSuspendedListings = asyncStats
                     .getUniqueDevelopersCountWithCuresUpdatedSuspendedListings(certifiedProductDAO);
             uniqueProductsCountWithCuresUpdatedListings = asyncStats
@@ -207,8 +207,8 @@ public class AsynchronousSummaryStatisticsInitializor {
             stats.setAverageTimeToCloseSurveillance(averageTimeToCloseSurveillance.get());
 
             stats.setUniqueDevelopersCountWithCuresUpdatedListingsByAcb(uniqueDevelopersCountWithCuresUpdatedListingsByAcb.get());
-            stats.setUniqueDevelopersCountWithCuresUpdatedActiveListings(
-                    uniqueDevelopersCountWithCuresUpdatedActiveListings.get());
+            stats.setUniqueDevelopersCountWithCuresUpdatedActiveListingsByAcb(
+                    uniqueDevelopersCountWithCuresUpdatedActiveListingsByAcb.get());
             stats.setUniqueDevelopersCountWithCuresUpdatedSuspendedListings(
                     uniqueDevelopersCountWithCuresUpdatedSuspendedListings.get());
             stats.setUniqueProductsCountWithCuresUpdatedListings(
