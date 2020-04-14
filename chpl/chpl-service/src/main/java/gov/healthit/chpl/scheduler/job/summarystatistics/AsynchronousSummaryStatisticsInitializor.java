@@ -88,9 +88,10 @@ public class AsynchronousSummaryStatisticsInitializor {
         Future<Map<Long, Long>> closedCAPCountByAcb = null;
         Future<Long> averageTimeToCloseSurveillance = null;
 
-        Future<Long> uniqueDevelopersCountWithCuresUpdatedListings = null;
+        Future<List<CertifiedBodyStatistics>> uniqueDevelopersCountWithCuresUpdatedListingsByAcb = null;
         Future<Long> uniqueDevelopersCountWithCuresUpdatedActiveListings = null;
         Future<Long> uniqueDevelopersCountWithCuresUpdatedSuspendedListings = null;
+        Future<Long> uniqueProductsCountWithCuresUpdatedListings = null;
 
         if (dateRange == null) {
             totalActive2014Listings = asyncStats.getTotalActive2014Listings(listingStatisticsDAO, dateRange);
@@ -126,12 +127,14 @@ public class AsynchronousSummaryStatisticsInitializor {
             closedCAPCountByAcb = asyncStats.getClosedCAPCountByAcb(surveillanceStatisticsDAO);
             averageTimeToCloseSurveillance = asyncStats.getAverageTimeToCloseSurveillance(surveillanceStatisticsDAO);
 
-            uniqueDevelopersCountWithCuresUpdatedListings = asyncStats
-                    .getUniqueDevelopersCountWithCuresUpdatedListings(certifiedProductDAO);
+            uniqueDevelopersCountWithCuresUpdatedListingsByAcb = asyncStats
+                    .getUniqueDevelopersCountWithCuresUpdatedListingsByAcb(certifiedProductDAO);
             uniqueDevelopersCountWithCuresUpdatedActiveListings = asyncStats
                     .getUniqueDevelopersCountWithCuresUpdatedActiveListings(certifiedProductDAO);
             uniqueDevelopersCountWithCuresUpdatedSuspendedListings = asyncStats
                     .getUniqueDevelopersCountWithCuresUpdatedSuspendedListings(certifiedProductDAO);
+            uniqueProductsCountWithCuresUpdatedListings = asyncStats
+                    .getUniqueProductsCountWithCuresUpdatedListings(certifiedProductDAO);
         }
 
         // developers
@@ -203,11 +206,13 @@ public class AsynchronousSummaryStatisticsInitializor {
             stats.setClosedCAPCountByAcb(closedCAPCountByAcb.get());
             stats.setAverageTimeToCloseSurveillance(averageTimeToCloseSurveillance.get());
 
-            stats.setUniqueDevelopersCountWithCuresUpdatedListings(uniqueDevelopersCountWithCuresUpdatedListings.get());
+            stats.setUniqueDevelopersCountWithCuresUpdatedListingsByAcb(uniqueDevelopersCountWithCuresUpdatedListingsByAcb.get());
             stats.setUniqueDevelopersCountWithCuresUpdatedActiveListings(
                     uniqueDevelopersCountWithCuresUpdatedActiveListings.get());
             stats.setUniqueDevelopersCountWithCuresUpdatedSuspendedListings(
                     uniqueDevelopersCountWithCuresUpdatedSuspendedListings.get());
+            stats.setUniqueProductsCountWithCuresUpdatedListings(
+                    uniqueProductsCountWithCuresUpdatedListings.get());
         }
 
         // developers
