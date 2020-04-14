@@ -27,6 +27,7 @@ public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresent
         result.add("Vendor State");
         result.add("Vendor Zip Code");
         result.add("Vendor Website");
+        result.add("Self-developer");
         result.add("Vendor Contact Name");
         result.add("Vendor Contact Email");
         result.add("Vendor Contact Phone");
@@ -64,6 +65,7 @@ public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresent
         result.addAll(getDeveloperAddressCells(listing));
         result.add(listing.getDeveloper().getWebsite() == null
                 ? "" : listing.getDeveloper().getWebsite());
+        result.add(formatSelfDeveloper(listing));
         result.addAll(getContactCells(listing));
         result.add(listing.getProduct().getName());
         result.add(listing.getProduct().getProductId().toString());
