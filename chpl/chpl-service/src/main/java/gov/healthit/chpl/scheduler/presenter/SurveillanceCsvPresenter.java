@@ -21,40 +21,22 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
-import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.service.CertificationCriterionService;
 
-/**
- * Writes out all surveillance for all products in the system.
- *
- * @author kekey
- *
- */
 public class SurveillanceCsvPresenter {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceCsvPresenter.class);
     private Environment env;
     private DateTimeFormatter dateFormatter;
     private DateTimeFormatter dateTimeFormatter;
+    private CertificationCriterionService criterionService;
 
-    /**
-     * Constructor with properties.
-     *
-     * @param props
-     *            the properties
-     */
-    public SurveillanceCsvPresenter(final Environment env) {
+    public SurveillanceCsvPresenter(Environment env, CertificationCriterionService criterionService) {
         dateFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd");
         dateTimeFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm Z");
         this.env = env;
+        this.criterionService = criterionService;
     }
 
-    /**
-     * Write out surveillance details to CSV file.
-     *
-     * @param file
-     *            the output file
-     * @param cpList
-     *            list of Certified Products
-     */
     public void presentAsFile(final File file, final List<CertifiedProductSearchDetails> cpList) {
         try (FileWriter writer = new FileWriter(file);
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
@@ -210,7 +192,7 @@ public class SurveillanceCsvPresenter {
             reqRow.add("");
         }
         if (req.getCriterion() != null) {
-            reqRow.add(Util.formatCriteriaNumber(req.getCriterion()));
+            reqRow.add(criterionService.formatCriteriaNumber(req.getCriterion()));
         } else if (req.getRequirement() != null) {
             reqRow.add(req.getRequirement());
         } else {
@@ -227,7 +209,7 @@ public class SurveillanceCsvPresenter {
     protected List<String> generateNonconformityRowValues(final SurveillanceNonconformity nc) {
         List<String> ncRow = new ArrayList<String>();
         if (nc.getCriterion() != null) {
-            ncRow.add(Util.formatCriteriaNumber(nc.getCriterion()));
+            ncRow.add(criterionService.formatCriteriaNumber(nc.getCriterion()));
         } else if (nc.getNonconformityType() != null) {
             ncRow.add(nc.getNonconformityType());
         } else {

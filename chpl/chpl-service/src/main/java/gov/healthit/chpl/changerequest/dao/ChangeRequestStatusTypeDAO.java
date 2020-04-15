@@ -17,7 +17,6 @@ public class ChangeRequestStatusTypeDAO extends BaseDAOImpl {
     public ChangeRequestStatusType getChangeRequestStatusTypeById(Long changeRequestStatusTypeId)
             throws EntityRetrievalException {
         return ChangeRequestConverter.convert(getChangeRequestStatusTypeEntity(changeRequestStatusTypeId));
-
     }
 
     public List<ChangeRequestStatusType> getChangeRequestStatusTypes() {
@@ -35,7 +34,7 @@ public class ChangeRequestStatusTypeDAO extends BaseDAOImpl {
         return result;
     }
 
-    private ChangeRequestStatusTypeEntity getChangeRequestStatusTypeEntity(final Long changeRequestStatusTypeId)
+    private ChangeRequestStatusTypeEntity getChangeRequestStatusTypeEntity(Long changeRequestStatusTypeId)
             throws EntityRetrievalException {
         String hql = "FROM ChangeRequestStatusTypeEntity "
                 + "WHERE (NOT deleted = true) "

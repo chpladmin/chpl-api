@@ -17,7 +17,7 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.service.CertificationCriterionService;
 
 public class Sed2015CsvPresenter {
     private static final Logger LOGGER = LogManager.getLogger(Sed2015CsvPresenter.class);
@@ -25,14 +25,15 @@ public class Sed2015CsvPresenter {
     /**
      * Returns number of rows printed (minus the header)
      */
-    public int presentAsFile(final File file, final List<CertifiedProductSearchDetails> cpList) {
+    public int presentAsFile(File file, List<CertifiedProductSearchDetails> cpList,
+            CertificationCriterionService criterionService) {
         int numRows = 0;
         try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
             writer.write('\ufeff');
             csvPrinter.printRecord(generateHeaderValues());
             for (CertifiedProductSearchDetails currListing : cpList) {
-                List<List<String>> rows = generateRows(currListing);
+                List<List<String>> rows = generateRows(currListing, criterionService);
                 if (rows != null) { // can return null to skip a row
                     for (List<String> row : rows) {
                         csvPrinter.printRecord(row);
@@ -78,7 +79,8 @@ public class Sed2015CsvPresenter {
         return result;
     }
 
-    protected List<List<String>> generateRows(final CertifiedProductSearchDetails listing) {
+    protected List<List<String>> generateRows(final CertifiedProductSearchDetails listing,
+            CertificationCriterionService criterionService) {
         if (!hasTestTasks(listing)) {
             return null;
         }
@@ -102,7 +104,7 @@ public class Sed2015CsvPresenter {
                         if (assocCriteriaStr.length() > 0) {
                             assocCriteriaStr.append(";");
                         }
-                        assocCriteriaStr.append(Util.formatCriteriaNumber(criteria));
+                        assocCriteriaStr.append(criterionService.formatCriteriaNumber(criteria));
                     }
                     row.add(assocCriteriaStr.toString());
                     row.add(testTask.getDescription());
