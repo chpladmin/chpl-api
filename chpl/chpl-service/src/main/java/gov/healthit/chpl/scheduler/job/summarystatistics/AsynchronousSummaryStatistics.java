@@ -604,11 +604,86 @@ public class AsynchronousSummaryStatistics {
 
     @Async("jobAsyncDataExecutor")
     @Transactional
-    public Future<Long> getUniqueProductsCountWithCuresUpdatedListings(CertifiedProductDAO certifiedProductDAO) {
-        return new AsyncResult<Long>(
-                certifiedProductDAO.findCuresUpdatedListings().stream()
-                        .filter(distinctByKey(cp -> cp.getProduct().getId()))
-                        .collect(Collectors.counting()));
+    public Future<List<CertifiedBodyStatistics>> getUniqueProductsCountWithCuresUpdatedListingsByAcb(
+            CertifiedProductDAO certifiedProductDAO) {
+        return new AsyncResult<List<CertifiedBodyStatistics>>(certifiedProductDAO.findCuresUpdatedListings().stream()
+                .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
+                .entrySet().stream()
+                .map(entry -> {
+                    CertifiedBodyStatistics stat = new CertifiedBodyStatistics();
+                    stat.setName(entry.getKey());
+                    stat.setTotalListings(entry.getValue().stream()
+                            .filter(distinctByKey(cp -> cp.getProduct().getId()))
+                            .collect(Collectors.counting()));
+                    return stat;
+                })
+                .collect(Collectors.toList()));
+    }
+
+    @Async("jobAsyncDataExecutor")
+    @Transactional
+    public Future<List<CertifiedBodyStatistics>> getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(
+            CertifiedProductDAO certifiedProductDAO) {
+        return new AsyncResult<List<CertifiedBodyStatistics>>(certifiedProductDAO.findCuresUpdatedListings().stream()
+                .filter(listing -> listing.getCertificationStatusName().equals(CertificationStatusType.Active.getName()))
+                .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
+                .entrySet().stream()
+                .map(entry -> {
+                    CertifiedBodyStatistics stat = new CertifiedBodyStatistics();
+                    stat.setName(entry.getKey());
+                    stat.setTotalListings(entry.getValue().stream()
+                            .filter(distinctByKey(cp -> cp.getProduct().getId()))
+                            .collect(Collectors.counting()));
+                    return stat;
+                })
+                .collect(Collectors.toList()));
+    }
+
+    @Async("jobAsyncDataExecutor")
+    @Transactional
+    public Future<List<CertifiedBodyStatistics>> getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(
+            CertifiedProductDAO certifiedProductDAO) {
+        return new AsyncResult<List<CertifiedBodyStatistics>>(certifiedProductDAO.findCuresUpdatedListings().stream()
+                .filter(cp -> cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByAcb.getName())
+                        || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByOnc.getName()))
+                .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
+                .entrySet().stream()
+                .map(entry -> {
+                    CertifiedBodyStatistics stat = new CertifiedBodyStatistics();
+                    stat.setName(entry.getKey());
+                    stat.setTotalListings(entry.getValue().stream()
+                            .filter(distinctByKey(cp -> cp.getProduct().getId()))
+                            .collect(Collectors.counting()));
+                    return stat;
+                })
+                .collect(Collectors.toList()));
+    }
+
+    @Async("jobAsyncDataExecutor")
+    @Transactional
+    public Future<List<CertifiedBodyStatistics>> getActiveListingCountWithCuresUpdatedByAcb(
+            CertifiedProductDAO certifiedProductDAO) {
+        return new AsyncResult<List<CertifiedBodyStatistics>>(certifiedProductDAO.findCuresUpdatedListings().stream()
+                .filter(cp -> cp.getCertificationStatusName().equals(CertificationStatusType.Active.getName())
+                        || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByAcb.getName())
+                        || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByOnc.getName()))
+                .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
+                .entrySet().stream()
+                .map(entry -> {
+                    CertifiedBodyStatistics stat = new CertifiedBodyStatistics();
+                    stat.setName(entry.getKey());
+                    stat.setTotalListings(entry.getValue().stream()
+                            .collect(Collectors.counting()));
+                    return stat;
+                })
+                .collect(Collectors.toList()));
+    }
+
+    @Async("jobAsyncDataExecutor")
+    @Transactional
+    public Future<Long> getAllListingsCountWithCuresUpdated(
+            CertifiedProductDAO certifiedProductDAO) {
+        return new AsyncResult<Long>(Long.valueOf(certifiedProductDAO.findCuresUpdatedListings().size()));
     }
 
     private class NonconformanceStatistic {

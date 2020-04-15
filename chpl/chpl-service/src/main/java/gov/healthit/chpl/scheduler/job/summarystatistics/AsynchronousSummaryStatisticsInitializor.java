@@ -91,7 +91,14 @@ public class AsynchronousSummaryStatisticsInitializor {
         Future<List<CertifiedBodyStatistics>> uniqueDevelopersCountWithCuresUpdatedListingsByAcb = null;
         Future<List<CertifiedBodyStatistics>> uniqueDevelopersCountWithCuresUpdatedActiveListingsByAcb = null;
         Future<List<CertifiedBodyStatistics>> uniqueDevelopersCountWithCuresUpdatedSuspendedListingsByAcb = null;
-        Future<Long> uniqueProductsCountWithCuresUpdatedListings = null;
+
+        Future<List<CertifiedBodyStatistics>> uniqueProductsCountWithCuresUpdatedListingsByAcb = null;
+        Future<List<CertifiedBodyStatistics>> uniqueProductsCountWithCuresUpdatedActiveListingsByAcb = null;
+        Future<List<CertifiedBodyStatistics>> uniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb = null;
+
+        Future<List<CertifiedBodyStatistics>> activeListingCountWithCuresUpdatedByAcb = null;
+
+        Future<Long> allListingsCountWithCuresUpdated = null;
 
         if (dateRange == null) {
             totalActive2014Listings = asyncStats.getTotalActive2014Listings(listingStatisticsDAO, dateRange);
@@ -133,8 +140,18 @@ public class AsynchronousSummaryStatisticsInitializor {
                     .getUniqueDevelopersCountWithCuresUpdatedActiveListingsByAcb(certifiedProductDAO);
             uniqueDevelopersCountWithCuresUpdatedSuspendedListingsByAcb = asyncStats
                     .getUniqueDevelopersCountWithCuresUpdatedSuspendedListingsByAcb(certifiedProductDAO);
-            uniqueProductsCountWithCuresUpdatedListings = asyncStats
-                    .getUniqueProductsCountWithCuresUpdatedListings(certifiedProductDAO);
+
+            uniqueProductsCountWithCuresUpdatedListingsByAcb = asyncStats
+                    .getUniqueProductsCountWithCuresUpdatedListingsByAcb(certifiedProductDAO);
+            uniqueProductsCountWithCuresUpdatedActiveListingsByAcb = asyncStats
+                    .getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(certifiedProductDAO);
+            uniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb = asyncStats
+                    .getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(certifiedProductDAO);
+
+            activeListingCountWithCuresUpdatedByAcb = asyncStats
+                    .getActiveListingCountWithCuresUpdatedByAcb(certifiedProductDAO);
+
+            allListingsCountWithCuresUpdated = asyncStats.getAllListingsCountWithCuresUpdated(certifiedProductDAO);
         }
 
         // developers
@@ -211,8 +228,16 @@ public class AsynchronousSummaryStatisticsInitializor {
                     uniqueDevelopersCountWithCuresUpdatedActiveListingsByAcb.get());
             stats.setUniqueDevelopersCountWithCuresUpdatedSuspendedListingsByAcb(
                     uniqueDevelopersCountWithCuresUpdatedSuspendedListingsByAcb.get());
-            stats.setUniqueProductsCountWithCuresUpdatedListings(
-                    uniqueProductsCountWithCuresUpdatedListings.get());
+
+            stats.setUniqueProductsCountWithCuresUpdatedListingsByAcb(uniqueProductsCountWithCuresUpdatedListingsByAcb.get());
+            stats.setUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(
+                    uniqueProductsCountWithCuresUpdatedActiveListingsByAcb.get());
+            stats.setUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(
+                    uniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb.get());
+
+            stats.setActiveListingCountWithCuresUpdatedByAcb(activeListingCountWithCuresUpdatedByAcb.get());
+
+            stats.setAllListingsCountWithCuresUpdated(allListingsCountWithCuresUpdated.get());
         }
 
         // developers
