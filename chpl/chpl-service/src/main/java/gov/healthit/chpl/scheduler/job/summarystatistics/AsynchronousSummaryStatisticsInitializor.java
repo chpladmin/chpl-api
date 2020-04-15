@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.statistics.DeveloperStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.ListingStatisticsDAO;
@@ -48,6 +49,9 @@ public class AsynchronousSummaryStatisticsInitializor {
 
     @Autowired
     private CertifiedProductDAO certifiedProductDAO;
+
+    @Autowired
+    private CertificationResultDAO certificationResultDAO;
 
     @Transactional
     @Async
@@ -99,6 +103,7 @@ public class AsynchronousSummaryStatisticsInitializor {
         Future<List<CertifiedBodyStatistics>> activeListingCountWithCuresUpdatedByAcb = null;
 
         Future<Long> allListingsCountWithCuresUpdated = null;
+        Future<Long> allListingsCountWithCuresUpdatedWithAlternativeTestMethods = null;
 
         if (dateRange == null) {
             totalActive2014Listings = asyncStats.getTotalActive2014Listings(listingStatisticsDAO, dateRange);
@@ -152,6 +157,8 @@ public class AsynchronousSummaryStatisticsInitializor {
                     .getActiveListingCountWithCuresUpdatedByAcb(certifiedProductDAO);
 
             allListingsCountWithCuresUpdated = asyncStats.getAllListingsCountWithCuresUpdated(certifiedProductDAO);
+            allListingsCountWithCuresUpdatedWithAlternativeTestMethods = asyncStats
+                    .getAllListingsCountWithCuresUpdatedWithAlternativeTestMethods(certifiedProductDAO, certificationResultDAO);
         }
 
         // developers
@@ -238,6 +245,8 @@ public class AsynchronousSummaryStatisticsInitializor {
             stats.setActiveListingCountWithCuresUpdatedByAcb(activeListingCountWithCuresUpdatedByAcb.get());
 
             stats.setAllListingsCountWithCuresUpdated(allListingsCountWithCuresUpdated.get());
+            stats.setAllListingsCountWithCuresUpdatedWithAlternativeTestMethods(
+                    allListingsCountWithCuresUpdatedWithAlternativeTestMethods.get());
         }
 
         // developers

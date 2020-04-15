@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
@@ -104,7 +105,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
 
     }
 
-
     public CertificationResultDTO update(CertificationResultDTO toUpdate) throws EntityRetrievalException {
         CertificationResultEntity entity = getEntityById(toUpdate.getId());
         entity.setCertificationCriterionId(toUpdate.getCertificationCriterionId());
@@ -133,7 +133,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
         return new CertificationResultDTO(entity);
     }
 
-
     public void delete(Long resultId) {
 
         // TODO: How to delete this without leaving orphans
@@ -144,7 +143,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
 
     }
 
-
     public void deleteByCertifiedProductId(Long certifiedProductId) {
 
         // TODO: How to delete this without leaving orphans
@@ -154,7 +152,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
         query.executeUpdate();
 
     }
-
 
     public CertificationResultDTO getById(Long resultId) throws EntityRetrievalException {
 
@@ -200,7 +197,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
         return result;
     }
 
-
     public List<CertificationResultDTO> findByCertifiedProductId(Long certifiedProductId) {
         List<CertificationResultEntity> entities = getEntitiesByCertifiedProductId(certifiedProductId);
         List<CertificationResultDTO> cqmResults = new ArrayList<>();
@@ -237,7 +233,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
      *
      *******************************************************/
 
-
     public List<CertificationResultUcdProcessDTO> getUcdProcessesForCertificationResult(Long certificationResultId) {
 
         List<CertificationResultUcdProcessEntity> entities = getUcdProcessesForCertification(certificationResultId);
@@ -248,7 +243,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
         }
         return dtos;
     }
-
 
     public CertificationResultUcdProcessDTO lookupUcdProcessMapping(Long certificationResultId, Long ucdProcessId) {
         Query query = entityManager.createQuery("SELECT up " + "FROM CertificationResultUcdProcessEntity up "
@@ -352,7 +346,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
      * Additional Software for Certification Results
      *
      *******************************************************/
-
 
     public List<CertificationResultAdditionalSoftwareDTO> getAdditionalSoftwareForCertificationResult(
             Long certificationResultId) {
@@ -468,13 +461,12 @@ public class CertificationResultDAO extends BaseDAOImpl {
         return result;
     }
 
-
     public boolean getCertifiedProductHasAdditionalSoftware(Long certifiedProductId) {
         // This needs to be a native query since the is no relationship between
         // CertificationResultEntity
         // and CertificationResultAdditionalSoftwareEntity defined.
         Query query = entityManager.createNativeQuery(
-                        "select count(cr.certification_result_id) "
+                "select count(cr.certification_result_id) "
                         + "from " + SCHEMA_NAME + ".certification_result cr "
                         + "    inner join " + SCHEMA_NAME + ".certification_result_additional_software cras"
                         + "        on cr.certification_result_id = cras.certification_result_id "
@@ -491,7 +483,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
      *
      *******************************************************/
 
-
     public List<CertificationResultTestStandardDTO> getTestStandardsForCertificationResult(final Long certificationResultId) {
 
         List<CertificationResultTestStandardEntity> entities = getTestStandardsForCertification(certificationResultId);
@@ -503,7 +494,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
         }
         return dtos;
     }
-
 
     public CertificationResultTestStandardDTO addTestStandardMapping(CertificationResultTestStandardDTO dto)
             throws EntityCreationException {
@@ -520,7 +510,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
         return new CertificationResultTestStandardDTO(mapping);
     }
 
-
     public void deleteTestStandardMapping(Long mappingId) {
         CertificationResultTestStandardEntity toDelete = getCertificationResultTestStandardById(mappingId);
         if (toDelete != null) {
@@ -531,7 +520,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
             entityManager.flush();
         }
     }
-
 
     public CertificationResultTestStandardDTO lookupTestStandardMapping(Long certificationResultId,
             Long testStandardId) {
@@ -587,7 +575,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
      *
      *******************************************************/
 
-
     public List<CertificationResultTestToolDTO> getTestToolsForCertificationResult(Long certificationResultId) {
 
         List<CertificationResultTestToolEntity> entities = getTestToolsForCertification(certificationResultId);
@@ -599,7 +586,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
         }
         return dtos;
     }
-
 
     public CertificationResultTestToolDTO addTestToolMapping(CertificationResultTestToolDTO dto)
             throws EntityCreationException {
@@ -622,7 +608,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
 
         return new CertificationResultTestToolDTO(mapping);
     }
-
 
     public void deleteTestToolMapping(Long mappingId) {
         CertificationResultTestToolEntity toDelete = getCertificationResultTestToolById(mappingId);
@@ -669,7 +654,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
      *
      *******************************************************/
 
-
     public List<CertificationResultMacraMeasureDTO> getG1MacraMeasuresForCertificationResult(
             Long certificationResultId) {
 
@@ -683,7 +667,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
         }
         return dtos;
     }
-
 
     public CertificationResultMacraMeasureDTO addG1MacraMeasureMapping(CertificationResultMacraMeasureDTO dto)
             throws EntityCreationException {
@@ -699,7 +682,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
 
         return new CertificationResultMacraMeasureDTO(mapping);
     }
-
 
     public void deleteG1MacraMeasureMapping(Long certificationResultId, Long macraMeasureId) {
         CertificationResultG1MacraMeasureEntity toDelete = getCertificationResultG1MacraMeasure(certificationResultId,
@@ -756,7 +738,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
      *
      *******************************************************/
 
-
     public List<CertificationResultMacraMeasureDTO> getG2MacraMeasuresForCertificationResult(
             Long certificationResultId) {
 
@@ -770,7 +751,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
         }
         return dtos;
     }
-
 
     public CertificationResultMacraMeasureDTO addG2MacraMeasureMapping(CertificationResultMacraMeasureDTO dto)
             throws EntityCreationException {
@@ -786,7 +766,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
 
         return new CertificationResultMacraMeasureDTO(mapping);
     }
-
 
     public void deleteG2MacraMeasureMapping(Long certResultId, Long macraId) {
         CertificationResultG2MacraMeasureEntity toDelete = getCertificationResultG2MacraMeasureById(certResultId,
@@ -842,7 +821,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
      * Test Data for Certification Results
      *
      *******************************************************/
-
 
     public List<CertificationResultTestDataDTO> getTestDataForCertificationResult(Long certificationResultId) {
 
@@ -946,7 +924,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
      *
      *******************************************************/
 
-
     public List<CertificationResultTestProcedureDTO> getTestProceduresForCertificationResult(
             Long certificationResultId) {
 
@@ -961,6 +938,11 @@ public class CertificationResultDAO extends BaseDAOImpl {
         return dtos;
     }
 
+    public List<CertificationResultTestProcedureDTO> getTestProceduresForListing(Long listingId) {
+        return getTestProcedureEntitiesForListing(listingId).stream()
+                .map(tp -> new CertificationResultTestProcedureDTO(tp))
+                .collect(Collectors.toList());
+    }
 
     public CertificationResultTestProcedureDTO addTestProcedureMapping(CertificationResultTestProcedureDTO dto)
             throws EntityCreationException {
@@ -977,7 +959,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
 
         return new CertificationResultTestProcedureDTO(mapping);
     }
-
 
     public void deleteTestProcedureMapping(Long mappingId) {
         CertificationResultTestProcedureEntity toDelete = getCertificationResultTestProcedureById(mappingId);
@@ -1021,11 +1002,26 @@ public class CertificationResultDAO extends BaseDAOImpl {
         return result;
     }
 
+    private List<CertificationResultTestProcedureEntity> getTestProcedureEntitiesForListing(Long listingId) {
+
+        String hql = "SELECT tp "
+                + "FROM CertificationResultTestProcedureEntity tp "
+                + "LEFT OUTER JOIN FETCH tp.testProcedure "
+                + "WHERE (NOT tp.deleted = true) "
+                + "AND tp.certificationResultId IN "
+                + "(SELECT cr.id "
+                + "FROM CertificationResultEntity cr "
+                + "WHERE cr.certifiedProductId = :listingId)";
+
+        return entityManager.createQuery(hql, CertificationResultTestProcedureEntity.class)
+                .setParameter("listingId", listingId)
+                .getResultList();
+    }
+
     /******************************************************
      * Test Functionality for Certification Results
      *
      *******************************************************/
-
 
     public List<CertificationResultTestFunctionalityDTO> getTestFunctionalityForCertificationResult(
             Long certificationResultId) {
@@ -1103,7 +1099,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
      *
      *******************************************************/
 
-
     public List<CertificationResultTestTaskDTO> getTestTasksForCertificationResult(Long certificationResultId) {
 
         List<CertificationResultTestTaskEntity> entities = getTestTasksForCertification(certificationResultId);
@@ -1115,7 +1110,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
         }
         return dtos;
     }
-
 
     public CertificationResultTestTaskDTO addTestTaskMapping(CertificationResultTestTaskDTO dto)
             throws EntityCreationException {
@@ -1136,7 +1130,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
         }
         return new CertificationResultTestTaskDTO(mapping);
     }
-
 
     public void deleteTestTaskMapping(Long certResultId, Long taskId) {
         Query query = entityManager.createQuery(
@@ -1238,7 +1231,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
 
         return participant;
     }
-
 
     public void deleteTestParticipantMapping(Long testTaskId, Long testParticipantId) {
         Query query = entityManager.createQuery("SELECT mapping " + "FROM TestTaskParticipantMapEntity mapping "

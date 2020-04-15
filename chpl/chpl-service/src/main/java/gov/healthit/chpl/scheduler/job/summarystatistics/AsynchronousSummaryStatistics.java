@@ -19,6 +19,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.statistics.DeveloperStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.ListingStatisticsDAO;
@@ -684,6 +685,22 @@ public class AsynchronousSummaryStatistics {
     public Future<Long> getAllListingsCountWithCuresUpdated(
             CertifiedProductDAO certifiedProductDAO) {
         return new AsyncResult<Long>(Long.valueOf(certifiedProductDAO.findCuresUpdatedListings().size()));
+    }
+
+    @Async("jobAsyncDataExecutor")
+    @Transactional
+    public Future<Long> getAllListingsCountWithCuresUpdatedWithAlternativeTestMethods(
+            CertifiedProductDAO certifiedProductDAO, CertificationResultDAO certificationResultDAO) {
+        return new AsyncResult<Long>(certifiedProductDAO.findCuresUpdatedListings().stream()
+                .filter(cp -> doesListingHaveAlternativeTestMethod(cp.getId(), certificationResultDAO))
+                .count());
+    }
+
+    private boolean doesListingHaveAlternativeTestMethod(Long listingId, CertificationResultDAO certificationResultDAO) {
+        return certificationResultDAO.getTestProceduresForListing(listingId).stream()
+                .filter(crtp -> !crtp.getTestProcedure().getName().equals("ONC Test Method"))
+                .findAny()
+                .isPresent();
     }
 
     private class NonconformanceStatistic {
