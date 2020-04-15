@@ -936,5 +936,20 @@
                 </entry>
             </job-data-map>
         </job>
+        <!--  Update 2015 listings as Cures Updated, where appropriate -->
+        <job>
+            <name>addCuresUpdateToListings</name>
+            <group>systemJobs</group>
+            <description>Updates existing 2015 listings as Cures Updated if they meet the necessary requirements</description>
+            <job-class>gov.healthit.chpl.scheduler.job.AddCuresUpdateToListingsJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+            </job-data-map>
+        </job>
     </schedule>
 </job-scheduling-data>
