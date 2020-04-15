@@ -69,9 +69,9 @@ public class Statistics implements Serializable {
     private List<CertifiedBodyStatistics> uniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb;
 
     private List<CertifiedBodyStatistics> activeListingCountWithCuresUpdatedByAcb;
+    private List<CertifiedBodyStatistics> listingCountWithCuresUpdatedAndAltTestMethodsByAcb;
 
     private Long allListingsCountWithCuresUpdated;
-    private Long allListingsCountWithCuresUpdatedWithAlternativeTestMethods;
 
     public List<CertifiedBodyStatistics> getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear() {
         return totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear;

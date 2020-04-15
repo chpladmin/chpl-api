@@ -97,9 +97,9 @@ public class AsynchronousSummaryStatisticsInitializor {
         Future<List<CertifiedBodyStatistics>> uniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb = null;
 
         Future<List<CertifiedBodyStatistics>> activeListingCountWithCuresUpdatedByAcb = null;
+        Future<List<CertifiedBodyStatistics>> listingCountWithCuresUpdatedAndAltTestMethodsByAcb = null;
 
         Future<Long> allListingsCountWithCuresUpdated = null;
-        Future<Long> allListingsCountWithCuresUpdatedWithAlternativeTestMethods = null;
 
         if (dateRange == null) {
             totalActive2014Listings = asyncStats.getTotalActive2014Listings(listingStatisticsDAO, dateRange);
@@ -151,10 +151,10 @@ public class AsynchronousSummaryStatisticsInitializor {
 
             activeListingCountWithCuresUpdatedByAcb = asyncStats
                     .getActiveListingCountWithCuresUpdatedByAcb(certifiedProductDAO);
+            listingCountWithCuresUpdatedAndAltTestMethodsByAcb = asyncStats
+                    .getListingCountWithCuresUpdatedAndAltTestMethodsByAcb(certifiedProductDAO, certificationResultDAO);
 
             allListingsCountWithCuresUpdated = asyncStats.getAllListingsCountWithCuresUpdated(certifiedProductDAO);
-            allListingsCountWithCuresUpdatedWithAlternativeTestMethods = asyncStats
-                    .getAllListingsCountWithCuresUpdatedWithAlternativeTestMethods(certifiedProductDAO, certificationResultDAO);
         }
 
         // developers
@@ -239,10 +239,9 @@ public class AsynchronousSummaryStatisticsInitializor {
                     uniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb.get());
 
             stats.setActiveListingCountWithCuresUpdatedByAcb(activeListingCountWithCuresUpdatedByAcb.get());
+            stats.setListingCountWithCuresUpdatedAndAltTestMethodsByAcb(listingCountWithCuresUpdatedAndAltTestMethodsByAcb.get());
 
             stats.setAllListingsCountWithCuresUpdated(allListingsCountWithCuresUpdated.get());
-            stats.setAllListingsCountWithCuresUpdatedWithAlternativeTestMethods(
-                    allListingsCountWithCuresUpdatedWithAlternativeTestMethods.get());
         }
 
         // developers

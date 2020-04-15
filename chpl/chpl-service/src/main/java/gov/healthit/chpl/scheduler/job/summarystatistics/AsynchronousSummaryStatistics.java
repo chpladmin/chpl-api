@@ -682,6 +682,24 @@ public class AsynchronousSummaryStatistics {
 
     @Async("jobAsyncDataExecutor")
     @Transactional
+    public Future<List<CertifiedBodyStatistics>> getListingCountWithCuresUpdatedAndAltTestMethodsByAcb(
+            CertifiedProductDAO certifiedProductDAO, CertificationResultDAO certificationResultDAO) {
+        return new AsyncResult<List<CertifiedBodyStatistics>>(certifiedProductDAO.findCuresUpdatedListings().stream()
+                .filter(cp -> doesListingHaveAlternativeTestMethod(cp.getId(), certificationResultDAO))
+                .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
+                .entrySet().stream()
+                .map(entry -> {
+                    CertifiedBodyStatistics stat = new CertifiedBodyStatistics();
+                    stat.setName(entry.getKey());
+                    stat.setTotalListings(entry.getValue().stream()
+                            .collect(Collectors.counting()));
+                    return stat;
+                })
+                .collect(Collectors.toList()));
+    }
+
+    @Async("jobAsyncDataExecutor")
+    @Transactional
     public Future<Long> getAllListingsCountWithCuresUpdated(
             CertifiedProductDAO certifiedProductDAO) {
         return new AsyncResult<Long>(Long.valueOf(certifiedProductDAO.findCuresUpdatedListings().size()));
