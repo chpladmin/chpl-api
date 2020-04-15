@@ -483,7 +483,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
      *
      *******************************************************/
 
-    public List<CertificationResultTestStandardDTO> getTestStandardsForCertificationResult(final Long certificationResultId) {
+    public List<CertificationResultTestStandardDTO> getTestStandardsForCertificationResult(Long certificationResultId) {
 
         List<CertificationResultTestStandardEntity> entities = getTestStandardsForCertification(certificationResultId);
         List<CertificationResultTestStandardDTO> dtos = new ArrayList<CertificationResultTestStandardDTO>();
@@ -889,7 +889,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
         }
     }
 
-    private CertificationResultTestDataEntity getCertificationResultTestDataById(final Long id) {
+    private CertificationResultTestDataEntity getCertificationResultTestDataById(Long id) {
         CertificationResultTestDataEntity entity = null;
 
         Query query = entityManager.createQuery(
@@ -905,7 +905,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
         return entity;
     }
 
-    private List<CertificationResultTestDataEntity> getTestDataForCertification(final Long certificationResultId) {
+    private List<CertificationResultTestDataEntity> getTestDataForCertification(Long certificationResultId) {
         Query query = entityManager.createQuery(
                 "SELECT td " + "FROM CertificationResultTestDataEntity td " + "LEFT JOIN FETCH td.testData "
                         + "WHERE (NOT td.deleted = true) " + "AND (td.certificationResultId = :certificationResultId) ",
@@ -971,7 +971,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
         }
     }
 
-    private CertificationResultTestProcedureEntity getCertificationResultTestProcedureById(final Long id) {
+    private CertificationResultTestProcedureEntity getCertificationResultTestProcedureById(Long id) {
         CertificationResultTestProcedureEntity entity = null;
 
         Query query = entityManager.createQuery("SELECT tp " + "FROM CertificationResultTestProcedureEntity tp "
@@ -987,7 +987,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
     }
 
     private List<CertificationResultTestProcedureEntity> getTestProceduresForCertification(
-            final Long certificationResultId) {
+            Long certificationResultId) {
         Query query = entityManager.createQuery(
                 "SELECT tp " + "FROM CertificationResultTestProcedureEntity tp "
                         + "LEFT OUTER JOIN FETCH tp.testProcedure " + "WHERE (NOT tp.deleted = true) "

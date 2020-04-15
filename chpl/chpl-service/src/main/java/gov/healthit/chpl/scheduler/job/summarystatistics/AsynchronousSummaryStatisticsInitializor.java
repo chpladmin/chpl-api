@@ -24,34 +24,30 @@ import gov.healthit.chpl.domain.statistics.CertifiedBodyAltTestStatistics;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import gov.healthit.chpl.domain.statistics.Statistics;
 
-/**
- * Initializes statistics retrieval.
- * 
- * @author alarned
- *
- */
 @Component("asynchronousSummaryStatisticsInitializor")
 @EnableAsync
 public class AsynchronousSummaryStatisticsInitializor {
     private Logger logger;
 
-    @Autowired
     private AsynchronousSummaryStatistics asyncStats;
-
-    @Autowired
     private DeveloperStatisticsDAO developerStatisticsDAO;
-
-    @Autowired
     private ListingStatisticsDAO listingStatisticsDAO;
-
-    @Autowired
     private SurveillanceStatisticsDAO surveillanceStatisticsDAO;
-
-    @Autowired
     private CertifiedProductDAO certifiedProductDAO;
+    private CertificationResultDAO certificationResultDAO;
 
     @Autowired
-    private CertificationResultDAO certificationResultDAO;
+    public AsynchronousSummaryStatisticsInitializor(AsynchronousSummaryStatistics asyncStats,
+            DeveloperStatisticsDAO developerStatisticsDAO, ListingStatisticsDAO listingStatisticsDAO,
+            SurveillanceStatisticsDAO surveillanceStatisticsDAO, CertifiedProductDAO certifiedProductDAO,
+            CertificationResultDAO certificationResultDAO) {
+        this.asyncStats = asyncStats;
+        this.developerStatisticsDAO = developerStatisticsDAO;
+        this.listingStatisticsDAO = listingStatisticsDAO;
+        this.surveillanceStatisticsDAO = surveillanceStatisticsDAO;
+        this.certifiedProductDAO = certifiedProductDAO;
+        this.certificationResultDAO = certificationResultDAO;
+    }
 
     @Transactional
     @Async
