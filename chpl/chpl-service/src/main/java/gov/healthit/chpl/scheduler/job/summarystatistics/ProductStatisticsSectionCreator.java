@@ -11,7 +11,7 @@ public class ProductStatisticsSectionCreator extends StatisticsSectionCreator {
     private static int EDITION2014 = 2014;
 
     public String build(Statistics stats, List<CertificationBodyDTO> activeAcbs) {
-        return buildUniqueProductSection(stats, activeAcbs);
+        return buildUniqueProductSection(stats, new StatisticsMassager(activeAcbs));
     }
 
     @Override
@@ -19,7 +19,7 @@ public class ProductStatisticsSectionCreator extends StatisticsSectionCreator {
         return stat.getTotalListings();
     }
 
-    private String buildUniqueProductSection(Statistics stats, List<CertificationBodyDTO> activeAcbs) {
+    private String buildUniqueProductSection(Statistics stats, StatisticsMassager massager) {
         StringBuilder section = new StringBuilder();
 
         section.append(buildHeader("Total # of Certified Unique Products Regardless of Status or Edition - Including 2011)",
@@ -29,36 +29,38 @@ public class ProductStatisticsSectionCreator extends StatisticsSectionCreator {
         section.append(buildSection(
                 "Total # of Unique Products with 2014 Listings (Regardless of Status)",
                 stats.getTotalCPs2014Listings(),
-                getStatisticsByEdition(stats.getTotalCPListingsEachYearByCertifiedBody(), EDITION2014, activeAcbs)));
+                massager.getStatisticsByEdition(stats.getTotalCPListingsEachYearByCertifiedBody(), EDITION2014)));
 
         section.append(buildSection(
                 "Total # of Unique Products with Active 2014 Listings",
                 stats.getTotalCPsActive2014Listings(),
-                getStatisticsByStatusAndEdition(stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(), "Active",
-                        EDITION2014, activeAcbs)));
+                massager.getStatisticsByStatusAndEdition(stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(),
+                        "Active",
+                        EDITION2014)));
 
         section.append(buildSection(
                 "Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2014 Listings",
                 stats.getTotalCPsSuspended2014Listings(),
-                getStatisticsByStatusAndEdition(stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(),
-                        "Suspended", EDITION2014, activeAcbs)));
+                massager.getStatisticsByStatusAndEdition(stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(),
+                        "Suspended", EDITION2014)));
 
         section.append(buildSection(
                 "Total # of Unique Products with 2015 Listings (Regardless of Status)",
                 stats.getTotalCPs2015Listings(),
-                getStatisticsByEdition(stats.getTotalCPListingsEachYearByCertifiedBody(), EDITION2015, activeAcbs)));
+                massager.getStatisticsByEdition(stats.getTotalCPListingsEachYearByCertifiedBody(), EDITION2015)));
 
         section.append(buildSection(
                 "Total # of Unique Products with Active 2015 Listings",
                 stats.getTotalCPsActive2015Listings(),
-                getStatisticsByStatusAndEdition(stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(), "Active",
-                        EDITION2015, activeAcbs)));
+                massager.getStatisticsByStatusAndEdition(stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(),
+                        "Active",
+                        EDITION2015)));
 
         section.append(buildSection(
                 "Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015 Listings",
                 stats.getTotalCPsSuspended2015Listings(),
-                getStatisticsByStatusAndEdition(stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(),
-                        "Suspended", EDITION2015, activeAcbs)));
+                massager.getStatisticsByStatusAndEdition(stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(),
+                        "Suspended", EDITION2015)));
 
         section.append("<li>Total # of Unique Products with Active Listings (Regardless of Edition) - ")
                 .append(stats.getTotalCPsActiveListings())

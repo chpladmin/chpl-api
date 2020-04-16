@@ -5,11 +5,8 @@ import java.io.IOException;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import javax.mail.MessagingException;
@@ -29,8 +26,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
-import gov.healthit.chpl.domain.statistics.CertifiedBodyAltTestStatistics;
-import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import gov.healthit.chpl.domain.statistics.Statistics;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.entity.SummaryStatisticsEntity;
@@ -38,13 +33,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.util.EmailBuilder;
 
-/**
- * The SummaryStatisticsEmailJob implements a Quartz job and is schedulable by ADMINs. When the job is triggered, it
- * will send the recipient an email with summary statistics of the CHPL data.
- * 
- * @author TYoung
- *
- */
 public class SummaryStatisticsEmailJob extends QuartzJob {
     private static Logger LOGGER = LogManager.getLogger("summaryStatisticsEmailJobLogger");
     private static int EDITION2014 = 2014;
@@ -61,12 +49,6 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
 
     private List<CertificationBodyDTO> activeAcbs;
 
-    /**
-     * Constructor that initializes the SummaryStatisticsEmailJob object.
-     * 
-     * @throws Exception
-     *             if thrown
-     */
     public SummaryStatisticsEmailJob() throws Exception {
         super();
     }
@@ -123,13 +105,14 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         ProductStatisticsSectionCreator productStatisticsSectionCreator = new ProductStatisticsSectionCreator();
         ListingStatisticsSectionCreator listingStatisticsSectionCreator = new ListingStatisticsSectionCreator();
         SurveillanceStatisticsSectionCreator surveillanceStatisticsSectionCreator = new SurveillanceStatisticsSectionCreator();
+        NonConformityStatisticsSectionCreator nonConformityStatisticsSectionCreator = new NonConformityStatisticsSectionCreator();
 
         emailMessage.append(createMessageHeader(endDate));
         emailMessage.append(developerStatisticsSectionCreator.build(stats, activeAcbs));
         emailMessage.append(productStatisticsSectionCreator.build(stats, activeAcbs));
         emailMessage.append(listingStatisticsSectionCreator.build(stats, activeAcbs));
         emailMessage.append(surveillanceStatisticsSectionCreator.build(stats, activeAcbs));
-        emailMessage.append(createNonconformitySection(stats));
+        emailMessage.append(nonConformityStatisticsSectionCreator.build(stats, activeAcbs));
 
         return emailMessage.toString();
     }
@@ -143,165 +126,5 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         ret.append("<br/>");
         ret.append("Email attachment has weekly statistics ending " + endDateCal.getTime());
         return ret.toString();
-    }
-
-    private String createNonconformitySection(Statistics stats) throws EntityRetrievalException {
-        StringBuilder emailMessage = new StringBuilder();
-        emailMessage.append("<h4>Total # of NCs -  " + stats.getTotalNonConformities() + "</h4>");
-        emailMessage.append("<ul><li>Open NCs - " + stats.getTotalOpenNonconformities() + "</li>");
-
-        emailMessage.append("<ul>");
-        for (CertifiedBodyStatistics stat : getStatistics(stats.getTotalOpenNonconformitiesByAcb())) {
-            emailMessage.append("<li>Certified by ");
-            emailMessage.append(stat.getName());
-            emailMessage.append(" - ");
-            emailMessage.append(stat.getTotalListings().toString());
-            emailMessage.append("</li>");
-        }
-        emailMessage.append("</ul>");
-        emailMessage.append("<li>Closed NCs - " + stats.getTotalClosedNonconformities() + "</li>");
-        emailMessage.append(
-                "<li>Average Time to Assess Conformity (in days) - " + stats.getAverageTimeToAssessConformity() + "</li>");
-        emailMessage.append("<li>Average Time to Approve CAP (in days) - " + stats.getAverageTimeToApproveCAP() + "</li>");
-        emailMessage.append("<li>Average Duration of CAP (in days) (includes closed and ongoing CAPs) - "
-                + stats.getAverageDurationOfCAP() + "</li>");
-        emailMessage.append("<li>Average Time from CAP Approval to Surveillance Close (in days) - "
-                + stats.getAverageTimeFromCAPApprovalToSurveillanceEnd() + "</li>");
-        emailMessage.append("<li>Average Time from CAP Close to Surveillance Close (in days) - "
-                + stats.getAverageTimeFromCAPEndToSurveillanceEnd() + "</li>");
-        emailMessage.append("<li>Average Duration of Closed Non-Conformities (in days) - "
-                + stats.getAverageTimeFromSurveillanceOpenToSurveillanceClose() + "</li>");
-
-        emailMessage.append("<li>Number of Open CAPs</li>");
-        emailMessage.append("<ul>");
-        for (Entry<Long, Long> entry : stats.getOpenCAPCountByAcb().entrySet()) {
-            CertificationBodyDTO acb = certificationBodyDAO.getById(entry.getKey());
-            emailMessage.append("<li>Certified by ");
-            emailMessage.append(acb.getName());
-            emailMessage.append(" - ");
-            emailMessage.append(entry.getValue());
-            emailMessage.append("</li>");
-        }
-        emailMessage.append("</ul>");
-
-        emailMessage.append("<li>Number of Closed CAPs</li>");
-        emailMessage.append("<ul>");
-        for (Entry<Long, Long> entry : stats.getClosedCAPCountByAcb().entrySet()) {
-            CertificationBodyDTO acb = certificationBodyDAO.getById(entry.getKey());
-            emailMessage.append("<li>Certified by ");
-            emailMessage.append(acb.getName());
-            emailMessage.append(" - ");
-            emailMessage.append(entry.getValue());
-            emailMessage.append("</li>");
-        }
-        emailMessage.append("</ul>");
-
-        return emailMessage.toString();
-    }
-
-    private List<CertifiedBodyStatistics> getStatistics(List<CertifiedBodyStatistics> stats) {
-        List<CertifiedBodyStatistics> acbStats = new ArrayList<CertifiedBodyStatistics>();
-        // All the existing stats
-        for (CertifiedBodyStatistics cbStat : stats) {
-            acbStats.add(cbStat);
-        }
-        addMissingAcbStatistics(acbStats, null);
-        return acbStats;
-    }
-
-    // Parameter intentionally not 'final'. This way we don;t have to copy the values passed in to a
-    // new list.
-    private void addMissingAcbStatistics(List<CertifiedBodyStatistics> acbStats, Integer edition) {
-        // Add statistics for missing active ACBs
-        acbStats.addAll(getMissingAcbStats(acbStats, edition));
-
-        Collections.sort(acbStats, new Comparator<CertifiedBodyStatistics>() {
-            public int compare(CertifiedBodyStatistics obj1, CertifiedBodyStatistics obj2) {
-                return obj1.getName().compareTo(obj2.getName());
-            }
-        });
-    }
-
-    private List<CertifiedBodyStatistics> getMissingAcbStats(List<CertifiedBodyStatistics> statistics,
-            Integer edition) {
-
-        List<CertifiedBodyStatistics> updatedStats = new ArrayList<CertifiedBodyStatistics>();
-        // Make sure all active ACBs are in the resultset
-        for (CertificationBodyDTO acb : activeAcbs) {
-            if (!isAcbInStatistics(acb, statistics)) {
-                updatedStats.add(getNewCertifiedBodyStatistic(acb.getName(), edition));
-            }
-        }
-        return updatedStats;
-    }
-
-    private Boolean isAcbInStatistics(CertificationBodyDTO acb, List<CertifiedBodyStatistics> stats) {
-        for (CertifiedBodyStatistics stat : stats) {
-            if (stat.getName().equals(acb.getName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private CertifiedBodyStatistics getNewCertifiedBodyStatistic(String acbName, Integer year) {
-        CertifiedBodyStatistics stat = new CertifiedBodyStatistics();
-        stat.setName(acbName);
-        stat.setTotalDevelopersWithListings(0L);
-        stat.setTotalListings(0L);
-        stat.setYear(year);
-        return stat;
-    }
-
-    private List<CertifiedBodyAltTestStatistics> getStatisticsWithAltTestMethods(Statistics stats) {
-        List<CertifiedBodyAltTestStatistics> acbStats = new ArrayList<CertifiedBodyAltTestStatistics>();
-        // Filter the existing stats
-        for (CertifiedBodyAltTestStatistics cbStat : stats
-                .getTotalListingsWithCertifiedBodyAndAlternativeTestMethods()) {
-
-            acbStats.add(cbStat);
-        }
-        // Add statistics for missing active ACBs
-        acbStats.addAll(getMissingAcbWithAltTestMethodsStats(acbStats));
-
-        Collections.sort(acbStats, new Comparator<CertifiedBodyAltTestStatistics>() {
-            public int compare(CertifiedBodyAltTestStatistics obj1, CertifiedBodyAltTestStatistics obj2) {
-                return obj1.getName().compareTo(obj2.getName());
-            }
-        });
-
-        return acbStats;
-    }
-
-    private List<CertifiedBodyAltTestStatistics> getMissingAcbWithAltTestMethodsStats(
-            List<CertifiedBodyAltTestStatistics> statistics) {
-
-        List<CertifiedBodyAltTestStatistics> updatedStats = new ArrayList<CertifiedBodyAltTestStatistics>();
-        // Make sure all active ACBs are in the resultset
-        for (CertificationBodyDTO acb : activeAcbs) {
-            if (!isAcbWithAltTestMethodsInStatistics(acb, statistics)) {
-                updatedStats.add(getNewCertifiedBodyWithAltTestMethodsStatistic(acb.getName()));
-            }
-        }
-        return updatedStats;
-    }
-
-    private CertifiedBodyAltTestStatistics getNewCertifiedBodyWithAltTestMethodsStatistic(String acbName) {
-        CertifiedBodyAltTestStatistics stat = new CertifiedBodyAltTestStatistics();
-        stat.setName(acbName);
-        stat.setTotalDevelopersWithListings(0L);
-        stat.setTotalListings(0L);
-        return stat;
-    }
-
-    private Boolean isAcbWithAltTestMethodsInStatistics(CertificationBodyDTO acb,
-            List<CertifiedBodyAltTestStatistics> stats) {
-
-        for (CertifiedBodyAltTestStatistics stat : stats) {
-            if (stat.getName().equals(acb.getName())) {
-                return true;
-            }
-        }
-        return false;
     }
 }

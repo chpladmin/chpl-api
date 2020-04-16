@@ -1,88 +1,12 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 
 public abstract class StatisticsSectionCreator {
 
     public abstract Long getStatistic(CertifiedBodyStatistics stat);
-
-    public List<CertifiedBodyStatistics> getStatisticsByStatusAndEdition(List<CertifiedBodyStatistics> stats,
-            String statusName, Integer edition, List<CertificationBodyDTO> activeAcbs) {
-
-        List<CertifiedBodyStatistics> acbStats = new ArrayList<CertifiedBodyStatistics>();
-        // Filter the existing stats
-        for (CertifiedBodyStatistics cbStat : stats) {
-            if (cbStat.getYear().equals(edition)
-                    && cbStat.getCertificationStatusName().toLowerCase().contains(statusName.toLowerCase())) {
-                acbStats.add(cbStat);
-            }
-        }
-        addMissingAcbStatistics(acbStats, edition, activeAcbs);
-        return acbStats;
-    }
-
-    public List<CertifiedBodyStatistics> getStatisticsByEdition(List<CertifiedBodyStatistics> stats,
-            Integer edition, List<CertificationBodyDTO> activeAcbs) {
-
-        List<CertifiedBodyStatistics> acbStats = new ArrayList<CertifiedBodyStatistics>();
-        // Filter the existing stats
-        for (CertifiedBodyStatistics cbStat : stats) {
-            if (cbStat.getYear().equals(edition)) {
-                acbStats.add(cbStat);
-            }
-        }
-        addMissingAcbStatistics(acbStats, edition, activeAcbs);
-        return acbStats;
-    }
-
-    private void addMissingAcbStatistics(List<CertifiedBodyStatistics> acbStats, Integer edition,
-            List<CertificationBodyDTO> activeAcbs) {
-        // Add statistics for missing active ACBs
-        acbStats.addAll(getMissingAcbStats(acbStats, edition, activeAcbs));
-
-        Collections.sort(acbStats, new Comparator<CertifiedBodyStatistics>() {
-            public int compare(CertifiedBodyStatistics obj1, CertifiedBodyStatistics obj2) {
-                return obj1.getName().compareTo(obj2.getName());
-            }
-        });
-    }
-
-    private List<CertifiedBodyStatistics> getMissingAcbStats(List<CertifiedBodyStatistics> statistics,
-            Integer edition, List<CertificationBodyDTO> activeAcbs) {
-
-        List<CertifiedBodyStatistics> updatedStats = new ArrayList<CertifiedBodyStatistics>();
-        // Make sure all active ACBs are in the resultset
-        for (CertificationBodyDTO acb : activeAcbs) {
-            if (!isAcbInStatistics(acb, statistics)) {
-                updatedStats.add(getNewCertifiedBodyStatistic(acb.getName(), edition));
-            }
-        }
-        return updatedStats;
-    }
-
-    private Boolean isAcbInStatistics(CertificationBodyDTO acb, List<CertifiedBodyStatistics> stats) {
-        for (CertifiedBodyStatistics stat : stats) {
-            if (stat.getName().equals(acb.getName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private CertifiedBodyStatistics getNewCertifiedBodyStatistic(String acbName, Integer year) {
-        CertifiedBodyStatistics stat = new CertifiedBodyStatistics();
-        stat.setName(acbName);
-        stat.setTotalDevelopersWithListings(0L);
-        stat.setTotalListings(0L);
-        stat.setYear(year);
-        return stat;
-    }
 
     public String buildHeader(String text, Long count) {
         StringBuilder header = new StringBuilder();
@@ -113,7 +37,7 @@ public abstract class StatisticsSectionCreator {
                 .append(text)
                 .append(" - ")
                 .append(count)
-                .append("/<li>")
+                .append("</li>")
                 .toString();
     }
 
