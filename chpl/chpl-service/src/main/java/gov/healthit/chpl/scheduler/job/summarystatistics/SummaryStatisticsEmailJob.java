@@ -121,7 +121,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         StringBuilder emailMessage = new StringBuilder();
 
         emailMessage.append(createMessageHeader(endDate));
-        emailMessage.append(createUniqueDeveloperSection(stats));
+        emailMessage.append(DeveloperStatisticsSectionCreator.build(stats, activeAcbs));
         emailMessage.append(createUniqueProductSection(stats));
         emailMessage.append(createListingSection(stats));
         emailMessage.append(createSurveillanceSection(stats));
@@ -138,114 +138,6 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         ret.append("Email body has current statistics as of " + currDateCal.getTime());
         ret.append("<br/>");
         ret.append("Email attachment has weekly statistics ending " + endDateCal.getTime());
-        return ret.toString();
-    }
-
-    private String createUniqueDeveloperSection(Statistics stats) {
-        StringBuilder ret = new StringBuilder();
-
-        ret.append(
-                "<h4>Total # of Unique Developers (Regardless of Edition) -  " + stats.getTotalDevelopers() + "</h4>");
-
-        ret.append("<ul>");
-
-        ret.append("<li>Total # of Developers with 2014 Listings (Regardless of Status) - "
-                + stats.getTotalDevelopersWith2014Listings() + "</li>");
-        ret.append("<ul>");
-        for (CertifiedBodyStatistics stat : getStatisticsByEdition(
-                stats.getTotalDevelopersByCertifiedBodyWithListingsEachYear(), EDITION2014)) {
-            ret.append("<li>Certified by ");
-            ret.append(stat.getName());
-            ret.append(" - ");
-            ret.append(stat.getTotalDevelopersWithListings());
-        }
-        ret.append("</ul>");
-
-        ret.append("<li>Total # of Developers with Active 2014 Listings - "
-                + stats.getTotalDevelopersWithActive2014Listings() + "</li>");
-        ret.append("<ul>");
-
-        for (CertifiedBodyStatistics stat : getStatisticsByStatusAndEdition(
-                stats.getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(), "Active",
-                EDITION2014)) {
-            ret.append("<li>Certified by ");
-            ret.append(stat.getName());
-            ret.append(" - ");
-            ret.append(stat.getTotalDevelopersWithListings());
-        }
-        ret.append("</ul>");
-
-        // Calculate 'Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2014 Listings'
-        StringBuilder suspendedDevs2014 = new StringBuilder();
-        Long suspendedDevsTotal = 0L;
-        for (CertifiedBodyStatistics stat : getStatisticsByStatusAndEdition(
-                stats.getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(), "Suspended",
-                EDITION2014)) {
-            suspendedDevs2014.append("<li>Certified by ");
-            suspendedDevs2014.append(stat.getName());
-            suspendedDevs2014.append(" - ");
-            suspendedDevs2014.append(stat.getTotalDevelopersWithListings());
-
-            suspendedDevsTotal += stat.getTotalDevelopersWithListings();
-        }
-        // Build the section...
-        ret.append("<li>");
-        ret.append("Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2014 Listings - ");
-        ret.append(suspendedDevsTotal);
-        ret.append("</li>");
-        ret.append("<ul>");
-        ret.append(suspendedDevs2014.toString());
-        ret.append("</ul>");
-
-        ret.append("<li>Total # of Developers with 2015 Listings (Regardless of Status) - "
-                + stats.getTotalDevelopersWith2015Listings() + "</li>");
-        ret.append("<ul>");
-        for (CertifiedBodyStatistics stat : getStatisticsByEdition(
-                stats.getTotalDevelopersByCertifiedBodyWithListingsEachYear(), EDITION2015)) {
-            ret.append("<li>Certified by ");
-            ret.append(stat.getName());
-            ret.append(" - ");
-            ret.append(stat.getTotalDevelopersWithListings());
-        }
-        ret.append("</ul>");
-
-        ret.append("<li>Total # of Developers with Active 2015 Listings - "
-                + stats.getTotalDevelopersWithActive2015Listings() + "</li>");
-        ret.append("<ul>");
-        for (CertifiedBodyStatistics stat : getStatisticsByStatusAndEdition(
-                stats.getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(), "Active",
-                EDITION2015)) {
-            ret.append("<li>Certified by ");
-            ret.append(stat.getName());
-            ret.append(" - ");
-            ret.append(stat.getTotalDevelopersWithListings());
-        }
-
-        ret.append("</ul>");
-
-        StringBuilder suspendedDevs2015 = new StringBuilder();
-        Long suspendedDevsTotal2015 = 0L;
-        for (CertifiedBodyStatistics stat : getStatisticsByStatusAndEdition(
-                stats.getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(), "Suspended",
-                EDITION2015)) {
-            suspendedDevs2015.append("<li>Certified by ");
-            suspendedDevs2015.append(stat.getName());
-            suspendedDevs2015.append(" - ");
-            suspendedDevs2015.append(stat.getTotalDevelopersWithListings());
-
-            suspendedDevsTotal2015 += stat.getTotalDevelopersWithListings();
-        }
-
-        // Build the section...
-        ret.append("<li>");
-        ret.append("Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015 Listings - ");
-        ret.append(suspendedDevsTotal2015);
-        ret.append("</li>");
-        ret.append("<ul>");
-        ret.append(suspendedDevs2015.toString());
-        ret.append("</ul>");
-
-        ret.append("</ul>");
         return ret.toString();
     }
 
