@@ -119,10 +119,12 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
 
     private String createHtmlMessage(Statistics stats, Date endDate) throws EntityRetrievalException {
         StringBuilder emailMessage = new StringBuilder();
+        DeveloperStatisticsSectionCreator developerStatisticsSectionCreator = new DeveloperStatisticsSectionCreator();
+        ProductStatisticsSectionCreator productStatisticsSectionCreator = new ProductStatisticsSectionCreator();
 
         emailMessage.append(createMessageHeader(endDate));
-        emailMessage.append(DeveloperStatisticsSectionCreator.build(stats, activeAcbs));
-        emailMessage.append(createUniqueProductSection(stats));
+        emailMessage.append(developerStatisticsSectionCreator.build(stats, activeAcbs));
+        emailMessage.append(productStatisticsSectionCreator.build(stats, activeAcbs));
         emailMessage.append(createListingSection(stats));
         emailMessage.append(createSurveillanceSection(stats));
         emailMessage.append(createNonconformitySection(stats));
@@ -138,102 +140,6 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         ret.append("Email body has current statistics as of " + currDateCal.getTime());
         ret.append("<br/>");
         ret.append("Email attachment has weekly statistics ending " + endDateCal.getTime());
-        return ret.toString();
-    }
-
-    private String createUniqueProductSection(Statistics stats) {
-        StringBuilder ret = new StringBuilder();
-
-        ret.append("<h4>Total # of Certified Unique Products Regardless of Status or Edition - Including 2011) - ");
-        ret.append(stats.getTotalCertifiedProducts());
-        ret.append("</h4>");
-
-        ret.append("<ul>");
-        ret.append("<li>Total # of Unique Products with 2014 Listings (Regardless of Status) -  ");
-        ret.append(stats.getTotalCPs2014Listings());
-        ret.append("</li>");
-        ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat : getStatisticsByEdition(stats.getTotalCPListingsEachYearByCertifiedBody(),
-                EDITION2014)) {
-            ret.append("<li>Certified by ");
-            ret.append(cbStat.getName());
-            ret.append(" - ");
-            ret.append(cbStat.getTotalListings());
-            ret.append("</li>");
-        }
-        ret.append("</ul>");
-
-        ret.append("<li>Total # of Unique Products with Active 2014 Listings - ");
-        ret.append(stats.getTotalCPsActive2014Listings());
-        ret.append("</li>");
-        ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat : getStatisticsByStatusAndEdition(
-                stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(), "Active", EDITION2014)) {
-            ret.append("<li>Certified by ");
-            ret.append(cbStat.getName());
-            ret.append(" - ");
-            ret.append(cbStat.getTotalListings());
-            ret.append("</li>");
-        }
-        ret.append("</ul>");
-
-        ret.append("<li>Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2014 Listings -  ");
-        ret.append(stats.getTotalCPsSuspended2014Listings());
-        ret.append("</li>");
-        ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat : getStatisticsByStatusAndEdition(
-                stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(), "Suspended", EDITION2014)) {
-            ret.append("<li>Certified by ");
-            ret.append(cbStat.getName());
-            ret.append(" - ");
-            ret.append(cbStat.getTotalListings());
-        }
-        ret.append("</ul>");
-
-        ret.append("<li>Total # of Unique Products with 2015 Listings (Regardless of Status) -  ");
-        ret.append(stats.getTotalCPs2015Listings());
-        ret.append("</li>");
-        ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat : getStatisticsByEdition(stats.getTotalCPListingsEachYearByCertifiedBody(),
-                EDITION2015)) {
-            ret.append("<li>Certified by ");
-            ret.append(cbStat.getName());
-            ret.append(" - ");
-            ret.append(cbStat.getTotalListings());
-            ret.append("</li>");
-        }
-        ret.append("</ul>");
-
-        ret.append("<li>Total # of Unique Products with Active 2015 Listings - ");
-        ret.append(stats.getTotalCPsActive2015Listings());
-        ret.append("</li>");
-        ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat : getStatisticsByStatusAndEdition(
-                stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(), "Active", EDITION2015)) {
-            ret.append("<li>Certified by ");
-            ret.append(cbStat.getName());
-            ret.append(" - ");
-            ret.append(cbStat.getTotalListings());
-            ret.append("</li>");
-        }
-        ret.append("</ul>");
-
-        ret.append("<li>Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015 Listings -  ");
-        ret.append(stats.getTotalCPsSuspended2015Listings());
-        ret.append("</li>");
-        ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat : getStatisticsByStatusAndEdition(
-                stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(), "Suspended", EDITION2015)) {
-            ret.append("<li>Certified by ");
-            ret.append(cbStat.getName());
-            ret.append(" - ");
-            ret.append(cbStat.getTotalListings());
-        }
-        ret.append("</ul>");
-
-        ret.append("<li>Total # of Unique Products with Active Listings (Regardless of Edition) - "
-                + stats.getTotalCPsActiveListings() + "</ul></li>");
-        ret.append("</ul>");
         return ret.toString();
     }
 
