@@ -53,18 +53,11 @@ public class ListingStatisticsSectionCreator extends StatisticsSectionCreator {
         }
         section.append("</ul>");
 
-        section.append("<li>Total # of 2014 Listings (Regardless of Status) - ")
-                .append(stats.getTotal2014Listings())
-                .append("</li>");
-        section.append("<li>Total # of 2015 Listings (Regardless of Status) - ")
-                .append(stats.getTotal2015Listings())
-                .append("</li>");
-        section.append("<li>Total # of 2011 Listings (Regardless of Status) - ")
-                .append(stats.getTotal2011Listings())
-                .append("</li>");
+        section.append(buildItem("Total # of 2014 Listings (Regardless of Status)", stats.getTotal2014Listings()));
+        section.append(buildItem("Total # of 2015 Listings (Regardless of Status)", stats.getTotal2015Listings()));
+        section.append(buildItem("Total # of 2011 Listings (Regardless of Status)", stats.getTotal2011Listings()));
 
         section.append("</ul>");
-
         return section.toString();
     }
 

@@ -17,7 +17,7 @@ public class SurveillanceStatisticsSectionCreator extends StatisticsSectionCreat
 
     @Override
     public Long getStatistic(CertifiedBodyStatistics stat) {
-        return stat.getTotalDevelopersWithListings();
+        return stat.getTotalListings();
     }
 
     private String buildSurveillanceSection(Statistics stats, List<CertificationBodyDTO> activeAcbs) {
@@ -31,13 +31,8 @@ public class SurveillanceStatisticsSectionCreator extends StatisticsSectionCreat
                 stats.getTotalOpenSurveillanceActivities(),
                 getStatistics(stats.getTotalOpenSurveillanceActivitiesByAcb(), activeAcbs)));
 
-        section.append("<li>Closed Surveillance Activities - ")
-                .append(stats.getTotalClosedSurveillanceActivities())
-                .append("</li>");
-
-        section.append("<li>Average Duration of Closed Surveillance (in days) - ")
-                .append(stats.getAverageTimeToCloseSurveillance())
-                .append("</li>");
+        section.append(buildItem("Closed Surveillance Activities", stats.getTotalClosedSurveillanceActivities()));
+        section.append(buildItem("Average Duration of Closed Surveillance (in days)", stats.getAverageTimeToCloseSurveillance()));
 
         section.append("</ul>");
         return section.toString();

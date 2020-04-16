@@ -107,6 +107,16 @@ public abstract class StatisticsSectionCreator {
         return section.toString();
     }
 
+    public String buildItem(String text, Long count) {
+        StringBuilder item = new StringBuilder();
+        return item.append("<li>")
+                .append(text)
+                .append(" - ")
+                .append(count)
+                .append("/<li>")
+                .toString();
+    }
+
     private String buildSectionHeader(String header, Long count) {
         StringBuilder section = new StringBuilder();
         return section.append("<li>")
