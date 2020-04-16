@@ -15,7 +15,7 @@ public class ListingStatisticsSectionCreator extends StatisticsSectionCreator {
     private static int EDITION2014 = 2014;
 
     public String build(Statistics stats, List<CertificationBodyDTO> activeAcbs) {
-        return buildUniqueProductSection(stats, activeAcbs);
+        return buildListingSection(stats, activeAcbs);
     }
 
     @Override
@@ -23,7 +23,7 @@ public class ListingStatisticsSectionCreator extends StatisticsSectionCreator {
         return stat.getTotalListings();
     }
 
-    private String buildUniqueProductSection(Statistics stats, List<CertificationBodyDTO> activeAcbs) {
+    private String buildListingSection(Statistics stats, List<CertificationBodyDTO> activeAcbs) {
         StringBuilder section = new StringBuilder();
 
         section.append(buildHeader("Total # of Listings (Regardless of Status or Edition)",
@@ -32,7 +32,7 @@ public class ListingStatisticsSectionCreator extends StatisticsSectionCreator {
 
         section.append(buildSection(
                 "Total # of Active (Including Suspended by ONC/ONC-ACB 2014 Listings)",
-                stats.getTotalCPs2014Listings(),
+                stats.getTotalActive2014Listings(),
                 getStatisticsByEdition(stats.getTotalActiveListingsByCertifiedBody(), EDITION2014, activeAcbs)));
 
         section.append(buildSection(

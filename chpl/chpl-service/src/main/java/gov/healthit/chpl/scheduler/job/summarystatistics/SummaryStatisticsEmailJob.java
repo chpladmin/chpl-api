@@ -122,12 +122,13 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         DeveloperStatisticsSectionCreator developerStatisticsSectionCreator = new DeveloperStatisticsSectionCreator();
         ProductStatisticsSectionCreator productStatisticsSectionCreator = new ProductStatisticsSectionCreator();
         ListingStatisticsSectionCreator listingStatisticsSectionCreator = new ListingStatisticsSectionCreator();
+        SurveillanceStatisticsSectionCreator surveillanceStatisticsSectionCreator = new SurveillanceStatisticsSectionCreator();
 
         emailMessage.append(createMessageHeader(endDate));
         emailMessage.append(developerStatisticsSectionCreator.build(stats, activeAcbs));
         emailMessage.append(productStatisticsSectionCreator.build(stats, activeAcbs));
         emailMessage.append(listingStatisticsSectionCreator.build(stats, activeAcbs));
-        emailMessage.append(createSurveillanceSection(stats));
+        emailMessage.append(surveillanceStatisticsSectionCreator.build(stats, activeAcbs));
         emailMessage.append(createNonconformitySection(stats));
 
         return emailMessage.toString();
@@ -142,34 +143,6 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         ret.append("<br/>");
         ret.append("Email attachment has weekly statistics ending " + endDateCal.getTime());
         return ret.toString();
-    }
-
-    private String createSurveillanceSection(Statistics stats) {
-        StringBuilder emailMessage = new StringBuilder();
-        emailMessage.append(
-                "<h4>Total # of Surveillance Activities -  " + stats.getTotalSurveillanceActivities() + "</h4>");
-        emailMessage.append(
-                "<ul><li>Open Surveillance Activities - " + stats.getTotalOpenSurveillanceActivities() + "</li>");
-
-        emailMessage.append("<ul>");
-        for (CertifiedBodyStatistics stat : getStatistics(stats.getTotalOpenSurveillanceActivitiesByAcb())) {
-            emailMessage.append("<li>Certified by ");
-            emailMessage.append(stat.getName());
-            emailMessage.append(" - ");
-            emailMessage.append(stat.getTotalListings().toString());
-            emailMessage.append("</li>");
-        }
-        emailMessage.append("</ul>");
-
-        emailMessage.append(
-                "<li>Closed Surveillance Activities - " + stats.getTotalClosedSurveillanceActivities() + "</li>");
-
-        emailMessage.append(
-                "<li>Average Duration of Closed Surveillance (in days) - "
-                        + stats.getAverageTimeToCloseSurveillance() + "</li>");
-        emailMessage.append("</ul>");
-
-        return emailMessage.toString();
     }
 
     private String createNonconformitySection(Statistics stats) throws EntityRetrievalException {
@@ -233,35 +206,6 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
             acbStats.add(cbStat);
         }
         addMissingAcbStatistics(acbStats, null);
-        return acbStats;
-    }
-
-    private List<CertifiedBodyStatistics> getStatisticsByStatusAndEdition(List<CertifiedBodyStatistics> stats,
-            String statusName, Integer edition) {
-
-        List<CertifiedBodyStatistics> acbStats = new ArrayList<CertifiedBodyStatistics>();
-        // Filter the existing stats
-        for (CertifiedBodyStatistics cbStat : stats) {
-            if (cbStat.getYear().equals(edition)
-                    && cbStat.getCertificationStatusName().toLowerCase().contains(statusName.toLowerCase())) {
-                acbStats.add(cbStat);
-            }
-        }
-        addMissingAcbStatistics(acbStats, edition);
-        return acbStats;
-    }
-
-    private List<CertifiedBodyStatistics> getStatisticsByEdition(List<CertifiedBodyStatistics> stats,
-            Integer edition) {
-
-        List<CertifiedBodyStatistics> acbStats = new ArrayList<CertifiedBodyStatistics>();
-        // Filter the existing stats
-        for (CertifiedBodyStatistics cbStat : stats) {
-            if (cbStat.getYear().equals(edition)) {
-                acbStats.add(cbStat);
-            }
-        }
-        addMissingAcbStatistics(acbStats, edition);
         return acbStats;
     }
 

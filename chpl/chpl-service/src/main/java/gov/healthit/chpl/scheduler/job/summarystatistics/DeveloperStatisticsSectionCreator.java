@@ -39,7 +39,7 @@ public class DeveloperStatisticsSectionCreator extends StatisticsSectionCreator 
 
         List<CertifiedBodyStatistics> devsSuspended2014 = getStatisticsByStatusAndEdition(
                 stats.getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(),
-                "Suspended", EDITION2015, activeAcbs);
+                "Suspended", EDITION2014, activeAcbs);
         section.append(buildSection(
                 "Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2014 Listings",
                 sumTotalDeveloperWithListings(devsSuspended2014),
