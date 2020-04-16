@@ -121,11 +121,12 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         StringBuilder emailMessage = new StringBuilder();
         DeveloperStatisticsSectionCreator developerStatisticsSectionCreator = new DeveloperStatisticsSectionCreator();
         ProductStatisticsSectionCreator productStatisticsSectionCreator = new ProductStatisticsSectionCreator();
+        ListingStatisticsSectionCreator listingStatisticsSectionCreator = new ListingStatisticsSectionCreator();
 
         emailMessage.append(createMessageHeader(endDate));
         emailMessage.append(developerStatisticsSectionCreator.build(stats, activeAcbs));
         emailMessage.append(productStatisticsSectionCreator.build(stats, activeAcbs));
-        emailMessage.append(createListingSection(stats));
+        emailMessage.append(listingStatisticsSectionCreator.build(stats, activeAcbs));
         emailMessage.append(createSurveillanceSection(stats));
         emailMessage.append(createNonconformitySection(stats));
 
@@ -141,63 +142,6 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         ret.append("<br/>");
         ret.append("Email attachment has weekly statistics ending " + endDateCal.getTime());
         return ret.toString();
-    }
-
-    private String createListingSection(Statistics stats) {
-        StringBuilder ret = new StringBuilder();
-
-        ret.append("<h4>Total # of Listings (Regardless of Status or Edition) -  ");
-        ret.append(stats.getTotalListings());
-        ret.append("</h4>");
-
-        ret.append("<ul>");
-
-        ret.append("<li>Total # of Active (Including Suspended by ONC/ONC-ACB 2014 Listings) - ");
-        ret.append(stats.getTotalActive2014Listings());
-        ret.append("</li>");
-        ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat : getStatisticsByEdition(stats.getTotalActiveListingsByCertifiedBody(),
-                EDITION2014)) {
-            ret.append("<li>Certified by ");
-            ret.append(cbStat.getName());
-            ret.append(" - ");
-            ret.append(cbStat.getTotalListings());
-            ret.append("</li>");
-        }
-        ret.append("</ul>");
-
-        ret.append("<li>Total # of Active (Including Suspended by ONC/ONC-ACB 2015 Listings) - ");
-        ret.append(stats.getTotalActive2015Listings());
-        ret.append("</li>");
-        ret.append("<ul>");
-        for (CertifiedBodyStatistics cbStat : getStatisticsByEdition(stats.getTotalActiveListingsByCertifiedBody(),
-                EDITION2015)) {
-            ret.append("<li>Certified by ");
-            ret.append(cbStat.getName());
-            ret.append(" - ");
-            ret.append(cbStat.getTotalListings());
-            ret.append("</li>");
-        }
-        ret.append("</ul>");
-
-        ret.append("<li>Total # of 2015 Listings with Alternative Test Methods -  "
-                + stats.getTotalListingsWithAlternativeTestMethods() + "</li>");
-        ret.append("<ul>");
-        for (CertifiedBodyAltTestStatistics cbStat : getStatisticsWithAltTestMethods(stats)) {
-            ret.append("<li>Certified by ");
-            ret.append(cbStat.getName());
-            ret.append(" - ");
-            ret.append(cbStat.getTotalListings());
-            ret.append("</li>");
-        }
-        ret.append("</ul>");
-
-        ret.append("<li>Total # of 2014 Listings (Regardless of Status) - " + stats.getTotal2014Listings() + "</li>");
-        ret.append("<li>Total # of 2015 Listings (Regardless of Status) - " + stats.getTotal2015Listings() + "</li>");
-        ret.append(
-                "<li>Total # of 2011 Listings (Regardless of Status) - " + stats.getTotal2011Listings() + "</li></ul>");
-        return ret.toString();
-
     }
 
     private String createSurveillanceSection(Statistics stats) {

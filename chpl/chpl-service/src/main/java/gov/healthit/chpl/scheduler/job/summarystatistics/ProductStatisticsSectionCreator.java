@@ -62,7 +62,7 @@ public class ProductStatisticsSectionCreator extends StatisticsSectionCreator {
 
         section.append("<li>Total # of Unique Products with Active Listings (Regardless of Edition) - ")
                 .append(stats.getTotalCPsActiveListings())
-                .append("</ul></li>");
+                .append("</li></ul>");
 
         return section.toString();
     }
