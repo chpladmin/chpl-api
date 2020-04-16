@@ -1,6 +1,7 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import gov.healthit.chpl.domain.statistics.Statistics;
@@ -62,6 +63,27 @@ public class ProductStatisticsSectionCreator extends StatisticsSectionCreator {
                 massager.getStatisticsByStatusAndEdition(stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(),
                         "Suspended", EDITION2015)));
 
+        List<CertifiedBodyStatistics> productsWithCuresUpdatedListing = massager
+                .getStatistics(stats.getUniqueProductsCountWithCuresUpdatedListingsByAcb());
+        section.append(buildSection(
+                "Total # of Unique Products with 2015-Cures Update Listings",
+                sumTotalListings(productsWithCuresUpdatedListing),
+                productsWithCuresUpdatedListing));
+
+        List<CertifiedBodyStatistics> productsWithCuresUpdatedActiveListing = massager
+                .getStatistics(stats.getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb());
+        section.append(buildSection(
+                "Total # of Unique Products with Active 2015-Cures Update Listings",
+                sumTotalListings(productsWithCuresUpdatedActiveListing),
+                productsWithCuresUpdatedActiveListing));
+
+        List<CertifiedBodyStatistics> productsWithCuresUpdatedSuspendedListing = massager
+                .getStatistics(stats.getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb());
+        section.append(buildSection(
+                "Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015-Cures Update Listings",
+                sumTotalListings(productsWithCuresUpdatedSuspendedListing),
+                productsWithCuresUpdatedSuspendedListing));
+
         section.append("<li>Total # of Unique Products with Active Listings (Regardless of Edition) - ")
                 .append(stats.getTotalCPsActiveListings())
                 .append("</li></ul>");
@@ -69,4 +91,8 @@ public class ProductStatisticsSectionCreator extends StatisticsSectionCreator {
         return section.toString();
     }
 
+    private Long sumTotalListings(List<CertifiedBodyStatistics> stats) {
+        return stats.stream()
+                .collect(Collectors.summingLong(CertifiedBodyStatistics::getTotalListings));
+    }
 }
