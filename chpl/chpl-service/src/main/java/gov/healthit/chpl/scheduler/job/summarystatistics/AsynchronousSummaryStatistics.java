@@ -556,7 +556,7 @@ public class AsynchronousSummaryStatistics {
                 .map(entry -> {
                     CertifiedBodyStatistics stat = new CertifiedBodyStatistics();
                     stat.setName(entry.getKey());
-                    stat.setTotalListings(entry.getValue().stream()
+                    stat.setTotalDevelopersWithListings(entry.getValue().stream()
                             .filter(distinctByKey(cp -> cp.getDeveloper().getId()))
                             .collect(Collectors.counting()));
                     return stat;
@@ -575,7 +575,7 @@ public class AsynchronousSummaryStatistics {
                 .map(entry -> {
                     CertifiedBodyStatistics stat = new CertifiedBodyStatistics();
                     stat.setName(entry.getKey());
-                    stat.setTotalListings(entry.getValue().stream()
+                    stat.setTotalDevelopersWithListings(entry.getValue().stream()
                             .filter(distinctByKey(cp -> cp.getDeveloper().getId()))
                             .collect(Collectors.counting()));
                     return stat;
@@ -595,7 +595,7 @@ public class AsynchronousSummaryStatistics {
                 .map(entry -> {
                     CertifiedBodyStatistics stat = new CertifiedBodyStatistics();
                     stat.setName(entry.getKey());
-                    stat.setTotalListings(entry.getValue().stream()
+                    stat.setTotalDevelopersWithListings(entry.getValue().stream()
                             .filter(distinctByKey(cp -> cp.getDeveloper().getId()))
                             .collect(Collectors.counting()));
                     return stat;
