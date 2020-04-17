@@ -44,7 +44,6 @@ public class Statistics implements Serializable {
     private Long totalClosedSurveillanceActivities;
     private Long totalNonConformities;
     private Long totalOpenNonconformities;
-
     private Long averageTimeToAssessConformity;
     private Long averageTimeToApproveCAP;
     private Long averageDurationOfCAP;
@@ -54,32 +53,17 @@ public class Statistics implements Serializable {
     private Map<Long, Long> openCAPCountByAcb;
     private Map<Long, Long> closedCAPCountByAcb;
     private Long averageTimeToCloseSurveillance;
-
     private List<CertifiedBodyStatistics> totalOpenNonconformitiesByAcb;
     private Long totalClosedNonconformities;
     private Long totalListingsWithAlternativeTestMethods;
     private List<CertifiedBodyAltTestStatistics> totalListingsWithCertifiedBodyAndAlternativeTestMethods;
-
     private List<CertifiedBodyStatistics> uniqueDevelopersCountWithCuresUpdatedListingsByAcb;
     private List<CertifiedBodyStatistics> uniqueDevelopersCountWithCuresUpdatedActiveListingsByAcb;
     private List<CertifiedBodyStatistics> uniqueDevelopersCountWithCuresUpdatedSuspendedListingsByAcb;
-
     private List<CertifiedBodyStatistics> uniqueProductsCountWithCuresUpdatedListingsByAcb;
     private List<CertifiedBodyStatistics> uniqueProductsCountWithCuresUpdatedActiveListingsByAcb;
     private List<CertifiedBodyStatistics> uniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb;
-
     private List<CertifiedBodyStatistics> activeListingCountWithCuresUpdatedByAcb;
     private List<CertifiedBodyStatistics> listingCountWithCuresUpdatedAndAltTestMethodsByAcb;
-
     private Long allListingsCountWithCuresUpdated;
-
-    public List<CertifiedBodyStatistics> getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear() {
-        return totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear;
-    }
-
-    public void setTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(
-            List<CertifiedBodyStatistics> totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear) {
-        this.totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear = totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear;
-    }
-
 }

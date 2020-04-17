@@ -33,11 +33,11 @@ public class DeveloperStatisticsSectionCreator extends StatisticsSectionCreator 
                 "Total # of Developers with Active 2014 Listings",
                 stats.getTotalDevelopersWithActive2014Listings(),
                 massager.getStatisticsByStatusAndEdition(
-                        stats.getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(),
+                        stats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(),
                         "Active", get2014EditionAsInteger())));
 
         List<CertifiedBodyStatistics> devsSuspended2014 = massager.getStatisticsByStatusAndEdition(
-                stats.getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(), "Suspended",
+                stats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(), "Suspended",
                 get2014EditionAsInteger());
         section.append(buildSection(
                 "Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2014 Listings",
@@ -54,11 +54,11 @@ public class DeveloperStatisticsSectionCreator extends StatisticsSectionCreator 
                 "Total # of Developers with Active 2015 Listings",
                 stats.getTotalDevelopersWithActive2015Listings(),
                 massager.getStatisticsByStatusAndEdition(
-                        stats.getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(),
+                        stats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(),
                         "Active", get2015EditionAsInteger())));
 
         List<CertifiedBodyStatistics> devsSuspended2015 = massager.getStatisticsByStatusAndEdition(
-                stats.getTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(),
+                stats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(),
                 "Suspended", get2015EditionAsInteger());
         section.append(buildSection(
                 "Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015 Listings",

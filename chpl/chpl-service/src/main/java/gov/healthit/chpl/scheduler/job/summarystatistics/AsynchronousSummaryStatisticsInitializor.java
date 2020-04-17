@@ -250,7 +250,7 @@ public class AsynchronousSummaryStatisticsInitializor {
 
         stats.setTotalDevelopersByCertifiedBodyWithListingsEachYear(
                 totalDevelopersByCertifiedBodyWithListingsEachYear.get());
-        stats.setTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(
+        stats.setTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(
                 totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear.get());
         stats.setTotalDevelopersWith2015Listings(totalDeveloperswith2015Listings.get());
 
