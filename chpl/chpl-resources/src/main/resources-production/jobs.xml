@@ -8,10 +8,29 @@
         <delete-triggers-in-group>triggerJob</delete-triggers-in-group>
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- Delete the below pre-processing command(s) after PROD push -->
+        <delete-job>
+        <name>removeRT13ECMacraMeasureJob</name>
+        <group>systemJobs</group>
+        </delete-job>
         <!-- End delete pre-processing command(s). -->
     </pre-processing-commands>
     <schedule>
         <!-- Delete from here to "DELETE END MARKER" after PROD push -->
+        <!--  Update 2015 listings as Cures Updated, where appropriate -->
+        <job>
+            <name>addCuresUpdateToListings</name>
+            <group>systemJobs</group>
+            <description>Updates existing 2015 listings as Cures Updated if they meet the necessary requirements</description>
+            <job-class>gov.healthit.chpl.scheduler.job.AddCuresUpdateToListingsJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+            </job-data-map>
+        </job>
         <!-- DELETE END MARKER -->
     </schedule>
 </job-scheduling-data>

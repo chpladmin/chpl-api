@@ -22,13 +22,8 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.presenter.NonconformityCsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.SurveillanceCsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.SurveillanceReportCsvPresenter;
+import gov.healthit.chpl.service.CertificationCriterionService;
 
-/**
- * Quartz job to generate downloadable files for surveillance reports.
- * 
- * @author kekey
- *
- */
 @DisallowConcurrentExecution
 public class SurveillanceDownloadableResourceCreatorJob extends DownloadableResourceCreatorJob {
     private static final Logger LOGGER = LogManager.getLogger("surveillanceDownloadableResourceCreatorJobLogger");
@@ -36,12 +31,9 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
     @Autowired
     private Environment env;
 
-    /**
-     * Default constructor.
-     * 
-     * @throws Exception
-     *             if issue with context
-     */
+    @Autowired
+    private CertificationCriterionService criterionService;
+
     public SurveillanceDownloadableResourceCreatorJob() throws Exception {
         super(LOGGER);
     }
@@ -68,12 +60,6 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
         LOGGER.info("********* Completed the Surveillance Downloadable Resource Creator job. *********");
     }
 
-    /**
-     * Gets all listings that have surveillance
-     * 
-     * @return
-     * @throws EntityRetrievalException
-     */
     private List<CertifiedProductDetailsDTO> getRelevantListings() throws EntityRetrievalException {
         LOGGER.info("Finding all listings with surveillance.");
         List<CertifiedProductDetailsDTO> listings = getCertifiedProductDao().findWithSurveillance();
@@ -89,7 +75,7 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
                 + getFilenameTimestampFormat().format(new Date())
                 + ".csv";
         File csvFile = getFile(csvFilename);
-        SurveillanceCsvPresenter csvPresenter = new SurveillanceCsvPresenter(env);
+        SurveillanceCsvPresenter csvPresenter = new SurveillanceCsvPresenter(env, criterionService);
         csvPresenter.presentAsFile(csvFile, results);
         LOGGER.info("Wrote Surveillance-All CSV file.");
     }
@@ -102,7 +88,7 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
                 + getFilenameTimestampFormat().format(new Date())
                 + ".csv";
         File csvFile = getFile(csvFilename);
-        NonconformityCsvPresenter csvPresenter = new NonconformityCsvPresenter(env);
+        NonconformityCsvPresenter csvPresenter = new NonconformityCsvPresenter(env, criterionService);
         csvPresenter.presentAsFile(csvFile, results);
         LOGGER.info("Wrote Surveillance With Nonconformities CSV file.");
     }
@@ -115,7 +101,7 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
                 + getFilenameTimestampFormat().format(new Date())
                 + ".csv";
         File csvFile = getFile(csvFilename);
-        SurveillanceReportCsvPresenter csvPresenter = new SurveillanceReportCsvPresenter(env);
+        SurveillanceReportCsvPresenter csvPresenter = new SurveillanceReportCsvPresenter(env, criterionService);
         csvPresenter.presentAsFile(csvFile, results);
         LOGGER.info("Wrote Surveillance Basic Report CSV file.");
     }

@@ -79,7 +79,7 @@ public class ApiExceptionControllerAdvice {
     public ResponseEntity<ErrorResponse> exception(final InvalidArgumentsException e) {
         LOGGER.error(e.getMessage(), e);
         return new ResponseEntity<ErrorResponse>(new ErrorResponse(e.getMessage()),
-                HttpStatus.INTERNAL_SERVER_ERROR);
+                HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

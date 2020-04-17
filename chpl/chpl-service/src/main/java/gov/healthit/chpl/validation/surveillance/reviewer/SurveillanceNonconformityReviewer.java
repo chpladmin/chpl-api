@@ -17,6 +17,7 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
@@ -24,14 +25,15 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
     private CertificationResultDetailsDAO certResultDetailsDao;
     private SurveillanceDAO survDao;
     private ErrorMessageUtil msgUtil;
+    private CertificationCriterionService criterionService;
 
     @Autowired
-    public SurveillanceNonconformityReviewer(SurveillanceDAO survDao,
-            CertificationResultDetailsDAO certResultDetailsDao,
-            ErrorMessageUtil msgUtil) {
+    public SurveillanceNonconformityReviewer(SurveillanceDAO survDao, CertificationResultDetailsDAO certResultDetailsDao,
+            ErrorMessageUtil msgUtil, CertificationCriterionService criterionService) {
         this.survDao = survDao;
         this.certResultDetailsDao = certResultDetailsDao;
         this.msgUtil = msgUtil;
+        this.criterionService = criterionService;
     }
 
     @Override
@@ -39,8 +41,8 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
         if (surv.getRequirements() == null) {
             return;
         }
-        List<CertificationResultDetailsDTO> certResults =
-                certResultDetailsDao.getCertificationResultsForSurveillanceListing(surv);
+        List<CertificationResultDetailsDTO> certResults = certResultDetailsDao
+                .getCertificationResultsForSurveillanceListing(surv);
 
         // assume surveillance requires a close date until proven otherwise
         for (SurveillanceRequirement req : surv.getRequirements()) {
@@ -81,8 +83,7 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
                             req.getRequirementName()));
         } else if (nc.getCriterion() != null) {
             nc.setNonconformityType(nc.getCriterion().getNumber());
-            Optional<CertificationResultDetailsDTO> attestedCertResult =
-                    certResults.stream()
+            Optional<CertificationResultDetailsDTO> attestedCertResult = certResults.stream()
                     .filter(certResult -> isCriteriaAttestedTo(certResult, nc.getCriterion()))
                     .findFirst();
             if (!attestedCertResult.isPresent()) {
@@ -93,9 +94,8 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
                                 NonconformityType.L.getName(), NonconformityType.OTHER.getName()));
             }
         } else {
-            nc.setNonconformityType(gov.healthit.chpl.util.Util
-                    .coerceToCriterionNumberFormat(nc.getNonconformityType()));
-            //nonconformity type is not a criterion but it could be one of a few other values
+            nc.setNonconformityType(criterionService.coerceToCriterionNumberFormat(nc.getNonconformityType()));
+            // nonconformity type is not a criterion but it could be one of a few other values
             if (!NonconformityType.K1.getName().equals(nc.getNonconformityType())
                     && !NonconformityType.K2.getName().equals(nc.getNonconformityType())
                     && !NonconformityType.L.getName().equals(nc.getNonconformityType())

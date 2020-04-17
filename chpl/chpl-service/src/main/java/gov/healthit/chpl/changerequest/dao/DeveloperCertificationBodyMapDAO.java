@@ -14,7 +14,7 @@ import gov.healthit.chpl.dto.DeveloperDTO;
 @Repository
 public class DeveloperCertificationBodyMapDAO extends BaseDAOImpl {
 
-    public List<CertificationBody> getCertificationBodiesForDeveloper(final Long developerId) {
+    public List<CertificationBody> getCertificationBodiesForDeveloper(Long developerId) {
         String hql = "FROM DeveloperCertificationBodyMapEntity main "
                 + "JOIN FETCH main.developer dev "
                 + "JOIN FETCH main.certificationBody cb "
@@ -22,16 +22,16 @@ public class DeveloperCertificationBodyMapDAO extends BaseDAOImpl {
                 + "JOIN FETCH dev.contact "
                 + "JOIN FETCH cb.address "
                 + "WHERE dev.id = :developerId";
-
         return entityManager
                 .createQuery(hql, DeveloperCertificationBodyMapEntity.class)
                 .setParameter("developerId", developerId)
                 .getResultList().stream()
                 .map(item -> new CertificationBody(item.getCertificationBody()))
-                .collect(Collectors.<CertificationBody> toList());
+                .collect(Collectors.<CertificationBody>toList());
     }
 
-    public List<Developer> getDevelopersForCertificationBody(final Long certificationBodyId) {
+
+    public List<Developer> getDevelopersForCertificationBody(Long certificationBodyId) {
         String hql = "FROM DeveloperCertificationBodyMapEntity main"
                 + "JOIN FETCH main.developer dev "
                 + "JOIN FETCH main.certificationBody cb "
@@ -42,6 +42,6 @@ public class DeveloperCertificationBodyMapDAO extends BaseDAOImpl {
                 .setParameter("certificationBodyId", certificationBodyId)
                 .getResultList().stream()
                 .map(item -> new Developer(new DeveloperDTO(item.getDeveloper())))
-                .collect(Collectors.<Developer> toList());
+                .collect(Collectors.<Developer>toList());
     }
 }

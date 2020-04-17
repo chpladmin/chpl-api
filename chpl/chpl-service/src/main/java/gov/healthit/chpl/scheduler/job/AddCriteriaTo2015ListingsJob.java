@@ -58,6 +58,8 @@ import gov.healthit.chpl.manager.TestingFunctionalityManager;
 import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 import gov.healthit.chpl.scheduler.job.extra.JobResponseTriggerListener;
 import gov.healthit.chpl.scheduler.job.extra.JobResponseTriggerWrapper;
+import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.service.CuresUpdateService;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.PrivacyAndSecurityCriteriaReviewer;
 import net.sf.ehcache.CacheManager;
@@ -137,6 +139,12 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
     @Qualifier("pendingPrivacyAndSecurityCriteriaReviewer")
     private gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.PrivacyAndSecurityCriteriaReviewer pendingPrivacyAndSecurityCriteriaReviewer;
 
+    @Autowired
+    private CuresUpdateService curesUpdateService;
+
+    @Autowired
+    private CertificationCriterionService certificationCriterionService;
+
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         LOGGER.info("********* Starting the Add Criteria to 2015 Listings job. *********");
@@ -187,6 +195,9 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
 
             pendingPrivacyAndSecurityCriteriaReviewer.postConstruct();
             privacyAndSecurityCriteriaReviewer.postConstruct();
+
+            certificationCriterionService.postConstruct();
+            curesUpdateService.postConstruct();
         }
         LOGGER.info("********* Completed the Add Criteria To 2015 Listings job. *********");
     }
