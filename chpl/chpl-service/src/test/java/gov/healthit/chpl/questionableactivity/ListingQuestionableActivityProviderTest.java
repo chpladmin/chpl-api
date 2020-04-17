@@ -24,15 +24,17 @@ import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.service.CertificationCriterionService;
 
 public class ListingQuestionableActivityProviderTest {
 
-    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+    private SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
 
     private FF4j ff4j;
     private CertificationCriterionDAO certificationCriterionDAO;
     private Environment env;
     private SpecialProperties specialProperties;
+    private CertificationCriterionService certificationCriterionService;
 
     @Before
     public void before() throws EntityRetrievalException, ParseException {
@@ -74,7 +76,7 @@ public class ListingQuestionableActivityProviderTest {
                 .build();
 
         ListingQuestionableActivityProvider provider = new ListingQuestionableActivityProvider(null, ff4j, null,
-                specialProperties);
+                specialProperties, certificationCriterionService);
         QuestionableActivityDTO dto = provider.checkNonCuresAuditCriteriaOnCreate(listing);
 
         assertNull(dto);
@@ -90,7 +92,7 @@ public class ListingQuestionableActivityProviderTest {
                 .build();
 
         ListingQuestionableActivityProvider provider = new ListingQuestionableActivityProvider(null, ff4j, null,
-                specialProperties);
+                specialProperties, certificationCriterionService);
         QuestionableActivityDTO dto = provider.checkNonCuresAuditCriteriaOnCreate(listing);
 
         assertNull(dto);
@@ -118,7 +120,7 @@ public class ListingQuestionableActivityProviderTest {
                 .build();
 
         ListingQuestionableActivityProvider provider = new ListingQuestionableActivityProvider(
-                certificationCriterionDAO, ff4j, env, specialProperties);
+                certificationCriterionDAO, ff4j, env, specialProperties, certificationCriterionService);
         provider.postConstruct();
         QuestionableActivityDTO dto = provider.checkNonCuresAuditCriteriaOnCreate(listing);
 
@@ -147,7 +149,7 @@ public class ListingQuestionableActivityProviderTest {
                 .build();
 
         ListingQuestionableActivityProvider provider = new ListingQuestionableActivityProvider(
-                certificationCriterionDAO, ff4j, env, specialProperties);
+                certificationCriterionDAO, ff4j, env, specialProperties, certificationCriterionService);
         provider.postConstruct();
         QuestionableActivityDTO dto = provider.checkNonCuresAuditCriteriaOnCreate(listing);
 
@@ -160,7 +162,7 @@ public class ListingQuestionableActivityProviderTest {
         Mockito.when(ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)).thenReturn(false);
 
         ListingQuestionableActivityProvider provider = new ListingQuestionableActivityProvider(null, ff4j, null,
-                specialProperties);
+                specialProperties, certificationCriterionService);
         QuestionableActivityDTO dto = provider.checkNonCuresAuditCriteriaOnEdit(null, null);
 
         assertNull(dto);
@@ -189,7 +191,7 @@ public class ListingQuestionableActivityProviderTest {
                 .build();
 
         ListingQuestionableActivityProvider provider = new ListingQuestionableActivityProvider(
-                certificationCriterionDAO, ff4j, env, specialProperties);
+                certificationCriterionDAO, ff4j, env, specialProperties, certificationCriterionService);
         provider.postConstruct();
         QuestionableActivityDTO dto = provider.checkNonCuresAuditCriteriaOnEdit(origListing, newListing);
 
@@ -220,7 +222,7 @@ public class ListingQuestionableActivityProviderTest {
                 .build();
 
         ListingQuestionableActivityProvider provider = new ListingQuestionableActivityProvider(
-                certificationCriterionDAO, ff4j, env, specialProperties);
+                certificationCriterionDAO, ff4j, env, specialProperties, certificationCriterionService);
         provider.postConstruct();
         QuestionableActivityDTO dto = provider.checkNonCuresAuditCriteriaOnEdit(origListing, newListing);
 
@@ -250,7 +252,7 @@ public class ListingQuestionableActivityProviderTest {
                 .build();
 
         ListingQuestionableActivityProvider provider = new ListingQuestionableActivityProvider(
-                certificationCriterionDAO, ff4j, env, specialProperties);
+                certificationCriterionDAO, ff4j, env, specialProperties, certificationCriterionService);
         provider.postConstruct();
         QuestionableActivityDTO dto = provider.checkNonCuresAuditCriteriaOnEdit(origListing, newListing);
 
@@ -281,7 +283,7 @@ public class ListingQuestionableActivityProviderTest {
                 .build();
 
         ListingQuestionableActivityProvider provider = new ListingQuestionableActivityProvider(
-                certificationCriterionDAO, ff4j, env, specialProperties);
+                certificationCriterionDAO, ff4j, env, specialProperties, certificationCriterionService);
         provider.postConstruct();
         QuestionableActivityDTO dto = provider.checkNonCuresAuditCriteriaOnEdit(origListing, newListing);
 
@@ -312,7 +314,7 @@ public class ListingQuestionableActivityProviderTest {
                 .build();
 
         ListingQuestionableActivityProvider provider = new ListingQuestionableActivityProvider(
-                certificationCriterionDAO, ff4j, env, specialProperties);
+                certificationCriterionDAO, ff4j, env, specialProperties, certificationCriterionService);
         provider.postConstruct();
         QuestionableActivityDTO dto = provider.checkNonCuresAuditCriteriaOnEdit(origListing, newListing);
 
@@ -343,7 +345,7 @@ public class ListingQuestionableActivityProviderTest {
                 .build();
 
         ListingQuestionableActivityProvider provider = new ListingQuestionableActivityProvider(
-                certificationCriterionDAO, ff4j, env, specialProperties);
+                certificationCriterionDAO, ff4j, env, specialProperties, certificationCriterionService);
         provider.postConstruct();
         QuestionableActivityDTO dto = provider.checkNonCuresAuditCriteriaOnEdit(origListing, newListing);
 
@@ -356,7 +358,7 @@ public class ListingQuestionableActivityProviderTest {
         Mockito.when(ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)).thenReturn(false);
 
         ListingQuestionableActivityProvider provider = new ListingQuestionableActivityProvider(null, ff4j, null,
-                specialProperties);
+                specialProperties, certificationCriterionService);
         QuestionableActivityDTO dto = provider.checkNonCuresAuditCriteriaAndAddedIcsOnEdit(null, null);
 
         assertNull(dto);
@@ -392,7 +394,7 @@ public class ListingQuestionableActivityProviderTest {
                 .build();
 
         ListingQuestionableActivityProvider provider = new ListingQuestionableActivityProvider(
-                certificationCriterionDAO, ff4j, env, specialProperties);
+                certificationCriterionDAO, ff4j, env, specialProperties, certificationCriterionService);
         provider.postConstruct();
         QuestionableActivityDTO dto = provider.checkNonCuresAuditCriteriaOnEdit(origListing, newListing);
 
@@ -429,7 +431,7 @@ public class ListingQuestionableActivityProviderTest {
                 .build();
 
         ListingQuestionableActivityProvider provider = new ListingQuestionableActivityProvider(
-                certificationCriterionDAO, ff4j, env, specialProperties);
+                certificationCriterionDAO, ff4j, env, specialProperties, certificationCriterionService);
         provider.postConstruct();
         QuestionableActivityDTO dto = provider.checkNonCuresAuditCriteriaOnEdit(origListing, newListing);
 

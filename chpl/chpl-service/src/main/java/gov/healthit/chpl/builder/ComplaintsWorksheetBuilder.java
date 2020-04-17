@@ -40,7 +40,7 @@ import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.ComplaintManager;
-import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.service.CertificationCriterionService;
 
 @Component
 public class ComplaintsWorksheetBuilder {
@@ -69,8 +69,9 @@ public class ComplaintsWorksheetBuilder {
     private static final int COL_ATL_CONTACTED = 17;
     private static final int COL_COMPLAINT_STATUS = 18;
     private static final int COL_FLAGGED_FOR_ONC = 19;
-    private static final int[] HIDDEN_COLS =
-        {COL_DEVELOPER, COL_PRODUCT, COL_VERSION, COL_FLAGGED_FOR_ONC};
+    private static final int[] HIDDEN_COLS = {
+            COL_DEVELOPER, COL_PRODUCT, COL_VERSION, COL_FLAGGED_FOR_ONC
+    };
 
     private ComplaintManager complaintManager;
     private CertifiedProductDetailsManager cpdManager;
@@ -78,11 +79,12 @@ public class ComplaintsWorksheetBuilder {
     private int lastDataRow;
     private SimpleDateFormat dateFormatter;
     private PropertyTemplate pt;
+    private CertificationCriterionService criterionService;
 
     @Autowired
-    public ComplaintsWorksheetBuilder(final ComplaintManager complaintManager,
-            final CertifiedProductDetailsManager cpdManager,
-            final PrivilegedSurveillanceDAO survDao) {
+    public ComplaintsWorksheetBuilder(ComplaintManager complaintManager,
+            CertifiedProductDetailsManager cpdManager, PrivilegedSurveillanceDAO survDao,
+            CertificationCriterionService criterionService) {
         this.complaintManager = complaintManager;
         this.cpdManager = cpdManager;
         this.survDao = survDao;
@@ -99,6 +101,7 @@ public class ComplaintsWorksheetBuilder {
 
     /**
      * Creates a formatted Excel worksheet with the information in the report.
+     * 
      * @return
      * @throws IOException
      */
@@ -108,21 +111,21 @@ public class ComplaintsWorksheetBuilder {
         lastDataRow = 0;
         XSSFDataValidationHelper dvHelper = null;
 
-        //create sheet
+        // create sheet
         Sheet sheet = workbook.getSheet("Complaints", new Color(141, 180, 226), getLastDataColumn());
         if (sheet instanceof XSSFSheet) {
             XSSFSheet xssfSheet = (XSSFSheet) sheet;
             dvHelper = new XSSFDataValidationHelper(xssfSheet);
         }
 
-        //set some styling that applies to the whole sheet
+        // set some styling that applies to the whole sheet
         sheet.setDisplayGridlines(false);
         sheet.setDisplayRowColHeadings(false);
 
-        //all columns need a certain width to match the document format
+        // all columns need a certain width to match the document format
         int sharedColWidth = workbook.getColumnWidth(11.78);
         sheet.setColumnWidth(COL_COMPLAINT_DATE, sharedColWidth);
-        sheet.setColumnWidth(COL_ACB_COMPLAINT_ID,  sharedColWidth);
+        sheet.setColumnWidth(COL_ACB_COMPLAINT_ID, sharedColWidth);
         sheet.setColumnWidth(COL_ONC_COMPLAINT_ID, sharedColWidth);
         sheet.setColumnWidth(COL_SUMMARY, workbook.getColumnWidth(36.78));
         sheet.setColumnWidth(COL_ACTIONS_RESPONSE, workbook.getColumnWidth(78));
@@ -144,13 +147,13 @@ public class ComplaintsWorksheetBuilder {
         lastDataRow += addHeadingRow(workbook, sheet);
         lastDataRow += addTableData(workbook, sheet, quarterlyReports);
 
-        //some of the columns have dropdown lists of choices for the user - set those up
+        // some of the columns have dropdown lists of choices for the user - set those up
 
-        //If referenced as a list of strings, the total sum of characters of a dropdown must be less than 256
-        //(meaning if you put all the choices together it has to be less than 256 characters)
-        //but if you read those same strings from another set of cells using a formula, it is allowed
-        //to be as long as you want.
-        //names for the list constraints
+        // If referenced as a list of strings, the total sum of characters of a dropdown must be less than 256
+        // (meaning if you put all the choices together it has to be less than 256 characters)
+        // but if you read those same strings from another set of cells using a formula, it is allowed
+        // to be as long as you want.
+        // names for the list constraints
         Name complainantTypeNamedCell = workbook.getWorkbook().createName();
         complainantTypeNamedCell.setNameName("ComplainantTypeList");
         String reference = "Lists!$E$1:$E$" + getNumberOfComplainantTypes();
@@ -166,47 +169,41 @@ public class ComplaintsWorksheetBuilder {
         reference = "Lists!$D$1:$D$2";
         booleanNamedCell.setRefersToFormula(reference);
 
-        //complainant type is a dropdown list of choices
+        // complainant type is a dropdown list of choices
         CellRangeAddressList addressList = new CellRangeAddressList(2, getLastDataRow(),
                 COL_COMPLAINANT_TYPE, COL_COMPLAINANT_TYPE);
-        XSSFDataValidationConstraint dvConstraint = (XSSFDataValidationConstraint)
-                dvHelper.createFormulaListConstraint("ComplainantTypeList");
+        XSSFDataValidationConstraint dvConstraint = (XSSFDataValidationConstraint) dvHelper
+                .createFormulaListConstraint("ComplainantTypeList");
         XSSFDataValidation validation = (XSSFDataValidation) dvHelper.createValidation(dvConstraint, addressList);
         validation.setSuppressDropDownArrow(true);
         validation.setShowErrorBox(false);
         sheet.addValidationData(validation);
 
-        //complainant contacted? is a dropdown list of choices
-        addressList =
-                new CellRangeAddressList(2, getLastDataRow(), COL_COMPLAINANT_CONTACTED, COL_COMPLAINANT_CONTACTED);
-        dvConstraint = (XSSFDataValidationConstraint)
-          dvHelper.createFormulaListConstraint("ComplaintSheetBooleanList");
+        // complainant contacted? is a dropdown list of choices
+        addressList = new CellRangeAddressList(2, getLastDataRow(), COL_COMPLAINANT_CONTACTED, COL_COMPLAINANT_CONTACTED);
+        dvConstraint = (XSSFDataValidationConstraint) dvHelper.createFormulaListConstraint("ComplaintSheetBooleanList");
         validation = (XSSFDataValidation) dvHelper.createValidation(dvConstraint, addressList);
         validation.setSuppressDropDownArrow(true);
         validation.setShowErrorBox(false);
         sheet.addValidationData(validation);
 
-        //developer contacted? is a dropdown list of choices
-        addressList =
-                new CellRangeAddressList(2, getLastDataRow(), COL_DEVELOPER_CONTACTED, COL_DEVELOPER_CONTACTED);
-        dvConstraint = (XSSFDataValidationConstraint)
-          dvHelper.createFormulaListConstraint("ComplaintSheetBooleanList");
+        // developer contacted? is a dropdown list of choices
+        addressList = new CellRangeAddressList(2, getLastDataRow(), COL_DEVELOPER_CONTACTED, COL_DEVELOPER_CONTACTED);
+        dvConstraint = (XSSFDataValidationConstraint) dvHelper.createFormulaListConstraint("ComplaintSheetBooleanList");
         validation = (XSSFDataValidation) dvHelper.createValidation(dvConstraint, addressList);
         validation.setSuppressDropDownArrow(true);
         validation.setShowErrorBox(false);
         sheet.addValidationData(validation);
 
-        //atl contacted? is a dropdown list of choices
-        addressList =
-                new CellRangeAddressList(2, getLastDataRow(), COL_ATL_CONTACTED, COL_ATL_CONTACTED);
-        dvConstraint = (XSSFDataValidationConstraint)
-          dvHelper.createFormulaListConstraint("ComplaintSheetBooleanList");
+        // atl contacted? is a dropdown list of choices
+        addressList = new CellRangeAddressList(2, getLastDataRow(), COL_ATL_CONTACTED, COL_ATL_CONTACTED);
+        dvConstraint = (XSSFDataValidationConstraint) dvHelper.createFormulaListConstraint("ComplaintSheetBooleanList");
         validation = (XSSFDataValidation) dvHelper.createValidation(dvConstraint, addressList);
         validation.setSuppressDropDownArrow(true);
         validation.setShowErrorBox(false);
         sheet.addValidationData(validation);
 
-        //complaint status is a dropdown list of choices
+        // complaint status is a dropdown list of choices
         addressList = new CellRangeAddressList(2, getLastDataRow(), COL_COMPLAINT_STATUS, COL_COMPLAINT_STATUS);
         dvConstraint = (XSSFDataValidationConstraint) dvHelper.createFormulaListConstraint("ComplaintStatusTypeList");
         validation = (XSSFDataValidation) dvHelper.createValidation(dvConstraint, addressList);
@@ -214,12 +211,12 @@ public class ComplaintsWorksheetBuilder {
         validation.setShowErrorBox(false);
         sheet.addValidationData(validation);
 
-        //hide some rows the ACBs are not expected to fill out
+        // hide some rows the ACBs are not expected to fill out
         for (int i = 0; i < HIDDEN_COLS.length; i++) {
             sheet.setColumnHidden(HIDDEN_COLS[i], true);
         }
 
-        //apply the borders after the sheet has been created
+        // apply the borders after the sheet has been created
         pt.drawBorders(new CellRangeAddress(1, getLastDataRow(), 1, LAST_DATA_COLUMN - 1),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
         pt.applyBorders(sheet);
@@ -227,14 +224,14 @@ public class ComplaintsWorksheetBuilder {
     }
 
     /**
-     * Creates the heading for this worksheet.
-     * Returns the number of rows added.
+     * Creates the heading for this worksheet. Returns the number of rows added.
+     * 
      * @param sheet
      * @return
      */
     private int addHeadingRow(final SurveillanceReportWorkbookWrapper workbook, final Sheet sheet) {
         Row row = workbook.getRow(sheet, 1);
-        //row can have 6 lines of text
+        // row can have 6 lines of text
         row.setHeightInPoints(3 * sheet.getDefaultRowHeightInPoints());
 
         addHeadingCell(workbook, row, COL_COMPLAINT_DATE, "Date Complaint Received");
@@ -260,8 +257,8 @@ public class ComplaintsWorksheetBuilder {
     }
 
     /**
-     * Adds all of the complaint data to this worksheet.
-     * Returns the number of rows added.
+     * Adds all of the complaint data to this worksheet. Returns the number of rows added.
+     * 
      * @param sheet
      * @param reportListingMap
      */
@@ -271,8 +268,8 @@ public class ComplaintsWorksheetBuilder {
         int rowNum = 2;
 
         List<Complaint> uniqueComplaints = new ArrayList<Complaint>();
-        //get the complaints for each quarterly report
-        //a complaint could be relevant to multiple quarterly reports so filter out duplicates
+        // get the complaints for each quarterly report
+        // a complaint could be relevant to multiple quarterly reports so filter out duplicates
         for (QuarterlyReportDTO report : quarterlyReports) {
             List<Complaint> complaintsRelevantToReport = complaintManager.getAllComplaintsBetweenDates(
                     report.getAcb(), report.getStartDate(), report.getEndDate());
@@ -282,7 +279,7 @@ public class ComplaintsWorksheetBuilder {
                 }
             }
         }
-        //sort the complaints with oldest received date first
+        // sort the complaints with oldest received date first
         uniqueComplaints.sort(new Comparator<Complaint>() {
             @Override
             public int compare(final Complaint o1, final Complaint o2) {
@@ -304,7 +301,7 @@ public class ComplaintsWorksheetBuilder {
                     BorderStyle.HAIR, BorderExtent.HORIZONTAL);
             addedRows++;
 
-            //sort the criteria by criteria number so all data is in a predictable order
+            // sort the criteria by criteria number so all data is in a predictable order
             List<CertificationCriterion> orderedCriterion = new ArrayList<CertificationCriterion>();
             for (ComplaintCriterionMap criteriaMap : complaint.getCriteria()) {
                 orderedCriterion.add(criteriaMap.getCertificationCriterion());
@@ -316,28 +313,26 @@ public class ComplaintsWorksheetBuilder {
                 }
             });
 
-            Map<Long, CertifiedProductSearchDetails> listingDetailsCache =
-                    new LinkedHashMap<Long, CertifiedProductSearchDetails>();
+            Map<Long, CertifiedProductSearchDetails> listingDetailsCache = new LinkedHashMap<Long, CertifiedProductSearchDetails>();
             List<CertifiedProductSearchDetails> orderedListings = new ArrayList<CertifiedProductSearchDetails>();
             for (ComplaintListingMap listingMap : complaint.getListings()) {
                 try {
-                    CertifiedProductSearchDetails cpd =
-                            cpdManager.getCertifiedProductDetailsBasicByChplProductNumber(
-                                    listingMap.getChplProductNumber(), false);
+                    CertifiedProductSearchDetails cpd = cpdManager.getCertifiedProductDetailsBasicByChplProductNumber(
+                            listingMap.getChplProductNumber(), false);
                     listingDetailsCache.put(cpd.getId(), cpd);
                     orderedListings.add(cpd);
                 } catch (EntityRetrievalException ex) {
                     LOGGER.error("Could not find basic details for listing " + listingMap.getChplProductNumber(), ex);
                 }
             }
-            //sort the listings by chpl number so all data is in a consistent order
+            // sort the listings by chpl number so all data is in a consistent order
             orderedListings.sort(new Comparator<CertifiedProductSearchDetails>() {
                 @Override
                 public int compare(final CertifiedProductSearchDetails o1, final CertifiedProductSearchDetails o2) {
                     return o1.getChplProductNumber().compareTo(o2.getChplProductNumber());
                 }
             });
-            //sort the surveillances by chpl number + friendly surveillance id to keep data in consistent order
+            // sort the surveillances by chpl number + friendly surveillance id to keep data in consistent order
             List<SurveillanceBasic> orderedSurveillances = new ArrayList<SurveillanceBasic>();
             for (ComplaintSurveillanceMap survMap : complaint.getSurveillances()) {
                 orderedSurveillances.add(survMap.getSurveillance());
@@ -351,32 +346,32 @@ public class ComplaintsWorksheetBuilder {
                 }
             });
 
-            //we need the dev, product, and version for each listing associated with surveillance
-            //but in case listings are duplicated get the details only once
+            // we need the dev, product, and version for each listing associated with surveillance
+            // but in case listings are duplicated get the details only once
             for (SurveillanceBasic surv : orderedSurveillances) {
                 if (listingDetailsCache.get(surv.getCertifiedProductId()) == null) {
                     try {
                         listingDetailsCache.put(surv.getCertifiedProductId(),
-                            cpdManager.getCertifiedProductDetailsBasic(surv.getCertifiedProductId()));
+                                cpdManager.getCertifiedProductDetailsBasic(surv.getCertifiedProductId()));
                     } catch (EntityRetrievalException ex) {
                         LOGGER.error("Could not find basic details for listing " + surv.getCertifiedProductId(), ex);
                     }
                 }
             }
 
-            //A complaint can be associated with nothing at all, with a listing,
-            //with a surveillance (and implicitly the listing associated with that surveillance),
-            //or with a criteria.
-            //The first complaint row in this table should have all the complaint data
-            //and following rows should only have the additional listing, surveillance,
-            //or criteria that the complaint is associated with.
+            // A complaint can be associated with nothing at all, with a listing,
+            // with a surveillance (and implicitly the listing associated with that surveillance),
+            // or with a criteria.
+            // The first complaint row in this table should have all the complaint data
+            // and following rows should only have the additional listing, surveillance,
+            // or criteria that the complaint is associated with.
             for (CertificationCriterion criterion : orderedCriterion) {
                 if (!isFirstRowForComplaint) {
                     row = workbook.getRow(sheet, rowNum++);
                     addedRows++;
                 }
-                addDataCell(workbook, row, COL_CRITERIA_ID, Util.formatCriteriaNumber(criterion));
-                //nothing to show in the rest of the cells since they are all listing/surv specific
+                addDataCell(workbook, row, COL_CRITERIA_ID, criterionService.formatCriteriaNumber(criterion));
+                // nothing to show in the rest of the cells since they are all listing/surv specific
                 addDataCell(workbook, row, COL_CHPL_ID, "");
                 addDataCell(workbook, row, COL_SURV_ID, "");
                 addDataCell(workbook, row, COL_DEVELOPER, "");
@@ -395,17 +390,17 @@ public class ComplaintsWorksheetBuilder {
                 }
                 addDataCell(workbook, row, COL_CRITERIA_ID, "");
                 addDataCell(workbook, row, COL_CHPL_ID, listing.getChplProductNumber());
-                //nothing in surveillance because this complaint is only
-                //associated at the listing level
+                // nothing in surveillance because this complaint is only
+                // associated at the listing level
                 addDataCell(workbook, row, COL_SURV_ID, "");
                 addDataCell(workbook, row, COL_DEVELOPER, listing.getDeveloper().getName());
                 addDataCell(workbook, row, COL_PRODUCT, listing.getProduct().getName());
                 addDataCell(workbook, row, COL_VERSION, listing.getVersion().getVersion());
-                //nothing in surveillance outcome because this complaint is only
-                //associated at the listing level
+                // nothing in surveillance outcome because this complaint is only
+                // associated at the listing level
                 addDataCell(workbook, row, COL_SURV_OUTCOME, "");
                 pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, LAST_DATA_COLUMN - 1),
-                    BorderStyle.HAIR, BorderExtent.HORIZONTAL);
+                        BorderStyle.HAIR, BorderExtent.HORIZONTAL);
                 isFirstRowForComplaint = false;
             }
 
@@ -417,7 +412,7 @@ public class ComplaintsWorksheetBuilder {
                 addDataCell(workbook, row, COL_CRITERIA_ID, "");
                 addDataCell(workbook, row, COL_CHPL_ID, surv.getChplProductNumber());
                 addDataCell(workbook, row, COL_SURV_ID, surv.getFriendlyId());
-                //if we have the listing details print them out, otherwise print an error
+                // if we have the listing details print them out, otherwise print an error
                 CertifiedProductSearchDetails cpd = listingDetailsCache.get(surv.getCertifiedProductId());
                 if (cpd != null) {
                     addDataCell(workbook, row, COL_DEVELOPER, cpd.getDeveloper().getName());
@@ -430,7 +425,7 @@ public class ComplaintsWorksheetBuilder {
                 }
                 addDataCell(workbook, row, COL_SURV_OUTCOME, getSurveillanceOutcome(quarterlyReports, surv.getId()));
                 pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, LAST_DATA_COLUMN - 1),
-                    BorderStyle.HAIR, BorderExtent.HORIZONTAL);
+                        BorderStyle.HAIR, BorderExtent.HORIZONTAL);
                 isFirstRowForComplaint = false;
             }
         }
@@ -446,13 +441,15 @@ public class ComplaintsWorksheetBuilder {
         List<PrivilegedSurveillanceDTO> privSurvs = survDao.getByReportsAndSurveillance(reportIds, survId);
         if (reportIds.size() == 1 && privSurvs.size() > 0) {
             PrivilegedSurveillanceDTO privSurv = privSurvs.get(0);
-            result =  (privSurv.getSurveillanceOutcome() != null
-                    ? privSurv.getSurveillanceOutcome().getName() : "");
+            result = (privSurv.getSurveillanceOutcome() != null
+                    ? privSurv.getSurveillanceOutcome().getName()
+                    : "");
         } else if (privSurvs.size() > 0) {
             Map<String, ArrayList<String>> outcomeToQuarterMap = new LinkedHashMap<String, ArrayList<String>>();
             for (PrivilegedSurveillanceDTO privSurv : privSurvs) {
                 String outcomeStr = (privSurv.getSurveillanceOutcome() != null
-                        ? privSurv.getSurveillanceOutcome().getName() : "");
+                        ? privSurv.getSurveillanceOutcome().getName()
+                        : "");
                 if (outcomeToQuarterMap.get(outcomeStr) != null) {
                     outcomeToQuarterMap.get(outcomeStr).add(privSurv.getQuarterlyReport().getQuarter().getName());
                 } else {
@@ -479,7 +476,8 @@ public class ComplaintsWorksheetBuilder {
         addDataCell(workbook, row, COL_COMPLAINANT_CONTACTED, complaint.isComplainantContacted() ? BOOLEAN_YES : BOOLEAN_NO);
         addDataCell(workbook, row, COL_DEVELOPER_CONTACTED, complaint.isDeveloperContacted() ? BOOLEAN_YES : BOOLEAN_NO);
         addDataCell(workbook, row, COL_ATL_CONTACTED, complaint.isOncAtlContacted() ? BOOLEAN_YES : BOOLEAN_NO);
-        addDataCell(workbook, row, COL_COMPLAINT_STATUS, complaint.getClosedDate() == null ? Complaint.COMPLAINT_OPEN : Complaint.COMPLAINT_CLOSED);
+        addDataCell(workbook, row, COL_COMPLAINT_STATUS,
+                complaint.getClosedDate() == null ? Complaint.COMPLAINT_OPEN : Complaint.COMPLAINT_CLOSED);
         addDataCell(workbook, row, COL_FLAGGED_FOR_ONC, complaint.isFlagForOncReview() ? BOOLEAN_YES : BOOLEAN_NO);
     }
 

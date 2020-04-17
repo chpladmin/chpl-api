@@ -15,6 +15,7 @@ import org.springframework.core.env.Environment;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
+import gov.healthit.chpl.service.CertificationCriterionService;
 
 /**
  * Writes out only surveillance records that resulted in nonconformities.
@@ -31,8 +32,8 @@ public class NonconformityCsvPresenter extends SurveillanceCsvPresenter {
      * @param props
      *            the properties file
      */
-    public NonconformityCsvPresenter(final Environment env) {
-        super(env);
+    public NonconformityCsvPresenter(Environment env, CertificationCriterionService criterionService) {
+        super(env, criterionService);
     }
 
     @Override
