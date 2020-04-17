@@ -21,14 +21,14 @@ import gov.healthit.chpl.util.AuthUtil;
 @Repository("changeRequestStatusDAO")
 public class ChangeRequestStatusDAO extends BaseDAOImpl {
 
-    public ChangeRequestStatus create(final ChangeRequest cr, final ChangeRequestStatus crStatus)
+    public ChangeRequestStatus create(ChangeRequest cr, ChangeRequestStatus crStatus)
             throws EntityRetrievalException {
         ChangeRequestStatusEntity entity = getNewEntity(cr, crStatus);
         create(entity);
         return ChangeRequestConverter.convert(getEntityById(entity.getId()));
     }
 
-    public List<ChangeRequestStatus> getByChangeRequestId(final Long changeRequestId) {
+    public List<ChangeRequestStatus> getByChangeRequestId(Long changeRequestId) {
         String hql = "SELECT crStatus "
                 + "FROM ChangeRequestStatusEntity crStatus "
                 + "JOIN FETCH crStatus.changeRequestStatusType "
@@ -46,7 +46,7 @@ public class ChangeRequestStatusDAO extends BaseDAOImpl {
                 .collect(Collectors.<ChangeRequestStatus> toList());
     }
 
-    private ChangeRequestStatusEntity getEntityById(final Long id) throws EntityRetrievalException {
+    private ChangeRequestStatusEntity getEntityById(Long id) throws EntityRetrievalException {
         String hql = "FROM ChangeRequestStatusEntity crStatus "
                 + "JOIN FETCH crStatus.userPermission "
                 + "LEFT JOIN FETCH crStatus.certificationBody "
@@ -67,7 +67,7 @@ public class ChangeRequestStatusDAO extends BaseDAOImpl {
         return entity;
     }
 
-    private ChangeRequestStatusEntity getNewEntity(final ChangeRequest cr, final ChangeRequestStatus crStatus) {
+    private ChangeRequestStatusEntity getNewEntity(ChangeRequest cr, ChangeRequestStatus crStatus) {
         ChangeRequestStatusEntity entity = new ChangeRequestStatusEntity();
 
         entity.setChangeRequest(getSession().load(ChangeRequestEntity.class, cr.getId()));

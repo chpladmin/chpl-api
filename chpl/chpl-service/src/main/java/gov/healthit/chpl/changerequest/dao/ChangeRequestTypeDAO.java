@@ -35,7 +35,7 @@ public class ChangeRequestTypeDAO extends BaseDAOImpl {
                 .getResultList();
     }
 
-    private ChangeRequestTypeEntity getChangeRequestTypeEntity(final Long changeRequestTypeId)
+    private ChangeRequestTypeEntity getChangeRequestTypeEntity(Long changeRequestTypeId)
             throws EntityRetrievalException {
         String hql = "FROM ChangeRequestTypeEntity "
                 + "WHERE (NOT deleted = true) "

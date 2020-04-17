@@ -40,6 +40,7 @@ import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityProductDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityTriggerDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityVersionDTO;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.Util;
 
@@ -51,6 +52,9 @@ public class QuestionableActivityEmailJob extends QuartzJob {
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private CertificationCriterionService criterionService;
 
     private static final int NUM_REPORT_COLS = 13;
     private static final int ACB_COL = 0;
@@ -704,7 +708,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         criterion.setNumber(certResult.getNumber());
         criterion.setTitle(certResult.getTitle());
         criterion.setId(certResult.getCertificationCriterionId());
-        return Util.formatCriteriaNumber(criterion);
+        return criterionService.formatCriteriaNumber(criterion);
     }
 
     private static class ActivityDateTriggerGroup {

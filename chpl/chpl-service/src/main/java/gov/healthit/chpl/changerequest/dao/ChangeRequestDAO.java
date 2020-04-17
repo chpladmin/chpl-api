@@ -37,23 +37,22 @@ public class ChangeRequestDAO extends BaseDAOImpl {
     private Long pendingDeveloperAction;
 
     @Autowired
-    public ChangeRequestDAO(final DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO,
-            final ChangeRequestStatusDAO changeRequestStatusDAO,
-            final @Lazy ChangeRequestDetailsFactory changeRequestDetailsFactory) {
+    public ChangeRequestDAO(DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO,
+            ChangeRequestStatusDAO changeRequestStatusDAO,
+            @Lazy ChangeRequestDetailsFactory changeRequestDetailsFactory) {
         this.developerCertificationBodyMapDAO = developerCertificationBodyMapDAO;
         this.changeRequestStatusDAO = changeRequestStatusDAO;
         this.changeRequestDetailsFactory = changeRequestDetailsFactory;
     }
 
-    public ChangeRequest create(final ChangeRequest cr) throws EntityRetrievalException {
+    public ChangeRequest create(ChangeRequest cr) throws EntityRetrievalException {
         ChangeRequestEntity entity = getNewEntity(cr);
         create(entity);
         return ChangeRequestConverter.convert(getEntityById(entity.getId()));
     }
 
-    public ChangeRequest get(final Long changeRequestId) throws EntityRetrievalException {
+    public ChangeRequest get(Long changeRequestId) throws EntityRetrievalException {
         ChangeRequest cr = ChangeRequestConverter.convert(getEntityById(changeRequestId));
-
         return populateDependentObjects(cr);
     }
 
@@ -61,25 +60,26 @@ public class ChangeRequestDAO extends BaseDAOImpl {
         return getEntities().stream()
                 .map(entity -> ChangeRequestConverter.convert(entity))
                 .map(cr -> populateDependentObjects(cr))
-                .collect(Collectors.<ChangeRequest> toList());
+                .collect(Collectors.<ChangeRequest>toList());
     }
 
     public List<ChangeRequest> getAllPending() throws EntityRetrievalException {
         return getAll().stream()
                 .filter(cr -> getUpdatableStatuses().contains(cr.getCurrentStatus().getChangeRequestStatusType().getId()))
-                .collect(Collectors.<ChangeRequest> toList());
+                .collect(Collectors.<ChangeRequest>toList());
     }
 
-    public List<ChangeRequest> getByDeveloper(final Long developerId) throws EntityRetrievalException {
+
+    public List<ChangeRequest> getByDeveloper(Long developerId) throws EntityRetrievalException {
         List<Long> developers = new ArrayList<Long>(Arrays.asList(developerId));
 
         return getEntitiesByDevelopers(developers).stream()
                 .map(entity -> ChangeRequestConverter.convert(entity))
                 .map(cr -> populateDependentObjects(cr))
-                .collect(Collectors.<ChangeRequest> toList());
+                .collect(Collectors.<ChangeRequest>toList());
     }
 
-    private ChangeRequestEntity getEntityById(final Long id) throws EntityRetrievalException {
+    private ChangeRequestEntity getEntityById(Long id) throws EntityRetrievalException {
         String hql = "SELECT DISTINCT cr "
                 + "FROM ChangeRequestEntity cr "
                 + "JOIN FETCH cr.changeRequestType "
@@ -101,7 +101,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
         return entity;
     }
 
-    private List<ChangeRequestEntity> getEntitiesByDevelopers(final List<Long> developerIds)
+    private List<ChangeRequestEntity> getEntitiesByDevelopers(List<Long> developerIds)
             throws EntityRetrievalException {
         String hql = "SELECT DISTINCT cr "
                 + "FROM ChangeRequestEntity cr "
@@ -139,7 +139,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
         return results;
     }
 
-    private ChangeRequestStatus getCurrentStatus(final Long changeRequestId) {
+    private ChangeRequestStatus getCurrentStatus(Long changeRequestId) {
         String hql = "SELECT crStatus "
                 + "FROM ChangeRequestStatusEntity crStatus "
                 + "JOIN FETCH crStatus.changeRequestStatusType "
@@ -155,7 +155,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 .setParameter("changeRequestId", changeRequestId)
                 .getResultList().stream()
                 .map(ChangeRequestConverter::convert)
-                .collect(Collectors.<ChangeRequestStatus> toList());
+                .collect(Collectors.<ChangeRequestStatus>toList());
 
         if (statuses.size() > 0) {
             return statuses.get(0);
@@ -164,7 +164,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
         }
     }
 
-    private ChangeRequestEntity getNewEntity(final ChangeRequest cr) {
+    private ChangeRequestEntity getNewEntity(ChangeRequest cr) {
         ChangeRequestEntity entity = new ChangeRequestEntity();
         entity.setChangeRequestType(
                 getSession().load(ChangeRequestTypeEntity.class, cr.getChangeRequestType().getId()));
@@ -183,7 +183,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
         return statuses;
     }
 
-    private ChangeRequest populateDependentObjects(final ChangeRequest cr) {
+    private ChangeRequest populateDependentObjects(ChangeRequest cr) {
         try {
             cr.setCurrentStatus(getCurrentStatus(cr.getId()));
             cr.setStatuses(changeRequestStatusDAO.getByChangeRequestId(cr.getId()));
