@@ -1,15 +1,12 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import gov.healthit.chpl.domain.statistics.Statistics;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 
 public class ProductStatisticsSectionCreator extends StatisticsSectionCreator {
-    private static int EDITION2015 = 2015;
-    private static int EDITION2014 = 2014;
 
     public String build(Statistics stats, List<CertificationBodyDTO> activeAcbs) {
         return buildUniqueProductSection(stats, new StatisticsMassager(activeAcbs));
@@ -30,38 +27,38 @@ public class ProductStatisticsSectionCreator extends StatisticsSectionCreator {
         section.append(buildSection(
                 "Total # of Unique Products with 2014 Listings (Regardless of Status)",
                 stats.getTotalCPs2014Listings(),
-                massager.getStatisticsByEdition(stats.getTotalCPListingsEachYearByCertifiedBody(), EDITION2014)));
+                massager.getStatisticsByEdition(stats.getTotalCPListingsEachYearByCertifiedBody(), get2014EditionAsInteger())));
 
         section.append(buildSection(
                 "Total # of Unique Products with Active 2014 Listings",
                 stats.getTotalCPsActive2014Listings(),
                 massager.getStatisticsByStatusAndEdition(stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(),
                         "Active",
-                        EDITION2014)));
+                        get2014EditionAsInteger())));
 
         section.append(buildSection(
                 "Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2014 Listings",
                 stats.getTotalCPsSuspended2014Listings(),
                 massager.getStatisticsByStatusAndEdition(stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(),
-                        "Suspended", EDITION2014)));
+                        "Suspended", get2014EditionAsInteger())));
 
         section.append(buildSection(
                 "Total # of Unique Products with 2015 Listings (Regardless of Status)",
                 stats.getTotalCPs2015Listings(),
-                massager.getStatisticsByEdition(stats.getTotalCPListingsEachYearByCertifiedBody(), EDITION2015)));
+                massager.getStatisticsByEdition(stats.getTotalCPListingsEachYearByCertifiedBody(), get2015EditionAsInteger())));
 
         section.append(buildSection(
                 "Total # of Unique Products with Active 2015 Listings",
                 stats.getTotalCPsActive2015Listings(),
                 massager.getStatisticsByStatusAndEdition(stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(),
                         "Active",
-                        EDITION2015)));
+                        get2015EditionAsInteger())));
 
         section.append(buildSection(
                 "Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015 Listings",
                 stats.getTotalCPsSuspended2015Listings(),
                 massager.getStatisticsByStatusAndEdition(stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(),
-                        "Suspended", EDITION2015)));
+                        "Suspended", get2015EditionAsInteger())));
 
         List<CertifiedBodyStatistics> productsWithCuresUpdatedListing = massager
                 .getStatistics(stats.getUniqueProductsCountWithCuresUpdatedListingsByAcb());
@@ -89,10 +86,5 @@ public class ProductStatisticsSectionCreator extends StatisticsSectionCreator {
                 .append("</li></ul>");
 
         return section.toString();
-    }
-
-    private Long sumTotalListings(List<CertifiedBodyStatistics> stats) {
-        return stats.stream()
-                .collect(Collectors.summingLong(CertifiedBodyStatistics::getTotalListings));
     }
 }

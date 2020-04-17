@@ -31,6 +31,7 @@ public class NonConformityStatisticsSectionCreator extends StatisticsSectionCrea
                 stats.getTotalOpenNonconformities(),
                 massager.getStatistics(stats.getTotalOpenNonconformitiesByAcb())));
 
+        section.append(buildItem("Closed NCs", stats.getTotalClosedNonconformities()));
         section.append(buildItem("Average Time to Assess Conformity (in days)", stats.getAverageTimeToAssessConformity()));
         section.append(buildItem("Average Time to Approve CAP (in days)", stats.getAverageTimeToApproveCAP()));
         section.append(buildItem("Average Duration of CAP (in days) (includes closed and ongoing CAPs)",

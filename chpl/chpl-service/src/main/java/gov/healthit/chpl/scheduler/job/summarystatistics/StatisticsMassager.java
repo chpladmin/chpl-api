@@ -1,9 +1,9 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import gov.healthit.chpl.domain.statistics.CertifiedBodyAltTestStatistics;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
@@ -20,30 +20,28 @@ public class StatisticsMassager {
         this.activeAcbs = activeAcbs;
     }
 
+    public List<CertifiedBodyStatistics> getStatistics(List<CertifiedBodyStatistics> stats) {
+        List<CertifiedBodyStatistics> acbStats = new ArrayList<CertifiedBodyStatistics>(stats);
+        addMissingAcbStatistics(acbStats, null);
+        return acbStats;
+    }
+
     public List<CertifiedBodyStatistics> getStatisticsByStatusAndEdition(List<CertifiedBodyStatistics> stats,
             String statusName, Integer edition) {
 
-        List<CertifiedBodyStatistics> acbStats = new ArrayList<CertifiedBodyStatistics>();
-        // Filter the existing stats
-        for (CertifiedBodyStatistics cbStat : stats) {
-            if (cbStat.getYear().equals(edition)
-                    && cbStat.getCertificationStatusName().toLowerCase().contains(statusName.toLowerCase())) {
-                acbStats.add(cbStat);
-            }
-        }
+        List<CertifiedBodyStatistics> acbStats = stats.stream()
+                .filter(stat -> stat.getYear().equals(edition)
+                        && stat.getCertificationStatusName().toLowerCase().contains(statusName.toLowerCase()))
+                .collect(Collectors.toList());
+
         addMissingAcbStatistics(acbStats, edition);
         return acbStats;
     }
 
     public List<CertifiedBodyStatistics> getStatisticsByEdition(List<CertifiedBodyStatistics> stats, Integer edition) {
-
-        List<CertifiedBodyStatistics> acbStats = new ArrayList<CertifiedBodyStatistics>();
-        // Filter the existing stats
-        for (CertifiedBodyStatistics cbStat : stats) {
-            if (cbStat.getYear().equals(edition)) {
-                acbStats.add(cbStat);
-            }
-        }
+        List<CertifiedBodyStatistics> acbStats = stats.stream()
+                .filter(stat -> stat.getYear().equals(edition))
+                .collect(Collectors.toList());
         addMissingAcbStatistics(acbStats, edition);
         return acbStats;
     }
@@ -52,33 +50,26 @@ public class StatisticsMassager {
         // Add statistics for missing active ACBs
         acbStats.addAll(getMissingAcbStats(acbStats, edition));
 
-        Collections.sort(acbStats, new Comparator<CertifiedBodyStatistics>() {
-            public int compare(CertifiedBodyStatistics obj1, CertifiedBodyStatistics obj2) {
-                return obj1.getName().compareTo(obj2.getName());
-            }
-        });
+        acbStats = acbStats.stream()
+                .sorted(Comparator.comparing(CertifiedBodyStatistics::getName))
+                .collect(Collectors.toList());
     }
 
     private List<CertifiedBodyStatistics> getMissingAcbStats(List<CertifiedBodyStatistics> statistics,
             Integer edition) {
 
-        List<CertifiedBodyStatistics> updatedStats = new ArrayList<CertifiedBodyStatistics>();
-        // Make sure all active ACBs are in the resultset
-        for (CertificationBodyDTO acb : activeAcbs) {
-            if (!isAcbInStatistics(acb, statistics)) {
-                updatedStats.add(getNewCertifiedBodyStatistic(acb.getName(), edition));
-            }
-        }
+        List<CertifiedBodyStatistics> updatedStats = activeAcbs.stream()
+                .filter(acb -> !isAcbInStatistics(acb, statistics))
+                .map(acb -> getNewCertifiedBodyStatistic(acb.getName(), edition))
+                .collect(Collectors.toList());
         return updatedStats;
     }
 
     private Boolean isAcbInStatistics(CertificationBodyDTO acb, List<CertifiedBodyStatistics> stats) {
-        for (CertifiedBodyStatistics stat : stats) {
-            if (stat.getName().equals(acb.getName())) {
-                return true;
-            }
-        }
-        return false;
+        return stats.stream()
+                .filter(stat -> stat.getName().equals(acb.getName()))
+                .findAny()
+                .isPresent();
     }
 
     private CertifiedBodyStatistics getNewCertifiedBodyStatistic(String acbName, Integer year) {
@@ -91,36 +82,23 @@ public class StatisticsMassager {
     }
 
     public List<CertifiedBodyAltTestStatistics> getStatisticsWithAltTestMethods(Statistics stats) {
-        List<CertifiedBodyAltTestStatistics> acbStats = new ArrayList<CertifiedBodyAltTestStatistics>();
-        // Filter the existing stats
-        for (CertifiedBodyAltTestStatistics cbStat : stats
-                .getTotalListingsWithCertifiedBodyAndAlternativeTestMethods()) {
+        List<CertifiedBodyAltTestStatistics> acbStats = new ArrayList<CertifiedBodyAltTestStatistics>(
+                stats.getTotalListingsWithCertifiedBodyAndAlternativeTestMethods());
 
-            acbStats.add(cbStat);
-        }
-        // Add statistics for missing active ACBs
         acbStats.addAll(getMissingAcbWithAltTestMethodsStats(acbStats));
 
-        Collections.sort(acbStats, new Comparator<CertifiedBodyAltTestStatistics>() {
-            public int compare(CertifiedBodyAltTestStatistics obj1, CertifiedBodyAltTestStatistics obj2) {
-                return obj1.getName().compareTo(obj2.getName());
-            }
-        });
-
-        return acbStats;
+        return acbStats.stream()
+                .sorted(Comparator.comparing(CertifiedBodyAltTestStatistics::getName))
+                .collect(Collectors.toList());
     }
 
     private List<CertifiedBodyAltTestStatistics> getMissingAcbWithAltTestMethodsStats(
             List<CertifiedBodyAltTestStatistics> statistics) {
 
-        List<CertifiedBodyAltTestStatistics> updatedStats = new ArrayList<CertifiedBodyAltTestStatistics>();
-        // Make sure all active ACBs are in the resultset
-        for (CertificationBodyDTO acb : activeAcbs) {
-            if (!isAcbWithAltTestMethodsInStatistics(acb, statistics)) {
-                updatedStats.add(getNewCertifiedBodyWithAltTestMethodsStatistic(acb.getName()));
-            }
-        }
-        return updatedStats;
+        return activeAcbs.stream()
+                .filter(acb -> !isAcbWithAltTestMethodsInStatistics(acb, statistics))
+                .map(acb -> getNewCertifiedBodyWithAltTestMethodsStatistic(acb.getName()))
+                .collect(Collectors.toList());
     }
 
     private CertifiedBodyAltTestStatistics getNewCertifiedBodyWithAltTestMethodsStatistic(String acbName) {
@@ -133,24 +111,9 @@ public class StatisticsMassager {
 
     private Boolean isAcbWithAltTestMethodsInStatistics(CertificationBodyDTO acb,
             List<CertifiedBodyAltTestStatistics> stats) {
-
-        for (CertifiedBodyAltTestStatistics stat : stats) {
-            if (stat.getName().equals(acb.getName())) {
-                return true;
-            }
-        }
-        return false;
+        return stats.stream()
+                .filter(stat -> stat.getName().equals(acb.getName()))
+                .findAny()
+                .isPresent();
     }
-
-    ////////////////////////////////////
-    public List<CertifiedBodyStatistics> getStatistics(List<CertifiedBodyStatistics> stats) {
-        List<CertifiedBodyStatistics> acbStats = new ArrayList<CertifiedBodyStatistics>();
-        // All the existing stats
-        for (CertifiedBodyStatistics cbStat : stats) {
-            acbStats.add(cbStat);
-        }
-        addMissingAcbStatistics(acbStats, null);
-        return acbStats;
-    }
-
 }

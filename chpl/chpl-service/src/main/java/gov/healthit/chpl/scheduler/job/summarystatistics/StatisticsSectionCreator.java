@@ -1,7 +1,9 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 
 public abstract class StatisticsSectionCreator {
@@ -59,5 +61,23 @@ public abstract class StatisticsSectionCreator {
                 .append(count)
                 .append("</li>")
                 .toString();
+    }
+
+    public Long sumTotalListings(List<CertifiedBodyStatistics> stats) {
+        return stats.stream()
+                .collect(Collectors.summingLong(CertifiedBodyStatistics::getTotalListings));
+    }
+
+    public Long sumTotalDeveloperWithListings(List<CertifiedBodyStatistics> stats) {
+        return stats.stream()
+                .collect(Collectors.summingLong(CertifiedBodyStatistics::getTotalDevelopersWithListings));
+    }
+
+    public Integer get2015EditionAsInteger() {
+        return Integer.valueOf(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
+    }
+
+    public Integer get2014EditionAsInteger() {
+        return Integer.valueOf(CertificationEditionConcept.CERTIFICATION_EDITION_2014.getYear());
     }
 }

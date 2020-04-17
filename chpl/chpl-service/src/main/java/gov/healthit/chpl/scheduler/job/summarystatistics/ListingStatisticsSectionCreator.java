@@ -1,7 +1,6 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import gov.healthit.chpl.domain.statistics.CertifiedBodyAltTestStatistics;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
@@ -9,8 +8,6 @@ import gov.healthit.chpl.domain.statistics.Statistics;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 
 public class ListingStatisticsSectionCreator extends StatisticsSectionCreator {
-    private static int EDITION2015 = 2015;
-    private static int EDITION2014 = 2014;
 
     public String build(Statistics stats, List<CertificationBodyDTO> activeAcbs) {
         return buildListingSection(stats, new StatisticsMassager(activeAcbs));
@@ -31,12 +28,12 @@ public class ListingStatisticsSectionCreator extends StatisticsSectionCreator {
         section.append(buildSection(
                 "Total # of Active (Including Suspended by ONC/ONC-ACB 2014 Listings)",
                 stats.getTotalActive2014Listings(),
-                massager.getStatisticsByEdition(stats.getTotalActiveListingsByCertifiedBody(), EDITION2014)));
+                massager.getStatisticsByEdition(stats.getTotalActiveListingsByCertifiedBody(), get2014EditionAsInteger())));
 
         section.append(buildSection(
                 "Total # of Active (Including Suspended by ONC/ONC-ACB 2015 Listings)",
                 stats.getTotalActive2015Listings(),
-                massager.getStatisticsByEdition(stats.getTotalActiveListingsByCertifiedBody(), EDITION2015)));
+                massager.getStatisticsByEdition(stats.getTotalActiveListingsByCertifiedBody(), get2015EditionAsInteger())));
 
         section.append(buildItem("Total # of 2015 Listings with Alternative Test Methods",
                 stats.getTotalListingsWithAlternativeTestMethods()));
@@ -73,10 +70,5 @@ public class ListingStatisticsSectionCreator extends StatisticsSectionCreator {
 
         section.append("</ul>");
         return section.toString();
-    }
-
-    private Long sumTotalListings(List<CertifiedBodyStatistics> stats) {
-        return stats.stream()
-                .collect(Collectors.summingLong(CertifiedBodyStatistics::getTotalListings));
     }
 }
