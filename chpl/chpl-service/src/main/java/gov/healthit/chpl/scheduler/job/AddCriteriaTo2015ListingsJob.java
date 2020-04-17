@@ -20,6 +20,7 @@ import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.KeyMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -58,6 +59,7 @@ import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 import gov.healthit.chpl.scheduler.job.extra.JobResponseTriggerListener;
 import gov.healthit.chpl.scheduler.job.extra.JobResponseTriggerWrapper;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.PrivacyAndSecurityCriteriaReviewer;
 import net.sf.ehcache.CacheManager;
 
 public class AddCriteriaTo2015ListingsJob extends QuartzJob {
@@ -127,6 +129,14 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
     @Autowired
     private Environment env;
 
+    @Autowired
+    @Qualifier("privacyAndSecurityCriteriaReviewer")
+    private PrivacyAndSecurityCriteriaReviewer privacyAndSecurityCriteriaReviewer;
+
+    @Autowired
+    @Qualifier("pendingPrivacyAndSecurityCriteriaReviewer")
+    private gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.PrivacyAndSecurityCriteriaReviewer pendingPrivacyAndSecurityCriteriaReviewer;
+
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         LOGGER.info("********* Starting the Add Criteria to 2015 Listings job. *********");
@@ -168,12 +178,15 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         } catch (SchedulerException e) {
             LOGGER.error("Scheduler Error: " + e.getMessage(), e);
         } finally {
-            //search options-related calls may have changed data now
+            // search options-related calls may have changed data now
             CacheManager.getInstance().clearAll();
             // Need to "refresh" the data in CertifiedProductDetailsManager since it is stored within the bean.
             certifiedProductDetailsManager.refreshData();
             pcpManager.refreshData();
             testFuncManager.onApplicationEvent(null);
+
+            pendingPrivacyAndSecurityCriteriaReviewer.postConstruct();
+            privacyAndSecurityCriteriaReviewer.postConstruct();
         }
         LOGGER.info("********* Completed the Add Criteria To 2015 Listings job. *********");
     }
@@ -221,105 +234,271 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
     }
 
     private boolean criterionExists(String number, String title) {
-        CertificationCriterionDTO criterion =
-                criterionDAO.getByNumberAndTitle(number, title);
+        CertificationCriterionDTO criterion = criterionDAO.getByNumberAndTitle(number, title);
         return criterion != null;
     }
 
-    @SuppressWarnings({"checkstyle:linelength"})
+    @SuppressWarnings({
+            "checkstyle:linelength"
+    })
     private void addMacraMeasureMaps() {
-        addMacraMeasureMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "RT7 EP Stage 2", "Patient Care Record Exchange: Eligible Professional", "Required Test 7: Stage 2 Objective 5", false);
-        addMacraMeasureMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "RT7 EP Stage 3", "Patient Care Record Exchange: Eligible Professional", "Required Test 7: Stage 3 Objective 7 Measure 1", false);
-        addMacraMeasureMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "RT7 EC ACI Transition", "Patient Care Record Exchange: Eligible Clinician", "Required Test 7: Promoting Interoperability Transition Objective 6 Measure 1", false);
-        addMacraMeasureMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "RT7 EC ACI", "Support Electronic Referral Loops by Sending Health Information (formerly Patient Care Record Exchange): Eligible Clinician", "Required Test 7: Promoting Interoperability Objective 5 Measure 1", false);
-        addMacraMeasureMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "RT7 EH/CAH Stage 2", "Patient Care Record Exchange: Eligible Hospital/Critical Access Hospital", "Required Test 7: Stage 2 Objective 5", false);
-        addMacraMeasureMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "RT7 EH/CAH Stage 3", "Support Electronic Referral Loops by Sending Health Information (formerly Patient Care Record Exchange):  Eligible Hospital/Critical Access Hospital", "Required Test 7: Stage 3 Objective 7 Measure 1", false);
-        addMacraMeasureMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "RT8 EP Stage 3", "Request/Accept Patient Care Record: Eligible Professional", "Required Test 8: Stage 3 Objective 7 Measure 2", false);
-        addMacraMeasureMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "RT8 EC ACI", "Request/Accept Patient Care Record: Eligible Clinician", "Required Test 8: Promoting Interoperability Objective 5 Measure 2", false);
-        addMacraMeasureMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "RT8 EH/CAH Stage 3", "Request/Accept Patient Care Record: Eligible Hospital/Critical Access Hospital", "Required Test 8: Stage 3 Objective 7 Measure 2", false);
-        addMacraMeasureMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "RT15 EH/CAH Stage 3", "Support Electronic Referral Loops by Receiving and Incorporating Health Information: Eligible Hospital/Critical Access Hospital", "Required Test 15: Stage 3", false);
-        addMacraMeasureMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "RT15 EC", "Support Electronic Referral Loops by Receiving and Incorporating Health Information: Eligible Clinician", "Required Test 15: Promoting Interoperability", false);
-        addMacraMeasureMap("170.315 (b)(2)", "Clinical Information Reconciliation and Incorporation (Cures Update)", "EC ACI Transition", "Medication/Clinical Information Reconciliation: Eligible Clinician", "Required Test 9: Promoting Interoperability Transition Objective 7 Measure 1", false);
-        addMacraMeasureMap("170.315 (b)(2)", "Clinical Information Reconciliation and Incorporation (Cures Update)", "EC ACI", "Medication/Clinical Information Reconciliation: Eligible Clinician", "Required Test 9: Promoting Interoperability Objective 5 Measure 3", false);
-        addMacraMeasureMap("170.315 (b)(2)", "Clinical Information Reconciliation and Incorporation (Cures Update)", "EH/CAH Stage 2", "Medication/Clinical Information Reconciliation: Eligible Hospital/Critical Access Hospital", "Required Test 9: Stage 2 Objective 7", false);
-        addMacraMeasureMap("170.315 (b)(2)", "Clinical Information Reconciliation and Incorporation (Cures Update)", "EH/CAH Stage 3", "Medication/Clinical Information Reconciliation: Eligible Hospital/Critical Access Hospital", "Required Test 9: Stage 3 Objective 7 Measure 3", false);
-        addMacraMeasureMap("170.315 (b)(2)", "Clinical Information Reconciliation and Incorporation (Cures Update)", "EP Stage 2", "Medication/Clinical Information Reconciliation: Eligible Professional", "Required Test 9: Stage 2 Objective 7", false);
-        addMacraMeasureMap("170.315 (b)(2)", "Clinical Information Reconciliation and Incorporation (Cures Update)", "EP Stage 3", "Medication/Clinical Information Reconciliation: Eligible Professional", "Required Test 9: Stage 3 Objective 7 Measure 3", false);
-        addMacraMeasureMap("170.315 (b)(2)", "Clinical Information Reconciliation and Incorporation (Cures Update)", "RT15 EH/CAH Stage 3", "Support Electronic Referral Loops by Receiving and Incorporating Health Information: Eligible Hospital/Critical Access Hospital", "Required Test 15: Stage 3", false);
-        addMacraMeasureMap("170.315 (b)(2)", "Clinical Information Reconciliation and Incorporation (Cures Update)", "RT15 EC", "Support Electronic Referral Loops by Receiving and Incorporating Health Information: Eligible Clinician", "Required Test 15: Promoting Interoperability", false);
-        addMacraMeasureMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "EP Stage 2", "Electronic Prescribing: Eligible Professional", "Required Test 1: Stage 2 Objective 4", false);
-        addMacraMeasureMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "EP Stage 3", "Electronic Prescribing: Eligible Professional", "Required Test 1: Stage 3 Objective 2", false);
-        addMacraMeasureMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "EC ACI Transition", "Electronic Prescribing: Eligible Clinician", "Required Test 1: Promoting Interoperability Transition Objective 2 Measure 1", false);
-        addMacraMeasureMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "EC ACI", "Electronic Prescribing: Eligible Clinician", "Required Test 1: Promoting Interoperability Objective 2 Measure 1", false);
-        addMacraMeasureMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "EH/CAH Stage 2", "Electronic Prescribing: Eligible Hospital/Critical Access Hospital", "Required Test 1: Stage 2 Objective 4", false);
-        addMacraMeasureMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "EH/CAH Stage 3", "Electronic Prescribing: Eligible Hospital/Critical Access Hospital", "Required Test 1: Stage 3 Objective 2", false);
-        addMacraMeasureMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "RT13 EH/CAH Stage 3", "Query of Prescription Drug Monitoring Program (PDMP): Eligible Hospital/Critical Access Hospital", "Required Test 13: Stage 3", true);
-        addMacraMeasureMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "RT14 EH/CAH Stage 3", "Verify Opioid Treatment Agreement: Eligible Hospital/Critical Access Hospital", "Required Test 14: Stage 3", false);
-        addMacraMeasureMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "RT13 EC", "Query of Prescription Drug Monitoring Program (PDMP): Eligible Clinician", "Required Test 13: Promoting Interoperability", true);
-        addMacraMeasureMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "RT14 EC", "Verify Opioid Treatment Agreement: Eligible Clinician", "Required Test 14: Promoting Interoperability", false);
-        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT2a EP Stage 2", "Patient Electronic Access: Eligible Professional", "Required Test 2: Stage 2 Objective 8 Measure 1", false);
-        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT2a EP Stage 3", "Patient Electronic Access: Eligible Professional", "Required Test 2: Stage 3 Objective 5 Measure 1", false);
-        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT2a EC ACI Transition", "Patient Electronic Access: Eligible Clinician", "Required Test 2: Promoting Interoperability Transition Objective 3 Measure 1", false);
-        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT2a EC ACI", "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Clinician", "Required Test 2: Promoting Interoperability Objective 3 Measure 1", false);
-        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT2a EH/CAH Stage 2", "Patient Electronic Access: Eligible Hospital/Critical Access Hospital", "Required Test 2: Stage 2 Objective 8 Measure 1", false);
-        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT2a EH/CAH Stage 3", "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital", "Required Test 2: Stage 3 Objective 5 Measure 1", false);
-        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT2b EP Stage 2", "Patient Electronic Access: Eligible Professional", "Required Test 2: Stage 2 Objective 8 Measure 1", false);
-        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT2b EP Stage 3", "Patient Electronic Access: Eligible Professional", "Required Test 2: Stage 3 Objective 5 Measure 1", false);
-        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT2b EC ACI Transition", "Patient Electronic Access: Eligible Clinician", "Required Test 2: Promoting Interoperability Transition Objective 3 Measure 1", false);
-        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT2b EC ACI", "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Clinician", "Required Test 2: Promoting Interoperability Objective 3 Measure 1", false);
-        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT2b EH/CAH Stage 2", "Patient Electronic Access: Eligible Hospital/Critical Access Hospital", "Required Test 2: Stage 2 Objective 8 Measure 1", false);
-        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT2b EH/CAH Stage 3", "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital", "Required Test 2: Stage 3 Objective 5 Measure 1", false);
-        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT4a EP Stage 2", "View, Download, or Transmit (VDT): Eligible Professional", "Required Test 4: Stage 2 Objective 8 Measure 2", false);
-        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT4a EP Stage 3", "View, Download, or Transmit (VDT): Eligible Professional", "Required Test 4: Stage 3 Objective 6 Measure 1", false);
-        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT4a EC ACI Transition", "View, Download, or Transmit (VDT): Eligible Clinician ", "Required Test 4: Promoting Interoperability Transition Objective 3 Measure 2", false);
-        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT4a EC ACI", "View, Download, or Transmit (VDT): Eligible Clinician", "Required Test 4: Promoting Interoperability Objective 4 Measure 1", false);
-        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT4a EH/CAH Stage 2", "View, Download, or Transmit (VDT): Eligible Hospital/Critical Access Hospital", "Required Test 4: Stage 2 Objective 8 Measure 2", false);
-        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT4a EH/CAH Stage 3", "View, Download, or Transmit (VDT): Eligible Hospital/Critical Access Hospital", "Required Test 4: Stage 3 Objective 6 Measure 1", false);
-        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT4b EP Stage 2", "View, Download, or Transmit (VDT): Eligible Professional", "Required Test 4: Stage 2 Objective 8 Measure 2", false);
-        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT4b EP Stage 3", "View, Download, or Transmit (VDT): Eligible Professional", "Required Test 4: Stage 3 Objective 6 Measure 1", false);
-        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT4b EC ACI Transition", "View, Download, or Transmit (VDT): Eligible Clinician", "Required Test 4: Promoting Interoperability Transition Objective 3 Measure 2", false);
-        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT4b EC ACI", "View, Download, or Transmit (VDT): Eligible Clinician", "Required Test 4: Promoting Interoperability Objective 4 Measure 1", false);
-        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT4b EH/CAH Stage 2", "View, Download, or Transmit (VDT): Eligible Hospital/Critical Access Hospital", "Required Test 4: Stage 2 Objective 8 Measure 2", false);
-        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT4b EH/CAH Stage 3", "View, Download, or Transmit (VDT): Eligible Hospital/Critical Access Hospital", "Required Test 4: Stage 3 Objective 6 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT2a EP Stage 2", "Patient Electronic Access: Eligible Professional", "Required Test 2: Stage 2 Objective 8 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT2a EP Stage 3", "Patient Electronic Access: Eligible Professional", "Required Test 2: Stage 3 Objective 5 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT2a EC ACI Transition", "Patient Electronic Access: Eligible Clinician", "Required Test 2: Promoting Interoperability Transition Objective 3 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT2a EC ACI", "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Clinician", "Required Test 2: Promoting Interoperability Objective 3 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT2a EH/CAH Stage 2", "Patient Electronic Access: Eligible Hospital/Critical Access Hospital", "Required Test 2: Stage 2 Objective 8 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT2a EH/CAH Stage 3", "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital", "Required Test 2: Stage 3 Objective 5 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT2c EP Stage 2", "Patient Electronic Access: Eligible Professional", "Required Test 2: Stage 2 Objective 8 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT2c EP Stage 3", "Patient Electronic Access: Eligible Professional", "Required Test 2: Stage 3 Objective 5 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT2c EC ACI Transition", "Patient Electronic Access: Eligible Clinician ", "Required Test 2: Promoting Interoperability Transition Objective 3 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT2c EC ACI", "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Clinician", "Required Test 2: Promoting Interoperability Objective 3 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT2c EH/CAH Stage 2", "Patient Electronic Access: Eligible Hospital/Critical Access Hospital", "Required Test 2: Stage 2 Objective 8 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT2c EH/CAH Stage 3", "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital", "Required Test 4: Stage 3 Objective 6 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT4a EP Stage 2", "View, Download, or Transmit (VDT): Eligible Professional", "Required Test 4: Stage 2 Objective 8 Measure 2", false);
-        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT4a EP Stage 3", "View, Download, or Transmit (VDT): Eligible Professional", "Required Test 4: Stage 3 Objective 6 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT4a EC ACI Transition", "View, Download, or Transmit (VDT): Eligible Clinician ", "Required Test 4: Promoting Interoperability Transition Objective 3 Measure 2", false);
-        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT4a EC ACI", "View, Download, or Transmit (VDT): Eligible Clinician ", "Required Test 4: Promoting Interoperability Objective 4 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT4a EH/CAH Stage 2", "View, Download, or Transmit (VDT): Eligible Hospital/Critical Access Hospital", "Required Test 4: Stage 2 Objective 8 Measure 2", false);
-        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT4a EH/CAH Stage 3", "View, Download, or Transmit (VDT): Eligible Hospital/Critical Access Hospital", "Required Test 4: Stage 3 Objective 6 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT4c EP Stage 2", "View, Download, or Transmit (VDT): Eligible Professional", "Required Test 4: Stage 2 Objective 8 Measure 2", false);
-        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT4c EP Stage 3", "View, Download, or Transmit (VDT): Eligible Professional", "Required Test 4: Stage 3 Objective 6 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT4c EC ACI Transition", "View, Download, or Transmit (VDT): Eligible Clinician ", "Required Test 4: Promoting Interoperability Transition Objective 3 Measure 2", false);
-        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT4c EC ACI", "View, Download, or Transmit (VDT): Eligible Clinician ", "Required Test 4: Promoting Interoperability Objective 4 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT4c EH/CAH Stage 2", "View, Download, or Transmit (VDT): Eligible Hospital/Critical Access Hospital", "Required Test 4: Stage 2 Objective 8 Measure 2", false);
-        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT4c EH/CAH Stage 3", "View, Download, or Transmit (VDT): Eligible Hospital/Critical Access Hospital", "Required Test 4: Stage 3 Objective 6 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT2a EP Stage 3", "Patient Electronic Access: Eligible Professional", "Required Test 2: Stage 3 Objective 5 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT2a EH/CAH Stage 3", "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital", "Required Test 2: Stage 3 Objective 5 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT2a EC PI", "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Clinician", "Required Test 2: Promoting Interoperability Objective 3 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT2c EP Stage 3", "Patient Electronic Access: Eligible Professional", "Required Test 2: Stage 3 Objective 5 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT2c EH/CAH Stage 3", "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital", "Required Test 2: Stage 3 Objective 5 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT2c EC PI", "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Clinician", "Required Test 2: Promoting Interoperability Objective 3 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT4a EP Stage 3", "View, Download, or Transmit (VDT): Eligible Professional", "Required Test 4: Stage 3 Objective 6 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT4a EH/CAH Stage 3", "View, Download, or Transmit (VDT): Eligible Hospital/Critical Access Hospital", "Required Test 4: Stage 3 Objective 6 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT4a EC PI", "View, Download, or Transmit (VDT):  Eligible Clinician", "Required Test 4: Promoting Interoperability Objective 4 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT4c EP Stage 3", "View, Download, or Transmit (VDT): Eligible Professional", "Required Test 4: Stage 3 Objective 6 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT4c EH/CAH Stage 3", "View, Download, or Transmit (VDT): Eligible Hospital/Critical Access Hospital", "Required Test 4: Stage 3 Objective 6 Measure 1", false);
-        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT4c EC PI", "View, Download, or Transmit (VDT):  Eligible Clinician", "Required Test 4: Promoting Interoperability Objective 4 Measure 1", false);
+        addMacraMeasureMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "RT7 EP Stage 2",
+                "Patient Care Record Exchange: Eligible Professional", "Required Test 7: Stage 2 Objective 5", false);
+        addMacraMeasureMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "RT7 EP Stage 3",
+                "Patient Care Record Exchange: Eligible Professional", "Required Test 7: Stage 3 Objective 7 Measure 1", false);
+        addMacraMeasureMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "RT7 EC ACI Transition",
+                "Patient Care Record Exchange: Eligible Clinician",
+                "Required Test 7: Promoting Interoperability Transition Objective 6 Measure 1", false);
+        addMacraMeasureMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "RT7 EC ACI",
+                "Support Electronic Referral Loops by Sending Health Information (formerly Patient Care Record Exchange): Eligible Clinician",
+                "Required Test 7: Promoting Interoperability Objective 5 Measure 1", false);
+        addMacraMeasureMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "RT7 EH/CAH Stage 2",
+                "Patient Care Record Exchange: Eligible Hospital/Critical Access Hospital",
+                "Required Test 7: Stage 2 Objective 5", false);
+        addMacraMeasureMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "RT7 EH/CAH Stage 3",
+                "Support Electronic Referral Loops by Sending Health Information (formerly Patient Care Record Exchange):  Eligible Hospital/Critical Access Hospital",
+                "Required Test 7: Stage 3 Objective 7 Measure 1", false);
+        addMacraMeasureMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "RT8 EP Stage 3",
+                "Request/Accept Patient Care Record: Eligible Professional", "Required Test 8: Stage 3 Objective 7 Measure 2",
+                false);
+        addMacraMeasureMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "RT8 EC ACI",
+                "Request/Accept Patient Care Record: Eligible Clinician",
+                "Required Test 8: Promoting Interoperability Objective 5 Measure 2", false);
+        addMacraMeasureMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "RT8 EH/CAH Stage 3",
+                "Request/Accept Patient Care Record: Eligible Hospital/Critical Access Hospital",
+                "Required Test 8: Stage 3 Objective 7 Measure 2", false);
+        addMacraMeasureMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "RT15 EH/CAH Stage 3",
+                "Support Electronic Referral Loops by Receiving and Incorporating Health Information: Eligible Hospital/Critical Access Hospital",
+                "Required Test 15: Stage 3", false);
+        addMacraMeasureMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "RT15 EC",
+                "Support Electronic Referral Loops by Receiving and Incorporating Health Information: Eligible Clinician",
+                "Required Test 15: Promoting Interoperability", false);
+        addMacraMeasureMap("170.315 (b)(2)", "Clinical Information Reconciliation and Incorporation (Cures Update)",
+                "EC ACI Transition", "Medication/Clinical Information Reconciliation: Eligible Clinician",
+                "Required Test 9: Promoting Interoperability Transition Objective 7 Measure 1", false);
+        addMacraMeasureMap("170.315 (b)(2)", "Clinical Information Reconciliation and Incorporation (Cures Update)", "EC ACI",
+                "Medication/Clinical Information Reconciliation: Eligible Clinician",
+                "Required Test 9: Promoting Interoperability Objective 5 Measure 3", false);
+        addMacraMeasureMap("170.315 (b)(2)", "Clinical Information Reconciliation and Incorporation (Cures Update)",
+                "EH/CAH Stage 2", "Medication/Clinical Information Reconciliation: Eligible Hospital/Critical Access Hospital",
+                "Required Test 9: Stage 2 Objective 7", false);
+        addMacraMeasureMap("170.315 (b)(2)", "Clinical Information Reconciliation and Incorporation (Cures Update)",
+                "EH/CAH Stage 3", "Medication/Clinical Information Reconciliation: Eligible Hospital/Critical Access Hospital",
+                "Required Test 9: Stage 3 Objective 7 Measure 3", false);
+        addMacraMeasureMap("170.315 (b)(2)", "Clinical Information Reconciliation and Incorporation (Cures Update)", "EP Stage 2",
+                "Medication/Clinical Information Reconciliation: Eligible Professional", "Required Test 9: Stage 2 Objective 7",
+                false);
+        addMacraMeasureMap("170.315 (b)(2)", "Clinical Information Reconciliation and Incorporation (Cures Update)", "EP Stage 3",
+                "Medication/Clinical Information Reconciliation: Eligible Professional",
+                "Required Test 9: Stage 3 Objective 7 Measure 3", false);
+        addMacraMeasureMap("170.315 (b)(2)", "Clinical Information Reconciliation and Incorporation (Cures Update)",
+                "RT15 EH/CAH Stage 3",
+                "Support Electronic Referral Loops by Receiving and Incorporating Health Information: Eligible Hospital/Critical Access Hospital",
+                "Required Test 15: Stage 3", false);
+        addMacraMeasureMap("170.315 (b)(2)", "Clinical Information Reconciliation and Incorporation (Cures Update)", "RT15 EC",
+                "Support Electronic Referral Loops by Receiving and Incorporating Health Information: Eligible Clinician",
+                "Required Test 15: Promoting Interoperability", false);
+        addMacraMeasureMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "EP Stage 2",
+                "Electronic Prescribing: Eligible Professional", "Required Test 1: Stage 2 Objective 4", false);
+        addMacraMeasureMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "EP Stage 3",
+                "Electronic Prescribing: Eligible Professional", "Required Test 1: Stage 3 Objective 2", false);
+        addMacraMeasureMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "EC ACI Transition",
+                "Electronic Prescribing: Eligible Clinician",
+                "Required Test 1: Promoting Interoperability Transition Objective 2 Measure 1", false);
+        addMacraMeasureMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "EC ACI",
+                "Electronic Prescribing: Eligible Clinician", "Required Test 1: Promoting Interoperability Objective 2 Measure 1",
+                false);
+        addMacraMeasureMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "EH/CAH Stage 2",
+                "Electronic Prescribing: Eligible Hospital/Critical Access Hospital", "Required Test 1: Stage 2 Objective 4",
+                false);
+        addMacraMeasureMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "EH/CAH Stage 3",
+                "Electronic Prescribing: Eligible Hospital/Critical Access Hospital", "Required Test 1: Stage 3 Objective 2",
+                false);
+        addMacraMeasureMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "RT13 EH/CAH Stage 3",
+                "Query of Prescription Drug Monitoring Program (PDMP): Eligible Hospital/Critical Access Hospital",
+                "Required Test 13: Stage 3", true);
+        addMacraMeasureMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "RT14 EH/CAH Stage 3",
+                "Verify Opioid Treatment Agreement: Eligible Hospital/Critical Access Hospital", "Required Test 14: Stage 3",
+                false);
+        addMacraMeasureMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "RT13 EC",
+                "Query of Prescription Drug Monitoring Program (PDMP): Eligible Clinician",
+                "Required Test 13: Promoting Interoperability", true);
+        addMacraMeasureMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "RT14 EC",
+                "Verify Opioid Treatment Agreement: Eligible Clinician", "Required Test 14: Promoting Interoperability", false);
+        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT2a EP Stage 2",
+                "Patient Electronic Access: Eligible Professional", "Required Test 2: Stage 2 Objective 8 Measure 1", false);
+        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT2a EP Stage 3",
+                "Patient Electronic Access: Eligible Professional", "Required Test 2: Stage 3 Objective 5 Measure 1", false);
+        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT2a EC ACI Transition",
+                "Patient Electronic Access: Eligible Clinician",
+                "Required Test 2: Promoting Interoperability Transition Objective 3 Measure 1", false);
+        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT2a EC ACI",
+                "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Clinician",
+                "Required Test 2: Promoting Interoperability Objective 3 Measure 1", false);
+        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT2a EH/CAH Stage 2",
+                "Patient Electronic Access: Eligible Hospital/Critical Access Hospital",
+                "Required Test 2: Stage 2 Objective 8 Measure 1", false);
+        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT2a EH/CAH Stage 3",
+                "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital",
+                "Required Test 2: Stage 3 Objective 5 Measure 1", false);
+        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT2b EP Stage 2",
+                "Patient Electronic Access: Eligible Professional", "Required Test 2: Stage 2 Objective 8 Measure 1", false);
+        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT2b EP Stage 3",
+                "Patient Electronic Access: Eligible Professional", "Required Test 2: Stage 3 Objective 5 Measure 1", false);
+        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT2b EC ACI Transition",
+                "Patient Electronic Access: Eligible Clinician",
+                "Required Test 2: Promoting Interoperability Transition Objective 3 Measure 1", false);
+        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT2b EC ACI",
+                "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Clinician",
+                "Required Test 2: Promoting Interoperability Objective 3 Measure 1", false);
+        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT2b EH/CAH Stage 2",
+                "Patient Electronic Access: Eligible Hospital/Critical Access Hospital",
+                "Required Test 2: Stage 2 Objective 8 Measure 1", false);
+        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT2b EH/CAH Stage 3",
+                "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital",
+                "Required Test 2: Stage 3 Objective 5 Measure 1", false);
+        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT4a EP Stage 2",
+                "View, Download, or Transmit (VDT): Eligible Professional", "Required Test 4: Stage 2 Objective 8 Measure 2",
+                false);
+        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT4a EP Stage 3",
+                "View, Download, or Transmit (VDT): Eligible Professional", "Required Test 4: Stage 3 Objective 6 Measure 1",
+                false);
+        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT4a EC ACI Transition",
+                "View, Download, or Transmit (VDT): Eligible Clinician ",
+                "Required Test 4: Promoting Interoperability Transition Objective 3 Measure 2", false);
+        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT4a EC ACI",
+                "View, Download, or Transmit (VDT): Eligible Clinician",
+                "Required Test 4: Promoting Interoperability Objective 4 Measure 1", false);
+        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT4a EH/CAH Stage 2",
+                "View, Download, or Transmit (VDT): Eligible Hospital/Critical Access Hospital",
+                "Required Test 4: Stage 2 Objective 8 Measure 2", false);
+        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT4a EH/CAH Stage 3",
+                "View, Download, or Transmit (VDT): Eligible Hospital/Critical Access Hospital",
+                "Required Test 4: Stage 3 Objective 6 Measure 1", false);
+        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT4b EP Stage 2",
+                "View, Download, or Transmit (VDT): Eligible Professional", "Required Test 4: Stage 2 Objective 8 Measure 2",
+                false);
+        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT4b EP Stage 3",
+                "View, Download, or Transmit (VDT): Eligible Professional", "Required Test 4: Stage 3 Objective 6 Measure 1",
+                false);
+        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT4b EC ACI Transition",
+                "View, Download, or Transmit (VDT): Eligible Clinician",
+                "Required Test 4: Promoting Interoperability Transition Objective 3 Measure 2", false);
+        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT4b EC ACI",
+                "View, Download, or Transmit (VDT): Eligible Clinician",
+                "Required Test 4: Promoting Interoperability Objective 4 Measure 1", false);
+        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT4b EH/CAH Stage 2",
+                "View, Download, or Transmit (VDT): Eligible Hospital/Critical Access Hospital",
+                "Required Test 4: Stage 2 Objective 8 Measure 2", false);
+        addMacraMeasureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "RT4b EH/CAH Stage 3",
+                "View, Download, or Transmit (VDT): Eligible Hospital/Critical Access Hospital",
+                "Required Test 4: Stage 3 Objective 6 Measure 1", false);
+        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT2a EP Stage 2",
+                "Patient Electronic Access: Eligible Professional", "Required Test 2: Stage 2 Objective 8 Measure 1", false);
+        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT2a EP Stage 3",
+                "Patient Electronic Access: Eligible Professional", "Required Test 2: Stage 3 Objective 5 Measure 1", false);
+        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT2a EC ACI Transition",
+                "Patient Electronic Access: Eligible Clinician",
+                "Required Test 2: Promoting Interoperability Transition Objective 3 Measure 1", false);
+        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT2a EC ACI",
+                "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Clinician",
+                "Required Test 2: Promoting Interoperability Objective 3 Measure 1", false);
+        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT2a EH/CAH Stage 2",
+                "Patient Electronic Access: Eligible Hospital/Critical Access Hospital",
+                "Required Test 2: Stage 2 Objective 8 Measure 1", false);
+        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT2a EH/CAH Stage 3",
+                "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital",
+                "Required Test 2: Stage 3 Objective 5 Measure 1", false);
+        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT2c EP Stage 2",
+                "Patient Electronic Access: Eligible Professional", "Required Test 2: Stage 2 Objective 8 Measure 1", false);
+        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT2c EP Stage 3",
+                "Patient Electronic Access: Eligible Professional", "Required Test 2: Stage 3 Objective 5 Measure 1", false);
+        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT2c EC ACI Transition",
+                "Patient Electronic Access: Eligible Clinician ",
+                "Required Test 2: Promoting Interoperability Transition Objective 3 Measure 1", false);
+        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT2c EC ACI",
+                "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Clinician",
+                "Required Test 2: Promoting Interoperability Objective 3 Measure 1", false);
+        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT2c EH/CAH Stage 2",
+                "Patient Electronic Access: Eligible Hospital/Critical Access Hospital",
+                "Required Test 2: Stage 2 Objective 8 Measure 1", false);
+        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT2c EH/CAH Stage 3",
+                "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital",
+                "Required Test 4: Stage 3 Objective 6 Measure 1", false);
+        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT4a EP Stage 2",
+                "View, Download, or Transmit (VDT): Eligible Professional", "Required Test 4: Stage 2 Objective 8 Measure 2",
+                false);
+        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT4a EP Stage 3",
+                "View, Download, or Transmit (VDT): Eligible Professional", "Required Test 4: Stage 3 Objective 6 Measure 1",
+                false);
+        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT4a EC ACI Transition",
+                "View, Download, or Transmit (VDT): Eligible Clinician ",
+                "Required Test 4: Promoting Interoperability Transition Objective 3 Measure 2", false);
+        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT4a EC ACI",
+                "View, Download, or Transmit (VDT): Eligible Clinician ",
+                "Required Test 4: Promoting Interoperability Objective 4 Measure 1", false);
+        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT4a EH/CAH Stage 2",
+                "View, Download, or Transmit (VDT): Eligible Hospital/Critical Access Hospital",
+                "Required Test 4: Stage 2 Objective 8 Measure 2", false);
+        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT4a EH/CAH Stage 3",
+                "View, Download, or Transmit (VDT): Eligible Hospital/Critical Access Hospital",
+                "Required Test 4: Stage 3 Objective 6 Measure 1", false);
+        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT4c EP Stage 2",
+                "View, Download, or Transmit (VDT): Eligible Professional", "Required Test 4: Stage 2 Objective 8 Measure 2",
+                false);
+        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT4c EP Stage 3",
+                "View, Download, or Transmit (VDT): Eligible Professional", "Required Test 4: Stage 3 Objective 6 Measure 1",
+                false);
+        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT4c EC ACI Transition",
+                "View, Download, or Transmit (VDT): Eligible Clinician ",
+                "Required Test 4: Promoting Interoperability Transition Objective 3 Measure 2", false);
+        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT4c EC ACI",
+                "View, Download, or Transmit (VDT): Eligible Clinician ",
+                "Required Test 4: Promoting Interoperability Objective 4 Measure 1", false);
+        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT4c EH/CAH Stage 2",
+                "View, Download, or Transmit (VDT): Eligible Hospital/Critical Access Hospital",
+                "Required Test 4: Stage 2 Objective 8 Measure 2", false);
+        addMacraMeasureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "RT4c EH/CAH Stage 3",
+                "View, Download, or Transmit (VDT): Eligible Hospital/Critical Access Hospital",
+                "Required Test 4: Stage 3 Objective 6 Measure 1", false);
+        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT2a EP Stage 3",
+                "Patient Electronic Access: Eligible Professional", "Required Test 2: Stage 3 Objective 5 Measure 1", false);
+        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT2a EH/CAH Stage 3",
+                "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital",
+                "Required Test 2: Stage 3 Objective 5 Measure 1", false);
+        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT2a EC PI",
+                "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Clinician",
+                "Required Test 2: Promoting Interoperability Objective 3 Measure 1", false);
+        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT2c EP Stage 3",
+                "Patient Electronic Access: Eligible Professional", "Required Test 2: Stage 3 Objective 5 Measure 1", false);
+        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT2c EH/CAH Stage 3",
+                "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital",
+                "Required Test 2: Stage 3 Objective 5 Measure 1", false);
+        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT2c EC PI",
+                "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Clinician",
+                "Required Test 2: Promoting Interoperability Objective 3 Measure 1", false);
+        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT4a EP Stage 3",
+                "View, Download, or Transmit (VDT): Eligible Professional", "Required Test 4: Stage 3 Objective 6 Measure 1",
+                false);
+        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT4a EH/CAH Stage 3",
+                "View, Download, or Transmit (VDT): Eligible Hospital/Critical Access Hospital",
+                "Required Test 4: Stage 3 Objective 6 Measure 1", false);
+        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT4a EC PI",
+                "View, Download, or Transmit (VDT):  Eligible Clinician",
+                "Required Test 4: Promoting Interoperability Objective 4 Measure 1", false);
+        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT4c EP Stage 3",
+                "View, Download, or Transmit (VDT): Eligible Professional", "Required Test 4: Stage 3 Objective 6 Measure 1",
+                false);
+        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT4c EH/CAH Stage 3",
+                "View, Download, or Transmit (VDT): Eligible Hospital/Critical Access Hospital",
+                "Required Test 4: Stage 3 Objective 6 Measure 1", false);
+        addMacraMeasureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "RT4c EC PI",
+                "View, Download, or Transmit (VDT):  Eligible Clinician",
+                "Required Test 4: Promoting Interoperability Objective 4 Measure 1", false);
     }
 
-    private void addMacraMeasureMap(String criterionNumber, String criterionTitle, String value, String name, String description, boolean removed) {
+    private void addMacraMeasureMap(String criterionNumber, String criterionTitle, String value, String name, String description,
+            boolean removed) {
         if (!macraMeasureCriteriaMapExists(criterionNumber, criterionTitle, value)) {
             MacraMeasureDTO mm = new MacraMeasureDTO();
             CertificationCriterionDTO criterion = criterionDAO.getByNumberAndTitle(criterionNumber, criterionTitle);
@@ -345,10 +524,13 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         return mm != null;
     }
 
-    @SuppressWarnings({"checkstyle:linelength"})
+    @SuppressWarnings({
+            "checkstyle:linelength"
+    })
     private void addTestDataMaps() {
         addTestDataMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "ONC Test Method");
-        addTestDataMap("170.315 (b)(2)", "Clinical Information Reconciliation and Incorporation (Cures Update)", "ONC Test Method");
+        addTestDataMap("170.315 (b)(2)", "Clinical Information Reconciliation and Incorporation (Cures Update)",
+                "ONC Test Method");
         addTestDataMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "ONC Test Method");
         addTestDataMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "Not Applicable");
         addTestDataMap("170.315 (b)(7)", "Data Segmentation for Privacy - Send (Cures Update)", "ONC Test Method");
@@ -380,7 +562,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
             }
         } else {
             LOGGER.info("Test data mapping from " + criterionNumber + ":"
-        + criterionTitle + " to " + testDataName + " already exists.");
+                    + criterionTitle + " to " + testDataName + " already exists.");
         }
     }
 
@@ -389,12 +571,16 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         return td != null;
     }
 
-    @SuppressWarnings({"checkstyle:linelength"})
+    @SuppressWarnings({
+            "checkstyle:linelength"
+    })
     private void addTestProcedureMaps() {
         addTestProcedureMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "ONC Test Method");
-        addTestProcedureMap("170.315 (b)(2)", "Clinical Information Reconciliation and Incorporation (Cures Update)", "ONC Test Method");
+        addTestProcedureMap("170.315 (b)(2)", "Clinical Information Reconciliation and Incorporation (Cures Update)",
+                "ONC Test Method");
         addTestProcedureMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "ONC Test Method");
-        addTestProcedureMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "ONC Test Method - Surescripts (Alternative)");
+        addTestProcedureMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)",
+                "ONC Test Method - Surescripts (Alternative)");
         addTestProcedureMap("170.315 (b)(7)", "Data Segmentation for Privacy - Send (Cures Update)", "ONC Test Method");
         addTestProcedureMap("170.315 (b)(8)", "Data Segmentation for Privacy - Receive (Cures Update)", "ONC Test Method");
         addTestProcedureMap("170.315 (b)(9)", "Care Plan (Cures Update)", "ONC Test Method");
@@ -407,7 +593,8 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         addTestProcedureMap("170.315 (d)(12)", "Encrypt Authentication Credentials", "ONC Test Method");
         addTestProcedureMap("170.315 (d)(13)", "Multi-Factor Authentication", "ONC Test Method");
         addTestProcedureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "ONC Test Method");
-        addTestProcedureMap("170.315 (f)(5)", "Transmission to Public Health Agencies - Electronic Case Reporting (Cures Update)", "ONC Test Method");
+        addTestProcedureMap("170.315 (f)(5)", "Transmission to Public Health Agencies - Electronic Case Reporting (Cures Update)",
+                "ONC Test Method");
         addTestProcedureMap("170.315 (g)(6)", "Consolidated CDA Creation (Cures Update)", "ONC Test Method");
         addTestProcedureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "ONC Test Method");
         addTestProcedureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "ONC Test Method");
@@ -441,21 +628,30 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         return tp != null;
     }
 
-    @SuppressWarnings({"checkstyle:linelength"})
+    @SuppressWarnings({
+            "checkstyle:linelength"
+    })
     private void addTestFunctionalities() {
         addTestFunctionality("(b)(3)(ii)(B)(1)", "Create and respond to new prescriptions (NewRxRequest, NewRxResponseDenied)");
         addTestFunctionality("(b)(3)(ii)(B)(2)", "Receive fill status notifications (RxFillIndicator)");
         addTestFunctionality("(b)(3)(ii)(B)(3)", "Ask the Mailbox if there are any transactions (GetMessage)");
         addTestFunctionality("(b)(3)(ii)(B)(4)", "Request to send an additional supply of medication (Resupply)");
         addTestFunctionality("(b)(3)(ii)(B)(5)", "Communicate drug administration events (DrugAdministration)");
-        addTestFunctionality("(b)(3)(ii)(B)(6)", "Request and respond to transfer one or more prescriptions between pharmacies (RxTransferRequest, RxTransferResponse, RxTransferConfirm)");
-        addTestFunctionality("(b)(3)(ii)(B)(7)", "Recertify the continued administration of a medication order (Recertification)");
-        addTestFunctionality("(b)(3)(ii)(B)(8)", "Complete Risk Evaluation and Mitigation Strategy (REMS) transactions (REMSInitiationRequest, REMSInitiationResponse, REMSRequest, and REMSResponse)");
-        addTestFunctionality("(b)(3)(ii)(B)(9)", "Electronic prior authorization transactions (PAInitiationRequest, PAInitiationResponse, PARequest, PAResponse, PAAppealRequest, PAAppealResponse,  PACancelRequest, and PACancelResponse).");
-        addTestFunctionality("(b)(3)(ii)(D)", "Optional: 170.315(b)(3)(ii)(D) For each transaction listed in paragraph (b)(3)(ii)(C) of this section, the technology must be able to receive and transmit the reason for the prescription using the <IndicationforUse> element in the SIG segment");
+        addTestFunctionality("(b)(3)(ii)(B)(6)",
+                "Request and respond to transfer one or more prescriptions between pharmacies (RxTransferRequest, RxTransferResponse, RxTransferConfirm)");
+        addTestFunctionality("(b)(3)(ii)(B)(7)",
+                "Recertify the continued administration of a medication order (Recertification)");
+        addTestFunctionality("(b)(3)(ii)(B)(8)",
+                "Complete Risk Evaluation and Mitigation Strategy (REMS) transactions (REMSInitiationRequest, REMSInitiationResponse, REMSRequest, and REMSResponse)");
+        addTestFunctionality("(b)(3)(ii)(B)(9)",
+                "Electronic prior authorization transactions (PAInitiationRequest, PAInitiationResponse, PARequest, PAResponse, PAAppealRequest, PAAppealResponse,  PACancelRequest, and PACancelResponse).");
+        addTestFunctionality("(b)(3)(ii)(D)",
+                "Optional: 170.315(b)(3)(ii)(D) For each transaction listed in paragraph (b)(3)(ii)(C) of this section, the technology must be able to receive and transmit the reason for the prescription using the <IndicationforUse> element in the SIG segment");
     }
 
-    @SuppressWarnings({"checkstyle:linelength"})
+    @SuppressWarnings({
+            "checkstyle:linelength"
+    })
     private void addTestFunctionalityMaps() {
         addTestFunctionalityMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "(b)(1)(ii)(A)(5)(i)");
         addTestFunctionalityMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "(b)(1)(ii)(A)(5)(ii)");
@@ -479,17 +675,23 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
 
         addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "(e)(1)(i)(A)(2)");
         addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "(e)(1)(i)(A)(3)");
-        addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "(e)(1)(i)(B)(2)(i)");
-        addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "(e)(1)(i)(B)(2)(ii)");
+        addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)",
+                "(e)(1)(i)(B)(2)(i)");
+        addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)",
+                "(e)(1)(i)(B)(2)(ii)");
         addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "(e)(1)(i)(B)(3)");
         addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "(e)(1)(i)(C)(2)");
-        addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "170.102(13)(ii)(C)");
+        addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)",
+                "170.102(13)(ii)(C)");
         addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "170.102(19)(i)");
         addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "170.102(19)(ii)");
 
-        addTestFunctionalityMap("170.315 (f)(5)", "Transmission to Public Health Agencies - Electronic Case Reporting (Cures Update)", "170.102(13)(ii)(C)");
-        addTestFunctionalityMap("170.315 (f)(5)", "Transmission to Public Health Agencies - Electronic Case Reporting (Cures Update)", "170.102(19)(i)");
-        addTestFunctionalityMap("170.315 (f)(5)", "Transmission to Public Health Agencies - Electronic Case Reporting (Cures Update)", "170.102(19)(ii)");
+        addTestFunctionalityMap("170.315 (f)(5)",
+                "Transmission to Public Health Agencies - Electronic Case Reporting (Cures Update)", "170.102(13)(ii)(C)");
+        addTestFunctionalityMap("170.315 (f)(5)",
+                "Transmission to Public Health Agencies - Electronic Case Reporting (Cures Update)", "170.102(19)(i)");
+        addTestFunctionalityMap("170.315 (f)(5)",
+                "Transmission to Public Health Agencies - Electronic Case Reporting (Cures Update)", "170.102(19)(ii)");
 
         addTestFunctionalityMap("170.315 (g)(6)", "Consolidated CDA Creation (Cures Update)", "170.102(13)(ii)(C)");
         addTestFunctionalityMap("170.315 (g)(6)", "Consolidated CDA Creation (Cures Update)", "170.102(19)(i)");
@@ -502,10 +704,10 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
 
     private void addTestFunctionality(String number, String title) {
         if (!testFunctionalityExists(number)) {
-                insertableTestFuncDao.create(number, title);
-                LOGGER.info("Added test functionality for number " + number
-                        + " with title: " + title);
-       } else {
+            insertableTestFuncDao.create(number, title);
+            LOGGER.info("Added test functionality for number " + number
+                    + " with title: " + title);
+        } else {
             LOGGER.info("Test functionality for number " + number
                     + " with title: " + title + " already exists");
         }
@@ -539,8 +741,8 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
     }
 
     private boolean testFunctionalityMapExists(String criterionNumber, String criterionTitle, String testFuncNumber) {
-        TestFunctionalityCriteriaMapDTO tfMap = insertableTestFuncDao.
-                getByCriteriaNumberTitleAndValue(criterionNumber, criterionTitle, testFuncNumber);
+        TestFunctionalityCriteriaMapDTO tfMap = insertableTestFuncDao.getByCriteriaNumberTitleAndValue(criterionNumber,
+                criterionTitle, testFuncNumber);
         return tfMap != null;
     }
 
@@ -895,7 +1097,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
                     "SELECT pcp from PendingCertifiedProductEntity pcp "
                             + "WHERE pcp.certificationEdition = '2015' "
                             + "AND pcp.deleted = false",
-                            PendingCertifiedProductEntity.class)
+                    PendingCertifiedProductEntity.class)
                     .getResultList();
             List<Long> allIds = new ArrayList<Long>();
             for (PendingCertifiedProductEntity entity : entities) {
