@@ -81,6 +81,9 @@ public class ListingActivityMetadataBuilder extends ActivityMetadataBuilder {
             listingMetadata.setEdition(listing.getCertificationEdition()
                     .get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString());
         }
+        if (listing.getCuresUpdate() != null) {
+            listingMetadata.setCuresUpdate(listing.getCuresUpdate());
+        }
         if (listing.getProduct() != null) {
             listingMetadata.setProductName(listing.getProduct().getName());
         }

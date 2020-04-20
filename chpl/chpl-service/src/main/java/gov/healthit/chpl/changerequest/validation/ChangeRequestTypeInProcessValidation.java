@@ -35,6 +35,7 @@ public class ChangeRequestTypeInProcessValidation extends ValidationRule<ChangeR
         try {
             List<ChangeRequest> crs = crDAO.getByDeveloper(context.getChangeRequest().getDeveloper().getDeveloperId())
                     .stream()
+                    .filter(cr -> cr.getChangeRequestType().getId().equals(context.getChangeRequest().getChangeRequestType().getId()))
                     .filter(cr -> getInProcessStatuses().stream()
                             .anyMatch(status -> cr.getCurrentStatus().getChangeRequestStatusType().getId()
                                     .equals(status)))

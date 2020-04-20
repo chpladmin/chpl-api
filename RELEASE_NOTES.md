@@ -1,5 +1,27 @@
 # Release Notes
 
+## Version 25.2.0
+_20 April 2020_
+
+### Features
+* Add Quartz job to update listings to be marked as Cures Update
+* Change the order of display of revised criteria so "Cures Update" is first
+* Remove no longer needed Quartz job
+
+### Flagged Features
+* Display "Cures Update" everywhere it's appropriate
+* Add "Developer Details" Change Request type
+
+---
+
+## Version 25.1.1
+_10 April 2020_
+
+### Bug Fixes
+* Allow application startup despite missing criteria
+
+---
+
 ## Version 25.1.0
 _8 April 2020_
 

@@ -11,16 +11,23 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import lombok.Data;
+import lombok.Singular;
 
-/**
- * Response object for Cert ID lookup results.
- */
+@Data
 public class CertificationIdLookupResults implements Serializable {
     private static final long serialVersionUID = 494982326653301352L;
 
-    /**
-     * Certified product embedded inside response object.
-     */
+    @Singular
+    private List<Product> products = new ArrayList<Product>();
+    private String ehrCertificationId;
+    private String year;
+    @Singular
+    private Set<CertificationCriterionDTO> criteria = null;
+    @Singular
+    private Set<String> cqms = null;
+
+    @Data
     public static class Product implements Serializable {
         private static final long serialVersionUID = 2970822527765944850L;
         private Long id;
@@ -28,6 +35,7 @@ public class CertificationIdLookupResults implements Serializable {
         private String version;
         private String chplProductNumber;
         private String year;
+        private Boolean curesUpdate;
         private String practiceType;
         private String acb;
         private String vendor;
@@ -51,6 +59,7 @@ public class CertificationIdLookupResults implements Serializable {
                         + dto.getAdditionalSoftwareCode() + "." + dto.getCertifiedDateCode());
             }
             this.year = dto.getYear();
+            this.curesUpdate = dto.getCuresUpdate();
             this.practiceType = dto.getPracticeTypeName();
             this.acb = dto.getCertificationBodyName();
             this.vendor = dto.getDeveloper().getName();
@@ -64,131 +73,5 @@ public class CertificationIdLookupResults implements Serializable {
                 // Do nothing
             }
         }
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public String getYear() {
-            return this.year;
-        }
-
-        public void setYear(String year) {
-            this.year = year;
-        }
-
-        public String getVersion() {
-            return this.version;
-        }
-
-        public void setVersion(String version) {
-            this.version = version;
-        }
-
-        public String getChplProductNumber() {
-            return this.chplProductNumber;
-        }
-
-        public void setChplProductNumber(String chplProductNumber) {
-            this.chplProductNumber = chplProductNumber;
-        }
-
-        public String getName() {
-            return this.name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getPracticeType() {
-            return this.practiceType;
-        }
-
-        public void setPracticeType(String practiceType) {
-            this.practiceType = practiceType;
-        }
-
-        public String getAcb() {
-            return this.acb;
-        }
-
-        public void setAcb(String acb) {
-            this.acb = acb;
-        }
-
-        public String getVendor() {
-            return this.vendor;
-        }
-
-        public void setVendor(String vendor) {
-            this.vendor = vendor;
-        }
-
-        public String getClassification() {
-            return this.classification;
-        }
-
-        public void setClassification(String classification) {
-            this.classification = classification;
-        }
-
-        public String getAdditionalSoftware() {
-            return this.additionalSoftware;
-        }
-
-        public void setAdditionalSoftware(String additionalSoftware) {
-            this.additionalSoftware = additionalSoftware;
-        }
-    }
-
-    private List<Product> products = new ArrayList<Product>();
-    private String ehrCertificationId;
-    private String year;
-    private Set<CertificationCriterionDTO> criteria = null;
-    private Set<String> cqms = null;
-
-    public String getYear() {
-        return this.year;
-    }
-
-    public void setYear(String year) {
-        this.year = year;
-    }
-
-    public List<Product> getProducts() {
-        return products;
-    }
-
-    public void setProducts(List<Product> products) {
-        this.products = products;
-    }
-
-    public String getEhrCertificationId() {
-        return this.ehrCertificationId;
-    }
-
-    public void setEhrCertificationId(String ehrCertificationId) {
-        this.ehrCertificationId = ehrCertificationId;
-    }
-
-    public Set<CertificationCriterionDTO> getCriteria() {
-        return this.criteria;
-    }
-
-    public void setCriteria(final Set<CertificationCriterionDTO> criteria) {
-        this.criteria = criteria;
-    }
-
-    public Set<String> getCqms() {
-        return this.cqms;
-    }
-
-    public void setCqms(final Set<String> cqms) {
-        this.cqms = cqms;
     }
 }

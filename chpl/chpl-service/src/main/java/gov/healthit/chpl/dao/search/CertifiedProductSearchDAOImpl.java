@@ -76,6 +76,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         result.setCertificationDate(results.get(0).getCertificationDate().getTime());
         result.setChplProductNumber(results.get(0).getChplProductNumber());
         result.setEdition(results.get(0).getEdition());
+        result.setCuresUpdate(results.get(0).getCuresUpdate());
         result.setId(results.get(0).getId());
         return result;
     }
@@ -583,6 +584,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
                 queryResult.getMeaningfulUseUsersDate() != null ? queryResult.getMeaningfulUseUsersDate().getTime() : null);
         listing.setTransparencyAttestationUrl(queryResult.getTransparencyAttestationUrl());
         listing.setEdition(queryResult.getEdition());
+        listing.setCuresUpdate(queryResult.getCuresUpdate());
         listing.setAcb(queryResult.getAcbName());
         listing.setAcbCertificationId(queryResult.getAcbCertificationId());
         listing.setPracticeType(queryResult.getPracticeTypeName());
@@ -623,6 +625,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
             result.setId(dbResult.getId());
             result.setChplProductNumber(dbResult.getChplProductNumber());
             result.setEdition(dbResult.getEdition());
+            result.setCuresUpdate(dbResult.getCuresUpdate());
             result.setAcb(dbResult.getAcbName());
             result.setAcbCertificationId(dbResult.getAcbCertificationId());
             result.setPracticeType(dbResult.getPracticeTypeName());

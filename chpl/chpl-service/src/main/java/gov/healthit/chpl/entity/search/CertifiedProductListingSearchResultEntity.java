@@ -9,6 +9,11 @@ import javax.persistence.Id;
 import org.hibernate.annotations.Immutable;
 
 import gov.healthit.chpl.util.Util;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Represents one row of one listing's search result data.
@@ -16,6 +21,8 @@ import gov.healthit.chpl.util.Util;
  * @author kekey
  *
  */
+@Data
+@NoArgsConstructor
 @Entity
 @Immutable
 public class CertifiedProductListingSearchResultEntity {
@@ -37,6 +44,8 @@ public class CertifiedProductListingSearchResultEntity {
     @Column(name = "meaningful_use_users")
     private Long meaningfulUseUserCount;
 
+    @Setter(AccessLevel.NONE)
+    @Getter(AccessLevel.NONE)
     @Column(name = "meaningful_use_users_date")
     private Date meaningfulUseUsersDate;
 
@@ -45,6 +54,9 @@ public class CertifiedProductListingSearchResultEntity {
 
     @Column(name = "year")
     private String edition;
+
+    @Column(name = "cures_update")
+    private Boolean curesUpdate;
 
     @Column(name = "certification_body_name")
     private String acbName;
@@ -67,9 +79,13 @@ public class CertifiedProductListingSearchResultEntity {
     @Column(name = "prev_vendor")
     private String previousDeveloperOwner;
 
+    @Setter(AccessLevel.NONE)
+    @Getter(AccessLevel.NONE)
     @Column(name = "certification_date")
     private Date certificationDate;
 
+    @Setter(AccessLevel.NONE)
+    @Getter(AccessLevel.NONE)
     @Column(name = "decertification_date")
     private Date decertificationDate;
 
@@ -88,84 +104,6 @@ public class CertifiedProductListingSearchResultEntity {
     @Column(name = "cqm_number")
     private String cqm;
 
-    /**
-     * Default constructor.
-     */
-    public CertifiedProductListingSearchResultEntity() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getChplProductNumber() {
-        return chplProductNumber;
-    }
-
-    public void setChplProductNumber(final String chplProductNumber) {
-        this.chplProductNumber = chplProductNumber;
-    }
-
-    public String getEdition() {
-        return edition;
-    }
-
-    public void setEdition(final String edition) {
-        this.edition = edition;
-    }
-
-    public String getAcbName() {
-        return acbName;
-    }
-
-    public void setAcbName(final String acbName) {
-        this.acbName = acbName;
-    }
-
-    public String getPracticeTypeName() {
-        return practiceTypeName;
-    }
-
-    public void setPracticeTypeName(final String practiceTypeName) {
-        this.practiceTypeName = practiceTypeName;
-    }
-
-    public String getAcbCertificationId() {
-        return acbCertificationId;
-    }
-
-    public void setAcbCertificationId(final String acbCertificationId) {
-        this.acbCertificationId = acbCertificationId;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(final String version) {
-        this.version = version;
-    }
-
-    public String getProduct() {
-        return product;
-    }
-
-    public void setProduct(final String product) {
-        this.product = product;
-    }
-
-    public String getDeveloper() {
-        return developer;
-    }
-
-    public void setDeveloper(final String developer) {
-        this.developer = developer;
-    }
-
     public Date getCertificationDate() {
         return Util.getNewDate(certificationDate);
     }
@@ -174,84 +112,12 @@ public class CertifiedProductListingSearchResultEntity {
         this.certificationDate = Util.getNewDate(certificationDate);
     }
 
-    public String getCertificationStatus() {
-        return certificationStatus;
-    }
-
-    public void setCertificationStatus(final String certificationStatus) {
-        this.certificationStatus = certificationStatus;
-    }
-
     public Date getDecertificationDate() {
         return Util.getNewDate(decertificationDate);
     }
 
     public void setDecertificationDate(final Date decertificationDate) {
         this.decertificationDate = Util.getNewDate(decertificationDate);
-    }
-
-    public Long getMeaningfulUseUserCount() {
-        return meaningfulUseUserCount;
-    }
-
-    public void setMeaningfulUseUserCount(final Long meaningfulUseUserCount) {
-        this.meaningfulUseUserCount = meaningfulUseUserCount;
-    }
-
-    public String getTransparencyAttestationUrl() {
-        return transparencyAttestationUrl;
-    }
-
-    public void setTransparencyAttestationUrl(final String transparencyAttestationUrl) {
-        this.transparencyAttestationUrl = transparencyAttestationUrl;
-    }
-
-    public String getPreviousDeveloperOwner() {
-        return previousDeveloperOwner;
-    }
-
-    public void setPreviousDeveloperOwner(final String previousDeveloperOwner) {
-        this.previousDeveloperOwner = previousDeveloperOwner;
-    }
-
-    public String getCert() {
-        return cert;
-    }
-
-    public void setCert(final String cert) {
-        this.cert = cert;
-    }
-
-    public String getCqm() {
-        return cqm;
-    }
-
-    public void setCqm(final String cqm) {
-        this.cqm = cqm;
-    }
-
-    public Integer getCountSurveillance() {
-        return countSurveillance;
-    }
-
-    public void setCountSurveillance(final Integer countSurveillance) {
-        this.countSurveillance = countSurveillance;
-    }
-
-    public Integer getCountOpenNonconformities() {
-        return countOpenNonconformities;
-    }
-
-    public void setCountOpenNonconformities(final Integer countOpenNonconformities) {
-        this.countOpenNonconformities = countOpenNonconformities;
-    }
-
-    public Integer getCountClosedNonconformities() {
-        return countClosedNonconformities;
-    }
-
-    public void setCountClosedNonconformities(final Integer countClosedNonconformities) {
-        this.countClosedNonconformities = countClosedNonconformities;
     }
 
     public Date getMeaningfulUseUsersDate() {

@@ -1,11 +1,17 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.entity.AddressEntity;
@@ -14,6 +20,7 @@ import gov.healthit.chpl.entity.AddressEntity;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Address implements Serializable {
     private static final long serialVersionUID = 7978604053959537664L;
+    private static final Logger LOGGER = LogManager.getLogger(Address.class);
 
     /**
      * Address internal ID.
@@ -89,6 +96,80 @@ public class Address implements Serializable {
         this.state = entity.getState();
         this.zipcode = entity.getZipcode();
         this.country = entity.getCountry();
+    }
+
+    public Address(HashMap<String, Object> map) {
+        if (map.containsKey("addressId") && map.get("addressId") != null) {
+            try {
+                this.addressId = Long.parseLong(map.get("addressId").toString());
+            } catch (NumberFormatException ex) {
+                LOGGER.warn("addressId in map = '" + map.get("addressId") + "' is not parseable into a Long");
+            }
+        }
+        if (map.containsKey("line1") && map.get("line1") != null) {
+            this.line1 = map.get("line1").toString();
+        }
+        if (map.containsKey("line2") && map.get("line2") != null) {
+            this.line2 = map.get("line2").toString();
+        }
+        if (map.containsKey("city") && map.get("city") != null) {
+            this.city = map.get("city").toString();
+        }
+        if (map.containsKey("state") && map.get("state") != null) {
+            this.state = map.get("state").toString();
+        }
+        if (map.containsKey("zipcode") && map.get("zipcode") != null) {
+            this.zipcode = map.get("zipcode").toString();
+        }
+        if (map.containsKey("country") && map.get("country") != null) {
+            this.country = map.get("country").toString();
+        }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Address)) {
+            return false;
+        }
+        Address anotherAddress = (Address) obj;
+        if ((this.addressId != null && anotherAddress.addressId != null
+                && this.addressId.longValue() == anotherAddress.addressId.longValue())
+                || (this.addressId == null && anotherAddress.addressId == null)) {
+            return ObjectUtils.equals(this.line1, anotherAddress.line1)
+                    && ObjectUtils.equals(this.line2, anotherAddress.line2)
+                    && ObjectUtils.equals(this.city, anotherAddress.city)
+                    && ObjectUtils.equals(this.state, anotherAddress.state)
+                    && ObjectUtils.equals(this.zipcode, anotherAddress.zipcode)
+                    && ObjectUtils.equals(this.country, anotherAddress.country);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        if (this.addressId != null) {
+            return this.addressId.hashCode();
+        }
+        int hashCode = 0;
+        if (!StringUtils.isEmpty(this.line1)) {
+            hashCode += this.line1.hashCode();
+        }
+        if (!StringUtils.isEmpty(this.line2)) {
+            hashCode += this.line2.hashCode();
+        }
+        if (!StringUtils.isEmpty(this.city)) {
+            hashCode += this.city.hashCode();
+        }
+        if (!StringUtils.isEmpty(this.state)) {
+            hashCode += this.state.hashCode();
+        }
+        if (!StringUtils.isEmpty(this.zipcode)) {
+            hashCode += this.zipcode.hashCode();
+        }
+        if (!StringUtils.isEmpty(this.country)) {
+            hashCode += this.country.hashCode();
+        }
+        return hashCode;
     }
 
     public Long getAddressId() {
