@@ -23,7 +23,7 @@ PHONE__C,Yes,<phone>,The phone number of the health IT developer contact.
 Product Name,Yes,<string>,The name of the product listed on the CHPL.
 Product Database ID,Yes,<int>,The unique database ID of the product.
 Version,Yes,<string>,The version of the product listed on the CHPL.
-Version Database ID,Yes,<Int>,The unique database ID of the version.
+Version Database ID,Yes,<int>,The unique database ID of the version.
 Practice Type,Yes,Ambulatory;Inpatient,"For 2014 listings, the practice setting for which the certified product is designed"
 Total Surveillance Activities,Yes,<int>,"The total number of surveillance activities that were conducted for the corresponding listing, regardless of whether or not a non-conformity was found.  For additional information, please see 'Understanding Surveillance Information in the CHPL', available in the CHPL Public User Guide"
 Total Nonconformities,Yes,<int>,"The total number of non-conformities found for the corresponding listing, regardless of whether or not the non-conformity has been resolved. For additional information, please see 'Understanding Surveillance Information in the CHPL', available in the CHPL Public User Guide"
