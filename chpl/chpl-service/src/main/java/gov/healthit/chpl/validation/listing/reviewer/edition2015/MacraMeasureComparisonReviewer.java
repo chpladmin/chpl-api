@@ -54,14 +54,16 @@ public class MacraMeasureComparisonReviewer implements ComparisonReviewer {
 
         // Was a G1 item added?
         subtractLists(updatedListingMacraMeasures, existingListingMacraMeasures).stream()
-                .forEach(mm -> getErrorMessage("listing.criteria.removedG1MacraMeasure", mm));
+                .forEach(mm -> updatedListing.getErrorMessages()
+                        .add(getErrorMessage("listing.criteria.removedG1MacraMeasure", mm)));
 
         existingListingMacraMeasures = getFlattenedG2MacraMeasures(existingListing.getCertificationResults());
         updatedListingMacraMeasures = getFlattenedG2MacraMeasures(updatedListing.getCertificationResults());
 
         // Was a G2 item added?
         subtractLists(updatedListingMacraMeasures, existingListingMacraMeasures).stream()
-                .forEach(mm -> getErrorMessage("listing.criteria.removedG2MacraMeasure", mm));
+                .forEach(mm -> updatedListing.getErrorMessages()
+                        .add(getErrorMessage("listing.criteria.removedG2MacraMeasure", mm)));
     }
 
     private List<FlatMacraMeasure> subtractLists(List<FlatMacraMeasure> listA,
