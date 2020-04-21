@@ -1011,7 +1011,8 @@ public class CertificationResultDAO extends BaseDAOImpl {
                 + "AND tp.certificationResultId IN "
                 + "(SELECT cr.id "
                 + "FROM CertificationResultEntity cr "
-                + "WHERE cr.certifiedProductId = :listingId)";
+                + "WHERE cr.certifiedProductId = :listingId "
+                + "AND cr.deleted = false)";
 
         return entityManager.createQuery(hql, CertificationResultTestProcedureEntity.class)
                 .setParameter("listingId", listingId)
