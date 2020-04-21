@@ -36,7 +36,8 @@ import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
 @Component
 @EnableAsync
 public class AsynchronousSummaryStatistics {
-    private static final Long NONCONFORMITY_SURVEILLANCE_RESULT = 1l;
+    private static final Long NONCONFORMITY_SURVEILLANCE_RESULT = 1L;
+    private static final String ONC_TEST_METHOD = "ONC Test Method";
 
     private Logger logger;
 
@@ -716,7 +717,7 @@ public class AsynchronousSummaryStatistics {
 
     private boolean doesListingHaveAlternativeTestMethod(Long listingId, CertificationResultDAO certificationResultDAO) {
         return certificationResultDAO.getTestProceduresForListing(listingId).stream()
-                .filter(crtp -> !crtp.getTestProcedure().getName().equals("ONC Test Method"))
+                .filter(crtp -> !crtp.getTestProcedure().getName().equals(ONC_TEST_METHOD))
                 .findAny()
                 .isPresent();
     }
