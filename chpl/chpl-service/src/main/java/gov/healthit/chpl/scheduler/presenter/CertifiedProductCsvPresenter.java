@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -124,10 +125,10 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         result.add(data.getOtherAcb());
         result.add(data.getDeveloper().getName());
         if (data.getDeveloper().getAddress() != null) {
-            if (data.getDeveloper().getAddress().getLine1() != null
-                    && data.getDeveloper().getAddress().getLine2() != null) {
+            if (!StringUtils.isEmpty(data.getDeveloper().getAddress().getLine1())
+                    && !StringUtils.isEmpty(data.getDeveloper().getAddress().getLine2())) {
                 result.add(data.getDeveloper().getAddress().getLine1()
-                        + data.getDeveloper().getAddress().getLine2());
+                        + ", " + data.getDeveloper().getAddress().getLine2());
             } else {
                 result.add(data.getDeveloper().getAddress().getLine1() == null
                         ? ""

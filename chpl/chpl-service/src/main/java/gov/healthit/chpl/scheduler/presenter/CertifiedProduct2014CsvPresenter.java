@@ -7,6 +7,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 
@@ -64,10 +66,10 @@ public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresent
         result.add(data.getOtherAcb());
         result.add(data.getDeveloper().getName());
         if (data.getDeveloper().getAddress() != null) {
-            if (data.getDeveloper().getAddress().getLine1() != null
-                    && data.getDeveloper().getAddress().getLine2() != null) {
+            if (!StringUtils.isEmpty(data.getDeveloper().getAddress().getLine1())
+                    && !StringUtils.isEmpty(data.getDeveloper().getAddress().getLine2())) {
                 result.add(data.getDeveloper().getAddress().getLine1()
-                        + data.getDeveloper().getAddress().getLine2());
+                        + ", " + data.getDeveloper().getAddress().getLine2());
             } else {
                 result.add(data.getDeveloper().getAddress().getLine1() == null
                         ? "" : data.getDeveloper().getAddress().getLine1());
