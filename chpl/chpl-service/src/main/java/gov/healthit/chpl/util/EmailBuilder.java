@@ -1,6 +1,7 @@
 package gov.healthit.chpl.util;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -39,7 +40,7 @@ import org.springframework.util.StringUtils;
  *
  */
 public class EmailBuilder {
-    private static final Logger LOGGER = LogManager.getLogger(EmailBuilder.class);
+    private static Logger LOGGER = LogManager.getLogger(EmailBuilder.class);
     private MimeMessage message;
     private List<String> recipients;
 
@@ -52,7 +53,7 @@ public class EmailBuilder {
     /**
      * @param env - Spring Environment
      */
-    public EmailBuilder(final Environment env) {
+    public EmailBuilder(Environment env) {
         this.env = env;
     }
 
@@ -62,8 +63,22 @@ public class EmailBuilder {
      * @param addresses - List of Strings representing email addresses
      * @return EmailBuilder (this)
      */
-    public EmailBuilder recipients(final List<String> addresses) {
+    public EmailBuilder recipients(List<String> addresses) {
         this.recipients = addresses;
+        return this;
+    }
+
+    /**
+     * Set a single recipient for the email.
+     * @param addresses
+     * @return
+     */
+    public EmailBuilder recipient(String address) {
+        if (this.recipients == null) {
+            this.recipients = new ArrayList<String>();
+        }
+        this.recipients.clear();
+        this.recipients.add(address);
         return this;
     }
 
@@ -72,14 +87,14 @@ public class EmailBuilder {
      * @param val - the subject
      * @return EmailBuilder (this)
      */
-    public EmailBuilder subject(final String val) {
+    public EmailBuilder subject(String val) {
         subject = val;
         //Add the environment to the subject
         String suffix = "";
         if (!StringUtils.isEmpty(env.getProperty("emailBuilder.config.emailSubjectSuffix"))) {
             suffix = env.getProperty("emailBuilder.config.emailSubjectSuffix");
             subject = subject + " " +suffix;
-        } 
+        }
         return this;
     }
 
@@ -88,7 +103,7 @@ public class EmailBuilder {
      * @param val - message in HTML form
      * @return EmailBuilder (this)
      */
-    public EmailBuilder htmlMessage(final String val) {
+    public EmailBuilder htmlMessage(String val) {
         htmlBody = val;
         return this;
     }
@@ -98,7 +113,7 @@ public class EmailBuilder {
      * @param val - List of File objects
      * @return EmailBuilder (this)
      */
-    public EmailBuilder fileAttachments(final List<File> val) {
+    public EmailBuilder fileAttachments(List<File> val) {
         fileAttachments = val;
         return this;
     }
@@ -144,7 +159,7 @@ public class EmailBuilder {
        Transport.send(message);
     }
 
-    private Authenticator getAuthenticator(final Properties properties) {
+    private Authenticator getAuthenticator(Properties properties) {
         return new Authenticator() {
             @Override
             public PasswordAuthentication getPasswordAuthentication() {
