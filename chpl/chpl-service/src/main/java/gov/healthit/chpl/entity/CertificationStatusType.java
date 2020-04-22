@@ -1,5 +1,9 @@
 package gov.healthit.chpl.entity;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.util.StringUtils;
 
 public enum CertificationStatusType {
@@ -47,5 +51,15 @@ public enum CertificationStatusType {
             }
         }
         return result;
+    }
+
+    public static List<CertificationStatusType> getActiveAndSuspendedTypes() {
+        return Arrays.asList(Active, SuspendedByAcb, SuspendedByOnc);
+    }
+
+    public static List<String> getActiveAndSuspendedNames() {
+        return getActiveAndSuspendedTypes().stream()
+                .map(type -> type.toString())
+                .collect(Collectors.toList());
     }
 }
