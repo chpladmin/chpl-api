@@ -3,7 +3,7 @@
 <Configuration status="warn" monitorInterval="300"
     name="CHPL-Service-STG" packages="">
     <Properties>
-        <Property name="logDir">${sys:catalina.home}/logs</Property>
+        <Property name="logDir">/opt/tomcat8/logs</Property>
     </Properties>
     <Appenders>
         <RollingFile name="FILE" fileName="${logDir}/chplservice.log"
