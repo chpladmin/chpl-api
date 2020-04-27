@@ -14,6 +14,7 @@ import javax.mail.internet.AddressException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.ff4j.FF4j;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +36,6 @@ import gov.healthit.chpl.util.EmailBuilder;
 
 public class SummaryStatisticsEmailJob extends QuartzJob {
     private static Logger LOGGER = LogManager.getLogger("summaryStatisticsEmailJobLogger");
-    private static int EDITION2014 = 2014;
-    private static int EDITION2015 = 2015;
 
     @Autowired
     private SummaryStatisticsDAO summaryStatisticsDAO;
@@ -46,6 +45,9 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private FF4j ff4j;
 
     private List<CertificationBodyDTO> activeAcbs;
 
@@ -108,9 +110,9 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         NonConformityStatisticsSectionCreator nonConformityStatisticsSectionCreator = new NonConformityStatisticsSectionCreator();
 
         emailMessage.append(createMessageHeader(endDate));
-        emailMessage.append(developerStatisticsSectionCreator.build(stats, activeAcbs));
-        emailMessage.append(productStatisticsSectionCreator.build(stats, activeAcbs));
-        emailMessage.append(listingStatisticsSectionCreator.build(stats, activeAcbs));
+        emailMessage.append(developerStatisticsSectionCreator.build(stats, activeAcbs, ff4j));
+        emailMessage.append(productStatisticsSectionCreator.build(stats, activeAcbs, ff4j));
+        emailMessage.append(listingStatisticsSectionCreator.build(stats, activeAcbs, ff4j));
         emailMessage.append(surveillanceStatisticsSectionCreator.build(stats, activeAcbs));
         emailMessage.append(nonConformityStatisticsSectionCreator.build(stats, activeAcbs));
 

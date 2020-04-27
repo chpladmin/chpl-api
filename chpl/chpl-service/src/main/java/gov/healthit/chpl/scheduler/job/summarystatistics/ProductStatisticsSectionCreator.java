@@ -2,14 +2,17 @@ package gov.healthit.chpl.scheduler.job.summarystatistics;
 
 import java.util.List;
 
+import org.ff4j.FF4j;
+
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import gov.healthit.chpl.domain.statistics.Statistics;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 
 public class ProductStatisticsSectionCreator extends StatisticsSectionCreator {
 
-    public String build(Statistics stats, List<CertificationBodyDTO> activeAcbs) {
-        return buildUniqueProductSection(stats, new StatisticsMassager(activeAcbs));
+    public String build(Statistics stats, List<CertificationBodyDTO> activeAcbs, FF4j ff4j) {
+        return buildUniqueProductSection(stats, new StatisticsMassager(activeAcbs), ff4j);
     }
 
     @Override
@@ -17,7 +20,7 @@ public class ProductStatisticsSectionCreator extends StatisticsSectionCreator {
         return stat.getTotalListings();
     }
 
-    private String buildUniqueProductSection(Statistics stats, StatisticsMassager massager) {
+    private String buildUniqueProductSection(Statistics stats, StatisticsMassager massager, FF4j ff4j) {
         StringBuilder section = new StringBuilder();
 
         section.append(buildHeader("Total # of Certified Unique Products Regardless of Status or Edition - Including 2011)",
@@ -60,26 +63,28 @@ public class ProductStatisticsSectionCreator extends StatisticsSectionCreator {
                 massager.getStatisticsByStatusAndEdition(stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(),
                         "Suspended", get2015EditionAsInteger())));
 
-        List<CertifiedBodyStatistics> productsWithCuresUpdatedListing = massager
-                .getStatistics(stats.getUniqueProductsCountWithCuresUpdatedListingsByAcb());
-        section.append(buildSection(
-                "Total # of Unique Products with 2015-Cures Update Listings",
-                sumTotalListings(productsWithCuresUpdatedListing),
-                productsWithCuresUpdatedListing));
+        if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
+            List<CertifiedBodyStatistics> productsWithCuresUpdatedListing = massager
+                    .getStatistics(stats.getUniqueProductsCountWithCuresUpdatedListingsByAcb());
+            section.append(buildSection(
+                    "Total # of Unique Products with 2015-Cures Update Listings",
+                    sumTotalListings(productsWithCuresUpdatedListing),
+                    productsWithCuresUpdatedListing));
 
-        List<CertifiedBodyStatistics> productsWithCuresUpdatedActiveListing = massager
-                .getStatistics(stats.getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb());
-        section.append(buildSection(
-                "Total # of Unique Products with Active 2015-Cures Update Listings",
-                sumTotalListings(productsWithCuresUpdatedActiveListing),
-                productsWithCuresUpdatedActiveListing));
+            List<CertifiedBodyStatistics> productsWithCuresUpdatedActiveListing = massager
+                    .getStatistics(stats.getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb());
+            section.append(buildSection(
+                    "Total # of Unique Products with Active 2015-Cures Update Listings",
+                    sumTotalListings(productsWithCuresUpdatedActiveListing),
+                    productsWithCuresUpdatedActiveListing));
 
-        List<CertifiedBodyStatistics> productsWithCuresUpdatedSuspendedListing = massager
-                .getStatistics(stats.getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb());
-        section.append(buildSection(
-                "Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015-Cures Update Listings",
-                sumTotalListings(productsWithCuresUpdatedSuspendedListing),
-                productsWithCuresUpdatedSuspendedListing));
+            List<CertifiedBodyStatistics> productsWithCuresUpdatedSuspendedListing = massager
+                    .getStatistics(stats.getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb());
+            section.append(buildSection(
+                    "Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015-Cures Update Listings",
+                    sumTotalListings(productsWithCuresUpdatedSuspendedListing),
+                    productsWithCuresUpdatedSuspendedListing));
+        }
 
         section.append("<li>Total # of Unique Products with Active Listings (Regardless of Edition) - ")
                 .append(stats.getTotalCPsActiveListings())
