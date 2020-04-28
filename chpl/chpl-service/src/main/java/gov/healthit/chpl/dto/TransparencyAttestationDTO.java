@@ -7,7 +7,11 @@ import org.ff4j.FF4j;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.SpringContext;
 import gov.healthit.chpl.domain.TransparencyAttestation;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
+@Builder
+@AllArgsConstructor
 public class TransparencyAttestationDTO implements Serializable {
     private static final long serialVersionUID = 3828311869155691347L;
 

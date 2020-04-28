@@ -82,6 +82,7 @@ public class DeveloperManager extends SecuredManager {
     private DeveloperValidationFactory developerValidationFactory;
     private ValidationUtils validationUtils;
     private FF4j ff4j;
+    private TransparencyAttestationManager transparencyAttestationManager;
 
     @Autowired
     public DeveloperManager(DeveloperDAO developerDao, ProductManager productManager,
@@ -89,7 +90,8 @@ public class DeveloperManager extends SecuredManager {
             CertifiedProductDetailsManager cpdManager, CertificationBodyDAO certificationBodyDao,
             CertifiedProductDAO certifiedProductDAO, ChplProductNumberUtil chplProductNumberUtil,
             ActivityManager activityManager, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
-            DeveloperValidationFactory developerValidationFactory, ValidationUtils validationUtils, FF4j ff4j) {
+            DeveloperValidationFactory developerValidationFactory, ValidationUtils validationUtils, FF4j ff4j,
+            TransparencyAttestationManager transparencyAttestationManager) {
         this.developerDao = developerDao;
         this.productManager = productManager;
         this.acbManager = acbManager;
@@ -104,6 +106,7 @@ public class DeveloperManager extends SecuredManager {
         this.developerValidationFactory = developerValidationFactory;
         this.validationUtils = validationUtils;
         this.ff4j = ff4j;
+        this.transparencyAttestationManager = transparencyAttestationManager;
     }
 
     @Transactional(readOnly = true)
@@ -211,30 +214,7 @@ public class DeveloperManager extends SecuredManager {
     }
 
     private void createOrUpdateTransparencyMappings(DeveloperDTO developer) {
-        List<CertificationBodyDTO> availableAcbs = resourcePermissions.getAllAcbsForCurrentUser();
-        if (availableAcbs != null && availableAcbs.size() > 0) {
-            for (CertificationBodyDTO acb : availableAcbs) {
-                DeveloperACBMapDTO existingMap = developerDao.getTransparencyMapping(developer.getId(), acb.getId());
-                if (existingMap == null) {
-                    DeveloperACBMapDTO developerMappingToCreate = new DeveloperACBMapDTO();
-                    developerMappingToCreate.setAcbId(acb.getId());
-                    developerMappingToCreate.setDeveloperId(developer.getId());
-                    for (DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
-                        if (attMap.getAcbName().equals(acb.getName())) {
-                            developerMappingToCreate.setTransparencyAttestation(attMap.getTransparencyAttestation());
-                            developerDao.createTransparencyMapping(developerMappingToCreate);
-                        }
-                    }
-                } else {
-                    for (DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
-                        if (attMap.getAcbName().equals(acb.getName())) {
-                            existingMap.setTransparencyAttestation(attMap.getTransparencyAttestation());
-                            developerDao.updateTransparencyMapping(existingMap);
-                        }
-                    }
-                }
-            }
-        }
+        transparencyAttestationManager.save(developer);
     }
 
     private void updateStatusHistory(DeveloperDTO beforeDev, DeveloperDTO updatedDev)

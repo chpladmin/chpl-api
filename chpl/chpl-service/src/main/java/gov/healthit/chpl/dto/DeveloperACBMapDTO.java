@@ -6,8 +6,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.entity.developer.DeveloperACBMapEntity;
 import gov.healthit.chpl.entity.developer.DeveloperACBTransparencyMapEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
+@AllArgsConstructor
 public class DeveloperACBMapDTO implements Serializable {
     private static final long serialVersionUID = -1860729017532925654L;
     private Long id;
