@@ -25,7 +25,10 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.FeatureList;
@@ -43,11 +46,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.util.EmailBuilder;
 
-/**
- * Quartz job to compile the results of the saved broken url data into a report.
- * @author kekey
- *
- */
 public class QuestionableUrlReportGenerator extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("questionableUrlReportGeneratorJobLogger");
     private static final String[] CSV_HEADER = {
@@ -55,7 +53,8 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             "URL Type", "ONC-ATL", "ONC-ACB", "Developer", "Developer Contact Name",
             "Developer Contact Email", "Developer Contact Phone Number", "Product", "Version",
             "CHPL Product Number", "Edition", "Certification Date",
-            "Certification Status", "Criteria", "Date Last Checked"};
+            "Certification Status", "Criteria", "Date Last Checked"
+    };
 
     @Autowired
     private Environment env;
@@ -81,187 +80,191 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
     @Autowired
     private FF4j ff4j;
 
+    @Autowired
+    private JpaTransactionManager txnMgr;
+
     @Override
-    @Transactional
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Questionable URL Report Generator job. *********");
 
-        try {
-            List<FailedUrlResult> badUrlsToWrite = new ArrayList<FailedUrlResult>();
-            List<UrlResult> badUrls = urlCheckerDao.getUrlResultsWithError();
-            LOGGER.info("Found " + badUrls.size() + " urls with errors.");
-            int i = 0;
-            for (UrlResult urlResult : badUrls) {
-                switch (urlResult.getUrlType()) {
-                case ACB:
-                    LOGGER.info("[" + i + "]: Getting ACBs with bad website " + urlResult.getUrl());
-                    List<CertificationBodyDTO> acbsWithBadUrl = acbDao.getByWebsite(urlResult.getUrl());
-                    for (CertificationBodyDTO acb : acbsWithBadUrl) {
-                        FailedUrlResult urlResultWithError = new FailedUrlResult(urlResult);
-                        urlResultWithError.setAcbName(acb.getName());
-                        badUrlsToWrite.add(urlResultWithError);
-                    }
-                    break;
-                case ATL:
-                    LOGGER.info("[" + i + "] Getting ATLs with bad website " + urlResult.getUrl());
-                    List<TestingLabDTO> atlsWithBadUrl = atlDao.getByWebsite(urlResult.getUrl());
-                    for (TestingLabDTO atl : atlsWithBadUrl) {
-                        FailedUrlResult urlResultWithError = new FailedUrlResult(urlResult);
-                        urlResultWithError.setAtlName(atl.getName());
-                        badUrlsToWrite.add(urlResultWithError);
-                    }
-                    break;
-                case DEVELOPER:
-                    LOGGER.info("[ " + i + "] Getting Developers with bad website " + urlResult.getUrl());
-                    List<DeveloperDTO> devsWithBadUrl = devDao.getByWebsite(urlResult.getUrl());
-                    for (DeveloperDTO dev : devsWithBadUrl) {
-                        FailedUrlResult urlResultWithError = new FailedUrlResult(urlResult);
-                        urlResultWithError.setDeveloperName(dev.getName());
-                        if (dev.getContact() != null) {
-                            urlResultWithError.setContactEmail(dev.getContact().getEmail());
-                            urlResultWithError.setContactName(dev.getContact().getFullName());
-                            urlResultWithError.setContactPhone(dev.getContact().getPhoneNumber());
-                        }
-                        badUrlsToWrite.add(urlResultWithError);
-                    }
-                    break;
-                case FULL_USABILITY_REPORT:
-                case MANDATORY_DISCLOSURE_URL:
-                case TEST_RESULTS_SUMMARY:
-                    LOGGER.info("[" + i + "] Getting Listings with bad "
-                            + urlResult.getUrlType().getName() + " website " + urlResult.getUrl());
-                    List<CertifiedProductSummaryDTO> listingsWithBadUrl =
-                            cpDao.getSummaryByUrl(urlResult.getUrl(), urlResult.getUrlType());
-                    for (CertifiedProductSummaryDTO listing : listingsWithBadUrl) {
-                        FailedUrlResult urlResultWithError = new FailedUrlResult(urlResult);
-                        if (listing.getAcb() != null) {
-                            urlResultWithError.setAcbName(listing.getAcb().getName());
-                        }
-                        if (listing.getDeveloper() != null) {
-                            DeveloperDTO dev = listing.getDeveloper();
-                            urlResultWithError.setDeveloperName(dev.getName());
-                            if (dev.getContact() != null) {
-                                urlResultWithError.setContactEmail(dev.getContact().getEmail());
-                                urlResultWithError.setContactName(dev.getContact().getFullName());
-                                urlResultWithError.setContactPhone(dev.getContact().getPhoneNumber());
+        TransactionTemplate txnTemplate = new TransactionTemplate(txnMgr);
+        txnTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                try {
+                    List<FailedUrlResult> badUrlsToWrite = new ArrayList<FailedUrlResult>();
+                    List<UrlResult> badUrls = urlCheckerDao.getUrlResultsWithError();
+                    LOGGER.info("Found " + badUrls.size() + " urls with errors.");
+                    int i = 0;
+                    for (UrlResult urlResult : badUrls) {
+                        switch (urlResult.getUrlType()) {
+                        case ACB:
+                            LOGGER.info("[" + i + "]: Getting ACBs with bad website " + urlResult.getUrl());
+                            List<CertificationBodyDTO> acbsWithBadUrl = acbDao.getByWebsite(urlResult.getUrl());
+                            for (CertificationBodyDTO acb : acbsWithBadUrl) {
+                                FailedUrlResult urlResultWithError = new FailedUrlResult(urlResult);
+                                urlResultWithError.setAcbName(acb.getName());
+                                badUrlsToWrite.add(urlResultWithError);
                             }
-                        }
-                        if (listing.getProduct() != null) {
-                            urlResultWithError.setProductName(listing.getProduct().getName());
-                        }
-                        if (listing.getVersion() != null) {
-                            urlResultWithError.setVersion(listing.getVersion().getVersion());
-                        }
-                        urlResultWithError.setChplProductNumber(listing.getChplProductNumber());
-                        urlResultWithError.setEdition(listing.getYear());
-                        urlResultWithError.setCertificationStatus(listing.getCertificationStatus());
-                        urlResultWithError.setCertificationDate(listing.getCertificationDate());
-                        badUrlsToWrite.add(urlResultWithError);
-                    }
-                    break;
-                case API_DOCUMENTATION:
-                case EXPORT_DOCUMENTATION:
-                case DOCUMENTATION_URL:
-                case USE_CASES:
-                    LOGGER.info("[" + i + "] Getting criteria with bad "
-                            + urlResult.getUrlType().getName() + " website " + urlResult.getUrl());
-                    List<CertificationResultDetailsDTO> certResultsWithBadUrl =
-                            certResultDao.getByUrl(urlResult.getUrl(), urlResult.getUrlType());
-                    for (CertificationResultDetailsDTO certResult : certResultsWithBadUrl) {
-                        //get the associated listing
-                        CertifiedProductSummaryDTO associatedListing = null;
-                        try {
-                            associatedListing = cpDao.getSummaryById(certResult.getCertifiedProductId());
-                        } catch (EntityRetrievalException ex) {
-                            LOGGER.info("Could not find associated listing with id " + certResult.getCertifiedProductId());
-                        }
-                        if (associatedListing != null) {
-                            FailedUrlResult urlResultWithError = new FailedUrlResult(urlResult);
-                            if (associatedListing.getAcb() != null) {
-                                urlResultWithError.setAcbName(associatedListing.getAcb().getName());
+                            break;
+                        case ATL:
+                            LOGGER.info("[" + i + "] Getting ATLs with bad website " + urlResult.getUrl());
+                            List<TestingLabDTO> atlsWithBadUrl = atlDao.getByWebsite(urlResult.getUrl());
+                            for (TestingLabDTO atl : atlsWithBadUrl) {
+                                FailedUrlResult urlResultWithError = new FailedUrlResult(urlResult);
+                                urlResultWithError.setAtlName(atl.getName());
+                                badUrlsToWrite.add(urlResultWithError);
                             }
-                            if (associatedListing.getDeveloper() != null) {
-                                DeveloperDTO dev = associatedListing.getDeveloper();
+                            break;
+                        case DEVELOPER:
+                            LOGGER.info("[ " + i + "] Getting Developers with bad website " + urlResult.getUrl());
+                            List<DeveloperDTO> devsWithBadUrl = devDao.getByWebsite(urlResult.getUrl());
+                            for (DeveloperDTO dev : devsWithBadUrl) {
+                                FailedUrlResult urlResultWithError = new FailedUrlResult(urlResult);
                                 urlResultWithError.setDeveloperName(dev.getName());
                                 if (dev.getContact() != null) {
                                     urlResultWithError.setContactEmail(dev.getContact().getEmail());
                                     urlResultWithError.setContactName(dev.getContact().getFullName());
                                     urlResultWithError.setContactPhone(dev.getContact().getPhoneNumber());
                                 }
+                                badUrlsToWrite.add(urlResultWithError);
                             }
-                            if (associatedListing.getProduct() != null) {
-                                urlResultWithError.setProductName(associatedListing.getProduct().getName());
+                            break;
+                        case FULL_USABILITY_REPORT:
+                        case MANDATORY_DISCLOSURE_URL:
+                        case TEST_RESULTS_SUMMARY:
+                            LOGGER.info("[" + i + "] Getting Listings with bad "
+                                    + urlResult.getUrlType().getName() + " website " + urlResult.getUrl());
+                            List<CertifiedProductSummaryDTO> listingsWithBadUrl = cpDao.getSummaryByUrl(urlResult.getUrl(),
+                                    urlResult.getUrlType());
+                            for (CertifiedProductSummaryDTO listing : listingsWithBadUrl) {
+                                FailedUrlResult urlResultWithError = new FailedUrlResult(urlResult);
+                                if (listing.getAcb() != null) {
+                                    urlResultWithError.setAcbName(listing.getAcb().getName());
+                                }
+                                if (listing.getDeveloper() != null) {
+                                    DeveloperDTO dev = listing.getDeveloper();
+                                    urlResultWithError.setDeveloperName(dev.getName());
+                                    if (dev.getContact() != null) {
+                                        urlResultWithError.setContactEmail(dev.getContact().getEmail());
+                                        urlResultWithError.setContactName(dev.getContact().getFullName());
+                                        urlResultWithError.setContactPhone(dev.getContact().getPhoneNumber());
+                                    }
+                                }
+                                if (listing.getProduct() != null) {
+                                    urlResultWithError.setProductName(listing.getProduct().getName());
+                                }
+                                if (listing.getVersion() != null) {
+                                    urlResultWithError.setVersion(listing.getVersion().getVersion());
+                                }
+                                urlResultWithError.setChplProductNumber(listing.getChplProductNumber());
+                                urlResultWithError.setEdition(listing.getYear());
+                                urlResultWithError.setCertificationStatus(listing.getCertificationStatus());
+                                urlResultWithError.setCertificationDate(listing.getCertificationDate());
+                                badUrlsToWrite.add(urlResultWithError);
                             }
-                            if (associatedListing.getVersion() != null) {
-                                urlResultWithError.setVersion(associatedListing.getVersion().getVersion());
+                            break;
+                        case API_DOCUMENTATION:
+                        case EXPORT_DOCUMENTATION:
+                        case DOCUMENTATION_URL:
+                        case USE_CASES:
+                            LOGGER.info("[" + i + "] Getting criteria with bad "
+                                    + urlResult.getUrlType().getName() + " website " + urlResult.getUrl());
+                            List<CertificationResultDetailsDTO> certResultsWithBadUrl = certResultDao.getByUrl(urlResult.getUrl(),
+                                    urlResult.getUrlType());
+                            for (CertificationResultDetailsDTO certResult : certResultsWithBadUrl) {
+                                // get the associated listing
+                                CertifiedProductSummaryDTO associatedListing = null;
+                                try {
+                                    associatedListing = cpDao.getSummaryById(certResult.getCertifiedProductId());
+                                } catch (EntityRetrievalException ex) {
+                                    LOGGER.info(
+                                            "Could not find associated listing with id " + certResult.getCertifiedProductId());
+                                }
+                                if (associatedListing != null) {
+                                    FailedUrlResult urlResultWithError = new FailedUrlResult(urlResult);
+                                    if (associatedListing.getAcb() != null) {
+                                        urlResultWithError.setAcbName(associatedListing.getAcb().getName());
+                                    }
+                                    if (associatedListing.getDeveloper() != null) {
+                                        DeveloperDTO dev = associatedListing.getDeveloper();
+                                        urlResultWithError.setDeveloperName(dev.getName());
+                                        if (dev.getContact() != null) {
+                                            urlResultWithError.setContactEmail(dev.getContact().getEmail());
+                                            urlResultWithError.setContactName(dev.getContact().getFullName());
+                                            urlResultWithError.setContactPhone(dev.getContact().getPhoneNumber());
+                                        }
+                                    }
+                                    if (associatedListing.getProduct() != null) {
+                                        urlResultWithError.setProductName(associatedListing.getProduct().getName());
+                                    }
+                                    if (associatedListing.getVersion() != null) {
+                                        urlResultWithError.setVersion(associatedListing.getVersion().getVersion());
+                                    }
+                                    urlResultWithError.setChplProductNumber(associatedListing.getChplProductNumber());
+                                    urlResultWithError.setEdition(associatedListing.getYear());
+                                    urlResultWithError.setCertificationStatus(associatedListing.getCertificationStatus());
+                                    urlResultWithError.setCertificationDate(associatedListing.getCertificationDate());
+                                    urlResultWithError.setCriteria(certResult.getNumber());
+                                    badUrlsToWrite.add(urlResultWithError);
+                                }
                             }
-                            urlResultWithError.setChplProductNumber(associatedListing.getChplProductNumber());
-                            urlResultWithError.setEdition(associatedListing.getYear());
-                            urlResultWithError.setCertificationStatus(associatedListing.getCertificationStatus());
-                            urlResultWithError.setCertificationDate(associatedListing.getCertificationDate());
-                            urlResultWithError.setCriteria(certResult.getNumber());
-                            badUrlsToWrite.add(urlResultWithError);
+                            break;
+                        default:
+                            break;
                         }
+                        i++;
                     }
-                    break;
-                default:
-                    break;
-                }
-                i++;
-            }
 
-            //sort the bad urls first by url
-            //and then by type
-            Collections.sort(badUrlsToWrite, new Comparator<FailedUrlResult>() {
-                @Override
-                public int compare(final FailedUrlResult o1, final FailedUrlResult o2) {
-                    if (o1.getUrl().equals(o2.getUrl())) {
-                        return o1.getUrlType().ordinal() - o2.getUrlType().ordinal();
+                    // sort the bad urls first by url
+                    // and then by type
+                    Collections.sort(badUrlsToWrite, new Comparator<FailedUrlResult>() {
+                        @Override
+                        public int compare(final FailedUrlResult o1, final FailedUrlResult o2) {
+                            if (o1.getUrl().equals(o2.getUrl())) {
+                                return o1.getUrlType().ordinal() - o2.getUrlType().ordinal();
+                            }
+                            return o1.getUrl().compareTo(o2.getUrl());
+                        }
+                    });
+
+                    LOGGER.info("Creating email subject and body.");
+                    String to = jobContext.getMergedJobDataMap().getString("email");
+                    String subject = env.getProperty("job.questionableUrlReport.emailSubject");
+                    String htmlMessage = env.getProperty("job.questionableUrlReport.emailBodyBegin");
+                    htmlMessage += createHtmlEmailBody(badUrlsToWrite,
+                            env.getProperty("job.questionableUrlReport.emailBodyNoContent"));
+                    File output = null;
+                    List<File> files = new ArrayList<File>();
+                    if (badUrlsToWrite.size() > 0) {
+                        output = getOutputFile(badUrlsToWrite, env.getProperty("job.questionableUrlReport.emailAttachmentName"));
+                        files.add(output);
                     }
-                    return o1.getUrl().compareTo(o2.getUrl());
+
+                    LOGGER.info("Sending email to {} with contents {} and a total of {} questionable URLs.",
+                            to, htmlMessage, badUrlsToWrite.size());
+                    try {
+                        List<String> addresses = new ArrayList<String>();
+                        addresses.add(to);
+
+                        EmailBuilder emailBuilder = new EmailBuilder(env);
+                        emailBuilder.recipients(addresses)
+                                .subject(subject)
+                                .htmlMessage(htmlMessage)
+                                .fileAttachments(files)
+                                .sendEmail();
+                    } catch (MessagingException e) {
+                        LOGGER.error(e);
+                    }
+                } catch (Exception ex) {
+                    LOGGER.error("Unable to complete job: " + ex.getMessage(), ex);
                 }
-            });
-
-            LOGGER.info("Creating email subject and body.");
-            String to = jobContext.getMergedJobDataMap().getString("email");
-            String subject = env.getProperty("job.questionableUrlReport.emailSubject");
-            String htmlMessage = env.getProperty("job.questionableUrlReport.emailBodyBegin");
-            htmlMessage += createHtmlEmailBody(badUrlsToWrite, env.getProperty("job.questionableUrlReport.emailBodyNoContent"));
-            File output = null;
-            List<File> files = new ArrayList<File>();
-            if (badUrlsToWrite.size() > 0) {
-                output = getOutputFile(badUrlsToWrite, env.getProperty("job.questionableUrlReport.emailAttachmentName"));
-                files.add(output);
             }
-
-            LOGGER.info("Sending email to {} with contents {} and a total of {} questionable URLs.",
-                    to, htmlMessage, badUrlsToWrite.size());
-            try {
-                List<String> addresses = new ArrayList<String>();
-                addresses.add(to);
-
-                EmailBuilder emailBuilder = new EmailBuilder(env);
-                emailBuilder.recipients(addresses)
-                .subject(subject)
-                .htmlMessage(htmlMessage)
-                .fileAttachments(files)
-                .sendEmail();
-            } catch (MessagingException e) {
-                LOGGER.error(e);
-            }
-        } catch (Exception ex) {
-            LOGGER.error("Unable to complete job: " + ex.getMessage(), ex);
-        }
+        });
         LOGGER.info("********* Completed the Questionable URL Report Generator job. *********");
     }
 
-    /**
-     * Generates a CSV output file with all bad url data.
-     * @param urlResultsToWrite list of failed url data, sorted by url
-     * @param reportFilename
-     * @return
-     */
     private File getOutputFile(List<FailedUrlResult> urlResultsToWrite, String reportFilename) {
         File temp = null;
         try {
@@ -276,7 +279,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                     new FileOutputStream(temp), Charset.forName("UTF-8").newEncoder());
                     CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
                 csvPrinter.printRecord(getHeaderRow());
-                //urlResultsToWrite must be sorted by url
+                // urlResultsToWrite must be sorted by url
                 for (int i = 0; i < urlResultsToWrite.size(); i++) {
                     FailedUrlResult currUrlResult = urlResultsToWrite.get(i);
                     FailedUrlResult prevUrlResult = null;
@@ -285,11 +288,11 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                     }
                     List<String> rowValue = null;
                     if (prevUrlResult == null || !currUrlResult.getUrl().equals(prevUrlResult.getUrl())) {
-                        //write a row with the url data since this url is different than the one before it
+                        // write a row with the url data since this url is different than the one before it
                         rowValue = generateRowValue(currUrlResult, true);
                     } else {
-                        //write a row with just the acb/atl/developer/listing data since this is for the same url
-                        //as the one before it
+                        // write a row with just the acb/atl/developer/listing data since this is for the same url
+                        // as the one before it
                         rowValue = generateRowValue(currUrlResult, false);
                     }
                     if (rowValue != null) {
@@ -303,19 +306,10 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
         return temp;
     }
 
-    /**
-     * Create an array of strings representing the header of a CSV.
-     * @return
-     */
     private List<String> getHeaderRow() {
         return Arrays.asList(CSV_HEADER);
     }
 
-    /**
-     * Create an array of strings representing one row of data in a CSV.
-     * @param urlResult
-     * @return
-     */
     private List<String> generateRowValue(FailedUrlResult urlResult, boolean firstUrlInGroup) {
         List<String> result = new ArrayList<String>();
         if (firstUrlInGroup) {
@@ -440,6 +434,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
 
     /**
      * Create the HTML body of the email to be sent.
+     * 
      * @param urlResults
      * @param noContentMsg
      * @return
