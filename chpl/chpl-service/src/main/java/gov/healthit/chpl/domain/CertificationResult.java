@@ -200,6 +200,7 @@ public class CertificationResult implements Serializable {
      */
     @XmlElementWrapper(name = "g1MacraMeasures", nillable = true, required = false)
     @XmlElement(name = "macraMeasure")
+    @Singular
     private List<MacraMeasure> g1MacraMeasures = new ArrayList<MacraMeasure>();
 
     /**
@@ -209,6 +210,7 @@ public class CertificationResult implements Serializable {
      */
     @XmlElementWrapper(name = "g2MacraMeasures", nillable = true, required = false)
     @XmlElement(name = "macraMeasure")
+    @Singular
     private List<MacraMeasure> g2MacraMeasures = new ArrayList<MacraMeasure>();
 
     /**

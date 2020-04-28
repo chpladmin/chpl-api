@@ -12,10 +12,14 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.MacraMeasureDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
+@AllArgsConstructor
 public class MacraMeasure implements Serializable {
     private static final long serialVersionUID = 3070401446291821552L;
 
@@ -35,15 +39,15 @@ public class MacraMeasure implements Serializable {
     private String abbreviation;
 
     /**
-     * The name of the measure that was successfully tested. For example,
-     * "Computerized Provider Order Entry - Medications: Eligible Hospital/Critical"
+     * The name of the measure that was successfully tested. For example, "Computerized Provider Order Entry -
+     * Medications: Eligible Hospital/Critical"
      */
     @XmlElement(required = false, nillable = true)
     private String name;
 
     /**
-     * The required test associated with each measure. For example,
-     * "Required Test 10: Stage 2 Objective 3 Measure 1 and Stage 3 Objective 4 Measure 1"
+     * The required test associated with each measure. For example, "Required Test 10: Stage 2 Objective 3 Measure 1 and
+     * Stage 3 Objective 4 Measure 1"
      */
     @XmlElement(required = false, nillable = true)
     private String description;
