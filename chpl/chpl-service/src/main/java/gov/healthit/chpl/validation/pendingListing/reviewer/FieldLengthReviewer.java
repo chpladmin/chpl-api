@@ -20,9 +20,9 @@ public class FieldLengthReviewer implements Reviewer {
 
     @Override
     public void review(PendingCertifiedProductDTO listing) {
-        checkField(listing, listing.getCertificationEditionId(), "certificationEdition", ERROR);
+        checkField(listing, listing.getCertificationEdition(), "certificationEdition", ERROR);
         checkField(listing, listing.getAcbCertificationId(), "acbCertificationId", ERROR);
-        checkField(listing, listing.getCertificationBodyId(), "certifyingAcb", ERROR);
+        checkField(listing, listing.getCertificationBodyName(), "certifyingAcb", ERROR);
         ArrayList<PendingCertifiedProductTargetedUserDTO> targetedUserToRemove = new ArrayList<PendingCertifiedProductTargetedUserDTO>();
         for (PendingCertifiedProductTargetedUserDTO tu : listing.getTargetedUsers()) {
             checkField(listing, tu.getName(), "targetedUser", WARNING);
