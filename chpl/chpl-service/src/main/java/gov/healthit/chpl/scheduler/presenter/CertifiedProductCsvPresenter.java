@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -197,10 +198,10 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
     protected List<String> getDeveloperAddressCells(CertifiedProductSearchDetails listing) {
         List<String> result = new ArrayList<String>();
         if (listing.getDeveloper().getAddress() != null) {
-            if (listing.getDeveloper().getAddress().getLine1() != null
-                    && listing.getDeveloper().getAddress().getLine2() != null) {
+            if (!StringUtils.isEmpty(listing.getDeveloper().getAddress().getLine1())
+                    && !StringUtils.isEmpty(listing.getDeveloper().getAddress().getLine2())) {
                 result.add(listing.getDeveloper().getAddress().getLine1()
-                        + listing.getDeveloper().getAddress().getLine2());
+                        + ", " + listing.getDeveloper().getAddress().getLine2());
             } else {
                 result.add(listing.getDeveloper().getAddress().getLine1() == null
                         ? ""
