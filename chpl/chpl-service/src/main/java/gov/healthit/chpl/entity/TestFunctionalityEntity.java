@@ -14,10 +14,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.util.Util;
+import lombok.Data;
 
 @Entity
 @Table(name = "test_functionality")
+@Data
 public class TestFunctionalityEntity implements Serializable {
     private static final long serialVersionUID = 2662883108826795645L;
 
@@ -42,101 +43,21 @@ public class TestFunctionalityEntity implements Serializable {
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "practice_type_id", insertable = false, updatable = false)
-    private  PracticeTypeEntity practiceType;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
+    private PracticeTypeEntity practiceType;
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
-    protected Date creationDate;
+    private Date creationDate;
 
     @Basic(optional = false)
     @Column(nullable = false)
-    protected Boolean deleted;
+    private Boolean deleted;
 
     @Basic(optional = false)
     @Column(name = "last_modified_date", nullable = false)
-    protected Date lastModifiedDate;
+    private Date lastModifiedDate;
 
     @Basic(optional = false)
     @Column(name = "last_modified_user", nullable = false)
-    protected Long lastModifiedUser;
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public String getNumber() {
-        return number;
-    }
-
-    public void setNumber(final String number) {
-        this.number = number;
-    }
-
-    public Long getCertificationEditionId() {
-        return certificationEditionId;
-    }
-
-    public void setCertificationEditionId(final Long certificationEditionId) {
-        this.certificationEditionId = certificationEditionId;
-    }
-
-    public CertificationEditionEntity getCertificationEdition() {
-        return certificationEdition;
-    }
-
-    public void setCertificationEdition(final CertificationEditionEntity certificationEdition) {
-        this.certificationEdition = certificationEdition;
-    }
-
-    public final PracticeTypeEntity getPracticeType() {
-        return practiceType;
-    }
-
-    public final void setPracticeType(final PracticeTypeEntity practiceType) {
-        this.practiceType = practiceType;
-    }
+    private Long lastModifiedUser;
 }
