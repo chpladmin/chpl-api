@@ -10,8 +10,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -61,12 +59,13 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
+import lombok.extern.log4j.Log4j2;
 
 @Lazy
 @Service
+@Log4j2
 public class DeveloperManager extends SecuredManager {
     public static final String NEW_DEVELOPER_CODE = "XXXX";
-    private static final Logger LOGGER = LogManager.getLogger(DeveloperManager.class);
 
     private DeveloperDAO developerDao;
     private ProductManager productManager;
@@ -178,6 +177,13 @@ public class DeveloperManager extends SecuredManager {
     public DeveloperDTO update(DeveloperDTO updatedDev, boolean doUpdateValidations)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
         DeveloperDTO beforeDev = getById(updatedDev.getId());
+
+        if (updatedDev.equals(beforeDev)) {
+            LOGGER.info("Developer did not change - not saving");
+            return beforeDev;
+        } else {
+            LOGGER.info("Developer did change - saving");
+        }
 
         Set<String> errors = null;
         if (doUpdateValidations) {

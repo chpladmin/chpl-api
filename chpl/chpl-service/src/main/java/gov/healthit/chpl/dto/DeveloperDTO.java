@@ -2,8 +2,10 @@ package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -11,10 +13,12 @@ import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.entity.developer.DeveloperEntitySimple;
 import gov.healthit.chpl.entity.developer.DeveloperStatusEventEntity;
-import gov.healthit.chpl.util.Util;
+import lombok.Data;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Data
 public class DeveloperDTO implements Serializable {
+
     private static final long serialVersionUID = -2492373079266782228L;
     private String developerCode;
     private Long id;
@@ -83,118 +87,6 @@ public class DeveloperDTO implements Serializable {
         }
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public AddressDTO getAddress() {
-        return address;
-    }
-
-    public void setAddress(final AddressDTO address) {
-        this.address = address;
-    }
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public String getWebsite() {
-        return website;
-    }
-
-    public void setWebsite(final String website) {
-        this.website = website;
-    }
-
-    public Boolean getSelfDeveloper() {
-        return selfDeveloper;
-    }
-
-    public void setSelfDeveloper(Boolean selfDeveloper) {
-        this.selfDeveloper = selfDeveloper;
-    }
-
-    public String getDeveloperCode() {
-        return developerCode;
-    }
-
-    public void setDeveloperCode(final String developerCode) {
-        this.developerCode = developerCode;
-    }
-
-    public ContactDTO getContact() {
-        return contact;
-    }
-
-    public void setContact(final ContactDTO contact) {
-        this.contact = contact;
-    }
-
-    public List<DeveloperACBMapDTO> getTransparencyAttestationMappings() {
-        return transparencyAttestationMappings;
-    }
-
-    public void setTransparencyAttestationMappings(final List<DeveloperACBMapDTO> transparencyAttestationMappings) {
-        this.transparencyAttestationMappings = transparencyAttestationMappings;
-    }
-
-    public Statuses getStatuses() {
-        return statuses;
-    }
-
-    public void setStatuses(final Statuses statuses) {
-        this.statuses = statuses;
-    }
-
-    public List<DeveloperStatusEventDTO> getStatusEvents() {
-        return statusEvents;
-    }
-
-    public void setStatusEvents(final List<DeveloperStatusEventDTO> statusEvents) {
-        this.statusEvents = statusEvents;
-    }
-
     public DeveloperStatusEventDTO getStatus() {
         DeveloperStatusEventDTO mostRecentStatus = null;
 
@@ -210,5 +102,129 @@ public class DeveloperDTO implements Serializable {
             }
         }
         return mostRecentStatus;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((address == null) ? 0 : address.hashCode());
+        result = prime * result + ((contact == null) ? 0 : contact.hashCode());
+        result = prime * result + ((developerCode == null) ? 0 : developerCode.hashCode());
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((selfDeveloper == null) ? 0 : selfDeveloper.hashCode());
+        result = prime * result + ((statusEvents == null) ? 0 : statusEvents.hashCode());
+        result = prime * result + ((transparencyAttestationMappings == null) ? 0 : transparencyAttestationMappings.hashCode());
+        result = prime * result + ((website == null) ? 0 : website.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        DeveloperDTO other = (DeveloperDTO) obj;
+        if (address == null) {
+            if (other.address != null) {
+                return false;
+            }
+        } else if (!address.equals(other.address)) {
+            return false;
+        }
+        if (contact == null) {
+            if (other.contact != null) {
+                return false;
+            }
+        } else if (!contact.equals(other.contact)) {
+            return false;
+        }
+        if (developerCode == null) {
+            if (other.developerCode != null) {
+                return false;
+            }
+        } else if (!developerCode.equals(other.developerCode)) {
+            return false;
+        }
+        if (id == null) {
+            if (other.id != null) {
+                return false;
+            }
+        } else if (!id.equals(other.id)) {
+            return false;
+        }
+        if (name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!name.equals(other.name)) {
+            return false;
+        }
+        if (selfDeveloper == null) {
+            if (other.selfDeveloper != null) {
+                return false;
+            }
+        } else if (!selfDeveloper.equals(other.selfDeveloper)) {
+            return false;
+        }
+        if (statusEvents == null) {
+            if (other.statusEvents != null) {
+                return false;
+            }
+        } else if (!isStatusEventListEqual(other.statusEvents)) {
+            return false;
+        }
+        if (transparencyAttestationMappings == null) {
+            if (other.transparencyAttestationMappings != null) {
+                return false;
+            }
+        } else if (!isTransparencyAttestationMappingsEqual(other.transparencyAttestationMappings)) {
+            return false;
+        }
+        if (website == null) {
+            if (other.website != null) {
+                return false;
+            }
+        } else if (!website.equals(other.website)) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isStatusEventListEqual(List<DeveloperStatusEventDTO> other) {
+        if (statusEvents.size() != other.size()) {
+            return false;
+        } else {
+            // Make copies of both lists and order them
+            List<DeveloperStatusEventDTO> clonedThis = statusEvents.stream()
+                    .sorted(Comparator.comparing(DeveloperStatusEventDTO::getStatusDate))
+                    .collect(Collectors.toList());
+            List<DeveloperStatusEventDTO> clonedOther = other.stream()
+                    .sorted(Comparator.comparing(DeveloperStatusEventDTO::getStatusDate))
+                    .collect(Collectors.toList());
+            return clonedThis.equals(clonedOther);
+        }
+    }
+
+    private boolean isTransparencyAttestationMappingsEqual(List<DeveloperACBMapDTO> other) {
+        if (transparencyAttestationMappings.size() != other.size()) {
+            return false;
+        } else {
+            // Make copies of both lists and order them
+            List<DeveloperACBMapDTO> clonedThis = transparencyAttestationMappings.stream()
+                    .sorted(Comparator.comparing(DeveloperACBMapDTO::getAcbName))
+                    .collect(Collectors.toList());
+            List<DeveloperACBMapDTO> clonedOther = other.stream()
+                    .sorted(Comparator.comparing(DeveloperACBMapDTO::getAcbName))
+                    .collect(Collectors.toList());
+            return clonedThis.equals(clonedOther);
+        }
     }
 }

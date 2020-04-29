@@ -6,9 +6,12 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.entity.AddressEntity;
-import gov.healthit.chpl.util.Util;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Data
+@NoArgsConstructor
 public class AddressDTO implements Serializable {
     private static final long serialVersionUID = -5340045233309684152L;
     private Long id;
@@ -22,9 +25,6 @@ public class AddressDTO implements Serializable {
     private Boolean deleted;
     private Date lastModifiedDate;
     private Long lastModifiedUser;
-
-    public AddressDTO() {
-    }
 
     public AddressDTO(AddressEntity entity) {
         if (entity != null) {
@@ -42,91 +42,81 @@ public class AddressDTO implements Serializable {
         }
     }
 
-    public Long getId() {
-        return id;
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((city == null) ? 0 : city.hashCode());
+        result = prime * result + ((country == null) ? 0 : country.hashCode());
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((state == null) ? 0 : state.hashCode());
+        result = prime * result + ((streetLineOne == null) ? 0 : streetLineOne.hashCode());
+        result = prime * result + ((streetLineTwo == null) ? 0 : streetLineTwo.hashCode());
+        result = prime * result + ((zipcode == null) ? 0 : zipcode.hashCode());
+        return result;
     }
 
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getStreetLineOne() {
-        return streetLineOne;
-    }
-
-    public void setStreetLineOne(final String streetLineOne) {
-        this.streetLineOne = streetLineOne;
-    }
-
-    public String getStreetLineTwo() {
-        return streetLineTwo;
-    }
-
-    public void setStreetLineTwo(final String streetLineTwo) {
-        this.streetLineTwo = streetLineTwo;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(final String city) {
-        this.city = city;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(final String state) {
-        this.state = state;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(final String country) {
-        this.country = country;
-    }
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public String getZipcode() {
-        return zipcode;
-    }
-
-    public void setZipcode(final String zipcode) {
-        this.zipcode = zipcode;
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        AddressDTO other = (AddressDTO) obj;
+        if (city == null) {
+            if (other.city != null) {
+                return false;
+            }
+        } else if (!city.equals(other.city)) {
+            return false;
+        }
+        if (country == null) {
+            if (other.country != null) {
+                return false;
+            }
+        } else if (!country.equals(other.country)) {
+            return false;
+        }
+        if (id == null) {
+            if (other.id != null) {
+                return false;
+            }
+        } else if (!id.equals(other.id)) {
+            return false;
+        }
+        if (state == null) {
+            if (other.state != null) {
+                return false;
+            }
+        } else if (!state.equals(other.state)) {
+            return false;
+        }
+        if (streetLineOne == null) {
+            if (other.streetLineOne != null) {
+                return false;
+            }
+        } else if (!streetLineOne.equals(other.streetLineOne)) {
+            return false;
+        }
+        if (streetLineTwo == null) {
+            if (other.streetLineTwo != null) {
+                return false;
+            }
+        } else if (!streetLineTwo.equals(other.streetLineTwo)) {
+            return false;
+        }
+        if (zipcode == null) {
+            if (other.zipcode != null) {
+                return false;
+            }
+        } else if (!zipcode.equals(other.zipcode)) {
+            return false;
+        }
+        return true;
     }
 }

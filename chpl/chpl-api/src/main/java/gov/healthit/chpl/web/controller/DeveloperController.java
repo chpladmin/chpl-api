@@ -387,6 +387,7 @@ public class DeveloperController {
             if (developerInfo.getDeveloper().getContact() != null) {
                 Contact developerContact = developerInfo.getDeveloper().getContact();
                 ContactDTO toUpdateContact = new ContactDTO();
+                toUpdateContact.setId(developerContact.getContactId());
                 toUpdateContact.setEmail(developerContact.getEmail());
                 toUpdateContact.setFullName(developerContact.getFullName());
                 toUpdateContact.setFriendlyName(developerContact.getFriendlyName());
