@@ -81,6 +81,7 @@ public class ValidationUtils {
         return false;
     }
 
+    @SuppressWarnings("checkstyle:magicnumber")
     public boolean hasNonUtf8Character(byte[] input) {
         int i = 0;
         // Check for BOM
@@ -286,7 +287,7 @@ public class ValidationUtils {
                 .filter(certResult -> certResult.getNumber().startsWith(criterionNumberStart)
                         && (certResult.getRemoved() == null
                                 || certResult.getRemoved().equals(Boolean.FALSE)))
-                .collect(Collectors.<CertificationCriterion> toList());
+                .collect(Collectors.<CertificationCriterion>toList());
 
         if (presentAttestedCriteriaInClass != null && presentAttestedCriteriaInClass.size() > 0) {
             for (String currRequiredCriteria : complimentaryCertNumbers) {
@@ -313,12 +314,12 @@ public class ValidationUtils {
                 .filter(certResult -> certResult.getNumber().startsWith(criterionNumberStart)
                         && (certResult.getRemoved() == null
                                 || certResult.getRemoved().equals(Boolean.TRUE)))
-                .collect(Collectors.<CertificationCriterion> toList());
+                .collect(Collectors.<CertificationCriterion>toList());
         List<CertificationCriterion> presentAttestedCriteriaInClass = allCriteriaMet.stream()
                 .filter(certResult -> certResult.getNumber().startsWith(criterionNumberStart)
                         && (certResult.getRemoved() == null
                                 || certResult.getRemoved().equals(Boolean.FALSE)))
-                .collect(Collectors.<CertificationCriterion> toList());
+                .collect(Collectors.<CertificationCriterion>toList());
 
         // if the only attested criteria in the "class" of criteria are marked as removed
         // then the lack of a complimentary criteria is only a warning
@@ -379,7 +380,7 @@ public class ValidationUtils {
     public List<CertificationCriterion> getAttestedCriteria(CertifiedProductSearchDetails listing) {
         List<CertificationResult> attestedCertificationResults = listing.getCertificationResults().stream()
                 .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess().equals(Boolean.TRUE))
-                .collect(Collectors.<CertificationResult> toList());
+                .collect(Collectors.<CertificationResult>toList());
 
         List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
         for (CertificationResult cr : attestedCertificationResults) {
@@ -391,7 +392,7 @@ public class ValidationUtils {
     public List<CertificationCriterion> getAttestedCriteria(PendingCertifiedProductDTO listing) {
         List<PendingCertificationResultDTO> attestedCertificationResults = listing.getCertificationCriterion().stream()
                 .filter(certResult -> certResult.getMeetsCriteria() != null && certResult.getMeetsCriteria().equals(Boolean.TRUE))
-                .collect(Collectors.<PendingCertificationResultDTO> toList());
+                .collect(Collectors.<PendingCertificationResultDTO>toList());
 
         List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
         for (PendingCertificationResultDTO cr : attestedCertificationResults) {
