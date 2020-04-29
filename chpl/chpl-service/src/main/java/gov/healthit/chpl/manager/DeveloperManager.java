@@ -180,9 +180,8 @@ public class DeveloperManager extends SecuredManager {
 
         if (updatedDev.equals(beforeDev)) {
             LOGGER.info("Developer did not change - not saving");
+            LOGGER.info(updatedDev.toString());
             return beforeDev;
-        } else {
-            LOGGER.info("Developer did change - saving");
         }
 
         Set<String> errors = null;
