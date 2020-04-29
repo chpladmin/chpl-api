@@ -54,10 +54,6 @@ public class FieldLengthReviewer implements Reviewer {
         ArrayList<PendingCertifiedProductQmsStandardDTO> qmsToRemove = new ArrayList<PendingCertifiedProductQmsStandardDTO>();
         for (PendingCertifiedProductQmsStandardDTO qms : listing.getQmsStandards()) {
             checkField(listing, qms.getName(), "qmsStandard", ERROR);
-            if (listing.getErrorMessages().contains(msgUtil.getMessage("listing.qmsStandard.maxlength",
-                    String.valueOf(msgUtil.getMessageAsInteger("maxLength.qmsStandard")), qms.getName()))) {
-                qmsToRemove.add(qms);
-            }
         }
         listing.getQmsStandards().removeAll(qmsToRemove);
 
