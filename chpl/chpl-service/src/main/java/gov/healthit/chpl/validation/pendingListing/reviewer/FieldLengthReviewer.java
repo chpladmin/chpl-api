@@ -51,11 +51,9 @@ public class FieldLengthReviewer implements Reviewer {
         checkField(listing, listing.getDeveloperEmail(), "developerEmail", ERROR);
         checkField(listing, listing.getDeveloperPhoneNumber(), "developerPhone", ERROR);
         checkField(listing, listing.getDeveloperContactName(), "developerContactName", ERROR);
-        ArrayList<PendingCertifiedProductQmsStandardDTO> qmsToRemove = new ArrayList<PendingCertifiedProductQmsStandardDTO>();
         for (PendingCertifiedProductQmsStandardDTO qms : listing.getQmsStandards()) {
             checkField(listing, qms.getName(), "qmsStandard", ERROR);
         }
-        listing.getQmsStandards().removeAll(qmsToRemove);
 
     }
 
