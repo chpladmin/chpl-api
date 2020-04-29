@@ -281,31 +281,6 @@ public class ValidationUtils {
             List<CertificationCriterion> allCriteriaMet, List<String> complimentaryCertNumbers) {
         return checkClassSubsetOfCriteriaForErrors(criterionNumberStart, allCriteriaMet,
                 complimentaryCertNumbers, new ArrayList<String>());
-        /*
-        List<String> errors = new ArrayList<String>();
-        List<CertificationCriterion> presentAttestedCriteriaInClass = allCriteriaMet.stream()
-                .filter(certResult -> certResult.getNumber().startsWith(criterionNumberStart)
-                        && (certResult.getRemoved() == null
-                                || certResult.getRemoved().equals(Boolean.FALSE)))
-                .collect(Collectors.<CertificationCriterion>toList());
-
-        if (presentAttestedCriteriaInClass != null && presentAttestedCriteriaInClass.size() > 0) {
-            for (String currRequiredCriteria : complimentaryCertNumbers) {
-                boolean hasComplimentaryCert = false;
-                for (CertificationCriterion certResult : allCriteriaMet) {
-                    if (certResult.getNumber().equals(currRequiredCriteria)) {
-                        hasComplimentaryCert = true;
-                    }
-                }
-
-                if (!hasComplimentaryCert) {
-                    errors.add("Certification criterion " + criterionNumberStart + "(*) was found " + "so "
-                            + getAllCriteriaWithNumber(currRequiredCriteria) + " is required but was not found.");
-                }
-            }
-        }
-        return errors;
-        */
     }
 
     public List<String> checkClassSubsetOfCriteriaForErrors(String criterionNumberStart,
@@ -341,39 +316,6 @@ public class ValidationUtils {
             List<CertificationCriterion> allCriteriaMet, List<String> complimentaryCertNumbers) {
         return checkClassSubsetOfCriteriaForWarnings(criterionNumberStart, allCriteriaMet,
                 complimentaryCertNumbers, new ArrayList<String>());
-        /*
-        List<String> warnings = new ArrayList<String>();
-        List<CertificationCriterion> removedAttestedCriteriaInClass = allCriteriaMet.stream()
-                .filter(certResult -> certResult.getNumber().startsWith(criterionNumberStart)
-                        && (certResult.getRemoved() == null
-                                || certResult.getRemoved().equals(Boolean.TRUE)))
-                .collect(Collectors.<CertificationCriterion>toList());
-        List<CertificationCriterion> presentAttestedCriteriaInClass = allCriteriaMet.stream()
-                .filter(certResult -> certResult.getNumber().startsWith(criterionNumberStart)
-                        && (certResult.getRemoved() == null
-                                || certResult.getRemoved().equals(Boolean.FALSE)))
-                .collect(Collectors.<CertificationCriterion>toList());
-
-        // if the only attested criteria in the "class" of criteria are marked as removed
-        // then the lack of a complimentary criteria is only a warning
-        if (removedAttestedCriteriaInClass != null && removedAttestedCriteriaInClass.size() > 0
-                && (presentAttestedCriteriaInClass == null || presentAttestedCriteriaInClass.size() == 0)) {
-            for (String currRequiredCriteria : complimentaryCertNumbers) {
-                boolean hasComplimentaryCert = false;
-                for (CertificationCriterion certResult : allCriteriaMet) {
-                    if (certResult.getNumber().equals(currRequiredCriteria)) {
-                        hasComplimentaryCert = true;
-                    }
-                }
-
-                if (!hasComplimentaryCert) {
-                    warnings.add("Certification criterion " + criterionNumberStart + "(*) was found " + "so "
-                            + getAllCriteriaWithNumber(currRequiredCriteria) + " is required but was not found.");
-                }
-            }
-        }
-        return warnings;
-        */
     }
 
     public List<String> checkClassSubsetOfCriteriaForWarnings(String criterionNumberStart,
