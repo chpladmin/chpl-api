@@ -42,6 +42,8 @@ public class AddressDTO implements Serializable {
         }
     }
 
+    // Not all attributes have been included. The attributes being used were selected so the DeveloperManager could
+    // determine equality when updating a Developer
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -56,6 +58,8 @@ public class AddressDTO implements Serializable {
         return result;
     }
 
+    // Not all attributes have been included. The attributes being used were selected so the DeveloperManager could
+    // determine equality when updating a Developer
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

@@ -8,10 +8,14 @@ import gov.healthit.chpl.entity.developer.DeveloperACBMapEntity;
 import gov.healthit.chpl.entity.developer.DeveloperACBTransparencyMapEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class DeveloperACBMapDTO implements Serializable {
     private static final long serialVersionUID = -1860729017532925654L;
     private Long id;
@@ -19,9 +23,6 @@ public class DeveloperACBMapDTO implements Serializable {
     private Long acbId;
     private String acbName;
     private TransparencyAttestationDTO transparencyAttestation;
-
-    public DeveloperACBMapDTO() {
-    }
 
     public DeveloperACBMapDTO(DeveloperACBMapEntity entity) {
         this.id = entity.getId();
@@ -45,43 +46,46 @@ public class DeveloperACBMapDTO implements Serializable {
         this.acbName = entity.getAcbName();
     }
 
-    public Long getId() {
-        return id;
+    // Not all attributes have been included. The attributes being used were selected so the DeveloperManager could
+    // determine equality when updating a Developer
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        DeveloperACBMapDTO other = (DeveloperACBMapDTO) obj;
+        if (acbName == null) {
+            if (other.acbName != null) {
+                return false;
+            }
+        } else if (!acbName.equals(other.acbName)) {
+            return false;
+        }
+        if (transparencyAttestation == null) {
+            if (other.transparencyAttestation != null) {
+                return false;
+            }
+        } else if (!transparencyAttestation.equals(other.transparencyAttestation)) {
+            return false;
+        }
+        return true;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    // Not all attributes have been included. The attributes being used were selected so the DeveloperManager could
+    // determine equality when updating a Developer
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((acbName == null) ? 0 : acbName.hashCode());
+        result = prime * result + ((transparencyAttestation == null) ? 0 : transparencyAttestation.hashCode());
+        return result;
     }
 
-    public Long getDeveloperId() {
-        return developerId;
-    }
-
-    public void setDeveloperId(Long developerId) {
-        this.developerId = developerId;
-    }
-
-    public Long getAcbId() {
-        return acbId;
-    }
-
-    public void setAcbId(final Long acbId) {
-        this.acbId = acbId;
-    }
-
-    public TransparencyAttestationDTO getTransparencyAttestation() {
-        return transparencyAttestation;
-    }
-
-    public void setTransparencyAttestation(TransparencyAttestationDTO transparencyAttestation) {
-        this.transparencyAttestation = transparencyAttestation;
-    }
-
-    public String getAcbName() {
-        return acbName;
-    }
-
-    public void setAcbName(String acbName) {
-        this.acbName = acbName;
-    }
 }
