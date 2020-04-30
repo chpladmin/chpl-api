@@ -10,8 +10,6 @@ import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -53,50 +51,40 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.InvitationManager;
-import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.manager.auth.UserManager;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.log4j.Log4j2;
 
 @Api(value = "users")
 @RestController
 @RequestMapping("/users")
+@Log4j2
 public class UserManagementController {
+    private static final long VALID_INVITATION_LENGTH = 3L * 24L * 60L * 60L * 1000L;
+    private static final long VALID_CONFIRMATION_LENGTH = 30L * 24L * 60L * 60L * 1000L;
 
-    @Autowired
     private UserManager userManager;
-
-    @Autowired
     private InvitationManager invitationManager;
-
-    @Autowired
     private Authenticator authenticator;
-
-    @Autowired
     private ActivityManager activityManager;
-
-    @Autowired
     private FF4j ff4j;
-
-    @Autowired
     private Environment env;
-
-    @Autowired
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    private UserPermissionsManager userPermissionsManager;
-
-    @Autowired
-    private ResourcePermissions resourcePermissions;
-
-    private static final Logger LOGGER = LogManager.getLogger(UserManagementController.class);
-    private static final long VALID_INVITATION_LENGTH = 3L * 24L * 60L * 60L * 1000L;
-    private static final long VALID_CONFIRMATION_LENGTH = 30L * 24L * 60L * 60L * 1000L;
+    public UserManagementController(UserManager userManager, InvitationManager invitationManager, Authenticator authenticator, ActivityManager activityManager, FF4j ff4j, Environment env, ErrorMessageUtil errorMessageUtil) {
+        this.userManager = userManager;
+        this.invitationManager = invitationManager;
+        this.authenticator = authenticator;
+        this.activityManager = activityManager;
+        this.ff4j = ff4j;
+        this.env = env;
+        this.errorMessageUtil = errorMessageUtil;
+    }
 
     @ApiOperation(value = "Create a new user account from an invitation.",
             notes = "An individual who has been invited to the CHPL has a special user key in their invitation email. "
@@ -300,18 +288,18 @@ public class UserManagementController {
         } else if (invitation.getRole().equals(Authority.ROLE_CMS_STAFF)) {
             createdInvite = invitationManager.inviteCms(invitation.getEmailAddress());
         } else if (invitation.getRole().equals(Authority.ROLE_ACB)
-                    && invitation.getPermissionObjectId() != null) {
+                && invitation.getPermissionObjectId() != null) {
             createdInvite = invitationManager.inviteWithAcbAccess(invitation.getEmailAddress(),
                     invitation.getPermissionObjectId());
         } else if (invitation.getRole().equals(Authority.ROLE_ATL)
-                    && invitation.getPermissionObjectId() != null) {
-                createdInvite = invitationManager.inviteWithAtlAccess(invitation.getEmailAddress(),
-                        invitation.getPermissionObjectId());
+                && invitation.getPermissionObjectId() != null) {
+            createdInvite = invitationManager.inviteWithAtlAccess(invitation.getEmailAddress(),
+                    invitation.getPermissionObjectId());
         } else if (invitation.getRole().equals(Authority.ROLE_DEVELOPER)
                 && invitation.getPermissionObjectId() != null) {
             createdInvite = invitationManager.inviteWithDeveloperAccess(invitation.getEmailAddress(),
                     invitation.getPermissionObjectId());
-    }
+        }
 
         // send email
         String htmlMessage = "<p>Hi,</p>" + "<p>You have been granted a new role on ONC's CHPL "
