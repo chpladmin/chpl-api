@@ -4,13 +4,13 @@ CHPL ID,Yes,CHP-XXXXXX or Edition.ATL.ACB.Developer.Product.Version.ICS.Addition
 Listing Database ID,Yes,<int>,The unique database ID of the listing.
 ONC-ACB Certification ID,Yes,<string>,The ID used by ONC-ACBs for internal tracking
 Certification Date,Yes,<MM/DD/YYYY>,The date on which the listing was certified
-Inactive As Of Date,No,<MM/DD/YYYY>,If the current certification status is Withdrawn By Developer this field displays the date of the status change.
-Decertified As Of Date,No,<MM/DD/YYYY>,"If the current certification status is Withdrawn By Developer Under Surveillance/Review, Withdrawn by ONC-ACB, or Terminated by ONC this field displays the date of the status change."
+Inactive As Of Date,No,<MM/DD/YYYY>,"'Inactive', which includes Withdrawn By Developer, this field displays the date the product was no longer certified."
+Decertified As Of Date,No,<MM/DD/YYYY>,"If the current certification status is 'Decertified', which includes Withdrawn By Developer, Under Surveillance/Review, Withdrawn by ONC-ACB, or Terminated by ONC, this field displays the date the product was no longer certified."
 Certification Status,Yes,Active; Suspended by ONC; Suspended by ONC-ACB; Withdrawn by Developer; Withdrawn by Developer Under Surveillance/Review; Withdrawn by ONC-ACB; Terminated by ONC; Retired,"The certification status for the corresponding listing. For a detailed description of each certification status, please see 'Understanding Certification Status in the CHPL', available in the CHPL Public User Guide"
 ACB Name,Yes,Drummond Group Inc.;UL LLC;ICSA Labs,The ONC-ACB responsible for certifying the listing
 Previous ACB Name,If applicable,<ACB Name> = <Date of Transfer>,"If another ONC-ACB had previously been responsible for certifying the listing, this field displays the previous ONC-ACB, and the date on which the certificate was transferred to the current ONC-ACB"
 Developer Name,Yes,<string>,The name of the developer or vendor of the certified health IT product.
-Developer Database ID,Yes,<int>,The unique database of ID of the developer.
+Developer Database ID,Yes,<int>,The unique database ID of the developer.
 VENDOR_STREET_ADDRESS__C,Yes,<string>,The street address of the health IT developer.
 VENDOR_CITY__C,Yes,<string>,The city of the health IT developer.
 VENDOR_STATE__C,Yes,<string>,The state of the health IT developer.
