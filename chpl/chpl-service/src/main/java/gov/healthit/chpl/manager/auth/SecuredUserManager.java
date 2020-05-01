@@ -18,25 +18,35 @@ import org.springframework.security.acls.model.Sid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.dao.auth.UserContactDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.auth.UserEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 
 @Service
 public class SecuredUserManager extends SecuredManager {
 
+    private ActivityManager activityManager;
     private UserDAO userDAO;
     private UserContactDAO userContactDAO;
     private MutableAclService mutableAclService;
 
     @Autowired
-    public SecuredUserManager(UserDAO userDAO, UserContactDAO userContactDAO, MutableAclService mutableAclService) {
+    public SecuredUserManager(ActivityManager activityManager, UserDAO userDAO, UserContactDAO userContactDAO,
+            MutableAclService mutableAclService) {
+        this.activityManager = activityManager;
         this.userDAO = userDAO;
         this.userContactDAO = userContactDAO;
         this.mutableAclService = mutableAclService;
@@ -58,8 +68,36 @@ public class SecuredUserManager extends SecuredManager {
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE, #user)")
-    public UserDTO update(UserDTO user) throws UserRetrievalException {
-        return userDAO.update(user);
+    public UserDTO update(User user)
+            throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException {
+        UserDTO before = getById(user.getUserId());
+        UserDTO toUpdate = UserDTO.builder()
+                .id(before.getId())
+                .passwordResetRequired(user.getPasswordResetRequired())
+                .accountEnabled(user.getAccountEnabled())
+                .accountExpired(before.isAccountExpired())
+                .accountLocked(user.getAccountLocked())
+                .credentialsExpired(user.getCredentialsExpired())
+                .email(user.getEmail())
+                .failedLoginCount(before.getFailedLoginCount())
+                .friendlyName(user.getFriendlyName())
+                .fullName(user.getFullName())
+                .passwordResetRequired(user.getPasswordResetRequired())
+                .permission(before.getPermission())
+                .phoneNumber(user.getPhoneNumber())
+                .signatureDate(before.getSignatureDate())
+                .subjectName(before.getSubjectName())
+                .title(user.getTitle())
+                .lastLoggedInDate(before.getLastLoggedInDate())
+                .build();
+
+        UserDTO updated = userDAO.update(toUpdate);
+
+        String activityDescription = "User " + user.getSubjectName() + " was updated.";
+        activityManager.addActivity(ActivityConcept.USER, before.getId(), activityDescription, before,
+                updated);
+
+        return updated;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "

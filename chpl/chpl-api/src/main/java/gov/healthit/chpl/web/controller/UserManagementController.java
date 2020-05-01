@@ -336,32 +336,7 @@ public class UserManagementController {
             throw new UserRetrievalException("Cannot update user with ID less than 0");
         }
 
-        UserDTO before = userManager.getById(userInfo.getUserId());
-        UserDTO toUpdate = new UserDTO();
-        toUpdate.setId(before.getId());
-        toUpdate.setPasswordResetRequired(userInfo.getPasswordResetRequired());
-        toUpdate.setAccountEnabled(userInfo.getAccountEnabled());
-        toUpdate.setAccountExpired(before.isAccountExpired());
-        toUpdate.setAccountLocked(userInfo.getAccountLocked());
-        toUpdate.setCredentialsExpired(userInfo.getCredentialsExpired());
-        toUpdate.setEmail(userInfo.getEmail());
-        toUpdate.setFailedLoginCount(before.getFailedLoginCount());
-        toUpdate.setFriendlyName(userInfo.getFriendlyName());
-        toUpdate.setFullName(userInfo.getFullName());
-        toUpdate.setPasswordResetRequired(userInfo.getPasswordResetRequired());
-        toUpdate.setPermission(before.getPermission());
-        toUpdate.setPhoneNumber(userInfo.getPhoneNumber());
-        toUpdate.setSignatureDate(before.getSignatureDate());
-        toUpdate.setSubjectName(before.getSubjectName());
-        toUpdate.setTitle(userInfo.getTitle());
-        //Client not should be able to change this value, so we'll always use the on from the DB
-        toUpdate.setLastLoggedInDate(before.getLastLoggedInDate());
-        UserDTO updated = userManager.update(toUpdate);
-
-        String activityDescription = "User " + userInfo.getSubjectName() + " was updated.";
-        activityManager.addActivity(ActivityConcept.USER, before.getId(), activityDescription, before,
-                updated);
-
+        UserDTO updated = userManager.update(userInfo);
         return new User(updated);
     }
 

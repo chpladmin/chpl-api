@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nulabinc.zxcvbn.Strength;
 import com.nulabinc.zxcvbn.Zxcvbn;
 
@@ -22,6 +23,8 @@ import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserResetTokenDTO;
 import gov.healthit.chpl.entity.auth.UserEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
@@ -66,7 +69,8 @@ public class UserManager {
     }
 
     @Transactional
-    public UserDTO update(UserDTO user) throws UserRetrievalException {
+    public UserDTO update(User user)
+            throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException {
         return securedUserManager.update(user);
     }
 
