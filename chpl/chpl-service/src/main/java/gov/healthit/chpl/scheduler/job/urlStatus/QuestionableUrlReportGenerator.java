@@ -282,19 +282,8 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                 // urlResultsToWrite must be sorted by url
                 for (int i = 0; i < urlResultsToWrite.size(); i++) {
                     FailedUrlResult currUrlResult = urlResultsToWrite.get(i);
-                    FailedUrlResult prevUrlResult = null;
-                    if (i > 0) {
-                        prevUrlResult = urlResultsToWrite.get(i - 1);
-                    }
                     List<String> rowValue = null;
-                    if (prevUrlResult == null || !currUrlResult.getUrl().equals(prevUrlResult.getUrl())) {
-                        // write a row with the url data since this url is different than the one before it
-                        rowValue = generateRowValue(currUrlResult, true);
-                    } else {
-                        // write a row with just the acb/atl/developer/listing data since this is for the same url
-                        // as the one before it
-                        rowValue = generateRowValue(currUrlResult, false);
-                    }
+                        rowValue = generateRowValue(currUrlResult);
                     if (rowValue != null) {
                         csvPrinter.printRecord(rowValue);
                     }
@@ -310,9 +299,9 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
         return Arrays.asList(CSV_HEADER);
     }
 
-    private List<String> generateRowValue(FailedUrlResult urlResult, boolean firstUrlInGroup) {
+    private List<String> generateRowValue(FailedUrlResult urlResult) {
         List<String> result = new ArrayList<String>();
-        if (firstUrlInGroup) {
+        
             result.add(urlResult.getUrl());
             if (urlResult.getResponseCode() != null) {
                 result.add(urlResult.getResponseCode().toString());
@@ -337,13 +326,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             } else {
                 result.add("");
             }
-        } else {
-            result.add("");
-            result.add("");
-            result.add("");
-            result.add("");
-        }
-
+    
         result.add(urlResult.getUrlType().getName());
 
         if (urlResult.getAtlName() != null) {
