@@ -1,71 +1,224 @@
 package gov.healthit.chpl.manager.auth;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.nulabinc.zxcvbn.Strength;
+import com.nulabinc.zxcvbn.Zxcvbn;
 
+import gov.healthit.chpl.dao.auth.UserDAO;
+import gov.healthit.chpl.dao.auth.UserResetTokenDAO;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserResetTokenDTO;
+import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import lombok.extern.log4j.Log4j2;
 
-public interface UserManager {
+@Service
+@Log4j2
+public class UserManager {
+    private static int MIN_PASSWORD_STRENGTH = 3;
 
-    /**
-     * Minimum Password strength required for new users and password changes.
-     */
-    int MIN_PASSWORD_STRENGTH = 3;
+    private Environment env;
+    private SecuredUserManager securedUserManager;
+    private UserDAO userDAO;
+    private UserResetTokenDAO userResetTokenDAO;
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    UserDTO create(UserDTO userInfo, String password) throws UserCreationException, UserRetrievalException;
+    @Autowired
+    public UserManager(SecuredUserManager securedUserManager, Environment env, UserDAO userDAO,
+            UserResetTokenDAO userResetTokenDAO, BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.securedUserManager = securedUserManager;
+        this.env = env;
+        this.userDAO = userDAO;
+        this.userResetTokenDAO = userResetTokenDAO;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    }
 
-    UserDTO update(UserDTO user) throws UserRetrievalException;
+    @Transactional
+    public UserDTO create(final UserDTO userDto, final String password)
+            throws UserCreationException, UserRetrievalException {
 
-    void delete(UserDTO user) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException;
+        Strength strength = getPasswordStrength(userDto, password);
+        if (strength.getScore() < UserManager.MIN_PASSWORD_STRENGTH) {
+            LOGGER.info("Strength results: [warning: {}] [suggestions: {}] [score: {}] [worst case crack time: {}]",
+                    strength.getFeedback().getWarning(), strength.getFeedback().getSuggestions().toString(),
+                    strength.getScore(), strength.getCrackTimesDisplay().getOfflineFastHashing1e10PerSecond());
+            throw new UserCreationException("Password is not strong enough");
+        }
+        String encodedPassword = encodePassword(password);
+        UserDTO createdUser = securedUserManager.create(userDto, encodedPassword);
+        return createdUser;
+    }
 
-    void delete(String userName)
-            throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException;
+    @Transactional
+    public UserDTO update(final UserDTO user) throws UserRetrievalException {
+        return securedUserManager.update(user);
+    }
 
-    List<UserDTO> getAll();
+    @Transactional
+    private void updateContactInfo(final UserEntity user) {
+        securedUserManager.updateContactInfo(user);
+    }
 
-    List<UserDTO> getUsersWithPermission(String permissionName);
+    @Transactional
+    public void delete(final UserDTO user)
+            throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
+        securedUserManager.delete(user);
+    }
 
-    UserDTO getById(Long id) throws UserRetrievalException;
+    @Transactional
+    public void delete(final String userName)
+            throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
 
-    UserDTO getByName(String userName) throws UserRetrievalException;
+        UserDTO user = securedUserManager.getBySubjectName(userName);
+        if (user == null) {
+            throw new UserRetrievalException("User not found");
+        } else {
+            delete(user);
+        }
+    }
 
-    User getUserInfo(String userName) throws UserRetrievalException;
+    @Transactional
+    public List<UserDTO> getAll() {
+        return securedUserManager.getAll();
+    }
 
-    void updateFailedLoginCount(UserDTO userToUpdate) throws UserRetrievalException;
+    @Transactional
+    public List<UserDTO> getUsersWithPermission(final String permissionName) {
+        return securedUserManager.getUsersWithPermission(permissionName);
+    }
 
-    void updateUserPassword(String userName, String password) throws UserRetrievalException;
+    @Transactional
+    public UserDTO getById(final Long id) throws UserRetrievalException {
+        return securedUserManager.getById(id);
+    }
 
-    String getEncodedPassword(UserDTO user) throws UserRetrievalException;
+    @Transactional
+    public void updateFailedLoginCount(final UserDTO userToUpdate) throws UserRetrievalException {
+        securedUserManager.updateFailedLoginCount(userToUpdate);
+        String maxLoginsStr = env.getProperty("authMaximumLoginAttempts");
+        int maxLogins = Integer.parseInt(maxLoginsStr);
 
-    String encodePassword(String password);
+        if (userToUpdate.getFailedLoginCount() >= maxLogins) {
+            userToUpdate.setAccountLocked(true);
+            securedUserManager.updateAccountLockedStatus(userToUpdate);
+        }
+    }
 
-    /**
-     * Retrieve password strength object.
-     * 
-     * @param user
-     *            user's information
-     * @param password
-     *            the password to check
-     * @return a Strength object with password strength information
-     */
-    public Strength getPasswordStrength(UserDTO user, String password);
+    @Transactional
+    public void updateUserPassword(final String userName, final String password) throws UserRetrievalException {
+        String encodedPassword = encodePassword(password);
+        UserDTO userToUpdate = securedUserManager.getBySubjectName(userName);
+        securedUserManager.updatePassword(userToUpdate, encodedPassword);
+    }
 
-    public UserResetTokenDTO createResetUserPasswordToken(String username, String email) throws UserRetrievalException;
+    @Transactional
+    public void updateUserPasswordUnsecured(final String userName, final String password)
+            throws UserRetrievalException {
+        String encodedPassword = encodePassword(password);
+        userDAO.updatePassword(userName, encodedPassword);
+    }
 
-    public boolean authorizePasswordReset(String token);
+    // no auth needed. create a random string and create a new reset token row
+    // for the user
+    @Transactional
+    public UserResetTokenDTO createResetUserPasswordToken(final String username, final String email)
+            throws UserRetrievalException {
+        UserDTO foundUser = userDAO.findUserByNameAndEmail(username, email);
+        if (foundUser == null) {
+            throw new UserRetrievalException("Cannot find user with name " + username + " and email address " + email);
+        }
 
-    public void deletePreviousTokens(String token);
+        String password = UUID.randomUUID().toString();
 
-    public UserDTO getByNameUnsecured(String userName) throws UserRetrievalException;
+        // delete all previous tokens from that user that are in the table
+        userResetTokenDAO.deletePreviousUserTokens(foundUser.getId());
 
-    public void updateUserPasswordUnsecured(String userName, String password) throws UserRetrievalException;
+        // create new row in reset token table
+        UserResetTokenDTO userResetToken = userResetTokenDAO.create(password, foundUser.getId());
 
-    public void updateLastLoggedInDate(UserDTO user) throws UserRetrievalException;
+        return userResetToken;
+    }
+
+    // checks that the token was made in the last x hours
+    private boolean isTokenValid(UserResetTokenDTO userResetToken) {
+        Date checkDate = userResetToken.getCreationDate();
+        Instant now = Instant.now();
+        return (!checkDate.toInstant().isBefore(
+                now.minus(Integer.parseInt(env.getProperty("resetLinkExpirationTimeInHours")), ChronoUnit.HOURS)));
+    }
+
+    @Transactional
+    public boolean authorizePasswordReset(String token) {
+        UserResetTokenDTO userResetToken = userResetTokenDAO.findByAuthToken(token);
+        if (userResetToken != null && isTokenValid(userResetToken)) {
+            return true;
+        }
+        return false;
+    }
+
+    @Transactional
+    public void deletePreviousTokens(String token) {
+        UserResetTokenDTO userResetToken = userResetTokenDAO.findByAuthToken(token);
+        userResetTokenDAO.deletePreviousUserTokens(userResetToken.getUser().getId());
+    }
+
+    public String encodePassword(final String password) {
+        String encodedPassword = bCryptPasswordEncoder.encode(password);
+        return encodedPassword;
+    }
+
+    public String getEncodedPassword(final UserDTO user) throws UserRetrievalException {
+        return userDAO.getEncodedPassword(user);
+    }
+
+    public UserDTO getByName(final String userName) throws UserRetrievalException {
+        UserDTO dto = securedUserManager.getBySubjectName(userName);
+        return dto;
+    }
+
+    public UserDTO getByNameUnsecured(final String userName) throws UserRetrievalException {
+        return userDAO.getByName(userName);
+    }
+
+    public User getUserInfo(final String userName) throws UserRetrievalException {
+        UserDTO user = securedUserManager.getBySubjectName(userName);
+        return new User(user);
+    }
+
+    public Strength getPasswordStrength(final UserDTO user, final String password) {
+        ArrayList<String> badWords = new ArrayList<String>();
+        badWords.add("chpl");
+        badWords.add(user.getEmail());
+        badWords.add(user.getFullName());
+        badWords.add(user.getUsername());
+        if (user.getFriendlyName() != null) {
+            badWords.add(user.getFriendlyName());
+        }
+
+        Zxcvbn zxcvbn = new Zxcvbn();
+        Strength strength = zxcvbn.measure(password, badWords);
+        return strength;
+    }
+
+    @Transactional
+    public void updateLastLoggedInDate(UserDTO user) throws UserRetrievalException {
+        user.setLastLoggedInDate(new Date());
+        userDAO.update(user);
+    }
 }
