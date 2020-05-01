@@ -50,7 +50,7 @@ public class UserManager {
     }
 
     @Transactional
-    public UserDTO create(final UserDTO userDto, final String password)
+    public UserDTO create(UserDTO userDto, String password)
             throws UserCreationException, UserRetrievalException {
 
         Strength strength = getPasswordStrength(userDto, password);
@@ -66,23 +66,23 @@ public class UserManager {
     }
 
     @Transactional
-    public UserDTO update(final UserDTO user) throws UserRetrievalException {
+    public UserDTO update(UserDTO user) throws UserRetrievalException {
         return securedUserManager.update(user);
     }
 
     @Transactional
-    private void updateContactInfo(final UserEntity user) {
+    private void updateContactInfo(UserEntity user) {
         securedUserManager.updateContactInfo(user);
     }
 
     @Transactional
-    public void delete(final UserDTO user)
+    public void delete(UserDTO user)
             throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
         securedUserManager.delete(user);
     }
 
     @Transactional
-    public void delete(final String userName)
+    public void delete(String userName)
             throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
 
         UserDTO user = securedUserManager.getBySubjectName(userName);
@@ -99,17 +99,17 @@ public class UserManager {
     }
 
     @Transactional
-    public List<UserDTO> getUsersWithPermission(final String permissionName) {
+    public List<UserDTO> getUsersWithPermission(String permissionName) {
         return securedUserManager.getUsersWithPermission(permissionName);
     }
 
     @Transactional
-    public UserDTO getById(final Long id) throws UserRetrievalException {
+    public UserDTO getById(Long id) throws UserRetrievalException {
         return securedUserManager.getById(id);
     }
 
     @Transactional
-    public void updateFailedLoginCount(final UserDTO userToUpdate) throws UserRetrievalException {
+    public void updateFailedLoginCount(UserDTO userToUpdate) throws UserRetrievalException {
         securedUserManager.updateFailedLoginCount(userToUpdate);
         String maxLoginsStr = env.getProperty("authMaximumLoginAttempts");
         int maxLogins = Integer.parseInt(maxLoginsStr);
@@ -121,14 +121,14 @@ public class UserManager {
     }
 
     @Transactional
-    public void updateUserPassword(final String userName, final String password) throws UserRetrievalException {
+    public void updateUserPassword(String userName, String password) throws UserRetrievalException {
         String encodedPassword = encodePassword(password);
         UserDTO userToUpdate = securedUserManager.getBySubjectName(userName);
         securedUserManager.updatePassword(userToUpdate, encodedPassword);
     }
 
     @Transactional
-    public void updateUserPasswordUnsecured(final String userName, final String password)
+    public void updateUserPasswordUnsecured(String userName, String password)
             throws UserRetrievalException {
         String encodedPassword = encodePassword(password);
         userDAO.updatePassword(userName, encodedPassword);
@@ -137,7 +137,7 @@ public class UserManager {
     // no auth needed. create a random string and create a new reset token row
     // for the user
     @Transactional
-    public UserResetTokenDTO createResetUserPasswordToken(final String username, final String email)
+    public UserResetTokenDTO createResetUserPasswordToken(String username, String email)
             throws UserRetrievalException {
         UserDTO foundUser = userDAO.findUserByNameAndEmail(username, email);
         if (foundUser == null) {
@@ -178,30 +178,30 @@ public class UserManager {
         userResetTokenDAO.deletePreviousUserTokens(userResetToken.getUser().getId());
     }
 
-    public String encodePassword(final String password) {
+    public String encodePassword(String password) {
         String encodedPassword = bCryptPasswordEncoder.encode(password);
         return encodedPassword;
     }
 
-    public String getEncodedPassword(final UserDTO user) throws UserRetrievalException {
+    public String getEncodedPassword(UserDTO user) throws UserRetrievalException {
         return userDAO.getEncodedPassword(user);
     }
 
-    public UserDTO getByName(final String userName) throws UserRetrievalException {
+    public UserDTO getByName(String userName) throws UserRetrievalException {
         UserDTO dto = securedUserManager.getBySubjectName(userName);
         return dto;
     }
 
-    public UserDTO getByNameUnsecured(final String userName) throws UserRetrievalException {
+    public UserDTO getByNameUnsecured(String userName) throws UserRetrievalException {
         return userDAO.getByName(userName);
     }
 
-    public User getUserInfo(final String userName) throws UserRetrievalException {
+    public User getUserInfo(String userName) throws UserRetrievalException {
         UserDTO user = securedUserManager.getBySubjectName(userName);
         return new User(user);
     }
 
-    public Strength getPasswordStrength(final UserDTO user, final String password) {
+    public Strength getPasswordStrength(UserDTO user, final String password) {
         ArrayList<String> badWords = new ArrayList<String>();
         badWords.add("chpl");
         badWords.add(user.getEmail());
