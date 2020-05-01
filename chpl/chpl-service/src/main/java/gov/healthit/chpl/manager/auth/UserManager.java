@@ -75,6 +75,12 @@ public class UserManager {
     }
 
     @Transactional
+    public UserDTO update(UserDTO user)
+            throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException {
+        return securedUserManager.update(user);
+    }
+
+    @Transactional
     private void updateContactInfo(UserEntity user) {
         securedUserManager.updateContactInfo(user);
     }

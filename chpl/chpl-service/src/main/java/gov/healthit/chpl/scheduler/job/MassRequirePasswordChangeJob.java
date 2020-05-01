@@ -14,11 +14,15 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.JWTCreationException;
 import gov.healthit.chpl.exception.JWTValidationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
@@ -73,8 +77,9 @@ public class MassRequirePasswordChangeJob extends QuartzJob implements Interrupt
                     try {
                         LOGGER.info("Marking user {} as requiring password change on next login", user.getUsername());
                         userManager.update(user);
-                    } catch (UserRetrievalException e) {
-                        LOGGER.debug("Unable to retrieve user with username {} and message {}",
+                    } catch (UserRetrievalException | JsonProcessingException | EntityCreationException
+                            | EntityRetrievalException e) {
+                        LOGGER.debug("Unable to update user with username {} and message {}",
                                 user.getUsername(), e.getMessage());
                     }
                 } else {

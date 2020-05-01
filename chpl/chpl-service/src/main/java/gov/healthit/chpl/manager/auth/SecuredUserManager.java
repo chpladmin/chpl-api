@@ -68,6 +68,21 @@ public class SecuredUserManager extends SecuredManager {
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE, #user)")
+    public UserDTO update(UserDTO user)
+            throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException {
+        UserDTO before = getById(user.getId());
+
+        UserDTO updated = userDAO.update(user);
+
+        String activityDescription = "User " + user.getSubjectName() + " was updated.";
+        activityManager.addActivity(ActivityConcept.USER, before.getId(), activityDescription, before,
+                updated);
+
+        return updated;
+    }
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE, #user)")
     public UserDTO update(User user)
             throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException {
         UserDTO before = getById(user.getUserId());
@@ -91,13 +106,7 @@ public class SecuredUserManager extends SecuredManager {
                 .lastLoggedInDate(before.getLastLoggedInDate())
                 .build();
 
-        UserDTO updated = userDAO.update(toUpdate);
-
-        String activityDescription = "User " + user.getSubjectName() + " was updated.";
-        activityManager.addActivity(ActivityConcept.USER, before.getId(), activityDescription, before,
-                updated);
-
-        return updated;
+        return update(toUpdate);
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
