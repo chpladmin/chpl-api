@@ -28,10 +28,10 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.AttestedCriteri
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.CqmAttestedCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.InvalidCriteriaCombinationReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.MacraMeasureComparisonReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.PrivacyAndSecurityCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaTestTaskComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaUcdComparisonReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredCriteriaValidator;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestFunctionality2015Reviewer;
@@ -129,8 +129,8 @@ public class Edition2015ListingValidator extends Validator {
     private RemovedCriteriaUcdComparisonReviewer ucdCriteriaComparisonReviewer;
 
     @Autowired
-    @Qualifier("requiredCriteriaValidator")
-    private RequiredCriteriaValidator requiredCriteriaValidator;
+    @Qualifier("privacyAndSecurityCriteriaReviewer")
+    private PrivacyAndSecurityCriteriaReviewer privacyAndSecurityCriteriaReviewer;
 
     @Autowired
     @Qualifier("invalidCriteriaCombinationReviewer")
@@ -175,7 +175,6 @@ public class Edition2015ListingValidator extends Validator {
             reviewers.add(tt2015Reviewer);
             reviewers.add(urlReviewer);
             reviewers.add(testFunctionalityReviewer);
-            reviewers.add(requiredCriteriaValidator);
             reviewers.add(invalidCriteriaCombinationReviewer);
             reviewers.add(attestedCriteriaCqmReviewer);
             reviewers.add(cqmAttestedCriteriaReviewer);
@@ -195,6 +194,7 @@ public class Edition2015ListingValidator extends Validator {
             comparisonReviewers.add(ucdCriteriaComparisonReviewer);
             comparisonReviewers.add(testFunctionalityAllowedByRoleReviewer);
             comparisonReviewers.add(listingStatusAndUserRoleReviewer);
+            comparisonReviewers.add(privacyAndSecurityCriteriaReviewer);
         }
         return comparisonReviewers;
     }

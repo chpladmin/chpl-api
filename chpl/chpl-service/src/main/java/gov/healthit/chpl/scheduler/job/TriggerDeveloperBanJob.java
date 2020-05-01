@@ -22,28 +22,14 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.Util;
 
-/**
- * Job run by Scheduler to send email when an ONC-ACB did something that might trigger a Developer Ban.
- * 
- * @author alarned
- *
- */
 public class TriggerDeveloperBanJob implements Job {
-    private static final Logger LOGGER = LogManager.getLogger("triggerDeveloperBanJobLogger");
+    private static Logger LOGGER = LogManager.getLogger("triggerDeveloperBanJobLogger");
 
     @Autowired
     private Environment env;
 
-    /**
-     * Main method. Sends email messages to subscribers of that notification.
-     * 
-     * @param jobContext
-     *            for context of the job
-     * @throws JobExecutionException
-     *             if necessary
-     */
     @Override
-    public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+    public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
         LOGGER.info("********* Starting the Trigger Developer Ban job. *********");
@@ -51,33 +37,43 @@ public class TriggerDeveloperBanJob implements Job {
         String[] recipients = jobContext.getMergedJobDataMap().getString("email").split("\u263A");
 
         try {
-            sendEmail(jobContext, recipients);
+            sendEmails(jobContext, recipients);
         } catch (IOException | MessagingException e) {
             LOGGER.error(e);
         }
         LOGGER.info("********* Completed the Trigger Developer Ban job. *********");
     }
 
-    private void sendEmail(final JobExecutionContext jobContext, final String[] recipients)
+    private void sendEmails(JobExecutionContext jobContext, String[] recipients)
             throws IOException, AddressException, MessagingException {
 
         String subject = "NEED TO REVIEW: Certification Status of listing set to \""
                 + jobContext.getMergedJobDataMap().getString("status") + "\"";
         String htmlMessage = createHtmlEmailBody(jobContext);
 
-        LOGGER.info("Sending email to: " + jobContext.getMergedJobDataMap().getString("email"));
+        List<String> emailAddresses = Arrays.asList(recipients);
+        for (String emailAddress : emailAddresses) {
+            try {
+                sendEmail(emailAddress, subject, htmlMessage);
+            } catch (Exception ex) {
+                LOGGER.error("Could not send message to " + emailAddress, ex);
+            }
+        }
+    }
+
+    private void sendEmail(String recipientEmail, String subject, String htmlMessage)
+            throws MessagingException {
+        LOGGER.info("Sending email to: " + recipientEmail);
         LOGGER.info("Message to be sent: " + htmlMessage);
 
-        List<String> addresses = Arrays.asList(recipients);
-
         EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipients(addresses)
+        emailBuilder.recipient(recipientEmail)
                 .subject(subject)
                 .htmlMessage(htmlMessage)
                 .sendEmail();
     }
 
-    private String createHtmlEmailBody(final JobExecutionContext jobContext) {
+    private String createHtmlEmailBody(JobExecutionContext jobContext) {
         JobDataMap jdm = jobContext.getMergedJobDataMap();
         String reasonForStatusChange = jdm.getString("reason");
         if (StringUtils.isEmpty(reasonForStatusChange)) {

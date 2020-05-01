@@ -277,6 +277,20 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get metadata about auditable records in the system for developers.",
+            notes = "All parameters are optional and will default to the first page of listing activity "
+                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
+                    + "with the most recent activity first.")
+    @RequestMapping(value = "/metadata/beta/developers", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public ActivityMetadataPage metadataForDevelopers(@RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+        return pagedMetadataManager.getActivityMetadataByConcept(
+                ActivityConcept.DEVELOPER, start, end, pageNum, pageSize);
+    }
+
+    @Deprecated
+    @ApiOperation(value = "Get metadata about auditable records in the system for developers.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
     @RequestMapping(value = "/metadata/developers", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -316,6 +330,20 @@ public class ActivityController {
                 id, ActivityConcept.DEVELOPER, startDate, endDate);
     }
 
+    @ApiOperation(value = "Get metadata about auditable records in the system for products.",
+            notes = "All parameters are optional and will default to the first page of listing activity "
+                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
+                    + "with the most recent activity first.")
+    @RequestMapping(value = "/metadata/beta/products", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public ActivityMetadataPage metadataForProducts(@RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+        return pagedMetadataManager.getActivityMetadataByConcept(
+                ActivityConcept.PRODUCT, start, end, pageNum, pageSize);
+    }
+
+    @Deprecated
     @ApiOperation(value = "Get metadata about auditable records in the system for products.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
     @RequestMapping(value = "/metadata/products", method = RequestMethod.GET,

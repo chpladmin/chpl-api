@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.validator.routines.UrlValidator;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -23,7 +21,6 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 
 @Component
 public class ValidationUtils {
-    private static final Logger LOGGER = LogManager.getLogger(ValidationUtils.class);
     private UrlValidator urlValidator;
     private CertificationCriterionDAO criteriaDao;
 
@@ -81,6 +78,7 @@ public class ValidationUtils {
         return false;
     }
 
+    @SuppressWarnings("checkstyle:magicnumber")
     public boolean hasNonUtf8Character(byte[] input) {
         int i = 0;
         // Check for BOM
@@ -281,12 +279,20 @@ public class ValidationUtils {
 
     public List<String> checkClassOfCriteriaForErrors(String criterionNumberStart,
             List<CertificationCriterion> allCriteriaMet, List<String> complimentaryCertNumbers) {
+        return checkClassSubsetOfCriteriaForErrors(criterionNumberStart, allCriteriaMet,
+                complimentaryCertNumbers, new ArrayList<String>());
+    }
+
+    public List<String> checkClassSubsetOfCriteriaForErrors(String criterionNumberStart,
+            List<CertificationCriterion> allCriteriaMet, List<String> complimentaryCertNumbers,
+            List<String> excludedCertNumbers) {
         List<String> errors = new ArrayList<String>();
         List<CertificationCriterion> presentAttestedCriteriaInClass = allCriteriaMet.stream()
                 .filter(certResult -> certResult.getNumber().startsWith(criterionNumberStart)
                         && (certResult.getRemoved() == null
-                                || certResult.getRemoved().equals(Boolean.FALSE)))
-                .collect(Collectors.<CertificationCriterion> toList());
+                                || certResult.getRemoved().equals(Boolean.FALSE))
+                        && !excludedCertNumbers.contains(certResult.getNumber()))
+                .collect(Collectors.<CertificationCriterion>toList());
 
         if (presentAttestedCriteriaInClass != null && presentAttestedCriteriaInClass.size() > 0) {
             for (String currRequiredCriteria : complimentaryCertNumbers) {
@@ -308,17 +314,26 @@ public class ValidationUtils {
 
     public List<String> checkClassOfCriteriaForWarnings(String criterionNumberStart,
             List<CertificationCriterion> allCriteriaMet, List<String> complimentaryCertNumbers) {
+        return checkClassSubsetOfCriteriaForWarnings(criterionNumberStart, allCriteriaMet,
+                complimentaryCertNumbers, new ArrayList<String>());
+    }
+
+    public List<String> checkClassSubsetOfCriteriaForWarnings(String criterionNumberStart,
+            List<CertificationCriterion> allCriteriaMet, List<String> complimentaryCertNumbers,
+            List<String> excludedCertNumbers) {
         List<String> warnings = new ArrayList<String>();
         List<CertificationCriterion> removedAttestedCriteriaInClass = allCriteriaMet.stream()
                 .filter(certResult -> certResult.getNumber().startsWith(criterionNumberStart)
                         && (certResult.getRemoved() == null
-                                || certResult.getRemoved().equals(Boolean.TRUE)))
-                .collect(Collectors.<CertificationCriterion> toList());
+                                || certResult.getRemoved().equals(Boolean.TRUE))
+                        && !excludedCertNumbers.contains(certResult.getNumber()))
+                .collect(Collectors.<CertificationCriterion>toList());
         List<CertificationCriterion> presentAttestedCriteriaInClass = allCriteriaMet.stream()
                 .filter(certResult -> certResult.getNumber().startsWith(criterionNumberStart)
                         && (certResult.getRemoved() == null
-                                || certResult.getRemoved().equals(Boolean.FALSE)))
-                .collect(Collectors.<CertificationCriterion> toList());
+                                || certResult.getRemoved().equals(Boolean.FALSE))
+                        && !excludedCertNumbers.contains(certResult.getNumber()))
+                .collect(Collectors.<CertificationCriterion>toList());
 
         // if the only attested criteria in the "class" of criteria are marked as removed
         // then the lack of a complimentary criteria is only a warning
@@ -379,7 +394,7 @@ public class ValidationUtils {
     public List<CertificationCriterion> getAttestedCriteria(CertifiedProductSearchDetails listing) {
         List<CertificationResult> attestedCertificationResults = listing.getCertificationResults().stream()
                 .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess().equals(Boolean.TRUE))
-                .collect(Collectors.<CertificationResult> toList());
+                .collect(Collectors.<CertificationResult>toList());
 
         List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
         for (CertificationResult cr : attestedCertificationResults) {
@@ -391,7 +406,7 @@ public class ValidationUtils {
     public List<CertificationCriterion> getAttestedCriteria(PendingCertifiedProductDTO listing) {
         List<PendingCertificationResultDTO> attestedCertificationResults = listing.getCertificationCriterion().stream()
                 .filter(certResult -> certResult.getMeetsCriteria() != null && certResult.getMeetsCriteria().equals(Boolean.TRUE))
-                .collect(Collectors.<PendingCertificationResultDTO> toList());
+                .collect(Collectors.<PendingCertificationResultDTO>toList());
 
         List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
         for (PendingCertificationResultDTO cr : attestedCertificationResults) {
