@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang.ObjectUtils;
+
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.util.Util;
 import lombok.AccessLevel;
@@ -34,6 +36,25 @@ public class ActivityMetadata implements Serializable {
     private User responsibleUser;
     private String description;
 
+    @Override
+    public boolean equals(Object another) {
+        if (another == null) {
+            return false;
+        }
+        if (!(another instanceof ActivityMetadata)) {
+            return false;
+        }
+        ActivityMetadata anotherMeta = (ActivityMetadata) another;
+        return ObjectUtils.equals(this.id, anotherMeta.id);
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        return result;
+    }
 
     public Date getDate() {
         return Util.getNewDate(date);
@@ -42,4 +63,5 @@ public class ActivityMetadata implements Serializable {
     public void setDate(final Date date) {
         this.date = Util.getNewDate(date);
     }
+
 }
