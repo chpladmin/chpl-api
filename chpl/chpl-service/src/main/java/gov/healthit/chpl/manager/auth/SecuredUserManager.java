@@ -1,7 +1,11 @@
 package gov.healthit.chpl.manager.auth;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
@@ -32,8 +36,10 @@ import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Service
 public class SecuredUserManager extends SecuredManager {
@@ -42,14 +48,16 @@ public class SecuredUserManager extends SecuredManager {
     private UserDAO userDAO;
     private UserContactDAO userContactDAO;
     private MutableAclService mutableAclService;
+    private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
     public SecuredUserManager(ActivityManager activityManager, UserDAO userDAO, UserContactDAO userContactDAO,
-            MutableAclService mutableAclService) {
+            MutableAclService mutableAclService, ErrorMessageUtil errorMessageUtil) {
         this.activityManager = activityManager;
         this.userDAO = userDAO;
         this.userContactDAO = userContactDAO;
         this.mutableAclService = mutableAclService;
+        this.errorMessageUtil = errorMessageUtil;
     }
 
     @Transactional
@@ -69,9 +77,15 @@ public class SecuredUserManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE, #user)")
     public UserDTO update(UserDTO user)
-            throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException {
-        UserDTO before = getById(user.getId());
+            throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException,
+            ValidationException {
 
+        Optional<ValidationException> validationException = validateUser(user);
+        if (validationException.isPresent()) {
+            throw validationException.get();
+        }
+
+        UserDTO before = getById(user.getId());
         UserDTO updated = userDAO.update(user);
 
         String activityDescription = "User " + user.getSubjectName() + " was updated.";
@@ -81,10 +95,9 @@ public class SecuredUserManager extends SecuredManager {
         return updated;
     }
 
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
-            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE, #user)")
     public UserDTO update(User user)
-            throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException {
+            throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException,
+            ValidationException {
         UserDTO before = getById(user.getUserId());
         UserDTO toUpdate = UserDTO.builder()
                 .id(before.getId())
@@ -186,5 +199,25 @@ public class SecuredUserManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME, returnObject)")
     public UserDTO getBySubjectName(String userName) throws UserRetrievalException {
         return userDAO.getByName(userName);
+    }
+
+    private Optional<ValidationException> validateUser(UserDTO user) {
+        Set<String> errors = new HashSet<String>();
+
+        if (StringUtils.isEmpty(user.getFullName())) {
+            errors.add(errorMessageUtil.getMessage("user.fullName.required"));
+        }
+        if (StringUtils.isEmpty(user.getEmail())) {
+            errors.add(errorMessageUtil.getMessage("user.email.required"));
+        }
+        if (StringUtils.isEmpty(user.getPhoneNumber())) {
+            errors.add(errorMessageUtil.getMessage("user.phone.required"));
+        }
+
+        if (errors.size() > 0) {
+            return Optional.of(new ValidationException(errors));
+        } else {
+            return Optional.empty();
+        }
     }
 }

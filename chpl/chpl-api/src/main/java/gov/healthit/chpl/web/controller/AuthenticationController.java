@@ -96,7 +96,7 @@ public class AuthenticationController {
         String jwt = null;
         jwt = authenticator.getJWT(credentials);
         UserDTO user = authenticator.getUser(credentials);
-        if (user != null && user.getPasswordResetRequired()) {
+        if (user != null && user.isPasswordResetRequired()) {
             throw new UserRetrievalException("The user is required to change their password on next log in.");
         }
         String jwtJSON = "{\"token\": \"" + jwt + "\"}";

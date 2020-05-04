@@ -330,7 +330,7 @@ public class UserManagementController {
     produces = "application/json; charset=utf-8")
     public User updateUserDetails(@RequestBody final User userInfo)
             throws UserRetrievalException, UserPermissionRetrievalException, JsonProcessingException,
-            EntityCreationException, EntityRetrievalException {
+            EntityCreationException, EntityRetrievalException, ValidationException {
 
         if (userInfo.getUserId() <= 0) {
             throw new UserRetrievalException("Cannot update user with ID less than 0");

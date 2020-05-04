@@ -29,12 +29,13 @@ import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.exception.ValidationException;
 import lombok.extern.log4j.Log4j2;
 
 @Service
 @Log4j2
 public class UserManager {
-    private static int MIN_PASSWORD_STRENGTH = 3;
+    public static int MIN_PASSWORD_STRENGTH = 3;
 
     private Environment env;
     private SecuredUserManager securedUserManager;
@@ -70,13 +71,15 @@ public class UserManager {
 
     @Transactional
     public UserDTO update(User user)
-            throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException {
+            throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException,
+            ValidationException {
         return securedUserManager.update(user);
     }
 
     @Transactional
     public UserDTO update(UserDTO user)
-            throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException {
+            throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException,
+            ValidationException {
         return securedUserManager.update(user);
     }
 
