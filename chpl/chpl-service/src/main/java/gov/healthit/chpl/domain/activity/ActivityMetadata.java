@@ -3,9 +3,8 @@ package gov.healthit.chpl.domain.activity;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
-
-import org.apache.commons.lang.ObjectUtils;
 
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.util.Util;
@@ -45,7 +44,7 @@ public class ActivityMetadata implements Serializable {
             return false;
         }
         ActivityMetadata anotherMeta = (ActivityMetadata) another;
-        return ObjectUtils.equals(this.id, anotherMeta.id);
+        return Objects.equals(this.id, anotherMeta.id);
     }
 
     @Override
