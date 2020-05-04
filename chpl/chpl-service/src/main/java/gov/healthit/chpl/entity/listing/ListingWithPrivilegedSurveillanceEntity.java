@@ -9,21 +9,17 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Immutable;
-import org.hibernate.annotations.Type;
 import org.hibernate.annotations.Where;
 
-import gov.healthit.chpl.entity.AttestationType;
-import gov.healthit.chpl.entity.ProductEntity;
-import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementEntity;
 import gov.healthit.chpl.entity.surveillance.report.PrivilegedSurveillanceEntity;
-import gov.healthit.chpl.util.Util;
+import lombok.Data;
+import lombok.Singular;
 
+@Data
 @Entity
 @Immutable
 @Table(name = "certified_product_details")
@@ -47,6 +43,9 @@ public class ListingWithPrivilegedSurveillanceEntity {
 
     @Column(name = "year")
     private String year;
+
+    @Column(name = "cures_update")
+    private Boolean curesUpdate;
 
     @Column(name = "vendor_id")
     private Long developerId;
@@ -87,169 +86,10 @@ public class ListingWithPrivilegedSurveillanceEntity {
     @Column(name = "deleted")
     private Boolean deleted;
 
+    @Singular
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "certifiedProductId")
     @Basic(optional = false)
     @Column(name = "certified_product_id", nullable = false)
     @Where(clause = "deleted <> 'true'")
     private Set<PrivilegedSurveillanceEntity> surveillances = new HashSet<PrivilegedSurveillanceEntity>();
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getChplProductNumber() {
-        return chplProductNumber;
-    }
-
-    public void setChplProductNumber(final String chplProductNumber) {
-        this.chplProductNumber = chplProductNumber;
-    }
-
-    public Long getCertificationStatusId() {
-        return certificationStatusId;
-    }
-
-    public void setCertificationStatusId(final Long certificationStatusId) {
-        this.certificationStatusId = certificationStatusId;
-    }
-
-    public String getCertificationStatusName() {
-        return certificationStatusName;
-    }
-
-    public void setCertificationStatusName(final String certificationStatusName) {
-        this.certificationStatusName = certificationStatusName;
-    }
-
-    public Long getCertificationEditionId() {
-        return certificationEditionId;
-    }
-
-    public void setCertificationEditionId(final Long certificationEditionId) {
-        this.certificationEditionId = certificationEditionId;
-    }
-
-    public String getYear() {
-        return year;
-    }
-
-    public void setYear(final String year) {
-        this.year = year;
-    }
-
-    public Long getCertificationBodyId() {
-        return certificationBodyId;
-    }
-
-    public void setCertificationBodyId(final Long certificationBodyId) {
-        this.certificationBodyId = certificationBodyId;
-    }
-
-    public String getCertificationBodyName() {
-        return certificationBodyName;
-    }
-
-    public void setCertificationBodyName(final String certificationBodyName) {
-        this.certificationBodyName = certificationBodyName;
-    }
-
-    public String getCertificationBodyCode() {
-        return certificationBodyCode;
-    }
-
-    public void setCertificationBodyCode(final String certificationBodyCode) {
-        this.certificationBodyCode = certificationBodyCode;
-    }
-
-    public Date getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Set<PrivilegedSurveillanceEntity> getSurveillances() {
-        return surveillances;
-    }
-
-    public void setSurveillances(final Set<PrivilegedSurveillanceEntity> surveillances) {
-        this.surveillances = surveillances;
-    }
-
-    public Date getCertificationDate() {
-        return certificationDate;
-    }
-
-    public void setCertificationDate(final Date certificationDate) {
-        this.certificationDate = certificationDate;
-    }
-
-    public Long getDeveloperId() {
-        return developerId;
-    }
-
-    public void setDeveloperId(Long developerId) {
-        this.developerId = developerId;
-    }
-
-    public String getDeveloperName() {
-        return developerName;
-    }
-
-    public void setDeveloperName(String developerName) {
-        this.developerName = developerName;
-    }
-
-    public String getDeveloperCode() {
-        return developerCode;
-    }
-
-    public void setDeveloperCode(String developerCode) {
-        this.developerCode = developerCode;
-    }
-
-    public Long getProductId() {
-        return productId;
-    }
-
-    public void setProductId(Long productId) {
-        this.productId = productId;
-    }
-
-    public String getProductName() {
-        return productName;
-    }
-
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
-    public Long getProductVersionId() {
-        return productVersionId;
-    }
-
-    public void setProductVersionId(Long productVersionId) {
-        this.productVersionId = productVersionId;
-    }
-
-    public String getProductVersion() {
-        return productVersion;
-    }
-
-    public void setProductVersion(String productVersion) {
-        this.productVersion = productVersion;
-    }
 }

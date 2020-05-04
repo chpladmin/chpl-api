@@ -330,17 +330,6 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
-        <RollingFile name="removeRT13ECMacraMeasureJob"
-            fileName="${logDir}/scheduler/RemoveRT13ECMacraMeasureJob.log"
-            filePattern="${logDir}/scheduler/history/RemoveRT13ECMacraMeasureJob-%d{yyyy-MM-dd}.log">
-            <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
-            </PatternLayout>
-            <Policies>
-                <TimeBasedTriggeringPolicy
-                    interval="1" modulate="true" />
-            </Policies>
-        </RollingFile>
         <RollingFile name="addCriteriaToListingsJob"
             fileName="${logDir}/scheduler/addCriteriaToListingsJob.log"
             filePattern="${logDir}/scheduler/history/addCriteriaToListingsJob-%d{yyyy-MM-dd}.log">
@@ -355,6 +344,17 @@
         <RollingFile name="updateMacraMeasuresJob"
             fileName="${logDir}/scheduler/updateMacraMeasuresJob.log"
             filePattern="${logDir}/scheduler/history/updateMacraMeasuresJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
+        <RollingFile name="addCuresUpdateToListingsJob"
+            fileName="${logDir}/scheduler/addCuresUpdateToListingsJob.log"
+            filePattern="${logDir}/scheduler/history/addCuresUpdateToListingsJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
                 <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
             </PatternLayout>
@@ -495,10 +495,6 @@
             additivity="false">
             <AppenderRef ref="modifyTestFunctionalityJob" />
         </Logger>
-        <Logger name="removeRT13ECMacraMeasureJobLogger" level="INFO"
-            additivity="false">
-            <AppenderRef ref="removeRT13ECMacraMeasureJob" />
-        </Logger>
         <Logger name="addCriteriaToListingsJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="addCriteriaToListingsJob" />
@@ -506,6 +502,10 @@
         <Logger name="updateMacraMeasuresJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="updateMacraMeasuresJob" />
+        </Logger>
+        <Logger name="addCuresUpdateToListingsJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="addCuresUpdateToListingsJob" />
         </Logger>
     </Loggers>
 </Configuration>

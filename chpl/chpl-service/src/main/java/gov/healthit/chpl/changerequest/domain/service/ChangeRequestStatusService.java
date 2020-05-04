@@ -86,7 +86,7 @@ public class ChangeRequestStatusService {
                 .orElse(null);
 
         if (statusTypeIdFromDB != null && statusTypeIdFromCaller != null
-                && statusTypeIdFromDB != statusTypeIdFromCaller
+                && statusTypeIdFromDB.longValue() != statusTypeIdFromCaller.longValue()
                 && isStatusChangeValid(statusTypeIdFromDB, statusTypeIdFromCaller)) {
 
             createNewStatusForChangeRequest(
