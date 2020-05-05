@@ -15,6 +15,7 @@ import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DeveloperBanComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DeveloperStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.FieldLengthReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.ListingStatusAndUserRoleReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestToolReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestingLabReviewer;
@@ -29,6 +30,7 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2014.TestTool2014Rev
 
 /**
  * Validation interface for any listing that is already uploaded and confirmed on the CHPL.
+ * 
  * @author kekey
  *
  */
@@ -102,6 +104,10 @@ public abstract class Edition2014ListingValidator extends Validator {
     @Qualifier("developerBanComparisonReviewer")
     private DeveloperBanComparisonReviewer devBanComparisonReviewer;
 
+    @Autowired
+    @Qualifier("listingStatusAndUserRoleReviewer")
+    private ListingStatusAndUserRoleReviewer listingStatusAndUserRoleReviewer;
+
     private List<Reviewer> reviewers;
     private List<ComparisonReviewer> comparisonReviewers;
 
@@ -134,6 +140,7 @@ public abstract class Edition2014ListingValidator extends Validator {
             comparisonReviewers = new ArrayList<ComparisonReviewer>();
             comparisonReviewers.add(chplNumberComparisonReviewer);
             comparisonReviewers.add(devBanComparisonReviewer);
+            comparisonReviewers.add(listingStatusAndUserRoleReviewer);
         }
         return comparisonReviewers;
     }

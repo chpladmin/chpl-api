@@ -10,14 +10,16 @@ import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-/**
- * Certification Status Event domain object.
- * @author alarned
- *
- */
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CertificationStatusEvent implements Serializable {
     private static final long serialVersionUID = -2498656549844148886L;
 
@@ -50,12 +52,6 @@ public class CertificationStatusEvent implements Serializable {
 
     @XmlTransient
     private Long lastModifiedDate;
-
-    /**
-     * Constructor.
-     */
-    public CertificationStatusEvent() {
-    }
 
     public Long getId() {
         return id;
@@ -99,7 +95,9 @@ public class CertificationStatusEvent implements Serializable {
 
     /**
      * Check to see if this CSE matches another one.
-     * @param other CSE to check against
+     * 
+     * @param other
+     *            CSE to check against
      * @return true if the IDs match
      */
     public boolean matches(final CertificationStatusEvent other) {
