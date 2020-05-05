@@ -73,9 +73,12 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         LOGGER.info("********* Starting the Broken Surveillance Rules Creator job. *********");
         ExecutorService executorService = null;
         try {
-            executorService = Executors.newFixedThreadPool(getThreadCountForJob());
+            deleteAllExistingBrokenSurveillanceRules();
 
+            executorService = Executors.newFixedThreadPool(getThreadCountForJob());
             List<CertifiedProductFlatSearchResult> listingsForReport = getListingsForReport();
+            LOGGER.info(String.format("Found %s listings to process", listingsForReport.size()));
+
             for (CertifiedProductFlatSearchResult listing : listingsForReport) {
                 CompletableFuture.runAsync(() -> processListing(listing.getId()), executorService);
             }
@@ -101,14 +104,14 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
 
     private List<CertifiedProductFlatSearchResult> getListingsForReport() {
         return certifiedProductSearchDAO.getAllCertifiedProducts().stream()
-                .filter(listing -> isEditionNot2011(listing)
-                        && isCertificationStatusSuspendedByAcb(listing)
-                        && hasSurveillances(listing))
+                .filter(listing -> !isEdition2011(listing)
+                        && (isCertificationStatusSuspendedByAcb(listing)
+                                || hasSurveillances(listing)))
                 .collect(Collectors.toList());
     }
 
-    private boolean isEditionNot2011(CertifiedProductFlatSearchResult listing) {
-        return !listing.getEdition().equals(EDITION_2011);
+    private boolean isEdition2011(CertifiedProductFlatSearchResult listing) {
+        return listing.getEdition().equals(EDITION_2011);
     }
 
     private boolean isCertificationStatusSuspendedByAcb(CertifiedProductFlatSearchResult listing) {
@@ -338,6 +341,11 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
 
     private Integer getThreadCountForJob() throws NumberFormatException {
         return Integer.parseInt(env.getProperty("executorThreadCountForQuartzJobs"));
+    }
+
+    private void deleteAllExistingBrokenSurveillanceRules() {
+        LOGGER.info("Deleting {} OBE rules", brokenSurveillanceRulesDAO.findAll().size());
+        brokenSurveillanceRulesDAO.deleteAll();
     }
 
 }
