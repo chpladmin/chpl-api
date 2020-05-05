@@ -88,17 +88,6 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
             executorService.shutdown();
         }
 
-        // List<CertifiedProductSearchDetails> results = retrieveData();
-        // List<BrokenSurveillanceRulesDTO> errors = new ArrayList<BrokenSurveillanceRulesDTO>();
-        // for (CertifiedProductSearchDetails listing : results) {
-        // errors.addAll(brokenRules(listing));
-        // }
-        // LOGGER.info("Deleting {} OBE rules", brokenSurveillanceRulesDAO.findAll().size());
-        // brokenSurveillanceRulesDAO.deleteAll();
-        // if (errors.size() > 0) {
-        // saveBrokenSurveillanceRules(errors);
-        // LOGGER.info("Saving {} broken rules", errors.size());
-        // }
         LOGGER.info("********* Completed the Broken Surveillance Rules Creator job. *********");
     }
 
