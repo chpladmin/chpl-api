@@ -39,13 +39,6 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.scheduler.DataCollectorAsyncSchedulerHelper;
 import gov.healthit.chpl.scheduler.surveillance.rules.RuleComplianceCalculator;
 
-/**
- * Initiates and runs the the Quartz job that generates the data that is used to to create the Broken Surveillance Rules
- * report.
- * 
- * @author alarned
- *
- */
 @DisallowConcurrentExecution
 public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("brokenSurveillanceRulesCreatorJobLogger");
@@ -72,12 +65,6 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
     @Autowired
     private Environment env;
 
-    /**
-     * Constructor to initialize BrokenSurveillanceRulesCreatorJob object.
-     * 
-     * @throws Exception
-     *             is thrown
-     */
     public BrokenSurveillanceRulesCreatorJob() throws Exception {
         super();
         dateFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd");
@@ -85,7 +72,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
 
     @Override
     @Transactional
-    public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+    public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         dataCollectorAsyncSchedulerHelper.setLogger(LOGGER);
 
@@ -104,7 +91,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         LOGGER.info("********* Completed the Broken Surveillance Rules Creator job. *********");
     }
 
-    private void saveBrokenSurveillanceRules(final List<BrokenSurveillanceRulesDTO> items) {
+    private void saveBrokenSurveillanceRules(List<BrokenSurveillanceRulesDTO> items) {
         try {
             brokenSurveillanceRulesDAO.create(items);
         } catch (EntityCreationException | EntityRetrievalException e) {
@@ -124,8 +111,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         return certifiedProductsWithDetails;
     }
 
-    private List<CertifiedProductFlatSearchResult> filterData(
-            final List<CertifiedProductFlatSearchResult> certifiedProducts) {
+    private List<CertifiedProductFlatSearchResult> filterData(List<CertifiedProductFlatSearchResult> certifiedProducts) {
         List<CertifiedProductFlatSearchResult> results = new ArrayList<CertifiedProductFlatSearchResult>();
         for (CertifiedProductFlatSearchResult result : certifiedProducts) {
             if ((!result.getEdition().equalsIgnoreCase(EDITION_2011))
@@ -139,7 +125,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
     }
 
     private List<CertifiedProductSearchDetails> getCertifiedProductDetailsForAll(
-            final List<CertifiedProductFlatSearchResult> certifiedProducts) {
+            List<CertifiedProductFlatSearchResult> certifiedProducts) {
 
         List<CertifiedProductSearchDetails> details = new ArrayList<CertifiedProductSearchDetails>();
         List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
@@ -170,7 +156,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         return details;
     }
 
-    private List<BrokenSurveillanceRulesDTO> brokenRules(final CertifiedProductSearchDetails listing) {
+    private List<BrokenSurveillanceRulesDTO> brokenRules(CertifiedProductSearchDetails listing) {
         List<BrokenSurveillanceRulesDTO> errors = new ArrayList<BrokenSurveillanceRulesDTO>();
 
         if (listing.getSurveillance().size() == 0) {
@@ -246,7 +232,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         return errors;
     }
 
-    private BrokenSurveillanceRulesDTO getDefaultBrokenRule(final CertifiedProductSearchDetails listing) {
+    private BrokenSurveillanceRulesDTO getDefaultBrokenRule(CertifiedProductSearchDetails listing) {
         BrokenSurveillanceRulesDTO base = new BrokenSurveillanceRulesDTO();
         base.setDeveloper(listing.getDeveloper().getName());
         base.setProduct(listing.getProduct().getName());
@@ -278,8 +264,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         return base;
     }
 
-    private BrokenSurveillanceRulesDTO addSurveillanceData(
-            final BrokenSurveillanceRulesDTO rule, final Surveillance surv) {
+    private BrokenSurveillanceRulesDTO addSurveillanceData(BrokenSurveillanceRulesDTO rule, Surveillance surv) {
 
         if (surv.getFriendlyId() != null) {
             rule.setSurveillanceId(surv.getFriendlyId());
@@ -299,8 +284,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         return rule;
     }
 
-    private BrokenSurveillanceRulesDTO addNcData(
-            final BrokenSurveillanceRulesDTO rule, final SurveillanceNonconformity nc) {
+    private BrokenSurveillanceRulesDTO addNcData(BrokenSurveillanceRulesDTO rule, SurveillanceNonconformity nc) {
 
         rule.setNonconformity(true);
         rule.setNonconformityCriteria(nc.getNonconformityType());
