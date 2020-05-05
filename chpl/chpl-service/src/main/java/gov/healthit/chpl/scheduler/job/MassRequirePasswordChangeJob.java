@@ -26,6 +26,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.JWTCreationException;
 import gov.healthit.chpl.exception.JWTValidationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.auth.UserManager;
 
 /**
@@ -78,7 +79,7 @@ public class MassRequirePasswordChangeJob extends QuartzJob implements Interrupt
                         LOGGER.info("Marking user {} as requiring password change on next login", user.getUsername());
                         userManager.update(user);
                     } catch (UserRetrievalException | JsonProcessingException | EntityCreationException
-                            | EntityRetrievalException e) {
+                            | EntityRetrievalException | ValidationException e) {
                         LOGGER.debug("Unable to update user with username {} and message {}",
                                 user.getUsername(), e.getMessage());
                     }
