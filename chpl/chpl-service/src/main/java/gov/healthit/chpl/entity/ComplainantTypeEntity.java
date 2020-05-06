@@ -10,8 +10,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import lombok.Data;
+
 @Entity
 @Table(name = "complainant_type")
+@Data
 public class ComplainantTypeEntity {
 
     @Id
@@ -34,59 +37,4 @@ public class ComplainantTypeEntity {
 
     @Column(name = "deleted", nullable = false)
     private Boolean deleted;
-
-    public final Long getId() {
-        return id;
-    }
-
-    public final void setId(final Long id) {
-        this.id = id;
-    }
-
-    public final String getName() {
-        return name;
-    }
-
-    public final void setName(final String name) {
-        this.name = name;
-    }
-
-    public final Date getCreationDate() {
-        return creationDate;
-    }
-
-    public final void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public final Date getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public final void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
-
-    public final Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public final void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public final Boolean getDeleted() {
-        return deleted;
-    }
-
-    public final void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    @Override
-    public String toString() {
-        return "ComplaintTypeEntity [id=" + id + ", name=" + name + ", creationDate=" + creationDate
-                + ", lastModifiedDate=" + lastModifiedDate + ", lastModifiedUser=" + lastModifiedUser + ", deleted="
-                + deleted + "]";
-    }
 }
