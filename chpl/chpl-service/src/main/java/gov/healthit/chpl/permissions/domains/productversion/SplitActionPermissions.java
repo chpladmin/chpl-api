@@ -3,7 +3,6 @@ package gov.healthit.chpl.permissions.domains.productversion;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dto.ProductVersionDTO;
@@ -15,7 +14,6 @@ public class SplitActionPermissions extends ActionPermissions {
 
     private List<CertificationStatusType> allowedCertStatuses;
 
-    @Autowired
     public SplitActionPermissions() {
         allowedCertStatuses = new ArrayList<CertificationStatusType>();
         allowedCertStatuses.add(CertificationStatusType.Active);
