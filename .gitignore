@@ -185,6 +185,11 @@ $RECYCLE.BIN/
 # Mac crap
 .DS_Store
 
+#############
+## IntelliJ
+#############
+.idea/
+*.iml
 
 #############
 ## Python

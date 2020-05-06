@@ -49,11 +49,10 @@ import gov.healthit.chpl.util.EmailBuilder;
 public class QuestionableUrlReportGenerator extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("questionableUrlReportGeneratorJobLogger");
     private static final String[] CSV_HEADER = {
-            "URL", "Status Code", "Status Name", "Error Message",
-            "URL Type", "ONC-ATL", "ONC-ACB", "Developer", "Developer Contact Name",
-            "Developer Contact Email", "Developer Contact Phone Number", "Product", "Version",
-            "CHPL Product Number", "Edition", "Certification Date",
-            "Certification Status", "Criteria", "Date Last Checked"
+            "URL", "Status Code", "Status Name", "Error Message", "URL Type", "ONC-ATL", "ONC-ACB", "Developer",
+            "Developer Contact Name", "Developer Contact Email", "Developer Contact Phone Number", "Product", "Version",
+            "CHPL Product Number", "Edition", "Certification Date", "Certification Status", "Criteria",
+            "Date Last Checked"
     };
 
     @Autowired
@@ -134,10 +133,10 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                         case FULL_USABILITY_REPORT:
                         case MANDATORY_DISCLOSURE_URL:
                         case TEST_RESULTS_SUMMARY:
-                            LOGGER.info("[" + i + "] Getting Listings with bad "
-                                    + urlResult.getUrlType().getName() + " website " + urlResult.getUrl());
-                            List<CertifiedProductSummaryDTO> listingsWithBadUrl = cpDao.getSummaryByUrl(urlResult.getUrl(),
-                                    urlResult.getUrlType());
+                            LOGGER.info("[" + i + "] Getting Listings with bad " + urlResult.getUrlType().getName()
+                                    + " website " + urlResult.getUrl());
+                            List<CertifiedProductSummaryDTO> listingsWithBadUrl = cpDao
+                                    .getSummaryByUrl(urlResult.getUrl(), urlResult.getUrlType());
                             for (CertifiedProductSummaryDTO listing : listingsWithBadUrl) {
                                 FailedUrlResult urlResultWithError = new FailedUrlResult(urlResult);
                                 if (listing.getAcb() != null) {
@@ -169,18 +168,18 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                         case EXPORT_DOCUMENTATION:
                         case DOCUMENTATION_URL:
                         case USE_CASES:
-                            LOGGER.info("[" + i + "] Getting criteria with bad "
-                                    + urlResult.getUrlType().getName() + " website " + urlResult.getUrl());
-                            List<CertificationResultDetailsDTO> certResultsWithBadUrl = certResultDao.getByUrl(urlResult.getUrl(),
-                                    urlResult.getUrlType());
+                            LOGGER.info("[" + i + "] Getting criteria with bad " + urlResult.getUrlType().getName()
+                                    + " website " + urlResult.getUrl());
+                            List<CertificationResultDetailsDTO> certResultsWithBadUrl = certResultDao
+                                    .getByUrl(urlResult.getUrl(), urlResult.getUrlType());
                             for (CertificationResultDetailsDTO certResult : certResultsWithBadUrl) {
                                 // get the associated listing
                                 CertifiedProductSummaryDTO associatedListing = null;
                                 try {
                                     associatedListing = cpDao.getSummaryById(certResult.getCertifiedProductId());
                                 } catch (EntityRetrievalException ex) {
-                                    LOGGER.info(
-                                            "Could not find associated listing with id " + certResult.getCertifiedProductId());
+                                    LOGGER.info("Could not find associated listing with id "
+                                            + certResult.getCertifiedProductId());
                                 }
                                 if (associatedListing != null) {
                                     FailedUrlResult urlResultWithError = new FailedUrlResult(urlResult);
@@ -204,7 +203,8 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                                     }
                                     urlResultWithError.setChplProductNumber(associatedListing.getChplProductNumber());
                                     urlResultWithError.setEdition(associatedListing.getYear());
-                                    urlResultWithError.setCertificationStatus(associatedListing.getCertificationStatus());
+                                    urlResultWithError
+                                            .setCertificationStatus(associatedListing.getCertificationStatus());
                                     urlResultWithError.setCertificationDate(associatedListing.getCertificationDate());
                                     urlResultWithError.setCriteria(certResult.getNumber());
                                     badUrlsToWrite.add(urlResultWithError);
@@ -238,22 +238,20 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                     File output = null;
                     List<File> files = new ArrayList<File>();
                     if (badUrlsToWrite.size() > 0) {
-                        output = getOutputFile(badUrlsToWrite, env.getProperty("job.questionableUrlReport.emailAttachmentName"));
+                        output = getOutputFile(badUrlsToWrite,
+                                env.getProperty("job.questionableUrlReport.emailAttachmentName"));
                         files.add(output);
                     }
 
-                    LOGGER.info("Sending email to {} with contents {} and a total of {} questionable URLs.",
-                            to, htmlMessage, badUrlsToWrite.size());
+                    LOGGER.info("Sending email to {} with contents {} and a total of {} questionable URLs.", to,
+                            htmlMessage, badUrlsToWrite.size());
                     try {
                         List<String> addresses = new ArrayList<String>();
                         addresses.add(to);
 
                         EmailBuilder emailBuilder = new EmailBuilder(env);
-                        emailBuilder.recipients(addresses)
-                                .subject(subject)
-                                .htmlMessage(htmlMessage)
-                                .fileAttachments(files)
-                                .sendEmail();
+                        emailBuilder.recipients(addresses).subject(subject).htmlMessage(htmlMessage)
+                                .fileAttachments(files).sendEmail();
                     } catch (MessagingException e) {
                         LOGGER.error(e);
                     }
@@ -275,26 +273,15 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
         }
 
         if (temp != null) {
-            try (OutputStreamWriter writer = new OutputStreamWriter(
-                    new FileOutputStream(temp), Charset.forName("UTF-8").newEncoder());
+            try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(temp),
+                    Charset.forName("UTF-8").newEncoder());
                     CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
                 csvPrinter.printRecord(getHeaderRow());
                 // urlResultsToWrite must be sorted by url
                 for (int i = 0; i < urlResultsToWrite.size(); i++) {
                     FailedUrlResult currUrlResult = urlResultsToWrite.get(i);
-                    FailedUrlResult prevUrlResult = null;
-                    if (i > 0) {
-                        prevUrlResult = urlResultsToWrite.get(i - 1);
-                    }
                     List<String> rowValue = null;
-                    if (prevUrlResult == null || !currUrlResult.getUrl().equals(prevUrlResult.getUrl())) {
-                        // write a row with the url data since this url is different than the one before it
-                        rowValue = generateRowValue(currUrlResult, true);
-                    } else {
-                        // write a row with just the acb/atl/developer/listing data since this is for the same url
-                        // as the one before it
-                        rowValue = generateRowValue(currUrlResult, false);
-                    }
+                    rowValue = generateRowValue(currUrlResult);
                     if (rowValue != null) {
                         csvPrinter.printRecord(rowValue);
                     }
@@ -310,37 +297,31 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
         return Arrays.asList(CSV_HEADER);
     }
 
-    private List<String> generateRowValue(FailedUrlResult urlResult, boolean firstUrlInGroup) {
+    private List<String> generateRowValue(FailedUrlResult urlResult) {
         List<String> result = new ArrayList<String>();
-        if (firstUrlInGroup) {
-            result.add(urlResult.getUrl());
-            if (urlResult.getResponseCode() != null) {
-                result.add(urlResult.getResponseCode().toString());
-                try {
-                    HttpStatus httpStatus = HttpStatus.valueOf(urlResult.getResponseCode());
-                    if (httpStatus != null) {
-                        result.add(httpStatus.getReasonPhrase());
-                    } else {
-                        result.add("");
-                    }
-                } catch (IllegalArgumentException ex) {
-                    LOGGER.warn("No HttpStatus object could be found for response code " + urlResult.getResponseCode());
+
+        result.add(urlResult.getUrl());
+        if (urlResult.getResponseCode() != null) {
+            result.add(urlResult.getResponseCode().toString());
+            try {
+                HttpStatus httpStatus = HttpStatus.valueOf(urlResult.getResponseCode());
+                if (httpStatus != null) {
+                    result.add(httpStatus.getReasonPhrase());
+                } else {
                     result.add("");
                 }
-            } else {
-                result.add("");
-                result.add("");
-            }
-
-            if (urlResult.getResponseMessage() != null) {
-                result.add(urlResult.getResponseMessage());
-            } else {
+            } catch (IllegalArgumentException ex) {
+                LOGGER.warn("No HttpStatus object could be found for response code " + urlResult.getResponseCode());
                 result.add("");
             }
         } else {
             result.add("");
             result.add("");
-            result.add("");
+        }
+
+        if (urlResult.getResponseMessage() != null) {
+            result.add(urlResult.getResponseMessage());
+        } else {
             result.add("");
         }
 
@@ -434,7 +415,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
 
     /**
      * Create the HTML body of the email to be sent.
-     * 
+     *
      * @param urlResults
      * @param noContentMsg
      * @return
@@ -447,7 +428,8 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             int brokenAcbUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.ACB);
             int brokenAtlUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.ATL);
             int brokenDeveloperUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.DEVELOPER);
-            int brokenMandatoryDisclosureUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.MANDATORY_DISCLOSURE_URL);
+            int brokenMandatoryDisclosureUrls = getCountOfBrokenUrlsOfType(urlResults,
+                    UrlType.MANDATORY_DISCLOSURE_URL);
             int brokenTestResultsSummaryUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.TEST_RESULTS_SUMMARY);
             int brokenFullUsabilityReportUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.FULL_USABILITY_REPORT);
             int brokenApiDocumentationUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.API_DOCUMENTATION);
@@ -459,13 +441,18 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             htmlMessage += "<li>" + UrlType.ATL.getName() + ": " + brokenAtlUrls + "</li>";
             htmlMessage += "<li>" + UrlType.ACB.getName() + ": " + brokenAcbUrls + "</li>";
             htmlMessage += "<li>" + UrlType.DEVELOPER.getName() + ": " + brokenDeveloperUrls + "</li>";
-            htmlMessage += "<li>" + UrlType.FULL_USABILITY_REPORT.getName() + ": " + brokenFullUsabilityReportUrls + "</li>";
-            htmlMessage += "<li>" + UrlType.MANDATORY_DISCLOSURE_URL.getName() + ": " + brokenMandatoryDisclosureUrls + "</li>";
-            htmlMessage += "<li>" + UrlType.TEST_RESULTS_SUMMARY.getName() + ": " + brokenTestResultsSummaryUrls + "</li>";
+            htmlMessage += "<li>" + UrlType.FULL_USABILITY_REPORT.getName() + ": " + brokenFullUsabilityReportUrls
+                    + "</li>";
+            htmlMessage += "<li>" + UrlType.MANDATORY_DISCLOSURE_URL.getName() + ": " + brokenMandatoryDisclosureUrls
+                    + "</li>";
+            htmlMessage += "<li>" + UrlType.TEST_RESULTS_SUMMARY.getName() + ": " + brokenTestResultsSummaryUrls
+                    + "</li>";
             htmlMessage += "<li>" + UrlType.API_DOCUMENTATION.getName() + ": " + brokenApiDocumentationUrls + "</li>";
             if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
-                htmlMessage += "<li>" + UrlType.EXPORT_DOCUMENTATION.getName() + ": " + brokenExportDocumentationUrls + "</li>";
-                htmlMessage += "<li>" + UrlType.DOCUMENTATION_URL.getName() + ": " + brokenDocumentationUrlUrls + "</li>";
+                htmlMessage += "<li>" + UrlType.EXPORT_DOCUMENTATION.getName() + ": " + brokenExportDocumentationUrls
+                        + "</li>";
+                htmlMessage += "<li>" + UrlType.DOCUMENTATION_URL.getName() + ": " + brokenDocumentationUrlUrls
+                        + "</li>";
                 htmlMessage += "<li>" + UrlType.USE_CASES.getName() + ": " + brokenUseCasesUrls + "</li>";
             }
             htmlMessage += "</ul>";
@@ -489,9 +476,6 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
     }
 
     private DateFormat getTimestampFormatter() {
-        return DateFormat.getDateTimeInstance(
-                DateFormat.LONG,
-                DateFormat.LONG,
-                Locale.US);
+        return DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, Locale.US);
     }
 }
