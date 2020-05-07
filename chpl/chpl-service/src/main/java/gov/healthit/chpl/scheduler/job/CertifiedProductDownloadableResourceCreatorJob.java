@@ -14,10 +14,8 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
-import org.quartz.InterruptableJob;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.UnableToInterruptJobException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
@@ -33,13 +31,11 @@ import gov.healthit.chpl.scheduler.presenter.CertifiedProductXmlPresenter;
 import gov.healthit.chpl.service.CertificationCriterionService;
 
 @DisallowConcurrentExecution
-public class CertifiedProductDownloadableResourceCreatorJob
-        extends DownloadableResourceCreatorJob implements InterruptableJob {
+public class CertifiedProductDownloadableResourceCreatorJob extends DownloadableResourceCreatorJob {
     private static final Logger LOGGER = LogManager.getLogger("certifiedProductDownloadableResourceCreatorJobLogger");
     private static final int MILLIS_PER_SECOND = 1000;
-    // private static final int SECONDS_PER_MINUTE = 60;
     private String edition;
-    private boolean interrupted;
+    private ExecutorService executorService;
 
     @Autowired
     private CertificationCriterionService criterionService;
@@ -56,58 +52,43 @@ public class CertifiedProductDownloadableResourceCreatorJob
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
-        Date start = new Date();
         edition = jobContext.getMergedJobDataMap().getString("edition");
-        interrupted = false;
-        LOGGER.info("********* Starting the Certified Product Downloadable Resource Creator job for {}. *********",
-                edition);
-
-        ExecutorService executorService = Executors.newFixedThreadPool(getThreadCountForJob());
+        LOGGER.info("********* Starting the Certified Product Downloadable Resource Creator job for {}. *********", edition);
 
         try (CertifiedProductXmlPresenter xmlPresenter = new CertifiedProductXmlPresenter();
                 CertifiedProductCsvPresenter csvPresenter = getCsvPresenter()) {
 
-            List<CertifiedProductDetailsDTO> listings = getRelevantListings();
-
             initializeWritingToFiles(xmlPresenter, csvPresenter);
+            initializeExecutorService();
+
             List<CertifiedProductPresenter> presenters = new ArrayList<CertifiedProductPresenter>(
                     Arrays.asList(xmlPresenter, csvPresenter));
+            List<CompletableFuture<Void>> futures = getCertifiedProductSearchFutures(getRelevantListings(), presenters);
+            CompletableFuture<Void> combinedFutures = CompletableFuture
+                    .allOf(futures.toArray(new CompletableFuture[futures.size()]));
 
-            for (CertifiedProductDetailsDTO certifiedProductDetails : listings) {
-                CompletableFuture.supplyAsync(() -> getCertifiedProductSearchDetails(certifiedProductDetails.getId()),
-                        executorService)
-                        .thenAccept(listing -> listing.ifPresent(cp -> addToPresenters(presenters, cp)));
-            }
+            // This is not blocking - I think because the job executes using it's own ExecutorService
+            // This is necessary so that the presenters do not close until all of the data has been written to them
+            combinedFutures.get();
 
-            // for (Future<CertifiedProductSearchDetails> future : futures) {
-            // if (interrupted) {
-            // break;
-            // }
-            // CertifiedProductSearchDetails details = future.get();
-            // LOGGER.info("Complete retrieving details for id: " + details.getId());
-            // xmlPresenter.add(details);
-            // csvPresenter.add(details);
-            // }
-
-            // Closing of xmlPresenter and csvPresenter happen due to try-with-resources
-
+            LOGGER.info("********* Completed the Certified Product Downloadable Resource Creator job for {}. *********", edition);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
+        } finally {
+            executorService.shutdown();
         }
-        // Date end = new Date();
-        // if (interrupted) {
-        // LOGGER.info("Interrupted before files for {} edition after {} seconds, or {} minutes",
-        // edition,
-        // (end.getTime() - start.getTime()) / MILLIS_PER_SECOND,
-        // (end.getTime() - start.getTime()) / MILLIS_PER_SECOND / SECONDS_PER_MINUTE);
-        // } else {
-        // LOGGER.info("Time to create file(s) for {} edition: {} seconds, or {} minutes",
-        // edition,
-        // (end.getTime() - start.getTime()) / MILLIS_PER_SECOND,
-        // (end.getTime() - start.getTime()) / MILLIS_PER_SECOND / SECONDS_PER_MINUTE);
-        // LOGGER.info("********* Completed the Certified Product Downloadable Resource Creator job for {}. *********",
-        // edition);
-        // }
+    }
+
+    private List<CompletableFuture<Void>> getCertifiedProductSearchFutures(List<CertifiedProductDetailsDTO> listings,
+            List<CertifiedProductPresenter> presenters) {
+
+        List<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
+        for (CertifiedProductDetailsDTO certifiedProductDetails : listings) {
+            futures.add(CompletableFuture
+                    .supplyAsync(() -> getCertifiedProductSearchDetails(certifiedProductDetails.getId()), executorService)
+                    .thenAccept(listing -> listing.ifPresent(cp -> addToPresenters(presenters, cp))));
+        }
+        return futures;
     }
 
     private void addToPresenters(List<CertifiedProductPresenter> presenters, CertifiedProductSearchDetails listing) {
@@ -187,14 +168,11 @@ public class CertifiedProductDownloadableResourceCreatorJob
         return file;
     }
 
-    @Override
-    public void interrupt() throws UnableToInterruptJobException {
-        LOGGER.info("Certified Product download job for edition {} interrupted", edition);
-        interrupted = true;
-    }
-
     private Integer getThreadCountForJob() throws NumberFormatException {
         return Integer.parseInt(env.getProperty("executorThreadCountForQuartzJobs"));
     }
 
+    private void initializeExecutorService() {
+        executorService = Executors.newFixedThreadPool(getThreadCountForJob());
+    }
 }
