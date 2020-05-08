@@ -59,7 +59,8 @@ public class CuresUpdateService {
 
         // After ERD and new criteria are added all checks can be removed and items can be directly
         // added to the list in the statement above.
-        if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
+        if (ff4j.exist(FeatureList.EFFECTIVE_RULE_DATE)
+                && ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
             if (criteriaService.get(Criteria2015.D_12) != null) {
                 newPnSCriteria.add(criteriaService.get(Criteria2015.D_12).getId());
             }
@@ -99,7 +100,8 @@ public class CuresUpdateService {
 
         // After ERD and new criteria are added all checks can be removed and items can be directly
         // added to the list in the statement above.
-        if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
+        if (ff4j.exist(FeatureList.EFFECTIVE_RULE_DATE)
+                && ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
             if (criteriaService.get(Criteria2015.B_1_CURES) != null) {
                 requiresPnSCriteriaIds.add(criteriaService.get(Criteria2015.B_1_CURES).getId());
             }
@@ -152,7 +154,8 @@ public class CuresUpdateService {
 
         // After ERD and new criteria are added all checks can be removed and items can be directly
         // added to the list in the statement above.
-        if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
+        if (ff4j.exist(FeatureList.EFFECTIVE_RULE_DATE)
+                && ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
             if (criteriaService.get(Criteria2015.B_10) != null) {
                 dependentCriteriaIds.add(criteriaService.get(Criteria2015.B_10).getId());
             }
