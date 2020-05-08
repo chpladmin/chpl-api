@@ -231,7 +231,7 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
                         nc.getNonconformityTypeName()));
             }
 
-            if (nc.getTotalSites() > surv.getRandomizedSitesUsed()) {
+            if (nc.getTotalSites() != null && nc.getTotalSites() > surv.getRandomizedSitesUsed()) {
                 surv.getErrorMessages().add(msgUtil.getMessage("surveillance.tooManyTotalSites",
                         req.getRequirementName(),
                         nc.getNonconformityTypeName()));
