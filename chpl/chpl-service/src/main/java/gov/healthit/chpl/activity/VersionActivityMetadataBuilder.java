@@ -13,10 +13,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.domain.activity.ActivityCategory;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
-import gov.healthit.chpl.domain.activity.ProductActivityMetadata;
 import gov.healthit.chpl.domain.activity.VersionActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 
@@ -124,7 +122,7 @@ public class VersionActivityMetadataBuilder extends ActivityMetadataBuilder {
             versionMetadata.setProductName(version.getProductName());
         } else if (version.getProductId() != null) {
             try {
-                ProductDTO product = productDao.getById(version.getProductId(), true);
+                ProductDTO product = productDao.getSimpleProductById(version.getProductId(), true);
                 versionMetadata.setProductName(product.getName());
             } catch (Exception ex) {
                 LOGGER.error("Unable to find product with ID " + version.getProductId() + " referenced "
@@ -139,7 +137,7 @@ public class VersionActivityMetadataBuilder extends ActivityMetadataBuilder {
             final List<ProductVersionDTO> versions) {
         Long idToFind = activity.getActivityObjectId();
         for (ProductVersionDTO currVersion : versions) {
-            if(currVersion.getId().longValue() == idToFind.longValue()) {
+            if (currVersion.getId().longValue() == idToFind.longValue()) {
                 parseVersionMetadata(versionMetadata, currVersion);
                 break;
             }
