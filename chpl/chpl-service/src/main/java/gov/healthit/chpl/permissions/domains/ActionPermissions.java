@@ -64,13 +64,9 @@ public abstract class ActionPermissions {
     public boolean doesCurrentUserHaveAccessToAllOfDevelopersListings(Long developerId,
             List<CertificationStatusType> listingStatuses) {
         List<CertifiedProductDetailsDTO> cpDtos = certifiedProductDAO.findByDeveloperId(developerId);
-        for (CertifiedProductDetailsDTO cpDto : cpDtos) {
-            if (isInStatuses(cpDto.getCertificationStatusName(), listingStatuses)
-                    && !isAcbValidForCurrentUser(cpDto.getCertificationBodyId())) {
-                return false;
-            }
-        }
-        return true;
+        return !cpDtos.stream().filter(cpDto ->
+            !isAcbValidForCurrentUser(cpDto.getCertificationBodyId())
+            && isInStatuses(cpDto.getCertificationStatusName(), listingStatuses)).findAny().isPresent();
     }
 
     @Transactional(readOnly = true)
