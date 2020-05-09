@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.activity.ActivityCategory;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
-import gov.healthit.chpl.domain.activity.DeveloperActivityMetadata;
 import gov.healthit.chpl.domain.activity.ProductActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
@@ -21,18 +20,18 @@ import gov.healthit.chpl.dto.ProductDTO;
 
 @Component("productActivityMetadataBuilder")
 public class ProductActivityMetadataBuilder extends ActivityMetadataBuilder {
-    private static final Logger LOGGER = LogManager.getLogger(ProductActivityMetadataBuilder.class);
+    private static Logger LOGGER = LogManager.getLogger(ProductActivityMetadataBuilder.class);
     private ObjectMapper jsonMapper;
     private DeveloperDAO developerDao;
 
     @Autowired
-    public ProductActivityMetadataBuilder(final DeveloperDAO developerDao) {
+    public ProductActivityMetadataBuilder(DeveloperDAO developerDao) {
         super();
         jsonMapper = new ObjectMapper();
         this.developerDao = developerDao;
     }
 
-    protected void addConceptSpecificMetadata(final ActivityDTO activity, final ActivityMetadata metadata) {
+    protected void addConceptSpecificMetadata(ActivityDTO activity, ActivityMetadata metadata) {
         if (!(metadata instanceof ProductActivityMetadata)) {
             return;
         }
@@ -48,13 +47,13 @@ public class ProductActivityMetadataBuilder extends ActivityMetadataBuilder {
             try {
                 origProduct =
                     jsonMapper.readValue(activity.getOriginalData(), ProductDTO.class);
-            } catch (final Exception ignore) { }
+            } catch (Exception ignore) { }
 
             if (origProduct == null) {
                 try {
                     origProducts = jsonMapper.readValue(activity.getOriginalData(),
                             jsonMapper.getTypeFactory().constructCollectionType(List.class, ProductDTO.class));
-                } catch (final Exception ignore) {}
+                } catch (Exception ignore) {}
             }
 
             if (origProduct == null && origProducts == null) {
@@ -69,13 +68,13 @@ public class ProductActivityMetadataBuilder extends ActivityMetadataBuilder {
             try {
                 newProduct =
                     jsonMapper.readValue(activity.getNewData(), ProductDTO.class);
-            } catch (final Exception ignore) {}
+            } catch (Exception ignore) {}
 
             if (newProduct == null) {
                 try {
                     newProducts = jsonMapper.readValue(activity.getNewData(),
                             jsonMapper.getTypeFactory().constructCollectionType(List.class, ProductDTO.class));
-                } catch (final Exception ignore) {}
+                } catch (Exception ignore) {}
             }
 
             if (newProduct == null && newProducts == null) {
@@ -115,7 +114,7 @@ public class ProductActivityMetadataBuilder extends ActivityMetadataBuilder {
     }
 
     private void parseProductMetadata(
-            final ProductActivityMetadata productMetadata, final ProductDTO product) {
+            ProductActivityMetadata productMetadata, ProductDTO product) {
         //Developer id is always filled in the activity object
         //but the name does not seem to be. If the name is available
         //use it but if not look up the developer by ID
@@ -123,7 +122,7 @@ public class ProductActivityMetadataBuilder extends ActivityMetadataBuilder {
             productMetadata.setDeveloperName(product.getDeveloperName());
         } else if (product.getDeveloperId() != null) {
             try {
-                DeveloperDTO developer = developerDao.getById(product.getDeveloperId(), true);
+                DeveloperDTO developer = developerDao.getSimpleDeveloperById(product.getDeveloperId(), true);
                 productMetadata.setDeveloperName(developer.getName());
             } catch (Exception ex) {
                 LOGGER.error("Unable to find developer with ID " + product.getDeveloperId() + " referenced "
@@ -134,11 +133,11 @@ public class ProductActivityMetadataBuilder extends ActivityMetadataBuilder {
     }
 
     private void parseProductMetadata(
-            final ProductActivityMetadata productMetadata, final ActivityDTO activity,
-            final List<ProductDTO> products) {
+            ProductActivityMetadata productMetadata, ActivityDTO activity,
+            List<ProductDTO> products) {
         Long idToFind = activity.getActivityObjectId();
         for (ProductDTO currProduct : products) {
-            if(currProduct.getId().longValue() == idToFind.longValue()) {
+            if (currProduct.getId().longValue() == idToFind.longValue()) {
                 parseProductMetadata(productMetadata, currProduct);
                 break;
             }
