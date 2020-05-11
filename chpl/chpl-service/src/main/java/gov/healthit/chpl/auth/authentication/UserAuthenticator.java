@@ -24,6 +24,7 @@ import gov.healthit.chpl.auth.jwt.JWTAuthor;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.JWTCreationException;
@@ -36,17 +37,21 @@ import gov.healthit.chpl.util.AuthUtil;
 public class UserAuthenticator implements Authenticator {
     private static final Logger LOGGER = LogManager.getLogger(UserAuthenticator.class);
 
-    @Autowired
     private JWTAuthor jwtAuthor;
-
-    @Autowired
     private UserManager userManager;
-
-    @Autowired
+    private UserDAO userDAO;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private UserDetailsChecker userDetailsChecker;
 
     @Autowired
-    private UserDetailsChecker userDetailsChecker;
+    public UserAuthenticator(JWTAuthor jwtAuthor, UserManager userManager, UserDAO userDAO,
+            BCryptPasswordEncoder bCryptPasswordEncoder, UserDetailsChecker userDetailsChecker) {
+        this.jwtAuthor = jwtAuthor;
+        this.userManager = userManager;
+        this.userDAO = userDAO;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.userDetailsChecker = userDetailsChecker;
+    }
 
     @Override
     public UserDTO getUser(final LoginCredentials credentials)
@@ -201,7 +206,7 @@ public class UserAuthenticator implements Authenticator {
 
         SecurityContextHolder.getContext().setAuthentication(authenticator);
         try {
-            UserDTO user = userManager.getByName(userName);
+            UserDTO user = userDAO.getByName(userName);
             return user;
         } finally {
             SecurityContextHolder.getContext().setAuthentication(null);
