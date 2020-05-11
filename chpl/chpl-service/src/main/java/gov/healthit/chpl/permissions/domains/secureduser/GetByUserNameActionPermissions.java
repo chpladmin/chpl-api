@@ -10,7 +10,7 @@ public class GetByUserNameActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess() {
-        return false;
+        return !getResourcePermissions().isUserAnonymous();
     }
 
     @Override
