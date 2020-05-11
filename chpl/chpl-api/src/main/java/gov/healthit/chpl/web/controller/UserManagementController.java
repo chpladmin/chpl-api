@@ -208,9 +208,9 @@ public class UserManagementController {
     public String authorizeUser(@RequestBody final AuthorizeCredentials credentials)
             throws InvalidArgumentsException, JWTCreationException, UserRetrievalException, EntityRetrievalException {
 
-        if (StringUtils.isEmpty(credentials.getHash())) {
-            throw new InvalidArgumentsException("User key is required.");
-        }
+        //if (StringUtils.isEmpty(credentials.getHash())) {
+        //    throw new InvalidArgumentsException("User key is required.");
+        //}
 
         JWTAuthenticatedUser loggedInUser = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
         if (loggedInUser == null
