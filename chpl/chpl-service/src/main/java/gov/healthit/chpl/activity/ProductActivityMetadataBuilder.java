@@ -3,8 +3,6 @@ package gov.healthit.chpl.activity;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,10 +15,11 @@ import gov.healthit.chpl.domain.activity.ProductActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component("productActivityMetadataBuilder")
 public class ProductActivityMetadataBuilder extends ActivityMetadataBuilder {
-    private static Logger LOGGER = LogManager.getLogger(ProductActivityMetadataBuilder.class);
     private ObjectMapper jsonMapper;
     private DeveloperDAO developerDao;
 
@@ -53,7 +52,7 @@ public class ProductActivityMetadataBuilder extends ActivityMetadataBuilder {
                 try {
                     origProducts = jsonMapper.readValue(activity.getOriginalData(),
                             jsonMapper.getTypeFactory().constructCollectionType(List.class, ProductDTO.class));
-                } catch (Exception ignore) {}
+                } catch (Exception ignore) { }
             }
 
             if (origProduct == null && origProducts == null) {
@@ -68,13 +67,13 @@ public class ProductActivityMetadataBuilder extends ActivityMetadataBuilder {
             try {
                 newProduct =
                     jsonMapper.readValue(activity.getNewData(), ProductDTO.class);
-            } catch (Exception ignore) {}
+            } catch (Exception ignore) { }
 
             if (newProduct == null) {
                 try {
                     newProducts = jsonMapper.readValue(activity.getNewData(),
                             jsonMapper.getTypeFactory().constructCollectionType(List.class, ProductDTO.class));
-                } catch (Exception ignore) {}
+                } catch (Exception ignore) { }
             }
 
             if (newProduct == null && newProducts == null) {

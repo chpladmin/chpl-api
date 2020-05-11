@@ -3,8 +3,6 @@ package gov.healthit.chpl.activity;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,10 +17,11 @@ import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component("versionActivityMetadataBuilder")
 public class VersionActivityMetadataBuilder extends ActivityMetadataBuilder {
-    private static Logger LOGGER = LogManager.getLogger(VersionActivityMetadataBuilder.class);
     private ObjectMapper jsonMapper;
     private DeveloperDAO developerDao;
     private ProductDAO productDao;
