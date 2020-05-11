@@ -1,5 +1,27 @@
 # Release Notes
 
+## Version 25.3.0
+_4 May 2020_
+
+### Features
+* Add inactive date, decertified date, and ids to generated CSVs
+* Add /activity/metadata/beta/products endpoint
+* Send individual emails when developer ban may be triggered
+* Add comma between developer address line 1 and line 2 in CSV download
+* Add 'Activity Level' column to questionable activity report
+* Add /activity/metadata/beta/developers endpoint
+
+### Flagged Features
+* Require d12 and d13 when editing certain 2015 listings in certain scenarios
+
+### Bug Fixes
+* Remove requirement for d4 from certain a criteria
+* ACBs receive error when editing a listing with removed MACRA measures
+* Questionable URL Report Generator not sending report
+* Use correct URL for listing report in questionable activity email
+
+---
+
 ## Version 25.2.0
 _20 April 2020_
 

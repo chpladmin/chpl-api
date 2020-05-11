@@ -173,32 +173,34 @@ public class SurveillanceManager extends SecuredManager {
         CertifiedProductSearchDetails beforeListing = cpDetailsManager
                 .getCertifiedProductDetails(survToUpdate.getCertifiedProduct().getId());
 
-        Optional<Surveillance> foundSurv = beforeListing.getSurveillance().stream()
+        Optional<Surveillance> beforeSurv = beforeListing.getSurveillance().stream()
             .filter(surv -> surv.getId().equals(survToUpdate.getId()))
             .findFirst();
-        validateSurveillanceUpdate(foundSurv.isPresent() ? foundSurv.get() : null, survToUpdate);
+        validateSurveillanceUpdate(beforeSurv.isPresent() ? beforeSurv.get() : null, survToUpdate);
         if (survToUpdate.getErrorMessages() != null && survToUpdate.getErrorMessages().size() > 0) {
             throw new ValidationException(survToUpdate.getErrorMessages(), null);
         }
 
-        SurveillanceEntity dbSurvEntity = new SurveillanceEntity();
-        try {
-            dbSurvEntity = survDao.getSurveillanceById(survToUpdate.getId());
-        } catch (final NullPointerException e) {
-            LOGGER.debug("Surveillance id is null");
+        if (beforeSurv.isPresent() && !beforeSurv.get().matches(survToUpdate)) {
+            SurveillanceEntity dbSurvEntity = new SurveillanceEntity();
+            try {
+                dbSurvEntity = survDao.getSurveillanceById(survToUpdate.getId());
+            } catch (final NullPointerException e) {
+                LOGGER.debug("Surveillance id is null");
+            }
+            Surveillance dbSurv = new Surveillance();
+            dbSurv.setId(dbSurvEntity.getId());
+            UserPermissionDTO upDto = userPermissionDao.findById(dbSurvEntity.getUserPermissionId());
+            dbSurv.setAuthority(upDto.getAuthority());
+            checkSurveillanceAuthority(dbSurv);
+            try {
+                survDao.updateSurveillance(survToUpdate);
+            } catch (final UserPermissionRetrievalException ex) {
+                LOGGER.error("Error updating surveillance.", ex);
+                throw ex;
+            }
+            logSurveillanceUpdateActivity(beforeListing);
         }
-        Surveillance dbSurv = new Surveillance();
-        dbSurv.setId(dbSurvEntity.getId());
-        UserPermissionDTO upDto = userPermissionDao.findById(dbSurvEntity.getUserPermissionId());
-        dbSurv.setAuthority(upDto.getAuthority());
-        checkSurveillanceAuthority(dbSurv);
-        try {
-            survDao.updateSurveillance(survToUpdate);
-        } catch (final UserPermissionRetrievalException ex) {
-            LOGGER.error("Error updating surveillance.", ex);
-            throw ex;
-        }
-        logSurveillanceUpdateActivity(beforeListing);
     }
 
     @Transactional

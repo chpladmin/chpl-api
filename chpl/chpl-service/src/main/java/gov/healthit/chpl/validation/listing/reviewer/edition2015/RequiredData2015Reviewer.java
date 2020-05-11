@@ -42,8 +42,16 @@ import gov.healthit.chpl.validation.listing.reviewer.RequiredDataReviewer;
 @Component("requiredData2015Reviewer")
 public class RequiredData2015Reviewer extends RequiredDataReviewer {
     private static final String[] A_RELATED_CERTS = {
-            "170.315 (d)(1)", "170.315 (d)(2)", "170.315 (d)(3)", "170.315 (d)(4)", "170.315 (d)(5)", "170.315 (d)(6)",
+            "170.315 (d)(1)", "170.315 (d)(2)", "170.315 (d)(3)", "170.315 (d)(5)", "170.315 (d)(6)",
             "170.315 (d)(7)"
+    };
+
+    private static final String[] A_CERT_EXCEPTIONS = {
+            "170.315 (a)(4)", "170.315 (a)(9)", "170.315 (a)(10)", "170.315 (a)(13)"
+    };
+
+    private static final String[] A_RELATED_CERTS_EXCEPTION = {
+            "170.315 (d)(4)"
     };
 
     private static final String[] B_RELATED_CERTS = {
@@ -137,11 +145,21 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         }
 
         List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
-        List<String> errors = validationUtils.checkClassOfCriteriaForErrors("170.315 (a)", attestedCriteria,
+        List<String> errors;
+        List<String> warnings;
+
+        errors = validationUtils.checkClassOfCriteriaForErrors("170.315 (a)", attestedCriteria,
                 Arrays.asList(A_RELATED_CERTS));
         listing.getErrorMessages().addAll(errors);
-        List<String> warnings = validationUtils.checkClassOfCriteriaForWarnings("170.315 (a)", attestedCriteria,
+        warnings = validationUtils.checkClassOfCriteriaForWarnings("170.315 (a)", attestedCriteria,
                 Arrays.asList(A_RELATED_CERTS));
+        addListingWarningsByPermission(listing, warnings);
+
+        errors = validationUtils.checkClassSubsetOfCriteriaForErrors("170.315 (a)", attestedCriteria,
+                Arrays.asList(A_RELATED_CERTS_EXCEPTION), Arrays.asList(A_CERT_EXCEPTIONS));
+        listing.getErrorMessages().addAll(errors);
+        warnings = validationUtils.checkClassSubsetOfCriteriaForWarnings("170.315 (a)", attestedCriteria,
+                Arrays.asList(A_RELATED_CERTS_EXCEPTION), Arrays.asList(A_CERT_EXCEPTIONS));
         addListingWarningsByPermission(listing, warnings);
 
         errors = validationUtils.checkClassOfCriteriaForErrors("170.315 (b)", attestedCriteria,
