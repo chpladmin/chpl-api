@@ -4,11 +4,27 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.acls.domain.BasePermission;
+import org.springframework.security.acls.domain.ObjectIdentityImpl;
+import org.springframework.security.acls.domain.PrincipalSid;
+import org.springframework.security.acls.model.MutableAcl;
+import org.springframework.security.acls.model.MutableAclService;
+import org.springframework.security.acls.model.NotFoundException;
+import org.springframework.security.acls.model.ObjectIdentity;
+import org.springframework.security.acls.model.Permission;
+import org.springframework.security.acls.model.Sid;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,10 +35,10 @@ import com.nulabinc.zxcvbn.Zxcvbn;
 
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.dao.auth.UserResetTokenDAO;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserResetTokenDTO;
-import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserCreationException;
@@ -30,30 +46,40 @@ import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.manager.impl.SecuredManager;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Service
 @Log4j2
-public class UserManager {
+public class UserManager extends SecuredManager {
     public static int MIN_PASSWORD_STRENGTH = 3;
 
     private Environment env;
-    private SecuredUserManager securedUserManager;
     private UserDAO userDAO;
     private UserResetTokenDAO userResetTokenDAO;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private MutableAclService mutableAclService;
+    private ErrorMessageUtil errorMessageUtil;
+    private ActivityManager activityManager;
 
     @Autowired
-    public UserManager(SecuredUserManager securedUserManager, Environment env, UserDAO userDAO,
-            UserResetTokenDAO userResetTokenDAO, BCryptPasswordEncoder bCryptPasswordEncoder) {
-        this.securedUserManager = securedUserManager;
+    public UserManager(Environment env, UserDAO userDAO,
+            UserResetTokenDAO userResetTokenDAO, BCryptPasswordEncoder bCryptPasswordEncoder,
+            MutableAclService mutableAclService, ErrorMessageUtil errorMessageUtil, ActivityManager activityManager) {
         this.env = env;
         this.userDAO = userDAO;
         this.userResetTokenDAO = userResetTokenDAO;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.mutableAclService = mutableAclService;
+        this.errorMessageUtil = errorMessageUtil;
+        this.activityManager = activityManager;
     }
 
     @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).CREATE)")
     public UserDTO create(UserDTO userDto, String password)
             throws UserCreationException, UserRetrievalException {
 
@@ -64,80 +90,118 @@ public class UserManager {
                     strength.getScore(), strength.getCrackTimesDisplay().getOfflineFastHashing1e10PerSecond());
             throw new UserCreationException("Password is not strong enough");
         }
-        String encodedPassword = encodePassword(password);
-        UserDTO createdUser = securedUserManager.create(userDto, encodedPassword);
-        return createdUser;
+        UserDTO newUser = userDAO.create(userDto, encodePassword(password));
+
+        // Grant the user administrative permission over itself.
+        addAclPermission(newUser, new PrincipalSid(newUser.getSubjectName()), BasePermission.ADMINISTRATION);
+
+        return newUser;
     }
 
     @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE, #user)")
     public UserDTO update(User user)
             throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException,
             ValidationException {
-        return securedUserManager.update(user);
+        UserDTO before = getById(user.getUserId());
+        UserDTO toUpdate = UserDTO.builder()
+                .id(before.getId())
+                .passwordResetRequired(user.getPasswordResetRequired())
+                .accountEnabled(user.getAccountEnabled())
+                .accountExpired(before.isAccountExpired())
+                .accountLocked(user.getAccountLocked())
+                .credentialsExpired(user.getCredentialsExpired())
+                .email(user.getEmail())
+                .failedLoginCount(before.getFailedLoginCount())
+                .friendlyName(user.getFriendlyName())
+                .fullName(user.getFullName())
+                .passwordResetRequired(user.getPasswordResetRequired())
+                .permission(before.getPermission())
+                .phoneNumber(user.getPhoneNumber())
+                .signatureDate(before.getSignatureDate())
+                .subjectName(before.getSubjectName())
+                .title(user.getTitle())
+                .lastLoggedInDate(before.getLastLoggedInDate())
+                .build();
+        return update(toUpdate);
     }
 
     @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE, #user)")
     public UserDTO update(UserDTO user)
             throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException,
             ValidationException {
-        return securedUserManager.update(user);
+        Optional<ValidationException> validationException = validateUser(user);
+        if (validationException.isPresent()) {
+            throw validationException.get();
+        }
+
+        UserDTO before = getById(user.getId());
+        UserDTO updated = userDAO.update(user);
+
+        String activityDescription = "User " + user.getSubjectName() + " was updated.";
+        activityManager.addActivity(ActivityConcept.USER, before.getId(), activityDescription, before,
+                updated);
+
+        return updated;
     }
 
     @Transactional
-    private void updateContactInfo(UserEntity user) {
-        securedUserManager.updateContactInfo(user);
-    }
-
-    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).DELETE)")
     public void delete(UserDTO user)
             throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
-        securedUserManager.delete(user);
+        // remove all ACLs for this user
+        // should only be one - for themselves
+        ObjectIdentity oid = new ObjectIdentityImpl(UserDTO.class, user.getId());
+        mutableAclService.deleteAcl(oid, false);
+
+        // now delete the user
+        userDAO.delete(user.getId());
     }
 
     @Transactional
-    public void delete(String userName)
-            throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
-
-        UserDTO user = securedUserManager.getBySubjectName(userName);
-        if (user == null) {
-            throw new UserRetrievalException("User not found");
-        } else {
-            delete(user);
-        }
-    }
-
-    @Transactional
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_ALL, filterObject)")
     public List<UserDTO> getAll() {
-        return securedUserManager.getAll();
+        return userDAO.findAll();
     }
 
-    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_PERMISSION)")
     public List<UserDTO> getUsersWithPermission(String permissionName) {
-        return securedUserManager.getUsersWithPermission(permissionName);
+        return userDAO.getUsersWithPermission(permissionName);
     }
 
-    @Transactional
+    @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_ID, returnObject)")
     public UserDTO getById(Long id) throws UserRetrievalException {
-        return securedUserManager.getById(id);
+        return userDAO.getById(id);
     }
 
     @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).FAILED_LOGIN_COUNT)")
     public void updateFailedLoginCount(UserDTO userToUpdate) throws UserRetrievalException {
-        securedUserManager.updateFailedLoginCount(userToUpdate);
+        userDAO.updateFailedLoginCount(userToUpdate.getSubjectName(), userToUpdate.getFailedLoginCount());
         String maxLoginsStr = env.getProperty("authMaximumLoginAttempts");
         int maxLogins = Integer.parseInt(maxLoginsStr);
 
         if (userToUpdate.getFailedLoginCount() >= maxLogins) {
             userToUpdate.setAccountLocked(true);
-            securedUserManager.updateAccountLockedStatus(userToUpdate);
+            userDAO.updateAccountLockedStatus(userToUpdate.getSubjectName(), userToUpdate.isAccountLocked());
         }
     }
 
     @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE_PASSWORD, #user)")
     public void updateUserPassword(String userName, String password) throws UserRetrievalException {
         String encodedPassword = encodePassword(password);
-        UserDTO userToUpdate = securedUserManager.getBySubjectName(userName);
-        securedUserManager.updatePassword(userToUpdate, encodedPassword);
+        UserDTO userToUpdate = userDAO.getByName(userName);
+        userDAO.updatePassword(userToUpdate.getSubjectName(), encodedPassword);
     }
 
     @Transactional
@@ -168,14 +232,6 @@ public class UserManager {
         return userResetToken;
     }
 
-    // checks that the token was made in the last x hours
-    private boolean isTokenValid(UserResetTokenDTO userResetToken) {
-        Date checkDate = userResetToken.getCreationDate();
-        Instant now = Instant.now();
-        return (!checkDate.toInstant().isBefore(
-                now.minus(Integer.parseInt(env.getProperty("resetLinkExpirationTimeInHours")), ChronoUnit.HOURS)));
-    }
-
     @Transactional
     public boolean authorizePasswordReset(String token) {
         UserResetTokenDTO userResetToken = userResetTokenDAO.findByAuthToken(token);
@@ -191,26 +247,30 @@ public class UserManager {
         userResetTokenDAO.deletePreviousUserTokens(userResetToken.getUser().getId());
     }
 
-    public String encodePassword(String password) {
-        String encodedPassword = bCryptPasswordEncoder.encode(password);
-        return encodedPassword;
-    }
-
     public String getEncodedPassword(UserDTO user) throws UserRetrievalException {
         return userDAO.getEncodedPassword(user);
     }
 
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME)")
+    @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME, returnObject)")
     public UserDTO getByName(String userName) throws UserRetrievalException {
-        UserDTO dto = securedUserManager.getBySubjectName(userName);
-        return dto;
+        return getByNameUnsecured(userName);
     }
 
     public UserDTO getByNameUnsecured(String userName) throws UserRetrievalException {
         return userDAO.getByName(userName);
     }
 
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME)")
+    @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME, returnObject)")
     public User getUserInfo(String userName) throws UserRetrievalException {
-        UserDTO user = securedUserManager.getBySubjectName(userName);
+        UserDTO user = getByNameUnsecured(userName);
         return new User(user);
     }
 
@@ -233,5 +293,50 @@ public class UserManager {
     public void updateLastLoggedInDate(UserDTO user) throws UserRetrievalException {
         user.setLastLoggedInDate(new Date());
         userDAO.update(user);
+    }
+
+    private void addAclPermission(UserDTO user, Sid recipient, Permission permission) {
+        MutableAcl acl;
+        ObjectIdentity oid = new ObjectIdentityImpl(UserDTO.class, user.getId());
+        try {
+            acl = (MutableAcl) mutableAclService.readAclById(oid);
+        } catch (NotFoundException nfe) {
+            acl = mutableAclService.createAcl(oid);
+        }
+        acl.insertAce(acl.getEntries().size(), permission, recipient, true);
+        mutableAclService.updateAcl(acl);
+    }
+
+    private Optional<ValidationException> validateUser(UserDTO user) {
+        Set<String> errors = new HashSet<String>();
+
+        if (StringUtils.isEmpty(user.getFullName())) {
+            errors.add(errorMessageUtil.getMessage("user.fullName.required"));
+        }
+        if (StringUtils.isEmpty(user.getEmail())) {
+            errors.add(errorMessageUtil.getMessage("user.email.required"));
+        }
+        if (StringUtils.isEmpty(user.getPhoneNumber())) {
+            errors.add(errorMessageUtil.getMessage("user.phone.required"));
+        }
+
+        if (errors.size() > 0) {
+            return Optional.of(new ValidationException(errors));
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    // checks that the token was made in the last x hours
+    private boolean isTokenValid(UserResetTokenDTO userResetToken) {
+        Date checkDate = userResetToken.getCreationDate();
+        Instant now = Instant.now();
+        return (!checkDate.toInstant().isBefore(
+                now.minus(Integer.parseInt(env.getProperty("resetLinkExpirationTimeInHours")), ChronoUnit.HOURS)));
+    }
+
+    private String encodePassword(String password) {
+        String encodedPassword = bCryptPasswordEncoder.encode(password);
+        return encodedPassword;
     }
 }
