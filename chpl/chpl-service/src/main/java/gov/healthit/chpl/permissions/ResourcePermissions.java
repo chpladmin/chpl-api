@@ -2,6 +2,7 @@ package gov.healthit.chpl.permissions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
@@ -308,8 +309,8 @@ public class ResourcePermissions {
      */
     @Transactional(readOnly = true)
     public boolean hasPermissionOnUser(UserDTO user) {
-        if (isUserRoleAdmin() || isUserRoleOnc()
-                || permissionEvaluator.hasPermission(AuthUtil.getCurrentUser(), user, BasePermission.ADMINISTRATION)) {
+
+        if (isUserRoleAdmin() || isUserRoleOnc() || doesCurrentUserHaveExplicitAdminToSubject(user)) {
             return true;
         } else if (isUserRoleAcbAdmin()) {
             // is the user being checked on any of the same ACB(s) that the
@@ -349,6 +350,14 @@ public class ResourcePermissions {
             }
         }
         return false;
+    }
+
+    private boolean doesCurrentUserHaveExplicitAdminToSubject(UserDTO subject) {
+        if (Objects.nonNull(AuthUtil.getCurrentUser())) {
+            return permissionEvaluator.hasPermission(AuthUtil.getCurrentUser(), subject, BasePermission.ADMINISTRATION);
+        } else {
+            return false;
+        }
     }
 
     public boolean isUserRoleAdmin() {
