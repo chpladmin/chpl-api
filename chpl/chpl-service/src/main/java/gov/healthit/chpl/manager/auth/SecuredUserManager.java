@@ -197,6 +197,8 @@ public class SecuredUserManager extends SecuredManager {
         userDAO.updateAccountLockedStatus(user.getSubjectName(), user.isAccountLocked());
     }
 
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME)")
     @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME, returnObject)")
     public UserDTO getBySubjectName(String userName) throws UserRetrievalException {
