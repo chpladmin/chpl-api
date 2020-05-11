@@ -95,6 +95,8 @@ public class SecuredUserManager extends SecuredManager {
         return updated;
     }
 
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE, #user)")
     public UserDTO update(User user)
             throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException,
             ValidationException {
