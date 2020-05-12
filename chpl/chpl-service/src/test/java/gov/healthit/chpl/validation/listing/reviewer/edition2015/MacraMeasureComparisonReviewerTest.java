@@ -23,6 +23,10 @@ public class MacraMeasureComparisonReviewerTest {
 
     private MacraMeasureComparisonReviewer reviewer;
 
+    private static final long EDITION_2015_A_1 = 1L;
+    private static final long GAP_EP_ID = 87L;
+    private static final long GAP_EH_CAH = 88L;
+
     @Before
     public void before() {
         resourcePermissions = Mockito.mock(ResourcePermissions.class);
@@ -229,4 +233,42 @@ public class MacraMeasureComparisonReviewerTest {
         assertEquals(2, updatedListing.getErrorMessages().size());
     }
 
+    @Test
+    public void review_UserIsAcbAndAddingNonRemovedMeasure_NoMessages() {
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+
+        CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(EDITION_2015_A_1)
+                                .number("170.315 (a)(1)")
+                                .build())
+                        .build())
+                .build();
+
+        CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(EDITION_2015_A_1)
+                                .number("170.315 (a)(1)")
+                                .build())
+                        .g1MacraMeasure(MacraMeasure.builder()
+                                .id(GAP_EP_ID)
+                                .abbreviation("GAP-EP")
+                                .removed(false)
+                                .build())
+                        .g2MacraMeasure(MacraMeasure.builder()
+                                .id(GAP_EH_CAH)
+                                .abbreviation("GAP-EH/CAH")
+                                .removed(false)
+                                .build())
+                        .build())
+                .build();
+        updatedListing.setErrorMessages(new HashSet<String>());
+
+        reviewer.review(existingListing, updatedListing);
+
+        assertEquals(0, updatedListing.getErrorMessages().size());
+    }
 }
