@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.mail.MessagingException;
@@ -74,6 +75,7 @@ public class UserManagementController {
     private FF4j ff4j;
     private Environment env;
     private ErrorMessageUtil errorMessageUtil;
+
 
     @Autowired
     public UserManagementController(UserManager userManager, InvitationManager invitationManager, Authenticator authenticator, ActivityManager activityManager, FF4j ff4j, Environment env, ErrorMessageUtil errorMessageUtil) {
@@ -208,9 +210,9 @@ public class UserManagementController {
     public String authorizeUser(@RequestBody final AuthorizeCredentials credentials)
             throws InvalidArgumentsException, JWTCreationException, UserRetrievalException, EntityRetrievalException {
 
-        //if (StringUtils.isEmpty(credentials.getHash())) {
-        //    throw new InvalidArgumentsException("User key is required.");
-        //}
+        if (StringUtils.isEmpty(credentials.getHash())) {
+            throw new InvalidArgumentsException("User key is required.");
+        }
 
         JWTAuthenticatedUser loggedInUser = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
         if (loggedInUser == null
@@ -226,39 +228,22 @@ public class UserManagementController {
                             + "it is assigned.");
         }
 
-        String jwtToken = null;
-        if (loggedInUser == null) {
-            //there's no logged in user - they are logging in at the same time
-            //they are accepting the invitation for additional access
-            UserDTO userToUpdate = authenticator.getUser(credentials);
-            if (userToUpdate == null) {
-                throw new UserRetrievalException(
-                        "The user " + credentials.getUserName() + " could not be authenticated.");
-            }
-            //invitation manager method has security on it
-            //so it cannot be called without some user in the security context;
-            //in this case the user is logging in at the same time as accepting the invitation
-            //so there will not be any user in the security context until the call completes
-            //put in this one so that the permissions security can work
-            Authentication invitedUserAuthenticator =
-                    AuthUtil.getInvitedUserAuthenticator(invitation.getLastModifiedUserId());
+        // Log the user in, if they are not logged in
+        if (Objects.isNull(loggedInUser)) {
+            authenticator.authenticate(credentials);
+            UserDTO user = authenticator.getUser(credentials);
+            Authentication invitedUserAuthenticator = AuthUtil.getInvitedUserAuthenticator(user.getId());
             SecurityContextHolder.getContext().setAuthentication(invitedUserAuthenticator);
-            invitationManager.updateUserFromInvitation(new UserInvitationDTO(userToUpdate, invitation));
-            SecurityContextHolder.getContext().setAuthentication(null);
-            jwtToken = authenticator.getJWT(credentials);
-        } else {
-            // add authorization to the currently logged in user
-            UserDTO userToUpdate = userManager.getById(loggedInUser.getId());
-            if (loggedInUser.getImpersonatingUser() != null) {
-                userToUpdate = loggedInUser.getImpersonatingUser();
-            }
-            invitationManager.updateUserFromInvitation(new UserInvitationDTO(userToUpdate, invitation));
-            UserDTO updatedUser = userManager.getById(userToUpdate.getId());
-            jwtToken = authenticator.getJWT(updatedUser);
+            loggedInUser = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
         }
 
-        String jwtJSON = "{\"token\": \"" + jwtToken + "\"}";
-        return jwtJSON;
+        UserDTO userToUpdate = userManager.getById(loggedInUser.getId());
+        if (loggedInUser.getImpersonatingUser() != null) {
+            userToUpdate = loggedInUser.getImpersonatingUser();
+        }
+        invitationManager.updateUserFromInvitation(new UserInvitationDTO(userToUpdate, invitation));
+        UserDTO updatedUser = userManager.getById(userToUpdate.getId());
+        return "{\"token\": \"" + authenticator.getJWT(updatedUser) + "\"}";
     }
 
     @ApiOperation(value = "Invite a user to the CHPL.",

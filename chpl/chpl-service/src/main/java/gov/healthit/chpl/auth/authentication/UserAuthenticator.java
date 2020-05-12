@@ -53,6 +53,18 @@ public class UserAuthenticator implements Authenticator {
         this.userDetailsChecker = userDetailsChecker;
     }
 
+    @Transactional
+    public String authenticate(LoginCredentials credentials)
+            throws JWTCreationException, UserRetrievalException {
+
+        String jwt = getJWT(credentials);
+        UserDTO user = getUser(credentials);
+        if (user != null && user.isPasswordResetRequired()) {
+            throw new UserRetrievalException("The user is required to change their password on next log in.");
+        }
+        return jwt;
+    }
+
     @Override
     public UserDTO getUser(final LoginCredentials credentials)
             throws BadCredentialsException, AccountStatusException, UserRetrievalException {
