@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
@@ -25,6 +26,10 @@ public class ListingCountDataFilter {
 
     @Autowired
     private FF4j ff4j;
+
+    public ListingCountDataFilter() {
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+    }
 
     public List<CertifiedProductFlatSearchResult> filterData(
             final List<CertifiedProductFlatSearchResult> certifiedProducts) {
