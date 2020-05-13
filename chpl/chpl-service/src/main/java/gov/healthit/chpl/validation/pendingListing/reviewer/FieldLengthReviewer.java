@@ -51,7 +51,11 @@ public class FieldLengthReviewer implements Reviewer {
         checkField(listing, listing.getDeveloperEmail(), "developerEmail", ERROR);
         checkField(listing, listing.getDeveloperPhoneNumber(), "developerPhone", ERROR);
         checkField(listing, listing.getDeveloperContactName(), "developerContactName", ERROR);
-
+        listing.getCertificationCriterion().stream()
+                .flatMap(pendingCertificationResult -> pendingCertificationResult.getAdditionalSoftware().stream())
+                .forEach(additionalSoftware -> {
+                    checkField(listing, additionalSoftware.getGrouping(), "cpSourceGrouping", ERROR);
+                });
     }
 
     private void checkField(final PendingCertifiedProductDTO listing, final Object field, final String errorField, String type) {
