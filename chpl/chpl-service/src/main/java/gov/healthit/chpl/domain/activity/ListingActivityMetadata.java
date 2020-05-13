@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper=true)
 public class ListingActivityMetadata extends ActivityMetadata {
     private static final long serialVersionUID = 5473773376581297578L;
 

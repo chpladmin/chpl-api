@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -19,25 +20,24 @@ public class FieldLengthReviewer implements Reviewer {
 
     @Override
     public void review(PendingCertifiedProductDTO listing) {
-        checkField(listing, listing.getCertificationEditionId(), "certificationEdition", ERROR);
+        checkField(listing, listing.getCertificationEdition(), "certificationEdition", ERROR);
         checkField(listing, listing.getAcbCertificationId(), "acbCertificationId", ERROR);
-        checkField(listing, listing.getCertificationBodyId(), "certifyingAcb", ERROR);
-        ArrayList<PendingCertifiedProductTargetedUserDTO> toRemove = new ArrayList<PendingCertifiedProductTargetedUserDTO>();
+        checkField(listing, listing.getCertificationBodyName(), "certifyingAcb", ERROR);
+        ArrayList<PendingCertifiedProductTargetedUserDTO> targetedUserToRemove = new ArrayList<PendingCertifiedProductTargetedUserDTO>();
         for (PendingCertifiedProductTargetedUserDTO tu : listing.getTargetedUsers()) {
             checkField(listing, tu.getName(), "targetedUser", WARNING);
             if (listing.getWarningMessages().contains(msgUtil.getMessage("listing.targetedUser.maxlength",
                     String.valueOf(msgUtil.getMessageAsInteger("maxLength.targetedUser")), tu.getName()))) {
-                toRemove.add(tu);
+                targetedUserToRemove.add(tu);
             }
         }
-        listing.getTargetedUsers().removeAll(toRemove);
+        listing.getTargetedUsers().removeAll(targetedUserToRemove);
         checkField(listing, listing.getUniqueId(), "uniqueCHPLId", ERROR);
         checkField(listing, listing.getDeveloperName(), "developerName", ERROR);
         checkField(listing, listing.getProductName(), "productName", ERROR);
         checkField(listing, listing.getProductVersion(), "productVersion", ERROR);
         if (listing.getDeveloperAddress() != null) {
             checkField(listing, listing.getDeveloperAddress().getStreetLineOne(), "developerStreetAddress", ERROR);
-            checkField(listing, listing.getDeveloperAddress().getStreetLineTwo(), "developerStreetAddressTwo", ERROR);
             checkField(listing, listing.getDeveloperAddress().getCity(), "developerCity", ERROR);
             checkField(listing, listing.getDeveloperAddress().getState(), "developerState", ERROR);
             checkField(listing, listing.getDeveloperAddress().getZipcode(), "developerZip", ERROR);
@@ -51,6 +51,9 @@ public class FieldLengthReviewer implements Reviewer {
         checkField(listing, listing.getDeveloperEmail(), "developerEmail", ERROR);
         checkField(listing, listing.getDeveloperPhoneNumber(), "developerPhone", ERROR);
         checkField(listing, listing.getDeveloperContactName(), "developerContactName", ERROR);
+        for (PendingCertifiedProductQmsStandardDTO qms : listing.getQmsStandards()) {
+            checkField(listing, qms.getName(), "qmsStandard", ERROR);
+        }
         listing.getCertificationCriterion().stream()
                 .flatMap(pendingCertificationResult -> pendingCertificationResult.getAdditionalSoftware().stream())
                 .forEach(additionalSoftware -> {
