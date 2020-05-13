@@ -40,6 +40,8 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class ResourcePermissions {
+    private static final String ROLE_ADMIN = "ROLE_ADMIN";
+
     private PermissionEvaluator permissionEvaluator;
     private UserCertificationBodyMapDAO userCertificationBodyMapDAO;
     private UserTestingLabMapDAO userTestingLabMapDAO;
@@ -302,7 +304,7 @@ public class ResourcePermissions {
      * Onc can access all users. Acb can access any other ROLE_ACB user who is also on their ACB. Atl can access any
      * other ROLE_ATL user who is also on their ATL. Developer Admin can access any other ROLE_DEVELOPER user who is
      * also on their developer. All users can access themselves.
-     * 
+     *
      * @param user
      *            user to check permissions on
      * @return
@@ -310,8 +312,10 @@ public class ResourcePermissions {
     @Transactional(readOnly = true)
     public boolean hasPermissionOnUser(UserDTO user) {
 
-        if (isUserRoleAdmin() || isUserRoleOnc() || doesCurrentUserHaveExplicitAdminToSubject(user)) {
+        if (isUserRoleAdmin() || doesCurrentUserHaveExplicitAdminToSubject(user)) {
             return true;
+        } else if (isUserRoleOnc()) {
+            return !getRoleByUserId(user.getId()).getAuthority().equalsIgnoreCase(ROLE_ADMIN);
         } else if (isUserRoleAcbAdmin()) {
             // is the user being checked on any of the same ACB(s) that the
             // current user is on?
