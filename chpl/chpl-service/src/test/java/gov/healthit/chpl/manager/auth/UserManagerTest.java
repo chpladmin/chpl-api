@@ -46,6 +46,7 @@ public class UserManagerTest {
     private static final String MAX_FAILED_LOGIN_ATTEMPTS = "3";
     private static final String RESET_LINK_EXPIRATION = "1";
     private static final int FIVE_HOURS_AGO = -5;
+    private static final int FOUR_FAILED_LOGIN_ATTEMPTS = 4;
 
     private UserDAO userDAO;
     private MutableAclService mutableAclService;
@@ -275,7 +276,7 @@ public class UserManagerTest {
         UserManager userManager = new UserManager(env, userDAO, null, null, null, null, null);
 
         UserDTO user = getUserDTO(1L);
-        user.setFailedLoginCount(4);
+        user.setFailedLoginCount(FOUR_FAILED_LOGIN_ATTEMPTS);
         userManager.updateFailedLoginCount(user);
 
         Mockito.verify(userDAO).updateFailedLoginCount(ArgumentMatchers.anyString(), ArgumentMatchers.anyInt());
