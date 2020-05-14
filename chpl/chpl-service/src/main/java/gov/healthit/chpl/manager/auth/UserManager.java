@@ -81,7 +81,7 @@ public class UserManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).CREATE)")
     public UserDTO create(UserDTO userDto, String password)
-            throws UserCreationException, UserRetrievalException {
+            throws UserCreationException {
 
         Strength strength = getPasswordStrength(userDto, password);
         if (strength.getScore() < UserManager.MIN_PASSWORD_STRENGTH) {
@@ -336,7 +336,6 @@ public class UserManager extends SecuredManager {
     }
 
     private String encodePassword(String password) {
-        String encodedPassword = bCryptPasswordEncoder.encode(password);
-        return encodedPassword;
+        return bCryptPasswordEncoder.encode(password);
     }
 }
