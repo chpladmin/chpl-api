@@ -16,6 +16,10 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.TestStandardDuplicateReviewer;
 
 public class TestStandardDuplicateReviewerTest {
+    private static final String CRITERION_NUMBER = "170.315 (a)(1)";
+    private static final String ERR_MSG =
+            "Certification %s contains duplicate Test Standard: Number '%s'. The duplicates have been removed.";
+
     private ErrorMessageUtil msgUtil;
     private TestStandardDuplicateReviewer reviewer;
 
@@ -25,8 +29,7 @@ public class TestStandardDuplicateReviewerTest {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateTestStandard"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-                .thenAnswer(i -> String.format("Certification %s contains duplicate Test Standard: Number '%s'.  The duplicates have been removed.",
-                        i.getArgument(1), i.getArgument(2)));
+                .thenAnswer(i -> String.format(ERR_MSG, i.getArgument(1), i.getArgument(2)));
         reviewer = new TestStandardDuplicateReviewer(msgUtil);
     }
 
@@ -48,6 +51,9 @@ public class TestStandardDuplicateReviewerTest {
         reviewer.review(listing, cert);
 
         assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(1, listing.getWarningMessages().stream()
+                .filter(warning -> warning.equals(String.format(ERR_MSG, CRITERION_NUMBER, "TestStandard1")))
+                .count());
         assertEquals(1, cert.getTestStandards().size());
     }
 
@@ -108,12 +114,15 @@ public class TestStandardDuplicateReviewerTest {
         reviewer.review(listing, cert);
 
         assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(1, listing.getWarningMessages().stream()
+                .filter(warning -> warning.equals(String.format(ERR_MSG, CRITERION_NUMBER, "TestStandard1")))
+                .count());
         assertEquals(3, cert.getTestStandards().size());
     }
 
     private PendingCertificationResultDTO getCertResult() {
         CertificationCriterionDTO criterion = new CertificationCriterionDTO();
-        criterion.setNumber("170.315 (a)(1)");
+        criterion.setNumber(CRITERION_NUMBER);
         PendingCertificationResultDTO cert = new PendingCertificationResultDTO();
         cert.setCriterion(criterion);
         return cert;

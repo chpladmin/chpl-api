@@ -16,6 +16,10 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.TestFunctionalityDuplicateReviewer;
 
 public class TestFunctionalityDuplicateReviewerTest {
+    private static final String CRITERION_NUMBER = "170.315 (a)(1)";
+    private static final String ERR_MSG =
+            "Certification %s contains duplicate Test Functionality: Number '%s'. The duplicates have been removed.";
+
     private ErrorMessageUtil msgUtil;
     private TestFunctionalityDuplicateReviewer reviewer;
 
@@ -25,8 +29,7 @@ public class TestFunctionalityDuplicateReviewerTest {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateTestFunctionality"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-                .thenAnswer(i -> String.format("Certification %s contains duplicate Test Functionality: Number '%s'. The duplicates have been removed.",
-                        i.getArgument(1), i.getArgument(2)));
+                .thenAnswer(i -> String.format(ERR_MSG, i.getArgument(1), i.getArgument(2)));
         reviewer = new TestFunctionalityDuplicateReviewer(msgUtil);
     }
 
@@ -47,6 +50,9 @@ public class TestFunctionalityDuplicateReviewerTest {
         reviewer.review(listing, cert);
 
         assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(1, listing.getWarningMessages().stream()
+                .filter(warning -> warning.equals(String.format(ERR_MSG, CRITERION_NUMBER, "TestFunc1")))
+                .count());
         assertEquals(1, cert.getTestFunctionality().size());
     }
 
@@ -107,12 +113,15 @@ public class TestFunctionalityDuplicateReviewerTest {
         reviewer.review(listing, cert);
 
         assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(1, listing.getWarningMessages().stream()
+                .filter(warning -> warning.equals(String.format(ERR_MSG, CRITERION_NUMBER, "TestFunc1")))
+                .count());
         assertEquals(3, cert.getTestFunctionality().size());
     }
 
     private PendingCertificationResultDTO getCertResult() {
         CertificationCriterionDTO criterion = new CertificationCriterionDTO();
-        criterion.setNumber("170.315 (a)(1)");
+        criterion.setNumber(CRITERION_NUMBER);
         PendingCertificationResultDTO cert = new PendingCertificationResultDTO();
         cert.setCriterion(criterion);
         return cert;

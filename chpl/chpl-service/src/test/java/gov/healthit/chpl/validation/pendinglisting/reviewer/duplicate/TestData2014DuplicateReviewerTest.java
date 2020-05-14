@@ -10,43 +10,42 @@ import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestProcedureDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.duplicate.TestProcedure2014DuplicateReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.duplicate.TestData2014DuplicateReviewer;
 
-public class TestProcedure2014DuplicateReviewerTest {
+public class TestData2014DuplicateReviewerTest {
     private static final String CRITERION_NUMBER = "170.314 (a)(1)";
     private static final String ERR_MSG =
-            "Certification %s contains duplicate Test Procedure: Version '%s'. The duplicates have been removed.";
+            "Certification %s contains duplicate Test Data: Version '%s'. The duplicates have been removed.";
 
     private ErrorMessageUtil msgUtil;
-    private TestProcedure2014DuplicateReviewer reviewer;
+    private TestData2014DuplicateReviewer reviewer;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateTestProcedure.2014"),
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateTestData.2014"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format(ERR_MSG, i.getArgument(1), i.getArgument(2)));
-        reviewer = new TestProcedure2014DuplicateReviewer(msgUtil);
+        reviewer = new TestData2014DuplicateReviewer(msgUtil);
     }
 
     @Test
     public void review_duplicateExists_warningFoundAndDuplicateRemoved() {
         PendingCertifiedProductDTO listing = new PendingCertifiedProductDTO();
-
         PendingCertificationResultDTO cert = getCertResult();
 
-        PendingCertificationResultTestProcedureDTO testProc1 = new PendingCertificationResultTestProcedureDTO();
-        testProc1.setVersion("v1");
+        PendingCertificationResultTestDataDTO testData1 = new PendingCertificationResultTestDataDTO();
+        testData1.setVersion("v1");
 
-        PendingCertificationResultTestProcedureDTO testProc2 = new PendingCertificationResultTestProcedureDTO();
-        testProc2.setVersion("v1");
+        PendingCertificationResultTestDataDTO testData2 = new PendingCertificationResultTestDataDTO();
+        testData2.setVersion("v1");
 
-        cert.getTestProcedures().add(testProc1);
-        cert.getTestProcedures().add(testProc2);
+        cert.getTestData().add(testData1);
+        cert.getTestData().add(testData2);
 
         reviewer.review(listing, cert);
 
@@ -54,40 +53,39 @@ public class TestProcedure2014DuplicateReviewerTest {
         assertEquals(1, listing.getWarningMessages().stream()
                 .filter(warning -> warning.equals(String.format(ERR_MSG, CRITERION_NUMBER, "v1")))
                 .count());
-        assertEquals(1, cert.getTestProcedures().size());
+        assertEquals(1, cert.getTestData().size());
     }
 
     @Test
     public void review_noDuplicates_noWarning() {
         PendingCertifiedProductDTO listing = new PendingCertifiedProductDTO();
-
         PendingCertificationResultDTO cert = getCertResult();
 
-        PendingCertificationResultTestProcedureDTO testProc1 = new PendingCertificationResultTestProcedureDTO();
-        testProc1.setVersion("v1");
+        PendingCertificationResultTestDataDTO testData1 = new PendingCertificationResultTestDataDTO();
+        testData1.setVersion("v1");
 
-        PendingCertificationResultTestProcedureDTO testProc2 = new PendingCertificationResultTestProcedureDTO();
-        testProc2.setVersion("v2");
+        PendingCertificationResultTestDataDTO testData2 = new PendingCertificationResultTestDataDTO();
+        testData2.setVersion("v2");
 
-        cert.getTestProcedures().add(testProc1);
-        cert.getTestProcedures().add(testProc2);
+        cert.getTestData().add(testData1);
+        cert.getTestData().add(testData2);
 
         reviewer.review(listing, cert);
 
         assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(2, cert.getTestProcedures().size());
+        assertEquals(2, cert.getTestData().size());
     }
 
     @Test
-    public void review_emptyTestProcedures_noWarning() {
+    public void review_emptyTestData_noWarning() {
         PendingCertifiedProductDTO listing = new PendingCertifiedProductDTO();
         PendingCertificationResultDTO cert = getCertResult();
-        cert.getTestProcedures().clear();
+        cert.getTestData().clear();
 
         reviewer.review(listing, cert);
 
         assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(0, cert.getTestProcedures().size());
+        assertEquals(0, cert.getTestData().size());
     }
 
     @Test
@@ -95,22 +93,22 @@ public class TestProcedure2014DuplicateReviewerTest {
         PendingCertifiedProductDTO listing = new PendingCertifiedProductDTO();
         PendingCertificationResultDTO cert = getCertResult();
 
-        PendingCertificationResultTestProcedureDTO testProc1 = new PendingCertificationResultTestProcedureDTO();
-        testProc1.setVersion("v1");
+        PendingCertificationResultTestDataDTO testData1 = new PendingCertificationResultTestDataDTO();
+        testData1.setVersion("v1");
 
-        PendingCertificationResultTestProcedureDTO testProc2 = new PendingCertificationResultTestProcedureDTO();
-        testProc2.setVersion("v2");
+        PendingCertificationResultTestDataDTO testData2 = new PendingCertificationResultTestDataDTO();
+        testData2.setVersion("v2");
 
-        PendingCertificationResultTestProcedureDTO testProc3 = new PendingCertificationResultTestProcedureDTO();
-        testProc3.setVersion("v1");
+        PendingCertificationResultTestDataDTO testData3 = new PendingCertificationResultTestDataDTO();
+        testData3.setVersion("v1");
 
-        PendingCertificationResultTestProcedureDTO testProc4 = new PendingCertificationResultTestProcedureDTO();
-        testProc4.setVersion("v3");
+        PendingCertificationResultTestDataDTO testData4 = new PendingCertificationResultTestDataDTO();
+        testData4.setVersion("v3");
 
-        cert.getTestProcedures().add(testProc1);
-        cert.getTestProcedures().add(testProc2);
-        cert.getTestProcedures().add(testProc3);
-        cert.getTestProcedures().add(testProc4);
+        cert.getTestData().add(testData1);
+        cert.getTestData().add(testData2);
+        cert.getTestData().add(testData3);
+        cert.getTestData().add(testData4);
 
         reviewer.review(listing, cert);
 
@@ -118,7 +116,7 @@ public class TestProcedure2014DuplicateReviewerTest {
         assertEquals(1, listing.getWarningMessages().stream()
                 .filter(warning -> warning.equals(String.format(ERR_MSG, CRITERION_NUMBER, "v1")))
                 .count());
-        assertEquals(3, cert.getTestProcedures().size());
+        assertEquals(3, cert.getTestData().size());
     }
 
     private PendingCertificationResultDTO getCertResult() {

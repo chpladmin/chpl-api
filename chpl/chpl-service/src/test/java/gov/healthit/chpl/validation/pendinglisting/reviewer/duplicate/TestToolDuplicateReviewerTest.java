@@ -16,6 +16,10 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.TestToolDuplicateReviewer;
 
 public class TestToolDuplicateReviewerTest {
+    private static final String CRITERION_NUMBER = "170.315 (a)(1)";
+    private static final String ERR_MSG =
+            "Certification %s contains duplicate Test Tool: Name '%s', Version '%s'. The duplicates have been removed.";
+
     private ErrorMessageUtil msgUtil;
     private TestToolDuplicateReviewer reviewer;
 
@@ -26,8 +30,7 @@ public class TestToolDuplicateReviewerTest {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateTestTool"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-                .thenAnswer(i -> String.format("Certification %s contains duplicate Test Tool: Name '%s', Version '%s'. The duplicates have been removed.",
-                        i.getArgument(1), i.getArgument(2), i.getArgument(3)));
+                .thenAnswer(i -> String.format(ERR_MSG, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
         reviewer = new TestToolDuplicateReviewer(msgUtil);
     }
 
@@ -50,6 +53,9 @@ public class TestToolDuplicateReviewerTest {
         reviewer.review(listing, cert);
 
         assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(1, listing.getWarningMessages().stream()
+                .filter(warning -> warning.equals(String.format(ERR_MSG, CRITERION_NUMBER, "TestTool1", "v1")))
+                .count());
         assertEquals(1, cert.getTestTools().size());
     }
 
@@ -115,12 +121,15 @@ public class TestToolDuplicateReviewerTest {
         reviewer.review(listing, cert);
 
         assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(1, listing.getWarningMessages().stream()
+                .filter(warning -> warning.equals(String.format(ERR_MSG, CRITERION_NUMBER, "TestTool1", "v1")))
+                .count());
         assertEquals(3, cert.getTestTools().size());
     }
 
     private PendingCertificationResultDTO getCertResult() {
         CertificationCriterionDTO criterion = new CertificationCriterionDTO();
-        criterion.setNumber("170.315 (a)(1)");
+        criterion.setNumber(CRITERION_NUMBER);
         PendingCertificationResultDTO cert = new PendingCertificationResultDTO();
         cert.setCriterion(criterion);
         return cert;

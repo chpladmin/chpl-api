@@ -47,7 +47,7 @@ public class TestData2015DuplicateReviewer {
         List<String> warnings = new ArrayList<String>();
         for (PendingCertificationResultTestDataDTO duplicate : duplicates) {
             String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestData.2015",
-                    criteria, duplicate.getEnteredName(), duplicate.getVersion(), duplicate.getAlteration());
+                    criteria, duplicate.getEnteredName(), duplicate.getVersion());
             warnings.add(warning);
         }
         return warnings;
