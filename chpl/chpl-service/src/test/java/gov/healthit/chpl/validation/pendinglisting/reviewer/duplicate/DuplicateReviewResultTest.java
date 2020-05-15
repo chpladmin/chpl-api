@@ -6,7 +6,7 @@ import java.util.function.BiPredicate;
 
 import org.junit.Test;
 
-import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.DuplicateReviewResult;
+import gov.healthit.chpl.validation.DuplicateReviewResult;
 
 public class DuplicateReviewResultTest {
 
