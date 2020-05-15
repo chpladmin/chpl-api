@@ -47,7 +47,7 @@ public class TestData2015DuplicateReviewer {
         List<String> warnings = new ArrayList<String>();
         for (CertificationResultTestData duplicate : duplicates) {
             String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestData.2015",
-                    criteria, duplicate.getTestData().getName(), duplicate.getTestData().getName());
+                    criteria, duplicate.getTestData().getName(), duplicate.getVersion());
             warnings.add(warning);
         }
         return warnings;
@@ -58,8 +58,9 @@ public class TestData2015DuplicateReviewer {
             @Override
             public boolean test(CertificationResultTestData dto1,
                     CertificationResultTestData dto2) {
-                return ObjectUtils.allNotNull(dto1.getTestData().getName(), dto2.getTestData().getName(),
-                        dto1.getVersion(), dto2.getVersion())
+                return ObjectUtils.allNotNull(dto1.getTestData(), dto2.getTestData(),
+                                dto1.getTestData().getName(), dto2.getTestData().getName(),
+                                dto1.getVersion(), dto2.getVersion())
                         && dto1.getTestData().getName().equals(dto2.getTestData().getName())
                         && dto1.getVersion().equals(dto2.getVersion());
             }
