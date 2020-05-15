@@ -11,18 +11,18 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.DuplicateReviewResult;
+import gov.healthit.chpl.validation.DuplicateReviewResult;
 
-@Component("targetedUser2015DuplicateReviewer")
+@Component("pendingTargetedUser2015DuplicateReviewer")
 public class TargetedUser2015DuplicateReviewer {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public TargetedUser2015DuplicateReviewer(final ErrorMessageUtil errorMessageUtil) {
+    public TargetedUser2015DuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
-    public void review(final PendingCertifiedProductDTO listing) {
+    public void review(PendingCertifiedProductDTO listing) {
 
         DuplicateReviewResult<PendingCertifiedProductTargetedUserDTO> targetedUserDuplicateResults =
                 new DuplicateReviewResult<PendingCertifiedProductTargetedUserDTO>(getPredicate());
@@ -39,7 +39,7 @@ public class TargetedUser2015DuplicateReviewer {
         }
     }
 
-    private List<String> getWarnings(final List<PendingCertifiedProductTargetedUserDTO> duplicates) {
+    private List<String> getWarnings(List<PendingCertifiedProductTargetedUserDTO> duplicates) {
         List<String> warnings = new ArrayList<String>();
         for (PendingCertifiedProductTargetedUserDTO duplicate : duplicates) {
             String warning = errorMessageUtil.getMessage("listing.duplicateTargetedUser.2015", duplicate.getName());
@@ -51,8 +51,8 @@ public class TargetedUser2015DuplicateReviewer {
     private BiPredicate<PendingCertifiedProductTargetedUserDTO, PendingCertifiedProductTargetedUserDTO> getPredicate() {
         return new BiPredicate<PendingCertifiedProductTargetedUserDTO, PendingCertifiedProductTargetedUserDTO>() {
             @Override
-            public boolean test(final PendingCertifiedProductTargetedUserDTO dto1,
-                    final PendingCertifiedProductTargetedUserDTO dto2) {
+            public boolean test(PendingCertifiedProductTargetedUserDTO dto1,
+                    PendingCertifiedProductTargetedUserDTO dto2) {
                 return ObjectUtils.allNotNull(dto1.getName(), dto2.getName())
                         && dto1.getName().equals(dto2.getName());
             }

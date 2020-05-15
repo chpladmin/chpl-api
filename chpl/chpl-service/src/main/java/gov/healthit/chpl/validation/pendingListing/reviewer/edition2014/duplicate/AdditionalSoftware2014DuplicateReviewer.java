@@ -11,18 +11,18 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultAdditiona
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.DuplicateReviewResult;
+import gov.healthit.chpl.validation.DuplicateReviewResult;
 
-@Component("additionalSoftware2014DuplicateReviewer")
+@Component("pendingAdditionalSoftware2014DuplicateReviewer")
 public class AdditionalSoftware2014DuplicateReviewer {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public AdditionalSoftware2014DuplicateReviewer(final ErrorMessageUtil errorMessageUtil) {
+    public AdditionalSoftware2014DuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
-    public void review(final PendingCertifiedProductDTO listing, final PendingCertificationResultDTO certificationResult) {
+    public void review(PendingCertifiedProductDTO listing, PendingCertificationResultDTO certificationResult) {
 
         DuplicateReviewResult<PendingCertificationResultAdditionalSoftwareDTO> addtlSoftwareDuplicateResults =
                 new DuplicateReviewResult<PendingCertificationResultAdditionalSoftwareDTO>(getPredicate());
@@ -41,8 +41,8 @@ public class AdditionalSoftware2014DuplicateReviewer {
         }
     }
 
-    private List<String> getWarnings(final List<PendingCertificationResultAdditionalSoftwareDTO> duplicates,
-            final String criteria) {
+    private List<String> getWarnings(List<PendingCertificationResultAdditionalSoftwareDTO> duplicates,
+            String criteria) {
         List<String> warnings = new ArrayList<String>();
         for (PendingCertificationResultAdditionalSoftwareDTO duplicate : duplicates) {
             String warning = "";
@@ -64,8 +64,8 @@ public class AdditionalSoftware2014DuplicateReviewer {
         return new BiPredicate<
                 PendingCertificationResultAdditionalSoftwareDTO, PendingCertificationResultAdditionalSoftwareDTO>() {
             @Override
-            public boolean test(final PendingCertificationResultAdditionalSoftwareDTO dto1,
-                    final PendingCertificationResultAdditionalSoftwareDTO dto2) {
+            public boolean test(PendingCertificationResultAdditionalSoftwareDTO dto1,
+                    PendingCertificationResultAdditionalSoftwareDTO dto2) {
                 if (dto1.getChplId() != null && dto2.getChplId() != null) {
 
                     return dto1.getChplId().equals(dto2.getChplId());

@@ -11,19 +11,19 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.DuplicateReviewResult;
+import gov.healthit.chpl.validation.DuplicateReviewResult;
 
-@Component("icsSource2015DuplicateReviewer")
+@Component("pendingIcsSource2015DuplicateReviewer")
 public class IcsSource2015DuplicateReviewer {
 
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public IcsSource2015DuplicateReviewer(final ErrorMessageUtil errorMessageUtil) {
+    public IcsSource2015DuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
-    public void review(final PendingCertifiedProductDTO listing) {
+    public void review(PendingCertifiedProductDTO listing) {
 
         DuplicateReviewResult<CertifiedProductDetailsDTO> icsSourceDuplicateResults =
                 new DuplicateReviewResult<CertifiedProductDetailsDTO>(getPredicate());
@@ -40,7 +40,7 @@ public class IcsSource2015DuplicateReviewer {
         }
     }
 
-    private List<String> getWarnings(final List<CertifiedProductDetailsDTO> duplicates) {
+    private List<String> getWarnings(List<CertifiedProductDetailsDTO> duplicates) {
         List<String> warnings = new ArrayList<String>();
         for (CertifiedProductDetailsDTO duplicate : duplicates) {
             String warning = errorMessageUtil.getMessage("listing.duplicateIcsSource.2015",
@@ -53,8 +53,8 @@ public class IcsSource2015DuplicateReviewer {
     private BiPredicate<CertifiedProductDetailsDTO, CertifiedProductDetailsDTO> getPredicate() {
         return new BiPredicate<CertifiedProductDetailsDTO, CertifiedProductDetailsDTO>() {
             @Override
-            public boolean test(final CertifiedProductDetailsDTO dto1,
-                    final CertifiedProductDetailsDTO dto2) {
+            public boolean test(CertifiedProductDetailsDTO dto1,
+                    CertifiedProductDetailsDTO dto2) {
                 return ObjectUtils.allNotNull(dto1.getChplProductNumber(), dto2.getChplProductNumber())
                         && dto1.getChplProductNumber().equals(dto2.getChplProductNumber());
             }

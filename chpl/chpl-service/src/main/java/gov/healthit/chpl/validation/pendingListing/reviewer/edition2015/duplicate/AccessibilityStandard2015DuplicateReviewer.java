@@ -11,18 +11,18 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.DuplicateReviewResult;
+import gov.healthit.chpl.validation.DuplicateReviewResult;
 
-@Component("accessibilityStandard2015DuplicateReviewer")
+@Component("pendingAccessibilityStandard2015DuplicateReviewer")
 public class AccessibilityStandard2015DuplicateReviewer {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public AccessibilityStandard2015DuplicateReviewer(final ErrorMessageUtil errorMessageUtil) {
+    public AccessibilityStandard2015DuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
-    public void review(final PendingCertifiedProductDTO listing) {
+    public void review(PendingCertifiedProductDTO listing) {
 
         DuplicateReviewResult<PendingCertifiedProductAccessibilityStandardDTO> accessibilityStandardDuplicateResults =
                 new DuplicateReviewResult<PendingCertifiedProductAccessibilityStandardDTO>(getPredicate());
@@ -40,7 +40,7 @@ public class AccessibilityStandard2015DuplicateReviewer {
         }
     }
 
-    private List<String> getWarnings(final List<PendingCertifiedProductAccessibilityStandardDTO> duplicates) {
+    private List<String> getWarnings(List<PendingCertifiedProductAccessibilityStandardDTO> duplicates) {
         List<String> warnings = new ArrayList<String>();
         for (PendingCertifiedProductAccessibilityStandardDTO duplicate : duplicates) {
             String warning = errorMessageUtil.getMessage("listing.duplicateAccessibilityStandard.2015", duplicate.getName());
@@ -54,8 +54,8 @@ public class AccessibilityStandard2015DuplicateReviewer {
         return new BiPredicate<
                 PendingCertifiedProductAccessibilityStandardDTO, PendingCertifiedProductAccessibilityStandardDTO>() {
             @Override
-            public boolean test(final PendingCertifiedProductAccessibilityStandardDTO dto1,
-                    final PendingCertifiedProductAccessibilityStandardDTO dto2) {
+            public boolean test(PendingCertifiedProductAccessibilityStandardDTO dto1,
+                    PendingCertifiedProductAccessibilityStandardDTO dto2) {
                 return ObjectUtils.allNotNull(dto1.getName(), dto2.getName())
                         && dto1.getName().equals(dto2.getName());
             }
