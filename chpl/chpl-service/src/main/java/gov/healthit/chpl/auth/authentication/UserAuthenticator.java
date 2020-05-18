@@ -171,48 +171,6 @@ public class UserAuthenticator implements Authenticator {
     }
 
     private UserDTO getUserByName(final String userName) throws UserRetrievalException {
-        Authentication authenticator = new Authentication() {
-            private static final long serialVersionUID = 6718133333641942231L;
-
-            @Override
-            public Collection<? extends GrantedAuthority> getAuthorities() {
-                List<GrantedAuthority> auths = new ArrayList<GrantedAuthority>();
-                auths.add(new GrantedPermission("ROLE_USER_AUTHENTICATOR"));
-                return auths;
-            }
-
-            @Override
-            public Object getCredentials() {
-                return null;
-            }
-
-            @Override
-            public Object getDetails() {
-                return null;
-            }
-
-            @Override
-            public Object getPrincipal() {
-                return null;
-            }
-
-            @Override
-            public boolean isAuthenticated() {
-                return true;
-            }
-
-            @Override
-            public void setAuthenticated(final boolean arg0) throws IllegalArgumentException {
-            }
-
-            @Override
-            public String getName() {
-                return "AUTHENTICATOR";
-            }
-
-        };
-
-        SecurityContextHolder.getContext().setAuthentication(authenticator);
         try {
             UserDTO user = userDAO.getByName(userName);
             return user;
