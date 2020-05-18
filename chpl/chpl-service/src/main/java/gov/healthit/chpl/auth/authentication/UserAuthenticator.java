@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AccountStatusException;
@@ -28,11 +26,11 @@ import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.util.AuthUtil;
+import lombok.extern.log4j.Log4j2;
 
 @Service
+@Log4j2
 public class UserAuthenticator implements Authenticator {
-    private static final Logger LOGGER = LogManager.getLogger(UserAuthenticator.class);
-
     private JWTAuthor jwtAuthor;
     private UserManager userManager;
     private UserDAO userDAO;
@@ -126,7 +124,6 @@ public class UserAuthenticator implements Authenticator {
 
         jwt = jwtAuthor.createJWT(user, stringClaims, listClaims);
         return jwt;
-
     }
 
     @Override
