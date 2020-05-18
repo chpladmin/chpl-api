@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.permissions.domains.secureduser.CreateActionPermissions;
 import gov.healthit.chpl.permissions.domains.secureduser.DeleteActionPermissions;
-import gov.healthit.chpl.permissions.domains.secureduser.FailedLoginCountActionPermissions;
 import gov.healthit.chpl.permissions.domains.secureduser.GetAllActionPermissions;
 import gov.healthit.chpl.permissions.domains.secureduser.GetByIdActionPermissions;
 import gov.healthit.chpl.permissions.domains.secureduser.GetByPermissionActionPermissions;
@@ -20,7 +19,6 @@ import gov.healthit.chpl.permissions.domains.secureduser.UpdatePasswordActionPer
 public class SecuredUserDomainPermissions extends DomainPermissions {
     public static final String CREATE = "CREATE";
     public static final String DELETE = "DELETE";
-    public static final String FAILED_LOGIN_COUNT = "FAILED_LOGIN_COUNT";
     public static final String GET_ALL = "GET_ALL";
     public static final String GET_BY_ID = "GET_BY_ID";
     public static final String GET_BY_PERMISSION = "GET_BY_PERMISSION";
@@ -34,7 +32,6 @@ public class SecuredUserDomainPermissions extends DomainPermissions {
     public SecuredUserDomainPermissions(
             @Qualifier("securedUserCreateActionPermissions") CreateActionPermissions createActionPermissions,
             @Qualifier("securedUserDeleteActionPermissions") DeleteActionPermissions deleteActionPermissions,
-            @Qualifier("securedUserFailedLoginCountActionPermissions") FailedLoginCountActionPermissions failedLoginCountActionPermissions,
             @Qualifier("securedUserGetAllActionPermissions") GetAllActionPermissions getAllActionPermissions,
             @Qualifier("securedUserGetByIdActionPermissions") GetByIdActionPermissions getByIdActionPermissions,
             @Qualifier("securedUserGetByPermissionActionPermissions") GetByPermissionActionPermissions getByPermissionActionPermissions,
@@ -46,7 +43,6 @@ public class SecuredUserDomainPermissions extends DomainPermissions {
 
         getActionPermissions().put(CREATE, createActionPermissions);
         getActionPermissions().put(DELETE, deleteActionPermissions);
-        getActionPermissions().put(FAILED_LOGIN_COUNT, failedLoginCountActionPermissions);
         getActionPermissions().put(GET_ALL, getAllActionPermissions);
         getActionPermissions().put(GET_BY_ID, getByIdActionPermissions);
         getActionPermissions().put(GET_BY_PERMISSION, getByPermissionActionPermissions);

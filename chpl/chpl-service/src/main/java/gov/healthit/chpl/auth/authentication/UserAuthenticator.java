@@ -1,7 +1,6 @@
 package gov.healthit.chpl.auth.authentication;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.jwt.JWTAuthor;
-import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.auth.UserDAO;
@@ -177,58 +173,14 @@ public class UserAuthenticator implements Authenticator {
         } finally {
             SecurityContextHolder.getContext().setAuthentication(null);
         }
-
     }
 
     private void updateFailedLogins(final UserDTO userToUpdate) throws UserRetrievalException, UserManagementException {
-        Authentication authenticator = new Authentication() {
-
-            @Override
-            public Collection<? extends GrantedAuthority> getAuthorities() {
-                List<GrantedAuthority> auths = new ArrayList<GrantedAuthority>();
-                auths.add(new GrantedPermission("ROLE_USER_AUTHENTICATOR"));
-                return auths;
-            }
-
-            @Override
-            public Object getCredentials() {
-                return null;
-            }
-
-            @Override
-            public Object getDetails() {
-                return null;
-            }
-
-            @Override
-            public Object getPrincipal() {
-                return null;
-            }
-
-            @Override
-            public boolean isAuthenticated() {
-                return true;
-            }
-
-            @Override
-            public void setAuthenticated(final boolean arg0) throws IllegalArgumentException {
-            }
-
-            @Override
-            public String getName() {
-                return "AUTHENTICATOR";
-            }
-
-        };
-
-        SecurityContextHolder.getContext().setAuthentication(authenticator);
         try {
             userManager.updateFailedLoginCount(userToUpdate);
         } catch (Exception ex) {
             throw new UserManagementException(
                     "Error increasing the failed login count for user " + userToUpdate.getSubjectName(), ex);
-        } finally {
-            SecurityContextHolder.getContext().setAuthentication(null);
         }
     }
 

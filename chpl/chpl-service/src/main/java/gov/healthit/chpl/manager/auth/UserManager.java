@@ -181,9 +181,6 @@ public class UserManager extends SecuredManager {
         return userDAO.getById(id);
     }
 
-    @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
-            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).FAILED_LOGIN_COUNT)")
     public void updateFailedLoginCount(UserDTO userToUpdate) throws UserRetrievalException {
         userDAO.updateFailedLoginCount(userToUpdate.getSubjectName(), userToUpdate.getFailedLoginCount());
         String maxLoginsStr = env.getProperty("authMaximumLoginAttempts");
