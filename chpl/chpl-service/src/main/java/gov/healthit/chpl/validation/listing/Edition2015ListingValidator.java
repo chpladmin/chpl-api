@@ -26,6 +26,7 @@ import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ValidDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.AttestedCriteriaCqmReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.CqmAttestedCriteriaReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.DuplicateData2015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.InvalidCriteriaCombinationReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.MacraMeasureComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.PrivacyAndSecurityCriteriaReviewer;
@@ -105,6 +106,10 @@ public class Edition2015ListingValidator extends Validator {
     private TestFunctionality2015Reviewer testFunctionalityReviewer;
 
     @Autowired
+    @Qualifier("duplicateData2015Reviewer")
+    private DuplicateData2015Reviewer duplicateData2015Reviewer;
+
+    @Autowired
     @Qualifier("developerBanComparisonReviewer")
     private DeveloperBanComparisonReviewer devBanComparisonReviewer;
 
@@ -159,6 +164,7 @@ public class Edition2015ListingValidator extends Validator {
     public List<Reviewer> getReviewers() {
         if (reviewers == null) {
             reviewers = new ArrayList<Reviewer>();
+            reviewers.add(duplicateData2015Reviewer);
             reviewers.add(chplNumberReviewer);
             reviewers.add(devStatusReviewer);
             reviewers.add(unsupportedCharacterReviewer);

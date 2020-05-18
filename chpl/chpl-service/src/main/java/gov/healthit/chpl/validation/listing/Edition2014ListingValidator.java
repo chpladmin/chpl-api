@@ -23,6 +23,7 @@ import gov.healthit.chpl.validation.listing.reviewer.UnattestedCriteriaWithDataR
 import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ValidDataReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2014.DuplicateData2014Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.RequiredData2014Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.SedG32014Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.TestFunctionality2014Reviewer;
@@ -30,7 +31,7 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2014.TestTool2014Rev
 
 /**
  * Validation interface for any listing that is already uploaded and confirmed on the CHPL.
- * 
+ *
  * @author kekey
  *
  */
@@ -97,6 +98,10 @@ public abstract class Edition2014ListingValidator extends Validator {
     private UrlReviewer urlReviewer;
 
     @Autowired
+    @Qualifier("duplicateData2014Reviewer")
+    private DuplicateData2014Reviewer duplicateData2014Reviewer;
+
+    @Autowired
     @Qualifier("chplNumberComparisonReviewer")
     private ChplNumberComparisonReviewer chplNumberComparisonReviewer;
 
@@ -115,6 +120,7 @@ public abstract class Edition2014ListingValidator extends Validator {
     public List<Reviewer> getReviewers() {
         if (reviewers == null) {
             reviewers = new ArrayList<Reviewer>();
+            reviewers.add(duplicateData2014Reviewer);
             reviewers.add(chplNumberReviewer);
             reviewers.add(devStatusReviewer);
             reviewers.add(unsupportedCharacterReviewer);

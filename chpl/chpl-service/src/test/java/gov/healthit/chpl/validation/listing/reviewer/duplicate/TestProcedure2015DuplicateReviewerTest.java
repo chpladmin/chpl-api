@@ -18,8 +18,10 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.duplicate.TestP
 
 public class TestProcedure2015DuplicateReviewerTest {
     private static final String CRITERION_NUMBER = "170.315 (a)(1)";
-    private static final String ERR_MSG =
+    private static final String WARN_MSG =
             "Certification %s contains duplicate Test Procedure: Name '%s', Version '%s'. The duplicates have been removed.";
+    private static final String ERR_MSG =
+            "Certification %s contains duplicate Test Procedure: '%s'.";
 
     private ErrorMessageUtil msgUtil;
     private TestProcedure2015DuplicateReviewer reviewer;
@@ -30,7 +32,10 @@ public class TestProcedure2015DuplicateReviewerTest {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateTestProcedure.2015"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-                .thenAnswer(i -> String.format(ERR_MSG, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
+                .thenAnswer(i -> String.format(WARN_MSG, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateTestProcedureName.2015"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+                .thenAnswer(i -> String.format(ERR_MSG, i.getArgument(1), i.getArgument(2)));
         reviewer = new TestProcedure2015DuplicateReviewer(msgUtil);
     }
 
@@ -48,11 +53,34 @@ public class TestProcedure2015DuplicateReviewerTest {
 
         reviewer.review(listing, cert);
 
+        assertEquals(0, listing.getErrorMessages().size());
         assertEquals(1, listing.getWarningMessages().size());
         assertEquals(1, listing.getWarningMessages().stream()
-                .filter(warning -> warning.equals(String.format(ERR_MSG, CRITERION_NUMBER, "TestProc1", "v1")))
+                .filter(warning -> warning.equals(String.format(WARN_MSG, CRITERION_NUMBER, "TestProc1", "v1")))
                 .count());
         assertEquals(1, cert.getTestProcedures().size());
+    }
+
+    @Test
+    public void review_duplicateNameExists_errorFound() {
+        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
+
+        CertificationResult cert = getCertResult();
+
+        CertificationResultTestProcedure testProc1 = getTestProcedure("TestProc1", "v1");
+        CertificationResultTestProcedure testProc2 = getTestProcedure("TestProc1", "v2");
+
+        cert.getTestProcedures().add(testProc1);
+        cert.getTestProcedures().add(testProc2);
+
+        reviewer.review(listing, cert);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertEquals(1, listing.getErrorMessages().stream()
+                .filter(error -> error.equals(String.format(ERR_MSG, CRITERION_NUMBER, "TestProc1")))
+                .count());
+        assertEquals(2, cert.getTestProcedures().size());
     }
 
     @Test
@@ -70,6 +98,7 @@ public class TestProcedure2015DuplicateReviewerTest {
         reviewer.review(listing, cert);
 
         assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
         assertEquals(2, cert.getTestProcedures().size());
     }
 
@@ -82,6 +111,7 @@ public class TestProcedure2015DuplicateReviewerTest {
         reviewer.review(listing, cert);
 
         assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
         assertEquals(0, cert.getTestProcedures().size());
     }
 
@@ -102,9 +132,10 @@ public class TestProcedure2015DuplicateReviewerTest {
 
         reviewer.review(listing, cert);
 
+        assertEquals(0, listing.getErrorMessages().size());
         assertEquals(1, listing.getWarningMessages().size());
         assertEquals(1, listing.getWarningMessages().stream()
-                .filter(warning -> warning.equals(String.format(ERR_MSG, CRITERION_NUMBER, "TestProc1", "v1")))
+                .filter(warning -> warning.equals(String.format(WARN_MSG, CRITERION_NUMBER, "TestProc1", "v1")))
                 .count());
         assertEquals(3, cert.getTestProcedures().size());
     }

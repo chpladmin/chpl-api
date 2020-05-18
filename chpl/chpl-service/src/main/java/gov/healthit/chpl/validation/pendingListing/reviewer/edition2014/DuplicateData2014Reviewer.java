@@ -3,6 +3,7 @@ package gov.healthit.chpl.validation.pendingListing.reviewer.edition2014;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
@@ -31,14 +32,15 @@ public class DuplicateData2014Reviewer implements Reviewer {
     private AtlDuplicateReviewer atlDuplicateReviewer;
 
     @Autowired
-    public DuplicateData2014Reviewer(QmsStandard2014DuplicateReviewer qmsStandard2014DuplicateReviewer,
-            TestFunctionalityDuplicateReviewer testFunctionalityDuplicateReviewer,
-            AdditionalSoftware2014DuplicateReviewer additionalSoftwareDuplicateReviewer,
-            TestToolDuplicateReviewer testToolDuplicateReviewer,
-            TestStandardDuplicateReviewer testStandardDuplicateReviewer,
-            TestProcedure2014DuplicateReviewer testProcedureDuplicateReviewer,
-            TestData2014DuplicateReviewer testDataDuplicateReviewer,
-            AtlDuplicateReviewer atlDuplicateReviewer) {
+    public DuplicateData2014Reviewer(
+            @Qualifier("pendingQmsStandard2014DuplicateReviewer") QmsStandard2014DuplicateReviewer qmsStandard2014DuplicateReviewer,
+            @Qualifier("pendingTestFunctionalityDuplicateReviewer") TestFunctionalityDuplicateReviewer testFunctionalityDuplicateReviewer,
+            @Qualifier("pendingAdditionalSoftware2014DuplicateReviewer") AdditionalSoftware2014DuplicateReviewer additionalSoftwareDuplicateReviewer,
+            @Qualifier("pendingTestToolDuplicateReviewer") TestToolDuplicateReviewer testToolDuplicateReviewer,
+            @Qualifier("pendingTestStandardDuplicateReviewer") TestStandardDuplicateReviewer testStandardDuplicateReviewer,
+            @Qualifier("pendingTestProcedure2014DuplicateReviewer") TestProcedure2014DuplicateReviewer testProcedureDuplicateReviewer,
+            @Qualifier("pendingTestData2014DuplicateReviewer") TestData2014DuplicateReviewer testDataDuplicateReviewer,
+            @Qualifier("pendingAtlDuplicateReviewer") AtlDuplicateReviewer atlDuplicateReviewer) {
         this.qmsStandardDuplicateReviewer = qmsStandard2014DuplicateReviewer;
         this.testFunctionalityDuplicateReviewer = testFunctionalityDuplicateReviewer;
         this.additionalSoftwareDuplicateReviewer = additionalSoftwareDuplicateReviewer;

@@ -21,13 +21,14 @@ import gov.healthit.chpl.validation.listing.reviewer.UnattestedCriteriaWithDataR
 import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ValidDataReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2014.DuplicateData2014Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.RequiredData2014Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.TestFunctionality2014Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.TestTool2014Reviewer;
 
 /**
  * Validation interface for any 2014 listing with CHPL number beginning with CHP-.
- * 
+ *
  * @author kekey
  *
  */
@@ -93,6 +94,10 @@ public class Edition2014LegacyListingValidator extends Validator {
     @Qualifier("listingStatusAndUserRoleReviewer")
     private ListingStatusAndUserRoleReviewer listingStatusAndUserRoleReviewer;
 
+    @Autowired
+    @Qualifier("duplicateData2014Reviewer")
+    private DuplicateData2014Reviewer duplicateData2014Reviewer;
+
     private List<Reviewer> reviewers;
     private List<ComparisonReviewer> comparisonReviewers;
 
@@ -100,6 +105,7 @@ public class Edition2014LegacyListingValidator extends Validator {
     public List<Reviewer> getReviewers() {
         if (reviewers == null) {
             reviewers = new ArrayList<Reviewer>();
+            reviewers.add(duplicateData2014Reviewer);
             reviewers.add(devStatusReviewer);
             reviewers.add(unsupportedCharacterReviewer);
             reviewers.add(fieldLengthReviewer);

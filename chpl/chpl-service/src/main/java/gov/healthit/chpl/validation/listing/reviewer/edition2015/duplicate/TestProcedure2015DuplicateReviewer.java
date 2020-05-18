@@ -27,8 +27,7 @@ public class TestProcedure2015DuplicateReviewer {
     public void review(CertifiedProductSearchDetails listing, CertificationResult certificationResult) {
 
         DuplicateReviewResult<CertificationResultTestProcedure> testProcedureDuplicateResults =
-                new DuplicateReviewResult<CertificationResultTestProcedure>(getPredicate());
-
+                new DuplicateReviewResult<CertificationResultTestProcedure>(duplicatePredicate());
         if (certificationResult.getTestProcedures() != null) {
             for (CertificationResultTestProcedure dto : certificationResult.getTestProcedures()) {
                 testProcedureDuplicateResults.addObject(dto);
@@ -40,6 +39,30 @@ public class TestProcedure2015DuplicateReviewer {
                             Util.formatCriteriaNumber(certificationResult.getCriterion())));
             certificationResult.setTestProcedures(testProcedureDuplicateResults.getUniqueList());
         }
+
+        DuplicateReviewResult<CertificationResultTestProcedure> testProcedureDuplicateNameResults =
+                new DuplicateReviewResult<CertificationResultTestProcedure>(duplicateNamePredicate());
+        if (certificationResult.getTestProcedures() != null) {
+            for (CertificationResultTestProcedure dto : certificationResult.getTestProcedures()) {
+                testProcedureDuplicateNameResults.addObject(dto);
+            }
+        }
+        if (testProcedureDuplicateNameResults.duplicatesExist()) {
+            listing.getErrorMessages().addAll(
+                    getErrors(testProcedureDuplicateNameResults.getDuplicateList(),
+                            Util.formatCriteriaNumber(certificationResult.getCriterion())));
+        }
+    }
+
+    private List<String> getErrors(List<CertificationResultTestProcedure> duplicates,
+            String criteria) {
+        List<String> warnings = new ArrayList<String>();
+        for (CertificationResultTestProcedure duplicate : duplicates) {
+            String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestProcedureName.2015",
+                    criteria, duplicate.getTestProcedure().getName());
+            warnings.add(warning);
+        }
+        return warnings;
     }
 
     private List<String> getWarnings(List<CertificationResultTestProcedure> duplicates,
@@ -53,7 +76,7 @@ public class TestProcedure2015DuplicateReviewer {
         return warnings;
     }
 
-    private BiPredicate<CertificationResultTestProcedure, CertificationResultTestProcedure> getPredicate() {
+    private BiPredicate<CertificationResultTestProcedure, CertificationResultTestProcedure> duplicatePredicate() {
         return new BiPredicate<CertificationResultTestProcedure, CertificationResultTestProcedure>() {
             @Override
             public boolean test(CertificationResultTestProcedure dto1,
@@ -62,6 +85,17 @@ public class TestProcedure2015DuplicateReviewer {
                         dto1.getTestProcedureVersion(), dto2.getTestProcedureVersion())
                         && dto1.getTestProcedure().getName().equals(dto2.getTestProcedure().getName())
                         && dto1.getTestProcedureVersion().equals(dto2.getTestProcedureVersion());
+            }
+        };
+    }
+
+    private BiPredicate<CertificationResultTestProcedure, CertificationResultTestProcedure> duplicateNamePredicate() {
+        return new BiPredicate<CertificationResultTestProcedure, CertificationResultTestProcedure>() {
+            @Override
+            public boolean test(CertificationResultTestProcedure dto1,
+                    CertificationResultTestProcedure dto2) {
+                return ObjectUtils.allNotNull(dto1.getTestProcedure().getName(), dto2.getTestProcedure().getName())
+                        && dto1.getTestProcedure().getName().equals(dto2.getTestProcedure().getName());
             }
         };
     }
