@@ -47,6 +47,7 @@ public class UserAuthenticator implements Authenticator {
         this.userDetailsChecker = userDetailsChecker;
     }
 
+    @Override
     @Transactional
     public String authenticate(LoginCredentials credentials)
             throws JWTCreationException, UserRetrievalException {
@@ -179,14 +180,6 @@ public class UserAuthenticator implements Authenticator {
             throw new UserManagementException(
                     "Error increasing the failed login count for user " + userToUpdate.getSubjectName(), ex);
         }
-    }
-
-    public JWTAuthor getJwtAuthor() {
-        return jwtAuthor;
-    }
-
-    public void setJwtAuthor(final JWTAuthor jwtAuthor) {
-        this.jwtAuthor = jwtAuthor;
     }
 
     @Override
