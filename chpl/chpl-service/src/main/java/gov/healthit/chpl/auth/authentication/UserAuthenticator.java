@@ -78,21 +78,17 @@ public class UserAuthenticator implements Authenticator {
 
             if (checkPassword(credentials.getPassword(), userManager.getEncodedPassword(user))) {
 
-                try {
-                    userDetailsChecker.check(user);
-                    userManager.updateLastLoggedInDate(user);
+                userDetailsChecker.check(user);
+                userManager.updateLastLoggedInDate(user);
 
-                    // if login was successful reset failed logins to 0
-                    if (user.getFailedLoginCount() > 0) {
-                        try {
-                            user.setFailedLoginCount(0);
-                            updateFailedLogins(user);
-                        } catch (UserManagementException ex) {
-                            LOGGER.error("Error adding failed login", ex);
-                        }
+                // if login was successful reset failed logins to 0
+                if (user.getFailedLoginCount() > 0) {
+                    try {
+                        user.setFailedLoginCount(0);
+                        updateFailedLogins(user);
+                    } catch (UserManagementException ex) {
+                        LOGGER.error("Error adding failed login", ex);
                     }
-                } catch (AccountStatusException ex) {
-                    throw ex;
                 }
                 return user;
 
