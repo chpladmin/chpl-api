@@ -8,18 +8,24 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 import gov.healthit.chpl.dto.CertificationStatusDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CertificationStatus implements Serializable {
 
     private static final long serialVersionUID = 818896721132619130L;
 
-    public CertificationStatus() {}
     public CertificationStatus(CertificationStatusDTO dto) {
         this.id = dto.getId();
         this.name = dto.getStatus();
     }
+
     /**
      * Internal ID
      */

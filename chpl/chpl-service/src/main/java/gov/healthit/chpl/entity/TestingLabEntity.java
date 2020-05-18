@@ -15,15 +15,13 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import gov.healthit.chpl.util.Util;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-/**
- * Testing Lab mapping to database.
- * @author kekey
- *
- */
 @Entity
 @Table(name = "testing_lab")
+@Data
+@NoArgsConstructor
 public class TestingLabEntity implements Serializable {
     private static final long serialVersionUID = -5332080900089062553L;
 
@@ -72,10 +70,6 @@ public class TestingLabEntity implements Serializable {
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
-    public TestingLabEntity() {
-        // Default constructor
-    }
-
     public TestingLabEntity(final Long id) {
         this.id = id;
     }
@@ -88,113 +82,5 @@ public class TestingLabEntity implements Serializable {
     @Transient
     public Class<?> getClassType() {
         return TestingLabEntity.class;
-    }
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Boolean isDeleted() {
-        return this.deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Long getId() {
-        return this.id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Long getLastModifiedUser() {
-        return this.lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public String getTestingLabCode() {
-        return testingLabCode;
-    }
-
-    public void setTestingLabCode(final String testingLabCode) {
-        this.testingLabCode = testingLabCode;
-    }
-
-    public AddressEntity getAddress() {
-        return address;
-    }
-
-    public void setAddress(final AddressEntity address) {
-        this.address = address;
-    }
-
-    public String getAccredidationNumber() {
-        return accredidationNumber;
-    }
-
-    public void setAccredidationNumber(final String accredidationNumber) {
-        this.accredidationNumber = accredidationNumber;
-    }
-
-    public String getWebsite() {
-        return website;
-    }
-
-    public void setWebsite(final String website) {
-        this.website = website;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public Boolean getRetired() {
-        return retired;
-    }
-
-    public void setRetired(final Boolean retired) {
-        this.retired = retired;
-    }
-
-    public final Date getRetirementDate() {
-        return retirementDate;
-    }
-
-    public final void setRetirementDate(final Date retirementDate) {
-        this.retirementDate = retirementDate;
-    }
-
-    @Override
-    public String toString() {
-        return "TestingLabEntity [id=" + id + ", testingLabCode=" + testingLabCode + ", address=" + address + ", name="
-                + name + ", accredidationNumber=" + accredidationNumber + ", website=" + website + ", retired="
-                + retired + ", retirementDate=" + retirementDate + ", creationDate=" + creationDate + ", deleted="
-                + deleted + ", lastModifiedDate=" + lastModifiedDate + ", lastModifiedUser=" + lastModifiedUser + "]";
     }
 }
