@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -165,12 +164,8 @@ public class UserAuthenticator implements Authenticator {
     }
 
     private UserDTO getUserByName(final String userName) throws UserRetrievalException {
-        try {
-            UserDTO user = userDAO.getByName(userName);
-            return user;
-        } finally {
-            SecurityContextHolder.getContext().setAuthentication(null);
-        }
+        UserDTO user = userDAO.getByName(userName);
+        return user;
     }
 
     private void updateFailedLogins(final UserDTO userToUpdate) throws UserRetrievalException, UserManagementException {
