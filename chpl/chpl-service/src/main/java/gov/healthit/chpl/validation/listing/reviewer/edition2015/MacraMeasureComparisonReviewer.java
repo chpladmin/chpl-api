@@ -19,27 +19,20 @@ import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-/**
- * This reviewer confirms that an ACB user does not attempt to add a 'removed' macra measure to any certification
- * result.
- * 
- * @author kekey
- *
- */
 @Component("macraMeasureComparisonReviewer")
 public class MacraMeasureComparisonReviewer implements ComparisonReviewer {
     private ResourcePermissions resourcePermissions;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public MacraMeasureComparisonReviewer(final ResourcePermissions resourcePermissions,
-            final ErrorMessageUtil msgUtil) {
+    public MacraMeasureComparisonReviewer(ResourcePermissions resourcePermissions,
+            ErrorMessageUtil msgUtil) {
         this.resourcePermissions = resourcePermissions;
         this.msgUtil = msgUtil;
     }
 
     @Override
-    public void review(final CertifiedProductSearchDetails existingListing,
+    public void review(CertifiedProductSearchDetails existingListing,
             final CertifiedProductSearchDetails updatedListing) {
         // checking for the addition of a removed macra measure.
         // this is only disallowed if the user is not ADMIN/ONC, so first check the permissions
@@ -47,34 +40,34 @@ public class MacraMeasureComparisonReviewer implements ComparisonReviewer {
             return;
         }
 
-        List<FlatMacraMeasure> existingListingMacraMeasures = getFlattenedG1MacraMeasures(
-                existingListing.getCertificationResults());
-        List<FlatMacraMeasure> updatedListingMacraMeasures = getFlattenedG1MacraMeasures(
-                updatedListing.getCertificationResults());
+        List<FlatMacraMeasure> existingMacraMeasuresForCriterion;
+        List<FlatMacraMeasure> updatedMacraMeasuresForCriterion;
 
         // Was a G1 item added?
-        subtractLists(updatedListingMacraMeasures, existingListingMacraMeasures).stream()
+        existingMacraMeasuresForCriterion = getFlattenedG1MacraMeasures(existingListing.getCertificationResults());
+        updatedMacraMeasuresForCriterion = getFlattenedG1MacraMeasures(updatedListing.getCertificationResults());
+        getNewlyAddedRemovedItems(updatedMacraMeasuresForCriterion, existingMacraMeasuresForCriterion).stream()
                 .forEach(mm -> updatedListing.getErrorMessages()
                         .add(getErrorMessage("listing.criteria.removedG1MacraMeasure", mm)));
 
-        existingListingMacraMeasures = getFlattenedG2MacraMeasures(existingListing.getCertificationResults());
-        updatedListingMacraMeasures = getFlattenedG2MacraMeasures(updatedListing.getCertificationResults());
-
         // Was a G2 item added?
-        subtractLists(updatedListingMacraMeasures, existingListingMacraMeasures).stream()
+        existingMacraMeasuresForCriterion = getFlattenedG2MacraMeasures(existingListing.getCertificationResults());
+        updatedMacraMeasuresForCriterion = getFlattenedG2MacraMeasures(updatedListing.getCertificationResults());
+        getNewlyAddedRemovedItems(updatedMacraMeasuresForCriterion, existingMacraMeasuresForCriterion).stream()
                 .forEach(mm -> updatedListing.getErrorMessages()
                         .add(getErrorMessage("listing.criteria.removedG2MacraMeasure", mm)));
     }
 
-    private List<FlatMacraMeasure> subtractLists(List<FlatMacraMeasure> listA,
-            List<FlatMacraMeasure> listB) {
+    private List<FlatMacraMeasure> getNewlyAddedRemovedItems(List<FlatMacraMeasure> listInUpdatedCriterion,
+            List<FlatMacraMeasure> listInOriginalCriterion) {
 
-        Predicate<FlatMacraMeasure> notInListB = fromA -> !listB.stream()
-                .anyMatch(fromB -> fromA.getCriterion().getId().equals(fromB.getCriterion().getId())
-                        && fromA.getMacraMeasure().getId().equals(fromB.getMacraMeasure().getId()));
+        Predicate<FlatMacraMeasure> notInOriginalCriterion = updated -> !listInOriginalCriterion.stream()
+                .anyMatch(original -> updated.getCriterion().getId().equals(original.getCriterion().getId())
+                        && updated.getMacraMeasure().getId().equals(original.getMacraMeasure().getId()));
 
-        return listA.stream()
-                .filter(notInListB)
+        return listInUpdatedCriterion.stream()
+                .filter(notInOriginalCriterion)
+                .filter(mm -> mm.getMacraMeasure().getRemoved())
                 .collect(Collectors.toList());
     }
 
@@ -106,5 +99,4 @@ public class MacraMeasureComparisonReviewer implements ComparisonReviewer {
         private CertificationCriterion criterion;
         private MacraMeasure macraMeasure;
     }
-
 }
