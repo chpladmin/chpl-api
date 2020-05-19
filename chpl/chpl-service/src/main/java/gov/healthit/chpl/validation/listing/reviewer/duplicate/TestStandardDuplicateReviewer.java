@@ -2,9 +2,9 @@ package gov.healthit.chpl.validation.listing.reviewer.duplicate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiPredicate;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -59,8 +59,7 @@ public class TestStandardDuplicateReviewer {
             @Override
             public boolean test(CertificationResultTestStandard dto1,
                     CertificationResultTestStandard dto2) {
-                return ObjectUtils.allNotNull(dto1.getTestStandardName(), dto2.getTestStandardName())
-                        && dto1.getTestStandardName().equals(dto2.getTestStandardName());
+                return Objects.equals(dto1.getTestStandardId(), dto2.getTestStandardId());
             }
         };
     }

@@ -39,9 +39,11 @@ public class TestStandardDuplicateReviewerTest {
         CertificationResult cert = getCertResult();
 
         CertificationResultTestStandard testStandard1 = new CertificationResultTestStandard();
+        testStandard1.setTestStandardId(1L);
         testStandard1.setTestStandardName("TestStandard1");
 
         CertificationResultTestStandard testStandard2 = new CertificationResultTestStandard();
+        testStandard2.setTestStandardId(1L);
         testStandard2.setTestStandardName("TestStandard1");
 
         cert.getTestStandards().add(testStandard1);
@@ -62,9 +64,11 @@ public class TestStandardDuplicateReviewerTest {
         CertificationResult cert = getCertResult();
 
         CertificationResultTestStandard testStandard1 = new CertificationResultTestStandard();
+        testStandard1.setTestStandardId(1L);
         testStandard1.setTestStandardName("TestStandard1");
 
         CertificationResultTestStandard testStandard2 = new CertificationResultTestStandard();
+        testStandard2.setTestStandardId(2L);
         testStandard2.setTestStandardName("TestStandard2");
 
         cert.getTestStandards().add(testStandard1);
@@ -94,15 +98,19 @@ public class TestStandardDuplicateReviewerTest {
         CertificationResult cert = getCertResult();
 
         CertificationResultTestStandard testStandard1 = new CertificationResultTestStandard();
+        testStandard1.setTestStandardId(1L);
         testStandard1.setTestStandardName("TestStandard1");
 
         CertificationResultTestStandard testStandard2 = new CertificationResultTestStandard();
+        testStandard2.setTestStandardId(2L);
         testStandard2.setTestStandardName("TestStandard2");
 
         CertificationResultTestStandard testStandard3 = new CertificationResultTestStandard();
+        testStandard3.setTestStandardId(1L);
         testStandard3.setTestStandardName("TestStandard1");
 
         CertificationResultTestStandard testStandard4 = new CertificationResultTestStandard();
+        testStandard4.setTestStandardId(4L);
         testStandard4.setTestStandardName("TestStandard4");
 
         cert.getTestStandards().add(testStandard1);
