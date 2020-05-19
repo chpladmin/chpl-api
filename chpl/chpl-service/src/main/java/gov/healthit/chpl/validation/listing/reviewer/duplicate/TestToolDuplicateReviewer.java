@@ -2,9 +2,9 @@ package gov.healthit.chpl.validation.listing.reviewer.duplicate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiPredicate;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,42 +27,72 @@ public class TestToolDuplicateReviewer {
     public void review(CertifiedProductSearchDetails listing, CertificationResult certificationResult) {
 
         DuplicateReviewResult<CertificationResultTestTool> testToolDuplicateResults =
-                new DuplicateReviewResult<CertificationResultTestTool>(getPredicate());
-
+                new DuplicateReviewResult<CertificationResultTestTool>(duplicatePredicate());
         if (certificationResult.getTestToolsUsed() != null) {
             for (CertificationResultTestTool dto : certificationResult.getTestToolsUsed()) {
                 testToolDuplicateResults.addObject(dto);
             }
         }
-
         if (testToolDuplicateResults.duplicatesExist()) {
             listing.getWarningMessages().addAll(
                     getWarnings(testToolDuplicateResults.getDuplicateList(),
                             Util.formatCriteriaNumber(certificationResult.getCriterion())));
             certificationResult.setTestToolsUsed(testToolDuplicateResults.getUniqueList());
         }
+
+        DuplicateReviewResult<CertificationResultTestTool> testToolDuplicateIdResults =
+                new DuplicateReviewResult<CertificationResultTestTool>(duplicateIdPredicate());
+        if (certificationResult.getTestToolsUsed() != null) {
+            for (CertificationResultTestTool dto : certificationResult.getTestToolsUsed()) {
+                testToolDuplicateIdResults.addObject(dto);
+            }
+        }
+        if (testToolDuplicateIdResults.duplicatesExist()) {
+            listing.getErrorMessages().addAll(
+                    getErrors(testToolDuplicateIdResults.getDuplicateList(),
+                            Util.formatCriteriaNumber(certificationResult.getCriterion())));
+        }
+    }
+
+    private List<String> getErrors(List<CertificationResultTestTool> duplicates, String criteria) {
+        List<String> errors = new ArrayList<String>();
+        for (CertificationResultTestTool duplicate : duplicates) {
+            String error = errorMessageUtil.getMessage("listing.criteria.duplicateTestToolName",
+                    criteria, duplicate.getTestToolName());
+            errors.add(error);
+        }
+        return errors;
     }
 
     private List<String> getWarnings(List<CertificationResultTestTool> duplicates, String criteria) {
         List<String> warnings = new ArrayList<String>();
         for (CertificationResultTestTool duplicate : duplicates) {
-            String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestTool",
+            String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestToolNameAndVersion",
                     criteria, duplicate.getTestToolName(), duplicate.getTestToolVersion());
             warnings.add(warning);
         }
         return warnings;
     }
 
-    private BiPredicate<CertificationResultTestTool, CertificationResultTestTool> getPredicate() {
+    private BiPredicate<CertificationResultTestTool, CertificationResultTestTool> duplicatePredicate() {
+        return new BiPredicate<CertificationResultTestTool, CertificationResultTestTool>() {
+            @Override
+            public boolean test(CertificationResultTestTool dto1,
+                    CertificationResultTestTool dto2) {
+                return Objects.equals(dto1.getTestToolId(), dto2.getTestToolId())
+                        && Objects.equals(dto1.getTestToolVersion(), dto2.getTestToolVersion());
+            }
+        };
+    }
+
+    private BiPredicate<CertificationResultTestTool, CertificationResultTestTool> duplicateIdPredicate() {
         return new BiPredicate<CertificationResultTestTool, CertificationResultTestTool>() {
             @Override
             public boolean test(CertificationResultTestTool dto1,
                     CertificationResultTestTool dto2) {
 
-                return ObjectUtils.allNotNull(dto1.getTestToolName(), dto2.getTestToolName(),
-                        dto1.getTestToolVersion(), dto2.getTestToolVersion())
-                        && dto1.getTestToolName().equals(dto2.getTestToolName())
-                        && dto1.getTestToolVersion().equals(dto2.getTestToolVersion());
+                return Objects.equals(dto1.getTestToolId(), dto2.getTestToolId())
+                        && !Objects.equals(dto1.getTestToolVersion(), dto2.getTestToolVersion());
             }
         };
     }

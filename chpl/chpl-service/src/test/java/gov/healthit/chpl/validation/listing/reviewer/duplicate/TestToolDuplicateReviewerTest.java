@@ -16,8 +16,10 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class TestToolDuplicateReviewerTest {
     private static final String CRITERION_NUMBER = "170.315 (a)(1)";
-    private static final String ERR_MSG =
+    private static final String DUPLICATE_NAME_AND_VERSION =
             "Certification %s contains duplicate Test Tool: Name '%s', Version '%s'. The duplicates have been removed.";
+    private static final String DUPLICATE_NAME =
+            "Certification %s contains duplicate Test Tool: Name '%s'.";
 
     private ErrorMessageUtil msgUtil;
     private TestToolDuplicateReviewer reviewer;
@@ -27,9 +29,12 @@ public class TestToolDuplicateReviewerTest {
         MockitoAnnotations.initMocks(this);
 
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateTestTool"),
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateTestToolNameAndVersion"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-                .thenAnswer(i -> String.format(ERR_MSG, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
+                .thenAnswer(i -> String.format(DUPLICATE_NAME_AND_VERSION, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateTestToolName"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+                .thenAnswer(i -> String.format(DUPLICATE_NAME, i.getArgument(1), i.getArgument(2)));
         reviewer = new TestToolDuplicateReviewer(msgUtil);
     }
 
@@ -37,45 +42,52 @@ public class TestToolDuplicateReviewerTest {
     public void review_duplicateExists_warningFoundAndDuplicateRemoved() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         CertificationResult cert = getCertResult();
-
-        CertificationResultTestTool testTool1 = new CertificationResultTestTool();
-        testTool1.setTestToolName("TestTool1");
-        testTool1.setTestToolVersion("v1");
-
-        CertificationResultTestTool testTool2 = new CertificationResultTestTool();
-        testTool2.setTestToolName("TestTool1");
-        testTool2.setTestToolVersion("v1");
-
+        CertificationResultTestTool testTool1 = getTestTool(1L, "Test Tool 1", "v1");
+        CertificationResultTestTool testTool2 = getTestTool(1L, "Test Tool 1", "v1");
         cert.getTestToolsUsed().add(testTool1);
         cert.getTestToolsUsed().add(testTool2);
 
         reviewer.review(listing, cert);
 
+        assertEquals(0, listing.getErrorMessages().size());
         assertEquals(1, listing.getWarningMessages().size());
         assertEquals(1, listing.getWarningMessages().stream()
-                .filter(warning -> warning.equals(String.format(ERR_MSG, CRITERION_NUMBER, "TestTool1", "v1")))
+                .filter(warning -> warning.equals(String.format(DUPLICATE_NAME_AND_VERSION, CRITERION_NUMBER, "Test Tool 1", "v1")))
                 .count());
         assertEquals(1, cert.getTestToolsUsed().size());
     }
 
     @Test
-    public void review_noDuplicates_noWarning() {
+    public void review_duplicateNameExists_errorFound() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         CertificationResult cert = getCertResult();
-
-        CertificationResultTestTool testTool1 = new CertificationResultTestTool();
-        testTool1.setTestToolName("TestTool1");
-        testTool1.setTestToolVersion("v1");
-
-        CertificationResultTestTool testTool2 = new CertificationResultTestTool();
-        testTool2.setTestToolName("TestTool2");
-        testTool2.setTestToolVersion("v1");
-
+        CertificationResultTestTool testTool1 = getTestTool(1L, "Test Tool 1", "v1");
+        CertificationResultTestTool testTool2 = getTestTool(1L, "Test Tool 1", "v2");
         cert.getTestToolsUsed().add(testTool1);
         cert.getTestToolsUsed().add(testTool2);
 
         reviewer.review(listing, cert);
 
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertEquals(1, listing.getErrorMessages().stream()
+                .filter(error -> error.equals(String.format(DUPLICATE_NAME, CRITERION_NUMBER, "Test Tool 1")))
+                .count());
+        assertEquals(2, cert.getTestToolsUsed().size());
+    }
+
+    @Test
+    public void review_noDuplicateIds_noWarning() {
+        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
+        CertificationResult cert = getCertResult();
+        CertificationResultTestTool testTool1 = getTestTool(1L, "Test Tool 1", "v1");
+        CertificationResultTestTool testTool2 = getTestTool(2L, "Test Tool 2", "v1");
+        cert.getTestToolsUsed().add(testTool1);
+        cert.getTestToolsUsed().add(testTool2);
+
+        reviewer.review(listing, cert);
+
+        assertEquals(0, listing.getErrorMessages().size());
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(2, cert.getTestToolsUsed().size());
     }
@@ -87,6 +99,7 @@ public class TestToolDuplicateReviewerTest {
         cert.getTestToolsUsed().clear();
         reviewer.review(listing, cert);
 
+        assertEquals(0, listing.getErrorMessages().size());
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(0, cert.getTestToolsUsed().size());
     }
@@ -95,23 +108,10 @@ public class TestToolDuplicateReviewerTest {
     public void review_duplicateExistsInLargeSet_warningFoundAndDuplicateRemoved() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         CertificationResult cert = getCertResult();
-
-        CertificationResultTestTool testTool1 = new CertificationResultTestTool();
-        testTool1.setTestToolName("TestTool1");
-        testTool1.setTestToolVersion("v1");
-
-        CertificationResultTestTool testTool2 = new CertificationResultTestTool();
-        testTool2.setTestToolName("TestTool2");
-        testTool2.setTestToolVersion("v1");
-
-        CertificationResultTestTool testTool3 = new CertificationResultTestTool();
-        testTool3.setTestToolName("TestTool1");
-        testTool3.setTestToolVersion("v1");
-
-        CertificationResultTestTool testTool4 = new CertificationResultTestTool();
-        testTool4.setTestToolName("TestTool4");
-        testTool4.setTestToolVersion("v2");
-
+        CertificationResultTestTool testTool1 = getTestTool(1L, "Test Tool 1", "v1");
+        CertificationResultTestTool testTool2 = getTestTool(2L, "Test Tool 2", "v2");
+        CertificationResultTestTool testTool3 = getTestTool(1L, "Test Tool 1", "v1");
+        CertificationResultTestTool testTool4 = getTestTool(3L, "Test Tool 3", "v1");
         cert.getTestToolsUsed().add(testTool1);
         cert.getTestToolsUsed().add(testTool2);
         cert.getTestToolsUsed().add(testTool3);
@@ -119,11 +119,20 @@ public class TestToolDuplicateReviewerTest {
 
         reviewer.review(listing, cert);
 
+        assertEquals(0, listing.getErrorMessages().size());
         assertEquals(1, listing.getWarningMessages().size());
         assertEquals(1, listing.getWarningMessages().stream()
-                .filter(warning -> warning.equals(String.format(ERR_MSG, CRITERION_NUMBER, "TestTool1", "v1")))
+                .filter(warning -> warning.equals(String.format(DUPLICATE_NAME_AND_VERSION, CRITERION_NUMBER, "Test Tool 1", "v1")))
                 .count());
         assertEquals(3, cert.getTestToolsUsed().size());
+    }
+
+    private CertificationResultTestTool getTestTool(Long id, String name, String version) {
+        CertificationResultTestTool testTool = new CertificationResultTestTool();
+        testTool.setTestToolId(id);
+        testTool.setTestToolName(name);
+        testTool.setTestToolVersion(version);
+        return testTool;
     }
 
     private CertificationResult getCertResult() {
