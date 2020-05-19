@@ -34,9 +34,11 @@ public class AtlDuplicateReviewerTest {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
 
         CertifiedProductTestingLab atl1 = new CertifiedProductTestingLab();
+        atl1.setTestingLabId(1L);
         atl1.setTestingLabName("Atl1");
 
         CertifiedProductTestingLab atl2 = new CertifiedProductTestingLab();
+        atl2.setTestingLabId(1L);
         atl2.setTestingLabName("Atl1");
 
         listing.getTestingLabs().add(atl1);
@@ -56,9 +58,11 @@ public class AtlDuplicateReviewerTest {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
 
         CertifiedProductTestingLab atl1 = new CertifiedProductTestingLab();
+        atl1.setTestingLabId(1L);
         atl1.setTestingLabName("Atl1");
 
         CertifiedProductTestingLab atl2 = new CertifiedProductTestingLab();
+        atl2.setTestingLabId(2L);
         atl2.setTestingLabName("Atl2");
 
         listing.getTestingLabs().add(atl1);
@@ -86,15 +90,19 @@ public class AtlDuplicateReviewerTest {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
 
         CertifiedProductTestingLab atl1 = new CertifiedProductTestingLab();
+        atl1.setTestingLabId(1L);
         atl1.setTestingLabName("Atl1");
 
         CertifiedProductTestingLab atl2 = new CertifiedProductTestingLab();
+        atl2.setTestingLabId(2L);
         atl2.setTestingLabName("Atl2");
 
         CertifiedProductTestingLab atl3 = new CertifiedProductTestingLab();
+        atl3.setTestingLabId(1L);
         atl3.setTestingLabName("Atl1");
 
         CertifiedProductTestingLab atl4 = new CertifiedProductTestingLab();
+        atl4.setTestingLabId(3L);
         atl4.setTestingLabName("Atl3");
 
         listing.getTestingLabs().add(atl1);
