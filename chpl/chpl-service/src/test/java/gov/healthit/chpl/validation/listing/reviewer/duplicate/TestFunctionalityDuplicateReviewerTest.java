@@ -38,9 +38,11 @@ public class TestFunctionalityDuplicateReviewerTest {
         CertificationResult cert = getCertResult();
 
         CertificationResultTestFunctionality testFunc1 = new CertificationResultTestFunctionality();
+        testFunc1.setTestFunctionalityId(1L);
         testFunc1.setName("TestFunc1");
 
         CertificationResultTestFunctionality testFunc2 = new CertificationResultTestFunctionality();
+        testFunc2.setTestFunctionalityId(1L);
         testFunc2.setName("TestFunc1");
 
         cert.getTestFunctionality().add(testFunc1);
@@ -61,9 +63,11 @@ public class TestFunctionalityDuplicateReviewerTest {
         CertificationResult cert = getCertResult();
 
         CertificationResultTestFunctionality testFunc1 = new CertificationResultTestFunctionality();
+        testFunc1.setTestFunctionalityId(1L);
         testFunc1.setName("TestFunc1");
 
         CertificationResultTestFunctionality testFunc2 = new CertificationResultTestFunctionality();
+        testFunc2.setTestFunctionalityId(2L);
         testFunc2.setName("TestFunc2");
 
         cert.getTestFunctionality().add(testFunc1);
@@ -93,15 +97,19 @@ public class TestFunctionalityDuplicateReviewerTest {
         CertificationResult cert = getCertResult();
 
         CertificationResultTestFunctionality testFunc1 = new CertificationResultTestFunctionality();
+        testFunc1.setTestFunctionalityId(1L);
         testFunc1.setName("TestFunc1");
 
         CertificationResultTestFunctionality testFunc2 = new CertificationResultTestFunctionality();
+        testFunc2.setTestFunctionalityId(2L);
         testFunc2.setName("TestFunc2");
 
         CertificationResultTestFunctionality testFunc3 = new CertificationResultTestFunctionality();
+        testFunc3.setTestFunctionalityId(1L);
         testFunc3.setName("TestFunc1");
 
         CertificationResultTestFunctionality testFunc4 = new CertificationResultTestFunctionality();
+        testFunc4.setTestFunctionalityId(3L);
         testFunc4.setName("TestFunc3");
 
         cert.getTestFunctionality().add(testFunc1);
