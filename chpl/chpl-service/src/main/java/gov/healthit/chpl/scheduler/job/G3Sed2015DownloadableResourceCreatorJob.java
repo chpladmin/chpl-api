@@ -37,7 +37,7 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
     }
 
     @Override
-    public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+    public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
         Date start = new Date();
@@ -61,12 +61,6 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
         LOGGER.info("********* Completed the G3 SED 2015 Downloadable Resource Creator job. *********");
     }
 
-    /**
-     * Gets all listings that have certified to 170.315 (g)(3)
-     * 
-     * @return
-     * @throws EntityRetrievalException
-     */
     private List<Long> getRelevantListingIds() throws EntityRetrievalException {
         LOGGER.info("Finding all listings attesting to " + CRITERIA_NAME + ".");
         CertificationCriterionDTO certCrit = getCriteriaDao().getByNumberAndTitle(CRITERIA_NAME, TITLE);
@@ -75,7 +69,7 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
         return listingIds;
     }
 
-    private void writeToFile(final File downloadFolder, final List<CertifiedProductSearchDetails> results)
+    private void writeToFile(File downloadFolder, List<CertifiedProductSearchDetails> results)
             throws IOException {
         String csvFilename = downloadFolder.getAbsolutePath()
                 + File.separator
@@ -88,7 +82,7 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
         LOGGER.info("Wrote G3 SED 2015 CSV file.");
     }
 
-    private File getFile(final String fileName) throws IOException {
+    private File getFile(String fileName) throws IOException {
         File file = new File(fileName);
         if (file.exists()) {
             if (!file.delete()) {
