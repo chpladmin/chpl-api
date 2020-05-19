@@ -1,10 +1,11 @@
-package gov.healthit.chpl.validation.listing.reviewer.edition2015.duplicate;
+package gov.healthit.chpl.validation.listing.reviewer.duplicate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiPredicate;
 
-import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,12 +16,12 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.DuplicateReviewResult;
 
-@Component("testProcedure2015DuplicateReviewer")
-public class TestProcedure2015DuplicateReviewer {
+@Component("testProcedureDuplicateReviewer")
+public class TestProcedureDuplicateReviewer {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public TestProcedure2015DuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
+    public TestProcedureDuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
@@ -40,37 +41,43 @@ public class TestProcedure2015DuplicateReviewer {
             certificationResult.setTestProcedures(testProcedureDuplicateResults.getUniqueList());
         }
 
-        DuplicateReviewResult<CertificationResultTestProcedure> testProcedureDuplicateNameResults =
-                new DuplicateReviewResult<CertificationResultTestProcedure>(duplicateNamePredicate());
+        DuplicateReviewResult<CertificationResultTestProcedure> testProcedureDuplicateIdResults =
+                new DuplicateReviewResult<CertificationResultTestProcedure>(duplicateIdPredicate());
         if (certificationResult.getTestProcedures() != null) {
             for (CertificationResultTestProcedure dto : certificationResult.getTestProcedures()) {
-                testProcedureDuplicateNameResults.addObject(dto);
+                testProcedureDuplicateIdResults.addObject(dto);
             }
         }
-        if (testProcedureDuplicateNameResults.duplicatesExist()) {
+        if (testProcedureDuplicateIdResults.duplicatesExist()) {
             listing.getErrorMessages().addAll(
-                    getErrors(testProcedureDuplicateNameResults.getDuplicateList(),
+                    getErrors(testProcedureDuplicateIdResults.getDuplicateList(),
                             Util.formatCriteriaNumber(certificationResult.getCriterion())));
         }
     }
 
     private List<String> getErrors(List<CertificationResultTestProcedure> duplicates,
             String criteria) {
-        List<String> warnings = new ArrayList<String>();
+        List<String> errors = new ArrayList<String>();
         for (CertificationResultTestProcedure duplicate : duplicates) {
-            String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestProcedureName.2015",
-                    criteria, duplicate.getTestProcedure().getName());
-            warnings.add(warning);
+            String error = errorMessageUtil.getMessage("listing.criteria.duplicateTestProcedureName",
+                        criteria, duplicate.getTestProcedure().getName());
+            errors.add(error);
         }
-        return warnings;
+        return errors;
     }
 
     private List<String> getWarnings(List<CertificationResultTestProcedure> duplicates,
             String criteria) {
         List<String> warnings = new ArrayList<String>();
         for (CertificationResultTestProcedure duplicate : duplicates) {
-            String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestProcedure.2015",
+            String warning = "";
+            if (StringUtils.isEmpty(duplicate.getTestProcedureVersion())) {
+                warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestProcedureName",
+                        criteria, duplicate.getTestProcedure().getName());
+            } else {
+                warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestProcedureNameAndVersion",
                     criteria, duplicate.getTestProcedure().getName(), duplicate.getTestProcedureVersion());
+            }
             warnings.add(warning);
         }
         return warnings;
@@ -81,21 +88,19 @@ public class TestProcedure2015DuplicateReviewer {
             @Override
             public boolean test(CertificationResultTestProcedure dto1,
                     CertificationResultTestProcedure dto2) {
-                return ObjectUtils.allNotNull(dto1.getTestProcedure().getName(), dto2.getTestProcedure().getName(),
-                        dto1.getTestProcedureVersion(), dto2.getTestProcedureVersion())
-                        && dto1.getTestProcedure().getName().equals(dto2.getTestProcedure().getName())
-                        && dto1.getTestProcedureVersion().equals(dto2.getTestProcedureVersion());
+                return Objects.equals(dto1.getTestProcedure().getId(), dto2.getTestProcedure().getId())
+                        && Objects.equals(dto1.getTestProcedureVersion(), dto2.getTestProcedureVersion());
             }
         };
     }
 
-    private BiPredicate<CertificationResultTestProcedure, CertificationResultTestProcedure> duplicateNamePredicate() {
+    private BiPredicate<CertificationResultTestProcedure, CertificationResultTestProcedure> duplicateIdPredicate() {
         return new BiPredicate<CertificationResultTestProcedure, CertificationResultTestProcedure>() {
             @Override
             public boolean test(CertificationResultTestProcedure dto1,
                     CertificationResultTestProcedure dto2) {
-                return ObjectUtils.allNotNull(dto1.getTestProcedure().getName(), dto2.getTestProcedure().getName())
-                        && dto1.getTestProcedure().getName().equals(dto2.getTestProcedure().getName());
+                return Objects.equals(dto1.getTestProcedure().getId(), dto2.getTestProcedure().getId())
+                        && !Objects.equals(dto1.getTestProcedureVersion(), dto2.getTestProcedureVersion());
             }
         };
     }

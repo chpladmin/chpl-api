@@ -14,40 +14,36 @@ import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestProcedure;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.duplicate.TestProcedure2015DuplicateReviewer;
 
-public class TestProcedure2015DuplicateReviewerTest {
+public class TestProcedureDuplicateReviewerTest {
     private static final String CRITERION_NUMBER = "170.315 (a)(1)";
-    private static final String WARN_MSG =
+    private static final String DUPLICATE_NAME_AND_VERSION =
             "Certification %s contains duplicate Test Procedure: Name '%s', Version '%s'. The duplicates have been removed.";
-    private static final String ERR_MSG =
+    private static final String DUPLICATE_NAME =
             "Certification %s contains duplicate Test Procedure: '%s'.";
 
     private ErrorMessageUtil msgUtil;
-    private TestProcedure2015DuplicateReviewer reviewer;
+    private TestProcedureDuplicateReviewer reviewer;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateTestProcedure.2015"),
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateTestProcedureNameAndVersion"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-                .thenAnswer(i -> String.format(WARN_MSG, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateTestProcedureName.2015"),
+                .thenAnswer(i -> String.format(DUPLICATE_NAME_AND_VERSION, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateTestProcedureName"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-                .thenAnswer(i -> String.format(ERR_MSG, i.getArgument(1), i.getArgument(2)));
-        reviewer = new TestProcedure2015DuplicateReviewer(msgUtil);
+                .thenAnswer(i -> String.format(DUPLICATE_NAME, i.getArgument(1), i.getArgument(2)));
+        reviewer = new TestProcedureDuplicateReviewer(msgUtil);
     }
 
     @Test
     public void review_duplicateExists_warningFoundAndDuplicateRemoved() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-
         CertificationResult cert = getCertResult();
-
-        CertificationResultTestProcedure testProc1 = getTestProcedure("TestProc1", "v1");
-        CertificationResultTestProcedure testProc2 = getTestProcedure("TestProc1", "v1");
-
+        CertificationResultTestProcedure testProc1 = getTestProcedure(1L, "TestProc1", "v1");
+        CertificationResultTestProcedure testProc2 = getTestProcedure(1L, "TestProc1", "v1");
         cert.getTestProcedures().add(testProc1);
         cert.getTestProcedures().add(testProc2);
 
@@ -56,7 +52,7 @@ public class TestProcedure2015DuplicateReviewerTest {
         assertEquals(0, listing.getErrorMessages().size());
         assertEquals(1, listing.getWarningMessages().size());
         assertEquals(1, listing.getWarningMessages().stream()
-                .filter(warning -> warning.equals(String.format(WARN_MSG, CRITERION_NUMBER, "TestProc1", "v1")))
+                .filter(warning -> warning.equals(String.format(DUPLICATE_NAME_AND_VERSION, CRITERION_NUMBER, "TestProc1", "v1")))
                 .count());
         assertEquals(1, cert.getTestProcedures().size());
     }
@@ -64,12 +60,9 @@ public class TestProcedure2015DuplicateReviewerTest {
     @Test
     public void review_duplicateNameExists_errorFound() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-
         CertificationResult cert = getCertResult();
-
-        CertificationResultTestProcedure testProc1 = getTestProcedure("TestProc1", "v1");
-        CertificationResultTestProcedure testProc2 = getTestProcedure("TestProc1", "v2");
-
+        CertificationResultTestProcedure testProc1 = getTestProcedure(1L, "TestProc1", "v1");
+        CertificationResultTestProcedure testProc2 = getTestProcedure(1L, "TestProc1", "v2");
         cert.getTestProcedures().add(testProc1);
         cert.getTestProcedures().add(testProc2);
 
@@ -78,20 +71,57 @@ public class TestProcedure2015DuplicateReviewerTest {
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(1, listing.getErrorMessages().size());
         assertEquals(1, listing.getErrorMessages().stream()
-                .filter(error -> error.equals(String.format(ERR_MSG, CRITERION_NUMBER, "TestProc1")))
+                .filter(error -> error.equals(String.format(DUPLICATE_NAME, CRITERION_NUMBER, "TestProc1")))
                 .count());
         assertEquals(2, cert.getTestProcedures().size());
     }
 
     @Test
-    public void review_noDuplicates_noWarning() {
+    public void review_duplicateNameNullVersion_errorFound() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-
         CertificationResult cert = getCertResult();
+        //2014 listings allow null tp version
+        CertificationResultTestProcedure testProc1 = getTestProcedure(1L, "TestProc1", null);
+        CertificationResultTestProcedure testProc2 = getTestProcedure(1L, "TestProc1", null);
+        cert.getTestProcedures().add(testProc1);
+        cert.getTestProcedures().add(testProc2);
 
-        CertificationResultTestProcedure testProc1 = getTestProcedure("TestProc1", "v1");
-        CertificationResultTestProcedure testProc2 = getTestProcedure("TestProc2", "v1");
+        reviewer.review(listing, cert);
 
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(1, listing.getWarningMessages().stream()
+                .filter(warning -> warning.equals(String.format(DUPLICATE_NAME, CRITERION_NUMBER, "TestProc1")))
+                .count());
+        assertEquals(1, cert.getTestProcedures().size());
+    }
+
+    @Test
+    public void review_duplicateNameEmptyVersion_errorFound() {
+        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
+        CertificationResult cert = getCertResult();
+        //2014 listings allow empty tp version
+        CertificationResultTestProcedure testProc1 = getTestProcedure(1L, "TestProc1", "");
+        CertificationResultTestProcedure testProc2 = getTestProcedure(1L, "TestProc1", "");
+        cert.getTestProcedures().add(testProc1);
+        cert.getTestProcedures().add(testProc2);
+
+        reviewer.review(listing, cert);
+
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(1, listing.getWarningMessages().stream()
+                .filter(warning -> warning.equals(String.format(DUPLICATE_NAME, CRITERION_NUMBER, "TestProc1")))
+                .count());
+        assertEquals(1, cert.getTestProcedures().size());
+    }
+
+    @Test
+    public void review_noDuplicateIds_noWarning() {
+        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
+        CertificationResult cert = getCertResult();
+        CertificationResultTestProcedure testProc1 = getTestProcedure(1L, "TestProc1", "v1");
+        CertificationResultTestProcedure testProc2 = getTestProcedure(2L, "TestProc2", "v1");
         cert.getTestProcedures().add(testProc1);
         cert.getTestProcedures().add(testProc2);
 
@@ -107,7 +137,6 @@ public class TestProcedure2015DuplicateReviewerTest {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         CertificationResult cert = getCertResult();
         cert.getTestProcedures().clear();
-
         reviewer.review(listing, cert);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -119,12 +148,10 @@ public class TestProcedure2015DuplicateReviewerTest {
     public void review_duplicateExistsInLargeSet_warningFoundAndDuplicateRemoved() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         CertificationResult cert = getCertResult();
-
-        CertificationResultTestProcedure testProc1 = getTestProcedure("TestProc1", "v1");
-        CertificationResultTestProcedure testProc2 = getTestProcedure("TestProc2", "v1");
-        CertificationResultTestProcedure testProc3 = getTestProcedure("TestProc1", "v1");
-        CertificationResultTestProcedure testProc4 = getTestProcedure("TestProc4", "v2");
-
+        CertificationResultTestProcedure testProc1 = getTestProcedure(1L, "TestProc1", "v1");
+        CertificationResultTestProcedure testProc2 = getTestProcedure(2L, "TestProc2", "v1");
+        CertificationResultTestProcedure testProc3 = getTestProcedure(1L, "TestProc1", "v1");
+        CertificationResultTestProcedure testProc4 = getTestProcedure(4L, "TestProc4", "v2");
         cert.getTestProcedures().add(testProc1);
         cert.getTestProcedures().add(testProc2);
         cert.getTestProcedures().add(testProc3);
@@ -135,15 +162,16 @@ public class TestProcedure2015DuplicateReviewerTest {
         assertEquals(0, listing.getErrorMessages().size());
         assertEquals(1, listing.getWarningMessages().size());
         assertEquals(1, listing.getWarningMessages().stream()
-                .filter(warning -> warning.equals(String.format(WARN_MSG, CRITERION_NUMBER, "TestProc1", "v1")))
+                .filter(warning -> warning.equals(String.format(DUPLICATE_NAME_AND_VERSION, CRITERION_NUMBER, "TestProc1", "v1")))
                 .count());
         assertEquals(3, cert.getTestProcedures().size());
     }
 
-    private CertificationResultTestProcedure getTestProcedure(String name, String version) {
+    private CertificationResultTestProcedure getTestProcedure(Long id, String tpName, String version) {
         CertificationResultTestProcedure certTp = new CertificationResultTestProcedure();
         TestProcedure tp = new TestProcedure();
-        tp.setName(name);
+        tp.setId(id);
+        tp.setName(tpName);
         certTp.setTestProcedure(tp);
         certTp.setTestProcedureVersion(version);
         return certTp;

@@ -9,6 +9,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.AtlDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestFunctionalityDuplicateReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestProcedureDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestStandardDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestToolDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.duplicate.AccessibilityStandard2015DuplicateReviewer;
@@ -17,14 +18,13 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.duplicate.IcsSo
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.duplicate.QmsStandard2015DuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.duplicate.TargetedUser2015DuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.duplicate.TestData2015DuplicateReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.duplicate.TestProcedure2015DuplicateReviewer;
 
 @Component("duplicateData2015Reviewer")
 public class DuplicateData2015Reviewer implements Reviewer {
     private TestFunctionalityDuplicateReviewer testFunctionalityDuplicateReviewer;
     private TestData2015DuplicateReviewer testDataDuplicateReviewer;
     private TestToolDuplicateReviewer testToolDuplicateReviewer;
-    private TestProcedure2015DuplicateReviewer testProcedureDuplicateReviewer;
+    private TestProcedureDuplicateReviewer testProcedureDuplicateReviewer;
     private TestStandardDuplicateReviewer testStandardDuplicateReviewer;
     private AdditionalSoftware2015DuplicateReviewer additionalSoftwareDuplicateReviewer;
     private AccessibilityStandard2015DuplicateReviewer accessibilityStandardDuplicateReviewer;
@@ -38,7 +38,7 @@ public class DuplicateData2015Reviewer implements Reviewer {
             @Qualifier("testFunctionalityDuplicateReviewer") TestFunctionalityDuplicateReviewer testFunctionalityDuplicateReviewer,
             @Qualifier("testData2015DuplicateReviewer") TestData2015DuplicateReviewer testDataDuplicateReviewer,
             @Qualifier("testToolDuplicateReviewer") TestToolDuplicateReviewer testToolDuplicateReviewer,
-            @Qualifier("testProcedure2015DuplicateReviewer") TestProcedure2015DuplicateReviewer testProcedureDuplicateReviewer,
+            @Qualifier("testProcedureDuplicateReviewer") TestProcedureDuplicateReviewer testProcedureDuplicateReviewer,
             @Qualifier("testStandardDuplicateReviewer") TestStandardDuplicateReviewer testStandardDuplicateReviewer,
             @Qualifier("additionalSoftware2015DuplicateReviewer") AdditionalSoftware2015DuplicateReviewer additionalSoftwareDuplicateReviewer,
             @Qualifier("accessibilityStandard2015DuplicateReviewer") AccessibilityStandard2015DuplicateReviewer accessibilityStandardDuplicateReviewer,

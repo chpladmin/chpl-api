@@ -9,12 +9,12 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.AtlDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestFunctionalityDuplicateReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestProcedureDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestStandardDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestToolDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.duplicate.AdditionalSoftware2014DuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.duplicate.QmsStandard2014DuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.duplicate.TestData2014DuplicateReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2014.duplicate.TestProcedure2014DuplicateReviewer;
 
 @Component("duplicateData2014Reviewer")
 public class DuplicateData2014Reviewer implements Reviewer {
@@ -23,7 +23,7 @@ public class DuplicateData2014Reviewer implements Reviewer {
     private AdditionalSoftware2014DuplicateReviewer additionalSoftwareDuplicateReviewer;
     private TestToolDuplicateReviewer testToolDuplicateReviewer;
     private TestStandardDuplicateReviewer testStandardDuplicateReviewer;
-    private TestProcedure2014DuplicateReviewer testProcedureDuplicateReviewer;
+    private TestProcedureDuplicateReviewer testProcedureDuplicateReviewer;
     private TestData2014DuplicateReviewer testDataDuplicateReviewer;
     private AtlDuplicateReviewer atlDuplicateReviewer;
 
@@ -34,7 +34,7 @@ public class DuplicateData2014Reviewer implements Reviewer {
             @Qualifier("additionalSoftware2014DuplicateReviewer") AdditionalSoftware2014DuplicateReviewer additionalSoftwareDuplicateReviewer,
             @Qualifier("testToolDuplicateReviewer") TestToolDuplicateReviewer testToolDuplicateReviewer,
             @Qualifier("testStandardDuplicateReviewer") TestStandardDuplicateReviewer testStandardDuplicateReviewer,
-            @Qualifier("testProcedure2014DuplicateReviewer") TestProcedure2014DuplicateReviewer testProcedureDuplicateReviewer,
+            @Qualifier("testProcedureDuplicateReviewer") TestProcedureDuplicateReviewer testProcedureDuplicateReviewer,
             @Qualifier("testData2014DuplicateReviewer") TestData2014DuplicateReviewer testDataDuplicateReviewer,
             @Qualifier("atlDuplicateReviewer") AtlDuplicateReviewer atlDuplicateReviewer) {
         this.qmsStandardDuplicateReviewer = qmsStandard2014DuplicateReviewer;
