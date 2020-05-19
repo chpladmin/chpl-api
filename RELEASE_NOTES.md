@@ -1,5 +1,20 @@
 # Release Notes
 
+## Version 25.4.0
+_18 May 2020_
+
+### Features
+* ONC-ACB should only be able to add or remove criteria if listing is in "Active" status
+* Show repeated information in Questionable URL report
+* Provide better error message for QMS Standards that are too long in upload
+
+### Bug Fixes
+* Allow addition of active Macra Measures by ROLE_ACB
+* Reduce incorrect "activity" in Developer reports
+* Show all surveillance update activity in listing reports
+
+---
+
 ## Version 25.3.0
 _4 May 2020_
 

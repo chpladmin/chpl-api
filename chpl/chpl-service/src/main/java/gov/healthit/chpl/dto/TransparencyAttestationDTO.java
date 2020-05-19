@@ -7,7 +7,13 @@ import org.ff4j.FF4j;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.SpringContext;
 import gov.healthit.chpl.domain.TransparencyAttestation;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
+@Builder
+@Data
+@AllArgsConstructor
 public class TransparencyAttestationDTO implements Serializable {
     private static final long serialVersionUID = 3828311869155691347L;
 
@@ -33,20 +39,37 @@ public class TransparencyAttestationDTO implements Serializable {
         this.removed = domain.getRemoved();
     }
 
-    public String getTransparencyAttestation() {
-        return transparencyAttestation;
+    // Not all attributes have been included. The attributes being used were selected so the DeveloperManager could
+    // determine equality when updating a Developer
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        TransparencyAttestationDTO other = (TransparencyAttestationDTO) obj;
+        if (transparencyAttestation == null) {
+            if (other.transparencyAttestation != null) {
+                return false;
+            }
+        } else if (!transparencyAttestation.equals(other.transparencyAttestation)) {
+            return false;
+        }
+        return true;
     }
 
-    public void setTransparencyAttestation(String transparencyAttestation) {
-        this.transparencyAttestation = transparencyAttestation;
+    // Not all attributes have been included. The attributes being used were selected so the DeveloperManager could
+    // determine equality when updating a Developer
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((transparencyAttestation == null) ? 0 : transparencyAttestation.hashCode());
+        return result;
     }
-
-    public Boolean getRemoved() {
-        return removed;
-    }
-
-    public void setRemoved(Boolean removed) {
-        this.removed = removed;
-    }
-
 }
