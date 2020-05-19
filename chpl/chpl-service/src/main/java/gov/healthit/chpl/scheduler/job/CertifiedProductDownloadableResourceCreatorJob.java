@@ -67,9 +67,10 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             CompletableFuture<Void> combinedFutures = CompletableFuture
                     .allOf(futures.toArray(new CompletableFuture[futures.size()]));
 
-            // This is not blocking - I think because the job executes using it's own ExecutorService
-            // This is necessary so that the presenters do not close until all of the data has been written to them
+            // This is not blocking - presumably because the job executes using it's own ExecutorService
+            // This is necessary so that the system can indicate that the job and it's threads are still running
             combinedFutures.get();
+            LOGGER.info("All processes have completed");
 
             LOGGER.info("********* Completed the Certified Product Downloadable Resource Creator job for {}. *********", edition);
         } catch (Exception e) {
