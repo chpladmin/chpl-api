@@ -9,16 +9,16 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.AdditionalSoftwareDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.AtlDuplicateReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.duplicate.QmsStandardDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestFunctionalityDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestProcedureDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestStandardDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestToolDuplicateReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2014.duplicate.QmsStandard2014DuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.duplicate.TestData2014DuplicateReviewer;
 
 @Component("duplicateData2014Reviewer")
 public class DuplicateData2014Reviewer implements Reviewer {
-    private QmsStandard2014DuplicateReviewer qmsStandardDuplicateReviewer;
+    private QmsStandardDuplicateReviewer qmsStandardDuplicateReviewer;
     private TestFunctionalityDuplicateReviewer testFunctionalityDuplicateReviewer;
     private AdditionalSoftwareDuplicateReviewer additionalSoftwareDuplicateReviewer;
     private TestToolDuplicateReviewer testToolDuplicateReviewer;
@@ -29,7 +29,7 @@ public class DuplicateData2014Reviewer implements Reviewer {
 
     @Autowired
     public DuplicateData2014Reviewer(
-            @Qualifier("qmsStandard2014DuplicateReviewer") QmsStandard2014DuplicateReviewer qmsStandard2014DuplicateReviewer,
+            @Qualifier("qmsStandardDuplicateReviewer") QmsStandardDuplicateReviewer qmsStandardDuplicateReviewer,
             @Qualifier("testFunctionalityDuplicateReviewer") TestFunctionalityDuplicateReviewer testFunctionalityDuplicateReviewer,
             @Qualifier("additionalSoftwareDuplicateReviewer") AdditionalSoftwareDuplicateReviewer additionalSoftwareDuplicateReviewer,
             @Qualifier("testToolDuplicateReviewer") TestToolDuplicateReviewer testToolDuplicateReviewer,
@@ -37,7 +37,7 @@ public class DuplicateData2014Reviewer implements Reviewer {
             @Qualifier("testProcedureDuplicateReviewer") TestProcedureDuplicateReviewer testProcedureDuplicateReviewer,
             @Qualifier("testData2014DuplicateReviewer") TestData2014DuplicateReviewer testDataDuplicateReviewer,
             @Qualifier("atlDuplicateReviewer") AtlDuplicateReviewer atlDuplicateReviewer) {
-        this.qmsStandardDuplicateReviewer = qmsStandard2014DuplicateReviewer;
+        this.qmsStandardDuplicateReviewer = qmsStandardDuplicateReviewer;
         this.testFunctionalityDuplicateReviewer = testFunctionalityDuplicateReviewer;
         this.additionalSoftwareDuplicateReviewer = additionalSoftwareDuplicateReviewer;
         this.testToolDuplicateReviewer = testToolDuplicateReviewer;

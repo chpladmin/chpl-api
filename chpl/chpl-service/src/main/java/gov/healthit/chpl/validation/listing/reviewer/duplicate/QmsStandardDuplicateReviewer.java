@@ -1,7 +1,8 @@
-package gov.healthit.chpl.validation.listing.reviewer.edition2015.duplicate;
+package gov.healthit.chpl.validation.listing.reviewer.duplicate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiPredicate;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -13,12 +14,12 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.DuplicateReviewResult;
 
-@Component("qmsStandard2015DuplicateReviewer")
-public class QmsStandard2015DuplicateReviewer {
+@Component("qmsStandardDuplicateReviewer")
+public class QmsStandardDuplicateReviewer {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public QmsStandard2015DuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
+    public QmsStandardDuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
@@ -26,13 +27,11 @@ public class QmsStandard2015DuplicateReviewer {
 
         DuplicateReviewResult<CertifiedProductQmsStandard> qmsStandardDuplicateResults =
                 new DuplicateReviewResult<CertifiedProductQmsStandard>(getPredicate());
-
         if (listing.getQmsStandards() != null) {
             for (CertifiedProductQmsStandard dto : listing.getQmsStandards()) {
                 qmsStandardDuplicateResults.addObject(dto);
             }
         }
-
         if (qmsStandardDuplicateResults.duplicatesExist()) {
             listing.getWarningMessages().addAll(getWarnings(qmsStandardDuplicateResults.getDuplicateList()));
             listing.setQmsStandards(qmsStandardDuplicateResults.getUniqueList());
@@ -42,8 +41,10 @@ public class QmsStandard2015DuplicateReviewer {
     private List<String> getWarnings(List<CertifiedProductQmsStandard> duplicates) {
         List<String> warnings = new ArrayList<String>();
         for (CertifiedProductQmsStandard duplicate : duplicates) {
-            String warning = errorMessageUtil.getMessage("listing.duplicateQmsStandard.2015",
-                    duplicate.getQmsStandardName(), duplicate.getApplicableCriteria());
+            String warning = errorMessageUtil.getMessage("listing.duplicateQmsStandard",
+                    duplicate.getQmsStandardName(),
+                    duplicate.getApplicableCriteria() == null ? "" : duplicate.getApplicableCriteria(),
+                    duplicate.getQmsModification() == null ? "" : duplicate.getQmsModification());
             warnings.add(warning);
         }
         return warnings;
@@ -54,10 +55,10 @@ public class QmsStandard2015DuplicateReviewer {
             @Override
             public boolean test(CertifiedProductQmsStandard dto1,
                     CertifiedProductQmsStandard dto2) {
-                return ObjectUtils.allNotNull(dto1.getQmsStandardName(), dto2.getQmsStandardName(),
-                        dto1.getApplicableCriteria(), dto2.getApplicableCriteria())
-                        && dto1.getQmsStandardName().equals(dto2.getQmsStandardName())
-                        && dto1.getApplicableCriteria().equals(dto2.getApplicableCriteria());
+                return ObjectUtils.allNotNull(dto1.getQmsStandardName(), dto2.getQmsStandardName())
+                        && Objects.equals(dto1.getQmsStandardName(), dto2.getQmsStandardName())
+                        && Objects.equals(dto1.getApplicableCriteria(), dto2.getApplicableCriteria())
+                        && Objects.equals(dto1.getQmsModification(), dto2.getQmsModification());
             }
         };
     }
