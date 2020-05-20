@@ -46,7 +46,7 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
     @Autowired
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
-    private ExecutorService executorService;
+    //private ExecutorService executorService;
 
     public G3Sed2015DownloadableResourceCreatorJob() throws Exception {
         super(LOGGER);
@@ -58,21 +58,19 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
 
         Date start = new Date();
         LOGGER.info("********* Starting the G3 SED 2015 Downloadable Resource Creator job. *********");
+        ExecutorService executorService = getExecutorService();
         try {
-            initializeExecutorService();
-
             List<CertifiedProductSearchDetails> orderedListings =
-                    getCertifiedProductSearchDetails(getRelevantListingIds()).stream()
-                    .map(fo -> get(fo))
-                    .filter(o -> o.isPresent())
-                    .map(o -> o.get())
+                    getCertifiedProductSearchDetails(getRelevantListingIds(), executorService).stream()
+                    .map(optionalListingFuture -> getListingFromFuture(optionalListingFuture))
+                    .filter(optionalListing -> optionalListing.isPresent())
+                    .map(optionalListing -> optionalListing.get())
                     .sorted(Comparator.comparing(CertifiedProductSearchDetails::getId))
                     .collect(Collectors.toList());
 
-            File downloadFolder = getDownloadFolder();
-            writeToFile(downloadFolder, orderedListings);
+            writeToFile(getDownloadFolder(), orderedListings);
         } catch (Exception e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
         } finally {
             executorService.shutdown();
         }
@@ -84,7 +82,9 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
         LOGGER.info("********* Completed the G3 SED 2015 Downloadable Resource Creator job. *********");
     }
 
-    private Optional<CertifiedProductSearchDetails> get(CompletableFuture<Optional<CertifiedProductSearchDetails>> future) {
+    private Optional<CertifiedProductSearchDetails> getListingFromFuture(
+            CompletableFuture<Optional<CertifiedProductSearchDetails>> future) {
+
         try {
             Optional<CertifiedProductSearchDetails> optionalListing = future.get();
             LOGGER.info("Completed retrieving listing: " + optionalListing.get().getId());
@@ -96,7 +96,7 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
     }
 
     private List<CompletableFuture<Optional<CertifiedProductSearchDetails>>> getCertifiedProductSearchDetails(
-            List<Long> listingIds) throws Exception {
+            List<Long> listingIds, ExecutorService executorService) {
 
         List<CompletableFuture<Optional<CertifiedProductSearchDetails>>> futures =
                 new ArrayList<CompletableFuture<Optional<CertifiedProductSearchDetails>>>();
@@ -151,7 +151,7 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
         return Integer.parseInt(env.getProperty("executorThreadCountForQuartzJobs"));
     }
 
-    private void initializeExecutorService() {
-        executorService = Executors.newFixedThreadPool(getThreadCountForJob());
+    private ExecutorService getExecutorService() {
+        return Executors.newFixedThreadPool(getThreadCountForJob());
     }
 }
