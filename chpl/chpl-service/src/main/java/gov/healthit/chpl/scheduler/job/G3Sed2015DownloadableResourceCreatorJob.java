@@ -65,14 +65,7 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
                     getRelevantListingIds());
 
             List<Optional<CertifiedProductSearchDetails>> optionals = futureOptionals.stream()
-                    .map(fo -> {
-                        try {
-                            return fo.get();
-                        } catch (InterruptedException | ExecutionException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                    })
+                    .map(fo -> get(fo))
                     .collect(Collectors.toList());
 
             List<CertifiedProductSearchDetails> orderedListings = optionals.stream()
@@ -91,6 +84,16 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
                 (end.getTime() - start.getTime()) / MILLIS_PER_SECOND,
                 (end.getTime() - start.getTime()) / MILLIS_PER_SECOND / SECONDS_PER_MINUTE);
         LOGGER.info("********* Completed the G3 SED 2015 Downloadable Resource Creator job. *********");
+    }
+
+    private Optional<CertifiedProductSearchDetails> get(CompletableFuture<Optional<CertifiedProductSearchDetails>> future) {
+        try {
+            return future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return Optional.empty();
+        }
     }
 
     private List<CompletableFuture<Optional<CertifiedProductSearchDetails>>> getCertifiedProductSearchDetails(
