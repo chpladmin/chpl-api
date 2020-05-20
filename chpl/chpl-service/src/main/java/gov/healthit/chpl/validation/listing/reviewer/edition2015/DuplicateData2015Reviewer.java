@@ -7,13 +7,13 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.duplicate.AdditionalSoftwareDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.AtlDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestFunctionalityDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestProcedureDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestStandardDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestToolDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.duplicate.AccessibilityStandard2015DuplicateReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.duplicate.AdditionalSoftware2015DuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.duplicate.IcsSource2015DuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.duplicate.QmsStandard2015DuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.duplicate.TargetedUser2015DuplicateReviewer;
@@ -26,7 +26,7 @@ public class DuplicateData2015Reviewer implements Reviewer {
     private TestToolDuplicateReviewer testToolDuplicateReviewer;
     private TestProcedureDuplicateReviewer testProcedureDuplicateReviewer;
     private TestStandardDuplicateReviewer testStandardDuplicateReviewer;
-    private AdditionalSoftware2015DuplicateReviewer additionalSoftwareDuplicateReviewer;
+    private AdditionalSoftwareDuplicateReviewer additionalSoftwareDuplicateReviewer;
     private AccessibilityStandard2015DuplicateReviewer accessibilityStandardDuplicateReviewer;
     private QmsStandard2015DuplicateReviewer qmsStandardDuplicateReviewer;
     private IcsSource2015DuplicateReviewer icsSourceDuplicateReviewer;
@@ -40,7 +40,7 @@ public class DuplicateData2015Reviewer implements Reviewer {
             @Qualifier("testToolDuplicateReviewer") TestToolDuplicateReviewer testToolDuplicateReviewer,
             @Qualifier("testProcedureDuplicateReviewer") TestProcedureDuplicateReviewer testProcedureDuplicateReviewer,
             @Qualifier("testStandardDuplicateReviewer") TestStandardDuplicateReviewer testStandardDuplicateReviewer,
-            @Qualifier("additionalSoftware2015DuplicateReviewer") AdditionalSoftware2015DuplicateReviewer additionalSoftwareDuplicateReviewer,
+            @Qualifier("additionalSoftwareDuplicateReviewer") AdditionalSoftwareDuplicateReviewer additionalSoftwareDuplicateReviewer,
             @Qualifier("accessibilityStandard2015DuplicateReviewer") AccessibilityStandard2015DuplicateReviewer accessibilityStandardDuplicateReviewer,
             @Qualifier("qmsStandard2015DuplicateReviewer") QmsStandard2015DuplicateReviewer qmsStandardDuplicateReviewer,
             @Qualifier("icsSource2015DuplicateReviewer") IcsSource2015DuplicateReviewer icsSourceDuplicateReviewer,

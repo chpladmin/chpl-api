@@ -7,12 +7,12 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.duplicate.AdditionalSoftwareDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.AtlDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestFunctionalityDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestProcedureDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestStandardDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestToolDuplicateReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2014.duplicate.AdditionalSoftware2014DuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.duplicate.QmsStandard2014DuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.duplicate.TestData2014DuplicateReviewer;
 
@@ -20,7 +20,7 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2014.duplicate.TestD
 public class DuplicateData2014Reviewer implements Reviewer {
     private QmsStandard2014DuplicateReviewer qmsStandardDuplicateReviewer;
     private TestFunctionalityDuplicateReviewer testFunctionalityDuplicateReviewer;
-    private AdditionalSoftware2014DuplicateReviewer additionalSoftwareDuplicateReviewer;
+    private AdditionalSoftwareDuplicateReviewer additionalSoftwareDuplicateReviewer;
     private TestToolDuplicateReviewer testToolDuplicateReviewer;
     private TestStandardDuplicateReviewer testStandardDuplicateReviewer;
     private TestProcedureDuplicateReviewer testProcedureDuplicateReviewer;
@@ -31,7 +31,7 @@ public class DuplicateData2014Reviewer implements Reviewer {
     public DuplicateData2014Reviewer(
             @Qualifier("qmsStandard2014DuplicateReviewer") QmsStandard2014DuplicateReviewer qmsStandard2014DuplicateReviewer,
             @Qualifier("testFunctionalityDuplicateReviewer") TestFunctionalityDuplicateReviewer testFunctionalityDuplicateReviewer,
-            @Qualifier("additionalSoftware2014DuplicateReviewer") AdditionalSoftware2014DuplicateReviewer additionalSoftwareDuplicateReviewer,
+            @Qualifier("additionalSoftwareDuplicateReviewer") AdditionalSoftwareDuplicateReviewer additionalSoftwareDuplicateReviewer,
             @Qualifier("testToolDuplicateReviewer") TestToolDuplicateReviewer testToolDuplicateReviewer,
             @Qualifier("testStandardDuplicateReviewer") TestStandardDuplicateReviewer testStandardDuplicateReviewer,
             @Qualifier("testProcedureDuplicateReviewer") TestProcedureDuplicateReviewer testProcedureDuplicateReviewer,
