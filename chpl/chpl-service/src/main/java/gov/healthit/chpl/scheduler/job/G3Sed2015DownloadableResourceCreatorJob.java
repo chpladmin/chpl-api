@@ -61,10 +61,8 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
         try {
             initializeExecutorService();
 
-            List<CompletableFuture<Optional<CertifiedProductSearchDetails>>> futureOptionals = getCertifiedProductSearchDetails(
-                    getRelevantListingIds());
-
-            List<CertifiedProductSearchDetails> orderedListings = futureOptionals.stream()
+            List<CertifiedProductSearchDetails> orderedListings =
+                    getCertifiedProductSearchDetails(getRelevantListingIds()).stream()
                     .map(fo -> get(fo))
                     .filter(o -> o.isPresent())
                     .map(o -> o.get())
@@ -75,7 +73,10 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
             writeToFile(downloadFolder, orderedListings);
         } catch (Exception e) {
             LOGGER.error(e);
+        } finally {
+            executorService.shutdown();
         }
+
         Date end = new Date();
         LOGGER.info("Time to create download file for G3 SED: {} seconds, or {} minutes",
                 (end.getTime() - start.getTime()) / MILLIS_PER_SECOND,
@@ -89,8 +90,7 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
             LOGGER.info("Completed retrieving listing: " + optionalListing.get().getId());
             return optionalListing;
         } catch (InterruptedException | ExecutionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.info(e.getMessage(), e);
             return Optional.empty();
         }
     }
@@ -98,7 +98,9 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
     private List<CompletableFuture<Optional<CertifiedProductSearchDetails>>> getCertifiedProductSearchDetails(
             List<Long> listingIds) throws Exception {
 
-        List<CompletableFuture<Optional<CertifiedProductSearchDetails>>> futures = new ArrayList<CompletableFuture<Optional<CertifiedProductSearchDetails>>>();
+        List<CompletableFuture<Optional<CertifiedProductSearchDetails>>> futures =
+                new ArrayList<CompletableFuture<Optional<CertifiedProductSearchDetails>>>();
+
         for (Long currListingId : listingIds) {
             futures.add(
                     CompletableFuture.supplyAsync(() -> getCertifiedProductDetails(currListingId), executorService));
