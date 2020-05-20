@@ -126,8 +126,11 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
     }
 
     private void writeToFile(File downloadFolder, List<CertifiedProductSearchDetails> results) throws IOException {
-        String csvFilename = downloadFolder.getAbsolutePath() + File.separator + "chpl-sed-all-details-"
-                + getFilenameTimestampFormat().format(new Date()) + ".csv";
+        String csvFilename = downloadFolder.getAbsolutePath()
+                + File.separator
+                + "chpl-sed-all-details-"
+                + getFilenameTimestampFormat().format(new Date())
+                + ".csv";
         File csvFile = getFile(csvFilename);
         Sed2015CsvPresenter csvPresenter = new Sed2015CsvPresenter();
         csvPresenter.presentAsFile(csvFile, results, criterionService);
