@@ -72,8 +72,8 @@ public class TestProcedureDuplicateReviewer {
         for (CertificationResultTestProcedure duplicate : duplicates) {
             String warning = "";
             if (StringUtils.isEmpty(duplicate.getTestProcedureVersion())) {
-                warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestProcedureName",
-                        criteria, duplicate.getTestProcedure().getName());
+                warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestProcedureNameAndVersion",
+                        criteria, duplicate.getTestProcedure().getName(), "");
             } else {
                 warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestProcedureNameAndVersion",
                     criteria, duplicate.getTestProcedure().getName(), duplicate.getTestProcedureVersion());

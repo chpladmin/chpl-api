@@ -10,6 +10,7 @@ import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.AdditionalSoftwareDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.AtlDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.QmsStandardDuplicateReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestDataDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestFunctionalityDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestProcedureDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestStandardDuplicateReviewer;
@@ -17,12 +18,11 @@ import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestToolDuplicate
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.duplicate.AccessibilityStandard2015DuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.duplicate.IcsSource2015DuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.duplicate.TargetedUser2015DuplicateReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.duplicate.TestData2015DuplicateReviewer;
 
 @Component("duplicateData2015Reviewer")
 public class DuplicateData2015Reviewer implements Reviewer {
     private TestFunctionalityDuplicateReviewer testFunctionalityDuplicateReviewer;
-    private TestData2015DuplicateReviewer testDataDuplicateReviewer;
+    private TestDataDuplicateReviewer testDataDuplicateReviewer;
     private TestToolDuplicateReviewer testToolDuplicateReviewer;
     private TestProcedureDuplicateReviewer testProcedureDuplicateReviewer;
     private TestStandardDuplicateReviewer testStandardDuplicateReviewer;
@@ -36,7 +36,7 @@ public class DuplicateData2015Reviewer implements Reviewer {
     @Autowired
     public DuplicateData2015Reviewer(
             @Qualifier("testFunctionalityDuplicateReviewer") TestFunctionalityDuplicateReviewer testFunctionalityDuplicateReviewer,
-            @Qualifier("testData2015DuplicateReviewer") TestData2015DuplicateReviewer testDataDuplicateReviewer,
+            @Qualifier("testDataDuplicateReviewer") TestDataDuplicateReviewer testDataDuplicateReviewer,
             @Qualifier("testToolDuplicateReviewer") TestToolDuplicateReviewer testToolDuplicateReviewer,
             @Qualifier("testProcedureDuplicateReviewer") TestProcedureDuplicateReviewer testProcedureDuplicateReviewer,
             @Qualifier("testStandardDuplicateReviewer") TestStandardDuplicateReviewer testStandardDuplicateReviewer,
