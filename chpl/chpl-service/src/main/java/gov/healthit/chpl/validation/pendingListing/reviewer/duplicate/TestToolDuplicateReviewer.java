@@ -46,7 +46,7 @@ public class TestToolDuplicateReviewer {
     private List<String> getWarnings(List<PendingCertificationResultTestToolDTO> duplicates, String criteria) {
         List<String> warnings = new ArrayList<String>();
         for (PendingCertificationResultTestToolDTO duplicate : duplicates) {
-            String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestTool",
+            String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestToolNameAndVersion",
                     criteria, duplicate.getName(), duplicate.getVersion());
             warnings.add(warning);
         }

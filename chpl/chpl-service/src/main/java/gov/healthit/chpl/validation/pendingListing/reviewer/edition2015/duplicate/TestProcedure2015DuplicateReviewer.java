@@ -58,7 +58,7 @@ public class TestProcedure2015DuplicateReviewer {
             String criteria) {
         List<String> warnings = new ArrayList<String>();
         for (PendingCertificationResultTestProcedureDTO duplicate : duplicates) {
-            String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestProcedureName.2015",
+            String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestProcedure.2015",
                     criteria, duplicate.getEnteredName());
             warnings.add(warning);
         }
