@@ -29,10 +29,10 @@ public class TestProcedure2015DuplicateReviewerTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateTestProcedure.2015"),
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateTestProcedureNameAndVersion"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format(WARN_MSG, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateTestProcedureName.2015"),
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateTestProcedureName"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format(ERR_MSG, i.getArgument(1), i.getArgument(2)));
         reviewer = new TestProcedure2015DuplicateReviewer(msgUtil);

@@ -28,7 +28,7 @@ public class TestToolDuplicateReviewerTest {
         MockitoAnnotations.initMocks(this);
 
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateTestTool"),
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateTestToolNameAndVersion"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format(ERR_MSG, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
         reviewer = new TestToolDuplicateReviewer(msgUtil);
