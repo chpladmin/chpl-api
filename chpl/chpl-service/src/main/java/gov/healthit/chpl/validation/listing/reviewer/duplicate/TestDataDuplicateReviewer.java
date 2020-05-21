@@ -43,7 +43,7 @@ public class TestDataDuplicateReviewer {
 
         DuplicateReviewResult<CertificationResultTestData> testDataDuplicateIdResults =
                 new DuplicateReviewResult<CertificationResultTestData>(duplicateIdPredicate());
-        if (certificationResult.getTestProcedures() != null) {
+        if (certificationResult.getTestDataUsed() != null) {
             for (CertificationResultTestData dto : certificationResult.getTestDataUsed()) {
                 testDataDuplicateIdResults.addObject(dto);
             }
