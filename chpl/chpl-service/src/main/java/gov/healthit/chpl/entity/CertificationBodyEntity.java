@@ -15,7 +15,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.util.Util;
+import lombok.Data;
 
 /**
  * Certification body mapping to database.
@@ -25,6 +25,7 @@ import gov.healthit.chpl.util.Util;
  */
 @Entity
 @Table(name = "certification_body")
+@Data
 public class CertificationBodyEntity implements Serializable {
     private static final long serialVersionUID = -4603773689327950041L;
 
@@ -71,94 +72,6 @@ public class CertificationBodyEntity implements Serializable {
     @Column(name = "deleted", nullable = false, insertable = false)
     private Boolean deleted;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long long1) {
-        this.id = long1;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public String getWebsite() {
-        return website;
-    }
-
-    public void setWebsite(final String website) {
-        this.website = website;
-    }
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public AddressEntity getAddress() {
-        return address;
-    }
-
-    public void setAddress(final AddressEntity address) {
-        this.address = address;
-    }
-
-    public String getAcbCode() {
-        return acbCode;
-    }
-
-    public void setAcbCode(final String acbCode) {
-        this.acbCode = acbCode;
-    }
-
-    public Boolean getRetired() {
-        return retired;
-    }
-
-    public void setRetired(final Boolean retired) {
-        this.retired = retired;
-    }
-
-    public final Date getRetirementDate() {
-        return retirementDate;
-    }
-
-    public final void setRetirementDate(final Date retirementDate) {
-        this.retirementDate = retirementDate;
-    }
-
     public static CertificationBodyEntity getNewAcbEntity(CertificationBody acb) {
         CertificationBodyEntity entity = new CertificationBodyEntity();
         entity.setId(acb.getId());
@@ -168,14 +81,6 @@ public class CertificationBodyEntity implements Serializable {
         entity.setRetired(acb.isRetired());
         entity.setRetirementDate(acb.getRetirementDate());
         return entity;
-    }
-
-    @Override
-    public String toString() {
-        return "CertificationBodyEntity [id=" + id + ", address=" + address + ", acbCode=" + acbCode + ", name=" + name
-                + ", website=" + website + ", retired=" + retired + ", retirementDate=" + retirementDate
-                + ", creationDate=" + creationDate + ", lastModifiedDate=" + lastModifiedDate + ", lastModifiedUser="
-                + lastModifiedUser + ", deleted=" + deleted + "]";
     }
 
 }

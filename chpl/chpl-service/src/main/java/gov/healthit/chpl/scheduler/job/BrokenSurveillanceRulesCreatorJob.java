@@ -6,10 +6,11 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,22 +37,12 @@ import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
-import gov.healthit.chpl.scheduler.DataCollectorAsyncSchedulerHelper;
 import gov.healthit.chpl.scheduler.surveillance.rules.RuleComplianceCalculator;
 
-/**
- * Initiates and runs the the Quartz job that generates the data that is used to to create the Broken Surveillance Rules
- * report.
- * 
- * @author alarned
- *
- */
 @DisallowConcurrentExecution
 public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("brokenSurveillanceRulesCreatorJobLogger");
     private static final String EDITION_2011 = "2011";
-    private static final Long MILLISECONDS_PER_SECOND = 1000L;
-    private static final Long SECONDS_PER_MINUTE = 60L;
     private DateTimeFormatter dateFormatter;
 
     @Autowired
@@ -64,20 +55,11 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
     @Autowired
-    private DataCollectorAsyncSchedulerHelper dataCollectorAsyncSchedulerHelper;
-
-    @Autowired
     private RuleComplianceCalculator ruleComplianceCalculator;
 
     @Autowired
     private Environment env;
 
-    /**
-     * Constructor to initialize BrokenSurveillanceRulesCreatorJob object.
-     * 
-     * @throws Exception
-     *             is thrown
-     */
     public BrokenSurveillanceRulesCreatorJob() throws Exception {
         super();
         dateFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd");
@@ -85,92 +67,64 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
 
     @Override
     @Transactional
-    public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+    public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        dataCollectorAsyncSchedulerHelper.setLogger(LOGGER);
 
         LOGGER.info("********* Starting the Broken Surveillance Rules Creator job. *********");
-        List<CertifiedProductSearchDetails> results = retrieveData();
-        List<BrokenSurveillanceRulesDTO> errors = new ArrayList<BrokenSurveillanceRulesDTO>();
-        for (CertifiedProductSearchDetails listing : results) {
-            errors.addAll(brokenRules(listing));
+        ExecutorService executorService = null;
+        try {
+            deleteAllExistingBrokenSurveillanceRules();
+
+            executorService = Executors.newFixedThreadPool(getThreadCountForJob());
+            List<CertifiedProductFlatSearchResult> listingsForReport = getListingsForReport();
+            LOGGER.info(String.format("Found %s listings to process", listingsForReport.size()));
+
+            for (CertifiedProductFlatSearchResult listing : listingsForReport) {
+                CompletableFuture.runAsync(() -> processListing(listing.getId()), executorService);
+            }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        } finally {
+            executorService.shutdown();
         }
-        LOGGER.info("Deleting {} OBE rules", brokenSurveillanceRulesDAO.findAll().size());
-        brokenSurveillanceRulesDAO.deleteAll();
-        if (errors.size() > 0) {
-            saveBrokenSurveillanceRules(errors);
-            LOGGER.info("Saving {} broken rules", errors.size());
-        }
+
         LOGGER.info("********* Completed the Broken Surveillance Rules Creator job. *********");
     }
 
-    private void saveBrokenSurveillanceRules(final List<BrokenSurveillanceRulesDTO> items) {
+    private List<CertifiedProductFlatSearchResult> getListingsForReport() {
+        return certifiedProductSearchDAO.getAllCertifiedProducts().stream()
+                .filter(listing -> !isEdition2011(listing)
+                        && (isCertificationStatusSuspendedByAcb(listing)
+                                || hasSurveillances(listing)))
+                .collect(Collectors.toList());
+    }
+
+    private boolean isEdition2011(CertifiedProductFlatSearchResult listing) {
+        return listing.getEdition().equals(EDITION_2011);
+    }
+
+    private boolean isCertificationStatusSuspendedByAcb(CertifiedProductFlatSearchResult listing) {
+        return listing.getCertificationStatus().equalsIgnoreCase(CertificationStatusType.SuspendedByAcb.getName());
+    }
+
+    private boolean hasSurveillances(CertifiedProductFlatSearchResult listing) {
+        return listing.getSurveillanceCount() > 0;
+    }
+
+    private void processListing(Long listingId) {
+        CertifiedProductSearchDetails listing;
         try {
-            brokenSurveillanceRulesDAO.create(items);
-        } catch (EntityCreationException | EntityRetrievalException e) {
-            LOGGER.error("Unable to save Broken Surveillance Rules {} with error message {}",
-                    items.toString(), e.getLocalizedMessage());
-        }
-    }
-
-    private List<CertifiedProductSearchDetails> retrieveData() {
-        List<CertifiedProductFlatSearchResult> listings = certifiedProductSearchDAO.getAllCertifiedProducts();
-        List<CertifiedProductFlatSearchResult> certifiedProducts = filterData(listings);
-        LOGGER.info("2014/2015 Certified Product Count: " + certifiedProducts.size());
-
-        List<CertifiedProductSearchDetails> certifiedProductsWithDetails = getCertifiedProductDetailsForAll(
-                certifiedProducts);
-
-        return certifiedProductsWithDetails;
-    }
-
-    private List<CertifiedProductFlatSearchResult> filterData(
-            final List<CertifiedProductFlatSearchResult> certifiedProducts) {
-        List<CertifiedProductFlatSearchResult> results = new ArrayList<CertifiedProductFlatSearchResult>();
-        for (CertifiedProductFlatSearchResult result : certifiedProducts) {
-            if ((!result.getEdition().equalsIgnoreCase(EDITION_2011))
-                    && (result.getCertificationStatus().equalsIgnoreCase(
-                            CertificationStatusType.SuspendedByAcb.getName())
-                            || result.getSurveillanceCount() > 0)) {
-                results.add(result);
-            }
-        }
-        return results;
-    }
-
-    private List<CertifiedProductSearchDetails> getCertifiedProductDetailsForAll(
-            final List<CertifiedProductFlatSearchResult> certifiedProducts) {
-
-        List<CertifiedProductSearchDetails> details = new ArrayList<CertifiedProductSearchDetails>();
-        List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
-
-        for (CertifiedProductFlatSearchResult certifiedProduct : certifiedProducts) {
-            try {
-                futures.add(dataCollectorAsyncSchedulerHelper
-                        .getCertifiedProductDetail(certifiedProduct.getId(), certifiedProductDetailsManager));
-            } catch (EntityRetrievalException e) {
-                LOGGER.error("Could not retrieve certified product details for id: " + certifiedProduct.getId(), e);
-            }
+            LOGGER.info(String.format("Retrieving CertifiedProductDetails for: %s", listingId));
+            listing = certifiedProductDetailsManager.getCertifiedProductDetails(listingId);
+            LOGGER.info(String.format("Complete retrieving CertifiedProductDetails for: %s", listingId));
+            saveBrokenSurveillanceRules(brokenRules(listing), listingId);
+        } catch (EntityRetrievalException e) {
+            LOGGER.error(String.format("Could not process listingId: %s  Reason: %s", listingId, e.getMessage()), e);
         }
 
-        Date startTime = new Date();
-        for (Future<CertifiedProductSearchDetails> future : futures) {
-            try {
-                details.add(future.get());
-            } catch (InterruptedException | ExecutionException e) {
-                LOGGER.error("Could not retrieve certified product details for unknown id.", e);
-            }
-        }
-
-        Date endTime = new Date();
-        long seconds = (endTime.getTime() - startTime.getTime()) / MILLISECONDS_PER_SECOND;
-        long minutes = seconds / SECONDS_PER_MINUTE;
-        LOGGER.info("Time to retrieve details: {} seconds or {} minutes", seconds, minutes);
-
-        return details;
     }
 
-    private List<BrokenSurveillanceRulesDTO> brokenRules(final CertifiedProductSearchDetails listing) {
+    private List<BrokenSurveillanceRulesDTO> brokenRules(CertifiedProductSearchDetails listing) {
         List<BrokenSurveillanceRulesDTO> errors = new ArrayList<BrokenSurveillanceRulesDTO>();
 
         if (listing.getSurveillance().size() == 0) {
@@ -246,7 +200,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         return errors;
     }
 
-    private BrokenSurveillanceRulesDTO getDefaultBrokenRule(final CertifiedProductSearchDetails listing) {
+    private BrokenSurveillanceRulesDTO getDefaultBrokenRule(CertifiedProductSearchDetails listing) {
         BrokenSurveillanceRulesDTO base = new BrokenSurveillanceRulesDTO();
         base.setDeveloper(listing.getDeveloper().getName());
         base.setProduct(listing.getProduct().getName());
@@ -278,8 +232,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         return base;
     }
 
-    private BrokenSurveillanceRulesDTO addSurveillanceData(
-            final BrokenSurveillanceRulesDTO rule, final Surveillance surv) {
+    private BrokenSurveillanceRulesDTO addSurveillanceData(BrokenSurveillanceRulesDTO rule, Surveillance surv) {
 
         if (surv.getFriendlyId() != null) {
             rule.setSurveillanceId(surv.getFriendlyId());
@@ -299,8 +252,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         return rule;
     }
 
-    private BrokenSurveillanceRulesDTO addNcData(
-            final BrokenSurveillanceRulesDTO rule, final SurveillanceNonconformity nc) {
+    private BrokenSurveillanceRulesDTO addNcData(BrokenSurveillanceRulesDTO rule, SurveillanceNonconformity nc) {
 
         rule.setNonconformity(true);
         rule.setNonconformityCriteria(nc.getNonconformityType());
@@ -365,4 +317,24 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         }
         return rule;
     }
+
+    private void saveBrokenSurveillanceRules(List<BrokenSurveillanceRulesDTO> items, Long listingId) {
+        try {
+            LOGGER.info(String.format("Saving %s Broken Surveillance Rules for listing: %s", items.size(), listingId));
+            brokenSurveillanceRulesDAO.create(items);
+        } catch (EntityCreationException | EntityRetrievalException e) {
+            LOGGER.error("Unable to save Broken Surveillance Rules {} with error message {}",
+                    items.toString(), e.getLocalizedMessage());
+        }
+    }
+
+    private Integer getThreadCountForJob() throws NumberFormatException {
+        return Integer.parseInt(env.getProperty("executorThreadCountForQuartzJobs"));
+    }
+
+    private void deleteAllExistingBrokenSurveillanceRules() {
+        LOGGER.info("Deleting {} OBE rules", brokenSurveillanceRulesDAO.findAll().size());
+        brokenSurveillanceRulesDAO.deleteAll();
+    }
+
 }
