@@ -1,4 +1,4 @@
-package gov.healthit.chpl.validation.listing.reviewer.edition2015.duplicate;
+package gov.healthit.chpl.validation.listing.reviewer.duplicate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,27 +13,24 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.DuplicateReviewResult;
 
-@Component("icsSource2015DuplicateReviewer")
-public class IcsSource2015DuplicateReviewer {
+@Component("icsSourceDuplicateReviewer")
+public class IcsSourceDuplicateReviewer {
 
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public IcsSource2015DuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
+    public IcsSourceDuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
     public void review(CertifiedProductSearchDetails listing) {
-
         DuplicateReviewResult<CertifiedProduct> icsSourceDuplicateResults =
                 new DuplicateReviewResult<CertifiedProduct>(getPredicate());
-
         if (listing.getIcs() != null && listing.getIcs().getParents() != null) {
             for (CertifiedProduct dto : listing.getIcs().getParents()) {
                 icsSourceDuplicateResults.addObject(dto);
             }
         }
-
         if (icsSourceDuplicateResults.duplicatesExist()) {
             listing.getWarningMessages().addAll(getWarnings(icsSourceDuplicateResults.getDuplicateList()));
             listing.getIcs().setParents(icsSourceDuplicateResults.getUniqueList());
@@ -43,7 +40,7 @@ public class IcsSource2015DuplicateReviewer {
     private List<String> getWarnings(List<CertifiedProduct> duplicates) {
         List<String> warnings = new ArrayList<String>();
         for (CertifiedProduct duplicate : duplicates) {
-            String warning = errorMessageUtil.getMessage("listing.duplicateIcsSource.2015",
+            String warning = errorMessageUtil.getMessage("listing.duplicateIcsSource",
                     duplicate.getChplProductNumber());
             warnings.add(warning);
         }

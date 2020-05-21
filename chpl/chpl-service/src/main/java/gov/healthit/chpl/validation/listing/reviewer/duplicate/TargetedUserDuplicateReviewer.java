@@ -1,4 +1,4 @@
-package gov.healthit.chpl.validation.listing.reviewer.edition2015.duplicate;
+package gov.healthit.chpl.validation.listing.reviewer.duplicate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,12 +13,12 @@ import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.DuplicateReviewResult;
 
-@Component("targetedUser2015DuplicateReviewer")
-public class TargetedUser2015DuplicateReviewer {
+@Component("targetedUserDuplicateReviewer")
+public class TargetedUserDuplicateReviewer {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public TargetedUser2015DuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
+    public TargetedUserDuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
@@ -42,7 +42,7 @@ public class TargetedUser2015DuplicateReviewer {
     private List<String> getWarnings(List<CertifiedProductTargetedUser> duplicates) {
         List<String> warnings = new ArrayList<String>();
         for (CertifiedProductTargetedUser duplicate : duplicates) {
-            String warning = errorMessageUtil.getMessage("listing.duplicateTargetedUser.2015",
+            String warning = errorMessageUtil.getMessage("listing.duplicateTargetedUser",
                     duplicate.getTargetedUserName());
             warnings.add(warning);
         }

@@ -11,23 +11,22 @@ import org.mockito.MockitoAnnotations;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.duplicate.TargetedUser2015DuplicateReviewer;
 
-public class TargetedUser2015DuplicateReviewerTest {
+public class TargetedUserDuplicateReviewerTest {
     private static final String ERR_MSG =
             "Listing contains duplicate Targeted User: '%s'. The duplicates have been removed.";
 
     private ErrorMessageUtil msgUtil;
-    private TargetedUser2015DuplicateReviewer reviewer;
+    private TargetedUserDuplicateReviewer reviewer;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.duplicateTargetedUser.2015"),
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.duplicateTargetedUser"),
                 ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format(ERR_MSG, i.getArgument(1), ""));
-        reviewer = new TargetedUser2015DuplicateReviewer(msgUtil);
+        reviewer = new TargetedUserDuplicateReviewer(msgUtil);
     }
 
     @Test

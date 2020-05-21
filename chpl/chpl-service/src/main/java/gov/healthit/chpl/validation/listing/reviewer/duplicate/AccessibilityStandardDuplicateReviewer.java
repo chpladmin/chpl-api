@@ -1,4 +1,4 @@
-package gov.healthit.chpl.validation.listing.reviewer.edition2015.duplicate;
+package gov.healthit.chpl.validation.listing.reviewer.duplicate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,12 +13,12 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.DuplicateReviewResult;
 
-@Component("accessibilityStandard2015DuplicateReviewer")
-public class AccessibilityStandard2015DuplicateReviewer {
+@Component("accessibilityStandardDuplicateReviewer")
+public class AccessibilityStandardDuplicateReviewer {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public AccessibilityStandard2015DuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
+    public AccessibilityStandardDuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
@@ -26,14 +26,11 @@ public class AccessibilityStandard2015DuplicateReviewer {
 
         DuplicateReviewResult<CertifiedProductAccessibilityStandard> accessibilityStandardDuplicateResults =
                 new DuplicateReviewResult<CertifiedProductAccessibilityStandard>(getPredicate());
-
-
         if (listing.getAccessibilityStandards() != null) {
             for (CertifiedProductAccessibilityStandard dto : listing.getAccessibilityStandards()) {
                 accessibilityStandardDuplicateResults.addObject(dto);
             }
         }
-
         if (accessibilityStandardDuplicateResults.duplicatesExist()) {
             listing.getWarningMessages().addAll(getWarnings(accessibilityStandardDuplicateResults.getDuplicateList()));
             listing.setAccessibilityStandards(accessibilityStandardDuplicateResults.getUniqueList());
@@ -43,7 +40,7 @@ public class AccessibilityStandard2015DuplicateReviewer {
     private List<String> getWarnings(List<CertifiedProductAccessibilityStandard> duplicates) {
         List<String> warnings = new ArrayList<String>();
         for (CertifiedProductAccessibilityStandard duplicate : duplicates) {
-            String warning = errorMessageUtil.getMessage("listing.duplicateAccessibilityStandard.2015",
+            String warning = errorMessageUtil.getMessage("listing.duplicateAccessibilityStandard",
                     duplicate.getAccessibilityStandardName());
             warnings.add(warning);
         }

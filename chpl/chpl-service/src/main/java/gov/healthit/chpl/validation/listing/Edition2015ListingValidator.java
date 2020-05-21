@@ -14,6 +14,7 @@ import gov.healthit.chpl.validation.listing.reviewer.ChplNumberReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DeveloperBanComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DeveloperStatusReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.DuplicateDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.FieldLengthReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.InheritedCertificationStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ListingStatusAndUserRoleReviewer;
@@ -26,7 +27,6 @@ import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ValidDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.AttestedCriteriaCqmReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.CqmAttestedCriteriaReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.DuplicateData2015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.InvalidCriteriaCombinationReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.MacraMeasureComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.PrivacyAndSecurityCriteriaReviewer;
@@ -106,8 +106,8 @@ public class Edition2015ListingValidator extends Validator {
     private TestFunctionality2015Reviewer testFunctionalityReviewer;
 
     @Autowired
-    @Qualifier("duplicateData2015Reviewer")
-    private DuplicateData2015Reviewer duplicateData2015Reviewer;
+    @Qualifier("duplicateDataReviewer")
+    private DuplicateDataReviewer duplicateDataReviewer;
 
     @Autowired
     @Qualifier("developerBanComparisonReviewer")
@@ -164,7 +164,6 @@ public class Edition2015ListingValidator extends Validator {
     public List<Reviewer> getReviewers() {
         if (reviewers == null) {
             reviewers = new ArrayList<Reviewer>();
-            reviewers.add(duplicateData2015Reviewer);
             reviewers.add(chplNumberReviewer);
             reviewers.add(devStatusReviewer);
             reviewers.add(unsupportedCharacterReviewer);
@@ -184,6 +183,7 @@ public class Edition2015ListingValidator extends Validator {
             reviewers.add(invalidCriteriaCombinationReviewer);
             reviewers.add(attestedCriteriaCqmReviewer);
             reviewers.add(cqmAttestedCriteriaReviewer);
+            reviewers.add(duplicateDataReviewer);
         }
         return reviewers;
     }

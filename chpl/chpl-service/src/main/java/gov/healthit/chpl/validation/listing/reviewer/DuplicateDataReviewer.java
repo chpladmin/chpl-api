@@ -1,4 +1,4 @@
-package gov.healthit.chpl.validation.listing.reviewer.edition2015;
+package gov.healthit.chpl.validation.listing.reviewer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -6,46 +6,45 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.duplicate.AccessibilityStandardDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.AdditionalSoftwareDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.AtlDuplicateReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.duplicate.IcsSourceDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.QmsStandardDuplicateReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.duplicate.TargetedUserDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestDataDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestFunctionalityDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestProcedureDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestStandardDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestToolDuplicateReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.duplicate.AccessibilityStandard2015DuplicateReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.duplicate.IcsSource2015DuplicateReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.duplicate.TargetedUser2015DuplicateReviewer;
 
-@Component("duplicateData2015Reviewer")
-public class DuplicateData2015Reviewer implements Reviewer {
+@Component("duplicateDataReviewer")
+public class DuplicateDataReviewer implements Reviewer {
     private TestFunctionalityDuplicateReviewer testFunctionalityDuplicateReviewer;
     private TestDataDuplicateReviewer testDataDuplicateReviewer;
     private TestToolDuplicateReviewer testToolDuplicateReviewer;
     private TestProcedureDuplicateReviewer testProcedureDuplicateReviewer;
     private TestStandardDuplicateReviewer testStandardDuplicateReviewer;
     private AdditionalSoftwareDuplicateReviewer additionalSoftwareDuplicateReviewer;
-    private AccessibilityStandard2015DuplicateReviewer accessibilityStandardDuplicateReviewer;
+    private AccessibilityStandardDuplicateReviewer accessibilityStandardDuplicateReviewer;
     private QmsStandardDuplicateReviewer qmsStandardDuplicateReviewer;
-    private IcsSource2015DuplicateReviewer icsSourceDuplicateReviewer;
+    private IcsSourceDuplicateReviewer icsSourceDuplicateReviewer;
     private AtlDuplicateReviewer atlDuplicateReviewer;
-    private TargetedUser2015DuplicateReviewer targetedUser2015DuplicateReviewer;
+    private TargetedUserDuplicateReviewer targetedUserDuplicateReviewer;
 
     @Autowired
-    public DuplicateData2015Reviewer(
+    public DuplicateDataReviewer(
             @Qualifier("testFunctionalityDuplicateReviewer") TestFunctionalityDuplicateReviewer testFunctionalityDuplicateReviewer,
             @Qualifier("testDataDuplicateReviewer") TestDataDuplicateReviewer testDataDuplicateReviewer,
             @Qualifier("testToolDuplicateReviewer") TestToolDuplicateReviewer testToolDuplicateReviewer,
             @Qualifier("testProcedureDuplicateReviewer") TestProcedureDuplicateReviewer testProcedureDuplicateReviewer,
             @Qualifier("testStandardDuplicateReviewer") TestStandardDuplicateReviewer testStandardDuplicateReviewer,
             @Qualifier("additionalSoftwareDuplicateReviewer") AdditionalSoftwareDuplicateReviewer additionalSoftwareDuplicateReviewer,
-            @Qualifier("accessibilityStandard2015DuplicateReviewer") AccessibilityStandard2015DuplicateReviewer accessibilityStandardDuplicateReviewer,
+            @Qualifier("accessibilityStandardDuplicateReviewer") AccessibilityStandardDuplicateReviewer accessibilityStandardDuplicateReviewer,
             @Qualifier("qmsStandardDuplicateReviewer") QmsStandardDuplicateReviewer qmsStandardDuplicateReviewer,
-            @Qualifier("icsSource2015DuplicateReviewer") IcsSource2015DuplicateReviewer icsSourceDuplicateReviewer,
+            @Qualifier("icsSourceDuplicateReviewer") IcsSourceDuplicateReviewer icsSourceDuplicateReviewer,
             @Qualifier("atlDuplicateReviewer") AtlDuplicateReviewer atlDuplicateReviewer,
-            @Qualifier("targetedUser2015DuplicateReviewer") TargetedUser2015DuplicateReviewer targetedUser2015DuplicateReviewer) {
+            @Qualifier("targetedUserDuplicateReviewer") TargetedUserDuplicateReviewer targetedUserDuplicateReviewer) {
         this.testFunctionalityDuplicateReviewer = testFunctionalityDuplicateReviewer;
         this.testDataDuplicateReviewer = testDataDuplicateReviewer;
         this.testToolDuplicateReviewer = testToolDuplicateReviewer;
@@ -56,7 +55,7 @@ public class DuplicateData2015Reviewer implements Reviewer {
         this.qmsStandardDuplicateReviewer = qmsStandardDuplicateReviewer;
         this.icsSourceDuplicateReviewer = icsSourceDuplicateReviewer;
         this.atlDuplicateReviewer = atlDuplicateReviewer;
-        this.targetedUser2015DuplicateReviewer = targetedUser2015DuplicateReviewer;
+        this.targetedUserDuplicateReviewer = targetedUserDuplicateReviewer;
     }
 
     @Override
@@ -65,7 +64,7 @@ public class DuplicateData2015Reviewer implements Reviewer {
         accessibilityStandardDuplicateReviewer.review(listing);
         qmsStandardDuplicateReviewer.review(listing);
         icsSourceDuplicateReviewer.review(listing);
-        targetedUser2015DuplicateReviewer.review(listing);
+        targetedUserDuplicateReviewer.review(listing);
 
         for (CertificationResult cr : listing.getCertificationResults()) {
             additionalSoftwareDuplicateReviewer.review(listing, cr);

@@ -11,23 +11,22 @@ import org.mockito.MockitoAnnotations;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.duplicate.AccessibilityStandard2015DuplicateReviewer;
 
 public class AccessibilityStandard2015DuplicateReviewerTest {
     private static final String ERR_MSG =
             "Listing contains duplicate Accessibility Standard: '%s'. The duplicates have been removed.";
 
     private ErrorMessageUtil msgUtil;
-    private AccessibilityStandard2015DuplicateReviewer reviewer;
+    private AccessibilityStandardDuplicateReviewer reviewer;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.duplicateAccessibilityStandard.2015"),
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.duplicateAccessibilityStandard"),
                 ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format(ERR_MSG, i.getArgument(1), ""));
-        reviewer = new AccessibilityStandard2015DuplicateReviewer(msgUtil);
+        reviewer = new AccessibilityStandardDuplicateReviewer(msgUtil);
     }
 
     @Test
