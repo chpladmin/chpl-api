@@ -57,12 +57,28 @@ public class Statistics implements Serializable {
     private Long totalClosedNonconformities;
     private Long totalListingsWithAlternativeTestMethods;
     private List<CertifiedBodyAltTestStatistics> totalListingsWithCertifiedBodyAndAlternativeTestMethods;
+
+    private List<CertifiedBodyStatistics> uniqueDevelopersCountWithoutCuresUpdatedListingsByAcb;
+    private List<CertifiedBodyStatistics> uniqueDevelopersCountWithoutCuresUpdatedActiveListingsByAcb;
+    private List<CertifiedBodyStatistics> uniqueDevelopersCountWithoutCuresUpdatedSuspendedListingsByAcb;
+    private List<CertifiedBodyStatistics> uniqueProductsCountWithoutCuresUpdatedListingsByAcb;
+    private List<CertifiedBodyStatistics> uniqueProductsCountWithoutCuresUpdatedActiveListingsByAcb;
+    private List<CertifiedBodyStatistics> uniqueProductsCountWithoutCuresUpdatedSuspendedListingsByAcb;
+
     private List<CertifiedBodyStatistics> uniqueDevelopersCountWithCuresUpdatedListingsByAcb;
     private List<CertifiedBodyStatistics> uniqueDevelopersCountWithCuresUpdatedActiveListingsByAcb;
     private List<CertifiedBodyStatistics> uniqueDevelopersCountWithCuresUpdatedSuspendedListingsByAcb;
     private List<CertifiedBodyStatistics> uniqueProductsCountWithCuresUpdatedListingsByAcb;
     private List<CertifiedBodyStatistics> uniqueProductsCountWithCuresUpdatedActiveListingsByAcb;
     private List<CertifiedBodyStatistics> uniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb;
+
+    private List<CertifiedBodyStatistics> uniqueDevelopersCountForAny2015ListingsByAcb;
+    private List<CertifiedBodyStatistics> uniqueDevelopersCountForAny2015ActiveListingsByAcb;
+    private List<CertifiedBodyStatistics> uniqueDevelopersCountForAny2015SuspendedListingsByAcb;
+    private List<CertifiedBodyStatistics> uniqueProductsCountForAny2015ListingsByAcb;
+    private List<CertifiedBodyStatistics> uniqueProductsCountForAny2015ActiveListingsByAcb;
+    private List<CertifiedBodyStatistics> uniqueProductsCountForAny2015SuspendedListingsByAcb;
+
     private List<CertifiedBodyStatistics> activeListingCountWithCuresUpdatedByAcb;
     private List<CertifiedBodyStatistics> listingCountWithCuresUpdatedAndAltTestMethodsByAcb;
     private Long allListingsCountWithCuresUpdated;

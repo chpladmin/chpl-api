@@ -88,13 +88,26 @@ public class AsynchronousSummaryStatisticsInitializor {
         Future<Map<Long, Long>> closedCAPCountByAcb = null;
         Future<Long> averageTimeToCloseSurveillance = null;
 
+        Future<List<CertifiedBodyStatistics>> uniqueDevelopersCountWithoutCuresUpdatedListingsByAcb = null;
+        Future<List<CertifiedBodyStatistics>> uniqueDevelopersCountWithoutCuresUpdatedActiveListingsByAcb = null;
+        Future<List<CertifiedBodyStatistics>> uniqueDevelopersCountWithoutCuresUpdatedSuspendedListingsByAcb = null;
+        Future<List<CertifiedBodyStatistics>> uniqueProductsCountWithoutCuresUpdatedListingsByAcb = null;
+        Future<List<CertifiedBodyStatistics>> uniqueProductsCountWithoutCuresUpdatedActiveListingsByAcb = null;
+        Future<List<CertifiedBodyStatistics>> uniqueProductsCountWithoutCuresUpdatedSuspendedListingsByAcb = null;
+
         Future<List<CertifiedBodyStatistics>> uniqueDevelopersCountWithCuresUpdatedListingsByAcb = null;
         Future<List<CertifiedBodyStatistics>> uniqueDevelopersCountWithCuresUpdatedActiveListingsByAcb = null;
         Future<List<CertifiedBodyStatistics>> uniqueDevelopersCountWithCuresUpdatedSuspendedListingsByAcb = null;
-
         Future<List<CertifiedBodyStatistics>> uniqueProductsCountWithCuresUpdatedListingsByAcb = null;
         Future<List<CertifiedBodyStatistics>> uniqueProductsCountWithCuresUpdatedActiveListingsByAcb = null;
         Future<List<CertifiedBodyStatistics>> uniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb = null;
+
+        Future<List<CertifiedBodyStatistics>> uniqueDevelopersCountForAny2015ListingsByAcb = null;
+        Future<List<CertifiedBodyStatistics>> uniqueDevelopersCountForAny2015ActiveListingsByAcb = null;
+        Future<List<CertifiedBodyStatistics>> uniqueDevelopersCountForAny2015SuspendedListingsByAcb = null;
+        Future<List<CertifiedBodyStatistics>> uniqueProductsCountForAny2015ListingsByAcb = null;
+        Future<List<CertifiedBodyStatistics>> uniqueProductsCountForAny2015ActiveListingsByAcb = null;
+        Future<List<CertifiedBodyStatistics>> uniqueProductsCountForAny2015SuspendedListingsByAcb = null;
 
         Future<List<CertifiedBodyStatistics>> activeListingCountWithCuresUpdatedByAcb = null;
         Future<List<CertifiedBodyStatistics>> listingCountWithCuresUpdatedAndAltTestMethodsByAcb = null;
@@ -135,24 +148,31 @@ public class AsynchronousSummaryStatisticsInitializor {
             closedCAPCountByAcb = asyncStats.getClosedCAPCountByAcb(surveillanceStatisticsDAO);
             averageTimeToCloseSurveillance = asyncStats.getAverageTimeToCloseSurveillance(surveillanceStatisticsDAO);
 
-            uniqueDevelopersCountWithCuresUpdatedListingsByAcb = asyncStats
-                    .getUniqueDevelopersCountWithCuresUpdatedListingsByAcb(certifiedProductDAO);
-            uniqueDevelopersCountWithCuresUpdatedActiveListingsByAcb = asyncStats
-                    .getUniqueDevelopersCountWithCuresUpdatedActiveListingsByAcb(certifiedProductDAO);
-            uniqueDevelopersCountWithCuresUpdatedSuspendedListingsByAcb = asyncStats
-                    .getUniqueDevelopersCountWithCuresUpdatedSuspendedListingsByAcb(certifiedProductDAO);
+            uniqueDevelopersCountWithoutCuresUpdatedListingsByAcb = asyncStats.getUniqueDevelopersCountFor2015ListingsByAcb(certifiedProductDAO, Edition2015Criteria.NON_CURES);
+            uniqueDevelopersCountWithoutCuresUpdatedActiveListingsByAcb = asyncStats.getUniqueDevelopersCountFor2015ActiveListingsByAcb(certifiedProductDAO, Edition2015Criteria.NON_CURES);
+            uniqueDevelopersCountWithoutCuresUpdatedSuspendedListingsByAcb = asyncStats.getUniqueDevelopersCountFor2015SuspendedListingsByAcb(certifiedProductDAO, Edition2015Criteria.NON_CURES);
+            uniqueProductsCountWithoutCuresUpdatedListingsByAcb = asyncStats.getUniqueProductsCountFor2015ListingsByAcb(certifiedProductDAO, Edition2015Criteria.NON_CURES);
+            uniqueProductsCountWithoutCuresUpdatedActiveListingsByAcb = asyncStats.getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(certifiedProductDAO, Edition2015Criteria.NON_CURES);
+            uniqueProductsCountWithoutCuresUpdatedSuspendedListingsByAcb = asyncStats.getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(certifiedProductDAO, Edition2015Criteria.NON_CURES);
 
-            uniqueProductsCountWithCuresUpdatedListingsByAcb = asyncStats
-                    .getUniqueProductsCountWithCuresUpdatedListingsByAcb(certifiedProductDAO);
-            uniqueProductsCountWithCuresUpdatedActiveListingsByAcb = asyncStats
-                    .getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(certifiedProductDAO);
-            uniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb = asyncStats
-                    .getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(certifiedProductDAO);
+            uniqueDevelopersCountWithCuresUpdatedListingsByAcb = asyncStats.getUniqueDevelopersCountFor2015ListingsByAcb(certifiedProductDAO, Edition2015Criteria.CURES);
+            uniqueDevelopersCountWithCuresUpdatedActiveListingsByAcb = asyncStats.getUniqueDevelopersCountFor2015ActiveListingsByAcb(certifiedProductDAO, Edition2015Criteria.CURES);
+            uniqueDevelopersCountWithCuresUpdatedSuspendedListingsByAcb = asyncStats.getUniqueDevelopersCountFor2015SuspendedListingsByAcb(certifiedProductDAO, Edition2015Criteria.CURES);
+            uniqueProductsCountWithCuresUpdatedListingsByAcb = asyncStats.getUniqueProductsCountFor2015ListingsByAcb(certifiedProductDAO, Edition2015Criteria.CURES);
+            uniqueProductsCountWithCuresUpdatedActiveListingsByAcb = asyncStats.getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(certifiedProductDAO, Edition2015Criteria.CURES);
+            uniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb = asyncStats.getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(certifiedProductDAO, Edition2015Criteria.CURES);
 
-            activeListingCountWithCuresUpdatedByAcb = asyncStats
-                    .getActiveListingCountWithCuresUpdatedByAcb(certifiedProductDAO);
-            listingCountWithCuresUpdatedAndAltTestMethodsByAcb = asyncStats
-                    .getListingCountWithCuresUpdatedAndAltTestMethodsByAcb(certifiedProductDAO, certificationResultDAO);
+            uniqueDevelopersCountForAny2015ListingsByAcb = asyncStats.getUniqueDevelopersCountFor2015ListingsByAcb(certifiedProductDAO, Edition2015Criteria.BOTH);
+            uniqueDevelopersCountForAny2015ActiveListingsByAcb = asyncStats.getUniqueDevelopersCountFor2015ActiveListingsByAcb(certifiedProductDAO, Edition2015Criteria.BOTH);
+            uniqueDevelopersCountForAny2015SuspendedListingsByAcb = asyncStats.getUniqueDevelopersCountFor2015SuspendedListingsByAcb(certifiedProductDAO, Edition2015Criteria.BOTH);
+            uniqueProductsCountForAny2015ListingsByAcb = asyncStats.getUniqueProductsCountFor2015ListingsByAcb(certifiedProductDAO, Edition2015Criteria.BOTH);
+            uniqueProductsCountForAny2015ActiveListingsByAcb = asyncStats.getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(certifiedProductDAO, Edition2015Criteria.BOTH);
+            uniqueProductsCountForAny2015SuspendedListingsByAcb = asyncStats.getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(certifiedProductDAO, Edition2015Criteria.BOTH);
+
+            //activeListingCountWithCuresUpdatedByAcb = asyncStats
+            //        .getActiveListingCountWithCuresUpdatedByAcb(certifiedProductDAO);
+            //listingCountWithCuresUpdatedAndAltTestMethodsByAcb = asyncStats
+            //        .getListingCountWithCuresUpdatedAndAltTestMethodsByAcb(certifiedProductDAO, certificationResultDAO);
 
             allListingsCountWithCuresUpdated = asyncStats.getAllListingsCountWithCuresUpdated(certifiedProductDAO);
         }
@@ -227,19 +247,28 @@ public class AsynchronousSummaryStatisticsInitializor {
             stats.setAverageTimeToCloseSurveillance(averageTimeToCloseSurveillance.get());
 
             stats.setUniqueDevelopersCountWithCuresUpdatedListingsByAcb(uniqueDevelopersCountWithCuresUpdatedListingsByAcb.get());
-            stats.setUniqueDevelopersCountWithCuresUpdatedActiveListingsByAcb(
-                    uniqueDevelopersCountWithCuresUpdatedActiveListingsByAcb.get());
-            stats.setUniqueDevelopersCountWithCuresUpdatedSuspendedListingsByAcb(
-                    uniqueDevelopersCountWithCuresUpdatedSuspendedListingsByAcb.get());
-
+            stats.setUniqueDevelopersCountWithCuresUpdatedActiveListingsByAcb(uniqueDevelopersCountWithCuresUpdatedActiveListingsByAcb.get());
+            stats.setUniqueDevelopersCountWithCuresUpdatedSuspendedListingsByAcb(uniqueDevelopersCountWithCuresUpdatedSuspendedListingsByAcb.get());
             stats.setUniqueProductsCountWithCuresUpdatedListingsByAcb(uniqueProductsCountWithCuresUpdatedListingsByAcb.get());
-            stats.setUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(
-                    uniqueProductsCountWithCuresUpdatedActiveListingsByAcb.get());
-            stats.setUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(
-                    uniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb.get());
+            stats.setUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(uniqueProductsCountWithCuresUpdatedActiveListingsByAcb.get());
+            stats.setUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(uniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb.get());
 
-            stats.setActiveListingCountWithCuresUpdatedByAcb(activeListingCountWithCuresUpdatedByAcb.get());
-            stats.setListingCountWithCuresUpdatedAndAltTestMethodsByAcb(listingCountWithCuresUpdatedAndAltTestMethodsByAcb.get());
+            stats.setUniqueDevelopersCountWithoutCuresUpdatedListingsByAcb(uniqueDevelopersCountWithoutCuresUpdatedListingsByAcb.get());
+            stats.setUniqueDevelopersCountWithoutCuresUpdatedActiveListingsByAcb(uniqueDevelopersCountWithoutCuresUpdatedActiveListingsByAcb.get());
+            stats.setUniqueDevelopersCountWithoutCuresUpdatedSuspendedListingsByAcb(uniqueDevelopersCountWithoutCuresUpdatedSuspendedListingsByAcb.get());
+            stats.setUniqueProductsCountWithoutCuresUpdatedListingsByAcb(uniqueProductsCountWithoutCuresUpdatedListingsByAcb.get());
+            stats.setUniqueProductsCountWithoutCuresUpdatedActiveListingsByAcb(uniqueProductsCountWithoutCuresUpdatedActiveListingsByAcb.get());
+            stats.setUniqueProductsCountWithoutCuresUpdatedSuspendedListingsByAcb(uniqueProductsCountWithoutCuresUpdatedSuspendedListingsByAcb.get());
+
+            stats.setUniqueDevelopersCountForAny2015ListingsByAcb(uniqueDevelopersCountForAny2015ListingsByAcb.get());
+            stats.setUniqueDevelopersCountForAny2015ActiveListingsByAcb(uniqueDevelopersCountForAny2015ActiveListingsByAcb.get());
+            stats.setUniqueDevelopersCountForAny2015SuspendedListingsByAcb(uniqueDevelopersCountForAny2015SuspendedListingsByAcb.get());
+            stats.setUniqueProductsCountForAny2015ListingsByAcb(uniqueProductsCountForAny2015ListingsByAcb.get());
+            stats.setUniqueProductsCountForAny2015ActiveListingsByAcb(uniqueProductsCountForAny2015ActiveListingsByAcb.get());
+            stats.setUniqueProductsCountForAny2015SuspendedListingsByAcb(uniqueProductsCountForAny2015SuspendedListingsByAcb.get());
+
+            //stats.setActiveListingCountWithCuresUpdatedByAcb(activeListingCountWithCuresUpdatedByAcb.get());
+            //stats.setListingCountWithCuresUpdatedAndAltTestMethodsByAcb(listingCountWithCuresUpdatedAndAltTestMethodsByAcb.get());
 
             stats.setAllListingsCountWithCuresUpdated(allListingsCountWithCuresUpdated.get());
         }

@@ -84,7 +84,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
 
         EmailBuilder emailBuilder = new EmailBuilder(env);
         emailBuilder.recipients(addresses).subject(subject).htmlMessage(message)
-                .fileAttachments(getSummaryStatisticsFile()).sendEmail();
+        .fileAttachments(getSummaryStatisticsFile()).sendEmail();
     }
 
     private List<File> getSummaryStatisticsFile() {
@@ -112,7 +112,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         emailMessage.append(createMessageHeader(endDate));
         emailMessage.append(developerStatisticsSectionCreator.build(stats, activeAcbs, ff4j));
         emailMessage.append(productStatisticsSectionCreator.build(stats, activeAcbs, ff4j));
-        emailMessage.append(listingStatisticsSectionCreator.build(stats, activeAcbs, ff4j));
+        //emailMessage.append(listingStatisticsSectionCreator.build(stats, activeAcbs, ff4j));
         emailMessage.append(surveillanceStatisticsSectionCreator.build(stats, activeAcbs));
         emailMessage.append(nonConformityStatisticsSectionCreator.build(stats, activeAcbs));
 

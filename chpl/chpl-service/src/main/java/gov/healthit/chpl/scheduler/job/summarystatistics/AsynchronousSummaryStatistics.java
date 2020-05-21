@@ -327,7 +327,7 @@ public class AsynchronousSummaryStatistics {
 
         List<SurveillanceEntity> surveillances = surveillanceStatisticsDAO.getAllSurveillances().stream()
                 .filter(surv -> surv.getStartDate() != null
-                        && surv.getEndDate() != null)
+                && surv.getEndDate() != null)
                 .collect(Collectors.toList());
 
         Long totalDuration = surveillances.stream()
@@ -473,7 +473,7 @@ public class AsynchronousSummaryStatistics {
                 .flatMap(surv -> surv.getSurveilledRequirements().stream())
                 .flatMap(req -> req.getNonconformities().stream())
                 .filter(nc -> nc.getCapEndDate() != null
-                        && nc.getNonconformityStatus().getName().equals(NonconformityStatusConcept.CLOSED.getName()))
+                && nc.getNonconformityStatus().getName().equals(NonconformityStatusConcept.CLOSED.getName()))
                 .distinct()
                 .collect(Collectors.toList());
 
@@ -493,7 +493,7 @@ public class AsynchronousSummaryStatistics {
 
         List<SurveillanceNonconformityEntity> nonconformities = surveillances.stream()
                 .filter(surv -> surv.getStartDate() != null
-                        && surv.getEndDate() != null)
+                && surv.getEndDate() != null)
                 .flatMap(surv -> surv.getSurveilledRequirements().stream())
                 .filter(req -> req.getSurveillanceResultTypeId().equals(NONCONFORMITY_SURVEILLANCE_RESULT))
                 .flatMap(req -> req.getNonconformities().stream())
@@ -518,7 +518,7 @@ public class AsynchronousSummaryStatistics {
                 .flatMap(surv -> surv.getSurveilledRequirements().stream())
                 .flatMap(req -> req.getNonconformities().stream())
                 .filter(nc -> nc.getCapApproval() != null
-                        && nc.getCapEndDate() == null)
+                && nc.getCapEndDate() == null)
                 .distinct()
                 .map(nc -> new NonconformanceStatistic(
                         findSurveillanceForNonconformity(nc, surveillances).getCertifiedProduct().getCertificationBodyId(), nc))
@@ -538,7 +538,7 @@ public class AsynchronousSummaryStatistics {
                 .flatMap(surv -> surv.getSurveilledRequirements().stream())
                 .flatMap(req -> req.getNonconformities().stream())
                 .filter(nc -> nc.getCapApproval() != null
-                        && nc.getCapEndDate() != null)
+                && nc.getCapEndDate() != null)
                 .distinct()
                 .map(nc -> new NonconformanceStatistic(
                         findSurveillanceForNonconformity(nc, surveillances).getCertifiedProduct().getCertificationBodyId(), nc))
@@ -549,9 +549,10 @@ public class AsynchronousSummaryStatistics {
 
     @Async("jobAsyncDataExecutor")
     @Transactional
-    public Future<List<CertifiedBodyStatistics>> getUniqueDevelopersCountWithCuresUpdatedListingsByAcb(
-            CertifiedProductDAO certifiedProductDAO) {
-        return new AsyncResult<List<CertifiedBodyStatistics>>(certifiedProductDAO.findCuresUpdatedListings().stream()
+    public Future<List<CertifiedBodyStatistics>> getUniqueDevelopersCountFor2015ListingsByAcb(
+            CertifiedProductDAO certifiedProductDAO, Edition2015Criteria listingsToInclude) {
+        return new AsyncResult<List<CertifiedBodyStatistics>>(certifiedProductDAO.findByEdition("2015").stream()
+                .filter(listing -> includeListing(listing, listingsToInclude))
                 .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
                 .entrySet().stream()
                 .map(entry -> {
@@ -567,10 +568,11 @@ public class AsynchronousSummaryStatistics {
 
     @Async("jobAsyncDataExecutor")
     @Transactional
-    public Future<List<CertifiedBodyStatistics>> getUniqueDevelopersCountWithCuresUpdatedActiveListingsByAcb(
-            CertifiedProductDAO certifiedProductDAO) {
-        return new AsyncResult<List<CertifiedBodyStatistics>>(certifiedProductDAO.findCuresUpdatedListings().stream()
-                .filter(listing -> listing.getCertificationStatusName().equals(CertificationStatusType.Active.getName()))
+    public Future<List<CertifiedBodyStatistics>> getUniqueDevelopersCountFor2015ActiveListingsByAcb(
+            CertifiedProductDAO certifiedProductDAO, Edition2015Criteria listingsToInclude) {
+        return new AsyncResult<List<CertifiedBodyStatistics>>(certifiedProductDAO.findByEdition("2015").stream()
+                .filter(listing -> includeListing(listing, listingsToInclude)
+                        && listing.getCertificationStatusName().equals(CertificationStatusType.Active.getName()))
                 .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
                 .entrySet().stream()
                 .map(entry -> {
@@ -586,11 +588,12 @@ public class AsynchronousSummaryStatistics {
 
     @Async("jobAsyncDataExecutor")
     @Transactional
-    public Future<List<CertifiedBodyStatistics>> getUniqueDevelopersCountWithCuresUpdatedSuspendedListingsByAcb(
-            CertifiedProductDAO certifiedProductDAO) {
-        return new AsyncResult<List<CertifiedBodyStatistics>>(certifiedProductDAO.findCuresUpdatedListings().stream()
-                .filter(cp -> cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByAcb.getName())
-                        || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByOnc.getName()))
+    public Future<List<CertifiedBodyStatistics>> getUniqueDevelopersCountFor2015SuspendedListingsByAcb(
+            CertifiedProductDAO certifiedProductDAO, Edition2015Criteria listingsToInclude) {
+        return new AsyncResult<List<CertifiedBodyStatistics>>(certifiedProductDAO.findByEdition("2015").stream()
+                .filter(cp -> includeListing(cp, listingsToInclude)
+                        && (cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByAcb.getName())
+                                || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByOnc.getName())))
                 .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
                 .entrySet().stream()
                 .map(entry -> {
@@ -606,9 +609,10 @@ public class AsynchronousSummaryStatistics {
 
     @Async("jobAsyncDataExecutor")
     @Transactional
-    public Future<List<CertifiedBodyStatistics>> getUniqueProductsCountWithCuresUpdatedListingsByAcb(
-            CertifiedProductDAO certifiedProductDAO) {
-        return new AsyncResult<List<CertifiedBodyStatistics>>(certifiedProductDAO.findCuresUpdatedListings().stream()
+    public Future<List<CertifiedBodyStatistics>> getUniqueProductsCountFor2015ListingsByAcb(
+            CertifiedProductDAO certifiedProductDAO, Edition2015Criteria listingsToInclude) {
+        return new AsyncResult<List<CertifiedBodyStatistics>>(certifiedProductDAO.findByEdition("2015").stream()
+                .filter(listing -> includeListing(listing, listingsToInclude))
                 .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
                 .entrySet().stream()
                 .map(entry -> {
@@ -625,9 +629,10 @@ public class AsynchronousSummaryStatistics {
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<List<CertifiedBodyStatistics>> getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(
-            CertifiedProductDAO certifiedProductDAO) {
-        return new AsyncResult<List<CertifiedBodyStatistics>>(certifiedProductDAO.findCuresUpdatedListings().stream()
-                .filter(listing -> listing.getCertificationStatusName().equals(CertificationStatusType.Active.getName()))
+            CertifiedProductDAO certifiedProductDAO, Edition2015Criteria listingsToInclude) {
+        return new AsyncResult<List<CertifiedBodyStatistics>>(certifiedProductDAO.findByEdition("2015").stream()
+                .filter(listing -> includeListing(listing, listingsToInclude)
+                        && listing.getCertificationStatusName().equals(CertificationStatusType.Active.getName()))
                 .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
                 .entrySet().stream()
                 .map(entry -> {
@@ -644,10 +649,11 @@ public class AsynchronousSummaryStatistics {
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<List<CertifiedBodyStatistics>> getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(
-            CertifiedProductDAO certifiedProductDAO) {
-        return new AsyncResult<List<CertifiedBodyStatistics>>(certifiedProductDAO.findCuresUpdatedListings().stream()
-                .filter(cp -> cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByAcb.getName())
-                        || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByOnc.getName()))
+            CertifiedProductDAO certifiedProductDAO, Edition2015Criteria listingsToInclude) {
+        return new AsyncResult<List<CertifiedBodyStatistics>>(certifiedProductDAO.findByEdition("2015").stream()
+                .filter(cp -> includeListing(cp, listingsToInclude)
+                        && (cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByAcb.getName())
+                                || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByOnc.getName())))
                 .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
                 .entrySet().stream()
                 .map(entry -> {
@@ -664,11 +670,12 @@ public class AsynchronousSummaryStatistics {
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<List<CertifiedBodyStatistics>> getActiveListingCountWithCuresUpdatedByAcb(
-            CertifiedProductDAO certifiedProductDAO) {
-        return new AsyncResult<List<CertifiedBodyStatistics>>(certifiedProductDAO.findCuresUpdatedListings().stream()
-                .filter(cp -> cp.getCertificationStatusName().equals(CertificationStatusType.Active.getName())
-                        || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByAcb.getName())
-                        || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByOnc.getName()))
+            CertifiedProductDAO certifiedProductDAO, Edition2015Criteria listingsToInclude) {
+        return new AsyncResult<List<CertifiedBodyStatistics>>(certifiedProductDAO.findByEdition("2015").stream()
+                .filter(cp -> includeListing(cp, listingsToInclude)
+                        && (cp.getCertificationStatusName().equals(CertificationStatusType.Active.getName())
+                                || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByAcb.getName())
+                                || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByOnc.getName())))
                 .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
                 .entrySet().stream()
                 .map(entry -> {
@@ -683,10 +690,13 @@ public class AsynchronousSummaryStatistics {
 
     @Async("jobAsyncDataExecutor")
     @Transactional
-    public Future<List<CertifiedBodyStatistics>> getListingCountWithCuresUpdatedAndAltTestMethodsByAcb(
-            CertifiedProductDAO certifiedProductDAO, CertificationResultDAO certificationResultDAO) {
-        return new AsyncResult<List<CertifiedBodyStatistics>>(certifiedProductDAO.findCuresUpdatedListings().stream()
-                .filter(cp -> doesListingHaveAlternativeTestMethod(cp.getId(), certificationResultDAO))
+    public Future<List<CertifiedBodyStatistics>> getListingCountFor2015AndAltTestMethodsByAcb(
+            CertifiedProductDAO certifiedProductDAO, CertificationResultDAO certificationResultDAO,
+            Edition2015Criteria listingsToInclude) {
+
+        return new AsyncResult<List<CertifiedBodyStatistics>>(certifiedProductDAO.findByEdition("2015").stream()
+                .filter(cp -> includeListing(cp, listingsToInclude)
+                        && doesListingHaveAlternativeTestMethod(cp.getId(), certificationResultDAO))
                 .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
                 .entrySet().stream()
                 .map(entry -> {
@@ -703,15 +713,18 @@ public class AsynchronousSummaryStatistics {
     @Transactional
     public Future<Long> getAllListingsCountWithCuresUpdated(
             CertifiedProductDAO certifiedProductDAO) {
-        return new AsyncResult<Long>(Long.valueOf(certifiedProductDAO.findCuresUpdatedListings().size()));
+        return new AsyncResult<Long>(certifiedProductDAO.findByEdition("2015").stream()
+                .filter(listing -> listing.getCuresUpdate())
+                .count());
     }
 
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<Long> getAllListingsCountWithCuresUpdatedWithAlternativeTestMethods(
             CertifiedProductDAO certifiedProductDAO, CertificationResultDAO certificationResultDAO) {
-        return new AsyncResult<Long>(certifiedProductDAO.findCuresUpdatedListings().stream()
-                .filter(cp -> doesListingHaveAlternativeTestMethod(cp.getId(), certificationResultDAO))
+        return new AsyncResult<Long>(certifiedProductDAO.findByEdition("2015").stream()
+                .filter(cp -> cp.getCuresUpdate()
+                        && doesListingHaveAlternativeTestMethod(cp.getId(), certificationResultDAO))
                 .count());
     }
 
@@ -774,6 +787,19 @@ public class AsynchronousSummaryStatistics {
         return Math.abs(ChronoUnit.DAYS.between(
                 surveillance.getStartDate().toInstant(),
                 surveillance.getEndDate().toInstant()));
+    }
+
+    private boolean includeListing(CertifiedProductDetailsDTO listing, Edition2015Criteria listinsToInclude) {
+        switch (listinsToInclude) {
+        case BOTH :
+            return true;
+        case CURES :
+            return listing.getCuresUpdate();
+        case NON_CURES :
+            return !listing.getCuresUpdate();
+        default :
+            return false;
+        }
     }
 
     private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
