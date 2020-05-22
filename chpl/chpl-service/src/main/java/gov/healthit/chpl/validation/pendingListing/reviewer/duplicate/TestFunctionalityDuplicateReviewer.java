@@ -2,6 +2,7 @@ package gov.healthit.chpl.validation.pendingListing.reviewer.duplicate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiPredicate;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -25,16 +26,13 @@ public class TestFunctionalityDuplicateReviewer {
     }
 
     public void review(PendingCertifiedProductDTO listing, PendingCertificationResultDTO certificationResult) {
-
         DuplicateReviewResult<PendingCertificationResultTestFunctionalityDTO> testFunctionalityDuplicateResults =
                 new DuplicateReviewResult<PendingCertificationResultTestFunctionalityDTO>(getPredicate());
-
         if (certificationResult.getTestFunctionality() != null) {
             for (PendingCertificationResultTestFunctionalityDTO dto : certificationResult.getTestFunctionality()) {
                 testFunctionalityDuplicateResults.addObject(dto);
             }
         }
-
         if (testFunctionalityDuplicateResults.duplicatesExist()) {
             listing.getWarningMessages().addAll(getWarnings(
                             testFunctionalityDuplicateResults.getDuplicateList(),
@@ -62,8 +60,11 @@ public class TestFunctionalityDuplicateReviewer {
             @Override
             public boolean test(PendingCertificationResultTestFunctionalityDTO dto1,
                     PendingCertificationResultTestFunctionalityDTO dto2) {
-                return ObjectUtils.allNotNull(dto1.getNumber(), dto2.getNumber())
-                        && dto1.getNumber().equals(dto2.getNumber());
+                return (ObjectUtils.allNotNull(dto1.getTestFunctionalityId(), dto2.getTestFunctionalityId())
+                            && Objects.equals(dto1.getTestFunctionalityId(), dto2.getTestFunctionalityId()))
+                        || (dto1.getTestFunctionalityId() == null && dto2.getTestFunctionalityId() == null
+                            && ObjectUtils.allNotNull(dto1.getNumber(), dto2.getNumber())
+                        && Objects.equals(dto1.getNumber(), dto2.getNumber()));
             }
         };
     }

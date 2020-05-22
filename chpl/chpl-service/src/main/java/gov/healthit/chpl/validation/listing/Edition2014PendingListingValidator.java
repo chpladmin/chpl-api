@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.validation.pendingListing.reviewer.CertificationDateReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.ChplNumberReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.DeveloperStatusReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.DuplicateDataReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.FieldLengthReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.FuzzyMatchReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
@@ -18,7 +19,6 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.UnattestedCriteriaWi
 import gov.healthit.chpl.validation.pendingListing.reviewer.UnsupportedCharacterReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.ValidDataReviewer;
-import gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.DuplicateData2014Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.RequiredData2014Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.SedG32014Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.TestFunctionality2014Reviewer;
@@ -88,8 +88,8 @@ public class Edition2014PendingListingValidator extends PendingValidator {
     private UrlReviewer urlReviewer;
 
     @Autowired
-    @Qualifier("pendingDuplicateData2014Reviewer")
-    private DuplicateData2014Reviewer duplicateData2014Reviewer;
+    @Qualifier("pendingDuplicateDataReviewer")
+    private DuplicateDataReviewer duplicateDataReviewer;
 
     private List<Reviewer> reviewers;
 
@@ -97,7 +97,6 @@ public class Edition2014PendingListingValidator extends PendingValidator {
     public List<Reviewer> getReviewers() {
         if (reviewers == null) {
             reviewers = new ArrayList<Reviewer>();
-            reviewers.add(duplicateData2014Reviewer);
             reviewers.add(chplNumberReviewer);
             reviewers.add(devStatusReviewer);
             reviewers.add(certDateReviewer);
@@ -112,6 +111,7 @@ public class Edition2014PendingListingValidator extends PendingValidator {
             reviewers.add(tt2014Reviewer);
             reviewers.add(tfReviewer);
             reviewers.add(urlReviewer);
+            reviewers.add(duplicateDataReviewer);
         }
         return reviewers;
     }

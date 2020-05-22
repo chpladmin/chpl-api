@@ -53,8 +53,11 @@ public class AtlDuplicateReviewer {
             @Override
             public boolean test(PendingCertifiedProductTestingLabDTO dto1,
                     PendingCertifiedProductTestingLabDTO dto2) {
-                return ObjectUtils.allNotNull(dto1.getTestingLabName(), dto2.getTestingLabName())
-                        && dto1.getTestingLabName().equals(dto2.getTestingLabName());
+                return (ObjectUtils.allNotNull(dto1.getTestingLabId(), dto2.getTestingLabId())
+                        && dto1.getTestingLabId().equals(dto2.getTestingLabId()))
+                        || (dto1.getTestingLabId() == null && dto2.getTestingLabId() == null
+                        && ObjectUtils.allNotNull(dto1.getTestingLabName(), dto2.getTestingLabName())
+                        && dto1.getTestingLabName().equals(dto2.getTestingLabName()));
             }
         };
     }

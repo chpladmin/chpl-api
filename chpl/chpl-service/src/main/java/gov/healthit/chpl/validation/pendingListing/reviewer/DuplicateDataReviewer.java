@@ -1,4 +1,4 @@
-package gov.healthit.chpl.validation.pendingListing.reviewer.edition2015;
+package gov.healthit.chpl.validation.pendingListing.reviewer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -8,45 +8,44 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
-import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.AtlDuplicateReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.QmsStandardDuplicateReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.TestDataDuplicateReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.TestFunctionalityDuplicateReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.TestStandardDuplicateReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.TestToolDuplicateReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate.AccessibilityStandard2015DuplicateReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate.AdditionalSoftware2015DuplicateReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate.IcsSource2015DuplicateReviewer;
-import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate.QmsStandard2015DuplicateReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate.TargetedUser2015DuplicateReviewer;
-import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate.TestData2015DuplicateReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate.TestProcedure2015DuplicateReviewer;
 
 @Component("pendingDuplicateData2015Reviewer")
-public class DuplicateData2015Reviewer implements Reviewer {
-    private static final Logger LOGGER = LogManager.getLogger(DuplicateData2015Reviewer.class);
+public class DuplicateDataReviewer implements Reviewer {
+    private static final Logger LOGGER = LogManager.getLogger(DuplicateDataReviewer.class);
 
     private TestFunctionalityDuplicateReviewer testFunctionalityDuplicateReviewer;
-    private TestData2015DuplicateReviewer testDataDuplicateReviewer;
+    private TestDataDuplicateReviewer testDataDuplicateReviewer;
     private TestToolDuplicateReviewer testToolDuplicateReviewer;
     private TestProcedure2015DuplicateReviewer testProcedureDuplicateReviewer;
     private TestStandardDuplicateReviewer testStandardDuplicateReviewer;
     private AdditionalSoftware2015DuplicateReviewer additionalSoftwareDuplicateReviewer;
     private AccessibilityStandard2015DuplicateReviewer accessibilityStandardDuplicateReviewer;
-    private QmsStandard2015DuplicateReviewer qmsStandardDuplicateReviewer;
+    private QmsStandardDuplicateReviewer qmsStandardDuplicateReviewer;
     private IcsSource2015DuplicateReviewer icsSourceDuplicateReviewer;
     private AtlDuplicateReviewer atlDuplicateReviewer;
     private TargetedUser2015DuplicateReviewer targetedUser2015DuplicateReviewer;
 
     @Autowired
-    public DuplicateData2015Reviewer(
+    public DuplicateDataReviewer(
             @Qualifier("pendingTestFunctionalityDuplicateReviewer") TestFunctionalityDuplicateReviewer testFunctionalityDuplicateReviewer,
-            @Qualifier("pendingTestData2015DuplicateReviewer") TestData2015DuplicateReviewer testDataDuplicateReviewer,
+            @Qualifier("pendingTestDataDuplicateReviewer") TestDataDuplicateReviewer testDataDuplicateReviewer,
             @Qualifier("pendingTestToolDuplicateReviewer") TestToolDuplicateReviewer testToolDuplicateReviewer,
             @Qualifier("pendingTestProcedure2015DuplicateReviewer") TestProcedure2015DuplicateReviewer testProcedureDuplicateReviewer,
             @Qualifier("pendingTestStandardDuplicateReviewer") TestStandardDuplicateReviewer testStandardDuplicateReviewer,
             @Qualifier("pendingAdditionalSoftware2015DuplicateReviewer") AdditionalSoftware2015DuplicateReviewer additionalSoftwareDuplicateReviewer,
             @Qualifier("pendingAccessibilityStandard2015DuplicateReviewer") AccessibilityStandard2015DuplicateReviewer accessibilityStandardDuplicateReviewer,
-            @Qualifier("pendingQmsStandard2015DuplicateReviewer") QmsStandard2015DuplicateReviewer qmsStandardDuplicateReviewer,
+            @Qualifier("pendingQmsStandardDuplicateReviewer") QmsStandardDuplicateReviewer qmsStandardDuplicateReviewer,
             @Qualifier("pendingIcsSource2015DuplicateReviewer") IcsSource2015DuplicateReviewer icsSourceDuplicateReviewer,
             @Qualifier("pendingAtlDuplicateReviewer") AtlDuplicateReviewer atlDuplicateReviewer,
             @Qualifier("pendingTargetedUser2015DuplicateReviewer") TargetedUser2015DuplicateReviewer targetedUser2015DuplicateReviewer) {

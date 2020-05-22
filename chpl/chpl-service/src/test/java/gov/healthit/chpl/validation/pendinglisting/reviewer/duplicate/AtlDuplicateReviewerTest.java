@@ -33,13 +33,25 @@ public class AtlDuplicateReviewerTest {
     @Test
     public void review_duplicateExists_warningFoundAndDuplicateRemoved() {
         PendingCertifiedProductDTO listing = new PendingCertifiedProductDTO();
+        PendingCertifiedProductTestingLabDTO atl1 = getTestingLab(1L, "Atl1");
+        PendingCertifiedProductTestingLabDTO atl2 = getTestingLab(1L, "Atl1");
+        listing.getTestingLabs().add(atl1);
+        listing.getTestingLabs().add(atl2);
 
-        PendingCertifiedProductTestingLabDTO atl1 = new PendingCertifiedProductTestingLabDTO();
-        atl1.setTestingLabName("Atl1");
+        reviewer.review(listing);
 
-        PendingCertifiedProductTestingLabDTO atl2 = new PendingCertifiedProductTestingLabDTO();
-        atl2.setTestingLabName("Atl1");
+        assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(1, listing.getWarningMessages().stream()
+                .filter(warning -> warning.equals(String.format(ERR_MSG, "Atl1")))
+                .count());
+        assertEquals(1, listing.getTestingLabs().size());
+    }
 
+    @Test
+    public void review_duplicateExistsNullId_warningFoundAndDuplicateRemoved() {
+        PendingCertifiedProductDTO listing = new PendingCertifiedProductDTO();
+        PendingCertifiedProductTestingLabDTO atl1 = getTestingLab(null, "Atl1");
+        PendingCertifiedProductTestingLabDTO atl2 = getTestingLab(null, "Atl1");
         listing.getTestingLabs().add(atl1);
         listing.getTestingLabs().add(atl2);
 
@@ -55,12 +67,8 @@ public class AtlDuplicateReviewerTest {
     @Test
     public void review_noDuplicates_noWarning() {
         PendingCertifiedProductDTO listing = new PendingCertifiedProductDTO();
-
-        PendingCertifiedProductTestingLabDTO atl1 = new PendingCertifiedProductTestingLabDTO();
-        atl1.setTestingLabName("Atl1");
-
-        PendingCertifiedProductTestingLabDTO atl2 = new PendingCertifiedProductTestingLabDTO();
-        atl2.setTestingLabName("Atl2");
+        PendingCertifiedProductTestingLabDTO atl1 = getTestingLab(1L, "Atl1");
+        PendingCertifiedProductTestingLabDTO atl2 = getTestingLab(2L, "Atl1");
 
         listing.getTestingLabs().add(atl1);
         listing.getTestingLabs().add(atl2);
@@ -85,18 +93,10 @@ public class AtlDuplicateReviewerTest {
     @Test
     public void review_duplicateExistsInLargeSet_warningFoundAndDuplicateRemoved() {
         PendingCertifiedProductDTO listing = new PendingCertifiedProductDTO();
-
-        PendingCertifiedProductTestingLabDTO atl1 = new PendingCertifiedProductTestingLabDTO();
-        atl1.setTestingLabName("Atl1");
-
-        PendingCertifiedProductTestingLabDTO atl2 = new PendingCertifiedProductTestingLabDTO();
-        atl2.setTestingLabName("Atl2");
-
-        PendingCertifiedProductTestingLabDTO atl3 = new PendingCertifiedProductTestingLabDTO();
-        atl3.setTestingLabName("Atl1");
-
-        PendingCertifiedProductTestingLabDTO atl4 = new PendingCertifiedProductTestingLabDTO();
-        atl4.setTestingLabName("Atl3");
+        PendingCertifiedProductTestingLabDTO atl1 = getTestingLab(1L, "Atl1");
+        PendingCertifiedProductTestingLabDTO atl2 = getTestingLab(2L, "Atl2");
+        PendingCertifiedProductTestingLabDTO atl3 = getTestingLab(1L, "Atl1");
+        PendingCertifiedProductTestingLabDTO atl4 = getTestingLab(3L, "Atl3");
 
         listing.getTestingLabs().add(atl1);
         listing.getTestingLabs().add(atl2);
@@ -110,5 +110,12 @@ public class AtlDuplicateReviewerTest {
                 .filter(warning -> warning.equals(String.format(ERR_MSG, "Atl1")))
                 .count());
         assertEquals(3, listing.getTestingLabs().size());
+    }
+
+    private PendingCertifiedProductTestingLabDTO getTestingLab(Long id, String name) {
+        PendingCertifiedProductTestingLabDTO atl = new PendingCertifiedProductTestingLabDTO();
+        atl.setTestingLabId(id);
+        atl.setTestingLabName(name);
+        return atl;
     }
 }

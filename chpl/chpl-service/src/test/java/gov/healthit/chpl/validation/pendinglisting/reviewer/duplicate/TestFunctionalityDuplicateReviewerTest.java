@@ -34,16 +34,29 @@ public class TestFunctionalityDuplicateReviewerTest {
     }
 
     @Test
-    public void review_duplicateExists_warningFoundAndDuplicateRemoved() {
+    public void review_duplicateIdExists_warningFoundAndDuplicateRemoved() {
         PendingCertifiedProductDTO listing = new PendingCertifiedProductDTO();
         PendingCertificationResultDTO cert = getCertResult();
+        PendingCertificationResultTestFunctionalityDTO testFunc1 = getTestFunc(1L, "TestFunc1");
+        PendingCertificationResultTestFunctionalityDTO testFunc2 = getTestFunc(1L, "TestFunc1");
+        cert.getTestFunctionality().add(testFunc1);
+        cert.getTestFunctionality().add(testFunc2);
 
-        PendingCertificationResultTestFunctionalityDTO testFunc1 = new PendingCertificationResultTestFunctionalityDTO();
-        testFunc1.setNumber("TestFunc1");
+        reviewer.review(listing, cert);
 
-        PendingCertificationResultTestFunctionalityDTO testFunc2 = new PendingCertificationResultTestFunctionalityDTO();
-        testFunc2.setNumber("TestFunc1");
+        assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(1, listing.getWarningMessages().stream()
+                .filter(warning -> warning.equals(String.format(ERR_MSG, CRITERION_NUMBER, "TestFunc1")))
+                .count());
+        assertEquals(1, cert.getTestFunctionality().size());
+    }
 
+    @Test
+    public void review_duplicateNameExists_warningFoundAndDuplicateRemoved() {
+        PendingCertifiedProductDTO listing = new PendingCertifiedProductDTO();
+        PendingCertificationResultDTO cert = getCertResult();
+        PendingCertificationResultTestFunctionalityDTO testFunc1 = getTestFunc(null, "TestFunc1");
+        PendingCertificationResultTestFunctionalityDTO testFunc2 = getTestFunc(null, "TestFunc1");
         cert.getTestFunctionality().add(testFunc1);
         cert.getTestFunctionality().add(testFunc2);
 
@@ -60,13 +73,8 @@ public class TestFunctionalityDuplicateReviewerTest {
     public void review_noDuplicates_noWarning() {
         PendingCertifiedProductDTO listing = new PendingCertifiedProductDTO();
         PendingCertificationResultDTO cert = getCertResult();
-
-        PendingCertificationResultTestFunctionalityDTO testFunc1 = new PendingCertificationResultTestFunctionalityDTO();
-        testFunc1.setNumber("TestFunc1");
-
-        PendingCertificationResultTestFunctionalityDTO testFunc2 = new PendingCertificationResultTestFunctionalityDTO();
-        testFunc2.setNumber("TestFunc2");
-
+        PendingCertificationResultTestFunctionalityDTO testFunc1 = getTestFunc(1L, "TestFunc1");
+        PendingCertificationResultTestFunctionalityDTO testFunc2 = getTestFunc(2L, "TestFunc2");
         cert.getTestFunctionality().add(testFunc1);
         cert.getTestFunctionality().add(testFunc2);
 
@@ -92,18 +100,10 @@ public class TestFunctionalityDuplicateReviewerTest {
     public void review_duplicateExistsInLargeSet_warningFoundAndDuplicateRemoved() {
         PendingCertifiedProductDTO listing = new PendingCertifiedProductDTO();
         PendingCertificationResultDTO cert = getCertResult();
-
-        PendingCertificationResultTestFunctionalityDTO testFunc1 = new PendingCertificationResultTestFunctionalityDTO();
-        testFunc1.setNumber("TestFunc1");
-
-        PendingCertificationResultTestFunctionalityDTO testFunc2 = new PendingCertificationResultTestFunctionalityDTO();
-        testFunc2.setNumber("TestFunc2");
-
-        PendingCertificationResultTestFunctionalityDTO testFunc3 = new PendingCertificationResultTestFunctionalityDTO();
-        testFunc3.setNumber("TestFunc1");
-
-        PendingCertificationResultTestFunctionalityDTO testFunc4 = new PendingCertificationResultTestFunctionalityDTO();
-        testFunc4.setNumber("TestFunc3");
+        PendingCertificationResultTestFunctionalityDTO testFunc1 = getTestFunc(1L, "TestFunc1");
+        PendingCertificationResultTestFunctionalityDTO testFunc2 = getTestFunc(2L, "TestFunc2");
+        PendingCertificationResultTestFunctionalityDTO testFunc3 = getTestFunc(1L, "TestFunc1");
+        PendingCertificationResultTestFunctionalityDTO testFunc4 = getTestFunc(3L, "TestFunc3");
 
         cert.getTestFunctionality().add(testFunc1);
         cert.getTestFunctionality().add(testFunc2);
@@ -117,6 +117,13 @@ public class TestFunctionalityDuplicateReviewerTest {
                 .filter(warning -> warning.equals(String.format(ERR_MSG, CRITERION_NUMBER, "TestFunc1")))
                 .count());
         assertEquals(3, cert.getTestFunctionality().size());
+    }
+
+    private PendingCertificationResultTestFunctionalityDTO getTestFunc(Long id, String number) {
+        PendingCertificationResultTestFunctionalityDTO testFunc = new PendingCertificationResultTestFunctionalityDTO();
+        testFunc.setTestFunctionalityId(id);
+        testFunc.setNumber(number);
+        return testFunc;
     }
 
     private PendingCertificationResultDTO getCertResult() {

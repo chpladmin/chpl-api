@@ -1,7 +1,8 @@
-package gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate;
+package gov.healthit.chpl.validation.pendingListing.reviewer.duplicate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiPredicate;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -13,12 +14,12 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductQmsStandardD
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.DuplicateReviewResult;
 
-@Component("pendingQmsStandard2015DuplicateReviewer")
-public class QmsStandard2015DuplicateReviewer {
+@Component("pendingQmsStandardDuplicateReviewer")
+public class QmsStandardDuplicateReviewer {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public QmsStandard2015DuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
+    public QmsStandardDuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
@@ -42,8 +43,10 @@ public class QmsStandard2015DuplicateReviewer {
     private List<String> getWarnings(List<PendingCertifiedProductQmsStandardDTO> duplicates) {
         List<String> warnings = new ArrayList<String>();
         for (PendingCertifiedProductQmsStandardDTO duplicate : duplicates) {
-            String warning = errorMessageUtil.getMessage("listing.duplicateQmsStandard.2015",
-                    duplicate.getName(), duplicate.getApplicableCriteria());
+            String warning = errorMessageUtil.getMessage("listing.duplicateQmsStandard",
+                    duplicate.getName(),
+                    duplicate.getApplicableCriteria() == null ? "" : duplicate.getApplicableCriteria(),
+                    duplicate.getModification() == null ? "" : duplicate.getModification());
             warnings.add(warning);
         }
         return warnings;
@@ -54,10 +57,10 @@ public class QmsStandard2015DuplicateReviewer {
             @Override
             public boolean test(PendingCertifiedProductQmsStandardDTO dto1,
                     PendingCertifiedProductQmsStandardDTO dto2) {
-                return ObjectUtils.allNotNull(dto1.getName(), dto2.getName(),
-                        dto1.getApplicableCriteria(), dto2.getApplicableCriteria())
-                        && dto1.getName().equals(dto2.getName())
-                        && dto1.getApplicableCriteria().equals(dto2.getApplicableCriteria());
+                return ObjectUtils.allNotNull(dto1.getName(), dto2.getName())
+                        && Objects.equals(dto1.getName(), dto2.getName())
+                        && Objects.equals(dto1.getApplicableCriteria(), dto2.getApplicableCriteria())
+                        && Objects.equals(dto1.getModification(), dto2.getModification());
             }
         };
     }

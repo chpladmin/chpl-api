@@ -68,7 +68,8 @@ public class TestToolDuplicateReviewer {
         List<String> warnings = new ArrayList<String>();
         for (CertificationResultTestTool duplicate : duplicates) {
             String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestToolNameAndVersion",
-                    criteria, duplicate.getTestToolName(), duplicate.getTestToolVersion());
+                    criteria, duplicate.getTestToolName(),
+                    duplicate.getTestToolVersion() == null ? "" : duplicate.getTestToolVersion());
             warnings.add(warning);
         }
         return warnings;
@@ -90,7 +91,6 @@ public class TestToolDuplicateReviewer {
             @Override
             public boolean test(CertificationResultTestTool dto1,
                     CertificationResultTestTool dto2) {
-
                 return Objects.equals(dto1.getTestToolId(), dto2.getTestToolId())
                         && !Objects.equals(dto1.getTestToolVersion(), dto2.getTestToolVersion());
             }

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.BiPredicate;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -68,14 +67,9 @@ public class TestDataDuplicateReviewer {
     private List<String> getWarnings(List<CertificationResultTestData> duplicates, String criteria) {
         List<String> warnings = new ArrayList<String>();
         for (CertificationResultTestData duplicate : duplicates) {
-            String warning = "";
-            if (StringUtils.isEmpty(duplicate.getVersion())) {
-                warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestDataNameAndVersion",
-                        criteria, duplicate.getTestData().getName(), "");
-            } else {
-                warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestDataNameAndVersion",
-                    criteria, duplicate.getTestData().getName(), duplicate.getVersion());
-            }
+            String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestDataNameAndVersion",
+                        criteria, duplicate.getTestData().getName(),
+                        duplicate.getVersion() == null ? "" : duplicate.getVersion());
             warnings.add(warning);
         }
         return warnings;

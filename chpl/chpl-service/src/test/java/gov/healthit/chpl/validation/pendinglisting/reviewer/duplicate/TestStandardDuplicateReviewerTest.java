@@ -34,17 +34,29 @@ public class TestStandardDuplicateReviewerTest {
     }
 
     @Test
-    public void review_duplicateExists_warningFoundAndDuplicateRemoved() {
+    public void review_duplicateIdExists_warningFoundAndDuplicateRemoved() {
         PendingCertifiedProductDTO listing = new PendingCertifiedProductDTO();
-
         PendingCertificationResultDTO cert = getCertResult();
+        PendingCertificationResultTestStandardDTO testStandard1 = getTestStandard(1L, "TestStandard1");
+        PendingCertificationResultTestStandardDTO testStandard2 = getTestStandard(1L, "TestStandard1");
+        cert.getTestStandards().add(testStandard1);
+        cert.getTestStandards().add(testStandard2);
 
-        PendingCertificationResultTestStandardDTO testStandard1 = new PendingCertificationResultTestStandardDTO();
-        testStandard1.setName("TestStandard1");
+        reviewer.review(listing, cert);
 
-        PendingCertificationResultTestStandardDTO testStandard2 = new PendingCertificationResultTestStandardDTO();
-        testStandard2.setName("TestStandard1");
+        assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(1, listing.getWarningMessages().stream()
+                .filter(warning -> warning.equals(String.format(ERR_MSG, CRITERION_NUMBER, "TestStandard1")))
+                .count());
+        assertEquals(1, cert.getTestStandards().size());
+    }
 
+    @Test
+    public void review_duplicateNameExists_warningFoundAndDuplicateRemoved() {
+        PendingCertifiedProductDTO listing = new PendingCertifiedProductDTO();
+        PendingCertificationResultDTO cert = getCertResult();
+        PendingCertificationResultTestStandardDTO testStandard1 = getTestStandard(null, "TestStandard1");
+        PendingCertificationResultTestStandardDTO testStandard2 = getTestStandard(null, "TestStandard1");
         cert.getTestStandards().add(testStandard1);
         cert.getTestStandards().add(testStandard2);
 
@@ -61,13 +73,8 @@ public class TestStandardDuplicateReviewerTest {
     public void review_noDuplicates_noWarning() {
         PendingCertifiedProductDTO listing = new PendingCertifiedProductDTO();
         PendingCertificationResultDTO cert = getCertResult();
-
-        PendingCertificationResultTestStandardDTO testStandard1 = new PendingCertificationResultTestStandardDTO();
-        testStandard1.setName("TestStandard1");
-
-        PendingCertificationResultTestStandardDTO testStandard2 = new PendingCertificationResultTestStandardDTO();
-        testStandard2.setName("TestStandard2");
-
+        PendingCertificationResultTestStandardDTO testStandard1 = getTestStandard(1L, "TestStandard1");
+        PendingCertificationResultTestStandardDTO testStandard2 = getTestStandard(2L, "TestStandard2");
         cert.getTestStandards().add(testStandard1);
         cert.getTestStandards().add(testStandard2);
 
@@ -93,19 +100,10 @@ public class TestStandardDuplicateReviewerTest {
     public void review_duplicateExistsInLargeSet_warningFoundAndDuplicateRemoved() {
         PendingCertifiedProductDTO listing = new PendingCertifiedProductDTO();
         PendingCertificationResultDTO cert = getCertResult();
-
-        PendingCertificationResultTestStandardDTO testStandard1 = new PendingCertificationResultTestStandardDTO();
-        testStandard1.setName("TestStandard1");
-
-        PendingCertificationResultTestStandardDTO testStandard2 = new PendingCertificationResultTestStandardDTO();
-        testStandard2.setName("TestStandard2");
-
-        PendingCertificationResultTestStandardDTO testStandard3 = new PendingCertificationResultTestStandardDTO();
-        testStandard3.setName("TestStandard1");
-
-        PendingCertificationResultTestStandardDTO testStandard4 = new PendingCertificationResultTestStandardDTO();
-        testStandard4.setName("TestStandard4");
-
+        PendingCertificationResultTestStandardDTO testStandard1 = getTestStandard(1L, "TestStandard1");
+        PendingCertificationResultTestStandardDTO testStandard2 = getTestStandard(2L, "TestStandard2");
+        PendingCertificationResultTestStandardDTO testStandard3 = getTestStandard(1L, "TestStandard1");
+        PendingCertificationResultTestStandardDTO testStandard4 = getTestStandard(3L, "TestStandard3");
         cert.getTestStandards().add(testStandard1);
         cert.getTestStandards().add(testStandard2);
         cert.getTestStandards().add(testStandard3);
@@ -118,6 +116,13 @@ public class TestStandardDuplicateReviewerTest {
                 .filter(warning -> warning.equals(String.format(ERR_MSG, CRITERION_NUMBER, "TestStandard1")))
                 .count());
         assertEquals(3, cert.getTestStandards().size());
+    }
+
+    private PendingCertificationResultTestStandardDTO getTestStandard(Long id, String name) {
+        PendingCertificationResultTestStandardDTO testStandard = new PendingCertificationResultTestStandardDTO();
+        testStandard.setTestStandardId(id);
+        testStandard.setName(name);
+        return testStandard;
     }
 
     private PendingCertificationResultDTO getCertResult() {

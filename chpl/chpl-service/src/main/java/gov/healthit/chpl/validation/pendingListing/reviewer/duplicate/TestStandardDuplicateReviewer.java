@@ -2,6 +2,7 @@ package gov.healthit.chpl.validation.pendingListing.reviewer.duplicate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiPredicate;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -28,14 +29,11 @@ public class TestStandardDuplicateReviewer {
 
         DuplicateReviewResult<PendingCertificationResultTestStandardDTO> testStandardDuplicateResults =
                 new DuplicateReviewResult<PendingCertificationResultTestStandardDTO>(getPredicate());
-
-
         if (certificationResult.getTestStandards() != null) {
             for (PendingCertificationResultTestStandardDTO dto : certificationResult.getTestStandards()) {
                 testStandardDuplicateResults.addObject(dto);
             }
         }
-
         if (testStandardDuplicateResults.duplicatesExist()) {
             listing.getWarningMessages().addAll(
                     getWarnings(testStandardDuplicateResults.getDuplicateList(),
@@ -59,8 +57,11 @@ public class TestStandardDuplicateReviewer {
             @Override
             public boolean test(PendingCertificationResultTestStandardDTO dto1,
                     PendingCertificationResultTestStandardDTO dto2) {
-                return ObjectUtils.allNotNull(dto1.getName(), dto2.getName())
-                        && dto1.getName().equals(dto2.getName());
+                return (ObjectUtils.allNotNull(dto1.getTestStandardId(), dto2.getTestStandardId())
+                            && Objects.equals(dto1.getTestStandardId(),  dto2.getTestStandardId()))
+                        || (dto1.getTestStandardId() == null && dto2.getTestStandardId() == null
+                            && ObjectUtils.allNotNull(dto1.getName(), dto2.getName())
+                        && Objects.equals(dto1.getName(), dto2.getName()));
             }
         };
     }
