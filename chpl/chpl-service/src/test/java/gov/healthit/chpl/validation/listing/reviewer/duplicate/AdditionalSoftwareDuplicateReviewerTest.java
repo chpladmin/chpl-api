@@ -146,7 +146,7 @@ public class AdditionalSoftwareDuplicateReviewerTest {
     }
 
     @Test
-    public void review_emptyTestTools_noWarning() {
+    public void review_emptyAdditionalSoftware_noWarning() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         CertificationResult cert = getCertResult();
         cert.getAdditionalSoftware().clear();

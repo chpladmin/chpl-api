@@ -1,9 +1,11 @@
-package gov.healthit.chpl.validation.pendingListing.reviewer.edition2014.duplicate;
+package gov.healthit.chpl.validation.pendingListing.reviewer.duplicate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiPredicate;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,32 +13,30 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultAdditiona
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.DuplicateReviewResult;
 
-@Component("pendingAdditionalSoftware2014DuplicateReviewer")
-public class AdditionalSoftware2014DuplicateReviewer {
+@Component("pendingAdditionalSoftwareDuplicateReviewer")
+public class AdditionalSoftwareDuplicateReviewer {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public AdditionalSoftware2014DuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
+    public AdditionalSoftwareDuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
     public void review(PendingCertifiedProductDTO listing, PendingCertificationResultDTO certificationResult) {
-
         DuplicateReviewResult<PendingCertificationResultAdditionalSoftwareDTO> addtlSoftwareDuplicateResults =
                 new DuplicateReviewResult<PendingCertificationResultAdditionalSoftwareDTO>(getPredicate());
-
         if (certificationResult.getAdditionalSoftware() != null) {
             for (PendingCertificationResultAdditionalSoftwareDTO dto : certificationResult.getAdditionalSoftware()) {
                 addtlSoftwareDuplicateResults.addObject(dto);
             }
         }
-
         if (addtlSoftwareDuplicateResults.duplicatesExist()) {
             listing.getWarningMessages().addAll(
                     getWarnings(addtlSoftwareDuplicateResults.getDuplicateList(),
-                            certificationResult.getCriterion().getNumber()));
+                            Util.formatCriteriaNumber(certificationResult.getCriterion())));
             certificationResult.setAdditionalSoftware(addtlSoftwareDuplicateResults.getUniqueList());
         }
     }
@@ -47,12 +47,14 @@ public class AdditionalSoftware2014DuplicateReviewer {
         for (PendingCertificationResultAdditionalSoftwareDTO duplicate : duplicates) {
             String warning = "";
             if (duplicate.getChplId() != null) {
-                warning = errorMessageUtil.getMessage("listing.criteria.duplicateAdditionalSoftwareCP.2014",
-                        criteria, duplicate.getChplId());
-            } else if (duplicate.getName() != null || duplicate.getVersion() != null
-                    || duplicate.getGrouping() != null) {
-                warning = errorMessageUtil.getMessage("listing.criteria.duplicateAdditionalSoftwareNonCP.2014",
-                        criteria, duplicate.getName(), duplicate.getVersion());
+                warning = errorMessageUtil.getMessage("listing.criteria.duplicateAdditionalSoftwareCP",
+                        criteria, duplicate.getChplId(),
+                        duplicate.getGrouping() == null ? "" : duplicate.getGrouping());
+            } else if (duplicate.getName() != null) {
+                warning = errorMessageUtil.getMessage("listing.criteria.duplicateAdditionalSoftwareNonCP",
+                        criteria, duplicate.getName(),
+                        duplicate.getVersion() == null ? "" : duplicate.getVersion(),
+                        duplicate.getGrouping() == null ? "" : duplicate.getGrouping());
             }
             warnings.add(warning);
         }
@@ -66,18 +68,18 @@ public class AdditionalSoftware2014DuplicateReviewer {
             @Override
             public boolean test(PendingCertificationResultAdditionalSoftwareDTO dto1,
                     PendingCertificationResultAdditionalSoftwareDTO dto2) {
-                if (dto1.getChplId() != null && dto2.getChplId() != null) {
-
-                    return dto1.getChplId().equals(dto2.getChplId());
-
-                } else if (dto1.getName() != null && dto2.getName() != null
-                        && dto1.getVersion() != null && dto2.getVersion() != null) {
-
-                    return dto1.getName().equals(dto2.getName())
-                            && dto1.getVersion().equals(dto2.getVersion());
-                } else {
-                    return false;
+                if (ObjectUtils.allNotNull(dto1.getCertifiedProductId(), dto2.getCertifiedProductId())) {
+                    return Objects.equals(dto1.getCertifiedProductId(), dto2.getCertifiedProductId())
+                            && Objects.equals(dto1.getGrouping(), dto2.getGrouping());
+                } else if (ObjectUtils.allNotNull(dto1.getChplId(), dto2.getChplId())) {
+                    return Objects.equals(dto1.getChplId(), dto2.getChplId())
+                            && Objects.equals(dto1.getGrouping(), dto2.getGrouping());
+                } else if (ObjectUtils.allNotNull(dto1.getName(), dto2.getName())) {
+                        return Objects.equals(dto1.getName(), dto2.getName())
+                        && Objects.equals(dto1.getVersion(), dto2.getVersion())
+                        && Objects.equals(dto1.getGrouping(), dto2.getGrouping());
                 }
+                return false;
             }
         };
     }

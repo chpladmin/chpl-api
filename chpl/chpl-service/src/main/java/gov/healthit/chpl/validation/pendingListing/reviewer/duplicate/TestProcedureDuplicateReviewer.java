@@ -1,7 +1,8 @@
-package gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate;
+package gov.healthit.chpl.validation.pendingListing.reviewer.duplicate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiPredicate;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -15,12 +16,12 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.DuplicateReviewResult;
 
-@Component("pendingTestProcedure2015DuplicateReviewer")
-public class TestProcedure2015DuplicateReviewer {
+@Component("pendingTestProcedureDuplicateReviewer")
+public class TestProcedureDuplicateReviewer {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public TestProcedure2015DuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
+    public TestProcedureDuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
@@ -40,16 +41,16 @@ public class TestProcedure2015DuplicateReviewer {
             certificationResult.setTestProcedures(testProcedureDuplicateResults.getUniqueList());
         }
 
-        DuplicateReviewResult<PendingCertificationResultTestProcedureDTO> testProcedureDuplicateNameResults =
-                new DuplicateReviewResult<PendingCertificationResultTestProcedureDTO>(duplicateNamePredicate());
+        DuplicateReviewResult<PendingCertificationResultTestProcedureDTO> testProcedureDuplicateIdResults =
+                new DuplicateReviewResult<PendingCertificationResultTestProcedureDTO>(duplicateIdPredicate());
         if (certificationResult.getTestProcedures() != null) {
             for (PendingCertificationResultTestProcedureDTO dto : certificationResult.getTestProcedures()) {
-                testProcedureDuplicateNameResults.addObject(dto);
+                testProcedureDuplicateIdResults.addObject(dto);
             }
         }
-        if (testProcedureDuplicateNameResults.duplicatesExist()) {
+        if (testProcedureDuplicateIdResults.duplicatesExist()) {
             listing.getErrorMessages().addAll(
-                    getErrors(testProcedureDuplicateNameResults.getDuplicateList(),
+                    getErrors(testProcedureDuplicateIdResults.getDuplicateList(),
                             Util.formatCriteriaNumber(certificationResult.getCriterion())));
         }
     }
@@ -58,8 +59,10 @@ public class TestProcedure2015DuplicateReviewer {
             String criteria) {
         List<String> warnings = new ArrayList<String>();
         for (PendingCertificationResultTestProcedureDTO duplicate : duplicates) {
+            String tpName = duplicate.getTestProcedure() != null && duplicate.getTestProcedure().getName() != null
+                    ? duplicate.getTestProcedure().getName() : duplicate.getEnteredName();
             String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestProcedureName",
-                    criteria, duplicate.getEnteredName());
+                    criteria, tpName);
             warnings.add(warning);
         }
         return warnings;
@@ -69,8 +72,10 @@ public class TestProcedure2015DuplicateReviewer {
             String criteria) {
         List<String> warnings = new ArrayList<String>();
         for (PendingCertificationResultTestProcedureDTO duplicate : duplicates) {
+            String tpName = duplicate.getTestProcedure() != null && duplicate.getTestProcedure().getName() != null
+                    ? duplicate.getTestProcedure().getName() : duplicate.getEnteredName();
             String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestProcedureNameAndVersion",
-                    criteria, duplicate.getEnteredName(), duplicate.getVersion());
+                    criteria, tpName, duplicate.getVersion() == null ? "" : duplicate.getVersion());
             warnings.add(warning);
         }
         return warnings;
@@ -81,21 +86,27 @@ public class TestProcedure2015DuplicateReviewer {
             @Override
             public boolean test(PendingCertificationResultTestProcedureDTO dto1,
                     PendingCertificationResultTestProcedureDTO dto2) {
-                return ObjectUtils.allNotNull(dto1.getEnteredName(), dto2.getEnteredName(),
-                        dto1.getVersion(), dto2.getVersion())
-                        && dto1.getEnteredName().equals(dto2.getEnteredName())
-                        && dto1.getVersion().equals(dto2.getVersion());
+                return ((ObjectUtils.allNotNull(dto1.getTestProcedureId(), dto2.getTestProcedureId())
+                        && Objects.equals(dto1.getTestProcedureId(), dto2.getTestProcedureId()))
+                    || (dto1.getTestProcedureId() == null && dto2.getTestProcedureId() == null
+                        && ObjectUtils.allNotNull(dto1.getEnteredName(), dto2.getEnteredName())
+                            && Objects.equals(dto1.getEnteredName(), dto2.getEnteredName())))
+                    && Objects.equals(dto1.getVersion(), dto2.getVersion());
             }
         };
     }
 
-    private BiPredicate<PendingCertificationResultTestProcedureDTO, PendingCertificationResultTestProcedureDTO> duplicateNamePredicate() {
+    private BiPredicate<PendingCertificationResultTestProcedureDTO, PendingCertificationResultTestProcedureDTO> duplicateIdPredicate() {
         return new BiPredicate<PendingCertificationResultTestProcedureDTO, PendingCertificationResultTestProcedureDTO>() {
             @Override
             public boolean test(PendingCertificationResultTestProcedureDTO dto1,
                     PendingCertificationResultTestProcedureDTO dto2) {
-                return ObjectUtils.allNotNull(dto1.getEnteredName(), dto2.getEnteredName())
-                        && dto1.getEnteredName().equals(dto2.getEnteredName());
+                return ((ObjectUtils.allNotNull(dto1.getTestProcedureId(), dto2.getTestProcedureId())
+                        && Objects.equals(dto1.getTestProcedureId(), dto2.getTestProcedureId()))
+                    || (dto1.getTestProcedureId() == null && dto2.getTestProcedureId() == null
+                        && ObjectUtils.allNotNull(dto1.getEnteredName(), dto2.getEnteredName())
+                            && Objects.equals(dto1.getEnteredName(), dto2.getEnteredName())))
+                    && !Objects.equals(dto1.getVersion(), dto2.getVersion());
             }
         };
     }

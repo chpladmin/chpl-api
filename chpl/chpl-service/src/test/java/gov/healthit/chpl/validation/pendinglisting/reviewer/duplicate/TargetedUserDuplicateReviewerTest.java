@@ -11,35 +11,47 @@ import org.mockito.MockitoAnnotations;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate.TargetedUser2015DuplicateReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.TargetedUserDuplicateReviewer;
 
-public class TargetedUser2015DuplicateReviewerTest {
+public class TargetedUserDuplicateReviewerTest {
     private static final String ERR_MSG =
             "Listing contains duplicate Targeted User: '%s'. The duplicates have been removed.";
 
     private ErrorMessageUtil msgUtil;
-    private TargetedUser2015DuplicateReviewer reviewer;
+    private TargetedUserDuplicateReviewer reviewer;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.duplicateTargetedUser.2015"),
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.duplicateTargetedUser"),
                 ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format(ERR_MSG, i.getArgument(1), ""));
-        reviewer = new TargetedUser2015DuplicateReviewer(msgUtil);
+        reviewer = new TargetedUserDuplicateReviewer(msgUtil);
     }
 
     @Test
     public void review_duplicateExists_warningFoundAndDuplicateRemoved() {
         PendingCertifiedProductDTO listing = new PendingCertifiedProductDTO();
+        PendingCertifiedProductTargetedUserDTO tu1 = getTargetedUser(1L, "TargetedUser1");
+        PendingCertifiedProductTargetedUserDTO tu2 = getTargetedUser(1L, "TargetedUser1");
+        listing.getTargetedUsers().add(tu1);
+        listing.getTargetedUsers().add(tu2);
 
-        PendingCertifiedProductTargetedUserDTO tu1 = new PendingCertifiedProductTargetedUserDTO();
-        tu1.setName("TargetedUser1");
+        reviewer.review(listing);
 
-        PendingCertifiedProductTargetedUserDTO tu2 = new PendingCertifiedProductTargetedUserDTO();
-        tu2.setName("TargetedUser1");
+        assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(1, listing.getWarningMessages().stream()
+                .filter(warning -> warning.equals(String.format(ERR_MSG, "TargetedUser1")))
+                .count());
+        assertEquals(1, listing.getTargetedUsers().size());
+    }
 
+    @Test
+    public void review_duplicateExistsIdNull_warningFoundAndDuplicateRemoved() {
+        PendingCertifiedProductDTO listing = new PendingCertifiedProductDTO();
+        PendingCertifiedProductTargetedUserDTO tu1 = getTargetedUser(null, "TargetedUser1");
+        PendingCertifiedProductTargetedUserDTO tu2 = getTargetedUser(null, "TargetedUser1");
         listing.getTargetedUsers().add(tu1);
         listing.getTargetedUsers().add(tu2);
 
@@ -55,13 +67,22 @@ public class TargetedUser2015DuplicateReviewerTest {
     @Test
     public void review_noDuplicates_noWarning() {
         PendingCertifiedProductDTO listing = new PendingCertifiedProductDTO();
+        PendingCertifiedProductTargetedUserDTO tu1 = getTargetedUser(1L, "TargetedUser1");
+        PendingCertifiedProductTargetedUserDTO tu2 = getTargetedUser(2L, "TargetedUser2");
+        listing.getTargetedUsers().add(tu1);
+        listing.getTargetedUsers().add(tu2);
 
-        PendingCertifiedProductTargetedUserDTO tu1 = new PendingCertifiedProductTargetedUserDTO();
-        tu1.setName("TargetedUser1");
+        reviewer.review(listing);
 
-        PendingCertifiedProductTargetedUserDTO tu2 = new PendingCertifiedProductTargetedUserDTO();
-        tu2.setName("TargetedUser2");
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(2, listing.getTargetedUsers().size());
+    }
 
+    @Test
+    public void review_noDuplicatesIdNull_noWarning() {
+        PendingCertifiedProductDTO listing = new PendingCertifiedProductDTO();
+        PendingCertifiedProductTargetedUserDTO tu1 = getTargetedUser(null, "TargetedUser1");
+        PendingCertifiedProductTargetedUserDTO tu2 = getTargetedUser(null, "TargetedUser2");
         listing.getTargetedUsers().add(tu1);
         listing.getTargetedUsers().add(tu2);
 
@@ -85,18 +106,10 @@ public class TargetedUser2015DuplicateReviewerTest {
     @Test
     public void review_duplicateExistsInLargeSet_warningFoundAndDuplicateRemoved() {
         PendingCertifiedProductDTO listing = new PendingCertifiedProductDTO();
-
-        PendingCertifiedProductTargetedUserDTO tu1 = new PendingCertifiedProductTargetedUserDTO();
-        tu1.setName("AccessibilityStandard1");
-
-        PendingCertifiedProductTargetedUserDTO tu2 = new PendingCertifiedProductTargetedUserDTO();
-        tu2.setName("AccessibilityStandard2");
-
-        PendingCertifiedProductTargetedUserDTO tu3 = new PendingCertifiedProductTargetedUserDTO();
-        tu3.setName("AccessibilityStandard1");
-
-        PendingCertifiedProductTargetedUserDTO tu4 = new PendingCertifiedProductTargetedUserDTO();
-        tu4.setName("AccessibilityStandard3");
+        PendingCertifiedProductTargetedUserDTO tu1 = getTargetedUser(1L, "TargetedUser1");
+        PendingCertifiedProductTargetedUserDTO tu2 = getTargetedUser(2L, "TargetedUser2");
+        PendingCertifiedProductTargetedUserDTO tu3 = getTargetedUser(1L, "TargetedUser1");
+        PendingCertifiedProductTargetedUserDTO tu4 = getTargetedUser(3L, "TargetedUser3");
 
         listing.getTargetedUsers().add(tu1);
         listing.getTargetedUsers().add(tu2);
@@ -107,5 +120,12 @@ public class TargetedUser2015DuplicateReviewerTest {
 
         assertEquals(1, listing.getWarningMessages().size());
         assertEquals(3, listing.getTargetedUsers().size());
+    }
+
+    private PendingCertifiedProductTargetedUserDTO getTargetedUser(Long id, String name) {
+        PendingCertifiedProductTargetedUserDTO tu = new PendingCertifiedProductTargetedUserDTO();
+        tu.setId(id);
+        tu.setName(name);
+        return tu;
     }
 }

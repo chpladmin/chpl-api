@@ -11,23 +11,23 @@ import org.mockito.MockitoAnnotations;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate.IcsSource2015DuplicateReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.IcsSourceDuplicateReviewer;
 
-public class IcsSource2015DuplicateReviewerTest {
+public class IcsSourceDuplicateReviewerTest {
     private static final String ERR_MSG =
             "Listing contains duplicate ICS Source: '%s'. The duplicates have been removed.";
 
     private ErrorMessageUtil msgUtil;
-    private IcsSource2015DuplicateReviewer reviewer;
+    private IcsSourceDuplicateReviewer reviewer;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.duplicateIcsSource.2015"),
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.duplicateIcsSource"),
                 ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format(ERR_MSG, i.getArgument(1), ""));
-        reviewer = new IcsSource2015DuplicateReviewer(msgUtil);
+        reviewer = new IcsSourceDuplicateReviewer(msgUtil);
     }
 
     @Test

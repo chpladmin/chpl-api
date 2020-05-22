@@ -1,4 +1,4 @@
-package gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.duplicate;
+package gov.healthit.chpl.validation.pendingListing.reviewer.duplicate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,17 +13,16 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTargetedUser
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.DuplicateReviewResult;
 
-@Component("pendingTargetedUser2015DuplicateReviewer")
-public class TargetedUser2015DuplicateReviewer {
+@Component("pendingTargetedUserDuplicateReviewer")
+public class TargetedUserDuplicateReviewer {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public TargetedUser2015DuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
+    public TargetedUserDuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
     public void review(PendingCertifiedProductDTO listing) {
-
         DuplicateReviewResult<PendingCertifiedProductTargetedUserDTO> targetedUserDuplicateResults =
                 new DuplicateReviewResult<PendingCertifiedProductTargetedUserDTO>(getPredicate());
 
@@ -42,7 +41,7 @@ public class TargetedUser2015DuplicateReviewer {
     private List<String> getWarnings(List<PendingCertifiedProductTargetedUserDTO> duplicates) {
         List<String> warnings = new ArrayList<String>();
         for (PendingCertifiedProductTargetedUserDTO duplicate : duplicates) {
-            String warning = errorMessageUtil.getMessage("listing.duplicateTargetedUser.2015", duplicate.getName());
+            String warning = errorMessageUtil.getMessage("listing.duplicateTargetedUser", duplicate.getName());
             warnings.add(warning);
         }
         return warnings;
@@ -53,8 +52,11 @@ public class TargetedUser2015DuplicateReviewer {
             @Override
             public boolean test(PendingCertifiedProductTargetedUserDTO dto1,
                     PendingCertifiedProductTargetedUserDTO dto2) {
-                return ObjectUtils.allNotNull(dto1.getName(), dto2.getName())
-                        && dto1.getName().equals(dto2.getName());
+                return (ObjectUtils.allNotNull(dto1.getTargetedUserId(), dto2.getTargetedUserId())
+                        && dto1.getTargetedUserId().equals(dto2.getTargetedUserId()))
+                        || (dto1.getTargetedUserId() == null && dto2.getTargetedUserId() == null
+                        && ObjectUtils.allNotNull(dto1.getName(), dto2.getName())
+                        && dto1.getName().equals(dto2.getName()));
             }
         };
     }

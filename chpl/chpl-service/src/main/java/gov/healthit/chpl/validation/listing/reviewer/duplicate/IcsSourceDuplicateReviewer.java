@@ -2,6 +2,7 @@ package gov.healthit.chpl.validation.listing.reviewer.duplicate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiPredicate;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -53,7 +54,7 @@ public class IcsSourceDuplicateReviewer {
             public boolean test(CertifiedProduct dto1,
                     CertifiedProduct dto2) {
                 return ObjectUtils.allNotNull(dto1.getChplProductNumber(), dto2.getChplProductNumber())
-                        && dto1.getChplProductNumber().equals(dto2.getChplProductNumber());
+                        && Objects.equals(dto1.getChplProductNumber(), dto2.getChplProductNumber());
             }
         };
     }
