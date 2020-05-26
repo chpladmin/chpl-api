@@ -47,9 +47,120 @@ public class AsynchronousSummaryStatisticsInitializor {
     }
 
     @Transactional
+    public Statistics getCurrentStatistics() {
+        asyncStats.setLogger(getLogger());
+        getLogger().info("Getting all current statistics.");
+
+        Statistics stats = new Statistics();
+        List<CertifiedProductDetailsDTO> listingsAll2015 = certifiedProductDAO.findByEdition("2015");
+
+        /////////////////////////////////////////////////////////////////////////////////////
+        //Developer Statistics
+        /////////////////////////////////////////////////////////////////////////////////////
+        // Total # of Developers with Active 2014 Listings
+        stats.setTotalDevelopersWithActive2014Listings(asyncStats.getTotalDevelopersWithActive2014Listings(null));
+        // Total # of Developers with 2015 Listings or 2015 Cures Update Listings (Regardless of Status)
+        stats.setUniqueDevelopersCountForAny2015ListingsByAcb(asyncStats.getUniqueDevelopersCountFor2015ListingsByAcb(listingsAll2015, Edition2015Criteria.BOTH));
+        // Total # of Developers with Active 2015 Listings or 2015 Cures Update Listings
+        stats.setUniqueDevelopersCountForAny2015ActiveListingsByAcb(asyncStats.getUniqueDevelopersCountFor2015ActiveListingsByAcb(listingsAll2015, Edition2015Criteria.BOTH));
+        // Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015 Listings or 2015 Cures Update Listings
+        stats.setUniqueDevelopersCountForAny2015SuspendedListingsByAcb(asyncStats.getUniqueDevelopersCountFor2015SuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.BOTH));
+        // Total # of Developers with 2015-Cures Update Listings (Regardless of Status)
+        stats.setUniqueDevelopersCountWithCuresUpdatedListingsByAcb(asyncStats.getUniqueDevelopersCountFor2015ListingsByAcb(listingsAll2015, Edition2015Criteria.NON_CURES));
+        // Total # of Developers with Active 2015-Cures Update Listings
+        stats.setUniqueDevelopersCountWithCuresUpdatedActiveListingsByAcb(asyncStats.getUniqueDevelopersCountFor2015ActiveListingsByAcb(listingsAll2015, Edition2015Criteria.NON_CURES));
+        // Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015-Cures Update Listings
+        stats.setUniqueDevelopersCountWithCuresUpdatedSuspendedListingsByAcb(asyncStats.getUniqueDevelopersCountFor2015SuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.NON_CURES));
+        // Total # of Developers with 2015 Listings (Regardless of Status)
+        stats.setUniqueDevelopersCountWithoutCuresUpdatedListingsByAcb(asyncStats.getUniqueDevelopersCountFor2015ListingsByAcb(listingsAll2015, Edition2015Criteria.CURES));
+        // Total # of Developers with Active 2015 Listings
+        stats.setUniqueDevelopersCountWithoutCuresUpdatedActiveListingsByAcb(asyncStats.getUniqueDevelopersCountFor2015ActiveListingsByAcb(listingsAll2015, Edition2015Criteria.CURES));
+        // Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015 Listings
+        stats.setUniqueDevelopersCountWithoutCuresUpdatedSuspendedListingsByAcb(asyncStats.getUniqueDevelopersCountFor2015SuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.CURES));
+
+        /////////////////////////////////////////////////////////////////////////////////////
+        //Product Statistics
+        /////////////////////////////////////////////////////////////////////////////////////
+        // Used for multiple sections
+        stats.setTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(asyncStats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(null));
+
+        // Total # of Unique Products with 2014 Listings (Regardless of Status)
+        stats.setTotalCPListingsEachYearByCertifiedBody(asyncStats.getTotalCPListingsEachYearByCertifiedBody(null));
+        // Total # of Unique Products with Active 2014 Listings
+        stats.setTotalCPs2014Listings(asyncStats.getTotalCPs2014Listings(null));
+        // Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2014 Listings
+        stats.setTotalCPsSuspended2014Listings(asyncStats.getTotalCPsSuspended2014Listings(null));
+        // Total # of Unique Products with 2015 Listings or 2015 Cures Update Listings
+        stats.setUniqueProductsCountForAny2015ListingsByAcb(asyncStats.getUniqueProductsCountFor2015ListingsByAcb(listingsAll2015, Edition2015Criteria.BOTH));
+        // Total # of Unique Products with Active 2015 Listings or 2015 Cures Update Listings
+        stats.setUniqueProductsCountForAny2015ActiveListingsByAcb(asyncStats.getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(listingsAll2015, Edition2015Criteria.BOTH));
+        // Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015 Listings or 2015 Cures Update Listings
+        stats.setUniqueProductsCountForAny2015SuspendedListingsByAcb(asyncStats.getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.BOTH));
+        // Total # of Unique Products with 2015 Listings
+        stats.setUniqueProductsCountWithoutCuresUpdatedListingsByAcb(asyncStats.getUniqueProductsCountFor2015ListingsByAcb(listingsAll2015, Edition2015Criteria.CURES));
+        // Total # of Unique Products with Active 2015 Listings
+        stats.setUniqueProductsCountWithoutCuresUpdatedActiveListingsByAcb(asyncStats.getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(listingsAll2015, Edition2015Criteria.CURES));
+        // Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015 Listings
+        stats.setUniqueProductsCountWithoutCuresUpdatedSuspendedListingsByAcb(asyncStats.getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.CURES));
+        // Total # of Unique Products with 2015-Cures Update Listings
+        stats.setUniqueProductsCountWithCuresUpdatedListingsByAcb(asyncStats.getUniqueProductsCountFor2015ListingsByAcb(listingsAll2015, Edition2015Criteria.NON_CURES));
+        // Total # of Unique Products with Active 2015-Cures Update Listings
+        stats.setUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(asyncStats.getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(listingsAll2015, Edition2015Criteria.NON_CURES));
+        // Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015-Cures Update Listings
+        stats.setUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(asyncStats.getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.NON_CURES));
+
+        /////////////////////////////////////////////////////////////////////////////////////
+        //Listing Statistics
+        /////////////////////////////////////////////////////////////////////////////////////
+        // Total # of Active (Including Suspended by ONC/ONC-ACB 2014 Listings)
+        stats.setTotalActive2014Listings(asyncStats.getTotalActive2014Listings(null));
+        stats.setTotalActiveListingsByCertifiedBody(asyncStats.getTotalActiveListingsByCertifiedBody(null));
+        // Total # of Active (Including Suspended by ONC/ONC-ACB 2015 Listings)
+        stats.setTotalActive2015Listings(asyncStats.getTotalActive2015Listings(null));
+        //Total # of 2015 Listings with Alternative Test Methods
+        stats.setTotalListingsWithAlternativeTestMethods(asyncStats.getTotalListingsWithAlternateTestMethods());
+        // Total # of 2015 Listings with Alternative Test Methods
+        stats.setTotalListingsWithCertifiedBodyAndAlternativeTestMethods(asyncStats.getTotalListingsWithCertifiedBodyAndAlternativeTestMethods());
+        // Total # of Active (Including Suspended by ONC/ONC-ACB 2015-Cures Update Listings)
+        stats.setActiveListingCountWithCuresUpdatedByAcb(asyncStats.getActiveListingCountWithCuresUpdatedByAcb(listingsAll2015));
+        // Total # of 2015-Cures Update Listings with Alternative Test Methods
+        stats.setListingCountWithCuresUpdatedAndAltTestMethodsByAcb(asyncStats.getListingCountFor2015AndAltTestMethodsByAcb(listingsAll2015, certificationResultDAO));
+        // Total # of 2015-Cures Updated Listings (Regardless of Status)
+        stats.setAllListingsCountWithCuresUpdated(asyncStats.getAllListingsCountWithCuresUpdated(listingsAll2015));
+
+        /////////////////////////////////////////////////////////////////////////////////////
+        // Surveillance Statistics
+        /////////////////////////////////////////////////////////////////////////////////////
+        // Average Duration of Closed Surveillance (in days)
+        stats.setAverageTimeToCloseSurveillance(asyncStats.getAverageTimeToCloseSurveillance());
+
+        /////////////////////////////////////////////////////////////////////////////////////
+        // Non-Conformity Statistics
+        /////////////////////////////////////////////////////////////////////////////////////
+        // Average Time to Assess Conformity (in days)
+        stats.setAverageTimeToAssessConformity(asyncStats.getAverageTimeToAssessConformity());
+        // Average Time to Approve CAP (in days)
+        stats.setAverageTimeToApproveCAP(asyncStats.getAverageTimeToApproveCAP());
+        // Average Duration of CAP (in days) (includes closed and ongoing CAPs)
+        stats.setAverageDurationOfCAP(asyncStats.getAverageDurationOfCAP());
+        // Average Time from CAP Approval to Surveillance Close (in days)
+        stats.setAverageTimeFromCAPApprovalToSurveillanceEnd(asyncStats.getAverageTimeFromCAPApprovalToSurveillanceClose(surveillanceStatisticsDAO));
+        // Average Time from CAP Close to Surveillance Close (in days)
+        stats.setAverageTimeFromCAPEndToSurveillanceEnd(asyncStats.getAverageTimeFromCAPEndToSurveillanceClose());
+        // Average Duration of Closed Non-Conformities (in days)
+        stats.setAverageTimeFromSurveillanceOpenToSurveillanceClose(asyncStats.getAverageTimeFromSurveillanceOpenToSurveillanceClose());
+        // Number of Open CAPs
+        stats.setOpenCAPCountByAcb(asyncStats.getOpenCAPCountByAcb());
+        // Number of Closed CAPs
+        stats.setClosedCAPCountByAcb(asyncStats.getClosedCAPCountByAcb());
+
+        return stats;
+    }
+
+
+    @Transactional
     @Async
-    public Future<Statistics> getStatistics(DateRange dateRange)
-            throws InterruptedException, ExecutionException {
+    public Future<Statistics> getStatistics(DateRange dateRange) throws InterruptedException, ExecutionException {
         asyncStats.setLogger(getLogger());
 
         if (dateRange == null) {
@@ -61,113 +172,6 @@ public class AsynchronousSummaryStatisticsInitializor {
 
         Statistics stats = new Statistics();
         stats.setDateRange(dateRange);
-
-        if (dateRange == null) {
-            List<CertifiedProductDetailsDTO> listingsAll2015 = certifiedProductDAO.findByEdition("2015");
-
-            /////////////////////////////////////////////////////////////////////////////////////
-            //Developer Statistics
-            /////////////////////////////////////////////////////////////////////////////////////
-            // Total # of Developers with Active 2014 Listings
-            stats.setTotalDevelopersWithActive2014Listings(asyncStats.getTotalDevelopersWithActive2014Listings(dateRange));
-            // Total # of Developers with 2015 Listings or 2015 Cures Update Listings (Regardless of Status)
-            stats.setUniqueDevelopersCountForAny2015ListingsByAcb(asyncStats.getUniqueDevelopersCountFor2015ListingsByAcb(listingsAll2015, Edition2015Criteria.BOTH));
-            // Total # of Developers with Active 2015 Listings or 2015 Cures Update Listings
-            stats.setUniqueDevelopersCountForAny2015ActiveListingsByAcb(asyncStats.getUniqueDevelopersCountFor2015ActiveListingsByAcb(listingsAll2015, Edition2015Criteria.BOTH));
-            // Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015 Listings or 2015 Cures Update Listings
-            stats.setUniqueDevelopersCountForAny2015SuspendedListingsByAcb(asyncStats.getUniqueDevelopersCountFor2015SuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.BOTH));
-            // Total # of Developers with 2015-Cures Update Listings (Regardless of Status)
-            stats.setUniqueDevelopersCountWithCuresUpdatedListingsByAcb(asyncStats.getUniqueDevelopersCountFor2015ListingsByAcb(listingsAll2015, Edition2015Criteria.NON_CURES));
-            // Total # of Developers with Active 2015-Cures Update Listings
-            stats.setUniqueDevelopersCountWithCuresUpdatedActiveListingsByAcb(asyncStats.getUniqueDevelopersCountFor2015ActiveListingsByAcb(listingsAll2015, Edition2015Criteria.NON_CURES));
-            // Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015-Cures Update Listings
-            stats.setUniqueDevelopersCountWithCuresUpdatedSuspendedListingsByAcb(asyncStats.getUniqueDevelopersCountFor2015SuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.NON_CURES));
-            // Total # of Developers with 2015 Listings (Regardless of Status)
-            stats.setUniqueDevelopersCountWithoutCuresUpdatedListingsByAcb(asyncStats.getUniqueDevelopersCountFor2015ListingsByAcb(listingsAll2015, Edition2015Criteria.CURES));
-            // Total # of Developers with Active 2015 Listings
-            stats.setUniqueDevelopersCountWithoutCuresUpdatedActiveListingsByAcb(asyncStats.getUniqueDevelopersCountFor2015ActiveListingsByAcb(listingsAll2015, Edition2015Criteria.CURES));
-            // Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015 Listings
-            stats.setUniqueDevelopersCountWithoutCuresUpdatedSuspendedListingsByAcb(asyncStats.getUniqueDevelopersCountFor2015SuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.CURES));
-
-            /////////////////////////////////////////////////////////////////////////////////////
-            //Product Statistics
-            /////////////////////////////////////////////////////////////////////////////////////
-            // Used for multiple sections
-            stats.setTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(asyncStats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(dateRange));
-
-            // Total # of Unique Products with 2014 Listings (Regardless of Status)
-            stats.setTotalCPListingsEachYearByCertifiedBody(asyncStats.getTotalCPListingsEachYearByCertifiedBody(dateRange));
-            // Total # of Unique Products with Active 2014 Listings
-            stats.setTotalCPs2014Listings(asyncStats.getTotalCPs2014Listings(dateRange));
-            // Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2014 Listings
-            stats.setTotalCPsSuspended2014Listings(asyncStats.getTotalCPsSuspended2014Listings(dateRange));
-            // Total # of Unique Products with 2015 Listings or 2015 Cures Update Listings
-            stats.setUniqueProductsCountForAny2015ListingsByAcb(asyncStats.getUniqueProductsCountFor2015ListingsByAcb(listingsAll2015, Edition2015Criteria.BOTH));
-            // Total # of Unique Products with Active 2015 Listings or 2015 Cures Update Listings
-            stats.setUniqueProductsCountForAny2015ActiveListingsByAcb(asyncStats.getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(listingsAll2015, Edition2015Criteria.BOTH));
-            // Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015 Listings or 2015 Cures Update Listings
-            stats.setUniqueProductsCountForAny2015SuspendedListingsByAcb(asyncStats.getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.BOTH));
-            // Total # of Unique Products with 2015 Listings
-            stats.setUniqueProductsCountWithoutCuresUpdatedListingsByAcb(asyncStats.getUniqueProductsCountFor2015ListingsByAcb(listingsAll2015, Edition2015Criteria.CURES));
-            // Total # of Unique Products with Active 2015 Listings
-            stats.setUniqueProductsCountWithoutCuresUpdatedActiveListingsByAcb(asyncStats.getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(listingsAll2015, Edition2015Criteria.CURES));
-            // Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015 Listings
-            stats.setUniqueProductsCountWithoutCuresUpdatedSuspendedListingsByAcb(asyncStats.getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.CURES));
-            // Total # of Unique Products with 2015-Cures Update Listings
-            stats.setUniqueProductsCountWithCuresUpdatedListingsByAcb(asyncStats.getUniqueProductsCountFor2015ListingsByAcb(listingsAll2015, Edition2015Criteria.NON_CURES));
-            // Total # of Unique Products with Active 2015-Cures Update Listings
-            stats.setUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(asyncStats.getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(listingsAll2015, Edition2015Criteria.NON_CURES));
-            // Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015-Cures Update Listings
-            stats.setUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(asyncStats.getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.NON_CURES));
-
-            /////////////////////////////////////////////////////////////////////////////////////
-            //Listing Statistics
-            /////////////////////////////////////////////////////////////////////////////////////
-            // Total # of Active (Including Suspended by ONC/ONC-ACB 2014 Listings)
-            stats.setTotalActive2014Listings(asyncStats.getTotalActive2014Listings(null));
-            stats.setTotalActiveListingsByCertifiedBody(asyncStats.getTotalActiveListingsByCertifiedBody(dateRange));
-            // Total # of Active (Including Suspended by ONC/ONC-ACB 2015 Listings)
-            stats.setTotalActive2015Listings(asyncStats.getTotalActive2015Listings(dateRange));
-            //Total # of 2015 Listings with Alternative Test Methods
-            stats.setTotalListingsWithAlternativeTestMethods(asyncStats.getTotalListingsWithAlternateTestMethods());
-            // Total # of 2015 Listings with Alternative Test Methods
-            stats.setTotalListingsWithCertifiedBodyAndAlternativeTestMethods(asyncStats.getTotalListingsWithCertifiedBodyAndAlternativeTestMethods());
-
-
-            // Total # of Active (Including Suspended by ONC/ONC-ACB 2015-Cures Update Listings)
-            stats.setActiveListingCountWithCuresUpdatedByAcb(asyncStats.getActiveListingCountWithCuresUpdatedByAcb(listingsAll2015));
-            // Total # of 2015-Cures Update Listings with Alternative Test Methods
-            stats.setListingCountWithCuresUpdatedAndAltTestMethodsByAcb(asyncStats.getListingCountFor2015AndAltTestMethodsByAcb(listingsAll2015, certificationResultDAO));
-            // Total # of 2015-Cures Updated Listings (Regardless of Status)
-            stats.setAllListingsCountWithCuresUpdated(asyncStats.getAllListingsCountWithCuresUpdated(listingsAll2015));
-
-            /////////////////////////////////////////////////////////////////////////////////////
-            // Surveillance Statistics
-            /////////////////////////////////////////////////////////////////////////////////////
-            // Average Duration of Closed Surveillance (in days)
-            stats.setAverageTimeToCloseSurveillance(asyncStats.getAverageTimeToCloseSurveillance());
-
-            /////////////////////////////////////////////////////////////////////////////////////
-            // Non-Conformity Statistics
-            /////////////////////////////////////////////////////////////////////////////////////
-            // Average Time to Assess Conformity (in days)
-            stats.setAverageTimeToAssessConformity(asyncStats.getAverageTimeToAssessConformity());
-            // Average Time to Approve CAP (in days)
-            stats.setAverageTimeToApproveCAP(asyncStats.getAverageTimeToApproveCAP());
-            // Average Duration of CAP (in days) (includes closed and ongoing CAPs)
-            stats.setAverageDurationOfCAP(asyncStats.getAverageDurationOfCAP());
-            // Average Time from CAP Approval to Surveillance Close (in days)
-            stats.setAverageTimeFromCAPApprovalToSurveillanceEnd(asyncStats.getAverageTimeFromCAPApprovalToSurveillanceClose(surveillanceStatisticsDAO));
-            // Average Time from CAP Close to Surveillance Close (in days)
-            stats.setAverageTimeFromCAPEndToSurveillanceEnd(asyncStats.getAverageTimeFromCAPEndToSurveillanceClose());
-            // Average Duration of Closed Non-Conformities (in days)
-            stats.setAverageTimeFromSurveillanceOpenToSurveillanceClose(asyncStats.getAverageTimeFromSurveillanceOpenToSurveillanceClose());
-            // Number of Open CAPs
-            stats.setOpenCAPCountByAcb(asyncStats.getOpenCAPCountByAcb());
-            // Number of Closed CAPs
-            stats.setClosedCAPCountByAcb(asyncStats.getClosedCAPCountByAcb());
-
-        }
 
         // developers
         Future<Long> totalDevelopers = asyncStats.getTotalDevelopers(developerStatisticsDAO, dateRange);

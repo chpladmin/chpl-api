@@ -37,7 +37,7 @@ import gov.healthit.chpl.scheduler.job.QuartzJob;
 
 /**
  * Initiates and runs the the Quartz job that generates the data that is used to to create the Summary Statistics Email.
- * 
+ *
  * @author TYoung
  *
  */
@@ -59,7 +59,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
 
     /**
      * Constructor to initialize SummaryStatisticsJobCreator object.
-     * 
+     *
      * @throws Exception
      *             is thrown
      */
@@ -82,8 +82,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
             Date endDate = new Date();
             Integer numDaysInPeriod = Integer.valueOf(env.getProperty("summaryEmailPeriodInDays").toString());
 
-            Future<Statistics> futureEmailBodyStats = asynchronousStatisticsInitializor.getStatistics(null);
-            Statistics emailBodyStats = futureEmailBodyStats.get();
+            Statistics emailBodyStats = asynchronousStatisticsInitializor.getCurrentStatistics();
 
             if (generateCsv) {
                 createSummaryStatisticsFile(startDate, endDate, numDaysInPeriod);
