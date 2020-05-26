@@ -47,7 +47,7 @@ public class OldCriteriaWithoutIcsReviewerTest {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(msgUtil.getMessage(
                 ArgumentMatchers.eq("listing.criteria.hasOldVersionOfCriteria"),
-                ArgumentMatchers.any())).thenReturn("AnyMessage1");
+                ArgumentMatchers.any())).thenAnswer(i -> i.getArguments()[1]);
 
         reviewer = new OldCriteriaWithoutIcsReviewer(env, msgUtil);
         beforeBoth = Date.from(LocalDate.of(BEFORE_YEAR, MIDDLE_MONTH, 1).atStartOfDay(ZoneId.systemDefault()).toInstant());
