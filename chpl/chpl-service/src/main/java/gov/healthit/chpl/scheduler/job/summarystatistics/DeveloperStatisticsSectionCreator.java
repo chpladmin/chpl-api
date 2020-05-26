@@ -47,9 +47,6 @@ public class DeveloperStatisticsSectionCreator extends StatisticsSectionCreator 
                 devsSuspended2014));
 
         if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
-            section.append("****************************************************************");
-            section.append("****************************************************************");
-
             List<CertifiedBodyStatistics> devsWith2015Listing = massager
                     .getStatistics(stats.getUniqueDevelopersCountForAny2015ListingsByAcb());
             section.append(buildSection(
@@ -70,8 +67,6 @@ public class DeveloperStatisticsSectionCreator extends StatisticsSectionCreator 
                     "Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015 Listings or 2015 Cures Update Listings",
                     sumTotalDeveloperWithListings(devsWithForAllSuspendedListing),
                     devsWithForAllSuspendedListing));
-
-            section.append("****************************************************************");
 
             List<CertifiedBodyStatistics> devsWithoutCuresUpdatedListing = massager
                     .getStatistics(stats.getUniqueDevelopersCountWithoutCuresUpdatedListingsByAcb());
@@ -94,8 +89,6 @@ public class DeveloperStatisticsSectionCreator extends StatisticsSectionCreator 
                     sumTotalDeveloperWithListings(devsWithoutCuresUpdatedSuspendedListing),
                     devsWithoutCuresUpdatedSuspendedListing));
 
-            section.append("****************************************************************");
-
             List<CertifiedBodyStatistics> devsWithCuresUpdatedListing = massager
                     .getStatistics(stats.getUniqueDevelopersCountWithCuresUpdatedListingsByAcb());
             section.append(buildSection(
@@ -116,10 +109,7 @@ public class DeveloperStatisticsSectionCreator extends StatisticsSectionCreator 
                     "Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015-Cures Update Listings",
                     sumTotalDeveloperWithListings(devsWithCuresUpdatedSuspendedListing),
                     devsWithCuresUpdatedSuspendedListing));
-
-            section.append("****************************************************************");
-            section.append("****************************************************************");
-        }   else {
+        } else {
             List<CertifiedBodyStatistics> devsWith2015Listing = massager
                     .getStatistics(stats.getUniqueDevelopersCountForAny2015ListingsByAcb());
             section.append(buildSection(

@@ -68,7 +68,6 @@ public class AsynchronousSummaryStatisticsInitializor {
         Future<Long> totalActive2015Listings = null;
         Future<List<CertifiedBodyStatistics>> totalActiveListingsByCertifiedBody = null;
         Future<Long> totalDevelopersWithActive2014Listings = null;
-        Future<Long> totalDevelopersWithActive2015Listings = null;
         Future<List<CertifiedBodyStatistics>> totalCPListingsEachYearByCertifiedBody = null;
         Future<List<CertifiedBodyStatistics>> totalCPListingsEachYearByCertifiedBodyAndCertificationStatus = null;
         Future<Long> totalCPs2014Listings = null;
@@ -121,8 +120,6 @@ public class AsynchronousSummaryStatisticsInitializor {
                     dateRange);
             totalDevelopersWithActive2014Listings = asyncStats.getTotalDevelopersWithActive2014Listings(developerStatisticsDAO,
                     dateRange);
-            totalDevelopersWithActive2015Listings = asyncStats.getTotalDevelopersWithActive2015Listings(developerStatisticsDAO,
-                    dateRange);
             totalCPListingsEachYearByCertifiedBody = asyncStats.getTotalCPListingsEachYearByCertifiedBody(listingStatisticsDAO,
                     dateRange);
             totalCPListingsEachYearByCertifiedBodyAndCertificationStatus = asyncStats
@@ -169,10 +166,10 @@ public class AsynchronousSummaryStatisticsInitializor {
             uniqueProductsCountForAny2015ActiveListingsByAcb = asyncStats.getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(certifiedProductDAO, Edition2015Criteria.BOTH);
             uniqueProductsCountForAny2015SuspendedListingsByAcb = asyncStats.getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(certifiedProductDAO, Edition2015Criteria.BOTH);
 
-            //activeListingCountWithCuresUpdatedByAcb = asyncStats
-            //        .getActiveListingCountWithCuresUpdatedByAcb(certifiedProductDAO);
-            //listingCountWithCuresUpdatedAndAltTestMethodsByAcb = asyncStats
-            //        .getListingCountWithCuresUpdatedAndAltTestMethodsByAcb(certifiedProductDAO, certificationResultDAO);
+            activeListingCountWithCuresUpdatedByAcb = asyncStats
+                    .getActiveListingCountWithCuresUpdatedByAcb(certifiedProductDAO);
+            listingCountWithCuresUpdatedAndAltTestMethodsByAcb = asyncStats
+                    .getListingCountFor2015AndAltTestMethodsByAcb(certifiedProductDAO, certificationResultDAO);
 
             allListingsCountWithCuresUpdated = asyncStats.getAllListingsCountWithCuresUpdated(certifiedProductDAO);
         }
@@ -187,8 +184,6 @@ public class AsynchronousSummaryStatisticsInitializor {
         Future<List<CertifiedBodyStatistics>> totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear = asyncStats
                 .getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(
                         developerStatisticsDAO, dateRange);
-        Future<Long> totalDeveloperswith2015Listings = asyncStats.getTotalDevelopersWith2015Listings(developerStatisticsDAO,
-                dateRange);
 
         // listings
         Future<Long> totalCertifiedProducts = asyncStats.getTotalCertifiedProducts(listingStatisticsDAO, dateRange);
@@ -224,7 +219,7 @@ public class AsynchronousSummaryStatisticsInitializor {
             stats.setTotalActive2015Listings(totalActive2015Listings.get());
             stats.setTotalActiveListingsByCertifiedBody(totalActiveListingsByCertifiedBody.get());
             stats.setTotalDevelopersWithActive2014Listings(totalDevelopersWithActive2014Listings.get());
-            stats.setTotalDevelopersWithActive2015Listings(totalDevelopersWithActive2015Listings.get());
+            //stats.setTotalDevelopersWithActive2015Listings(totalDevelopersWithActive2015Listings.get());
             stats.setTotalCPListingsEachYearByCertifiedBody(totalCPListingsEachYearByCertifiedBody.get());
             stats.setTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(
                     totalCPListingsEachYearByCertifiedBodyAndCertificationStatus.get());
@@ -267,8 +262,8 @@ public class AsynchronousSummaryStatisticsInitializor {
             stats.setUniqueProductsCountForAny2015ActiveListingsByAcb(uniqueProductsCountForAny2015ActiveListingsByAcb.get());
             stats.setUniqueProductsCountForAny2015SuspendedListingsByAcb(uniqueProductsCountForAny2015SuspendedListingsByAcb.get());
 
-            //stats.setActiveListingCountWithCuresUpdatedByAcb(activeListingCountWithCuresUpdatedByAcb.get());
-            //stats.setListingCountWithCuresUpdatedAndAltTestMethodsByAcb(listingCountWithCuresUpdatedAndAltTestMethodsByAcb.get());
+            stats.setActiveListingCountWithCuresUpdatedByAcb(activeListingCountWithCuresUpdatedByAcb.get());
+            stats.setListingCountWithCuresUpdatedAndAltTestMethodsByAcb(listingCountWithCuresUpdatedAndAltTestMethodsByAcb.get());
 
             stats.setAllListingsCountWithCuresUpdated(allListingsCountWithCuresUpdated.get());
         }
@@ -281,7 +276,7 @@ public class AsynchronousSummaryStatisticsInitializor {
                 totalDevelopersByCertifiedBodyWithListingsEachYear.get());
         stats.setTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(
                 totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear.get());
-        stats.setTotalDevelopersWith2015Listings(totalDeveloperswith2015Listings.get());
+        //stats.setTotalDevelopersWith2015Listings(totalDeveloperswith2015Listings.get());
 
         // listings
         stats.setTotalCertifiedProducts(totalCertifiedProducts.get());

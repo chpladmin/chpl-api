@@ -670,12 +670,11 @@ public class AsynchronousSummaryStatistics {
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<List<CertifiedBodyStatistics>> getActiveListingCountWithCuresUpdatedByAcb(
-            CertifiedProductDAO certifiedProductDAO, Edition2015Criteria listingsToInclude) {
+            CertifiedProductDAO certifiedProductDAO) {
         return new AsyncResult<List<CertifiedBodyStatistics>>(certifiedProductDAO.findByEdition("2015").stream()
-                .filter(cp -> includeListing(cp, listingsToInclude)
-                        && (cp.getCertificationStatusName().equals(CertificationStatusType.Active.getName())
-                                || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByAcb.getName())
-                                || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByOnc.getName())))
+                .filter(cp -> cp.getCertificationStatusName().equals(CertificationStatusType.Active.getName())
+                        || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByAcb.getName())
+                        || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByOnc.getName()))
                 .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
                 .entrySet().stream()
                 .map(entry -> {
@@ -691,12 +690,10 @@ public class AsynchronousSummaryStatistics {
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<List<CertifiedBodyStatistics>> getListingCountFor2015AndAltTestMethodsByAcb(
-            CertifiedProductDAO certifiedProductDAO, CertificationResultDAO certificationResultDAO,
-            Edition2015Criteria listingsToInclude) {
+            CertifiedProductDAO certifiedProductDAO, CertificationResultDAO certificationResultDAO) {
 
         return new AsyncResult<List<CertifiedBodyStatistics>>(certifiedProductDAO.findByEdition("2015").stream()
-                .filter(cp -> includeListing(cp, listingsToInclude)
-                        && doesListingHaveAlternativeTestMethod(cp.getId(), certificationResultDAO))
+                .filter(cp -> doesListingHaveAlternativeTestMethod(cp.getId(), certificationResultDAO))
                 .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
                 .entrySet().stream()
                 .map(entry -> {
