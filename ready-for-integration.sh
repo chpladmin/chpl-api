@@ -1,0 +1,1 @@
+../../resources/scripts/ready-for-integration.sh
