@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -21,7 +20,6 @@ public class AccessibilityStandard2015DuplicateReviewerTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.duplicateAccessibilityStandard"),
                 ArgumentMatchers.anyString()))

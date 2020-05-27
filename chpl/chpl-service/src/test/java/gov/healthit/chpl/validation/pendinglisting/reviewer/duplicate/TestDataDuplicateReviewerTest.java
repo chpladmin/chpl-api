@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
@@ -28,7 +27,6 @@ public class TestDataDuplicateReviewerTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateTestDataNameAndVersion"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))

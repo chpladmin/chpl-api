@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTargetedUserDTO;
@@ -22,7 +21,6 @@ public class TargetedUserDuplicateReviewerTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.duplicateTargetedUser"),
                 ArgumentMatchers.anyString()))
