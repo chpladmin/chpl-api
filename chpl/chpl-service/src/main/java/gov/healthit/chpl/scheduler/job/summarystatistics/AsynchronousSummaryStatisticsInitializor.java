@@ -1,7 +1,11 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.LogManager;
@@ -47,113 +51,202 @@ public class AsynchronousSummaryStatisticsInitializor {
     }
 
     @Transactional
-    public Statistics getCurrentStatistics() {
+    public Statistics getCurrentStatistics() throws InterruptedException, ExecutionException {
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+
         asyncStats.setLogger(getLogger());
         getLogger().info("Getting all current statistics.");
 
         Statistics stats = new Statistics();
+        List<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
         List<CertifiedProductDetailsDTO> listingsAll2015 = certifiedProductDAO.findByEdition("2015");
 
-        /////////////////////////////////////////////////////////////////////////////////////
-        //Developer Statistics
-        /////////////////////////////////////////////////////////////////////////////////////
-        // Total # of Developers with Active 2014 Listings
-        stats.setTotalDevelopersWithActive2014Listings(asyncStats.getTotalDevelopersWithActive2014Listings(null));
-        // Total # of Developers with 2015 Listings or 2015 Cures Update Listings (Regardless of Status)
-        stats.setUniqueDevelopersCountForAny2015ListingsByAcb(asyncStats.getUniqueDevelopersCountFor2015ListingsByAcb(listingsAll2015, Edition2015Criteria.BOTH));
-        // Total # of Developers with Active 2015 Listings or 2015 Cures Update Listings
-        stats.setUniqueDevelopersCountForAny2015ActiveListingsByAcb(asyncStats.getUniqueDevelopersCountFor2015ActiveListingsByAcb(listingsAll2015, Edition2015Criteria.BOTH));
-        // Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015 Listings or 2015 Cures Update Listings
-        stats.setUniqueDevelopersCountForAny2015SuspendedListingsByAcb(asyncStats.getUniqueDevelopersCountFor2015SuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.BOTH));
-        // Total # of Developers with 2015-Cures Update Listings (Regardless of Status)
-        stats.setUniqueDevelopersCountWithCuresUpdatedListingsByAcb(asyncStats.getUniqueDevelopersCountFor2015ListingsByAcb(listingsAll2015, Edition2015Criteria.NON_CURES));
-        // Total # of Developers with Active 2015-Cures Update Listings
-        stats.setUniqueDevelopersCountWithCuresUpdatedActiveListingsByAcb(asyncStats.getUniqueDevelopersCountFor2015ActiveListingsByAcb(listingsAll2015, Edition2015Criteria.NON_CURES));
-        // Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015-Cures Update Listings
-        stats.setUniqueDevelopersCountWithCuresUpdatedSuspendedListingsByAcb(asyncStats.getUniqueDevelopersCountFor2015SuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.NON_CURES));
-        // Total # of Developers with 2015 Listings (Regardless of Status)
-        stats.setUniqueDevelopersCountWithoutCuresUpdatedListingsByAcb(asyncStats.getUniqueDevelopersCountFor2015ListingsByAcb(listingsAll2015, Edition2015Criteria.CURES));
-        // Total # of Developers with Active 2015 Listings
-        stats.setUniqueDevelopersCountWithoutCuresUpdatedActiveListingsByAcb(asyncStats.getUniqueDevelopersCountFor2015ActiveListingsByAcb(listingsAll2015, Edition2015Criteria.CURES));
-        // Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015 Listings
-        stats.setUniqueDevelopersCountWithoutCuresUpdatedSuspendedListingsByAcb(asyncStats.getUniqueDevelopersCountFor2015SuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.CURES));
+        try {
+            /////////////////////////////////////////////////////////////////////////////////////
+            //Developer Statistics
+            /////////////////////////////////////////////////////////////////////////////////////
+            // Total # of Developers with 2014 Listings (Regardless of Status)
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getTotalDevelopersByCertifiedBodyWithListingsEachYear(null), executorService)
+                    .thenAccept(result -> stats.setTotalDevelopersByCertifiedBodyWithListingsEachYear(result)));
+            // Total # of Developers with Active 2014 Listings
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getTotalDevelopersWithActive2014Listings(null), executorService)
+                    .thenAccept(result -> stats.setTotalDevelopersWithActive2014Listings(result)));
+            // Total # of Developers with 2015 Listings or 2015 Cures Update Listings (Regardless of Status)
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getUniqueDevelopersCountFor2015ListingsByAcb(listingsAll2015, Edition2015Criteria.BOTH), executorService)
+                    .thenAccept(result -> stats.setUniqueDevelopersCountForAny2015ListingsByAcb(result)));
+            // Total # of Developers with Active 2015 Listings or 2015 Cures Update Listings
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getUniqueDevelopersCountFor2015ActiveListingsByAcb(listingsAll2015, Edition2015Criteria.BOTH), executorService)
+                    .thenAccept(result -> stats.setUniqueDevelopersCountForAny2015ActiveListingsByAcb(result)));
+            // Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015 Listings or 2015 Cures Update Listings
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getUniqueDevelopersCountFor2015SuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.BOTH), executorService)
+                    .thenAccept(result -> stats.setUniqueDevelopersCountForAny2015SuspendedListingsByAcb(result)));
+            // Total # of Developers with 2015-Cures Update Listings (Regardless of Status)
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getUniqueDevelopersCountFor2015ListingsByAcb(listingsAll2015, Edition2015Criteria.NON_CURES), executorService)
+                    .thenAccept(result -> stats.setUniqueDevelopersCountWithCuresUpdatedListingsByAcb(result)));
+            // Total # of Developers with Active 2015-Cures Update Listings
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getUniqueDevelopersCountFor2015ActiveListingsByAcb(listingsAll2015, Edition2015Criteria.NON_CURES), executorService)
+                    .thenAccept(result -> stats.setUniqueDevelopersCountWithCuresUpdatedActiveListingsByAcb(result)));
+            // Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015-Cures Update Listings
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getUniqueDevelopersCountFor2015SuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.NON_CURES), executorService)
+                    .thenAccept(result -> stats.setUniqueDevelopersCountWithCuresUpdatedSuspendedListingsByAcb(result)));
+            // Total # of Developers with 2015 Listings (Regardless of Status)
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getUniqueDevelopersCountFor2015ListingsByAcb(listingsAll2015, Edition2015Criteria.CURES), executorService)
+                    .thenAccept(result -> stats.setUniqueDevelopersCountWithoutCuresUpdatedListingsByAcb(result)));
+            // Total # of Developers with Active 2015 Listings
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getUniqueDevelopersCountFor2015ActiveListingsByAcb(listingsAll2015, Edition2015Criteria.CURES), executorService)
+                    .thenAccept(result -> stats.setUniqueDevelopersCountWithoutCuresUpdatedActiveListingsByAcb(result)));
+            // Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015 Listings
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getUniqueDevelopersCountFor2015SuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.CURES), executorService)
+                    .thenAccept(result -> stats.setUniqueDevelopersCountWithoutCuresUpdatedSuspendedListingsByAcb(result)));
 
-        /////////////////////////////////////////////////////////////////////////////////////
-        //Product Statistics
-        /////////////////////////////////////////////////////////////////////////////////////
-        // Used for multiple sections
-        stats.setTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(asyncStats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(null));
+            /////////////////////////////////////////////////////////////////////////////////////
+            //Product Statistics
+            /////////////////////////////////////////////////////////////////////////////////////
+            // Used for multiple sections
+            //stats.setTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(asyncStats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(null));
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(null), executorService)
+                    .thenAccept(result -> stats.setTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(result)));
+            // Total # of Unique Products with 2014 Listings (Regardless of Status)
+            //stats.setTotalCPListingsEachYearByCertifiedBody(asyncStats.getTotalCPListingsEachYearByCertifiedBody(null));
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getTotalCPListingsEachYearByCertifiedBody(null), executorService)
+                    .thenAccept(result -> stats.setTotalCPListingsEachYearByCertifiedBody(result)));
+            // Total # of Unique Products with Active 2014 Listings
+            //stats.setTotalCPs2014Listings(asyncStats.getTotalCPs2014Listings(null));
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getTotalCPs2014Listings(null), executorService)
+                    .thenAccept(result -> stats.setTotalCPs2014Listings(result)));
+            // Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2014 Listings
+            //stats.setTotalCPsSuspended2014Listings(asyncStats.getTotalCPsSuspended2014Listings(null));
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getTotalCPsSuspended2014Listings(null), executorService)
+                    .thenAccept(result -> stats.setTotalCPsSuspended2014Listings(result)));
+            // Total # of Unique Products with 2015 Listings or 2015 Cures Update Listings
+            //stats.setUniqueProductsCountForAny2015ListingsByAcb(asyncStats.getUniqueProductsCountFor2015ListingsByAcb(listingsAll2015, Edition2015Criteria.BOTH));
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getUniqueProductsCountFor2015ListingsByAcb(listingsAll2015, Edition2015Criteria.BOTH), executorService)
+                    .thenAccept(result -> stats.setUniqueProductsCountForAny2015ListingsByAcb(result)));
+            // Total # of Unique Products with Active 2015 Listings or 2015 Cures Update Listings
+            //stats.setUniqueProductsCountForAny2015ActiveListingsByAcb(asyncStats.getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(listingsAll2015, Edition2015Criteria.BOTH));
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(listingsAll2015, Edition2015Criteria.BOTH), executorService)
+                    .thenAccept(result -> stats.setUniqueProductsCountForAny2015ActiveListingsByAcb(result)));
+            // Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015 Listings or 2015 Cures Update Listings
+            //stats.setUniqueProductsCountForAny2015SuspendedListingsByAcb(asyncStats.getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.BOTH));
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.BOTH), executorService)
+                    .thenAccept(result -> stats.setUniqueProductsCountForAny2015SuspendedListingsByAcb(result)));
+            // Total # of Unique Products with 2015 Listings
+            //stats.setUniqueProductsCountWithoutCuresUpdatedListingsByAcb(asyncStats.getUniqueProductsCountFor2015ListingsByAcb(listingsAll2015, Edition2015Criteria.CURES));
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getUniqueProductsCountFor2015ListingsByAcb(listingsAll2015, Edition2015Criteria.CURES), executorService)
+                    .thenAccept(result -> stats.setUniqueProductsCountWithoutCuresUpdatedListingsByAcb(result)));
+            // Total # of Unique Products with Active 2015 Listings
+            //stats.setUniqueProductsCountWithoutCuresUpdatedActiveListingsByAcb(asyncStats.getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(listingsAll2015, Edition2015Criteria.CURES));
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(listingsAll2015, Edition2015Criteria.CURES), executorService)
+                    .thenAccept(result -> stats.setUniqueProductsCountWithoutCuresUpdatedActiveListingsByAcb(result)));
+            // Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015 Listings
+            //stats.setUniqueProductsCountWithoutCuresUpdatedSuspendedListingsByAcb(asyncStats.getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.CURES));
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.CURES), executorService)
+                    .thenAccept(result -> stats.setUniqueProductsCountWithoutCuresUpdatedSuspendedListingsByAcb(result)));
+            // Total # of Unique Products with 2015-Cures Update Listings
+            //stats.setUniqueProductsCountWithCuresUpdatedListingsByAcb(asyncStats.getUniqueProductsCountFor2015ListingsByAcb(listingsAll2015, Edition2015Criteria.NON_CURES));
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getUniqueProductsCountFor2015ListingsByAcb(listingsAll2015, Edition2015Criteria.NON_CURES), executorService)
+                    .thenAccept(result -> stats.setUniqueProductsCountWithCuresUpdatedListingsByAcb(result)));
+            // Total # of Unique Products with Active 2015-Cures Update Listings
+            //stats.setUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(asyncStats.getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(listingsAll2015, Edition2015Criteria.NON_CURES));
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(listingsAll2015, Edition2015Criteria.NON_CURES), executorService)
+                    .thenAccept(result -> stats.setUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(result)));
+            // Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015-Cures Update Listings
+            //stats.setUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(asyncStats.getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.NON_CURES));
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.NON_CURES), executorService)
+                    .thenAccept(result -> stats.setUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(result)));
 
-        // Total # of Unique Products with 2014 Listings (Regardless of Status)
-        stats.setTotalCPListingsEachYearByCertifiedBody(asyncStats.getTotalCPListingsEachYearByCertifiedBody(null));
-        // Total # of Unique Products with Active 2014 Listings
-        stats.setTotalCPs2014Listings(asyncStats.getTotalCPs2014Listings(null));
-        // Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2014 Listings
-        stats.setTotalCPsSuspended2014Listings(asyncStats.getTotalCPsSuspended2014Listings(null));
-        // Total # of Unique Products with 2015 Listings or 2015 Cures Update Listings
-        stats.setUniqueProductsCountForAny2015ListingsByAcb(asyncStats.getUniqueProductsCountFor2015ListingsByAcb(listingsAll2015, Edition2015Criteria.BOTH));
-        // Total # of Unique Products with Active 2015 Listings or 2015 Cures Update Listings
-        stats.setUniqueProductsCountForAny2015ActiveListingsByAcb(asyncStats.getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(listingsAll2015, Edition2015Criteria.BOTH));
-        // Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015 Listings or 2015 Cures Update Listings
-        stats.setUniqueProductsCountForAny2015SuspendedListingsByAcb(asyncStats.getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.BOTH));
-        // Total # of Unique Products with 2015 Listings
-        stats.setUniqueProductsCountWithoutCuresUpdatedListingsByAcb(asyncStats.getUniqueProductsCountFor2015ListingsByAcb(listingsAll2015, Edition2015Criteria.CURES));
-        // Total # of Unique Products with Active 2015 Listings
-        stats.setUniqueProductsCountWithoutCuresUpdatedActiveListingsByAcb(asyncStats.getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(listingsAll2015, Edition2015Criteria.CURES));
-        // Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015 Listings
-        stats.setUniqueProductsCountWithoutCuresUpdatedSuspendedListingsByAcb(asyncStats.getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.CURES));
-        // Total # of Unique Products with 2015-Cures Update Listings
-        stats.setUniqueProductsCountWithCuresUpdatedListingsByAcb(asyncStats.getUniqueProductsCountFor2015ListingsByAcb(listingsAll2015, Edition2015Criteria.NON_CURES));
-        // Total # of Unique Products with Active 2015-Cures Update Listings
-        stats.setUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(asyncStats.getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(listingsAll2015, Edition2015Criteria.NON_CURES));
-        // Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015-Cures Update Listings
-        stats.setUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(asyncStats.getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.NON_CURES));
+            /////////////////////////////////////////////////////////////////////////////////////
+            //Listing Statistics
+            /////////////////////////////////////////////////////////////////////////////////////
+            // Total # of Active (Including Suspended by ONC/ONC-ACB 2014 Listings)
+            //stats.setTotalActive2014Listings(asyncStats.getTotalActive2014Listings(null));
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getTotalActive2014Listings(null), executorService)
+                    .thenAccept(result -> stats.setTotalActive2014Listings(result)));
+            //stats.setTotalActiveListingsByCertifiedBody(asyncStats.getTotalActiveListingsByCertifiedBody(null));
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getTotalActiveListingsByCertifiedBody(null), executorService)
+                    .thenAccept(result -> stats.setTotalActiveListingsByCertifiedBody(result)));
+            // Total # of Active (Including Suspended by ONC/ONC-ACB 2015 Listings)
+            //stats.setTotalActive2015Listings(asyncStats.getTotalActive2015Listings(null));
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getTotalActive2015Listings(null), executorService)
+                    .thenAccept(result -> stats.setTotalActive2015Listings(result)));
+            //Total # of 2015 Listings with Alternative Test Methods
+            //stats.setTotalListingsWithAlternativeTestMethods(asyncStats.getTotalListingsWithAlternateTestMethods());
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getTotalListingsWithAlternateTestMethods(), executorService)
+                    .thenAccept(result -> stats.setTotalListingsWithAlternativeTestMethods(result)));
+            // Total # of 2015 Listings with Alternative Test Methods
+            //stats.setTotalListingsWithCertifiedBodyAndAlternativeTestMethods(asyncStats.getTotalListingsWithCertifiedBodyAndAlternativeTestMethods());
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getTotalListingsWithCertifiedBodyAndAlternativeTestMethods(), executorService)
+                    .thenAccept(result -> stats.setTotalListingsWithCertifiedBodyAndAlternativeTestMethods(result)));
+            // Total # of Active (Including Suspended by ONC/ONC-ACB 2015-Cures Update Listings)
+            //stats.setActiveListingCountWithCuresUpdatedByAcb(asyncStats.getActiveListingCountWithCuresUpdatedByAcb(listingsAll2015));
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getActiveListingCountWithCuresUpdatedByAcb(listingsAll2015), executorService)
+                    .thenAccept(result -> stats.setActiveListingCountWithCuresUpdatedByAcb(result)));
+            // Total # of 2015-Cures Update Listings with Alternative Test Methods
+            //stats.setListingCountWithCuresUpdatedAndAltTestMethodsByAcb(asyncStats.getListingCountFor2015AndAltTestMethodsByAcb(listingsAll2015, certificationResultDAO));
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getListingCountFor2015AndAltTestMethodsByAcb(listingsAll2015, certificationResultDAO), executorService)
+                    .thenAccept(result -> stats.setListingCountWithCuresUpdatedAndAltTestMethodsByAcb(result)));
+            // Total # of 2015-Cures Updated Listings (Regardless of Status)
+            //stats.setAllListingsCountWithCuresUpdated(asyncStats.getAllListingsCountWithCuresUpdated(listingsAll2015));
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getAllListingsCountWithCuresUpdated(listingsAll2015), executorService)
+                    .thenAccept(result -> stats.setAllListingsCountWithCuresUpdated(result)));
 
-        /////////////////////////////////////////////////////////////////////////////////////
-        //Listing Statistics
-        /////////////////////////////////////////////////////////////////////////////////////
-        // Total # of Active (Including Suspended by ONC/ONC-ACB 2014 Listings)
-        stats.setTotalActive2014Listings(asyncStats.getTotalActive2014Listings(null));
-        stats.setTotalActiveListingsByCertifiedBody(asyncStats.getTotalActiveListingsByCertifiedBody(null));
-        // Total # of Active (Including Suspended by ONC/ONC-ACB 2015 Listings)
-        stats.setTotalActive2015Listings(asyncStats.getTotalActive2015Listings(null));
-        //Total # of 2015 Listings with Alternative Test Methods
-        stats.setTotalListingsWithAlternativeTestMethods(asyncStats.getTotalListingsWithAlternateTestMethods());
-        // Total # of 2015 Listings with Alternative Test Methods
-        stats.setTotalListingsWithCertifiedBodyAndAlternativeTestMethods(asyncStats.getTotalListingsWithCertifiedBodyAndAlternativeTestMethods());
-        // Total # of Active (Including Suspended by ONC/ONC-ACB 2015-Cures Update Listings)
-        stats.setActiveListingCountWithCuresUpdatedByAcb(asyncStats.getActiveListingCountWithCuresUpdatedByAcb(listingsAll2015));
-        // Total # of 2015-Cures Update Listings with Alternative Test Methods
-        stats.setListingCountWithCuresUpdatedAndAltTestMethodsByAcb(asyncStats.getListingCountFor2015AndAltTestMethodsByAcb(listingsAll2015, certificationResultDAO));
-        // Total # of 2015-Cures Updated Listings (Regardless of Status)
-        stats.setAllListingsCountWithCuresUpdated(asyncStats.getAllListingsCountWithCuresUpdated(listingsAll2015));
 
-        /////////////////////////////////////////////////////////////////////////////////////
-        // Surveillance Statistics
-        /////////////////////////////////////////////////////////////////////////////////////
-        // Average Duration of Closed Surveillance (in days)
-        stats.setAverageTimeToCloseSurveillance(asyncStats.getAverageTimeToCloseSurveillance());
+            /////////////////////////////////////////////////////////////////////////////////////
+            // Surveillance Statistics
+            /////////////////////////////////////////////////////////////////////////////////////
+            // Average Duration of Closed Surveillance (in days)
+            //stats.setAverageTimeToCloseSurveillance(asyncStats.getAverageTimeToCloseSurveillance());
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getAverageTimeToCloseSurveillance(), executorService)
+                    .thenAccept(result -> stats.setAverageTimeToCloseSurveillance(result)));
 
-        /////////////////////////////////////////////////////////////////////////////////////
-        // Non-Conformity Statistics
-        /////////////////////////////////////////////////////////////////////////////////////
-        // Average Time to Assess Conformity (in days)
-        stats.setAverageTimeToAssessConformity(asyncStats.getAverageTimeToAssessConformity());
-        // Average Time to Approve CAP (in days)
-        stats.setAverageTimeToApproveCAP(asyncStats.getAverageTimeToApproveCAP());
-        // Average Duration of CAP (in days) (includes closed and ongoing CAPs)
-        stats.setAverageDurationOfCAP(asyncStats.getAverageDurationOfCAP());
-        // Average Time from CAP Approval to Surveillance Close (in days)
-        stats.setAverageTimeFromCAPApprovalToSurveillanceEnd(asyncStats.getAverageTimeFromCAPApprovalToSurveillanceClose(surveillanceStatisticsDAO));
-        // Average Time from CAP Close to Surveillance Close (in days)
-        stats.setAverageTimeFromCAPEndToSurveillanceEnd(asyncStats.getAverageTimeFromCAPEndToSurveillanceClose());
-        // Average Duration of Closed Non-Conformities (in days)
-        stats.setAverageTimeFromSurveillanceOpenToSurveillanceClose(asyncStats.getAverageTimeFromSurveillanceOpenToSurveillanceClose());
-        // Number of Open CAPs
-        stats.setOpenCAPCountByAcb(asyncStats.getOpenCAPCountByAcb());
-        // Number of Closed CAPs
-        stats.setClosedCAPCountByAcb(asyncStats.getClosedCAPCountByAcb());
+            /////////////////////////////////////////////////////////////////////////////////////
+            // Non-Conformity Statistics
+            /////////////////////////////////////////////////////////////////////////////////////
+            // Average Time to Assess Conformity (in days)
+            //stats.setAverageTimeToAssessConformity(asyncStats.getAverageTimeToAssessConformity());
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getAverageTimeToAssessConformity(), executorService)
+                    .thenAccept(result -> stats.setAverageTimeToAssessConformity(result)));
+            // Average Time to Approve CAP (in days)
+            //stats.setAverageTimeToApproveCAP(asyncStats.getAverageTimeToApproveCAP());
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getAverageTimeToApproveCAP(), executorService)
+                    .thenAccept(result -> stats.setAverageTimeToApproveCAP(result)));
+            // Average Duration of CAP (in days) (includes closed and ongoing CAPs)
+            //stats.setAverageDurationOfCAP(asyncStats.getAverageDurationOfCAP());
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getAverageDurationOfCAP(), executorService)
+                    .thenAccept(result -> stats.setAverageDurationOfCAP(result)));
+            // Average Time from CAP Approval to Surveillance Close (in days)
+            //stats.setAverageTimeFromCAPApprovalToSurveillanceEnd(asyncStats.getAverageTimeFromCAPApprovalToSurveillanceClose(surveillanceStatisticsDAO));
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getAverageTimeFromCAPApprovalToSurveillanceClose(surveillanceStatisticsDAO), executorService)
+                    .thenAccept(result -> stats.setAverageTimeFromCAPApprovalToSurveillanceEnd(result)));
+            // Average Time from CAP Close to Surveillance Close (in days)
+            //stats.setAverageTimeFromCAPEndToSurveillanceEnd(asyncStats.getAverageTimeFromCAPEndToSurveillanceClose());
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getAverageTimeFromCAPEndToSurveillanceClose(), executorService)
+                    .thenAccept(result -> stats.setAverageTimeFromCAPEndToSurveillanceEnd(result)));
+            // Average Duration of Closed Non-Conformities (in days)
+            //stats.setAverageTimeFromSurveillanceOpenToSurveillanceClose(asyncStats.getAverageTimeFromSurveillanceOpenToSurveillanceClose());
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getAverageTimeFromSurveillanceOpenToSurveillanceClose(), executorService)
+                    .thenAccept(result -> stats.setAverageTimeFromSurveillanceOpenToSurveillanceClose(result)));
+            // Number of Open CAPs
+            //stats.setOpenCAPCountByAcb(asyncStats.getOpenCAPCountByAcb());
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getOpenCAPCountByAcb(), executorService)
+                    .thenAccept(result -> stats.setOpenCAPCountByAcb(result)));
+            // Number of Closed CAPs
+            //stats.setClosedCAPCountByAcb(asyncStats.getClosedCAPCountByAcb());
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getClosedCAPCountByAcb(), executorService)
+                    .thenAccept(result -> stats.setClosedCAPCountByAcb(result)));
 
+
+            CompletableFuture<Void> combinedFutures = CompletableFuture
+                    .allOf(futures.toArray(new CompletableFuture[futures.size()]));
+
+            // This is not blocking - presumably because the job executes using it's own ExecutorService
+            // This is necessary so that the system can indicate that the job and it's threads are still running
+            combinedFutures.get();
+            getLogger().info("All processes have completed");
+
+        } finally {
+            executorService.shutdown();
+        }
         return stats;
     }
 

@@ -33,6 +33,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
+import lombok.var;
 
 @Component
 @EnableAsync
@@ -71,12 +72,14 @@ public class AsynchronousSummaryStatistics {
 
     @Transactional
     public Long getTotalDevelopersWithActive2014Listings(DateRange dateRange) {
+        logger.info("Starting #1");
         List<String> activeStatuses = new ArrayList<String>();
         activeStatuses.add(CertificationStatusType.Active.getName().toUpperCase());
         activeStatuses.add(CertificationStatusType.SuspendedByAcb.getName().toUpperCase());
         activeStatuses.add(CertificationStatusType.SuspendedByOnc.getName().toUpperCase());
         Long total = developerStatisticsDAO.getTotalDevelopersWithListingsByEditionAndStatus(
                 dateRange, "2014", activeStatuses);
+        logger.info("Completed #1");
         return total;
     }
 
@@ -87,6 +90,14 @@ public class AsynchronousSummaryStatistics {
         List<CertifiedBodyStatistics> total = developerStatisticsDAO
                 .getTotalDevelopersByCertifiedBodyWithListingsEachYear(dateRange);
         return new AsyncResult<List<CertifiedBodyStatistics>>(total);
+    }
+
+    //TODO:  Handle the method above
+    @Transactional
+    public List<CertifiedBodyStatistics> getTotalDevelopersByCertifiedBodyWithListingsEachYear(DateRange dateRange) {
+        List<CertifiedBodyStatistics> total = developerStatisticsDAO
+                .getTotalDevelopersByCertifiedBodyWithListingsEachYear(dateRange);
+        return total;
     }
 
     @Transactional
@@ -130,14 +141,18 @@ public class AsynchronousSummaryStatistics {
 
     @Transactional
     public List<CertifiedBodyStatistics> getTotalCPListingsEachYearByCertifiedBody(DateRange dateRange) {
+        logger.info("Starting #2");
         List<CertifiedBodyStatistics> totals = listingStatisticsDAO.getTotalCPListingsEachYearByCertifiedBody(dateRange);
+        logger.info("Completed #2");
         return totals;
     }
 
     @Transactional
     public List<CertifiedBodyStatistics> getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(DateRange dateRange) {
+        logger.info("Starting #3");
         List<CertifiedBodyStatistics> totals = listingStatisticsDAO
                 .getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(dateRange);
+        logger.info("Completed #3");
         return totals;
     }
 
@@ -162,11 +177,13 @@ public class AsynchronousSummaryStatistics {
 
     @Transactional
     public Long getTotalCPsSuspended2014Listings(DateRange dateRange) {
+        logger.info("Starting #4");
         List<String> suspendedStatuses = new ArrayList<String>();
         suspendedStatuses.add(CertificationStatusType.SuspendedByAcb.getName().toUpperCase());
         suspendedStatuses.add(CertificationStatusType.SuspendedByOnc.getName().toUpperCase());
         Long total = listingStatisticsDAO
                 .getTotalUniqueProductsByEditionAndStatus(dateRange, "2014", suspendedStatuses);
+        logger.info("Completed #4");
         return total;
     }
 
@@ -203,42 +220,52 @@ public class AsynchronousSummaryStatistics {
 
     @Transactional
     public Long getTotalActive2014Listings(DateRange dateRange) {
+        logger.info("Starting #5");
         List<String> activeStatuses = new ArrayList<String>();
         activeStatuses.add(CertificationStatusType.Active.getName().toUpperCase());
         activeStatuses.add(CertificationStatusType.SuspendedByAcb.getName().toUpperCase());
         activeStatuses.add(CertificationStatusType.SuspendedByOnc.getName().toUpperCase());
         Long total = listingStatisticsDAO
                 .getTotalListingsByEditionAndStatus(dateRange, "2014", activeStatuses);
+        logger.info("Completed #5");
         return total;
     }
 
     @Transactional
     public Long getTotalActive2015Listings(DateRange dateRange) {
+        logger.info("Starting #6");
         List<String> activeStatuses = new ArrayList<String>();
         activeStatuses.add(CertificationStatusType.Active.getName().toUpperCase());
         activeStatuses.add(CertificationStatusType.SuspendedByAcb.getName().toUpperCase());
         activeStatuses.add(CertificationStatusType.SuspendedByOnc.getName().toUpperCase());
         Long total = listingStatisticsDAO
                 .getTotalListingsByEditionAndStatus(dateRange, "2015", activeStatuses);
+        logger.info("Completed #6");
         return total;
     }
 
     @Transactional
     public Long getTotalListingsWithAlternateTestMethods() {
+        logger.info("Starting #7");
         Long total = listingStatisticsDAO.getTotalListingsWithAlternateTestMethods();
+        logger.info("Completed #7");
         return total;
     }
 
     @Transactional
     public List<CertifiedBodyAltTestStatistics> getTotalListingsWithCertifiedBodyAndAlternativeTestMethods() {
+        logger.info("Starting #8");
         List<CertifiedBodyAltTestStatistics> totals = listingStatisticsDAO
                 .getTotalListingsWithCertifiedBodyAndAlternativeTestMethods();
+        logger.info("Completed #8");
         return totals;
     }
 
     @Transactional
     public List<CertifiedBodyStatistics> getTotalActiveListingsByCertifiedBody(DateRange dateRange) {
+        logger.info("Starting #9");
         List<CertifiedBodyStatistics> totals = listingStatisticsDAO.getTotalActiveListingsByCertifiedBody(dateRange);
+        logger.info("Completed #9");
         return totals;
     }
 
@@ -295,7 +322,7 @@ public class AsynchronousSummaryStatistics {
 
     @Transactional
     public Long getAverageTimeToCloseSurveillance() {
-
+        logger.info("Starting #10");
         List<SurveillanceEntity> surveillances = surveillanceStatisticsDAO.getAllSurveillances().stream()
                 .filter(surv -> surv.getStartDate() != null
                 && surv.getEndDate() != null)
@@ -304,7 +331,7 @@ public class AsynchronousSummaryStatistics {
         Long totalDuration = surveillances.stream()
                 .map(surv -> Math.abs(ChronoUnit.DAYS.between(surv.getStartDate().toInstant(), surv.getEndDate().toInstant())))
                 .collect(Collectors.summingLong(n -> n.longValue()));
-
+        logger.info("Completed #10");
         return totalDuration / surveillances.size();
     }
 
@@ -352,7 +379,7 @@ public class AsynchronousSummaryStatistics {
 
     @Transactional
     public Long getAverageTimeToAssessConformity() {
-
+        logger.info("Starting #11");
         List<SurveillanceEntity> surveillances = surveillanceStatisticsDAO.getAllSurveillancesWithNonconformities();
 
         List<SurveillanceNonconformityEntity> nonconformitiesWithDeterminationDate = surveillances.stream()
@@ -365,12 +392,13 @@ public class AsynchronousSummaryStatistics {
         Long totalDuration = nonconformitiesWithDeterminationDate.stream()
                 .map(nc -> getDaysToAssessNonconformtity(findSurveillanceForNonconformity(nc, surveillances), nc))
                 .collect(Collectors.summingLong(n -> n.longValue()));
-
+        logger.info("Completed #11");
         return totalDuration / nonconformitiesWithDeterminationDate.size();
     }
 
     @Transactional
     public Long getAverageTimeToApproveCAP() {
+        logger.info("Starting #12");
         List<SurveillanceEntity> surveillances = surveillanceStatisticsDAO.getAllSurveillancesWithNonconformities();
 
         List<SurveillanceNonconformityEntity> nonconformities = surveillances.stream()
@@ -384,12 +412,13 @@ public class AsynchronousSummaryStatistics {
                 .map(nc -> Math
                         .abs(ChronoUnit.DAYS.between(nc.getDateOfDetermination().toInstant(), nc.getCapApproval().toInstant())))
                 .collect(Collectors.summingLong(n -> n.longValue()));
-
+        logger.info("Completed #12");
         return totalDuration / nonconformities.size();
     }
 
     @Transactional
     public Long getAverageDurationOfCAP() {
+        logger.info("Starting #13");
         List<SurveillanceEntity> surveillances = surveillanceStatisticsDAO.getAllSurveillancesWithNonconformities();
 
         List<SurveillanceNonconformityEntity> nonconformities = surveillances.stream()
@@ -405,13 +434,13 @@ public class AsynchronousSummaryStatistics {
                                 nc.getCapApproval().toInstant(),
                                 nc.getCapEndDate() != null ? nc.getCapEndDate().toInstant() : Instant.now())))
                 .collect(Collectors.summingLong(n -> n.longValue()));
-
+        logger.info("Completed #13");
         return totalDuration / nonconformities.size();
     }
 
     @Transactional
     public Long getAverageTimeFromCAPApprovalToSurveillanceClose(SurveillanceStatisticsDAO surveillanceStatisticsDAO) {
-
+        logger.info("Starting #14");
         List<SurveillanceEntity> surveillances = surveillanceStatisticsDAO.getAllSurveillancesWithNonconformities();
 
         List<SurveillanceNonconformityEntity> nonconformitiesWithDeterminationDate = surveillances.stream()
@@ -425,13 +454,13 @@ public class AsynchronousSummaryStatistics {
         Long totalDuration = nonconformitiesWithDeterminationDate.stream()
                 .map(nc -> getDaysFromCAPApprovalToSurveillanceClose(findSurveillanceForNonconformity(nc, surveillances), nc))
                 .collect(Collectors.summingLong(n -> n.longValue()));
-
+        logger.info("Completed #14");
         return totalDuration / nonconformitiesWithDeterminationDate.size();
     }
 
     @Transactional
     public Long getAverageTimeFromCAPEndToSurveillanceClose() {
-
+        logger.info("Starting #15");
         List<SurveillanceEntity> surveillances = surveillanceStatisticsDAO.getAllSurveillancesWithNonconformities();
 
         List<SurveillanceNonconformityEntity> nonconformitiesWithDeterminationDate = surveillances.stream()
@@ -447,12 +476,13 @@ public class AsynchronousSummaryStatistics {
                 .map(nc -> getDaysFromCAPEndToSurveillanceClose(findSurveillanceForNonconformity(nc, surveillances), nc))
                 .collect(Collectors.summingLong(n -> n.longValue()));
 
+        logger.info("Completed #15");
         return totalDuration / nonconformitiesWithDeterminationDate.size();
     }
 
     @Transactional
     public Long getAverageTimeFromSurveillanceOpenToSurveillanceClose() {
-
+        logger.info("Starting #16");
         List<SurveillanceEntity> surveillances = surveillanceStatisticsDAO.getAllSurveillances();
 
         List<SurveillanceNonconformityEntity> nonconformities = surveillances.stream()
@@ -468,12 +498,13 @@ public class AsynchronousSummaryStatistics {
                 .map(nc -> getDaysFromSurveillanceOpenToSurveillanceClose(findSurveillanceForNonconformity(nc, surveillances)))
                 .collect(Collectors.summingLong(n -> n.longValue()));
 
+        logger.info("Completed #16");
         return totalDuration / surveillances.size();
     }
 
     @Transactional
     public Map<Long, Long> getOpenCAPCountByAcb() {
-
+        logger.info("Starting #17");
         List<SurveillanceEntity> surveillances = surveillanceStatisticsDAO.getAllSurveillancesWithNonconformities();
 
         Map<Long, Long> openCAPCountByAcb = surveillances.stream()
@@ -485,13 +516,13 @@ public class AsynchronousSummaryStatistics {
                 .map(nc -> new NonconformanceStatistic(
                         findSurveillanceForNonconformity(nc, surveillances).getCertifiedProduct().getCertificationBodyId(), nc))
                 .collect(Collectors.groupingBy(stat -> stat.getCertificationBodyId(), Collectors.counting()));
-
+        logger.info("Completed #17");
         return openCAPCountByAcb;
     }
 
     @Transactional
     public Map<Long, Long> getClosedCAPCountByAcb() {
-
+        logger.info("Starting #18");
         List<SurveillanceEntity> surveillances = surveillanceStatisticsDAO.getAllSurveillancesWithNonconformities();
 
         Map<Long, Long> openCAPCountByAcb = surveillances.stream()
@@ -503,14 +534,15 @@ public class AsynchronousSummaryStatistics {
                 .map(nc -> new NonconformanceStatistic(
                         findSurveillanceForNonconformity(nc, surveillances).getCertifiedProduct().getCertificationBodyId(), nc))
                 .collect(Collectors.groupingBy(stat -> stat.getCertificationBodyId(), Collectors.counting()));
-
+        logger.info("Completed #18");
         return openCAPCountByAcb;
     }
 
     @Transactional
     public List<CertifiedBodyStatistics> getUniqueDevelopersCountFor2015ListingsByAcb(
             List<CertifiedProductDetailsDTO> certifiedProducts, Edition2015Criteria listingsToInclude) {
-        return certifiedProducts.stream()
+        logger.info("Starting #19");
+        var x = certifiedProducts.stream()
                 .filter(listing -> includeListing(listing, listingsToInclude))
                 .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
                 .entrySet().stream()
@@ -523,12 +555,15 @@ public class AsynchronousSummaryStatistics {
                     return stat;
                 })
                 .collect(Collectors.toList());
+        logger.info("Completed #19");
+        return x;
     }
 
     @Transactional
     public List<CertifiedBodyStatistics> getUniqueDevelopersCountFor2015ActiveListingsByAcb(
             List<CertifiedProductDetailsDTO> certifiedProducts, Edition2015Criteria listingsToInclude) {
-        return certifiedProducts.stream()
+        logger.info("Starting #20");
+        var x = certifiedProducts.stream()
                 .filter(listing -> includeListing(listing, listingsToInclude)
                         && listing.getCertificationStatusName().equals(CertificationStatusType.Active.getName()))
                 .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
@@ -542,12 +577,15 @@ public class AsynchronousSummaryStatistics {
                     return stat;
                 })
                 .collect(Collectors.toList());
+        logger.info("Completed #20");
+        return x;
     }
 
     @Transactional
     public List<CertifiedBodyStatistics> getUniqueDevelopersCountFor2015SuspendedListingsByAcb(
             List<CertifiedProductDetailsDTO> certifiedProducts, Edition2015Criteria listingsToInclude) {
-        return certifiedProducts.stream()
+        logger.info("Starting #21");
+        var x = certifiedProducts.stream()
                 .filter(cp -> includeListing(cp, listingsToInclude)
                         && (cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByAcb.getName())
                                 || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByOnc.getName())))
@@ -562,12 +600,15 @@ public class AsynchronousSummaryStatistics {
                     return stat;
                 })
                 .collect(Collectors.toList());
+        logger.info("Completed #21");
+        return x;
     }
 
     @Transactional
     public List<CertifiedBodyStatistics> getUniqueProductsCountFor2015ListingsByAcb(
             List<CertifiedProductDetailsDTO> certifiedProducts, Edition2015Criteria listingsToInclude) {
-        return certifiedProducts.stream()
+        logger.info("Starting #22");
+        var x = certifiedProducts.stream()
                 .filter(listing -> includeListing(listing, listingsToInclude))
                 .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
                 .entrySet().stream()
@@ -580,12 +621,15 @@ public class AsynchronousSummaryStatistics {
                     return stat;
                 })
                 .collect(Collectors.toList());
+        logger.info("Completed #22");
+        return x;
     }
 
     @Transactional
     public List<CertifiedBodyStatistics> getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(
             List<CertifiedProductDetailsDTO> certifiedProducts, Edition2015Criteria listingsToInclude) {
-        return certifiedProducts.stream()
+        logger.info("Starting #23");
+        var x = certifiedProducts.stream()
                 .filter(listing -> includeListing(listing, listingsToInclude)
                         && listing.getCertificationStatusName().equals(CertificationStatusType.Active.getName()))
                 .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
@@ -599,12 +643,15 @@ public class AsynchronousSummaryStatistics {
                     return stat;
                 })
                 .collect(Collectors.toList());
+        logger.info("Completed #23");
+        return x;
     }
 
     @Transactional
     public List<CertifiedBodyStatistics> getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(
             List<CertifiedProductDetailsDTO> certifiedProducts, Edition2015Criteria listingsToInclude) {
-        return certifiedProducts.stream()
+        logger.info("Starting #24");
+        var x = certifiedProducts.stream()
                 .filter(cp -> includeListing(cp, listingsToInclude)
                         && (cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByAcb.getName())
                                 || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByOnc.getName())))
@@ -619,12 +666,15 @@ public class AsynchronousSummaryStatistics {
                     return stat;
                 })
                 .collect(Collectors.toList());
+        logger.info("Completed #24");
+        return x;
     }
 
     @Transactional
     public List<CertifiedBodyStatistics> getActiveListingCountWithCuresUpdatedByAcb(
             List<CertifiedProductDetailsDTO> certifiedProducts) {
-        return certifiedProducts.stream()
+        logger.info("Starting #25");
+        var x = certifiedProducts.stream()
                 .filter(cp -> cp.getCertificationStatusName().equals(CertificationStatusType.Active.getName())
                         || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByAcb.getName())
                         || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByOnc.getName()))
@@ -638,13 +688,15 @@ public class AsynchronousSummaryStatistics {
                     return stat;
                 })
                 .collect(Collectors.toList());
+        logger.info("Completed #25");
+        return x;
     }
 
     @Transactional
     public List<CertifiedBodyStatistics> getListingCountFor2015AndAltTestMethodsByAcb(
             List<CertifiedProductDetailsDTO> certifiedProducts, CertificationResultDAO certificationResultDAO) {
-
-        return certifiedProducts.stream()
+        logger.info("Starting #26");
+        var x = certifiedProducts.stream()
                 .filter(cp -> doesListingHaveAlternativeTestMethod(cp.getId(), certificationResultDAO))
                 .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
                 .entrySet().stream()
@@ -656,13 +708,19 @@ public class AsynchronousSummaryStatistics {
                     return stat;
                 })
                 .collect(Collectors.toList());
+        logger.info("Completed #26");
+        return x;
     }
 
     @Transactional
     public Long getAllListingsCountWithCuresUpdated(List<CertifiedProductDetailsDTO> certifiedProducts) {
-        return certifiedProducts.stream()
+        logger.info("Starting #27");
+        var x = certifiedProducts.stream()
                 .filter(listing -> listing.getCuresUpdate())
                 .count();
+
+        logger.info("Completed #27");
+        return x;
     }
 
     @Async("jobAsyncDataExecutor")
