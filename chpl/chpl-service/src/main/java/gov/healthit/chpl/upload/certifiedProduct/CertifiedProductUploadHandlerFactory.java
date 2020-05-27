@@ -53,6 +53,10 @@ public final class CertifiedProductUploadHandlerFactory {
         this.msgUtil = msgUtil;
     }
 
+    public CertifiedProductUploadHandler getHandler(CSVRecord heading) throws InvalidArgumentsException {
+        return getHandler(heading, null);
+    }
+
     /**
      * Find the appropriate class to handle parsing this CSV file.
      * @param heading the heading parsed from the CSV file
@@ -60,7 +64,7 @@ public final class CertifiedProductUploadHandlerFactory {
      * @return the handler or an exception if none is found
      * @throws InvalidArgumentsException if no matching parser is found
      */
-    public CertifiedProductUploadHandler getHandler(final CSVRecord heading, final List<CSVRecord> cpRecords)
+    public CertifiedProductUploadHandler getHandler(CSVRecord heading, List<CSVRecord> cpRecords)
             throws InvalidArgumentsException {
         if (heading == null) {
             String msg = msgUtil.getMessage("listing.upload.badHeader", "null");

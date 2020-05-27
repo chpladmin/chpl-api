@@ -17,7 +17,7 @@ public class CreateOrReplaceActionPermissions extends ActionPermissions {
     public boolean hasAccess(Object obj) {
         if (!(obj instanceof PendingCertifiedProductEntity)) {
             return false;
-        } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
+        } else if (getResourcePermissions().isUserRoleAdmin()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             PendingCertifiedProductEntity pcp = (PendingCertifiedProductEntity) obj;

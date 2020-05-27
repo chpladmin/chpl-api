@@ -4,17 +4,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletResponse;
 
@@ -72,9 +67,7 @@ import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandler;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFactory;
-import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
-import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
@@ -827,16 +820,8 @@ public class CertifiedProductController {
                     + "Security Restrictions: ROLE_ADMIN or user uploading the file must have ROLE_ACB "
                     + "and administrative authority on the ACB(s) specified in the file.")
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public ResponseEntity<PendingCertifiedProductResults> upload(@RequestParam("file") final MultipartFile file)
+    public ResponseEntity<PendingCertifiedProductResults> upload(@RequestParam("file") MultipartFile file)
             throws ValidationException, MaxUploadSizeExceededException {
-        if (file.isEmpty()) {
-            throw new ValidationException(msgUtil.getMessage("upload.emptyFile"));
-        }
-
-        if (!file.getContentType().equalsIgnoreCase("text/csv")
-                && !file.getContentType().equalsIgnoreCase("application/vnd.ms-excel")) {
-            throw new ValidationException(msgUtil.getMessage("upload.notCSV"));
-        }
         HttpHeaders responseHeaders = new HttpHeaders();
         List<PendingCertifiedProductDetails> uploadedProducts = new ArrayList<PendingCertifiedProductDetails>();
 
@@ -971,67 +956,6 @@ public class CertifiedProductController {
         }
 
         return certifiedProduct;
-    }
-
-    /**
-     * Creates an email message to the configured recipients
-     * with configured subject and uses the stack trace as the
-     * email body. Creates a temporary file that is the uploaded
-     * CSV and attaches it to the email.
-     * @param file
-     * @param ex
-     */
-    private void sendUploadError(final MultipartFile file, final Exception ex) {
-        //get the recipients of this email
-        //if there are none specified we won't continue
-        if (StringUtils.isEmpty(env.getProperty("uploadErrorEmailRecipients"))) {
-            return;
-        }
-        List<String> recipients = Arrays.asList(env.getProperty("uploadErrorEmailRecipients").split(","));
-
-        //figure out the filename for the attachment
-        String originalFilename = file.getOriginalFilename();
-        int indexOfExtension = originalFilename.indexOf(".");
-        String filenameWithoutExtension = file.getOriginalFilename();
-        if (indexOfExtension >= 0) {
-            filenameWithoutExtension
-            = originalFilename.substring(0, indexOfExtension);
-        }
-        String extension = ".csv";
-        if (indexOfExtension >= 0) {
-            extension = originalFilename.substring(indexOfExtension);
-        }
-
-        //attach the file the user tried to upload
-        File temp = null;
-        List<File> attachments = null;
-        try {
-            temp = File.createTempFile(filenameWithoutExtension, extension);
-            file.transferTo(temp);
-            attachments = new ArrayList<File>();
-            attachments.add(temp);
-        } catch (IOException io) {
-            LOGGER.error("Could not create temporary file for attachment: " + io.getMessage(), io);
-        }
-
-        //create the email body
-        String htmlBody = "<p>Upload attempted at " + new Date()
-                + "<br/>Uploaded by " + AuthUtil.getUsername() + "</p>";
-        StringWriter writer = new StringWriter();
-        ex.printStackTrace(new PrintWriter(writer));
-        htmlBody += "<pre>" + writer.toString() + "</pre>";
-
-        //build and send the email
-        try {
-            EmailBuilder emailBuilder = new EmailBuilder(env);
-            emailBuilder.recipients(recipients)
-            .subject(env.getProperty("uploadErrorEmailSubject"))
-            .fileAttachments(attachments)
-            .htmlMessage(htmlBody)
-            .sendEmail();
-        } catch (MessagingException msgEx) {
-            LOGGER.error("Could not send team email about failed listing upload.", msgEx);
-        }
     }
 
     private static Function<CertifiedProductSearchDetails, CertifiedProductSearchBasicDetails> mapCertifiedProductDetailsToBasic = (CertifiedProductSearchDetails e)-> {
