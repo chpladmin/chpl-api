@@ -10,8 +10,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -61,12 +59,13 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
+import lombok.extern.log4j.Log4j2;
 
 @Lazy
 @Service
+@Log4j2
 public class DeveloperManager extends SecuredManager {
     public static final String NEW_DEVELOPER_CODE = "XXXX";
-    private static final Logger LOGGER = LogManager.getLogger(DeveloperManager.class);
 
     private DeveloperDAO developerDao;
     private ProductManager productManager;
@@ -82,6 +81,7 @@ public class DeveloperManager extends SecuredManager {
     private DeveloperValidationFactory developerValidationFactory;
     private ValidationUtils validationUtils;
     private FF4j ff4j;
+    private TransparencyAttestationManager transparencyAttestationManager;
 
     @Autowired
     public DeveloperManager(DeveloperDAO developerDao, ProductManager productManager,
@@ -89,7 +89,8 @@ public class DeveloperManager extends SecuredManager {
             CertifiedProductDetailsManager cpdManager, CertificationBodyDAO certificationBodyDao,
             CertifiedProductDAO certifiedProductDAO, ChplProductNumberUtil chplProductNumberUtil,
             ActivityManager activityManager, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
-            DeveloperValidationFactory developerValidationFactory, ValidationUtils validationUtils, FF4j ff4j) {
+            DeveloperValidationFactory developerValidationFactory, ValidationUtils validationUtils, FF4j ff4j,
+            TransparencyAttestationManager transparencyAttestationManager) {
         this.developerDao = developerDao;
         this.productManager = productManager;
         this.acbManager = acbManager;
@@ -104,6 +105,7 @@ public class DeveloperManager extends SecuredManager {
         this.developerValidationFactory = developerValidationFactory;
         this.validationUtils = validationUtils;
         this.ff4j = ff4j;
+        this.transparencyAttestationManager = transparencyAttestationManager;
     }
 
     @Transactional(readOnly = true)
@@ -176,6 +178,12 @@ public class DeveloperManager extends SecuredManager {
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
         DeveloperDTO beforeDev = getById(updatedDev.getId());
 
+        if (updatedDev.equals(beforeDev)) {
+            LOGGER.info("Developer did not change - not saving");
+            LOGGER.info(updatedDev.toString());
+            return beforeDev;
+        }
+
         Set<String> errors = null;
         if (doUpdateValidations) {
             // update validations are not done during listing update -> developer ban
@@ -211,30 +219,7 @@ public class DeveloperManager extends SecuredManager {
     }
 
     private void createOrUpdateTransparencyMappings(DeveloperDTO developer) {
-        List<CertificationBodyDTO> availableAcbs = resourcePermissions.getAllAcbsForCurrentUser();
-        if (availableAcbs != null && availableAcbs.size() > 0) {
-            for (CertificationBodyDTO acb : availableAcbs) {
-                DeveloperACBMapDTO existingMap = developerDao.getTransparencyMapping(developer.getId(), acb.getId());
-                if (existingMap == null) {
-                    DeveloperACBMapDTO developerMappingToCreate = new DeveloperACBMapDTO();
-                    developerMappingToCreate.setAcbId(acb.getId());
-                    developerMappingToCreate.setDeveloperId(developer.getId());
-                    for (DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
-                        if (attMap.getAcbName().equals(acb.getName())) {
-                            developerMappingToCreate.setTransparencyAttestation(attMap.getTransparencyAttestation());
-                            developerDao.createTransparencyMapping(developerMappingToCreate);
-                        }
-                    }
-                } else {
-                    for (DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
-                        if (attMap.getAcbName().equals(acb.getName())) {
-                            existingMap.setTransparencyAttestation(attMap.getTransparencyAttestation());
-                            developerDao.updateTransparencyMapping(existingMap);
-                        }
-                    }
-                }
-            }
-        }
+        transparencyAttestationManager.save(developer);
     }
 
     private void updateStatusHistory(DeveloperDTO beforeDev, DeveloperDTO updatedDev)

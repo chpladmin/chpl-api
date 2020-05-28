@@ -12,18 +12,15 @@ import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.presenter.Sed2015CsvPresenter;
+import gov.healthit.chpl.service.CertificationCriterionService;
 
-/**
- * Quartz job to generate download files for SED.
- * @author kekey
- *
- */
 @DisallowConcurrentExecution
 public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourceCreatorJob {
     private static final Logger LOGGER = LogManager.getLogger("g3Sed2015DownloadableResourceCreatorJobLogger");
@@ -32,10 +29,9 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
     private static final int MILLIS_PER_SECOND = 1000;
     private static final int SECONDS_PER_MINUTE = 60;
 
-    /**
-     * Default constructor.
-     * @throws Exception if issue with context
-     */
+    @Autowired
+    private CertificationCriterionService criterionService;
+
     public G3Sed2015DownloadableResourceCreatorJob() throws Exception {
         super(LOGGER);
     }
@@ -49,11 +45,9 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
         try {
             List<Long> listingIds = getRelevantListingIds();
 
-            List<Future<CertifiedProductSearchDetails>> futures =
-                    getCertifiedProductSearchDetailsFuturesFromIds(listingIds);
+            List<Future<CertifiedProductSearchDetails>> futures = getCertifiedProductSearchDetailsFuturesFromIds(listingIds);
             Map<Long, CertifiedProductSearchDetails> cpMap = getMapFromFutures(futures);
-            List<CertifiedProductSearchDetails> orderedListings =
-                    createOrderedListOfCertifiedProductsFromIds(cpMap, listingIds);
+            List<CertifiedProductSearchDetails> orderedListings = createOrderedListOfCertifiedProductsFromIds(cpMap, listingIds);
 
             File downloadFolder = getDownloadFolder();
             writeToFile(downloadFolder, orderedListings);
@@ -69,6 +63,7 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
 
     /**
      * Gets all listings that have certified to 170.315 (g)(3)
+     * 
      * @return
      * @throws EntityRetrievalException
      */
@@ -89,7 +84,7 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
                 + ".csv";
         File csvFile = getFile(csvFilename);
         Sed2015CsvPresenter csvPresenter = new Sed2015CsvPresenter();
-        csvPresenter.presentAsFile(csvFile, results);
+        csvPresenter.presentAsFile(csvFile, results, criterionService);
         LOGGER.info("Wrote G3 SED 2015 CSV file.");
     }
 

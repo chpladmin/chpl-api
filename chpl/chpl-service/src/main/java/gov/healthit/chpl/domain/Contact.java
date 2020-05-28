@@ -1,11 +1,17 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -22,6 +28,7 @@ import gov.healthit.chpl.dto.ContactDTO;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Contact implements Serializable {
     private static final long serialVersionUID = 5378524206189674741L;
+    private static final Logger LOGGER = LogManager.getLogger(Contact.class);
 
     /**
      * Contact internal ID
@@ -75,13 +82,80 @@ public class Contact implements Serializable {
      * Constructed from a DTO.
      * @param dto the DTO
      */
-    public Contact(final ContactDTO dto) {
+    public Contact(ContactDTO dto) {
         this.contactId = dto.getId();
         this.fullName = dto.getFullName();
         this.friendlyName = dto.getFriendlyName();
         this.email = dto.getEmail();
         this.phoneNumber = dto.getPhoneNumber();
         this.title = dto.getTitle();
+    }
+
+    public Contact(HashMap<String, Object> map) {
+        if (map.containsKey("contactId") && map.get("contactId") != null) {
+            try {
+                this.contactId = Long.parseLong(map.get("contactId").toString());
+            } catch (NumberFormatException ex) {
+                LOGGER.warn("contactId in map = '" + map.get("contactId") + "' is not parseable into a Long");
+            }
+        }
+        if (map.containsKey("fullName") && map.get("fullName") != null) {
+            this.fullName = map.get("fullName").toString();
+        }
+        if (map.containsKey("friendlyName") && map.get("friendlyName") != null) {
+            this.friendlyName = map.get("friendlyName").toString();
+        }
+        if (map.containsKey("email") && map.get("email") != null) {
+            this.email = map.get("email").toString();
+        }
+        if (map.containsKey("phoneNumber") && map.get("phoneNumber") != null) {
+            this.phoneNumber = map.get("phoneNumber").toString();
+        }
+        if (map.containsKey("title") && map.get("title") != null) {
+            this.title = map.get("title").toString();
+        }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Contact)) {
+            return false;
+        }
+        Contact anotherContact = (Contact) obj;
+        if ((this.contactId != null && anotherContact.contactId != null
+                && this.contactId.longValue() == anotherContact.contactId.longValue())
+                || (this.contactId == null && anotherContact.contactId == null)) {
+            return ObjectUtils.equals(this.fullName, anotherContact.fullName)
+                    && ObjectUtils.equals(this.friendlyName, anotherContact.friendlyName)
+                    && ObjectUtils.equals(this.email, anotherContact.email)
+                    && ObjectUtils.equals(this.phoneNumber, anotherContact.phoneNumber)
+                    && ObjectUtils.equals(this.title, anotherContact.title);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        if (this.contactId != null) {
+            return this.contactId.hashCode();
+        }
+        int hashCode = 0;
+        if (!StringUtils.isEmpty(this.fullName)) {
+            hashCode += this.fullName.hashCode();
+        }
+        if (!StringUtils.isEmpty(this.friendlyName)) {
+            hashCode += this.friendlyName.hashCode();
+        }
+        if (!StringUtils.isEmpty(this.email)) {
+            hashCode += this.email.hashCode();
+        }
+        if (!StringUtils.isEmpty(this.phoneNumber)) {
+            hashCode += this.phoneNumber.hashCode();
+        }
+        if (!StringUtils.isEmpty(this.title)) {
+            hashCode += this.title.hashCode();
+        }
+        return hashCode;
     }
 
     public Long getContactId() {

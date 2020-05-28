@@ -20,6 +20,7 @@ import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.KeyMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -60,6 +61,7 @@ import gov.healthit.chpl.scheduler.job.extra.JobResponseTriggerWrapper;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CuresUpdateService;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.PrivacyAndSecurityCriteriaReviewer;
 import net.sf.ehcache.CacheManager;
 
 public class AddCriteriaTo2015ListingsJob extends QuartzJob {
@@ -130,6 +132,14 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
     private Environment env;
 
     @Autowired
+    @Qualifier("privacyAndSecurityCriteriaReviewer")
+    private PrivacyAndSecurityCriteriaReviewer privacyAndSecurityCriteriaReviewer;
+
+    @Autowired
+    @Qualifier("pendingPrivacyAndSecurityCriteriaReviewer")
+    private gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.PrivacyAndSecurityCriteriaReviewer pendingPrivacyAndSecurityCriteriaReviewer;
+
+    @Autowired
     private CuresUpdateService curesUpdateService;
 
     @Autowired
@@ -182,6 +192,9 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
             certifiedProductDetailsManager.refreshData();
             pcpManager.refreshData();
             testFuncManager.onApplicationEvent(null);
+
+            pendingPrivacyAndSecurityCriteriaReviewer.postConstruct();
+            privacyAndSecurityCriteriaReviewer.postConstruct();
 
             certificationCriterionService.postConstruct();
             curesUpdateService.postConstruct();

@@ -14,6 +14,8 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.util.Util;
 
@@ -22,6 +24,7 @@ import gov.healthit.chpl.util.Util;
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SurveillanceNonconformity implements Serializable {
     private static long serialVersionUID = -1116153210791576784L;
 

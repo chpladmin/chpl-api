@@ -1,5 +1,56 @@
 # Release Notes
 
+## Version 25.4.0
+_18 May 2020_
+
+### Features
+* ONC-ACB should only be able to add or remove criteria if listing is in "Active" status
+* Show repeated information in Questionable URL report
+* Provide better error message for QMS Standards that are too long in upload
+
+### Bug Fixes
+* Allow addition of active Macra Measures by ROLE_ACB
+* Reduce incorrect "activity" in Developer reports
+* Show all surveillance update activity in listing reports
+
+---
+
+## Version 25.3.0
+_4 May 2020_
+
+### Features
+* Add inactive date, decertified date, and ids to generated CSVs
+* Add /activity/metadata/beta/products endpoint
+* Send individual emails when developer ban may be triggered
+* Add comma between developer address line 1 and line 2 in CSV download
+* Add 'Activity Level' column to questionable activity report
+* Add /activity/metadata/beta/developers endpoint
+
+### Flagged Features
+* Require d12 and d13 when editing certain 2015 listings in certain scenarios
+
+### Bug Fixes
+* Remove requirement for d4 from certain a criteria
+* ACBs receive error when editing a listing with removed MACRA measures
+* Questionable URL Report Generator not sending report
+* Use correct URL for listing report in questionable activity email
+
+---
+
+## Version 25.2.0
+_20 April 2020_
+
+### Features
+* Add Quartz job to update listings to be marked as Cures Update
+* Change the order of display of revised criteria so "Cures Update" is first
+* Remove no longer needed Quartz job
+
+### Flagged Features
+* Display "Cures Update" everywhere it's appropriate
+* Add "Developer Details" Change Request type
+
+---
+
 ## Version 25.1.1
 _10 April 2020_
 

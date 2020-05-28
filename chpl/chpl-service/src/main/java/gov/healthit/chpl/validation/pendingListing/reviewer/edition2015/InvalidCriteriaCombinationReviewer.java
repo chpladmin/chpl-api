@@ -11,16 +11,20 @@ import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.InvalidCriteriaCombination;
 import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
 
 @Component("pendingInvalidCriteriaCombinationReviewer")
 public class InvalidCriteriaCombinationReviewer extends InvalidCriteriaCombination implements Reviewer {
+    private CertificationCriterionService criterionService;
+
     @Autowired
-    public InvalidCriteriaCombinationReviewer(ErrorMessageUtil msgUtil, FF4j ff4j) {
+    public InvalidCriteriaCombinationReviewer(ErrorMessageUtil msgUtil, FF4j ff4j,
+            CertificationCriterionService criterionService) {
         super(msgUtil, ff4j);
+        this.criterionService = criterionService;
     }
 
     @Override
@@ -48,7 +52,7 @@ public class InvalidCriteriaCombinationReviewer extends InvalidCriteriaCombinati
             final CertificationCriterionDTO critB = certResultB.get().getCriterion();
             listing.getErrorMessages()
                     .add(msgUtil.getMessage("listing.criteria.invalidCombination",
-                            Util.formatCriteriaNumber(critA), Util.formatCriteriaNumber(critB)));
+                            criterionService.formatCriteriaNumber(critA), criterionService.formatCriteriaNumber(critB)));
         }
     }
 

@@ -3,7 +3,7 @@
 <Configuration status="warn" monitorInterval="300"
     name="CHPL-Service-STG" packages="">
     <Properties>
-        <Property name="logDir">${sys:catalina.home}/logs</Property>
+        <Property name="logDir">/opt/tomcat8/logs</Property>
     </Properties>
     <Appenders>
         <RollingFile name="FILE" fileName="${logDir}/chplservice.log"
@@ -357,6 +357,17 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <RollingFile name="addCuresUpdateToListingsJob"
+            fileName="${logDir}/scheduler/addCuresUpdateToListingsJob.log"
+            filePattern="${logDir}/scheduler/history/addCuresUpdateToListingsJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
     </Appenders>
     <Loggers>
         <Logger name="org.jose4j" level="ERROR" additivity="false">
@@ -496,6 +507,10 @@
         <Logger name="updateMacraMeasuresJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="updateMacraMeasuresJob" />
+        </Logger>
+        <Logger name="addCuresUpdateToListingsJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="addCuresUpdateToListingsJob" />
         </Logger>
     </Loggers>
 </Configuration>
