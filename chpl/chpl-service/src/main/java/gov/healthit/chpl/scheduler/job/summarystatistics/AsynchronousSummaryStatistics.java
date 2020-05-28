@@ -62,12 +62,26 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
+    //TODO: Need to fix method above
+    @Transactional
+    public Long getTotalDevelopers(DateRange dateRange) {
+        Long total = developerStatisticsDAO.getTotalDevelopers(dateRange);
+        return total;
+    }
+
     @Transactional
     @Async("jobAsyncDataExecutor")
     public Future<Long> getTotalDevelopersWith2014Listings(DeveloperStatisticsDAO developerStatisticsDAO,
             DateRange dateRange) {
         Long total = developerStatisticsDAO.getTotalDevelopersWithListingsByEditionAndStatus(dateRange, "2014", null);
         return new AsyncResult<Long>(total);
+    }
+
+    //TODO: Need to fix method above
+    @Transactional
+    public Long getTotalDevelopersWith2014Listings(DateRange dateRange) {
+        Long total = developerStatisticsDAO.getTotalDevelopersWithListingsByEditionAndStatus(dateRange, "2014", null);
+        return total;
     }
 
     @Transactional
@@ -109,6 +123,14 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<>(total);
     }
 
+    // TODO: Handle the method above
+    @Transactional
+    public List<CertifiedBodyStatistics> getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(DateRange dateRange) {
+        List<CertifiedBodyStatistics> total = developerStatisticsDAO
+                .getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(dateRange);
+        return total;
+    }
+
     @Transactional
     @Async("jobAsyncDataExecutor")
     public Future<Long> getTotalDevelopersWith2015Listings(
@@ -137,6 +159,13 @@ public class AsynchronousSummaryStatistics {
             DateRange dateRange) {
         Long total = listingStatisticsDAO.getTotalUniqueProductsByEditionAndStatus(dateRange, null, null);
         return new AsyncResult<Long>(total);
+    }
+
+    //TODO: need to fix the method above
+    @Transactional
+    public Long getTotalCertifiedProducts(DateRange dateRange) {
+        Long total = listingStatisticsDAO.getTotalUniqueProductsByEditionAndStatus(dateRange, null, null);
+        return total;
     }
 
     @Transactional
@@ -278,6 +307,14 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
+    //TODO: Need tofix the method above
+    @Transactional
+    public Long getTotal2014Listings(DateRange dateRange) {
+        Long total = listingStatisticsDAO
+                .getTotalListingsByEditionAndStatus(dateRange, "2014", null);
+        return total;
+    }
+
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<Long> getTotal2015Listings(ListingStatisticsDAO listingStatisticsDAO,
@@ -310,6 +347,13 @@ public class AsynchronousSummaryStatistics {
             DateRange dateRange) {
         Long total = surveillanceStatisticsDAO.getTotalOpenSurveillanceActivities(dateRange);
         return new AsyncResult<Long>(total);
+    }
+
+    //TODO: Need to fix the method above
+    @Transactional
+    public Long getTotalOpenSurveillanceActivities(DateRange dateRange) {
+        Long total = surveillanceStatisticsDAO.getTotalOpenSurveillanceActivities(dateRange);
+        return total;
     }
 
     @Async("jobAsyncDataExecutor")
@@ -351,6 +395,13 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
+    //TODO: Need to fix method above
+    @Transactional
+    public Long getTotalOpenNonconformities(DateRange dateRange) {
+        Long total = surveillanceStatisticsDAO.getTotalOpenNonconformities(dateRange);
+        return total;
+    }
+
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<Long> getTotalClosedNonconformities(SurveillanceStatisticsDAO surveillanceStatisticsDAO,
@@ -368,6 +419,13 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<List<CertifiedBodyStatistics>>(totals);
     }
 
+    //TODO: Fix the method above
+    @Transactional
+    public List<CertifiedBodyStatistics> getTotalOpenNonconformitiesByAcb(DateRange dateRange) {
+        List<CertifiedBodyStatistics> totals = surveillanceStatisticsDAO.getTotalOpenNonconformitiesByAcb(dateRange);
+        return totals;
+    }
+
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<List<CertifiedBodyStatistics>> getTotalOpenSurveillancesByAcb(
@@ -375,6 +433,13 @@ public class AsynchronousSummaryStatistics {
 
         List<CertifiedBodyStatistics> totals = surveillanceStatisticsDAO.getTotalOpenSurveillanceActivitiesByAcb(dateRange);
         return new AsyncResult<List<CertifiedBodyStatistics>>(totals);
+    }
+
+    //TODO: Need to handle the method above
+    @Transactional
+    public List<CertifiedBodyStatistics> getTotalOpenSurveillancesByAcb(DateRange dateRange) {
+        List<CertifiedBodyStatistics> totals = surveillanceStatisticsDAO.getTotalOpenSurveillanceActivitiesByAcb(dateRange);
+        return totals;
     }
 
     @Transactional
