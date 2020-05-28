@@ -9,13 +9,13 @@ public class UploadActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess() {
-        return false;
+        return getResourcePermissions().isUserRoleAdmin()
+                || getResourcePermissions().isUserRoleAcbAdmin();
     }
 
     @Override
     public boolean hasAccess(Object obj) {
-        return getResourcePermissions().isUserRoleAdmin()
-                || getResourcePermissions().isUserRoleAcbAdmin();
+        return hasAccess();
     }
 
 }

@@ -4,29 +4,17 @@ import static org.quartz.JobKey.jobKey;
 import static org.quartz.TriggerBuilder.newTrigger;
 import static org.quartz.TriggerKey.triggerKey;
 
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
-import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,17 +26,13 @@ import org.quartz.Trigger;
 import org.quartz.TriggerKey;
 import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -100,7 +84,6 @@ import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
-import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AddressDTO;
@@ -173,7 +156,6 @@ import gov.healthit.chpl.dto.listing.pending.PendingTestTaskDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
-import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -182,10 +164,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CuresUpdateService;
-import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandler;
-import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFactory;
 import gov.healthit.chpl.util.AuthUtil;
-import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.Validator;
@@ -193,12 +172,6 @@ import gov.healthit.chpl.validation.listing.Validator;
 @Service("certifiedProductManager")
 public class CertifiedProductManager extends SecuredManager {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductManager.class);
-
-    @Value("${uploadErrorEmailRecipients}")
-    private String uploadErrorEmailRecipients;
-
-    @Value("${uploadErrorEmailSubject}")
-    private String uploadErrorEmailSubject;
 
     private ErrorMessageUtil msgUtil;
     private CertifiedProductDAO cpDao;
@@ -238,11 +211,9 @@ public class CertifiedProductManager extends SecuredManager {
     private ResourcePermissions resourcePermissions;
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
-    private CertifiedProductUploadHandlerFactory uploadHandlerFactory;
     private ActivityManager activityManager;
     private ListingValidatorFactory validatorFactory;
     private CuresUpdateService curesUpdateService;
-    private Environment env;
     private FF4j ff4j;
 
     private static final int PROD_CODE_LOC = 4;
@@ -277,9 +248,8 @@ public class CertifiedProductManager extends SecuredManager {
             FuzzyChoicesDAO fuzzyChoicesDao, ResourcePermissions resourcePermissions,
             CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
-            CertifiedProductUploadHandlerFactory uploadHandlerFactory,
             ActivityManager activityManager, ListingValidatorFactory validatorFactory,
-            CuresUpdateService curesUpdateService, Environment env, FF4j ff4j) {
+            CuresUpdateService curesUpdateService, FF4j ff4j) {
 
         this.msgUtil = msgUtil;
         this.cpDao = cpDao;
@@ -319,11 +289,9 @@ public class CertifiedProductManager extends SecuredManager {
         this.resourcePermissions = resourcePermissions;
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
-        this.uploadHandlerFactory = uploadHandlerFactory;
         this.activityManager = activityManager;
         this.validatorFactory = validatorFactory;
         this.curesUpdateService = curesUpdateService;
-        this.env = env;
         this.ff4j = ff4j;
     }
 
@@ -436,141 +404,6 @@ public class CertifiedProductManager extends SecuredManager {
         }
 
         return familyTree;
-    }
-
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).UPLOAD)")
-    @Transactional(readOnly = false)
-    public void upload(MultipartFile file)
-            throws ValidationException {
-        if (file.isEmpty()) {
-            throw new ValidationException(msgUtil.getMessage("upload.emptyFile"));
-        }
-
-        if (!file.getContentType().equalsIgnoreCase("text/csv")
-                && !file.getContentType().equalsIgnoreCase("application/vnd.ms-excel")) {
-            throw new ValidationException(msgUtil.getMessage("upload.notCSV"));
-        }
-
-        CertifiedProductUploadHandler uploadHandler = getUploadHandler(file);
-
-
-        List<PendingCertifiedProductDetails> uploadedProducts = new ArrayList<PendingCertifiedProductDetails>();
-//        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8));
-//                CSVParser parser = new CSVParser(reader, CSVFormat.EXCEL)) {
-//            List<CSVRecord> records = parser.getRecords();
-//            if (records.size() <= 1) {
-//                throw new ValidationException(
-//                        msgUtil.getMessage("listing.upload.emptyRows"));
-//            }
-
-            Set<String> handlerErrors = new HashSet<String>();
-            List<PendingCertifiedProductEntity> cpsToAdd = new ArrayList<PendingCertifiedProductEntity>();
-            // parse the entire file into groups of records, one group per product
-            CSVRecord heading = null;
-            Set<String> uniqueIdsFromFile = new HashSet<String>();
-            Set<String> duplicateIdsFromFile = new HashSet<String>();
-            List<CSVRecord> rows = new ArrayList<CSVRecord>();
-            for (int i = 0; i < records.size(); i++) {
-                CSVRecord currRecord = records.get(i);
-                if (heading == null) {
-                    heading = currRecord;
-                } else {
-                    if (!StringUtils.isEmpty(currRecord.get(0))) {
-                        String currUniqueId = currRecord.get(0);
-                        String currStatus = currRecord.get(1);
-
-                        if (currStatus.equalsIgnoreCase("NEW")) {
-                            if (!currUniqueId.contains("XXXX") && uniqueIdsFromFile.contains(currUniqueId)) {
-                                handlerErrors.add(msgUtil.getMessage("upload.duplicateUniqueIds", currUniqueId));
-                                duplicateIdsFromFile.add(currUniqueId);
-                            } else {
-                                uniqueIdsFromFile.add(currUniqueId);
-
-                                // parse the previous recordset
-                                if (rows.size() > 0) {
-                                    try {
-                                        CertifiedProductUploadHandler handler = uploadHandlerFactory.getHandler(heading,
-                                                rows);
-                                        if (handler.getUploadTemplateVersion() != null
-                                                && handler.getUploadTemplateVersion().getDeprecated()) {
-                                            responseHeaders.set(
-                                                    HttpHeaders.WARNING, "299 - \"Deprecated upload template\"");
-                                        }
-                                        PendingCertifiedProductEntity pendingCp = handler.handle();
-                                        cpsToAdd.add(pendingCp);
-                                    } catch (final InvalidArgumentsException ex) {
-                                        LOGGER.error("Failed uploading file " + file.getName(), ex);
-                                        handlerErrors.add(ex.getMessage());
-                                    } catch (final Exception ex) {
-                                        LOGGER.error("Failed uploading file " + file.getName(), ex);
-                                        handlerErrors.add(ex.getMessage());
-                                    }
-                                }
-                                rows.clear();
-                            }
-                        }
-
-                        if (!duplicateIdsFromFile.contains(currUniqueId)) {
-                            rows.add(currRecord);
-                        }
-                    }
-                }
-
-                // add the last object
-                if (i == records.size() - 1 && !rows.isEmpty()) {
-                    try {
-                        CertifiedProductUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
-                        if (handler.getUploadTemplateVersion() != null
-                                && handler.getUploadTemplateVersion().getDeprecated()) {
-                            responseHeaders.set(HttpHeaders.WARNING, "299 - \"Deprecated upload template\"");
-                        }
-                        PendingCertifiedProductEntity pendingCp = handler.handle();
-                        cpsToAdd.add(pendingCp);
-                    } catch (final InvalidArgumentsException ex) {
-                        LOGGER.error("Failed uploading file " + file.getName(), ex);
-                        handlerErrors.add(ex.getMessage());
-                    } catch (final Exception ex) {
-                        LOGGER.error("Failed uploading file " + file.getName(), ex);
-                        handlerErrors.add(ex.getMessage());
-                    }
-                }
-            }
-
-            if (handlerErrors.size() > 0) {
-                throw new ValidationException(handlerErrors, null);
-            }
-
-            Set<String> allErrors = new HashSet<String>();
-            for (PendingCertifiedProductEntity cpToAdd : cpsToAdd) {
-                if (cpToAdd.getErrorMessages() != null && cpToAdd.getErrorMessages().size() > 0) {
-                    allErrors.addAll(cpToAdd.getErrorMessages());
-                }
-            }
-            if (allErrors.size() > 0) {
-                throw new ValidationException(allErrors, null);
-            } else {
-                for (PendingCertifiedProductEntity cpToAdd : cpsToAdd) {
-                    try {
-                        PendingCertifiedProductDTO pendingCpDto = pcpManager.createOrReplace(cpToAdd);
-                        PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(pendingCpDto);
-                        uploadedProducts.add(details);
-                    } catch (EntityCreationException | EntityRetrievalException ex) {
-                        String error = "Error creating pending certified product " + cpToAdd.getUniqueId()
-                        + ". Error was: " + ex.getMessage();
-                        LOGGER.error(error);
-                        //send an email that something weird happened
-                        sendUploadError(file, ex);
-                        throw new ValidationException(error);
-                    }
-                }
-            }
-//        } catch (IOException ioEx) {
-//            LOGGER.error("Could not get input stream for uploaded file " + file.getName());
-//            throw new ValidationException(
-//                    msgUtil.getMessage("listing.upload.couldNotParse", file.getName()));
-//        }
-
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
@@ -2485,86 +2318,6 @@ public class CertifiedProductManager extends SecuredManager {
             scheduler.scheduleJob(qzTrigger);
         } catch (SchedulerException e) {
             LOGGER.error("Could not start Trigger Developer Ban", e);
-        }
-    }
-
-    private CertifiedProductUploadHandler getUploadHandler(MultipartFile file)
-            throws ValidationException, InvalidArgumentsException {
-        CSVRecord heading = null;
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8));
-                CSVParser parser = new CSVParser(reader, CSVFormat.EXCEL)) {
-            List<CSVRecord> records = parser.getRecords();
-            if (records.size() <= 1) {
-                throw new ValidationException(msgUtil.getMessage("listing.upload.emptyRows"));
-            }
-            if (records.size() > 0) {
-                heading = records.get(0);
-            }
-        } catch (IOException ioEx) {
-            LOGGER.error("Could not get input stream for uploaded file " + file.getName());
-            throw new ValidationException(
-                    msgUtil.getMessage("listing.upload.couldNotParse", file.getName()));
-        }
-        return uploadHandlerFactory.getHandler(heading);
-    }
-
-    /**
-     * Creates an email message to the configured recipients
-     * with configured subject and uses the stack trace as the
-     * email body. Creates a temporary file that is the uploaded
-     * CSV and attaches it to the email.
-     * @param file
-     * @param ex
-     */
-    private void sendUploadError(MultipartFile file, Exception ex) {
-        if (StringUtils.isEmpty(uploadErrorEmailRecipients)) {
-            return;
-        }
-        List<String> recipients = Arrays.asList(uploadErrorEmailRecipients.split(","));
-
-        //figure out the filename for the attachment
-        String originalFilename = file.getOriginalFilename();
-        int indexOfExtension = originalFilename.indexOf(".");
-        String filenameWithoutExtension = file.getOriginalFilename();
-        if (indexOfExtension >= 0) {
-            filenameWithoutExtension
-            = originalFilename.substring(0, indexOfExtension);
-        }
-        String extension = ".csv";
-        if (indexOfExtension >= 0) {
-            extension = originalFilename.substring(indexOfExtension);
-        }
-
-        //attach the file the user tried to upload
-        File temp = null;
-        List<File> attachments = null;
-        try {
-            temp = File.createTempFile(filenameWithoutExtension, extension);
-            file.transferTo(temp);
-            attachments = new ArrayList<File>();
-            attachments.add(temp);
-        } catch (IOException io) {
-            LOGGER.error("Could not create temporary file for attachment: " + io.getMessage(), io);
-        }
-
-        //create the email body
-        String htmlBody = "<p>Upload attempted at " + new Date()
-                + "<br/>Uploaded by " + AuthUtil.getUsername() + "</p>";
-        StringWriter writer = new StringWriter();
-        ex.printStackTrace(new PrintWriter(writer));
-        htmlBody += "<pre>" + writer.toString() + "</pre>";
-
-        //build and send the email
-        try {
-            EmailBuilder emailBuilder = new EmailBuilder(env);
-            emailBuilder.recipients(recipients)
-            .subject(uploadErrorEmailSubject)
-            .fileAttachments(attachments)
-            .htmlMessage(htmlBody)
-            .sendEmail();
-        } catch (MessagingException msgEx) {
-            LOGGER.error("Could not send email about failed listing upload.", msgEx);
         }
     }
 

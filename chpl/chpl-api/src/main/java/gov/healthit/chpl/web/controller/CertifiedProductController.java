@@ -1,9 +1,7 @@
 package gov.healthit.chpl.web.controller;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -13,9 +11,6 @@ import java.util.function.Function;
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +46,7 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMetadataDTO;
-import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
+import gov.healthit.chpl.exception.DeprecatedUploadTemplateException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -62,11 +57,10 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.manager.CertifiedProductUploadManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
-import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandler;
-import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFactory;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.FileUtils;
@@ -89,9 +83,9 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/certified_products")
 public class CertifiedProductController {
-    private static final Logger LOGGER = LogManager.getLogger(CertifiedProductController.class);
+    private static Logger LOGGER = LogManager.getLogger(CertifiedProductController.class);
 
-    private CertifiedProductUploadHandlerFactory uploadHandlerFactory;
+    private CertifiedProductUploadManager uploadManager;
     private CertifiedProductDetailsManager cpdManager;
     private CertifiedProductManager cpManager;
     private ResourcePermissions resourcePermissions;
@@ -104,30 +98,14 @@ public class CertifiedProductController {
     private ChplProductNumberUtil chplProductNumberUtil;
     private DeveloperManager developerManager;
 
-    /**
-     * Autowired constructor for dependency injection.
-     *
-     * @param uploadHandlerFactory
-     * @param cpdManager
-     * @param cpManager
-     * @param resourcePermissions
-     * @param pcpManager
-     * @param activityManager
-     * @param validatorFactory
-     * @param env
-     * @param msgUtil
-     * @param fileUtils
-     * @param chplProductNumberUtil
-     * @param developerManager
-     */
     @Autowired
-    public CertifiedProductController(final CertifiedProductUploadHandlerFactory uploadHandlerFactory,
-            final CertifiedProductDetailsManager cpdManager, final CertifiedProductManager cpManager,
-            final ResourcePermissions resourcePermissions, final PendingCertifiedProductManager pcpManager,
-            final ActivityManager activityManager, final ListingValidatorFactory validatorFactory,
-            final Environment env, final ErrorMessageUtil msgUtil, final FileUtils fileUtils,
-            final ChplProductNumberUtil chplProductNumberUtil, final DeveloperManager developerManager) {
-        this.uploadHandlerFactory = uploadHandlerFactory;
+    public CertifiedProductController(CertifiedProductUploadManager uploadManager,
+            CertifiedProductDetailsManager cpdManager, CertifiedProductManager cpManager,
+            ResourcePermissions resourcePermissions, PendingCertifiedProductManager pcpManager,
+            ActivityManager activityManager, ListingValidatorFactory validatorFactory,
+            Environment env, ErrorMessageUtil msgUtil, FileUtils fileUtils,
+            ChplProductNumberUtil chplProductNumberUtil, DeveloperManager developerManager) {
+        this.uploadManager = uploadManager;
         this.cpdManager = cpdManager;
         this.cpManager = cpManager;
         this.resourcePermissions = resourcePermissions;
@@ -157,8 +135,8 @@ public class CertifiedProductController {
                     + " every certified product is returned. Call the /details service for more information.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertifiedProduct> getCertifiedProductsByVersion(
-            @RequestParam(required = true) final Long versionId,
-            @RequestParam(required = false, defaultValue = "false") final boolean editable)
+            @RequestParam(required = true) Long versionId,
+            @RequestParam(required = false, defaultValue = "false") boolean editable)
                     throws EntityRetrievalException {
         List<CertifiedProduct> certifiedProductList = null;
 
@@ -184,7 +162,7 @@ public class CertifiedProductController {
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductById(
-            @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
+            @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
 
         CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetails(certifiedProductId);
         certifiedProduct = validateCertifiedProduct(certifiedProduct);
@@ -219,15 +197,15 @@ public class CertifiedProductController {
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumber(
-            @PathVariable("year") final String year,
-            @PathVariable("testingLab") final String testingLab,
-            @PathVariable("certBody") final String certBody,
-            @PathVariable("vendorCode") final String vendorCode,
-            @PathVariable("productCode") final String productCode,
-            @PathVariable("versionCode") final String versionCode,
-            @PathVariable("icsCode") final String icsCode,
-            @PathVariable("addlSoftwareCode") final String addlSoftwareCode,
-            @PathVariable("certDateCode") final String certDateCode) throws EntityRetrievalException  {
+            @PathVariable("year") String year,
+            @PathVariable("testingLab") String testingLab,
+            @PathVariable("certBody") String certBody,
+            @PathVariable("vendorCode") String vendorCode,
+            @PathVariable("productCode") String productCode,
+            @PathVariable("versionCode") String versionCode,
+            @PathVariable("icsCode") String icsCode,
+            @PathVariable("addlSoftwareCode") String addlSoftwareCode,
+            @PathVariable("certDateCode") String certDateCode) throws EntityRetrievalException  {
 
         String chplProductNumber =
                 chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode,
@@ -253,8 +231,8 @@ public class CertifiedProductController {
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumber2(
-            @PathVariable("chplPrefix") final String chplPrefix,
-            @PathVariable("identifier") final String identifier) throws EntityRetrievalException {
+            @PathVariable("chplPrefix") String chplPrefix,
+            @PathVariable("identifier") String identifier) throws EntityRetrievalException {
 
         String chplProductNumber = chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
 
@@ -275,7 +253,7 @@ public class CertifiedProductController {
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchBasicDetails getCertifiedProductByIdBasic(
-            @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
+            @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
 
         CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetailsBasic(certifiedProductId);
 
@@ -313,15 +291,15 @@ public class CertifiedProductController {
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody
     CertifiedProductSearchBasicDetails getCertifiedProductByChplProductNumberBasic(
-            @PathVariable("year") final String year,
-            @PathVariable("testingLab") final String testingLab,
-            @PathVariable("certBody") final String certBody,
-            @PathVariable("vendorCode") final String vendorCode,
-            @PathVariable("productCode") final String productCode,
-            @PathVariable("versionCode") final String versionCode,
-            @PathVariable("icsCode") final String icsCode,
-            @PathVariable("addlSoftwareCode") final String addlSoftwareCode,
-            @PathVariable("certDateCode") final String certDateCode) throws EntityRetrievalException  {
+            @PathVariable("year") String year,
+            @PathVariable("testingLab") String testingLab,
+            @PathVariable("certBody") String certBody,
+            @PathVariable("vendorCode") String vendorCode,
+            @PathVariable("productCode") String productCode,
+            @PathVariable("versionCode") String versionCode,
+            @PathVariable("icsCode") String icsCode,
+            @PathVariable("addlSoftwareCode") String addlSoftwareCode,
+            @PathVariable("certDateCode") String certDateCode) throws EntityRetrievalException  {
 
         String chplProductNumber =
                 chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode,
@@ -345,8 +323,8 @@ public class CertifiedProductController {
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchBasicDetails getCertifiedProductByChplProductNumberBasic2(
-            @PathVariable("chplPrefix") final String chplPrefix,
-            @PathVariable("identifier") final String identifier) throws EntityRetrievalException {
+            @PathVariable("chplPrefix") String chplPrefix,
+            @PathVariable("identifier") String identifier) throws EntityRetrievalException {
 
         String chplProductNumber = chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
 
@@ -362,7 +340,7 @@ public class CertifiedProductController {
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CQMResultDetailResults getCqmsByCertifiedProductId(
-            @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
+            @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
 
         CQMResultDetailResults results =
                 new CQMResultDetailResults(cpdManager.getCertifiedProductCqms(certifiedProductId));
@@ -381,15 +359,15 @@ public class CertifiedProductController {
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CQMResultDetailResults getCqmsByCertifiedProductId(
-            @PathVariable("year") final String year,
-            @PathVariable("testingLab") final String testingLab,
-            @PathVariable("certBody") final String certBody,
-            @PathVariable("vendorCode") final String vendorCode,
-            @PathVariable("productCode") final String productCode,
-            @PathVariable("versionCode") final String versionCode,
-            @PathVariable("icsCode") final String icsCode,
-            @PathVariable("addlSoftwareCode") final String addlSoftwareCode,
-            @PathVariable("certDateCode") final String certDateCode) throws EntityRetrievalException  {
+            @PathVariable("year") String year,
+            @PathVariable("testingLab") String testingLab,
+            @PathVariable("certBody") String certBody,
+            @PathVariable("vendorCode") String vendorCode,
+            @PathVariable("productCode") String productCode,
+            @PathVariable("versionCode") String versionCode,
+            @PathVariable("icsCode") String icsCode,
+            @PathVariable("addlSoftwareCode") String addlSoftwareCode,
+            @PathVariable("certDateCode") String certDateCode) throws EntityRetrievalException  {
 
         String chplProductNumber =
                 chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode,
@@ -409,8 +387,8 @@ public class CertifiedProductController {
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CQMResultDetailResults getCqmsByCertifiedProductId(
-            @PathVariable("chplPrefix") final String chplPrefix,
-            @PathVariable("identifier") final String identifier) throws EntityRetrievalException  {
+            @PathVariable("chplPrefix") String chplPrefix,
+            @PathVariable("identifier") String identifier) throws EntityRetrievalException  {
 
         String chplProductNumber =  chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
         CQMResultDetailResults results =
@@ -425,7 +403,7 @@ public class CertifiedProductController {
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertificationResults getCertificationResultsByCertifiedProductId(
-            @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
+            @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
 
         CertificationResults results =
                 new CertificationResults(cpdManager.getCertifiedProductCertificationResults(certifiedProductId));
@@ -451,15 +429,15 @@ public class CertifiedProductController {
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertificationResults getCertificationResultsByCertifiedProductId(
-            @PathVariable("year") final String year,
-            @PathVariable("testingLab") final String testingLab,
-            @PathVariable("certBody") final String certBody,
-            @PathVariable("vendorCode") final String vendorCode,
-            @PathVariable("productCode") final String productCode,
-            @PathVariable("versionCode") final String versionCode,
-            @PathVariable("icsCode") final String icsCode,
-            @PathVariable("addlSoftwareCode") final String addlSoftwareCode,
-            @PathVariable("certDateCode") final String certDateCode) throws EntityRetrievalException  {
+            @PathVariable("year") String year,
+            @PathVariable("testingLab") String testingLab,
+            @PathVariable("certBody") String certBody,
+            @PathVariable("vendorCode") String vendorCode,
+            @PathVariable("productCode") String productCode,
+            @PathVariable("versionCode") String versionCode,
+            @PathVariable("icsCode") String icsCode,
+            @PathVariable("addlSoftwareCode") String addlSoftwareCode,
+            @PathVariable("certDateCode") String certDateCode) throws EntityRetrievalException  {
 
         String chplProductNumber =
                 chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode,
@@ -480,8 +458,8 @@ public class CertifiedProductController {
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertificationResults getCertificationResultsByCertifiedProductId(
-            @PathVariable("chplPrefix") final String chplPrefix,
-            @PathVariable("identifier") final String identifier) throws EntityRetrievalException  {
+            @PathVariable("chplPrefix") String chplPrefix,
+            @PathVariable("identifier") String identifier) throws EntityRetrievalException  {
 
         String chplProductNumber = chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
 
@@ -500,7 +478,7 @@ public class CertifiedProductController {
     @ApiOperation(value = "Download all SED details that are certified to 170.315(g)(3).",
             notes = "Download a specific file that is generated overnight.")
     @RequestMapping(value = "/sed_details", method = RequestMethod.GET)
-    public void streamSEDDetailsDocumentContents(final HttpServletResponse response)
+    public void streamSEDDetailsDocumentContents(HttpServletResponse response)
             throws EntityRetrievalException, IOException {
         File downloadFile = fileUtils.getNewestFileMatchingName("^" + env.getProperty("SEDDownloadName") + "-.+\\.csv$");
         fileUtils.streamFileAsResponse(downloadFile, "text/csv", response);
@@ -518,7 +496,7 @@ public class CertifiedProductController {
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeById(
-            @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
+            @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
         List<IcsFamilyTreeNode> familyTree = cpManager.getIcsFamilyTree(certifiedProductId);
 
         return familyTree;
@@ -535,15 +513,15 @@ public class CertifiedProductController {
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeByChplProductNumber(
-            @PathVariable("year") final String year,
-            @PathVariable("testingLab") final String testingLab,
-            @PathVariable("certBody") final String certBody,
-            @PathVariable("vendorCode") final String vendorCode,
-            @PathVariable("productCode") final String productCode,
-            @PathVariable("versionCode") final String versionCode,
-            @PathVariable("icsCode") final String icsCode,
-            @PathVariable("addlSoftwareCode") final String addlSoftwareCode,
-            @PathVariable("certDateCode") final String certDateCode) throws EntityRetrievalException  {
+            @PathVariable("year") String year,
+            @PathVariable("testingLab") String testingLab,
+            @PathVariable("certBody") String certBody,
+            @PathVariable("vendorCode") String vendorCode,
+            @PathVariable("productCode") String productCode,
+            @PathVariable("versionCode") String versionCode,
+            @PathVariable("icsCode") String icsCode,
+            @PathVariable("addlSoftwareCode") String addlSoftwareCode,
+            @PathVariable("certDateCode") String certDateCode) throws EntityRetrievalException  {
 
         String chplProductNumber =
                 chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode,
@@ -561,8 +539,8 @@ public class CertifiedProductController {
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeByChplProductNumber(
-            @PathVariable("chplPrefix") final String chplPrefix,
-            @PathVariable("identifier") final String identifier) throws EntityRetrievalException  {
+            @PathVariable("chplPrefix") String chplPrefix,
+            @PathVariable("identifier") String identifier) throws EntityRetrievalException  {
 
         String chplProductNumber = chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
         List<IcsFamilyTreeNode> familyTree = cpManager.getIcsFamilyTree(chplProductNumber);
@@ -578,7 +556,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{certifiedProductId}", method = RequestMethod.PUT,
     produces = "application/json; charset=utf-8")
     public ResponseEntity<CertifiedProductSearchDetails> updateCertifiedProduct(
-            @RequestBody(required = true) final ListingUpdateRequest updateRequest)
+            @RequestBody(required = true) ListingUpdateRequest updateRequest)
                     throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
                     JsonProcessingException, IOException, ValidationException, MissingReasonException {
 
@@ -586,7 +564,7 @@ public class CertifiedProductController {
         return update(updateRequest);
     }
 
-    private ResponseEntity<CertifiedProductSearchDetails> update(final ListingUpdateRequest updateRequest)
+    private ResponseEntity<CertifiedProductSearchDetails> update(ListingUpdateRequest updateRequest)
             throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
             JsonProcessingException, IOException, ValidationException, MissingReasonException {
 
@@ -698,7 +676,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/pending/{pcpId}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody PendingCertifiedProductDetails getPendingCertifiedProductById(
-            @PathVariable("pcpId") final Long pcpId) throws EntityRetrievalException, EntityNotFoundException,
+            @PathVariable("pcpId") Long pcpId) throws EntityRetrievalException, EntityNotFoundException,
     AccessDeniedException, ObjectMissingValidationException {
         PendingCertifiedProductDetails details = pcpManager.getById(pcpId);
         if (details == null) {
@@ -718,7 +696,7 @@ public class CertifiedProductController {
                     + "and administrative authority on the ACB for each pending certified product is required.")
     @RequestMapping(value = "/pending/{pcpId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
-    public @ResponseBody String rejectPendingCertifiedProduct(@PathVariable("pcpId") final Long pcpId)
+    public @ResponseBody String rejectPendingCertifiedProduct(@PathVariable("pcpId") Long pcpId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, ObjectMissingValidationException {
         pcpManager.deletePendingCertifiedProduct(pcpId);
@@ -730,7 +708,7 @@ public class CertifiedProductController {
                     + " and administrative authority on the ACB for each pending certified product is required.")
     @RequestMapping(value = "/pending", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
-    public @ResponseBody String rejectPendingCertifiedProducts(@RequestBody final IdListContainer idList)
+    public @ResponseBody String rejectPendingCertifiedProducts(@RequestBody IdListContainer idList)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, InvalidArgumentsException, ObjectsMissingValidationException {
 
@@ -742,7 +720,7 @@ public class CertifiedProductController {
         for (Long pcpId : idList.getIds()) {
             try {
                 pcpManager.deletePendingCertifiedProduct(pcpId);
-            } catch (final ObjectMissingValidationException ex) {
+            } catch (ObjectMissingValidationException ex) {
                 possibleExceptions.getExceptions().add(ex);
             }
         }
@@ -765,7 +743,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/pending/{pcpId}/confirm", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProduct(
-            @RequestBody(required = true) final PendingCertifiedProductDetails pendingCp)
+            @RequestBody(required = true) PendingCertifiedProductDetails pendingCp)
                     throws InvalidArgumentsException, ValidationException,
                     EntityCreationException, EntityRetrievalException,
                     ObjectMissingValidationException, IOException {
@@ -774,7 +752,7 @@ public class CertifiedProductController {
     }
 
     private synchronized ResponseEntity<CertifiedProductSearchDetails> addPendingCertifiedProduct(
-            final PendingCertifiedProductDetails pendingCp) throws InvalidArgumentsException, ValidationException,
+            PendingCertifiedProductDetails pendingCp) throws InvalidArgumentsException, ValidationException,
     EntityCreationException, EntityRetrievalException, ObjectMissingValidationException,
     IOException {
 
@@ -821,135 +799,31 @@ public class CertifiedProductController {
                     + "and administrative authority on the ACB(s) specified in the file.")
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<PendingCertifiedProductResults> upload(@RequestParam("file") MultipartFile file)
-            throws ValidationException, MaxUploadSizeExceededException {
+            throws ValidationException, JsonProcessingException, InvalidArgumentsException, MaxUploadSizeExceededException {
+        List<PendingCertifiedProductDetails> uploadedListings = new ArrayList<PendingCertifiedProductDetails>();
+        Set<String> errorMessages = new HashSet<String>();
         HttpHeaders responseHeaders = new HttpHeaders();
-        List<PendingCertifiedProductDetails> uploadedProducts = new ArrayList<PendingCertifiedProductDetails>();
-
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), "UTF-8"));
-                CSVParser parser = new CSVParser(reader, CSVFormat.EXCEL)) {
-            List<CSVRecord> records = parser.getRecords();
-            if (records.size() <= 1) {
-                throw new ValidationException(
-                        msgUtil.getMessage("listing.upload.emptyRows"));
-            }
-
-            Set<String> handlerErrors = new HashSet<String>();
-            List<PendingCertifiedProductEntity> cpsToAdd = new ArrayList<PendingCertifiedProductEntity>();
-
-            // parse the entire file into groups of records, one group per
-            // product
-            CSVRecord heading = null;
-            Set<String> uniqueIdsFromFile = new HashSet<String>();
-            Set<String> duplicateIdsFromFile = new HashSet<String>();
-            List<CSVRecord> rows = new ArrayList<CSVRecord>();
-            for (int i = 0; i < records.size(); i++) {
-                CSVRecord currRecord = records.get(i);
-
-                if (heading == null) {
-                    heading = currRecord;
-                } else {
-                    if (!StringUtils.isEmpty(currRecord.get(0))) {
-                        String currUniqueId = currRecord.get(0);
-                        String currStatus = currRecord.get(1);
-
-                        if (currStatus.equalsIgnoreCase("NEW")) {
-                            if (!currUniqueId.contains("XXXX") && uniqueIdsFromFile.contains(currUniqueId)) {
-                                handlerErrors.add(msgUtil.getMessage("upload.duplicateUniqueIds", currUniqueId));
-                                duplicateIdsFromFile.add(currUniqueId);
-                            } else {
-                                uniqueIdsFromFile.add(currUniqueId);
-
-                                // parse the previous recordset
-                                if (rows.size() > 0) {
-                                    try {
-                                        CertifiedProductUploadHandler handler = uploadHandlerFactory.getHandler(heading,
-                                                rows);
-                                        if (handler.getUploadTemplateVersion() != null
-                                                && handler.getUploadTemplateVersion().getDeprecated()) {
-                                            responseHeaders.set(
-                                                    HttpHeaders.WARNING, "299 - \"Deprecated upload template\"");
-                                        }
-                                        PendingCertifiedProductEntity pendingCp = handler.handle();
-                                        cpsToAdd.add(pendingCp);
-                                    } catch (final InvalidArgumentsException ex) {
-                                        LOGGER.error("Failed uploading file " + file.getName(), ex);
-                                        handlerErrors.add(ex.getMessage());
-                                    } catch (final Exception ex) {
-                                        LOGGER.error("Failed uploading file " + file.getName(), ex);
-                                        handlerErrors.add(ex.getMessage());
-                                    }
-                                }
-                                rows.clear();
-                            }
-                        }
-
-                        if (!duplicateIdsFromFile.contains(currUniqueId)) {
-                            rows.add(currRecord);
-                        }
-                    }
-                }
-
-                // add the last object
-                if (i == records.size() - 1 && !rows.isEmpty()) {
-                    try {
-                        CertifiedProductUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
-                        if (handler.getUploadTemplateVersion() != null
-                                && handler.getUploadTemplateVersion().getDeprecated()) {
-                            responseHeaders.set(HttpHeaders.WARNING, "299 - \"Deprecated upload template\"");
-                        }
-                        PendingCertifiedProductEntity pendingCp = handler.handle();
-                        cpsToAdd.add(pendingCp);
-                    } catch (final InvalidArgumentsException ex) {
-                        LOGGER.error("Failed uploading file " + file.getName(), ex);
-                        handlerErrors.add(ex.getMessage());
-                    } catch (final Exception ex) {
-                        LOGGER.error("Failed uploading file " + file.getName(), ex);
-                        handlerErrors.add(ex.getMessage());
-                    }
-                }
-            }
-
-            if (handlerErrors.size() > 0) {
-                throw new ValidationException(handlerErrors, null);
-            }
-
-            Set<String> allErrors = new HashSet<String>();
-            for (PendingCertifiedProductEntity cpToAdd : cpsToAdd) {
-                if (cpToAdd.getErrorMessages() != null && cpToAdd.getErrorMessages().size() > 0) {
-                    allErrors.addAll(cpToAdd.getErrorMessages());
-                }
-            }
-            if (allErrors.size() > 0) {
-                throw new ValidationException(allErrors, null);
-            } else {
-                for (PendingCertifiedProductEntity cpToAdd : cpsToAdd) {
-                    try {
-                        PendingCertifiedProductDTO pendingCpDto = pcpManager.createOrReplace(cpToAdd);
-                        PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(pendingCpDto);
-                        uploadedProducts.add(details);
-                    } catch (final EntityCreationException | EntityRetrievalException ex) {
-                        String error = "Error creating pending certified product " + cpToAdd.getUniqueId()
-                        + ". Error was: " + ex.getMessage();
-                        LOGGER.error(error);
-                        //send an email to the team that something weird happened
-                        sendUploadError(file, ex);
-                        throw new ValidationException(error);
-                    }
-                }
-            }
-        } catch (final IOException ioEx) {
-            LOGGER.error("Could not get input stream for uploaded file " + file.getName());
-            throw new ValidationException(
-                    msgUtil.getMessage("listing.upload.couldNotParse", file.getName()));
+        try {
+            uploadedListings = uploadManager.upload(file);
+        } catch (DeprecatedUploadTemplateException dep) {
+            responseHeaders.set(
+                    HttpHeaders.WARNING, "299 - \"Deprecated upload template\"");
+        } catch (ValidationException e) {
+            errorMessages.addAll(e.getErrorMessages());
+        } catch (Exception e) {
+            errorMessages.add(e.getMessage());
         }
 
+        if (errorMessages.size() > 0) {
+            throw new ValidationException(errorMessages);
+        }
         PendingCertifiedProductResults results = new PendingCertifiedProductResults();
-        results.getPendingCertifiedProducts().addAll(uploadedProducts);
+        results.getPendingCertifiedProducts().addAll(uploadedListings);
         return new ResponseEntity<PendingCertifiedProductResults>(results, responseHeaders, HttpStatus.OK);
     }
 
     private CertifiedProductSearchDetails validateCertifiedProduct(
-            final CertifiedProductSearchDetails certifiedProduct) {
+            CertifiedProductSearchDetails certifiedProduct) {
         Validator validator = validatorFactory.getValidator(certifiedProduct);
         if (validator != null) {
             validator.validate(certifiedProduct);
