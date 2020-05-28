@@ -10,17 +10,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.access.AccessDeniedException;
 
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.product.SplitActionPermissions;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class SplitActionPermissionsTest extends ActionPermissionsBaseTest {
-
+    @Mock
+    private ErrorMessageUtil msgUtil;
     @Mock
     private ResourcePermissions resourcePermissions;
-
     @InjectMocks
     private SplitActionPermissions permissions;
 
@@ -29,6 +31,9 @@ public class SplitActionPermissionsTest extends ActionPermissionsBaseTest {
         MockitoAnnotations.initMocks(this);
 
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(msgUtil.getMessage(
+                ArgumentMatchers.eq("product.split.notAllowedMultipleAcbs"),
+                ArgumentMatchers.any())).thenReturn("AnyMessage1");
     }
 
     @Override
@@ -50,7 +55,7 @@ public class SplitActionPermissionsTest extends ActionPermissionsBaseTest {
     }
 
     @Override
-    @Test
+    @Test(expected = AccessDeniedException.class)
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
 
@@ -68,14 +73,15 @@ public class SplitActionPermissionsTest extends ActionPermissionsBaseTest {
         // User has access to associated certified products
         Mockito.when(resourcePermissions.isDeveloperActive(ArgumentMatchers.anyLong())).thenReturn(true);
         Mockito.doReturn(true).when(spyPermissions)
-                .doesCurrentUserHaveAccessToAllOfDevelopersListings(ArgumentMatchers.anyLong());
+                .doesCurrentUserHaveAccessToAllOfDevelopersListings(ArgumentMatchers.anyLong(),
+                        ArgumentMatchers.any());
         assertTrue(spyPermissions.hasAccess(dto));
 
         // User does not have access to associated certified products
         Mockito.when(resourcePermissions.isDeveloperActive(ArgumentMatchers.anyLong())).thenReturn(true);
         Mockito.doReturn(false).when(spyPermissions)
-                .doesCurrentUserHaveAccessToAllOfDevelopersListings(ArgumentMatchers.anyLong());
-        assertFalse(spyPermissions.hasAccess(dto));
+                .doesCurrentUserHaveAccessToAllOfDevelopersListings(ArgumentMatchers.anyLong(), ArgumentMatchers.any());
+        spyPermissions.hasAccess(dto);
     }
 
     @Override
