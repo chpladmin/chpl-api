@@ -2,6 +2,7 @@ package gov.healthit.chpl.permissions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
@@ -39,6 +40,8 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class ResourcePermissions {
+    private static final String ROLE_ADMIN = "ROLE_ADMIN";
+
     private PermissionEvaluator permissionEvaluator;
     private UserCertificationBodyMapDAO userCertificationBodyMapDAO;
     private UserTestingLabMapDAO userTestingLabMapDAO;
@@ -301,16 +304,18 @@ public class ResourcePermissions {
      * Onc can access all users. Acb can access any other ROLE_ACB user who is also on their ACB. Atl can access any
      * other ROLE_ATL user who is also on their ATL. Developer Admin can access any other ROLE_DEVELOPER user who is
      * also on their developer. All users can access themselves.
-     * 
+     *
      * @param user
      *            user to check permissions on
      * @return
      */
     @Transactional(readOnly = true)
     public boolean hasPermissionOnUser(UserDTO user) {
-        if (isUserRoleAdmin() || isUserRoleOnc()
-                || permissionEvaluator.hasPermission(AuthUtil.getCurrentUser(), user, BasePermission.ADMINISTRATION)) {
+
+        if (isUserRoleAdmin() || doesCurrentUserHaveExplicitAdminToSubject(user)) {
             return true;
+        } else if (isUserRoleOnc()) {
+            return !getRoleByUserId(user.getId()).getAuthority().equalsIgnoreCase(ROLE_ADMIN);
         } else if (isUserRoleAcbAdmin()) {
             // is the user being checked on any of the same ACB(s) that the
             // current user is on?
@@ -349,6 +354,14 @@ public class ResourcePermissions {
             }
         }
         return false;
+    }
+
+    private boolean doesCurrentUserHaveExplicitAdminToSubject(UserDTO subject) {
+        if (Objects.nonNull(AuthUtil.getCurrentUser())) {
+            return permissionEvaluator.hasPermission(AuthUtil.getCurrentUser(), subject, BasePermission.ADMINISTRATION);
+        } else {
+            return false;
+        }
     }
 
     public boolean isUserRoleAdmin() {
