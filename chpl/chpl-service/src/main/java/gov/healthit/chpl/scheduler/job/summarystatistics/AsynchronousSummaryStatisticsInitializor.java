@@ -179,6 +179,10 @@ public class AsynchronousSummaryStatisticsInitializor {
             futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.CURES), executorService)
                     .thenAccept(result -> stats.setUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(result)));
 
+            //Total # of Unique Products with Active Listings (Regardless of Edition)
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getTotalCPsActiveListings(null), executorService)
+                    .thenAccept(result -> stats.setTotalCPsActiveListings(result)));
+
             /////////////////////////////////////////////////////////////////////////////////////
             //Listing Statistics
             /////////////////////////////////////////////////////////////////////////////////////
@@ -218,11 +222,17 @@ public class AsynchronousSummaryStatisticsInitializor {
             /////////////////////////////////////////////////////////////////////////////////////
             // Surveillance Statistics
             /////////////////////////////////////////////////////////////////////////////////////
-            //Open Surveillance Activities
+            // Total # of Surveillance Activities
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getTotalSurveillanceActivities(null), executorService)
+                    .thenAccept(result -> stats.setTotalSurveillanceActivities(result)));
+            // Open Surveillance Activities
             futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getTotalOpenSurveillanceActivities(null), executorService)
                     .thenAccept(result -> stats.setTotalOpenSurveillanceActivities(result)));
             futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getTotalOpenSurveillancesByAcb(null), executorService)
                     .thenAccept(result -> stats.setTotalOpenSurveillanceActivitiesByAcb(result)));
+            // Closed Surveillance Activities
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getTotalClosedSurveillanceActivities(null), executorService)
+                    .thenAccept(result -> stats.setTotalClosedSurveillanceActivities(result)));
             // Average Duration of Closed Surveillance (in days)
             futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getAverageTimeToCloseSurveillance(), executorService)
                     .thenAccept(result -> stats.setAverageTimeToCloseSurveillance(result)));
@@ -230,11 +240,17 @@ public class AsynchronousSummaryStatisticsInitializor {
             /////////////////////////////////////////////////////////////////////////////////////
             // Non-Conformity Statistics
             /////////////////////////////////////////////////////////////////////////////////////
+            // Total # of NCs
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getTotalNonConformities(null), executorService)
+                    .thenAccept(result -> stats.setTotalNonConformities(result)));
             // Open NCs
             futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getTotalOpenNonconformities(null), executorService)
                     .thenAccept(result -> stats.setTotalOpenNonconformities(result)));
             futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getTotalOpenNonconformitiesByAcb(null), executorService)
                     .thenAccept(result -> stats.setTotalOpenNonconformitiesByAcb(result)));
+            // Closed NCs
+            futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getTotalClosedNonconformities(null), executorService)
+                    .thenAccept(result -> stats.setTotalClosedNonconformities(result)));
             // Average Time to Assess Conformity (in days)
             futures.add(CompletableFuture.supplyAsync(() -> asyncStats.getAverageTimeToAssessConformity(), executorService)
                     .thenAccept(result -> stats.setAverageTimeToAssessConformity(result)));

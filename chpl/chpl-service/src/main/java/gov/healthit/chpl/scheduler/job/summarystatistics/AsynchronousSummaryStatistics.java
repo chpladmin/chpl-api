@@ -238,6 +238,16 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
+    //TODO: need to fix the above method
+    @Transactional
+    public Long getTotalCPsActiveListings(DateRange dateRange) {
+        List<String> activeStatuses = new ArrayList<String>();
+        activeStatuses.add(CertificationStatusType.Active.getName().toUpperCase());
+        Long total = listingStatisticsDAO
+                .getTotalUniqueProductsByEditionAndStatus(dateRange, null, activeStatuses);
+        return total;
+    }
+
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<Long> getTotalListings(ListingStatisticsDAO listingStatisticsDAO,
@@ -341,6 +351,13 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
+    //TODO: need to fix the above method
+    @Transactional
+    public Long getTotalSurveillanceActivities(DateRange dateRange) {
+        Long total = surveillanceStatisticsDAO.getTotalSurveillanceActivities(dateRange);
+        return total;
+    }
+
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<Long> getTotalOpenSurveillanceActivities(SurveillanceStatisticsDAO surveillanceStatisticsDAO,
@@ -362,6 +379,13 @@ public class AsynchronousSummaryStatistics {
             DateRange dateRange) {
         Long total = surveillanceStatisticsDAO.getTotalClosedSurveillanceActivities(dateRange);
         return new AsyncResult<Long>(total);
+    }
+
+    //TODO: Need to fix the method above
+    @Transactional
+    public Long getTotalClosedSurveillanceActivities(DateRange dateRange) {
+        Long total = surveillanceStatisticsDAO.getTotalClosedSurveillanceActivities(dateRange);
+        return total;
     }
 
     @Transactional
@@ -387,6 +411,13 @@ public class AsynchronousSummaryStatistics {
         return new AsyncResult<Long>(total);
     }
 
+    //TODO: need to fix the above method
+    @Transactional
+    public Long getTotalNonConformities(DateRange dateRange) {
+        Long total = surveillanceStatisticsDAO.getTotalNonConformities(dateRange);
+        return total;
+    }
+
     @Async("jobAsyncDataExecutor")
     @Transactional
     public Future<Long> getTotalOpenNonconformities(SurveillanceStatisticsDAO surveillanceStatisticsDAO,
@@ -408,6 +439,13 @@ public class AsynchronousSummaryStatistics {
             DateRange dateRange) {
         Long total = surveillanceStatisticsDAO.getTotalClosedNonconformities(dateRange);
         return new AsyncResult<Long>(total);
+    }
+
+    //TODO Need to fix method above
+    @Transactional
+    public Long getTotalClosedNonconformities(DateRange dateRange) {
+        Long total = surveillanceStatisticsDAO.getTotalClosedNonconformities(dateRange);
+        return total;
     }
 
     @Async("jobAsyncDataExecutor")
