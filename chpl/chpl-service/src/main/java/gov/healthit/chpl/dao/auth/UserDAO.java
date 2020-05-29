@@ -20,7 +20,9 @@ import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.UserMapper;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Repository(value = "userDAO")
 public class UserDAO extends BaseDAOImpl {
 
@@ -33,7 +35,6 @@ public class UserDAO extends BaseDAOImpl {
 
     @Transactional
     public UserDTO create(UserDTO user, String encodedPassword) throws UserCreationException {
-
         UserEntity userEntity = null;
         try {
             userEntity = getEntityByName(user.getSubjectName());
@@ -84,7 +85,6 @@ public class UserDAO extends BaseDAOImpl {
 
     @Transactional
     public UserDTO update(UserDTO user) throws UserRetrievalException {
-
         UserEntity userEntity = getEntityByName(user.getSubjectName());
         userEntity.setFailedLoginCount(user.getFailedLoginCount());
         userEntity.getContact().setEmail(user.getEmail());
@@ -199,7 +199,6 @@ public class UserDAO extends BaseDAOImpl {
     }
 
     private List<UserEntity> getAllEntities() {
-
         List<UserEntity> result = entityManager.createQuery("from UserEntity u "
                 + "JOIN FETCH u.contact "
                 + "JOIN FETCH u.permission "
@@ -207,7 +206,6 @@ public class UserDAO extends BaseDAOImpl {
 
         return result;
     }
-
 
     private UserEntity getEntityById(Long userId) throws UserRetrievalException {
         Query query = entityManager.createQuery("from UserEntity u "
@@ -253,7 +251,6 @@ public class UserDAO extends BaseDAOImpl {
     }
 
     public UserDTO getById(Long userId) throws UserRetrievalException {
-
         UserEntity userEntity = this.getEntityById(userId);
         if (userEntity == null) {
             return null;
@@ -286,14 +283,13 @@ public class UserDAO extends BaseDAOImpl {
         }
         return results;
     }
+
     @Transactional
     public void updatePassword(String uname, String encodedPassword) throws UserRetrievalException {
-
         UserEntity userEntity = this.getEntityByName(uname);
         userEntity.setPassword(encodedPassword);
         userEntity.setPasswordResetRequired(false);
         super.update(userEntity);
-
     }
 
     @Transactional
@@ -301,16 +297,13 @@ public class UserDAO extends BaseDAOImpl {
         UserEntity userEntity = this.getEntityByName(uname);
         userEntity.setFailedLoginCount(failedLoginCount);
         super.update(userEntity);
-
     }
 
-
     @Transactional
-    public void updateAccountLockedStatus(final String uname, final boolean locked) throws UserRetrievalException {
+    public void updateAccountLockedStatus(String uname, boolean locked) throws UserRetrievalException {
         UserEntity userEntity = this.getEntityByName(uname);
         userEntity.setAccountLocked(locked);
         super.update(userEntity);
-
     }
 
     public String getEncodedPassword(UserDTO user) throws UserRetrievalException {
