@@ -20,7 +20,7 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
-public final class CertifiedProductUploadHandlerFactory {
+public class CertifiedProductUploadHandlerFactory {
     private UploadTemplateVersionDAO templateVersionDao;
     private CertifiedProductHandler2014Version1 handler2014Version1;
     private CertifiedProductHandler2014Version2 handler2014Version2;
@@ -33,7 +33,7 @@ public final class CertifiedProductUploadHandlerFactory {
 
     @Autowired
     public CertifiedProductUploadHandlerFactory(
-            final UploadTemplateVersionDAO templateVersionDao,
+            UploadTemplateVersionDAO templateVersionDao,
             @Qualifier("certifiedProductHandler2014Version1") CertifiedProductHandler2014Version1 handler2014Version1,
             @Qualifier("certifiedProductHandler2014Version2") CertifiedProductHandler2014Version2 handler2014Version2,
             @Qualifier("certifiedProductHandler2015Version1") CertifiedProductHandler2015Version1 handler2015Version1,

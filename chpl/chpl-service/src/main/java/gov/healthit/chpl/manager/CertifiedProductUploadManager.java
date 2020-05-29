@@ -198,6 +198,7 @@ public class CertifiedProductUploadManager extends SecuredManager {
                     if (!currUniqueId.contains("XXXX") && uniqueIds.contains(currUniqueId)) {
                         duplicateErrors.add(msgUtil.getMessage("upload.duplicateUniqueIds", currUniqueId));
                     }
+                    uniqueIds.add(currUniqueId);
                 }
             }
         }
