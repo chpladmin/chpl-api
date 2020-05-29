@@ -92,7 +92,7 @@ public class AuthenticationManager {
                 throw new BadCredentialsException("Bad username and password combination.");
             }
         } else {
-            throw new BadCredentialsException("There is no CHPL user with name " + credentials.getUserName());
+            throw new BadCredentialsException("Bad username and password combination.");
         }
     }
 
