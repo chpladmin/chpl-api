@@ -45,7 +45,6 @@ public class AuthenticationManager {
         this.userDetailsChecker = userDetailsChecker;
     }
 
-    @Transactional
     public String authenticate(LoginCredentials credentials)
             throws JWTCreationException, UserRetrievalException {
 
