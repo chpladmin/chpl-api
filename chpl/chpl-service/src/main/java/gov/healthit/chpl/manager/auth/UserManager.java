@@ -124,6 +124,9 @@ public class UserManager extends SecuredManager {
                 .title(user.getTitle())
                 .lastLoggedInDate(before.getLastLoggedInDate())
                 .build();
+        if (before.isAccountLocked() && !user.getAccountLocked()) { //unlocking locked users needs to reset failed login count
+            toUpdate.setFailedLoginCount(0);
+        }
         return update(toUpdate);
     }
 
