@@ -57,7 +57,7 @@ public class AuthenticationManager {
         return jwt;
     }
 
-    public UserDTO getUser(final LoginCredentials credentials)
+    public UserDTO getUser(LoginCredentials credentials)
             throws BadCredentialsException, AccountStatusException, UserRetrievalException {
         UserDTO user = getUserByName(credentials.getUserName());
 
@@ -97,11 +97,11 @@ public class AuthenticationManager {
         }
     }
 
-    protected boolean checkPassword(final String rawPassword, final String encodedPassword) {
+    private boolean checkPassword(String rawPassword, String encodedPassword) {
         return bCryptPasswordEncoder.matches(rawPassword, encodedPassword);
     }
 
-    public String getJWT(final UserDTO user) throws JWTCreationException {
+    public String getJWT(UserDTO user) throws JWTCreationException {
         String jwt = null;
 
         Map<String, String> stringClaims = new HashMap<String, String>();
@@ -137,7 +137,7 @@ public class AuthenticationManager {
     }
 
     @Transactional
-    public String getJWT(final LoginCredentials credentials) throws JWTCreationException {
+    public String getJWT(LoginCredentials credentials) throws JWTCreationException {
         String jwt = null;
         UserDTO user = null;
 
@@ -157,12 +157,12 @@ public class AuthenticationManager {
 
     }
 
-    private UserDTO getUserByName(final String userName) throws UserRetrievalException {
+    private UserDTO getUserByName(String userName) throws UserRetrievalException {
         UserDTO user = userDAO.getByName(userName);
         return user;
     }
 
-    private void updateFailedLogins(final UserDTO userToUpdate) throws UserRetrievalException, UserManagementException {
+    private void updateFailedLogins(UserDTO userToUpdate) throws UserRetrievalException, UserManagementException {
         try {
             userManager.updateFailedLoginCount(userToUpdate);
         } catch (Exception ex) {
@@ -173,7 +173,7 @@ public class AuthenticationManager {
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).USER_PERMISSIONS, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).IMPERSONATE_USER, #username)")
-    public String impersonateUser(final String username)
+    public String impersonateUser(String username)
             throws UserRetrievalException, JWTCreationException, UserManagementException {
         JWTAuthenticatedUser user = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
         if (user.getImpersonatingUser() != null) {
@@ -186,7 +186,7 @@ public class AuthenticationManager {
         return getJWT(impersonatedUser);
     }
 
-    public String unimpersonateUser(final User user) throws JWTCreationException, UserRetrievalException {
+    public String unimpersonateUser(User user) throws JWTCreationException, UserRetrievalException {
         return getJWT(getUserByName(user.getSubjectName()));
     }
 }

@@ -30,7 +30,7 @@ import lombok.Data;
 // for the user that were already marked deleted any time the user "delete"
 // column is
 // included in an update statement (even if its value hasn't changed).
-@org.hibernate.annotations.Entity(dynamicUpdate = true)
+@org.hibernate.annotations.DynamicUpdate
 public class UserEntity {
     private static final long serialVersionUID = -5792083881155731413L;
 
