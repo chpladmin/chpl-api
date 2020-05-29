@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nulabinc.zxcvbn.Strength;
 
-import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
@@ -36,6 +35,7 @@ import gov.healthit.chpl.exception.JWTCreationException;
 import gov.healthit.chpl.exception.JWTValidationException;
 import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.manager.auth.AuthenticationManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.EmailBuilder;
@@ -43,11 +43,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import springfox.documentation.annotations.ApiIgnore;
 
-/**
- * CHPL Authentication controller.
- * @author alarned
- *
- */
 @Api(value = "auth")
 @RestController
 @RequestMapping("/auth")
@@ -55,7 +50,7 @@ public class AuthenticationController {
     private static final Logger LOGGER = LogManager.getLogger(AuthenticationController.class);
 
     @Autowired
-    private Authenticator authenticator;
+    private AuthenticationManager authenticationManager;
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -89,7 +84,7 @@ public class AuthenticationController {
     public String authenticateJSON(@RequestBody final LoginCredentials credentials)
             throws JWTCreationException, UserRetrievalException {
 
-        String jwt = authenticator.authenticate(credentials);
+        String jwt = authenticationManager.authenticate(credentials);
         String jwtJSON = "{\"token\": \"" + jwt + "\"}";
         return jwtJSON;
     }
@@ -105,7 +100,7 @@ public class AuthenticationController {
     produces = "application/json; charset=utf-8")
     public String keepAlive() throws JWTCreationException, UserRetrievalException {
 
-        String jwt = authenticator.refreshJWT();
+        String jwt = authenticationManager.refreshJWT();
 
         String jwtJSON = "{\"token\": \"" + jwt + "\"}";
 
@@ -178,7 +173,7 @@ public class AuthenticationController {
         UpdatePasswordResponse response = new UpdatePasswordResponse();
 
         // get the user trying to change their password
-        UserDTO currUser = authenticator.getUser(request.getLoginCredentials());
+        UserDTO currUser = authenticationManager.getUser(request.getLoginCredentials());
         if (currUser == null) {
             throw new UserRetrievalException("Cannot update password; bad username or password");
         }
@@ -204,7 +199,7 @@ public class AuthenticationController {
         if (!oldPasswordMatches) {
             throw new UserRetrievalException("The provided old password does not match the database.");
         } else {
-            String jwt = authenticator.getJWT(currUser);
+            String jwt = authenticationManager.getJWT(currUser);
             User authenticatedUser = userConverter.getAuthenticatedUser(jwt);
             SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
             userManager.updateUserPassword(currUser.getSubjectName(), request.getNewPassword());
@@ -280,7 +275,7 @@ public class AuthenticationController {
             @RequestParam(value = "username", required = true) final String username)
                     throws UserRetrievalException, JWTCreationException, UserManagementException, JWTValidationException {
 
-        String jwt = authenticator.impersonateUser(username);
+        String jwt = authenticationManager.impersonateUser(username);
         String jwtJSON = "{\"token\": \"" + jwt + "\"}";
         return jwtJSON;
     }
@@ -291,7 +286,7 @@ public class AuthenticationController {
     public String unimpersonateUser(@RequestHeader(value = "Authorization", required = true) final String userJwt)
             throws JWTValidationException, JWTCreationException, UserRetrievalException {
         User user = userConverter.getImpersonatingUser(userJwt.split(" ")[1]);
-        String jwt = authenticator.unimpersonateUser(user);
+        String jwt = authenticationManager.unimpersonateUser(user);
         String jwtJSON = "{\"token\": \"" + jwt + "\"}";
         return jwtJSON;
     }

@@ -29,7 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.FeatureList;
-import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
@@ -52,6 +51,7 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.InvitationManager;
+import gov.healthit.chpl.manager.auth.AuthenticationManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.EmailBuilder;
@@ -70,7 +70,7 @@ public class UserManagementController {
 
     private UserManager userManager;
     private InvitationManager invitationManager;
-    private Authenticator authenticator;
+    private AuthenticationManager authenticationManager;
     private ActivityManager activityManager;
     private FF4j ff4j;
     private Environment env;
@@ -78,10 +78,12 @@ public class UserManagementController {
 
 
     @Autowired
-    public UserManagementController(UserManager userManager, InvitationManager invitationManager, Authenticator authenticator, ActivityManager activityManager, FF4j ff4j, Environment env, ErrorMessageUtil errorMessageUtil) {
+    public UserManagementController(UserManager userManager, InvitationManager invitationManager,
+            AuthenticationManager authenticationManager, ActivityManager activityManager, FF4j ff4j,
+            Environment env, ErrorMessageUtil errorMessageUtil) {
         this.userManager = userManager;
         this.invitationManager = invitationManager;
-        this.authenticator = authenticator;
+        this.authenticationManager = authenticationManager;
         this.activityManager = activityManager;
         this.ff4j = ff4j;
         this.env = env;
@@ -230,8 +232,8 @@ public class UserManagementController {
 
         // Log the user in, if they are not logged in
         if (Objects.isNull(loggedInUser)) {
-            authenticator.authenticate(credentials);
-            UserDTO user = authenticator.getUser(credentials);
+            authenticationManager.authenticate(credentials);
+            UserDTO user = authenticationManager.getUser(credentials);
             Authentication invitedUserAuthenticator = AuthUtil.getInvitedUserAuthenticator(user.getId());
             SecurityContextHolder.getContext().setAuthentication(invitedUserAuthenticator);
             loggedInUser = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
@@ -243,7 +245,7 @@ public class UserManagementController {
         }
         invitationManager.updateUserFromInvitation(new UserInvitationDTO(userToUpdate, invitation));
         UserDTO updatedUser = userManager.getById(userToUpdate.getId());
-        return "{\"token\": \"" + authenticator.getJWT(updatedUser) + "\"}";
+        return "{\"token\": \"" + authenticationManager.getJWT(updatedUser) + "\"}";
     }
 
     @ApiOperation(value = "Invite a user to the CHPL.",
