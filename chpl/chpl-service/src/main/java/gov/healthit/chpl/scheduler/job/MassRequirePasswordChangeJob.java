@@ -2,8 +2,6 @@ package gov.healthit.chpl.scheduler.job;
 
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.quartz.InterruptableJob;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -16,7 +14,6 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
@@ -27,23 +24,19 @@ import gov.healthit.chpl.exception.JWTCreationException;
 import gov.healthit.chpl.exception.JWTValidationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.auth.AuthenticationManager;
 import gov.healthit.chpl.manager.auth.UserManager;
+import lombok.extern.log4j.Log4j2;
 
-/**
- * Quartz job to require all non-deleted users, except for Admin, to change their password on next login.
- * 
- * @author alarned
- *
- */
+@Log4j2
 public class MassRequirePasswordChangeJob extends QuartzJob implements InterruptableJob {
-    private static final Logger LOGGER = LogManager.getLogger("massRequirePasswordChangeJobLogger");
     private boolean interrupted;
 
     @Autowired
     private UserManager userManager;
 
     @Autowired
-    private Authenticator authenticator;
+    private AuthenticationManager authenticationManager;
 
     @Autowired
     private JWTUserConverter userConverter;
@@ -60,11 +53,11 @@ public class MassRequirePasswordChangeJob extends QuartzJob implements Interrupt
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
         try {
-            UserDTO actor = authenticator.getUser(
+            UserDTO actor = authenticationManager.getUser(
                     new LoginCredentials(jobContext.getMergedJobDataMap().getString("username"),
                             jobContext.getMergedJobDataMap().getString("password")));
 
-            String jwt = authenticator.getJWT(actor);
+            String jwt = authenticationManager.getJWT(actor);
             User authenticatedUser = userConverter.getAuthenticatedUser(jwt);
             SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
             List<UserDTO> allUsers = userManager.getAll();
