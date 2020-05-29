@@ -24,7 +24,6 @@ import com.nulabinc.zxcvbn.Strength;
 import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
 import gov.healthit.chpl.auth.user.User;
-import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.ResetPasswordRequest;
 import gov.healthit.chpl.domain.auth.UpdateExpiredPasswordRequest;
@@ -70,9 +69,6 @@ public class AuthenticationController {
     @Autowired
     private Environment env;
 
-    @Autowired
-    private UserDAO userDAO;
-
     // TODO: Create emergency "BUMP TOKENS" method which invalidates all active
     // tokens.
 
@@ -93,14 +89,8 @@ public class AuthenticationController {
     public String authenticateJSON(@RequestBody final LoginCredentials credentials)
             throws JWTCreationException, UserRetrievalException {
 
-        String jwt = null;
-        jwt = authenticator.getJWT(credentials);
-        UserDTO user = authenticator.getUser(credentials);
-        if (user != null && user.getPasswordResetRequired()) {
-            throw new UserRetrievalException("The user is required to change their password on next log in.");
-        }
+        String jwt = authenticator.authenticate(credentials);
         String jwtJSON = "{\"token\": \"" + jwt + "\"}";
-
         return jwtJSON;
     }
 

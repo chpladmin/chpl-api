@@ -1,29 +1,23 @@
 package gov.healthit.chpl.auth.authentication;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.jwt.JWTAuthor;
-import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.JWTCreationException;
@@ -31,22 +25,39 @@ import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.util.AuthUtil;
+import lombok.extern.log4j.Log4j2;
 
 @Service
+@Log4j2
 public class UserAuthenticator implements Authenticator {
-    private static final Logger LOGGER = LogManager.getLogger(UserAuthenticator.class);
-
-    @Autowired
     private JWTAuthor jwtAuthor;
-
-    @Autowired
     private UserManager userManager;
-
-    @Autowired
+    private UserDAO userDAO;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private UserDetailsChecker userDetailsChecker;
 
     @Autowired
-    private UserDetailsChecker userDetailsChecker;
+    public UserAuthenticator(JWTAuthor jwtAuthor, UserManager userManager, UserDAO userDAO,
+            BCryptPasswordEncoder bCryptPasswordEncoder, UserDetailsChecker userDetailsChecker) {
+        this.jwtAuthor = jwtAuthor;
+        this.userManager = userManager;
+        this.userDAO = userDAO;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.userDetailsChecker = userDetailsChecker;
+    }
+
+    @Override
+    @Transactional
+    public String authenticate(LoginCredentials credentials)
+            throws JWTCreationException, UserRetrievalException {
+
+        String jwt = getJWT(credentials);
+        UserDTO user = getUser(credentials);
+        if (user != null && user.isPasswordResetRequired()) {
+            throw new UserRetrievalException("The user is required to change their password on next log in.");
+        }
+        return jwt;
+    }
 
     @Override
     public UserDTO getUser(final LoginCredentials credentials)
@@ -61,21 +72,17 @@ public class UserAuthenticator implements Authenticator {
 
             if (checkPassword(credentials.getPassword(), userManager.getEncodedPassword(user))) {
 
-                try {
-                    userDetailsChecker.check(user);
-                    userManager.updateLastLoggedInDate(user);
+                userDetailsChecker.check(user);
+                userManager.updateLastLoggedInDate(user);
 
-                    // if login was successful reset failed logins to 0
-                    if (user.getFailedLoginCount() > 0) {
-                        try {
-                            user.setFailedLoginCount(0);
-                            updateFailedLogins(user);
-                        } catch (UserManagementException ex) {
-                            LOGGER.error("Error adding failed login", ex);
-                        }
+                // if login was successful reset failed logins to 0
+                if (user.getFailedLoginCount() > 0) {
+                    try {
+                        user.setFailedLoginCount(0);
+                        updateFailedLogins(user);
+                    } catch (UserManagementException ex) {
+                        LOGGER.error("Error adding failed login", ex);
                     }
-                } catch (AccountStatusException ex) {
-                    throw ex;
                 }
                 return user;
 
@@ -117,7 +124,6 @@ public class UserAuthenticator implements Authenticator {
 
         jwt = jwtAuthor.createJWT(user, stringClaims, listClaims);
         return jwt;
-
     }
 
     @Override
@@ -158,115 +164,17 @@ public class UserAuthenticator implements Authenticator {
     }
 
     private UserDTO getUserByName(final String userName) throws UserRetrievalException {
-        Authentication authenticator = new Authentication() {
-            private static final long serialVersionUID = 6718133333641942231L;
-
-            @Override
-            public Collection<? extends GrantedAuthority> getAuthorities() {
-                List<GrantedAuthority> auths = new ArrayList<GrantedAuthority>();
-                auths.add(new GrantedPermission("ROLE_USER_AUTHENTICATOR"));
-                return auths;
-            }
-
-            @Override
-            public Object getCredentials() {
-                return null;
-            }
-
-            @Override
-            public Object getDetails() {
-                return null;
-            }
-
-            @Override
-            public Object getPrincipal() {
-                return null;
-            }
-
-            @Override
-            public boolean isAuthenticated() {
-                return true;
-            }
-
-            @Override
-            public void setAuthenticated(final boolean arg0) throws IllegalArgumentException {
-            }
-
-            @Override
-            public String getName() {
-                return "AUTHENTICATOR";
-            }
-
-        };
-
-        SecurityContextHolder.getContext().setAuthentication(authenticator);
-        try {
-            UserDTO user = userManager.getByName(userName);
-            return user;
-        } finally {
-            SecurityContextHolder.getContext().setAuthentication(null);
-        }
-
+        UserDTO user = userDAO.getByName(userName);
+        return user;
     }
 
     private void updateFailedLogins(final UserDTO userToUpdate) throws UserRetrievalException, UserManagementException {
-        Authentication authenticator = new Authentication() {
-
-            @Override
-            public Collection<? extends GrantedAuthority> getAuthorities() {
-                List<GrantedAuthority> auths = new ArrayList<GrantedAuthority>();
-                auths.add(new GrantedPermission("ROLE_USER_AUTHENTICATOR"));
-                return auths;
-            }
-
-            @Override
-            public Object getCredentials() {
-                return null;
-            }
-
-            @Override
-            public Object getDetails() {
-                return null;
-            }
-
-            @Override
-            public Object getPrincipal() {
-                return null;
-            }
-
-            @Override
-            public boolean isAuthenticated() {
-                return true;
-            }
-
-            @Override
-            public void setAuthenticated(final boolean arg0) throws IllegalArgumentException {
-            }
-
-            @Override
-            public String getName() {
-                return "AUTHENTICATOR";
-            }
-
-        };
-
-        SecurityContextHolder.getContext().setAuthentication(authenticator);
         try {
             userManager.updateFailedLoginCount(userToUpdate);
         } catch (Exception ex) {
             throw new UserManagementException(
                     "Error increasing the failed login count for user " + userToUpdate.getSubjectName(), ex);
-        } finally {
-            SecurityContextHolder.getContext().setAuthentication(null);
         }
-    }
-
-    public JWTAuthor getJwtAuthor() {
-        return jwtAuthor;
-    }
-
-    public void setJwtAuthor(final JWTAuthor jwtAuthor) {
-        this.jwtAuthor = jwtAuthor;
     }
 
     @Override
