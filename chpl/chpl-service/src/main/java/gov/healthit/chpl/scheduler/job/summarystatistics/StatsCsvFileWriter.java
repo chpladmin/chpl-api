@@ -6,12 +6,14 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import gov.healthit.chpl.domain.statistics.Statistics;
 
 public class StatsCsvFileWriter {
@@ -21,12 +23,26 @@ public class StatsCsvFileWriter {
 
     // CSV file header
     private static final Object[] FILE_HEADER = {
-            "Date", "Total Developers", "Total Developers With 2014 Listings", "Total Developers With 2015 Listings",
-            "Total Unique Products", "Total Products With Active 2014 Listings",
-            "Total Products With Active 2015 Listings", "Total Products With Active Listings", "Total Listings",
-            "Total 2014 Listings", "Total 2015 Listings", "Total 2011 Listings", "Total Surveillance Activities",
-            "Total Open Surveillance Activities", "Total Closed Surveillance Activities", "Total NonConformities",
-            "Total Open NonConformities", "Total Closed NonConformities"
+            "Date",
+            "Total Developers",
+            "Total Developers With 2014 Listings",
+            "Total Developers With 2015 Listings",
+            "Total Developers With 2015 Non Cures Listings",
+            "Total Developers With 2015 Cures Listings",
+            "Total Unique Products",
+            "Total Products With Active 2014 Listings",
+            "Total Products With Active 2015 Listings",
+            "Total Products With Active Listings",
+            "Total Listings",
+            "Total 2014 Listings",
+            "Total 2015 Listings",
+            "Total 2011 Listings",
+            "Total Surveillance Activities",
+            "Total Open Surveillance Activities",
+            "Total Closed Surveillance Activities",
+            "Total NonConformities",
+            "Total Open NonConformities",
+            "Total Closed NonConformities"
     };
 
     public void writeCsvFile(String fileName, List<Statistics> statsCsvOutput) {
@@ -46,7 +62,9 @@ public class StatsCsvFileWriter {
                 statRecord.add(dateString);
                 statRecord.add(String.valueOf(stat.getTotalDevelopers()));
                 statRecord.add(String.valueOf(stat.getTotalDevelopersWith2014Listings()));
-                //statRecord.add(String.valueOf(stat.getTotalDevelopersWith2015Listings()));
+                statRecord.add(String.valueOf(getTotalDevelopersWith2015Listings(stat)));
+                statRecord.add(String.valueOf(getTotalDevelopersWith2015NonCuresListings(stat)));
+                statRecord.add(String.valueOf(getTotalDevelopersWith2015CuresListings(stat)));
                 statRecord.add(String.valueOf(stat.getTotalCertifiedProducts()));
                 statRecord.add(String.valueOf(stat.getTotalCPsActive2014Listings()));
                 statRecord.add(String.valueOf(stat.getTotalCPsActive2015Listings()));
@@ -67,6 +85,21 @@ public class StatsCsvFileWriter {
         } catch (Exception e) {
             getLogger().error(e);
         }
+    }
+
+    private Long getTotalDevelopersWith2015Listings(Statistics stats) {
+        return stats.getUniqueDevelopersCountForAny2015ListingsByAcb().stream()
+                .collect(Collectors.summingLong(CertifiedBodyStatistics::getTotalDevelopersWithListings));
+    }
+
+    private Long getTotalDevelopersWith2015NonCuresListings(Statistics stats) {
+        return stats.getUniqueDevelopersCountWithoutCuresUpdatedListingsByAcb().stream()
+                .collect(Collectors.summingLong(CertifiedBodyStatistics::getTotalDevelopersWithListings));
+    }
+
+    private Long getTotalDevelopersWith2015CuresListings(Statistics stats) {
+        return stats.getUniqueDevelopersCountWithCuresUpdatedListingsByAcb().stream()
+                .collect(Collectors.summingLong(CertifiedBodyStatistics::getTotalDevelopersWithListings));
     }
 
     public void setLogger(Logger logger) {

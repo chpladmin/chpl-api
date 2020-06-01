@@ -142,7 +142,7 @@
             <job-data-map>
                 <entry>
                     <key>generateCsvFile</key>
-                    <value>false</value>
+                    <value>true</value>
                 </entry>
             </job-data-map>
         </job>

@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,9 +26,11 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
 import gov.healthit.chpl.domain.DateRange;
 import gov.healthit.chpl.domain.statistics.Statistics;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -53,6 +54,9 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
 
     @Autowired
     private JpaTransactionManager txManager;
+
+    @Autowired
+    private CertifiedProductDAO certifiedProductDAO;
 
     @Autowired
     private Environment env;
@@ -104,14 +108,15 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         endDateCal.setTime(startDate);
         endDateCal.add(Calendar.DATE, numDaysInPeriod);
 
+        List<CertifiedProductDetailsDTO> listingsAll2015 = certifiedProductDAO.findByEdition("2015");
+
         while (endDate.compareTo(endDateCal.getTime()) >= 0) {
             LOGGER.info("Getting csvRecord for start date " + startDateCal.getTime().toString() + " end date "
                     + endDateCal.getTime().toString());
             DateRange csvRange = new DateRange(startDateCal.getTime(), new Date(endDateCal.getTimeInMillis()));
             Statistics historyStat = new Statistics();
             historyStat.setDateRange(csvRange);
-            Future<Statistics> futureEmailCsvStats = asynchronousStatisticsInitializor.getStatistics(csvRange);
-            historyStat = futureEmailCsvStats.get();
+            historyStat = asynchronousStatisticsInitializor.getStatistics(listingsAll2015, csvRange);
             csvStats.add(historyStat);
             LOGGER.info("Finished getting csvRecord for start date " + startDateCal.getTime().toString() + " end date "
                     + endDateCal.getTime().toString());
