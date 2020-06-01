@@ -2,18 +2,24 @@ package gov.healthit.chpl.web.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
+import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -46,6 +52,7 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMetadataDTO;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.exception.DeprecatedUploadTemplateException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -61,7 +68,9 @@ import gov.healthit.chpl.manager.CertifiedProductUploadManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
@@ -84,6 +93,12 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/certified_products")
 public class CertifiedProductController {
     private static Logger LOGGER = LogManager.getLogger(CertifiedProductController.class);
+
+    @Value("${uploadErrorEmailRecipients}")
+    private String uploadErrorEmailRecipients;
+
+    @Value("${uploadErrorEmailSubject}")
+    private String uploadErrorEmailSubject;
 
     private CertifiedProductUploadManager uploadManager;
     private CertifiedProductDetailsManager cpdManager;
@@ -800,11 +815,11 @@ public class CertifiedProductController {
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<PendingCertifiedProductResults> upload(@RequestParam("file") MultipartFile file)
             throws ValidationException, JsonProcessingException, InvalidArgumentsException, MaxUploadSizeExceededException {
-        List<PendingCertifiedProductDetails> uploadedListings = new ArrayList<PendingCertifiedProductDetails>();
+        List<PendingCertifiedProductEntity> listingsToAdd = new ArrayList<PendingCertifiedProductEntity>();
         Set<String> errorMessages = new HashSet<String>();
         HttpHeaders responseHeaders = new HttpHeaders();
         try {
-            uploadedListings = uploadManager.upload(file);
+            listingsToAdd = uploadManager.parseListingsFromFile(file);
         } catch (DeprecatedUploadTemplateException dep) {
             responseHeaders.set(
                     HttpHeaders.WARNING, "299 - \"Deprecated upload template\"");
@@ -813,13 +828,88 @@ public class CertifiedProductController {
         } catch (Exception e) {
             errorMessages.add(e.getMessage());
         }
-
         if (errorMessages.size() > 0) {
             throw new ValidationException(errorMessages);
         }
+
+        List<PendingCertifiedProductDetails> uploadedListings = new ArrayList<PendingCertifiedProductDetails>();
+        for (PendingCertifiedProductEntity listingToAdd : listingsToAdd) {
+            try {
+                PendingCertifiedProductDTO pendingCpDto = pcpManager.createOrReplace(listingToAdd);
+                PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(pendingCpDto);
+                uploadedListings.add(details);
+            } catch (EntityCreationException | EntityRetrievalException ex) {
+                String error = "Error creating pending certified product " + listingToAdd.getUniqueId()
+                + ". Error was: " + ex.getMessage();
+                LOGGER.error(error);
+                //send an email that something weird happened
+                sendUploadError(file, ex);
+                throw new ValidationException(error);
+            }
+        }
+
         PendingCertifiedProductResults results = new PendingCertifiedProductResults();
         results.getPendingCertifiedProducts().addAll(uploadedListings);
         return new ResponseEntity<PendingCertifiedProductResults>(results, responseHeaders, HttpStatus.OK);
+    }
+
+    /**
+     * Creates an email message to the configured recipients
+     * with configured subject and uses the stack trace as the
+     * email body. Creates a temporary file that is the uploaded
+     * CSV and attaches it to the email.
+     * @param file
+     * @param ex
+     */
+    private void sendUploadError(MultipartFile file, Exception ex) {
+        if (StringUtils.isEmpty(uploadErrorEmailRecipients)) {
+            return;
+        }
+        List<String> recipients = Arrays.asList(uploadErrorEmailRecipients.split(","));
+
+        //figure out the filename for the attachment
+        String originalFilename = file.getOriginalFilename();
+        int indexOfExtension = originalFilename.indexOf(".");
+        String filenameWithoutExtension = file.getOriginalFilename();
+        if (indexOfExtension >= 0) {
+            filenameWithoutExtension
+            = originalFilename.substring(0, indexOfExtension);
+        }
+        String extension = ".csv";
+        if (indexOfExtension >= 0) {
+            extension = originalFilename.substring(indexOfExtension);
+        }
+
+        //attach the file the user tried to upload
+        File temp = null;
+        List<File> attachments = null;
+        try {
+            temp = File.createTempFile(filenameWithoutExtension, extension);
+            file.transferTo(temp);
+            attachments = new ArrayList<File>();
+            attachments.add(temp);
+        } catch (IOException io) {
+            LOGGER.error("Could not create temporary file for attachment: " + io.getMessage(), io);
+        }
+
+        //create the email body
+        String htmlBody = "<p>Upload attempted at " + new Date()
+                + "<br/>Uploaded by " + AuthUtil.getUsername() + "</p>";
+        StringWriter writer = new StringWriter();
+        ex.printStackTrace(new PrintWriter(writer));
+        htmlBody += "<pre>" + writer.toString() + "</pre>";
+
+        //build and send the email
+        try {
+            EmailBuilder emailBuilder = new EmailBuilder(env);
+            emailBuilder.recipients(recipients)
+            .subject(uploadErrorEmailSubject)
+            .fileAttachments(attachments)
+            .htmlMessage(htmlBody)
+            .sendEmail();
+        } catch (MessagingException msgEx) {
+            LOGGER.error("Could not send email about failed listing upload.", msgEx);
+        }
     }
 
     private CertifiedProductSearchDetails validateCertifiedProduct(

@@ -9,14 +9,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-import org.springframework.core.env.Environment;
 import org.springframework.mock.web.MockMultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.exception.DeprecatedUploadTemplateException;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -87,18 +84,14 @@ public class CertifiedProductUploadTest {
 
 
     private ErrorMessageUtil msgUtil;
-    private PendingCertifiedProductManager pcpManager;
     private CertifiedProductUploadManager uploadManager;
     private CertifiedProductUploadHandlerFactory uploadHandlerFactory;
-    private Environment env;
 
     @Before
     public void setup() throws InvalidArgumentsException, JsonProcessingException,
         EntityRetrievalException, EntityCreationException {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        pcpManager = Mockito.mock(PendingCertifiedProductManager.class);
         uploadHandlerFactory = Mockito.mock(CertifiedProductUploadHandlerFactory.class);
-        env = Mockito.mock(Environment.class);
 
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("upload.emptyFile"))).thenReturn("Empty file message");
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("upload.notCSV"))).thenReturn("Not CSV message");
@@ -114,23 +107,22 @@ public class CertifiedProductUploadTest {
         Mockito.doReturn(parsed).when(((CertifiedProductHandler2015Version1) v19UploadHandler)).handle();
         Mockito.when(v19UploadHandler.handle()).thenReturn(parsed);
         Mockito.when(uploadHandlerFactory.getHandler(ArgumentMatchers.any())).thenReturn(v19UploadHandler);
-        Mockito.when(pcpManager.createOrReplace(ArgumentMatchers.any())).thenReturn(new PendingCertifiedProductDTO());
 
-        uploadManager = new CertifiedProductUploadManager(msgUtil, pcpManager, uploadHandlerFactory, env);
+        uploadManager = new CertifiedProductUploadManager(msgUtil, uploadHandlerFactory);
     }
 
     @Test(expected = ValidationException.class)
     public void upload_EmptyData_Fails() throws JsonProcessingException, ValidationException,
         InvalidArgumentsException, DeprecatedUploadTemplateException {
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", "".getBytes());
-        uploadManager.upload(file);
+        uploadManager.parseListingsFromFile(file);
     }
 
     @Test(expected = ValidationException.class)
     public void upload_HeaderOnly_Fails() throws JsonProcessingException, ValidationException,
         InvalidArgumentsException, DeprecatedUploadTemplateException {
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", HEADER_2015_V19.getBytes());
-        uploadManager.upload(file);
+        uploadManager.parseListingsFromFile(file);
     }
 
     @Test(expected = ValidationException.class)
@@ -138,7 +130,7 @@ public class CertifiedProductUploadTest {
         InvalidArgumentsException, DeprecatedUploadTemplateException {
         String fileContents = HEADER_2015_V19 + "\n" + LISTING1_2015_V19;
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/plain", fileContents.getBytes());
-        uploadManager.upload(file);
+        uploadManager.parseListingsFromFile(file);
     }
 
     @Test(expected = DeprecatedUploadTemplateException.class)
@@ -156,12 +148,11 @@ public class CertifiedProductUploadTest {
         Mockito.when(uploadTemplateVersion.getDeprecated()).thenReturn(Boolean.TRUE);
         Mockito.when(v19UploadHandler.getUploadTemplateVersion()).thenReturn(uploadTemplateVersion);
         Mockito.when(uploadHandlerFactory.getHandler(ArgumentMatchers.any())).thenReturn(v19UploadHandler);
-        Mockito.when(pcpManager.createOrReplace(ArgumentMatchers.any())).thenReturn(new PendingCertifiedProductDTO());
 
         String fileContents = HEADER_2015_V19 + "\n" + LISTING1_2015_V19;
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
 
-        uploadManager.upload(file);
+        uploadManager.parseListingsFromFile(file);
     }
 
     @Test(expected = ValidationException.class)
@@ -169,7 +160,7 @@ public class CertifiedProductUploadTest {
         InvalidArgumentsException, DeprecatedUploadTemplateException {
         String fileContents = HEADER_2015_V19 + "\n" + LISTING1_2015_V19 + "\n" + LISTING1_2015_V19;
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
-        uploadManager.upload(file);
+        uploadManager.parseListingsFromFile(file);
     }
 
     @Test
@@ -178,9 +169,9 @@ public class CertifiedProductUploadTest {
         String fileContents = HEADER_2015_V19 + "\n" + LISTING1_2015_V19;
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
 
-        List<PendingCertifiedProductDetails> uploadedListings = uploadManager.upload(file);
-        assertNotNull(uploadedListings);
-        assertEquals(1, uploadedListings.size());
+        List<PendingCertifiedProductEntity> parsedListings = uploadManager.parseListingsFromFile(file);
+        assertNotNull(parsedListings);
+        assertEquals(1, parsedListings.size());
     }
 
     @Test()
@@ -189,9 +180,9 @@ public class CertifiedProductUploadTest {
         String fileContents = HEADER_2015_V19 + "\n" + LISTING_NEW_DEVELOPER_2015_V19 + "\n" + LISTING_NEW_DEVELOPER_2015_V19;
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
 
-        List<PendingCertifiedProductDetails> uploadedListings = uploadManager.upload(file);
-        assertNotNull(uploadedListings);
-        assertEquals(2, uploadedListings.size());
+        List<PendingCertifiedProductEntity> parsedListings = uploadManager.parseListingsFromFile(file);
+        assertNotNull(parsedListings);
+        assertEquals(2, parsedListings.size());
     }
 
     @Test()
@@ -201,8 +192,8 @@ public class CertifiedProductUploadTest {
                 + LISTING2_2015_V19 + "\n" + LISTING_NEW_DEVELOPER_2015_V19;
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
 
-        List<PendingCertifiedProductDetails> uploadedListings = uploadManager.upload(file);
-        assertNotNull(uploadedListings);
-        assertEquals(3, uploadedListings.size());
+        List<PendingCertifiedProductEntity> parsedListings = uploadManager.parseListingsFromFile(file);
+        assertNotNull(parsedListings);
+        assertEquals(3, parsedListings.size());
     }
 }
