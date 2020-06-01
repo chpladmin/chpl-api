@@ -375,14 +375,14 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         addTestDataMap("170.315 (b)(2)", "Clinical Information Reconciliation and Incorporation (Cures Update)", "ONC Test Method");
         addTestDataMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "ONC Test Method");
         addTestDataMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "Not Applicable");
-        addTestDataMap("170.315 (b)(7)", "Data Segmentation for Privacy - Send (Cures Update)", "ONC Test Method");
-        addTestDataMap("170.315 (b)(8)", "Data Segmentation for Privacy - Receive (Cures Update)", "ONC Test Method");
+        addTestDataMap("170.315 (b)(7)", "Security Tags - Summary of Care - Send (Cures Update)", "ONC Test Method");
+        addTestDataMap("170.315 (b)(8)", "Security Tags - Summary of Care - Receive (Cures Update)", "ONC Test Method");
         addTestDataMap("170.315 (b)(9)", "Care Plan (Cures Update)", "ONC Test Method");
-        addTestDataMap("170.315 (b)(10)", "Clinical Information Export", "ONC Test Method");
+        addTestDataMap("170.315 (b)(10)", "Electronic Health Information Export", "ONC Test Method");
         addTestDataMap("170.315 (c)(3)", "Clinical Quality Measures - Report (Cures Update)", "ONC Test Method");
         addTestDataMap("170.315 (c)(3)", "Clinical Quality Measures - Report (Cures Update)", "NCQA eCQM Test Method");
         addTestDataMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "ONC Test Method");
-        addTestDataMap("170.315 (g)(6)", "Consolidated CDA Creation (Cures Update)", "ONC Test Method");
+        addTestDataMap("170.315 (g)(6)", "Consolidated CDA Creation Performance (Cures Update)", "ONC Test Method");
         addTestDataMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "ONC Test Method");
         addTestDataMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "ONC Test Method");
     }
@@ -418,10 +418,10 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         addTestProcedureMap("170.315 (b)(2)", "Clinical Information Reconciliation and Incorporation (Cures Update)", "ONC Test Method");
         addTestProcedureMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "ONC Test Method");
         addTestProcedureMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "ONC Test Method - Surescripts (Alternative)");
-        addTestProcedureMap("170.315 (b)(7)", "Data Segmentation for Privacy - Send (Cures Update)", "ONC Test Method");
-        addTestProcedureMap("170.315 (b)(8)", "Data Segmentation for Privacy - Receive (Cures Update)", "ONC Test Method");
+        addTestProcedureMap("170.315 (b)(7)", "Security Tags - Summary of Care - Send (Cures Update)", "ONC Test Method");
+        addTestProcedureMap("170.315 (b)(8)", "Security Tags - Summary of Care - Receive (Cures Update)", "ONC Test Method");
         addTestProcedureMap("170.315 (b)(9)", "Care Plan (Cures Update)", "ONC Test Method");
-        addTestProcedureMap("170.315 (b)(10)", "Clinical Information Export", "ONC Test Method");
+        addTestProcedureMap("170.315 (b)(10)", "Electronic Health Information Export", "ONC Test Method");
         addTestProcedureMap("170.315 (c)(3)", "Clinical Quality Measures - Report (Cures Update)", "ONC Test Method");
         addTestProcedureMap("170.315 (c)(3)", "Clinical Quality Measures - Report (Cures Update)", "NCQA eCQM Test Method");
         addTestProcedureMap("170.315 (d)(2)", "Auditable Events and Tamper-Resistance (Cures Update)", "ONC Test Method");
@@ -431,7 +431,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         addTestProcedureMap("170.315 (d)(13)", "Multi-Factor Authentication", "ONC Test Method");
         addTestProcedureMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "ONC Test Method");
         addTestProcedureMap("170.315 (f)(5)", "Transmission to Public Health Agencies - Electronic Case Reporting (Cures Update)", "ONC Test Method");
-        addTestProcedureMap("170.315 (g)(6)", "Consolidated CDA Creation (Cures Update)", "ONC Test Method");
+        addTestProcedureMap("170.315 (g)(6)", "Consolidated CDA Creation Performance (Cures Update)", "ONC Test Method");
         addTestProcedureMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "ONC Test Method");
         addTestProcedureMap("170.315 (g)(10)", "Standardized API for Patient and Population Services", "ONC Test Method");
     }
@@ -513,9 +513,9 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         addTestFunctionalityMap("170.315 (f)(5)", "Transmission to Public Health Agencies - Electronic Case Reporting (Cures Update)", "170.102(19)(i)");
         addTestFunctionalityMap("170.315 (f)(5)", "Transmission to Public Health Agencies - Electronic Case Reporting (Cures Update)", "170.102(19)(ii)");
 
-        addTestFunctionalityMap("170.315 (g)(6)", "Consolidated CDA Creation (Cures Update)", "170.102(13)(ii)(C)");
-        addTestFunctionalityMap("170.315 (g)(6)", "Consolidated CDA Creation (Cures Update)", "170.102(19)(i)");
-        addTestFunctionalityMap("170.315 (g)(6)", "Consolidated CDA Creation (Cures Update)", "170.102(19)(ii)");
+        addTestFunctionalityMap("170.315 (g)(6)", "Consolidated CDA Creation Performance (Cures Update)", "170.102(13)(ii)(C)");
+        addTestFunctionalityMap("170.315 (g)(6)", "Consolidated CDA Creation Performance (Cures Update)", "170.102(19)(i)");
+        addTestFunctionalityMap("170.315 (g)(6)", "Consolidated CDA Creation Performance (Cures Update)", "170.102(19)(ii)");
 
         addTestFunctionalityMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "170.102(13)(ii)(C)");
         addTestFunctionalityMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "170.102(19)(i)");
