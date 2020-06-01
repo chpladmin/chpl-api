@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +19,6 @@ import gov.healthit.chpl.dao.statistics.DeveloperStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.ListingStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
 import gov.healthit.chpl.domain.DateRange;
-import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import gov.healthit.chpl.domain.statistics.Statistics;
 import gov.healthit.chpl.entity.CertificationStatusType;
 
@@ -29,18 +29,20 @@ public class HistoricalStatisticsCreator {
     private ListingStatisticsDAO listingStatisticsDAO;
     private DeveloperStatisticsDAO developerStatisticsDAO;
     private SurveillanceStatisticsDAO surveillanceStatisticsDAO;
+    private Environment env;
 
     @Autowired
     public HistoricalStatisticsCreator(ListingStatisticsDAO listingStatisticsDAO, DeveloperStatisticsDAO developerStatisticsDAO,
-            SurveillanceStatisticsDAO surveillanceStatisticsDAO, CertifiedProductDAO certifiedProductDAO) {
+            SurveillanceStatisticsDAO surveillanceStatisticsDAO, CertifiedProductDAO certifiedProductDAO, Environment env) {
         this.listingStatisticsDAO = listingStatisticsDAO;
         this.developerStatisticsDAO = developerStatisticsDAO;
         this.surveillanceStatisticsDAO = surveillanceStatisticsDAO;
+        this.env = env;
     }
 
     @Transactional(readOnly = true)
     public Statistics getStatistics(DateRange dateRange) throws InterruptedException, ExecutionException {
-        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        ExecutorService executorService = Executors.newFixedThreadPool(getThreadCountForJob());
 
         Statistics stats = new Statistics();
         stats.setDateRange(dateRange);
@@ -52,10 +54,8 @@ public class HistoricalStatisticsCreator {
                     .thenAccept(result -> stats.setTotalDevelopers(result)));
             futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopersWith2014Listings(dateRange), executorService)
                     .thenAccept(result -> stats.setTotalDevelopersWith2014Listings(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopersByCertifiedBodyWithListingsEachYear(dateRange), executorService)
-                    .thenAccept(result -> stats.setTotalDevelopersByCertifiedBodyWithListingsEachYear(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(dateRange), executorService)
-                    .thenAccept(result -> stats.setTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(result)));
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopersWith2015Listings(dateRange), executorService)
+                    .thenAccept(result -> stats.setTotalDevelopersWith2015Listings(result)));
 
             // listings
             futures.add(CompletableFuture.supplyAsync(() -> getTotalCertifiedProducts(dateRange), executorService)
@@ -88,10 +88,6 @@ public class HistoricalStatisticsCreator {
                     .thenAccept(result -> stats.setTotalOpenNonconformities(result)));
             futures.add(CompletableFuture.supplyAsync(() -> getTotalClosedNonconformities(dateRange), executorService)
                     .thenAccept(result -> stats.setTotalClosedNonconformities(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalOpenNonconformitiesByAcb(dateRange), executorService)
-                    .thenAccept(result -> stats.setTotalOpenNonconformitiesByAcb(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalOpenSurveillancesByAcb(dateRange), executorService)
-                    .thenAccept(result -> stats.setTotalOpenSurveillanceActivitiesByAcb(result)));
 
             CompletableFuture<Void> combinedFutures = CompletableFuture
                     .allOf(futures.toArray(new CompletableFuture[futures.size()]));
@@ -116,15 +112,8 @@ public class HistoricalStatisticsCreator {
         return total;
     }
 
-    private List<CertifiedBodyStatistics> getTotalDevelopersByCertifiedBodyWithListingsEachYear(DateRange dateRange) {
-        List<CertifiedBodyStatistics> total = developerStatisticsDAO
-                .getTotalDevelopersByCertifiedBodyWithListingsEachYear(dateRange);
-        return total;
-    }
-
-    private List<CertifiedBodyStatistics> getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(DateRange dateRange) {
-        List<CertifiedBodyStatistics> total = developerStatisticsDAO
-                .getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(dateRange);
+    private Long getTotalDevelopersWith2015Listings(DateRange dateRange) {
+        Long total = developerStatisticsDAO.getTotalDevelopersWithListingsByEditionAndStatus(dateRange, "2015", null);
         return total;
     }
 
@@ -208,13 +197,8 @@ public class HistoricalStatisticsCreator {
         return total;
     }
 
-    private List<CertifiedBodyStatistics> getTotalOpenNonconformitiesByAcb(DateRange dateRange) {
-        List<CertifiedBodyStatistics> totals = surveillanceStatisticsDAO.getTotalOpenNonconformitiesByAcb(dateRange);
-        return totals;
+    private Integer getThreadCountForJob() throws NumberFormatException {
+        return Integer.parseInt(env.getProperty("executorThreadCountForQuartzJobs"));
     }
 
-    private List<CertifiedBodyStatistics> getTotalOpenSurveillancesByAcb(DateRange dateRange) {
-        List<CertifiedBodyStatistics> totals = surveillanceStatisticsDAO.getTotalOpenSurveillanceActivitiesByAcb(dateRange);
-        return totals;
-    }
 }

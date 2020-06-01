@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductSummaryDTO;
@@ -213,6 +214,23 @@ public class CertifiedProductDAO extends BaseDAOImpl {
                 + "WHERE (NOT deleted = true) "
                 + "AND cpd.year = :edition ", CertifiedProductDetailsEntity.class);
         query.setParameter("edition", edition.trim());
+        List<CertifiedProductDetailsEntity> entities = query.getResultList();
+        List<CertifiedProductDetailsDTO> products = new ArrayList<>(entities.size());
+
+        for (CertifiedProductDetailsEntity entity : entities) {
+            CertifiedProductDetailsDTO product = new CertifiedProductDetailsDTO(entity);
+            products.add(product);
+        }
+        return products;
+    }
+
+    @Transactional(readOnly = true)
+    public List<CertifiedProductDetailsDTO> findByEdition(CertificationEditionConcept edition) {
+        Query query = entityManager.createQuery("SELECT cpd "
+                + "FROM CertifiedProductDetailsEntity cpd "
+                + "WHERE (NOT deleted = true) "
+                + "AND cpd.certificationEditionId = :edition ", CertifiedProductDetailsEntity.class);
+        query.setParameter("edition", edition.getId());
         List<CertifiedProductDetailsEntity> entities = query.getResultList();
         List<CertifiedProductDetailsDTO> products = new ArrayList<>(entities.size());
 

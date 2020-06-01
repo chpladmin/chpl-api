@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,7 @@ import gov.healthit.chpl.dao.statistics.DeveloperStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.ListingStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
 import gov.healthit.chpl.domain.DateRange;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.domain.concept.NonconformityStatusConcept;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyAltTestStatistics;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
@@ -48,27 +50,32 @@ public class EmailStatisticsCreator {
     private CertificationResultDAO certificationResultDAO;
     private DeveloperStatisticsDAO developerStatisticsDAO;
     private ListingStatisticsDAO listingStatisticsDAO;
+    private Environment env;
 
     @Autowired
     public EmailStatisticsCreator(SurveillanceStatisticsDAO surveillanceStatisticsDAO, CertifiedProductDAO certifiedProductDAO,
             CertificationResultDAO certificationResultDAO, DeveloperStatisticsDAO developerStatisticsDAO,
-            ListingStatisticsDAO listingStatisticsDAO) {
+            ListingStatisticsDAO listingStatisticsDAO, Environment env) {
         this.surveillanceStatisticsDAO = surveillanceStatisticsDAO;
         this.certifiedProductDAO = certifiedProductDAO;
         this.certificationResultDAO = certificationResultDAO;
         this.developerStatisticsDAO = developerStatisticsDAO;
         this.listingStatisticsDAO = listingStatisticsDAO;
+        this.env = env;
     }
 
     @Transactional(readOnly = true)
     public Statistics getStatistics() throws InterruptedException, ExecutionException {
-        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        ExecutorService executorService = Executors.newFixedThreadPool(getThreadCountForJob());
 
         LOGGER.info("Getting all current statistics.");
 
         Statistics stats = new Statistics();
         List<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
-        List<CertifiedProductDetailsDTO> listingsAll2015 = certifiedProductDAO.findByEdition("2015");
+
+        LOGGER.info("Getting all 2015 listings.");
+        List<CertifiedProductDetailsDTO> listingsAll2015 = certifiedProductDAO.findByEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015);
+        LOGGER.info("Completing getting all 2015 listings.");
 
         try {
             /////////////////////////////////////////////////////////////////////////////////////
@@ -196,34 +203,26 @@ public class EmailStatisticsCreator {
             //Listing Statistics
             /////////////////////////////////////////////////////////////////////////////////////
             // Total # of Active (Including Suspended by ONC/ONC-ACB 2014 Listings)
-            //stats.setTotalActive2014Listings(asyncStats.getTotalActive2014Listings(null));
             futures.add(CompletableFuture.supplyAsync(() -> getTotalActive2014Listings(null), executorService)
                     .thenAccept(result -> stats.setTotalActive2014Listings(result)));
-            //stats.setTotalActiveListingsByCertifiedBody(asyncStats.getTotalActiveListingsByCertifiedBody(null));
             futures.add(CompletableFuture.supplyAsync(() -> getTotalActiveListingsByCertifiedBody(null), executorService)
                     .thenAccept(result -> stats.setTotalActiveListingsByCertifiedBody(result)));
             // Total # of Active (Including Suspended by ONC/ONC-ACB 2015 Listings)
-            //stats.setTotalActive2015Listings(asyncStats.getTotalActive2015Listings(null));
             futures.add(CompletableFuture.supplyAsync(() -> getTotalActive2015Listings(null), executorService)
                     .thenAccept(result -> stats.setTotalActive2015Listings(result)));
             //Total # of 2015 Listings with Alternative Test Methods
-            //stats.setTotalListingsWithAlternativeTestMethods(asyncStats.getTotalListingsWithAlternateTestMethods());
             futures.add(CompletableFuture.supplyAsync(() -> getTotalListingsWithAlternateTestMethods(), executorService)
                     .thenAccept(result -> stats.setTotalListingsWithAlternativeTestMethods(result)));
             // Total # of 2015 Listings with Alternative Test Methods
-            //stats.setTotalListingsWithCertifiedBodyAndAlternativeTestMethods(asyncStats.getTotalListingsWithCertifiedBodyAndAlternativeTestMethods());
             futures.add(CompletableFuture.supplyAsync(() -> getTotalListingsWithCertifiedBodyAndAlternativeTestMethods(), executorService)
                     .thenAccept(result -> stats.setTotalListingsWithCertifiedBodyAndAlternativeTestMethods(result)));
             // Total # of Active (Including Suspended by ONC/ONC-ACB 2015-Cures Update Listings)
-            //stats.setActiveListingCountWithCuresUpdatedByAcb(asyncStats.getActiveListingCountWithCuresUpdatedByAcb(listingsAll2015));
             futures.add(CompletableFuture.supplyAsync(() -> getActiveListingCountWithCuresUpdatedByAcb(listingsAll2015), executorService)
                     .thenAccept(result -> stats.setActiveListingCountWithCuresUpdatedByAcb(result)));
             // Total # of 2015-Cures Update Listings with Alternative Test Methods
-            //stats.setListingCountWithCuresUpdatedAndAltTestMethodsByAcb(asyncStats.getListingCountFor2015AndAltTestMethodsByAcb(listingsAll2015, certificationResultDAO));
             futures.add(CompletableFuture.supplyAsync(() -> getListingCountFor2015AndAltTestMethodsByAcb(listingsAll2015, certificationResultDAO), executorService)
                     .thenAccept(result -> stats.setListingCountWithCuresUpdatedAndAltTestMethodsByAcb(result)));
             // Total # of 2015-Cures Updated Listings (Regardless of Status)
-            //stats.setAllListingsCountWithCuresUpdated(asyncStats.getAllListingsCountWithCuresUpdated(listingsAll2015));
             futures.add(CompletableFuture.supplyAsync(() -> getAllListingsCountWithCuresUpdated(listingsAll2015), executorService)
                     .thenAccept(result -> stats.setAllListingsCountWithCuresUpdated(result)));
 
@@ -552,7 +551,7 @@ public class EmailStatisticsCreator {
     }
 
     private Long getAverageTimeFromSurveillanceOpenToSurveillanceClose() {
-        List<SurveillanceEntity> surveillances = surveillanceStatisticsDAO.getAllSurveillances();
+        List<SurveillanceEntity> surveillances = surveillanceStatisticsDAO.getAllSurveillancesWithNonconformities();
 
         List<SurveillanceNonconformityEntity> nonconformities = surveillances.stream()
                 .filter(surv -> surv.getStartDate() != null
@@ -836,4 +835,9 @@ public class EmailStatisticsCreator {
         Map<Object, Boolean> seen = new ConcurrentHashMap<>();
         return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
+
+    private Integer getThreadCountForJob() throws NumberFormatException {
+        return Integer.parseInt(env.getProperty("executorThreadCountForQuartzJobs"));
+    }
+
 }

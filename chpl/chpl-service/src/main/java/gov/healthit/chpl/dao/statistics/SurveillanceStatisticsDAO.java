@@ -253,6 +253,8 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         String hql = "FROM SurveillanceEntity se "
                 + "JOIN FETCH se.surveilledRequirements sre "
                 + "JOIN FETCH sre.nonconformities nc "
+                + "JOIN FETCH nc.nonconformityStatus ncs "
+                + "JOIN FETCH se.certifiedProduct cp "
                 + "WHERE se.deleted = false "
                 + "AND sre.deleted = false "
                 + "AND nc.deleted = false ";
@@ -262,6 +264,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
 
     public List<SurveillanceEntity> getAllSurveillances() {
         String hql = "FROM SurveillanceEntity se "
+                + "JOIN FETCH se.surveilledRequirements sre "
                 + "WHERE se.deleted = false ";
         return entityManager.createQuery(hql, SurveillanceEntity.class)
                 .getResultList();

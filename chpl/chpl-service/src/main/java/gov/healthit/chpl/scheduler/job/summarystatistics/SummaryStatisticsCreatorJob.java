@@ -53,12 +53,6 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
     @Autowired
     private Environment env;
 
-    /**
-     * Constructor to initialize SummaryStatisticsJobCreator object.
-     *
-     * @throws Exception
-     *             is thrown
-     */
     public SummaryStatisticsCreatorJob() throws Exception {
         super();
     }

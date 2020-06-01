@@ -6,14 +6,12 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
-import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import gov.healthit.chpl.domain.statistics.Statistics;
 
 public class StatsCsvFileWriter {
@@ -62,9 +60,7 @@ public class StatsCsvFileWriter {
                 statRecord.add(dateString);
                 statRecord.add(String.valueOf(stat.getTotalDevelopers()));
                 statRecord.add(String.valueOf(stat.getTotalDevelopersWith2014Listings()));
-                statRecord.add(String.valueOf(getTotalDevelopersWith2015Listings(stat)));
-                statRecord.add(String.valueOf(getTotalDevelopersWith2015NonCuresListings(stat)));
-                statRecord.add(String.valueOf(getTotalDevelopersWith2015CuresListings(stat)));
+                statRecord.add(String.valueOf(stat.getTotalDevelopersWith2015Listings()));
                 statRecord.add(String.valueOf(stat.getTotalCertifiedProducts()));
                 statRecord.add(String.valueOf(stat.getTotalCPsActive2014Listings()));
                 statRecord.add(String.valueOf(stat.getTotalCPsActive2015Listings()));
@@ -85,21 +81,6 @@ public class StatsCsvFileWriter {
         } catch (Exception e) {
             getLogger().error(e);
         }
-    }
-
-    private Long getTotalDevelopersWith2015Listings(Statistics stats) {
-        return stats.getUniqueDevelopersCountForAny2015ListingsByAcb().stream()
-                .collect(Collectors.summingLong(CertifiedBodyStatistics::getTotalDevelopersWithListings));
-    }
-
-    private Long getTotalDevelopersWith2015NonCuresListings(Statistics stats) {
-        return stats.getUniqueDevelopersCountWithoutCuresUpdatedListingsByAcb().stream()
-                .collect(Collectors.summingLong(CertifiedBodyStatistics::getTotalDevelopersWithListings));
-    }
-
-    private Long getTotalDevelopersWith2015CuresListings(Statistics stats) {
-        return stats.getUniqueDevelopersCountWithCuresUpdatedListingsByAcb().stream()
-                .collect(Collectors.summingLong(CertifiedBodyStatistics::getTotalDevelopersWithListings));
     }
 
     public void setLogger(Logger logger) {

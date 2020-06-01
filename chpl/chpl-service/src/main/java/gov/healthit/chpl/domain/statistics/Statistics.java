@@ -19,8 +19,8 @@ public class Statistics implements Serializable {
     private List<CertifiedBodyStatistics> totalDevelopersByCertifiedBodyWithListingsEachYear;
     private List<CertifiedBodyStatistics> totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear;
     private Long totalSuspendedDevelopersWith2014Listings;
-    //private Long totalDevelopersWith2015Listings;
-    //private Long totalDevelopersWithActive2015Listings;
+    private Long totalDevelopersWith2015Listings;
+    private Long totalDevelopersWithActive2015Listings;
     private Long totalCertifiedProducts;
     private List<CertifiedBodyStatistics> totalCPListingsEachYearByCertifiedBody;
     private List<CertifiedBodyStatistics> totalCPListingsEachYearByCertifiedBodyAndCertificationStatus;
