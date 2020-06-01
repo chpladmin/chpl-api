@@ -30,7 +30,7 @@ public class UploadActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Admin() throws Exception {
         setupForAdminUser(resourcePermissions);
         assertTrue(permissions.hasAccess());
-        assertTrue(permissions.hasAccess(new Object()));
+        assertFalse(permissions.hasAccess(new Object()));
     }
 
     @Override
@@ -46,7 +46,7 @@ public class UploadActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
         assertTrue(permissions.hasAccess());
-        assertTrue(permissions.hasAccess(new Object()));
+        assertFalse(permissions.hasAccess(new Object()));
     }
 
     @Override
