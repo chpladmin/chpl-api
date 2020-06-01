@@ -26,37 +26,29 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
 import gov.healthit.chpl.domain.DateRange;
 import gov.healthit.chpl.domain.statistics.Statistics;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 
-/**
- * Initiates and runs the the Quartz job that generates the data that is used to to create the Summary Statistics Email.
- *
- * @author TYoung
- *
- */
 @DisallowConcurrentExecution
 public class SummaryStatisticsCreatorJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("summaryStatisticsCreatorJobLogger");
 
     @Autowired
-    private AsynchronousSummaryStatisticsInitializor asynchronousStatisticsInitializor;
+    private HistoricalStatisticsCreator historicalStatisticsCreator;
+
+    @Autowired
+    private EmailStatisticsCreator emailStatisticsCreator;
 
     @Autowired
     private SummaryStatisticsDAO summaryStatisticsDAO;
 
     @Autowired
     private JpaTransactionManager txManager;
-
-    @Autowired
-    private CertifiedProductDAO certifiedProductDAO;
 
     @Autowired
     private Environment env;
@@ -76,7 +68,6 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         LOGGER.info("********* Starting the Summary Statistics Creation job. *********");
         try {
             SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-            asynchronousStatisticsInitializor.setLogger(LOGGER);
 
             Boolean generateCsv = Boolean.valueOf(jobContext.getMergedJobDataMap().getString("generateCsvFile"));
             Date startDate = getStartDate();
@@ -86,7 +77,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
             Date endDate = new Date();
             Integer numDaysInPeriod = Integer.valueOf(env.getProperty("summaryEmailPeriodInDays").toString());
 
-            Statistics emailBodyStats = asynchronousStatisticsInitializor.getCurrentStatistics();
+            Statistics emailBodyStats = emailStatisticsCreator.getStatistics();
 
             if (generateCsv) {
                 createSummaryStatisticsFile(startDate, endDate, numDaysInPeriod);
@@ -108,15 +99,13 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         endDateCal.setTime(startDate);
         endDateCal.add(Calendar.DATE, numDaysInPeriod);
 
-        List<CertifiedProductDetailsDTO> listingsAll2015 = certifiedProductDAO.findByEdition("2015");
-
         while (endDate.compareTo(endDateCal.getTime()) >= 0) {
             LOGGER.info("Getting csvRecord for start date " + startDateCal.getTime().toString() + " end date "
                     + endDateCal.getTime().toString());
             DateRange csvRange = new DateRange(startDateCal.getTime(), new Date(endDateCal.getTimeInMillis()));
             Statistics historyStat = new Statistics();
             historyStat.setDateRange(csvRange);
-            historyStat = asynchronousStatisticsInitializor.getStatistics(listingsAll2015, csvRange);
+            historyStat = historicalStatisticsCreator.getStatistics(csvRange);
             csvStats.add(historyStat);
             LOGGER.info("Finished getting csvRecord for start date " + startDateCal.getTime().toString() + " end date "
                     + endDateCal.getTime().toString());
@@ -190,13 +179,13 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         return null;
     }
 
-    public AsynchronousSummaryStatisticsInitializor getAsynchronousStatisticsInitializor() {
-        return asynchronousStatisticsInitializor;
+    public HistoricalStatisticsCreator getAsynchronousStatisticsInitializor() {
+        return historicalStatisticsCreator;
     }
 
     public void setAsynchronousStatisticsInitializor(
-            final AsynchronousSummaryStatisticsInitializor asynchronousStatisticsInitializor) {
-        this.asynchronousStatisticsInitializor = asynchronousStatisticsInitializor;
+            final HistoricalStatisticsCreator asynchronousStatisticsInitializor) {
+        this.historicalStatisticsCreator = asynchronousStatisticsInitializor;
     }
 
     public SummaryStatisticsDAO getSummaryStatisticsDAO() {
