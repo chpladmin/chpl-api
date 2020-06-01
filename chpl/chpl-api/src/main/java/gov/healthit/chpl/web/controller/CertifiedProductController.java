@@ -16,8 +16,6 @@ import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -84,6 +82,7 @@ import gov.healthit.chpl.web.controller.results.CertificationResults;
 import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * Certified Product Controller.
@@ -91,8 +90,8 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "certified-products")
 @RestController
 @RequestMapping("/certified_products")
+@Log4j2
 public class CertifiedProductController {
-    private static Logger LOGGER = LogManager.getLogger(CertifiedProductController.class);
 
     @Value("${uploadErrorEmailRecipients}")
     private String uploadErrorEmailRecipients;
@@ -841,7 +840,7 @@ public class CertifiedProductController {
             } catch (EntityCreationException | EntityRetrievalException ex) {
                 String error = "Error creating pending certified product " + listingToAdd.getUniqueId()
                 + ". Error was: " + ex.getMessage();
-                LOGGER.error(error);
+                log.error(error);
                 //send an email that something weird happened
                 sendUploadError(file, ex);
                 throw new ValidationException(error);
@@ -889,7 +888,7 @@ public class CertifiedProductController {
             attachments = new ArrayList<File>();
             attachments.add(temp);
         } catch (IOException io) {
-            LOGGER.error("Could not create temporary file for attachment: " + io.getMessage(), io);
+            log.error("Could not create temporary file for attachment: " + io.getMessage(), io);
         }
 
         //create the email body
@@ -908,7 +907,7 @@ public class CertifiedProductController {
             .htmlMessage(htmlBody)
             .sendEmail();
         } catch (MessagingException msgEx) {
-            LOGGER.error("Could not send email about failed listing upload.", msgEx);
+            log.error("Could not send email about failed listing upload.", msgEx);
         }
     }
 

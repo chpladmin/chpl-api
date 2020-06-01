@@ -14,8 +14,6 @@ import java.util.Set;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -33,11 +31,11 @@ import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandler;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import lombok.extern.log4j.Log4j2;
 
 @Service("certifiedProductUploadManager")
+@Log4j2
 public class CertifiedProductUploadManager extends SecuredManager {
-    private static final Logger LOGGER = LogManager.getLogger(CertifiedProductUploadManager.class);
-
     private ErrorMessageUtil msgUtil;
     private CertifiedProductUploadHandlerFactory uploadHandlerFactory;
 
