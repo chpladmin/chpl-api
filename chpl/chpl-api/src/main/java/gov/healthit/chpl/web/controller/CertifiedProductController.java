@@ -840,7 +840,7 @@ public class CertifiedProductController {
             } catch (EntityCreationException | EntityRetrievalException ex) {
                 String error = "Error creating pending certified product " + listingToAdd.getUniqueId()
                 + ". Error was: " + ex.getMessage();
-                log.error(error);
+                LOGGER.error(error);
                 //send an email that something weird happened
                 sendUploadError(file, ex);
                 throw new ValidationException(error);
@@ -888,7 +888,7 @@ public class CertifiedProductController {
             attachments = new ArrayList<File>();
             attachments.add(temp);
         } catch (IOException io) {
-            log.error("Could not create temporary file for attachment: " + io.getMessage(), io);
+            LOGGER.error("Could not create temporary file for attachment: " + io.getMessage(), io);
         }
 
         //create the email body
@@ -907,7 +907,7 @@ public class CertifiedProductController {
             .htmlMessage(htmlBody)
             .sendEmail();
         } catch (MessagingException msgEx) {
-            log.error("Could not send email about failed listing upload.", msgEx);
+            LOGGER.error("Could not send email about failed listing upload.", msgEx);
         }
     }
 
