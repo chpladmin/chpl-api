@@ -56,7 +56,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
     @Autowired
     private CertificationCriterionService criterionService;
 
-    private static final int NUM_REPORT_COLS = 13;
+    private static final int NUM_REPORT_COLS = 14;
     private static final int ACB_COL = 0;
     private static final int DEVELOPER_COL = 1;
     private static final int PRODUCT_COL = 2;
@@ -66,10 +66,11 @@ public class QuestionableActivityEmailJob extends QuartzJob {
     private static final int LINK_COL = 6;
     private static final int ACTIVITY_DATE_COL = 7;
     private static final int ACTIVITY_USER_COL = 8;
-    private static final int ACTIVITY_TYPE_COL = 9;
-    private static final int ACTIVITY_DESCRIPTION_COL = 10;
-    private static final int ACTIVITY_CERT_STATUS_CHANGE_REASON_COL = 11;
-    private static final int ACTIVITY_REASON_COL = 12;
+    private static final int ACTIVITY_LEVEL_COL = 9;
+    private static final int ACTIVITY_TYPE_COL = 10;
+    private static final int ACTIVITY_DESCRIPTION_COL = 11;
+    private static final int ACTIVITY_CERT_STATUS_CHANGE_REASON_COL = 12;
+    private static final int ACTIVITY_REASON_COL = 13;
 
     // private Integer minRangeInDays = 1;
     // private Integer maxRangeInDays = 365;
@@ -206,6 +207,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         row.add("Link");
         row.add("Activity Timestamp");
         row.add("Responsible User");
+        row.add("Activity Level");
         row.add("Activity Type");
         row.add("Activity");
         row.add("Reason for Status Change");
@@ -241,6 +243,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         for (ActivityDateTriggerGroup activityGroup : activityGroups) {
             List<String> currRow = createEmptyRow();
             currRow.set(ACTIVITY_DATE_COL, Util.getTimestampFormatter().format(activityGroup.getActivityDate()));
+            currRow.set(ACTIVITY_LEVEL_COL, activityGroup.getTrigger().getLevel());
             currRow.set(ACTIVITY_TYPE_COL, activityGroup.getTrigger().getName());
 
             List<QuestionableActivityCertificationResultDTO> activitiesForGroup = activityByGroup.get(activityGroup);
@@ -280,6 +283,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         for (ActivityDateTriggerGroup activityGroup : activityGroups) {
             List<String> currRow = createEmptyRow();
             currRow.set(ACTIVITY_DATE_COL, Util.getTimestampFormatter().format(activityGroup.getActivityDate()));
+            currRow.set(ACTIVITY_LEVEL_COL, activityGroup.getTrigger().getLevel());
             currRow.set(ACTIVITY_TYPE_COL, activityGroup.getTrigger().getName());
 
             List<QuestionableActivityListingDTO> activitiesForGroup = activityByGroup.get(activityGroup);
@@ -319,6 +323,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         for (ActivityDateTriggerGroup activityGroup : activityGroups) {
             List<String> currRow = createEmptyRow();
             currRow.set(ACTIVITY_DATE_COL, Util.getTimestampFormatter().format(activityGroup.getActivityDate()));
+            currRow.set(ACTIVITY_LEVEL_COL, activityGroup.getTrigger().getLevel());
             currRow.set(ACTIVITY_TYPE_COL, activityGroup.getTrigger().getName());
 
             List<QuestionableActivityDeveloperDTO> activitiesForGroup = activityByGroup.get(activityGroup);
@@ -358,6 +363,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         for (ActivityDateTriggerGroup activityGroup : activityGroups) {
             List<String> currRow = createEmptyRow();
             currRow.set(ACTIVITY_DATE_COL, Util.getTimestampFormatter().format(activityGroup.getActivityDate()));
+            currRow.set(ACTIVITY_LEVEL_COL, activityGroup.getTrigger().getLevel());
             currRow.set(ACTIVITY_TYPE_COL, activityGroup.getTrigger().getName());
 
             List<QuestionableActivityProductDTO> activitiesForGroup = activityByGroup.get(activityGroup);
@@ -397,6 +403,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         for (ActivityDateTriggerGroup activityGroup : activityGroups) {
             List<String> currRow = createEmptyRow();
             currRow.set(ACTIVITY_DATE_COL, Util.getTimestampFormatter().format(activityGroup.getActivityDate()));
+            currRow.set(ACTIVITY_LEVEL_COL, activityGroup.getTrigger().getLevel());
             currRow.set(ACTIVITY_TYPE_COL, activityGroup.getTrigger().getName());
 
             List<QuestionableActivityVersionDTO> activitiesForGroup = activityByGroup.get(activityGroup);
@@ -418,8 +425,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         currRow.set(VERSION_COL, activity.getListing().getVersion().getVersion());
         currRow.set(LISTING_COL, activity.getListing().getChplProductNumber());
         currRow.set(STATUS_COL, activity.getListing().getCertificationStatusName());
-        currRow.set(LINK_COL, env.getProperty(
-                "chplUrlBegin") + "/#/admin/reports/" + activity.getListing().getId());
+        currRow.set(LINK_COL, env.getProperty("chplUrlBegin") + env.getProperty("listingReportsUrlPart")
+            + "/" + activity.getListing().getId());
         currRow.set(ACTIVITY_USER_COL, activity.getUser().getSubjectName());
 
         if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.CRITERIA_ADDED.getName())) {
@@ -499,8 +506,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         currRow.set(VERSION_COL, activity.getListing().getVersion().getVersion());
         currRow.set(LISTING_COL, activity.getListing().getChplProductNumber());
         currRow.set(STATUS_COL, activity.getListing().getCertificationStatusName());
-        currRow.set(LINK_COL, env.getProperty(
-                "chplUrlBegin") + "/#/admin/reports/" + activity.getListing().getId());
+        currRow.set(LINK_COL, env.getProperty("chplUrlBegin") + env.getProperty("listingReportsUrlPart")
+            + "/" + activity.getListing().getId());
         currRow.set(ACTIVITY_USER_COL, activity.getUser().getSubjectName());
 
         if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G1_SUCCESS_EDITED.getName())) {

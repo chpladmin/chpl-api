@@ -13,11 +13,14 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.util.Util;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SurveillanceRequirement implements Serializable {
     private static long serialVersionUID = -4406043308588618231L;
 

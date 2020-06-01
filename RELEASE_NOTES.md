@@ -1,5 +1,61 @@
 # Release Notes
 
+## Version 25.5.0
+_1 June 2020_
+
+### Features
+* Reset user's failed log in account when their accout is unlocked
+* Stop distinguishing between bad un/pw combination and non-existent user
+* Update BrokenSurveillanceRulesCreatorJob job to be non-blocking
+* Add /activity/metadata/beta/versions endpoint
+
+### Flagged Features
+* Stop generating some stats for 2014 Charts
+
+### Bug Fixes
+* Lockout user after too many failed login attempts
+* Update validation of user data when updating user and fix security responses on User endpoints
+* Add e2 criterion into v19 upload template
+
+---
+
+## Version 25.4.0
+_18 May 2020_
+
+### Features
+* ONC-ACB should only be able to add or remove criteria if listing is in "Active" status
+* Show repeated information in Questionable URL report
+* Provide better error message for QMS Standards that are too long in upload
+
+### Bug Fixes
+* Allow addition of active Macra Measures by ROLE_ACB
+* Reduce incorrect "activity" in Developer reports
+* Show all surveillance update activity in listing reports
+
+---
+
+## Version 25.3.0
+_4 May 2020_
+
+### Features
+* Add inactive date, decertified date, and ids to generated CSVs
+* Add /activity/metadata/beta/products endpoint
+* Send individual emails when developer ban may be triggered
+* Add comma between developer address line 1 and line 2 in CSV download
+* Add 'Activity Level' column to questionable activity report
+* Add /activity/metadata/beta/developers endpoint
+
+### Flagged Features
+* Require d12 and d13 when editing certain 2015 listings in certain scenarios
+
+### Bug Fixes
+* Remove requirement for d4 from certain a criteria
+* ACBs receive error when editing a listing with removed MACRA measures
+* Questionable URL Report Generator not sending report
+* Use correct URL for listing report in questionable activity email
+
+---
+
 ## Version 25.2.0
 _20 April 2020_
 
