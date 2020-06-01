@@ -74,8 +74,8 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
     private static final String CRITERIA_TO_ADD = "170.315 (b)(1):Transitions of Care (Cures Update);"
             + "170.315 (b)(2):Clinical Information Reconciliation and Incorporation (Cures Update);"
             + "170.315 (b)(3):Electronic Prescribing (Cures Update);"
-            + "170.315 (b)(7):Security tags - summary of care - send (Cures Update);"
-            + "170.315 (b)(8):Security tags - summary of care - receive (Cures Update);"
+            + "170.315 (b)(7):Security Tags - Summary of Care - Send (Cures Update);"
+            + "170.315 (b)(8):Security Tags - Summary of Care - Receive (Cures Update);"
             + "170.315 (b)(9):Care Plan (Cures Update);"
             + "170.315 (b)(10):Electronic Health Information Export;"
             + "170.315 (c)(3):Clinical Quality Measures - Report (Cures Update);"
@@ -86,7 +86,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
             + "170.315 (d)(13):Multi-Factor Authentication;"
             + "170.315 (e)(1):View, Download, and Transmit to 3rd Party (Cures Update);"
             + "170.315 (f)(5):Transmission to Public Health Agencies - Electronic Case Reporting (Cures Update);"
-            + "170.315 (g)(6):Consolidated CDA creation performance (Cures Update);"
+            + "170.315 (g)(6):Consolidated CDA Creation Performance (Cures Update);"
             + "170.315 (g)(9):Application Access - All Data Request (Cures Update);"
             + "170.315 (g)(10):Standardized API for Patient and Population Services;";
     private static final String EDITION_2015 = "2015";
@@ -206,8 +206,8 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         add2015Criterion("170.315 (b)(1)", "Transitions of Care (Cures Update)");
         add2015Criterion("170.315 (b)(2)", "Clinical Information Reconciliation and Incorporation (Cures Update)");
         add2015Criterion("170.315 (b)(3)", "Electronic Prescribing (Cures Update)");
-        add2015Criterion("170.315 (b)(7)", "Security tags - summary of care - send (Cures Update)");
-        add2015Criterion("170.315 (b)(8)", "Security tags - summary of care - receive (Cures Update)");
+        add2015Criterion("170.315 (b)(7)", "Security Tags - Summary of Care - Send (Cures Update)");
+        add2015Criterion("170.315 (b)(8)", "Security Tags - Summary of Care - Receive (Cures Update)");
         add2015Criterion("170.315 (b)(9)", "Care Plan (Cures Update)");
         add2015Criterion("170.315 (b)(10)", "Electronic Health Information Export");
         add2015Criterion("170.315 (c)(3)", "Clinical Quality Measures - Report (Cures Update)");
@@ -218,7 +218,7 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         add2015Criterion("170.315 (d)(13)", "Multi-Factor Authentication");
         add2015Criterion("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)");
         add2015Criterion("170.315 (f)(5)", "Transmission to Public Health Agencies - Electronic Case Reporting (Cures Update)");
-        add2015Criterion("170.315 (g)(6)", "Consolidated CDA creation performance (Cures Update)");
+        add2015Criterion("170.315 (g)(6)", "Consolidated CDA Creation Performance (Cures Update)");
         add2015Criterion("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)");
         add2015Criterion("170.315 (g)(10)", "Standardized API for Patient and Population Services");
     }
