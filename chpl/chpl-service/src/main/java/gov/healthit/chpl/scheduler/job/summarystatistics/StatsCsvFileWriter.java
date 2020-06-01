@@ -25,8 +25,6 @@ public class StatsCsvFileWriter {
             "Total Developers",
             "Total Developers With 2014 Listings",
             "Total Developers With 2015 Listings",
-            "Total Developers With 2015 Non Cures Listings",
-            "Total Developers With 2015 Cures Listings",
             "Total Unique Products",
             "Total Products With Active 2014 Listings",
             "Total Products With Active 2015 Listings",
