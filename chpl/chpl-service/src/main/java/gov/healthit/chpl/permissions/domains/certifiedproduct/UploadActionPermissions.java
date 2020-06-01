@@ -15,7 +15,7 @@ public class UploadActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess(Object obj) {
-        return hasAccess();
+        return false;
     }
 
 }
