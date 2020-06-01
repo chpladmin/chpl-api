@@ -825,7 +825,7 @@ public class CertifiedProductController {
                     HttpHeaders.WARNING, "299 - \"Deprecated upload template\"");
         } catch (ValidationException e) {
             errorMessages.addAll(e.getErrorMessages());
-        } catch (Exception e) {
+        } catch (InvalidArgumentsException | JsonProcessingException e) {
             errorMessages.add(e.getMessage());
         }
         if (errorMessages.size() > 0) {
