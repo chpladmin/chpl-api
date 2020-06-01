@@ -499,8 +499,8 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         addTestFunctionalityMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "(b)(3)(ii)(B)(9)");
         addTestFunctionalityMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "(b)(3)(ii)(D)");
 
-        addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "(e)(1)(i)(A)(2)");
-        addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "(e)(1)(i)(A)(3)");
+        addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "(e)(1)(i)(A)(4)");
+        addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "(e)(1)(i)(A)(5)");
         addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "(e)(1)(i)(B)(2)(i)");
         addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "(e)(1)(i)(B)(2)(ii)");
         addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "(e)(1)(i)(B)(3)");
