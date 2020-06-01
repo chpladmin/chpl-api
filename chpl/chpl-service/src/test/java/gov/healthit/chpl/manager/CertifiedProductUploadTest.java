@@ -105,6 +105,8 @@ public class CertifiedProductUploadTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.upload.emptyRows"))).thenReturn("Header only message");
 
         PendingCertifiedProductEntity parsed = new PendingCertifiedProductEntity();
+        //had to do this because of lots of inheritance and super() getting called
+        //maybe an indication to refactor the upload handlers in the future
         CertifiedProductHandler2015Version5 v19UploadHandler = Mockito.spy(new CertifiedProductHandler2015Version5(msgUtil));
         Mockito.doReturn(parsed).when(((CertifiedProductHandler2015Version4) v19UploadHandler)).handle();
         Mockito.doReturn(parsed).when(((CertifiedProductHandler2015Version3) v19UploadHandler)).handle();
@@ -149,6 +151,7 @@ public class CertifiedProductUploadTest {
         Mockito.doReturn(parsed).when(((CertifiedProductHandler2015Version2) v19UploadHandler)).handle();
         Mockito.doReturn(parsed).when(((CertifiedProductHandler2015Version1) v19UploadHandler)).handle();
         Mockito.when(v19UploadHandler.handle()).thenReturn(parsed);
+        //need upload template version to exist and be deprecated
         UploadTemplateVersionDTO uploadTemplateVersion = Mockito.spy(new UploadTemplateVersionDTO());
         Mockito.when(uploadTemplateVersion.getDeprecated()).thenReturn(Boolean.TRUE);
         Mockito.when(v19UploadHandler.getUploadTemplateVersion()).thenReturn(uploadTemplateVersion);

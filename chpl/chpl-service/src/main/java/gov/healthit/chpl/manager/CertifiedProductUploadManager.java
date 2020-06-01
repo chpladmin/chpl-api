@@ -159,7 +159,7 @@ public class CertifiedProductUploadManager extends SecuredManager {
                         LOGGER.error(error);
                         //send an email that something weird happened
                         sendUploadError(file, ex);
-                        throw new ValidationException(error);
+                        return null;
                     }
                 }
             }
