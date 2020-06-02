@@ -26,7 +26,6 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.statistics.DeveloperStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.ListingStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
-import gov.healthit.chpl.domain.DateRange;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.domain.concept.NonconformityStatusConcept;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyAltTestStatistics;
@@ -36,7 +35,6 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
-import lombok.var;
 
 @Component
 public class EmailStatisticsCreator {
@@ -64,6 +62,7 @@ public class EmailStatisticsCreator {
         this.env = env;
     }
 
+    @SuppressWarnings({"checkstyle:linelength", "checkstyle:methodlength"})
     @Transactional(readOnly = true)
     public Statistics getStatistics() throws InterruptedException, ExecutionException {
         ExecutorService executorService = Executors.newFixedThreadPool(getThreadCountForJob());
@@ -82,18 +81,18 @@ public class EmailStatisticsCreator {
             //Developer Statistics
             /////////////////////////////////////////////////////////////////////////////////////
             //Used for multiple sections
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(null), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(), executorService)
                     .thenAccept(result -> stats.setTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(result)));
             // Total # of Unique Developers (Regardless of Edition)
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopers(null), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopers(), executorService)
                     .thenAccept(result -> stats.setTotalDevelopers(result)));
             // Total # of Developers with 2014 Listings (Regardless of Status)
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopersWith2014Listings(null), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopersWith2014Listings(), executorService)
                     .thenAccept(result -> stats.setTotalDevelopersWith2014Listings(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopersByCertifiedBodyWithListingsEachYear(null), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopersByCertifiedBodyWithListingsEachYear(), executorService)
                     .thenAccept(result -> stats.setTotalDevelopersByCertifiedBodyWithListingsEachYear(result)));
             // Total # of Developers with Active 2014 Listings
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopersWithActive2014Listings(null), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopersWithActive2014Listings(), executorService)
                     .thenAccept(result -> stats.setTotalDevelopersWithActive2014Listings(result)));
 
             //**********************
@@ -139,21 +138,21 @@ public class EmailStatisticsCreator {
             //Product Statistics
             /////////////////////////////////////////////////////////////////////////////////////
             // Used for multiple sections
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(null), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(), executorService)
                     .thenAccept(result -> stats.setTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(result)));
             //Total # of Certified Unique Products Regardless of Status or Edition - Including 2011)
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalCertifiedProducts(null), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalCertifiedProducts(), executorService)
                     .thenAccept(result -> stats.setTotalCertifiedProducts(result)));
             // Total # of Unique Products with 2014 Listings (Regardless of Status)
-            futures.add(CompletableFuture.supplyAsync(() -> getTotal2014Listings(null), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotal2014Listings(), executorService)
                     .thenAccept(result -> stats.setTotalCPs2014Listings(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalCPListingsEachYearByCertifiedBody(null), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalCPListingsEachYearByCertifiedBody(), executorService)
                     .thenAccept(result -> stats.setTotalCPListingsEachYearByCertifiedBody(result)));
             // Total # of Unique Products with Active 2014 Listings
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalCPs2014Listings(null), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalCPs2014Listings(), executorService)
                     .thenAccept(result -> stats.setTotalCPsActive2014Listings(result)));
             // Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2014 Listings
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalCPsSuspended2014Listings(null), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalCPsSuspended2014Listings(), executorService)
                     .thenAccept(result -> stats.setTotalCPsSuspended2014Listings(result)));
 
             //**********************
@@ -196,19 +195,19 @@ public class EmailStatisticsCreator {
                     .thenAccept(result -> stats.setUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(result)));
 
             //Total # of Unique Products with Active Listings (Regardless of Edition)
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalCPsActiveListings(null), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalCPsActiveListings(), executorService)
                     .thenAccept(result -> stats.setTotalCPsActiveListings(result)));
 
             /////////////////////////////////////////////////////////////////////////////////////
             //Listing Statistics
             /////////////////////////////////////////////////////////////////////////////////////
             // Total # of Active (Including Suspended by ONC/ONC-ACB 2014 Listings)
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalActive2014Listings(null), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalActive2014Listings(), executorService)
                     .thenAccept(result -> stats.setTotalActive2014Listings(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalActiveListingsByCertifiedBody(null), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalActiveListingsByCertifiedBody(), executorService)
                     .thenAccept(result -> stats.setTotalActiveListingsByCertifiedBody(result)));
             // Total # of Active (Including Suspended by ONC/ONC-ACB 2015 Listings)
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalActive2015Listings(null), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalActive2015Listings(), executorService)
                     .thenAccept(result -> stats.setTotalActive2015Listings(result)));
             //Total # of 2015 Listings with Alternative Test Methods
             futures.add(CompletableFuture.supplyAsync(() -> getTotalListingsWithAlternateTestMethods(), executorService)
@@ -220,7 +219,7 @@ public class EmailStatisticsCreator {
             futures.add(CompletableFuture.supplyAsync(() -> getActiveListingCountWithCuresUpdatedByAcb(listingsAll2015), executorService)
                     .thenAccept(result -> stats.setActiveListingCountWithCuresUpdatedByAcb(result)));
             // Total # of 2015-Cures Update Listings with Alternative Test Methods
-            futures.add(CompletableFuture.supplyAsync(() -> getListingCountFor2015AndAltTestMethodsByAcb(listingsAll2015, certificationResultDAO), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getListingCountFor2015AndAltTestMethodsByAcb(listingsAll2015), executorService)
                     .thenAccept(result -> stats.setListingCountWithCuresUpdatedAndAltTestMethodsByAcb(result)));
             // Total # of 2015-Cures Updated Listings (Regardless of Status)
             futures.add(CompletableFuture.supplyAsync(() -> getAllListingsCountWithCuresUpdated(listingsAll2015), executorService)
@@ -231,15 +230,15 @@ public class EmailStatisticsCreator {
             // Surveillance Statistics
             /////////////////////////////////////////////////////////////////////////////////////
             // Total # of Surveillance Activities
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalSurveillanceActivities(null), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalSurveillanceActivities(), executorService)
                     .thenAccept(result -> stats.setTotalSurveillanceActivities(result)));
             // Open Surveillance Activities
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalOpenSurveillanceActivities(null), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalOpenSurveillanceActivities(), executorService)
                     .thenAccept(result -> stats.setTotalOpenSurveillanceActivities(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalOpenSurveillancesByAcb(null), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalOpenSurveillancesByAcb(), executorService)
                     .thenAccept(result -> stats.setTotalOpenSurveillanceActivitiesByAcb(result)));
             // Closed Surveillance Activities
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalClosedSurveillanceActivities(null), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalClosedSurveillanceActivities(), executorService)
                     .thenAccept(result -> stats.setTotalClosedSurveillanceActivities(result)));
             // Average Duration of Closed Surveillance (in days)
             futures.add(CompletableFuture.supplyAsync(() -> getAverageTimeToCloseSurveillance(), executorService)
@@ -249,15 +248,15 @@ public class EmailStatisticsCreator {
             // Non-Conformity Statistics
             /////////////////////////////////////////////////////////////////////////////////////
             // Total # of NCs
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalNonConformities(null), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalNonConformities(), executorService)
                     .thenAccept(result -> stats.setTotalNonConformities(result)));
             // Open NCs
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalOpenNonconformities(null), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalOpenNonconformities(), executorService)
                     .thenAccept(result -> stats.setTotalOpenNonconformities(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalOpenNonconformitiesByAcb(null), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalOpenNonconformitiesByAcb(), executorService)
                     .thenAccept(result -> stats.setTotalOpenNonconformitiesByAcb(result)));
             // Closed NCs
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalClosedNonconformities(null), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalClosedNonconformities(), executorService)
                     .thenAccept(result -> stats.setTotalClosedNonconformities(result)));
             // Average Time to Assess Conformity (in days)
             futures.add(CompletableFuture.supplyAsync(() -> getAverageTimeToAssessConformity(), executorService)
@@ -269,7 +268,7 @@ public class EmailStatisticsCreator {
             futures.add(CompletableFuture.supplyAsync(() -> getAverageDurationOfCAP(), executorService)
                     .thenAccept(result -> stats.setAverageDurationOfCAP(result)));
             // Average Time from CAP Approval to Surveillance Close (in days)
-            futures.add(CompletableFuture.supplyAsync(() -> getAverageTimeFromCAPApprovalToSurveillanceClose(surveillanceStatisticsDAO), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getAverageTimeFromCAPApprovalToSurveillanceClose(), executorService)
                     .thenAccept(result -> stats.setAverageTimeFromCAPApprovalToSurveillanceEnd(result)));
             // Average Time from CAP Close to Surveillance Close (in days)
             futures.add(CompletableFuture.supplyAsync(() -> getAverageTimeFromCAPEndToSurveillanceClose(), executorService)
@@ -298,131 +297,103 @@ public class EmailStatisticsCreator {
         return stats;
     }
 
-    private Long getTotalDevelopers(DateRange dateRange) {
-        Long total = developerStatisticsDAO.getTotalDevelopers(dateRange);
+    private Long getTotalDevelopers() {
+        Long total = developerStatisticsDAO.getTotalDevelopers(null);
         return total;
     }
 
-    private Long getTotalDevelopersWith2014Listings(DateRange dateRange) {
-        Long total = developerStatisticsDAO.getTotalDevelopersWithListingsByEditionAndStatus(dateRange, "2014", null);
+    private Long getTotalDevelopersWith2014Listings() {
+        Long total = developerStatisticsDAO.getTotalDevelopersWithListingsByEditionAndStatus(null, "2014", null);
         return total;
     }
 
-    private Long getTotalDevelopersWithActive2014Listings(DateRange dateRange) {
+    private Long getTotalDevelopersWithActive2014Listings() {
         List<String> activeStatuses = new ArrayList<String>();
         activeStatuses.add(CertificationStatusType.Active.getName().toUpperCase());
         activeStatuses.add(CertificationStatusType.SuspendedByAcb.getName().toUpperCase());
         activeStatuses.add(CertificationStatusType.SuspendedByOnc.getName().toUpperCase());
-        Long total = developerStatisticsDAO.getTotalDevelopersWithListingsByEditionAndStatus(
-                dateRange, "2014", activeStatuses);
-        return total;
+        return developerStatisticsDAO.getTotalDevelopersWithListingsByEditionAndStatus(null, "2014", activeStatuses);
     }
 
-    private List<CertifiedBodyStatistics> getTotalDevelopersByCertifiedBodyWithListingsEachYear(DateRange dateRange) {
-        List<CertifiedBodyStatistics> total = developerStatisticsDAO
-                .getTotalDevelopersByCertifiedBodyWithListingsEachYear(dateRange);
-        return total;
+    private List<CertifiedBodyStatistics> getTotalDevelopersByCertifiedBodyWithListingsEachYear() {
+        return developerStatisticsDAO.getTotalDevelopersByCertifiedBodyWithListingsEachYear(null);
     }
 
-    private List<CertifiedBodyStatistics> getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(DateRange dateRange) {
-        List<CertifiedBodyStatistics> total = developerStatisticsDAO
-                .getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(dateRange);
-        return total;
+    private List<CertifiedBodyStatistics> getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear() {
+        return developerStatisticsDAO.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(null);
     }
 
-    private Long getTotalCertifiedProducts(DateRange dateRange) {
-        Long total = listingStatisticsDAO.getTotalUniqueProductsByEditionAndStatus(dateRange, null, null);
-        return total;
+    private Long getTotalCertifiedProducts() {
+        return listingStatisticsDAO.getTotalUniqueProductsByEditionAndStatus(null, null, null);
     }
 
-    private List<CertifiedBodyStatistics> getTotalCPListingsEachYearByCertifiedBody(DateRange dateRange) {
-        List<CertifiedBodyStatistics> totals = listingStatisticsDAO.getTotalCPListingsEachYearByCertifiedBody(dateRange);
-        return totals;
+    private List<CertifiedBodyStatistics> getTotalCPListingsEachYearByCertifiedBody() {
+        return  listingStatisticsDAO.getTotalCPListingsEachYearByCertifiedBody(null);
     }
 
-    private List<CertifiedBodyStatistics> getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(DateRange dateRange) {
-        List<CertifiedBodyStatistics> totals = listingStatisticsDAO
-                .getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(dateRange);
-        return totals;
+    private List<CertifiedBodyStatistics> getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus() {
+        return listingStatisticsDAO.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(null);
     }
 
-    private Long getTotalCPs2014Listings(DateRange dateRange) {
-        Long total = listingStatisticsDAO
-                .getTotalUniqueProductsByEditionAndStatus(dateRange, "2014", null);
-        return total;
+    private Long getTotalCPs2014Listings() {
+        return listingStatisticsDAO.getTotalUniqueProductsByEditionAndStatus(null, "2014", null);
     }
 
-    private Long getTotalCPsSuspended2014Listings(DateRange dateRange) {
+    private Long getTotalCPsSuspended2014Listings() {
         List<String> suspendedStatuses = new ArrayList<String>();
         suspendedStatuses.add(CertificationStatusType.SuspendedByAcb.getName().toUpperCase());
         suspendedStatuses.add(CertificationStatusType.SuspendedByOnc.getName().toUpperCase());
-        Long total = listingStatisticsDAO
-                .getTotalUniqueProductsByEditionAndStatus(dateRange, "2014", suspendedStatuses);
-        return total;
+        return listingStatisticsDAO.getTotalUniqueProductsByEditionAndStatus(null, "2014", suspendedStatuses);
     }
 
-    private Long getTotalCPsActiveListings(DateRange dateRange) {
+    private Long getTotalCPsActiveListings() {
         List<String> activeStatuses = new ArrayList<String>();
         activeStatuses.add(CertificationStatusType.Active.getName().toUpperCase());
-        Long total = listingStatisticsDAO
-                .getTotalUniqueProductsByEditionAndStatus(dateRange, null, activeStatuses);
-        return total;
+        return listingStatisticsDAO.getTotalUniqueProductsByEditionAndStatus(null, null, activeStatuses);
     }
 
-    private Long getTotalActive2014Listings(DateRange dateRange) {
+    private Long getTotalActive2014Listings() {
         List<String> activeStatuses = new ArrayList<String>();
         activeStatuses.add(CertificationStatusType.Active.getName().toUpperCase());
         activeStatuses.add(CertificationStatusType.SuspendedByAcb.getName().toUpperCase());
         activeStatuses.add(CertificationStatusType.SuspendedByOnc.getName().toUpperCase());
-        Long total = listingStatisticsDAO
-                .getTotalListingsByEditionAndStatus(dateRange, "2014", activeStatuses);
-        return total;
+        return listingStatisticsDAO.getTotalListingsByEditionAndStatus(null, "2014", activeStatuses);
     }
 
-    private Long getTotalActive2015Listings(DateRange dateRange) {
+    private Long getTotalActive2015Listings() {
         List<String> activeStatuses = new ArrayList<String>();
         activeStatuses.add(CertificationStatusType.Active.getName().toUpperCase());
         activeStatuses.add(CertificationStatusType.SuspendedByAcb.getName().toUpperCase());
         activeStatuses.add(CertificationStatusType.SuspendedByOnc.getName().toUpperCase());
-        Long total = listingStatisticsDAO
-                .getTotalListingsByEditionAndStatus(dateRange, "2015", activeStatuses);
-        return total;
+        return listingStatisticsDAO.getTotalListingsByEditionAndStatus(null, "2015", activeStatuses);
     }
 
     private Long getTotalListingsWithAlternateTestMethods() {
-        Long total = listingStatisticsDAO.getTotalListingsWithAlternateTestMethods();
-        return total;
+        return listingStatisticsDAO.getTotalListingsWithAlternateTestMethods();
     }
 
     private List<CertifiedBodyAltTestStatistics> getTotalListingsWithCertifiedBodyAndAlternativeTestMethods() {
-        List<CertifiedBodyAltTestStatistics> totals = listingStatisticsDAO
-                .getTotalListingsWithCertifiedBodyAndAlternativeTestMethods();
-        return totals;
+        return listingStatisticsDAO.getTotalListingsWithCertifiedBodyAndAlternativeTestMethods();
     }
 
-    private List<CertifiedBodyStatistics> getTotalActiveListingsByCertifiedBody(DateRange dateRange) {
-        List<CertifiedBodyStatistics> totals = listingStatisticsDAO.getTotalActiveListingsByCertifiedBody(dateRange);
-        return totals;
+    private List<CertifiedBodyStatistics> getTotalActiveListingsByCertifiedBody() {
+        return listingStatisticsDAO.getTotalActiveListingsByCertifiedBody(null);
     }
 
-    private Long getTotal2014Listings(DateRange dateRange) {
-        Long total = listingStatisticsDAO.getTotalListingsByEditionAndStatus(dateRange, "2014", null);
-        return total;
+    private Long getTotal2014Listings() {
+        return listingStatisticsDAO.getTotalListingsByEditionAndStatus(null, "2014", null);
     }
 
-    private Long getTotalSurveillanceActivities(DateRange dateRange) {
-        Long total = surveillanceStatisticsDAO.getTotalSurveillanceActivities(dateRange);
-        return total;
+    private Long getTotalSurveillanceActivities() {
+        return surveillanceStatisticsDAO.getTotalSurveillanceActivities(null);
     }
 
-    private Long getTotalOpenSurveillanceActivities(DateRange dateRange) {
-        Long total = surveillanceStatisticsDAO.getTotalOpenSurveillanceActivities(dateRange);
-        return total;
+    private Long getTotalOpenSurveillanceActivities() {
+        return surveillanceStatisticsDAO.getTotalOpenSurveillanceActivities(null);
     }
 
-    private Long getTotalClosedSurveillanceActivities(DateRange dateRange) {
-        Long total = surveillanceStatisticsDAO.getTotalClosedSurveillanceActivities(dateRange);
-        return total;
+    private Long getTotalClosedSurveillanceActivities() {
+        return surveillanceStatisticsDAO.getTotalClosedSurveillanceActivities(null);
     }
 
     private Long getAverageTimeToCloseSurveillance() {
@@ -437,29 +408,24 @@ public class EmailStatisticsCreator {
         return totalDuration / surveillances.size();
     }
 
-    private Long getTotalNonConformities(DateRange dateRange) {
-        Long total = surveillanceStatisticsDAO.getTotalNonConformities(dateRange);
-        return total;
+    private Long getTotalNonConformities() {
+        return surveillanceStatisticsDAO.getTotalNonConformities(null);
     }
 
-    private Long getTotalOpenNonconformities(DateRange dateRange) {
-        Long total = surveillanceStatisticsDAO.getTotalOpenNonconformities(dateRange);
-        return total;
+    private Long getTotalOpenNonconformities() {
+        return surveillanceStatisticsDAO.getTotalOpenNonconformities(null);
     }
 
-    private Long getTotalClosedNonconformities(DateRange dateRange) {
-        Long total = surveillanceStatisticsDAO.getTotalClosedNonconformities(dateRange);
-        return total;
+    private Long getTotalClosedNonconformities() {
+        return surveillanceStatisticsDAO.getTotalClosedNonconformities(null);
     }
 
-    private List<CertifiedBodyStatistics> getTotalOpenNonconformitiesByAcb(DateRange dateRange) {
-        List<CertifiedBodyStatistics> totals = surveillanceStatisticsDAO.getTotalOpenNonconformitiesByAcb(dateRange);
-        return totals;
+    private List<CertifiedBodyStatistics> getTotalOpenNonconformitiesByAcb() {
+        return surveillanceStatisticsDAO.getTotalOpenNonconformitiesByAcb(null);
     }
 
-    private List<CertifiedBodyStatistics> getTotalOpenSurveillancesByAcb(DateRange dateRange) {
-        List<CertifiedBodyStatistics> totals = surveillanceStatisticsDAO.getTotalOpenSurveillanceActivitiesByAcb(dateRange);
-        return totals;
+    private List<CertifiedBodyStatistics> getTotalOpenSurveillancesByAcb() {
+        return surveillanceStatisticsDAO.getTotalOpenSurveillanceActivitiesByAcb(null);
     }
 
     private Long getAverageTimeToAssessConformity() {
@@ -514,7 +480,7 @@ public class EmailStatisticsCreator {
         return totalDuration / nonconformities.size();
     }
 
-    private Long getAverageTimeFromCAPApprovalToSurveillanceClose(SurveillanceStatisticsDAO surveillanceStatisticsDAO) {
+    private Long getAverageTimeFromCAPApprovalToSurveillanceClose() {
         List<SurveillanceEntity> surveillances = surveillanceStatisticsDAO.getAllSurveillancesWithNonconformities();
 
         List<SurveillanceNonconformityEntity> nonconformitiesWithDeterminationDate = surveillances.stream()
@@ -572,7 +538,7 @@ public class EmailStatisticsCreator {
     private Map<Long, Long> getOpenCAPCountByAcb() {
         List<SurveillanceEntity> surveillances = surveillanceStatisticsDAO.getAllSurveillancesWithNonconformities();
 
-        Map<Long, Long> openCAPCountByAcb = surveillances.stream()
+        return surveillances.stream()
                 .flatMap(surv -> surv.getSurveilledRequirements().stream())
                 .flatMap(req -> req.getNonconformities().stream())
                 .filter(nc -> nc.getCapApproval() != null
@@ -581,13 +547,12 @@ public class EmailStatisticsCreator {
                 .map(nc -> new NonconformanceStatistic(
                         findSurveillanceForNonconformity(nc, surveillances).getCertifiedProduct().getCertificationBodyId(), nc))
                 .collect(Collectors.groupingBy(stat -> stat.getCertificationBodyId(), Collectors.counting()));
-        return openCAPCountByAcb;
     }
 
     private Map<Long, Long> getClosedCAPCountByAcb() {
         List<SurveillanceEntity> surveillances = surveillanceStatisticsDAO.getAllSurveillancesWithNonconformities();
 
-        Map<Long, Long> openCAPCountByAcb = surveillances.stream()
+        return surveillances.stream()
                 .flatMap(surv -> surv.getSurveilledRequirements().stream())
                 .flatMap(req -> req.getNonconformities().stream())
                 .filter(nc -> nc.getCapApproval() != null
@@ -596,12 +561,11 @@ public class EmailStatisticsCreator {
                 .map(nc -> new NonconformanceStatistic(
                         findSurveillanceForNonconformity(nc, surveillances).getCertifiedProduct().getCertificationBodyId(), nc))
                 .collect(Collectors.groupingBy(stat -> stat.getCertificationBodyId(), Collectors.counting()));
-        return openCAPCountByAcb;
     }
 
     private List<CertifiedBodyStatistics> getUniqueDevelopersCountFor2015ListingsByAcb(
             List<CertifiedProductDetailsDTO> certifiedProducts, Edition2015Criteria listingsToInclude) {
-        var x = certifiedProducts.stream()
+        return certifiedProducts.stream()
                 .filter(listing -> includeListing(listing, listingsToInclude))
                 .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
                 .entrySet().stream()
@@ -614,12 +578,11 @@ public class EmailStatisticsCreator {
                     return stat;
                 })
                 .collect(Collectors.toList());
-        return x;
     }
 
     private List<CertifiedBodyStatistics> getUniqueDevelopersCountFor2015ActiveListingsByAcb(
             List<CertifiedProductDetailsDTO> certifiedProducts, Edition2015Criteria listingsToInclude) {
-        var x = certifiedProducts.stream()
+        return certifiedProducts.stream()
                 .filter(listing -> includeListing(listing, listingsToInclude)
                         && listing.getCertificationStatusName().equals(CertificationStatusType.Active.getName()))
                 .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
@@ -633,12 +596,11 @@ public class EmailStatisticsCreator {
                     return stat;
                 })
                 .collect(Collectors.toList());
-        return x;
     }
 
     private List<CertifiedBodyStatistics> getUniqueDevelopersCountFor2015SuspendedListingsByAcb(
             List<CertifiedProductDetailsDTO> certifiedProducts, Edition2015Criteria listingsToInclude) {
-        var x = certifiedProducts.stream()
+        return certifiedProducts.stream()
                 .filter(cp -> includeListing(cp, listingsToInclude)
                         && (cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByAcb.getName())
                                 || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByOnc.getName())))
@@ -653,12 +615,11 @@ public class EmailStatisticsCreator {
                     return stat;
                 })
                 .collect(Collectors.toList());
-        return x;
     }
 
     private List<CertifiedBodyStatistics> getUniqueProductsCountFor2015ListingsByAcb(
             List<CertifiedProductDetailsDTO> certifiedProducts, Edition2015Criteria listingsToInclude) {
-        var x = certifiedProducts.stream()
+        return certifiedProducts.stream()
                 .filter(listing -> includeListing(listing, listingsToInclude))
                 .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
                 .entrySet().stream()
@@ -671,12 +632,11 @@ public class EmailStatisticsCreator {
                     return stat;
                 })
                 .collect(Collectors.toList());
-        return x;
     }
 
     private List<CertifiedBodyStatistics> getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(
             List<CertifiedProductDetailsDTO> certifiedProducts, Edition2015Criteria listingsToInclude) {
-        var x = certifiedProducts.stream()
+        return certifiedProducts.stream()
                 .filter(listing -> includeListing(listing, listingsToInclude)
                         && listing.getCertificationStatusName().equals(CertificationStatusType.Active.getName()))
                 .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
@@ -690,12 +650,11 @@ public class EmailStatisticsCreator {
                     return stat;
                 })
                 .collect(Collectors.toList());
-        return x;
     }
 
     private List<CertifiedBodyStatistics> getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(
             List<CertifiedProductDetailsDTO> certifiedProducts, Edition2015Criteria listingsToInclude) {
-        var x = certifiedProducts.stream()
+        return certifiedProducts.stream()
                 .filter(cp -> includeListing(cp, listingsToInclude)
                         && (cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByAcb.getName())
                                 || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByOnc.getName())))
@@ -710,12 +669,11 @@ public class EmailStatisticsCreator {
                     return stat;
                 })
                 .collect(Collectors.toList());
-        return x;
     }
 
     private List<CertifiedBodyStatistics> getActiveListingCountWithCuresUpdatedByAcb(
             List<CertifiedProductDetailsDTO> certifiedProducts) {
-        var x = certifiedProducts.stream()
+        return certifiedProducts.stream()
                 .filter(cp -> cp.getCertificationStatusName().equals(CertificationStatusType.Active.getName())
                         || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByAcb.getName())
                         || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByOnc.getName()))
@@ -729,13 +687,12 @@ public class EmailStatisticsCreator {
                     return stat;
                 })
                 .collect(Collectors.toList());
-        return x;
     }
 
     private List<CertifiedBodyStatistics> getListingCountFor2015AndAltTestMethodsByAcb(
-            List<CertifiedProductDetailsDTO> certifiedProducts, CertificationResultDAO certificationResultDAO) {
-        var x = certifiedProducts.stream()
-                .filter(cp -> doesListingHaveAlternativeTestMethod(cp.getId(), certificationResultDAO))
+            List<CertifiedProductDetailsDTO> certifiedProducts) {
+        return certifiedProducts.stream()
+                .filter(cp -> doesListingHaveAlternativeTestMethod(cp.getId()))
                 .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
                 .entrySet().stream()
                 .map(entry -> {
@@ -746,18 +703,15 @@ public class EmailStatisticsCreator {
                     return stat;
                 })
                 .collect(Collectors.toList());
-        return x;
     }
 
     private Long getAllListingsCountWithCuresUpdated(List<CertifiedProductDetailsDTO> certifiedProducts) {
-        var x = certifiedProducts.stream()
+        return certifiedProducts.stream()
                 .filter(listing -> listing.getCuresUpdate())
                 .count();
-
-        return x;
     }
 
-    private boolean doesListingHaveAlternativeTestMethod(Long listingId, CertificationResultDAO certificationResultDAO) {
+    private boolean doesListingHaveAlternativeTestMethod(Long listingId) {
         return certificationResultDAO.getTestProceduresForListing(listingId).stream()
                 .filter(crtp -> !crtp.getTestProcedure().getName().equals(ONC_TEST_METHOD))
                 .findAny()
@@ -768,7 +722,7 @@ public class EmailStatisticsCreator {
         private Long certificationBodyId;
         private SurveillanceNonconformityEntity nonconformity;
 
-        public NonconformanceStatistic(Long certificationBodyId, SurveillanceNonconformityEntity nonconformity) {
+        NonconformanceStatistic(Long certificationBodyId, SurveillanceNonconformityEntity nonconformity) {
             this.certificationBodyId = certificationBodyId;
             this.nonconformity = nonconformity;
         }
