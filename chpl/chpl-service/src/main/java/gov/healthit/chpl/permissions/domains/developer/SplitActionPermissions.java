@@ -1,21 +1,12 @@
 package gov.healthit.chpl.permissions.domains.developer;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
 @Component("developerSplitActionPermissions")
 public class SplitActionPermissions extends ActionPermissions {
-
-    @Autowired
-    private DeveloperDAO developerDao;
-
-    @Autowired
-    private CertifiedProductDAO certifiedProductDao;
 
     @Override
     public boolean hasAccess() {

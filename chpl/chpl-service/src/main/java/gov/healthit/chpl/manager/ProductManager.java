@@ -37,7 +37,7 @@ import gov.healthit.chpl.util.ValidationUtils;
 
 @Service
 public class ProductManager extends SecuredManager {
-    private static final Logger LOGGER = LogManager.getLogger(ProductManager.class);
+    private static Logger LOGGER = LogManager.getLogger(ProductManager.class);
 
     private ErrorMessageUtil msgUtil;
     private ProductDAO productDao;
@@ -52,10 +52,10 @@ public class ProductManager extends SecuredManager {
 
     @Autowired
     public ProductManager(ErrorMessageUtil msgUtil, ProductDAO productDao,
-            final ProductVersionDAO versionDao, final DeveloperDAO devDao, final CertifiedProductDAO cpDao,
-            final CertifiedProductDetailsManager cpdManager,
-            final ChplProductNumberUtil chplProductNumberUtil, final ActivityManager activityManager,
-            final ResourcePermissions resourcePermissions, ValidationUtils validationUtils) {
+            ProductVersionDAO versionDao, DeveloperDAO devDao, CertifiedProductDAO cpDao,
+            CertifiedProductDetailsManager cpdManager,
+            ChplProductNumberUtil chplProductNumberUtil, ActivityManager activityManager,
+            ResourcePermissions resourcePermissions, ValidationUtils validationUtils) {
         this.msgUtil = msgUtil;
         this.productDao = productDao;
         this.versionDao = versionDao;
@@ -70,13 +70,13 @@ public class ProductManager extends SecuredManager {
 
 
     @Transactional(readOnly = true)
-    public ProductDTO getById(final Long id, final boolean allowDeleted) throws EntityRetrievalException {
+    public ProductDTO getById(Long id, boolean allowDeleted) throws EntityRetrievalException {
         return productDao.getById(id, allowDeleted);
     }
 
 
     @Transactional(readOnly = true)
-    public ProductDTO getById(final Long id) throws EntityRetrievalException {
+    public ProductDTO getById(Long id) throws EntityRetrievalException {
         return getById(id, false);
     }
 
@@ -94,13 +94,13 @@ public class ProductManager extends SecuredManager {
 
 
     @Transactional(readOnly = true)
-    public List<ProductDTO> getByDeveloper(final Long developerId) {
+    public List<ProductDTO> getByDeveloper(Long developerId) {
         return productDao.getByDeveloper(developerId);
     }
 
 
     @Transactional(readOnly = true)
-    public List<ProductDTO> getByDevelopers(final List<Long> developerIds) {
+    public List<ProductDTO> getByDevelopers(List<Long> developerIds) {
         return productDao.getByDevelopers(developerIds);
     }
 
@@ -108,7 +108,7 @@ public class ProductManager extends SecuredManager {
     @Transactional(readOnly = false)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).CREATE)")
-    public ProductDTO create(final ProductDTO dto)
+    public ProductDTO create(ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         // check that the developer of this product is Active
         if (dto.getDeveloperId() == null) {
@@ -122,7 +122,7 @@ public class ProductManager extends SecuredManager {
     @Transactional(readOnly = false)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE_OWNERSHIP, #dto)")
-    public ProductDTO updateProductOwnership(final ProductDTO dto)
+    public ProductDTO updateProductOwnership(ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         // This method was created to provide different security than the update() method
         // even though it is the same functionality...
@@ -133,7 +133,7 @@ public class ProductManager extends SecuredManager {
     @Transactional(readOnly = false)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE, #dto)")
-    public ProductDTO update(final ProductDTO dto)
+    public ProductDTO update(ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         return updateProduct(dto);
     }
@@ -142,7 +142,7 @@ public class ProductManager extends SecuredManager {
     @Transactional(readOnly = false)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).MERGE, #productIdsToMerge)")
-    public ProductDTO merge(final List<Long> productIdsToMerge, final ProductDTO toCreate)
+    public ProductDTO merge(List<Long> productIdsToMerge, ProductDTO toCreate)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
         List<ProductDTO> beforeProducts = new ArrayList<ProductDTO>();
@@ -180,8 +180,8 @@ public class ProductManager extends SecuredManager {
     })
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).SPLIT, #oldProduct)")
-    public ProductDTO split(final ProductDTO oldProduct, final ProductDTO productToCreate, final String newProductCode,
-            final List<ProductVersionDTO> newProductVersions)
+    public ProductDTO split(ProductDTO oldProduct, ProductDTO productToCreate, String newProductCode,
+            List<ProductVersionDTO> newProductVersions)
             throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
         // what ACB does the user have??
         List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
@@ -272,7 +272,7 @@ public class ProductManager extends SecuredManager {
         return afterProduct;
     }
 
-    private ProductDTO updateProduct(final ProductDTO dto)
+    private ProductDTO updateProduct(ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
         ProductDTO beforeDTO = productDao.getById(dto.getId());
@@ -311,7 +311,7 @@ public class ProductManager extends SecuredManager {
         return result;
     }
 
-    private ProductDTO createProduct(final ProductDTO dto)
+    private ProductDTO createProduct(ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         DeveloperDTO dev = devDao.getById(dto.getDeveloperId());
         if (dev == null) {

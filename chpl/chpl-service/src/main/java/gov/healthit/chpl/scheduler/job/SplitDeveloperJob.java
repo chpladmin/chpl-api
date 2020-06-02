@@ -19,19 +19,23 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
+import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
+import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.manager.DeveloperManager;
+import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.Util;
+import net.sf.ehcache.CacheManager;
 
 public class SplitDeveloperJob implements Job {
     private static final Logger LOGGER = LogManager.getLogger("splitDeveloperJobLogger");
@@ -39,42 +43,55 @@ public class SplitDeveloperJob implements Job {
     @Autowired
     private Environment env;
 
+    @Autowired
+    private DeveloperManager devManager;
+
+    @Autowired
+    private ProductManager productManager;
+
+    @Autowired
+    private CertifiedProductManager cpManager;
+
+    @Autowired
+    private CertifiedProductDetailsManager cpdManager;
+
+    @Autowired
+    private ActivityManager activityManager;
+
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
         LOGGER.info("********* Starting the Split Developer job. *********");
 
-        /**
-         * Splits a developer into two. The new developer will have at least one product assigned to it that used to be
-         * assigned to the original developer along with the versions and listings associated with those products. At least
-         * one product along with its versions and listings will remain assigned to the original developer. Since the
-         * developer code is auto-generated in the database, any listing that gets transferred to the new developer will
-         * automatically have a unique ID (no other developer can have the same developer code).
-         */
+        //do the split
 
+        //evict all caches
+        CacheManager.getInstance().clearAll();
 
-        //TODO: Evict all caches
-
+        //send email about success/failure of job
         String[] recipients = jobContext.getMergedJobDataMap().getString("email").split("\u263A");
-
         try {
             sendEmails(jobContext, recipients);
         } catch (IOException | MessagingException e) {
             LOGGER.error(e);
         }
+
         LOGGER.info("********* Completed the Split Developer job. *********");
     }
 
     private DeveloperDTO splitDeveloper(DeveloperDTO oldDeveloper, DeveloperDTO developerToCreate,
             List<Long> productIdsToMove) {
-        // create the new developer and log activity
-        DeveloperDTO createdDeveloper = create(developerToCreate);
+
+        //TODO: would like to call the manager method create here
+        //but the security on that only allows ADMIN and ACB
+        //whereas ONC should also be allowed to split (create is a part of split)
+        //so can I change the security on the manager create method?
+        DeveloperDTO createdDeveloper = devManager.create(developerToCreate);
 
         // re-assign products to the new developer
         // log activity for all listings whose ID will have changed
         Date splitDate = new Date();
-        List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
         for (Long productIdToMove : productIdsToMove) {
             List<CertifiedProductDetailsDTO> affectedListings = cpManager.getByProduct(productIdToMove);
             // need to get details for affected listings now before the product is re-assigned
@@ -83,36 +100,24 @@ public class SplitDeveloperJob implements Job {
             for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
                 CertifiedProductSearchDetails beforeListing = cpdManager
                         .getCertifiedProductDetails(affectedListing.getId());
-
-                // make sure each listing associated with the new developer
-                boolean hasAccessToAcb = false;
-                for (CertificationBodyDTO allowedAcb : allowedAcbs) {
-                    if (allowedAcb.getId().longValue() == affectedListing.getCertificationBodyId().longValue()) {
-                        hasAccessToAcb = true;
-                    }
-                }
-                if (!hasAccessToAcb) {
-                    throw new AccessDeniedException(
-                            msgUtil.getMessage("acb.accessDenied.listingUpdate", beforeListing.getChplProductNumber(),
-                                    beforeListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)));
-                }
-
                 beforeListingDetails.put(beforeListing.getId(), beforeListing);
             }
 
             // move the product to be owned by the new developer
             ProductDTO productToMove = productManager.getById(productIdToMove);
             productToMove.setDeveloperId(createdDeveloper.getId());
-            // add owner history for old developer
             ProductOwnerDTO newOwner = new ProductOwnerDTO();
             newOwner.setProductId(productToMove.getId());
             newOwner.setDeveloper(oldDeveloper);
             newOwner.setTransferDate(splitDate.getTime());
             productToMove.getOwnerHistory().add(newOwner);
+
+            //update is ok for admin/onc and is only okay for acb
+            //if the developer associated with this product is Active
+            //but i guess since the developer associated is a new one it must be Active
             productManager.update(productToMove);
 
             // get the listing details again - this time they will have the new developer code
-            // so the change will show up in activity reports
             for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
                 CertifiedProductSearchDetails afterListing = cpdManager
                         .getCertifiedProductDetails(affectedListing.getId());
@@ -126,8 +131,8 @@ public class SplitDeveloperJob implements Job {
         DeveloperDTO afterDeveloper = null;
         // the split is complete - log split activity
         // get the original developer object from the db to make sure it's all filled in
-        DeveloperDTO origDeveloper = getById(oldDeveloper.getId());
-        afterDeveloper = getById(createdDeveloper.getId());
+        DeveloperDTO origDeveloper = devManager.getById(oldDeveloper.getId());
+        afterDeveloper = devManager.getById(createdDeveloper.getId());
         List<DeveloperDTO> splitDevelopers = new ArrayList<DeveloperDTO>();
         splitDevelopers.add(origDeveloper);
         splitDevelopers.add(afterDeveloper);
