@@ -1,7 +1,6 @@
 package gov.healthit.chpl.manager;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -393,100 +391,21 @@ public class DeveloperManager extends SecuredManager {
         return createdDeveloper;
     }
 
-    /**
-     * Splits a developer into two. The new developer will have at least one product assigned to it that used to be
-     * assigned to the original developer along with the versions and listings associated with those products. At least
-     * one product along with its versions and listings will remain assigned to the original developer. Since the
-     * developer code is auto-generated in the database, any listing that gets transferred to the new developer will
-     * automatically have a unique ID (no other developer can have the same developer code).
-     */
-    @Transactional(rollbackFor = {
-            EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
-            AccessDeniedException.class
-    })
-    @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
-            CacheNames.GET_DECERTIFIED_DEVELOPERS
-    }, allEntries = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).SPLIT, #oldDeveloper)")
-    public DeveloperDTO split(DeveloperDTO oldDeveloper, DeveloperDTO developerToCreate,
-            List<Long> productIdsToMove) throws ValidationException, AccessDeniedException,
-            EntityRetrievalException, EntityCreationException, JsonProcessingException {
+    public void split(DeveloperDTO oldDeveloper, DeveloperDTO developerToCreate,
+            List<Long> productIdsToMove) throws ValidationException {
+        //TODO: add permission checks to the SPLIT preauth
+
         // check developer fields for all valid values (except transparency attestation)
         Set<String> devErrors = runCreateValidations(developerToCreate);
         if (devErrors != null && devErrors.size() > 0) {
             throw new ValidationException(devErrors);
         }
 
-        // create the new developer and log activity
-        DeveloperDTO createdDeveloper = create(developerToCreate);
-
-        // re-assign products to the new developer
-        // log activity for all listings whose ID will have changed
-        Date splitDate = new Date();
-        List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
-        for (Long productIdToMove : productIdsToMove) {
-            List<CertifiedProductDetailsDTO> affectedListings = cpManager.getByProduct(productIdToMove);
-            // need to get details for affected listings now before the product is re-assigned
-            // so that any listings with a generated new-style CHPL ID have the old developer code
-            Map<Long, CertifiedProductSearchDetails> beforeListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
-            for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
-                CertifiedProductSearchDetails beforeListing = cpdManager
-                        .getCertifiedProductDetails(affectedListing.getId());
-
-                // make sure each listing associated with the new developer
-                boolean hasAccessToAcb = false;
-                for (CertificationBodyDTO allowedAcb : allowedAcbs) {
-                    if (allowedAcb.getId().longValue() == affectedListing.getCertificationBodyId().longValue()) {
-                        hasAccessToAcb = true;
-                    }
-                }
-                if (!hasAccessToAcb) {
-                    throw new AccessDeniedException(
-                            msgUtil.getMessage("acb.accessDenied.listingUpdate", beforeListing.getChplProductNumber(),
-                                    beforeListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)));
-                }
-
-                beforeListingDetails.put(beforeListing.getId(), beforeListing);
-            }
-
-            // move the product to be owned by the new developer
-            ProductDTO productToMove = productManager.getById(productIdToMove);
-            productToMove.setDeveloperId(createdDeveloper.getId());
-            // add owner history for old developer
-            ProductOwnerDTO newOwner = new ProductOwnerDTO();
-            newOwner.setProductId(productToMove.getId());
-            newOwner.setDeveloper(oldDeveloper);
-            newOwner.setTransferDate(splitDate.getTime());
-            productToMove.getOwnerHistory().add(newOwner);
-            productManager.update(productToMove);
-
-            // get the listing details again - this time they will have the new developer code
-            // so the change will show up in activity reports
-            for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
-                CertifiedProductSearchDetails afterListing = cpdManager
-                        .getCertifiedProductDetails(affectedListing.getId());
-                CertifiedProductSearchDetails beforeListing = beforeListingDetails.get(afterListing.getId());
-                activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeListing.getId(),
-                        "Updated certified product " + afterListing.getChplProductNumber() + ".", beforeListing,
-                        afterListing);
-            }
-        }
-
-        DeveloperDTO afterDeveloper = null;
-        // the split is complete - log split activity
-        // get the original developer object from the db to make sure it's all filled in
-        DeveloperDTO origDeveloper = getById(oldDeveloper.getId());
-        afterDeveloper = getById(createdDeveloper.getId());
-        List<DeveloperDTO> splitDevelopers = new ArrayList<DeveloperDTO>();
-        splitDevelopers.add(origDeveloper);
-        splitDevelopers.add(afterDeveloper);
-        activityManager.addActivity(ActivityConcept.DEVELOPER, afterDeveloper.getId(),
-                "Split developer " + origDeveloper.getName() + " into " + origDeveloper.getName()
-                        + " and " + afterDeveloper.getName(),
-                origDeveloper, splitDevelopers);
-        return afterDeveloper;
+        //TODO: any other permission-type checks we need to do here?
+        //TODO: start split developer quartz job
+        //TODO: return something for the user?
     }
 
     public static List<DeveloperStatusEventDTO> cloneDeveloperStatusEventList(List<DeveloperStatusEventDTO> original) {
