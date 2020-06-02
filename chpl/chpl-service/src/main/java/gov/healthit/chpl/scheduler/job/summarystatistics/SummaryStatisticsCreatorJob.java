@@ -139,12 +139,12 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try {
-                    getSummaryStatisticsDAO().deleteAll();
+                    summaryStatisticsDAO.deleteAll();
 
                     SummaryStatisticsEntity entity = new SummaryStatisticsEntity();
                     entity.setEndDate(endDate);
                     entity.setSummaryStatistics(getJson(statistics));
-                    getSummaryStatisticsDAO().create(entity);
+                    summaryStatisticsDAO.create(entity);
                 } catch (Exception e) {
                     status.setRollbackOnly();
                 }
@@ -173,20 +173,4 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         return null;
     }
 
-    public HistoricalStatisticsCreator getAsynchronousStatisticsInitializor() {
-        return historicalStatisticsCreator;
-    }
-
-    public void setAsynchronousStatisticsInitializor(
-            final HistoricalStatisticsCreator asynchronousStatisticsInitializor) {
-        this.historicalStatisticsCreator = asynchronousStatisticsInitializor;
-    }
-
-    public SummaryStatisticsDAO getSummaryStatisticsDAO() {
-        return summaryStatisticsDAO;
-    }
-
-    public void setSummaryStatisticsDAO(final SummaryStatisticsDAO summaryStatisticsDAO) {
-        this.summaryStatisticsDAO = summaryStatisticsDAO;
-    }
 }
