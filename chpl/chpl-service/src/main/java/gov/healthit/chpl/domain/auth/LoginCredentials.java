@@ -1,14 +1,13 @@
 package gov.healthit.chpl.domain.auth;
 
 public class LoginCredentials {
-
     private String userName;
     private String password;
 
     public LoginCredentials() {
     }
 
-    public LoginCredentials(final String userName, final String password) {
+    public LoginCredentials(String userName, String password) {
         this.userName = userName;
         this.password = password;
     }
@@ -17,7 +16,7 @@ public class LoginCredentials {
         return password;
     }
 
-    public void setPassword(final String password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 
@@ -25,8 +24,7 @@ public class LoginCredentials {
         return userName;
     }
 
-    public void setUserName(final String userName) {
+    public void setUserName(String userName) {
         this.userName = userName;
     }
-
 }

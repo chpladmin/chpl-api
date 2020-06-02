@@ -1,4 +1,4 @@
-package gov.healthit.chpl.auth.authentication;
+package gov.healthit.chpl.manager.auth;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,13 +23,12 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.JWTCreationException;
 import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserRetrievalException;
-import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Service
 @Log4j2
-public class UserAuthenticator implements Authenticator {
+public class AuthenticationManager {
     private JWTAuthor jwtAuthor;
     private UserManager userManager;
     private UserDAO userDAO;
@@ -37,7 +36,7 @@ public class UserAuthenticator implements Authenticator {
     private UserDetailsChecker userDetailsChecker;
 
     @Autowired
-    public UserAuthenticator(JWTAuthor jwtAuthor, UserManager userManager, UserDAO userDAO,
+    public AuthenticationManager(JWTAuthor jwtAuthor, UserManager userManager, UserDAO userDAO,
             BCryptPasswordEncoder bCryptPasswordEncoder, UserDetailsChecker userDetailsChecker) {
         this.jwtAuthor = jwtAuthor;
         this.userManager = userManager;
@@ -46,8 +45,6 @@ public class UserAuthenticator implements Authenticator {
         this.userDetailsChecker = userDetailsChecker;
     }
 
-    @Override
-    @Transactional
     public String authenticate(LoginCredentials credentials)
             throws JWTCreationException, UserRetrievalException {
 
@@ -59,8 +56,7 @@ public class UserAuthenticator implements Authenticator {
         return jwt;
     }
 
-    @Override
-    public UserDTO getUser(final LoginCredentials credentials)
+    public UserDTO getUser(LoginCredentials credentials)
             throws BadCredentialsException, AccountStatusException, UserRetrievalException {
         UserDTO user = getUserByName(credentials.getUserName());
 
@@ -96,16 +92,15 @@ public class UserAuthenticator implements Authenticator {
                 throw new BadCredentialsException("Bad username and password combination.");
             }
         } else {
-            throw new BadCredentialsException("There is no CHPL user with name " + credentials.getUserName());
+            throw new BadCredentialsException("Bad username and password combination.");
         }
     }
 
-    protected boolean checkPassword(final String rawPassword, final String encodedPassword) {
+    private boolean checkPassword(String rawPassword, String encodedPassword) {
         return bCryptPasswordEncoder.matches(rawPassword, encodedPassword);
     }
 
-    @Override
-    public String getJWT(final UserDTO user) throws JWTCreationException {
+    public String getJWT(UserDTO user) throws JWTCreationException {
         String jwt = null;
 
         Map<String, String> stringClaims = new HashMap<String, String>();
@@ -126,7 +121,6 @@ public class UserAuthenticator implements Authenticator {
         return jwt;
     }
 
-    @Override
     public String refreshJWT() throws JWTCreationException, UserRetrievalException {
         JWTAuthenticatedUser user = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
 
@@ -141,9 +135,8 @@ public class UserAuthenticator implements Authenticator {
         }
     }
 
-    @Override
     @Transactional
-    public String getJWT(final LoginCredentials credentials) throws JWTCreationException {
+    public String getJWT(LoginCredentials credentials) throws JWTCreationException {
         String jwt = null;
         UserDTO user = null;
 
@@ -163,12 +156,12 @@ public class UserAuthenticator implements Authenticator {
 
     }
 
-    private UserDTO getUserByName(final String userName) throws UserRetrievalException {
+    private UserDTO getUserByName(String userName) throws UserRetrievalException {
         UserDTO user = userDAO.getByName(userName);
         return user;
     }
 
-    private void updateFailedLogins(final UserDTO userToUpdate) throws UserRetrievalException, UserManagementException {
+    private void updateFailedLogins(UserDTO userToUpdate) throws UserRetrievalException, UserManagementException {
         try {
             userManager.updateFailedLoginCount(userToUpdate);
         } catch (Exception ex) {
@@ -177,10 +170,9 @@ public class UserAuthenticator implements Authenticator {
         }
     }
 
-    @Override
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).USER_PERMISSIONS, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).IMPERSONATE_USER, #username)")
-    public String impersonateUser(final String username)
+    public String impersonateUser(String username)
             throws UserRetrievalException, JWTCreationException, UserManagementException {
         JWTAuthenticatedUser user = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
         if (user.getImpersonatingUser() != null) {
@@ -193,8 +185,7 @@ public class UserAuthenticator implements Authenticator {
         return getJWT(impersonatedUser);
     }
 
-    @Override
-    public String unimpersonateUser(final User user) throws JWTCreationException, UserRetrievalException {
+    public String unimpersonateUser(User user) throws JWTCreationException, UserRetrievalException {
         return getJWT(getUserByName(user.getSubjectName()));
     }
 }
