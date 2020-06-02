@@ -54,7 +54,7 @@ import lombok.extern.log4j.Log4j2;
 @Service
 @Log4j2
 public class UserManager extends SecuredManager {
-    public static int MIN_PASSWORD_STRENGTH = 3;
+    public static final int MIN_PASSWORD_STRENGTH = 3;
 
     private Environment env;
     private UserDAO userDAO;
@@ -124,6 +124,9 @@ public class UserManager extends SecuredManager {
                 .title(user.getTitle())
                 .lastLoggedInDate(before.getLastLoggedInDate())
                 .build();
+        if (before.isAccountLocked() && !user.getAccountLocked()) { //unlocking locked users needs to reset failed login count
+            toUpdate.setFailedLoginCount(0);
+        }
         return update(toUpdate);
     }
 

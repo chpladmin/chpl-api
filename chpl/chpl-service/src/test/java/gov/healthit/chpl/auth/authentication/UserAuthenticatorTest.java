@@ -19,6 +19,7 @@ import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.manager.auth.AuthenticationManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 
 public class UserAuthenticatorTest {
@@ -70,7 +71,7 @@ public class UserAuthenticatorTest {
     @Test()
     public void getUser_ValidLoginCredentials_ReturnValidUserDTO() throws UserRetrievalException {
         LoginCredentials creds = new LoginCredentials("username", "password");
-        UserAuthenticator authenticator = new UserAuthenticator(jwtAuthor, userManager, userDAO, bCryptPasswordEncoder,
+        AuthenticationManager authenticator = new AuthenticationManager(jwtAuthor, userManager, userDAO, bCryptPasswordEncoder,
                 userDetailsChecker);
         UserDTO user = authenticator.getUser(creds);
 
@@ -85,7 +86,7 @@ public class UserAuthenticatorTest {
                 .thenThrow(UserRetrievalException.class);
 
         LoginCredentials creds = new LoginCredentials("username", "password");
-        UserAuthenticator authenticator = new UserAuthenticator(null, null, userDAO, null, null);
+        AuthenticationManager authenticator = new AuthenticationManager(null, null, userDAO, null, null);
         authenticator.getUser(creds);
 
         fail();
@@ -113,7 +114,7 @@ public class UserAuthenticatorTest {
                         .build());
 
         LoginCredentials creds = new LoginCredentials("username", "password");
-        UserAuthenticator authenticator = new UserAuthenticator(jwtAuthor, userManager, userDAO, bCryptPasswordEncoder,
+        AuthenticationManager authenticator = new AuthenticationManager(jwtAuthor, userManager, userDAO, bCryptPasswordEncoder,
                 userDetailsChecker);
         authenticator.getUser(creds);
 
@@ -128,7 +129,7 @@ public class UserAuthenticatorTest {
                 .thenReturn(false);
 
         LoginCredentials creds = new LoginCredentials("username", "password");
-        UserAuthenticator authenticator = new UserAuthenticator(jwtAuthor, userManager, userDAO, bCryptPasswordEncoder,
+        AuthenticationManager authenticator = new AuthenticationManager(jwtAuthor, userManager, userDAO, bCryptPasswordEncoder,
                 userDetailsChecker);
         authenticator.getUser(creds);
 
