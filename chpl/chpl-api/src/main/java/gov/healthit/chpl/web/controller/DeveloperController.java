@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -34,8 +35,8 @@ import gov.healthit.chpl.domain.TransparencyAttestationMap;
 import gov.healthit.chpl.domain.UpdateDevelopersRequest;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UsersResponse;
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.AddressDTO;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
@@ -48,13 +49,10 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
-import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
-import gov.healthit.chpl.web.controller.results.SplitDeveloperResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -64,24 +62,18 @@ import io.swagger.annotations.ApiOperation;
 public class DeveloperController {
 
     private DeveloperManager developerManager;
-    private CertifiedProductManager cpManager;
     private ErrorMessageUtil msgUtil;
-    private ChplProductNumberUtil chplProductNumberUtil;
     private UserPermissionsManager userPermissionsManager;
     private FF4j ff4j;
 
     @Autowired
-    public DeveloperController(final DeveloperManager developerManager,
-            final CertifiedProductManager cpManager,
-            final UserPermissionsManager userPermissionsManager,
-            final ErrorMessageUtil msgUtil,
-            final ChplProductNumberUtil chplProductNumberUtil,
-            final FF4j ff4j) {
+    public DeveloperController(DeveloperManager developerManager,
+            UserPermissionsManager userPermissionsManager,
+            ErrorMessageUtil msgUtil,
+            FF4j ff4j) {
         this.developerManager = developerManager;
-        this.cpManager = cpManager;
         this.userPermissionsManager = userPermissionsManager;
         this.msgUtil = msgUtil;
-        this.chplProductNumberUtil = chplProductNumberUtil;
         this.ff4j = ff4j;
     }
 
@@ -90,7 +82,7 @@ public class DeveloperController {
                     + "developers.  Everyone else can only see active developers.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody DeveloperResults getDevelopers(
-            @RequestParam(value = "showDeleted", required = false, defaultValue = "false") final boolean showDeleted) {
+            @RequestParam(value = "showDeleted", required = false, defaultValue = "false") boolean showDeleted) {
         List<DeveloperDTO> developerList = null;
         if (showDeleted) {
             developerList = developerManager.getAllIncludingDeleted();
@@ -114,7 +106,7 @@ public class DeveloperController {
     @ApiOperation(value = "Get information about a specific developer.", notes = "")
     @RequestMapping(value = "/{developerId}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
-    public @ResponseBody Developer getDeveloperById(@PathVariable("developerId") final Long developerId)
+    public @ResponseBody Developer getDeveloperById(@PathVariable("developerId") Long developerId)
             throws EntityRetrievalException {
         DeveloperDTO developer = developerManager.getById(developerId);
 
@@ -136,7 +128,7 @@ public class DeveloperController {
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public ResponseEntity<Developer> updateDeveloper(
-            @RequestBody(required = true) final UpdateDevelopersRequest developerInfo) throws InvalidArgumentsException,
+            @RequestBody(required = true) UpdateDevelopersRequest developerInfo) throws InvalidArgumentsException,
     EntityCreationException, EntityRetrievalException, JsonProcessingException,
     ValidationException, MissingReasonException {
         return update(developerInfo);
@@ -148,10 +140,9 @@ public class DeveloperController {
                     notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB")
     @RequestMapping(value = "/{developerId}/split", method = RequestMethod.POST,
     consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    public ResponseEntity<SplitDeveloperResponse> splitDeveloper(@PathVariable("developerId") final Long developerId,
-            @RequestBody(required = true) final SplitDeveloperRequest splitRequest)
-                    throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
-                    ValidationException, JsonProcessingException {
+    public ChplOneTimeTrigger splitDeveloper(@PathVariable("developerId") Long developerId,
+            @RequestBody(required = true) SplitDeveloperRequest splitRequest)
+                    throws EntityRetrievalException, InvalidArgumentsException, ValidationException, SchedulerException {
 
         //validate required fields are present in the split request
         //new developer product ids cannot be empty
@@ -185,7 +176,8 @@ public class DeveloperController {
             devMap.setAcbId(attMap.getAcbId());
             devMap.setAcbName(attMap.getAcbName());
             if (attMap.getAttestation() != null && !StringUtils.isEmpty(attMap.getAttestation().getTransparencyAttestation())) {
-                devMap.setTransparencyAttestation(new TransparencyAttestationDTO(attMap.getAttestation().getTransparencyAttestation()));
+                devMap.setTransparencyAttestation(
+                        new TransparencyAttestationDTO(attMap.getAttestation().getTransparencyAttestation()));
             }
             newDeveloper.getTransparencyAttestationMappings().add(devMap);
         }
@@ -213,30 +205,8 @@ public class DeveloperController {
             newDeveloperProductIds.add(newDeveloperProduct.getProductId());
         }
 
-        DeveloperDTO createdDeveloper = developerManager.split(oldDeveloper, newDeveloper, newDeveloperProductIds);
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
-        DeveloperDTO originalDeveloper = developerManager.getById(oldDeveloper.getId());
-        SplitDeveloperResponse response = new SplitDeveloperResponse();
-        response.setNewDeveloper(new Developer(createdDeveloper));
-        response.setOldDeveloper(new Developer(originalDeveloper));
-
-        // find out which CHPL product numbers would have changed (only
-        // new-style ones) and add them to the response header
-        List<CertifiedProductDetailsDTO> possibleChangedChplIds = cpManager.getByDeveloperId(originalDeveloper.getId());
-        if (possibleChangedChplIds != null && possibleChangedChplIds.size() > 0) {
-            StringBuffer buf = new StringBuffer();
-            for (CertifiedProductDetailsDTO possibleChanged : possibleChangedChplIds) {
-                if (!chplProductNumberUtil.isLegacy(possibleChanged.getChplProductNumber())) {
-                    if (buf.length() > 0) {
-                        buf.append(",");
-                    }
-                    buf.append(possibleChanged.getChplProductNumber());
-                }
-            }
-            responseHeaders.set("CHPL-Id-Changed", buf.toString());
-        }
-        return new ResponseEntity<SplitDeveloperResponse>(response, responseHeaders, HttpStatus.OK);
+        ChplOneTimeTrigger splitTrigger = developerManager.split(oldDeveloper, newDeveloper, newDeveloperProductIds);
+        return splitTrigger;
     }
 
     @ApiOperation(value = "Remove user permissions from a developer.",
@@ -247,7 +217,7 @@ public class DeveloperController {
     @RequestMapping(value = "{developerId}/users/{userId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public PermissionDeletedResponse deleteUserFromDeveloper(
-            @PathVariable final Long developerId, @PathVariable final Long userId)
+            @PathVariable Long developerId, @PathVariable Long userId)
                     throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         if (!ff4j.check(FeatureList.ROLE_DEVELOPER)) {
             throw new NotImplementedException();
@@ -265,7 +235,7 @@ public class DeveloperController {
                     + "authority on the specified developer.")
     @RequestMapping(value = "/{developerId}/users", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
-    public @ResponseBody UsersResponse getUsers(@PathVariable("developerId") final Long developerId)
+    public @ResponseBody UsersResponse getUsers(@PathVariable("developerId") Long developerId)
             throws InvalidArgumentsException, EntityRetrievalException {
         if (!ff4j.check(FeatureList.ROLE_DEVELOPER)) {
             throw new NotImplementedException();
@@ -282,7 +252,7 @@ public class DeveloperController {
         return results;
     }
 
-    private synchronized ResponseEntity<Developer> update(final UpdateDevelopersRequest developerInfo)
+    private synchronized ResponseEntity<Developer> update(UpdateDevelopersRequest developerInfo)
             throws InvalidArgumentsException, EntityCreationException,
             EntityRetrievalException, JsonProcessingException,
             ValidationException, MissingReasonException {
