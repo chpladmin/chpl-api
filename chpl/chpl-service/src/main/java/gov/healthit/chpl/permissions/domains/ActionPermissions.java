@@ -13,6 +13,7 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
 public abstract class ActionPermissions {
@@ -60,18 +61,16 @@ public abstract class ActionPermissions {
     }
 
     @Transactional(readOnly = true)
-    public boolean doesCurrentUserHaveAccessToAllOfDevelopersListings(final Long developerId) {
+    public boolean doesCurrentUserHaveAccessToAllOfDevelopersListings(Long developerId,
+            List<CertificationStatusType> listingStatuses) {
         List<CertifiedProductDetailsDTO> cpDtos = certifiedProductDAO.findByDeveloperId(developerId);
-        for (CertifiedProductDetailsDTO cpDto : cpDtos) {
-            if (!isAcbValidForCurrentUser(cpDto.getCertificationBodyId())) {
-                return false;
-            }
-        }
-        return true;
+        return !cpDtos.stream().filter(cpDto ->
+            !isAcbValidForCurrentUser(cpDto.getCertificationBodyId())
+            && isInStatuses(cpDto.getCertificationStatusName(), listingStatuses)).findAny().isPresent();
     }
 
     @Transactional(readOnly = true)
-    public boolean doesCurrentUserHaveAccessToAllOfProductListings(final Long productId) {
+    public boolean doesCurrentUserHaveAccessToAllOfProductListings(Long productId) {
         List<CertifiedProductDetailsDTO> cpDtos = certifiedProductDAO.getDetailsByProductId(productId);
         for (CertifiedProductDetailsDTO cpDto : cpDtos) {
             if (!isAcbValidForCurrentUser(cpDto.getCertificationBodyId())) {
@@ -92,6 +91,11 @@ public abstract class ActionPermissions {
         return developerAcbs.stream()
                 .anyMatch(developerAcb -> userAcbs.stream()
                         .anyMatch(userAcb -> userAcb.getId().equals(developerAcb.getId())));
+    }
+
+    private boolean isInStatuses(String certStatusName, List<CertificationStatusType> listingStatuses) {
+        return listingStatuses.stream()
+        .filter(status -> status.getName().equals(certStatusName)).findAny().isPresent();
     }
 
     public ResourcePermissions getResourcePermissions() {

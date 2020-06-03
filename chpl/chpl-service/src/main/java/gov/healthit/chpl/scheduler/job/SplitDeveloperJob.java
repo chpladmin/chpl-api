@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.Job;
@@ -19,8 +20,9 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
@@ -28,13 +30,14 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.util.EmailBuilder;
-import gov.healthit.chpl.util.Util;
 import net.sf.ehcache.CacheManager;
 
 public class SplitDeveloperJob implements Job {
@@ -65,14 +68,30 @@ public class SplitDeveloperJob implements Job {
         LOGGER.info("********* Starting the Split Developer job. *********");
 
         //do the split
+        JobDataMap jobDataMap = jobContext.getMergedJobDataMap();
+        DeveloperDTO oldDeveloper = (DeveloperDTO) jobDataMap.get("oldDeveloper");
+        DeveloperDTO newDeveloper = (DeveloperDTO) jobDataMap.get("newDeveloper");
+        List<Long> productIdsToMove = (List<Long>) jobDataMap.get("productIdsToMove");
+        DeveloperDTO createdDeveloper = null;
+        Exception splitException = null;
+        try {
+            createdDeveloper = splitDeveloper(oldDeveloper, newDeveloper, productIdsToMove);
+        } catch (Exception e) {
+            LOGGER.error("Error completing split of old developer '" + oldDeveloper.getName() + "' to new developer '"
+                    + newDeveloper.getName() + "'.", e);
+            splitException = e;
+        }
 
-        //evict all caches
-        CacheManager.getInstance().clearAll();
+        if (createdDeveloper != null) {
+            //evict all caches
+            CacheManager.getInstance().clearAll();
+        }
 
         //send email about success/failure of job
         String[] recipients = jobContext.getMergedJobDataMap().getString("email").split("\u263A");
         try {
-            sendEmails(jobContext, recipients);
+            sendEmails(oldDeveloper, createdDeveloper != null ? createdDeveloper : newDeveloper,
+                    productIdsToMove, splitException, recipients);
         } catch (IOException | MessagingException e) {
             LOGGER.error(e);
         }
@@ -81,7 +100,7 @@ public class SplitDeveloperJob implements Job {
     }
 
     private DeveloperDTO splitDeveloper(DeveloperDTO oldDeveloper, DeveloperDTO developerToCreate,
-            List<Long> productIdsToMove) {
+            List<Long> productIdsToMove) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
 
         //TODO: would like to call the manager method create here
         //but the security on that only allows ADMIN and ACB
@@ -143,12 +162,17 @@ public class SplitDeveloperJob implements Job {
         return afterDeveloper;
     }
 
-    private void sendEmails(JobExecutionContext jobContext, String[] recipients)
+    private void sendEmails(DeveloperDTO oldDeveloper, DeveloperDTO newDeveloper, List<Long> productIds,
+            Exception splitException, String[] recipients)
             throws IOException, AddressException, MessagingException {
 
-        String subject = "NEED TO REVIEW: Certification Status of listing set to \""
-                + jobContext.getMergedJobDataMap().getString("status") + "\"";
-        String htmlMessage = createHtmlEmailBody(jobContext);
+        String subject = "Developer Split Complete";
+        String htmlMessage = "";
+        if (splitException == null) {
+            htmlMessage = createHtmlEmailBodySuccess(oldDeveloper, newDeveloper, productIds);
+        } else {
+            htmlMessage = createHtmlEmailBodyFailure(oldDeveloper, newDeveloper, splitException);
+        }
 
         List<String> emailAddresses = Arrays.asList(recipients);
         for (String emailAddress : emailAddresses) {
@@ -172,45 +196,47 @@ public class SplitDeveloperJob implements Job {
                 .sendEmail();
     }
 
-    private String createHtmlEmailBody(JobExecutionContext jobContext) {
-        JobDataMap jdm = jobContext.getMergedJobDataMap();
-        String reasonForStatusChange = jdm.getString("reason");
-        if (StringUtils.isEmpty(reasonForStatusChange)) {
-            reasonForStatusChange = "<strong>ONC-ACB provided reason for status change:</strong> This field is blank";
-        } else {
-            reasonForStatusChange = "<strong>ONC-ACB provided reason for status change:</strong> \""
-                    + reasonForStatusChange + "\"";
+    private String createHtmlEmailBodySuccess(DeveloperDTO oldDeveloper, DeveloperDTO createdDeveloper,
+            List<Long> productIds) {
+        List<ProductDTO> products = new ArrayList<ProductDTO>(productIds.size());
+        for (Long productId : productIds) {
+            try {
+                ProductDTO product = productManager.getById(productId);
+                products.add(product);
+            } catch (EntityRetrievalException ex) {
+                LOGGER.warn("No product found with ID " + productId, ex);
+            }
         }
-        String reasonForListingChange = jdm.getString("reasonForChange");
-        if (StringUtils.isEmpty(reasonForListingChange)) {
-            reasonForListingChange = "<strong>ONC-ACB provided reason for listing change:</strong> This field is blank";
-        } else {
-            reasonForListingChange = "<strong>ONC-ACB provided reason for listing change:</strong> \""
-                    + reasonForListingChange + "\"";
-        }
-        int openNcs = jdm.getInt("openNcs");
-        int closedNcs = jdm.getInt("closedNcs");
-        String htmlMessage = String.format("<p>The CHPL Listing <a href=\"%s/#/product/%d\">%s</a>, owned by \"%s\" "
-                + "and certified by \"%s\" has been set on \"%s\" by \"%s\" to a Certification Status of \"%s\" with "
-                + "an effective date of \"%s\".</p>"
-                + "<p>%s</p>"
-                + "<p>%s</p>"
-                + "<p>There %s %d Open Nonconformit%s and %d Closed Nonconformit%s.</p>"
-                + "<p>ONC should review the activity and all details of the listing to determine if "
-                + "this action warrants a ban on the Developer.</p>",
+
+        String htmlMessage = String.format("<p>The Developer <a href=\"%s/#/organizations/developers/%d\">%s</a> has been "
+                + "created. It was split from <a href=\"%s/#/organizations/developers/%d\">%s</a> and has had the following "
+                + "products assigned to it: "
+                + "<ul>",
                 env.getProperty("chplUrlBegin"), // root of URL
-                jdm.getLong("dbId"), // for URL to product page
-                jdm.getString("chplId"), // visible link
-                jdm.getString("developer"), // developer name
-                jdm.getString("acb"), // ACB name
-                Util.getDateFormatter().format(new Date(jdm.getLong("changeDate"))), // date of change
-                jdm.getString("fullName"), // user making change
-                jdm.getString("status"), // target status
-                Util.getDateFormatter().format(new Date(jdm.getLong("effectiveDate"))), // effective date of change
-                reasonForStatusChange, // reason for change
-                reasonForListingChange, // reason for change
-                (openNcs != 1 ? "were" : "was"), openNcs, (openNcs != 1 ? "ies" : "y"), // formatted counts of open
-                closedNcs, (closedNcs != 1 ? "ies" : "y")); // and closed nonconformities, with English word endings
+                createdDeveloper.getId(),
+                createdDeveloper.getName(),
+                env.getProperty("chplUrlBegin"),
+                oldDeveloper.getId(),
+                oldDeveloper.getName());
+        for (ProductDTO product : products) {
+            htmlMessage += String.format("<li>%s</li>", product.getName());
+        }
+        htmlMessage += "</ul>";
+        return htmlMessage;
+    }
+
+    private String createHtmlEmailBodyFailure(DeveloperDTO oldDeveloper, DeveloperDTO newDeveloper,
+            Exception ex) {
+        String htmlMessage = String.format("<p>The Developer <a href=\"%s/#/organizations/developers/%d\">%s</a> could not "
+                + "be split into a new developer \"%s\".</p>"
+                + "<p>The error was: %s</p>"
+                + "<p>%s</p>",
+                env.getProperty("chplUrlBegin"), // root of URL
+                oldDeveloper.getId(),
+                oldDeveloper.getName(),
+                newDeveloper.getName(),
+                ex.getMessage(),
+                ExceptionUtils.getStackTrace(ex));
         return htmlMessage;
     }
 }

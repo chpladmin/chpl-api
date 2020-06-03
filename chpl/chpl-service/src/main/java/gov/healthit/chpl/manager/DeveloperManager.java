@@ -10,6 +10,8 @@ import java.util.Set;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ff4j.FF4j;
+import org.quartz.JobDataMap;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -21,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -32,6 +35,8 @@ import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.DeveloperTransparency;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.schedule.ChplJob;
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
@@ -47,13 +52,16 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.DeveloperStatusEventsHelper;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.manager.rules.developer.DeveloperValidationContext;
 import gov.healthit.chpl.manager.rules.developer.DeveloperValidationFactory;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -66,10 +74,9 @@ public class DeveloperManager extends SecuredManager {
     public static final String NEW_DEVELOPER_CODE = "XXXX";
 
     private DeveloperDAO developerDao;
+    private UserManager userManager;
     private ProductManager productManager;
     private CertificationBodyManager acbManager;
-    private CertifiedProductManager cpManager;
-    private CertifiedProductDetailsManager cpdManager;
     private CertificationBodyDAO certificationBodyDao;
     private CertifiedProductDAO certifiedProductDAO;
     private ChplProductNumberUtil chplProductNumberUtil;
@@ -78,22 +85,22 @@ public class DeveloperManager extends SecuredManager {
     private ResourcePermissions resourcePermissions;
     private DeveloperValidationFactory developerValidationFactory;
     private ValidationUtils validationUtils;
-    private FF4j ff4j;
     private TransparencyAttestationManager transparencyAttestationManager;
+    private SchedulerManager schedulerManager;
+    private FF4j ff4j;
 
     @Autowired
-    public DeveloperManager(DeveloperDAO developerDao, ProductManager productManager,
-            CertificationBodyManager acbManager, CertifiedProductManager cpManager,
-            CertifiedProductDetailsManager cpdManager, CertificationBodyDAO certificationBodyDao,
+    public DeveloperManager(DeveloperDAO developerDao, UserManager userManager, ProductManager productManager,
+            CertificationBodyManager acbManager, CertificationBodyDAO certificationBodyDao,
             CertifiedProductDAO certifiedProductDAO, ChplProductNumberUtil chplProductNumberUtil,
             ActivityManager activityManager, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
-            DeveloperValidationFactory developerValidationFactory, ValidationUtils validationUtils, FF4j ff4j,
-            TransparencyAttestationManager transparencyAttestationManager) {
+            DeveloperValidationFactory developerValidationFactory, ValidationUtils validationUtils,
+            TransparencyAttestationManager transparencyAttestationManager, SchedulerManager schedulerManager,
+            FF4j ff4j) {
         this.developerDao = developerDao;
+        this.userManager = userManager;
         this.productManager = productManager;
         this.acbManager = acbManager;
-        this.cpManager = cpManager;
-        this.cpdManager = cpdManager;
         this.certificationBodyDao = certificationBodyDao;
         this.certifiedProductDAO = certifiedProductDAO;
         this.chplProductNumberUtil = chplProductNumberUtil;
@@ -102,8 +109,9 @@ public class DeveloperManager extends SecuredManager {
         this.resourcePermissions = resourcePermissions;
         this.developerValidationFactory = developerValidationFactory;
         this.validationUtils = validationUtils;
-        this.ff4j = ff4j;
         this.transparencyAttestationManager = transparencyAttestationManager;
+        this.schedulerManager = schedulerManager;
+        this.ff4j = ff4j;
     }
 
     @Transactional(readOnly = true)
@@ -393,9 +401,9 @@ public class DeveloperManager extends SecuredManager {
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).SPLIT, #oldDeveloper)")
-    public void split(DeveloperDTO oldDeveloper, DeveloperDTO developerToCreate,
-            List<Long> productIdsToMove) throws ValidationException {
-        //TODO: add permission checks to the SPLIT preauth
+    public ChplOneTimeTrigger split(DeveloperDTO oldDeveloper, DeveloperDTO developerToCreate,
+            List<Long> productIdsToMove) throws ValidationException, SchedulerException {
+        //TODO: add other permission checks to the SPLIT preauth?
 
         // check developer fields for all valid values (except transparency attestation)
         Set<String> devErrors = runCreateValidations(developerToCreate);
@@ -403,9 +411,34 @@ public class DeveloperManager extends SecuredManager {
             throw new ValidationException(devErrors);
         }
 
-        //TODO: any other permission-type checks we need to do here?
-        //TODO: start split developer quartz job
-        //TODO: return something for the user?
+        //TODO: any other permission or validation-type checks we need to do here?
+
+        ChplOneTimeTrigger splitDeveloperTrigger = new ChplOneTimeTrigger();
+        ChplJob splitDeveloperJob = new ChplJob();
+        splitDeveloperJob.setName("splitDeveloperJob");
+        splitDeveloperJob.setGroup("chplBackgroundJobs");
+        JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put("oldDeveloper", oldDeveloper);
+        jobDataMap.put("newDeveloper", developerToCreate);
+        jobDataMap.put("productIdsToMove", productIdsToMove);
+        String email = "";
+        User user = AuthUtil.getCurrentUser();
+        if (user != null) {
+            try {
+                UserDTO userDto = userManager.getById(user.getId());
+                if (userDto != null) {
+                    email = userDto.getEmail();
+                }
+            } catch (UserRetrievalException ex) {
+                LOGGER.error("Could not find user by id " + user.getId(), ex);
+            }
+        }
+        jobDataMap.put("email", email);
+        splitDeveloperJob.setJobDataMap(jobDataMap);
+        splitDeveloperTrigger.setJob(splitDeveloperJob);
+        splitDeveloperTrigger.setRunDateMillis(System.currentTimeMillis() + 5000); //5 secs from now
+        splitDeveloperTrigger = schedulerManager.createOneTimeTrigger(splitDeveloperTrigger);
+        return splitDeveloperTrigger;
     }
 
     public static List<DeveloperStatusEventDTO> cloneDeveloperStatusEventList(List<DeveloperStatusEventDTO> original) {
