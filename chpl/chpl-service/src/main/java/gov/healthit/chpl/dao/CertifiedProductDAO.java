@@ -6,8 +6,6 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -28,10 +26,11 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.urlStatus.UrlType;
 import gov.healthit.chpl.util.AuthUtil;
+import lombok.extern.log4j.Log4j2;
 
 @Repository(value = "certifiedProductDAO")
+@Log4j2
 public class CertifiedProductDAO extends BaseDAOImpl {
-    private static final Logger LOGGER = LogManager.getLogger(CertifiedProductDAO.class);
     private static final int CHPL_ID_LENGTH = 9;
     @Autowired
     private MessageSource messageSource;
