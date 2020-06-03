@@ -44,10 +44,10 @@ public class ListingStatisticsSectionCreator extends StatisticsSectionCreator {
         section.append("<ul>");
         for (CertifiedBodyAltTestStatistics cbStat : massager.getStatisticsWithAltTestMethods(stats)) {
             section.append("<li>Certified by ")
-                    .append(cbStat.getName())
-                    .append(" - ")
-                    .append(cbStat.getTotalListings())
-                    .append("</li>");
+            .append(cbStat.getName())
+            .append(" - ")
+            .append(cbStat.getTotalListings())
+            .append("</li>");
         }
         section.append("</ul>");
 
@@ -66,11 +66,19 @@ public class ListingStatisticsSectionCreator extends StatisticsSectionCreator {
                     sumTotalListings(listingCountWithCuresUpdatedAndAltTestMethodsByAcb),
                     listingCountWithCuresUpdatedAndAltTestMethodsByAcb));
 
-            section.append(buildItem("Total # of 2015-Cures Updated Listings (Regardless of Status)",
+            section.append(buildItem("Total # of 2015 Listings and Cures Updated Listings (Regardless of Status)",
+                    stats.getTotal2015Listings()));
+
+            section.append(buildItem("Total # of 2015 Listings (Regardless of Status)",
+                    stats.getAllListingsCountWithoutCuresUpdated()));
+            
+            section.append(buildItem("Total # of 2015 Cures Updated Listings (Regardless of Status)",
                     stats.getAllListingsCountWithCuresUpdated()));
+        } else {
+            section.append(buildItem("Total # of 2015 Listings (Regardless of Status)", stats.getTotal2015Listings()));
         }
 
-        section.append(buildItem("Total # of 2015 Listings (Regardless of Status)", stats.getTotal2015Listings()));
+        
         section.append(buildItem("Total # of 2014 Listings (Regardless of Status)", stats.getTotal2014Listings()));
         section.append(buildItem("Total # of 2011 Listings (Regardless of Status)", stats.getTotal2011Listings()));
 

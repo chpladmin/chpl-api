@@ -201,6 +201,9 @@ public class EmailStatisticsCreator {
             /////////////////////////////////////////////////////////////////////////////////////
             //Listing Statistics
             /////////////////////////////////////////////////////////////////////////////////////
+            //Total # of Listings (Regardless of Status or Edition)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalListings(), executorService)
+                    .thenAccept(result -> stats.setTotalListings(result)));
             // Total # of Active (Including Suspended by ONC/ONC-ACB 2014 Listings)
             futures.add(CompletableFuture.supplyAsync(() -> getTotalActive2014Listings(), executorService)
                     .thenAccept(result -> stats.setTotalActive2014Listings(result)));
@@ -221,10 +224,21 @@ public class EmailStatisticsCreator {
             // Total # of 2015-Cures Update Listings with Alternative Test Methods
             futures.add(CompletableFuture.supplyAsync(() -> getListingCountFor2015AndAltTestMethodsByAcb(listingsAll2015), executorService)
                     .thenAccept(result -> stats.setListingCountWithCuresUpdatedAndAltTestMethodsByAcb(result)));
-            // Total # of 2015-Cures Updated Listings (Regardless of Status)
+            // Total # of 2015 Listings and 2015 Cures Update listings(Regardless of Status)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotal2015ListingsCount(listingsAll2015), executorService)
+                    .thenAccept(result -> stats.setTotal2015Listings(result)));
+            // Total # of 2015 Listings (Regardless of Status)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotal2015ListingsCountWithoutCuresUpdated(listingsAll2015), executorService)
+                    .thenAccept(result -> stats.setAllListingsCountWithoutCuresUpdated(result)));
+            // Total # of 2015 Cures Updated Listings (Regardless of Status)
             futures.add(CompletableFuture.supplyAsync(() -> getAllListingsCountWithCuresUpdated(listingsAll2015), executorService)
                     .thenAccept(result -> stats.setAllListingsCountWithCuresUpdated(result)));
-
+            // Total # of 2014 Listings (Regardless of Status)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotal2014Listings(), executorService)
+                    .thenAccept(result -> stats.setTotal2014Listings(result)));
+            // Total # of 2011 Listings (Regardless of Status)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotal2011Listings(), executorService)
+                    .thenAccept(result -> stats.setTotal2011Listings(result)));
 
             /////////////////////////////////////////////////////////////////////////////////////
             // Surveillance Statistics
@@ -705,10 +719,38 @@ public class EmailStatisticsCreator {
                 .collect(Collectors.toList());
     }
 
+    private Long getTotal2015ListingsCount(List<CertifiedProductDetailsDTO> certifiedProducts) {
+        return certifiedProducts.stream()
+                .filter(listing -> listing.getCertificationEditionId().equals(
+                        CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId()))
+                .count();
+    }
+
+    private Long getTotal2015ListingsCountWithoutCuresUpdated(List<CertifiedProductDetailsDTO> certifiedProducts) {
+        return certifiedProducts.stream()
+                .filter(listing -> listing.getCertificationEditionId().equals(
+                        CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId())
+                        && !listing.getCuresUpdate())
+                .count();
+    }
+
     private Long getAllListingsCountWithCuresUpdated(List<CertifiedProductDetailsDTO> certifiedProducts) {
         return certifiedProducts.stream()
-                .filter(listing -> listing.getCuresUpdate())
+                .filter(listing -> listing.getCertificationEditionId().equals(
+                        CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId())
+                        && listing.getCuresUpdate())
                 .count();
+    }
+
+    private Long getTotal2011Listings() {
+        Long total = listingStatisticsDAO.getTotalListingsByEditionAndStatus(null, "2011", null);
+        return total;
+    }
+
+    private Long getTotalListings() {
+        Long total = listingStatisticsDAO
+                .getTotalListingsByEditionAndStatus(null, null, null);
+        return total;
     }
 
     private boolean doesListingHaveAlternativeTestMethod(Long listingId) {
