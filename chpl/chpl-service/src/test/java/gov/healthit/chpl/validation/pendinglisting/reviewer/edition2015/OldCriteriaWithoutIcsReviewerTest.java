@@ -1,22 +1,24 @@
-package gov.healthit.chpl.validation.listing.reviewer.edition2015;
+package gov.healthit.chpl.validation.pendinglisting.reviewer.edition2015;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.HashSet;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
-import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.InheritedCertificationStatus;
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.OldCriteriaWithoutIcsReviewer;
 
 public class OldCriteriaWithoutIcsReviewerTest {
 
@@ -57,37 +59,37 @@ public class OldCriteriaWithoutIcsReviewerTest {
 
     @Test
     public void review_WithIcs_NoMessages() {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .ics(new InheritedCertificationStatus(true))
-                .certificationDate(beforeBoth.getTime())
-                .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
+        PendingCertifiedProductDTO listing = PendingCertifiedProductDTO.builder()
+                .ics(true)
+                .certificationDate(beforeBoth)
+                .certificationCriterionSingle(PendingCertificationResultDTO.builder()
+                        .criterion(CertificationCriterionDTO.builder()
                                 .id(EDITION_2015_B_3)
                                 .number("170.315 (b)(3)")
                                 .title("not cures")
                                 .build())
-                        .success(true)
+                        .meetsCriteria(true)
                         .build())
-                .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
+                .certificationCriterionSingle(PendingCertificationResultDTO.builder()
+                        .criterion(CertificationCriterionDTO.builder()
                                 .id(EDITION_2015_D_2)
                                 .number("170.315 (d)(2)")
                                 .build())
-                        .success(true)
+                        .meetsCriteria(true)
                         .build())
-                .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
+                .certificationCriterionSingle(PendingCertificationResultDTO.builder()
+                        .criterion(CertificationCriterionDTO.builder()
                                 .id(EDITION_2015_D_3)
                                 .number("170.315 (d)(3)")
                                 .build())
-                        .success(true)
+                        .meetsCriteria(true)
                         .build())
-                .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
+                .certificationCriterionSingle(PendingCertificationResultDTO.builder()
+                        .criterion(CertificationCriterionDTO.builder()
                                 .id(EDITION_2015_D_10)
                                 .number("170.315 (d)(10)")
                                 .build())
-                        .success(true)
+                        .meetsCriteria(true)
                         .build())
                 .build();
 
@@ -98,37 +100,37 @@ public class OldCriteriaWithoutIcsReviewerTest {
 
     @Test
     public void review_WithoutIcsWithoutCriteria_NoMessages() {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .ics(new InheritedCertificationStatus(false))
-                .certificationDate(beforeBoth.getTime())
-                .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
+        PendingCertifiedProductDTO listing = PendingCertifiedProductDTO.builder()
+                .ics(false)
+                .certificationDate(beforeBoth)
+                .certificationCriterionSingle(PendingCertificationResultDTO.builder()
+                        .criterion(CertificationCriterionDTO.builder()
                                 .id(EDITION_2015_B_3)
                                 .number("170.315 (b)(3)")
                                 .title("not cures")
                                 .build())
-                        .success(false)
+                        .meetsCriteria(false)
                         .build())
-                .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
+                .certificationCriterionSingle(PendingCertificationResultDTO.builder()
+                        .criterion(CertificationCriterionDTO.builder()
                                 .id(EDITION_2015_D_2)
                                 .number("170.315 (d)(2)")
                                 .build())
-                        .success(false)
+                        .meetsCriteria(false)
                         .build())
-                .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
+                .certificationCriterionSingle(PendingCertificationResultDTO.builder()
+                        .criterion(CertificationCriterionDTO.builder()
                                 .id(EDITION_2015_D_3)
                                 .number("170.315 (d)(3)")
                                 .build())
-                        .success(false)
+                        .meetsCriteria(false)
                         .build())
-                .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
+                .certificationCriterionSingle(PendingCertificationResultDTO.builder()
+                        .criterion(CertificationCriterionDTO.builder()
                                 .id(EDITION_2015_D_10)
                                 .number("170.315 (d)(10)")
                                 .build())
-                        .success(false)
+                        .meetsCriteria(false)
                         .build())
                 .build();
 
@@ -139,40 +141,40 @@ public class OldCriteriaWithoutIcsReviewerTest {
 
     @Test
     public void review_WithOldCriteriaWithoutIcsBeforeDates_NoMessages() {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .ics(new InheritedCertificationStatus(false))
-                .certificationDate(beforeBoth.getTime())
-                .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
+        PendingCertifiedProductDTO listing = PendingCertifiedProductDTO.builder()
+                .ics(false)
+                .certificationDate(beforeBoth)
+                .certificationCriterionSingle(PendingCertificationResultDTO.builder()
+                        .criterion(CertificationCriterionDTO.builder()
                                 .id(EDITION_2015_B_3)
                                 .number("170.315 (b)(3)")
                                 .title("not cures")
                                 .build())
-                        .success(true)
+                        .meetsCriteria(true)
                         .build())
-                .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
+                .certificationCriterionSingle(PendingCertificationResultDTO.builder()
+                        .criterion(CertificationCriterionDTO.builder()
                                 .id(EDITION_2015_D_2)
                                 .number("170.315 (d)(2)")
                                 .title("not cures")
                                 .build())
-                        .success(true)
+                        .meetsCriteria(true)
                         .build())
-                .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
+                .certificationCriterionSingle(PendingCertificationResultDTO.builder()
+                        .criterion(CertificationCriterionDTO.builder()
                                 .id(EDITION_2015_D_3)
                                 .number("170.315 (d)(3)")
                                 .title("not cures")
                                 .build())
-                        .success(true)
+                        .meetsCriteria(true)
                         .build())
-                .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
+                .certificationCriterionSingle(PendingCertificationResultDTO.builder()
+                        .criterion(CertificationCriterionDTO.builder()
                                 .id(EDITION_2015_D_10)
                                 .number("170.315 (d)(10)")
                                 .title("not cures")
                                 .build())
-                        .success(true)
+                        .meetsCriteria(true)
                         .build())
                 .build();
 
@@ -183,38 +185,40 @@ public class OldCriteriaWithoutIcsReviewerTest {
 
     @Test
     public void review_WithOldCriteriaWithoutIcsBetweenDates_OneMessage() {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .ics(new InheritedCertificationStatus(false))
-                .certificationDate(betweenBoth.getTime())
-                .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
+        PendingCertifiedProductDTO listing = PendingCertifiedProductDTO.builder()
+                .ics(false)
+                .certificationDate(betweenBoth)
+                .errorMessages(new HashSet<String>())
+                .certificationCriterionSingle(PendingCertificationResultDTO.builder()
+                        .criterion(CertificationCriterionDTO.builder()
                                 .id(EDITION_2015_B_3)
                                 .number("170.315 (b)(3)")
                                 .build())
-                        .success(true)
+                        .meetsCriteria(true)
                         .build())
-                .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
+                .certificationCriterionSingle(PendingCertificationResultDTO.builder()
+                        .criterion(CertificationCriterionDTO.builder()
                                 .id(EDITION_2015_D_2)
                                 .number("170.315 (d)(2)")
                                 .build())
-                        .success(true)
+                        .meetsCriteria(true)
                         .build())
-                .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
+                .certificationCriterionSingle(PendingCertificationResultDTO.builder()
+                        .criterion(CertificationCriterionDTO.builder()
                                 .id(EDITION_2015_D_3)
                                 .number("170.315 (d)(3)")
                                 .build())
-                        .success(true)
+                        .meetsCriteria(true)
                         .build())
-                .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
+                .certificationCriterionSingle(PendingCertificationResultDTO.builder()
+                        .criterion(CertificationCriterionDTO.builder()
                                 .id(EDITION_2015_D_10)
                                 .number("170.315 (d)(10)")
                                 .build())
-                        .success(true)
+                        .meetsCriteria(true)
                         .build())
                 .build();
+        listing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(listing);
 
@@ -224,38 +228,39 @@ public class OldCriteriaWithoutIcsReviewerTest {
     @SuppressWarnings("checkstyle:MagicNumber")
     @Test
     public void review_WithOldCriteriaWithoutIcsAfterDates_AllMessages() {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .ics(new InheritedCertificationStatus(false))
-                .certificationDate(afterBoth.getTime())
-                .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
+        PendingCertifiedProductDTO listing = PendingCertifiedProductDTO.builder()
+                .ics(false)
+                .certificationDate(afterBoth)
+                .certificationCriterionSingle(PendingCertificationResultDTO.builder()
+                        .criterion(CertificationCriterionDTO.builder()
                                 .id(EDITION_2015_B_3)
                                 .number("170.315 (b)(3)")
                                 .build())
-                        .success(true)
+                        .meetsCriteria(true)
                         .build())
-                .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
+                .certificationCriterionSingle(PendingCertificationResultDTO.builder()
+                        .criterion(CertificationCriterionDTO.builder()
                                 .id(EDITION_2015_D_2)
                                 .number("170.315 (d)(2)")
                                 .build())
-                        .success(true)
+                        .meetsCriteria(true)
                         .build())
-                .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
+                .certificationCriterionSingle(PendingCertificationResultDTO.builder()
+                        .criterion(CertificationCriterionDTO.builder()
                                 .id(EDITION_2015_D_3)
                                 .number("170.315 (d)(3)")
                                 .build())
-                        .success(true)
+                        .meetsCriteria(true)
                         .build())
-                .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
+                .certificationCriterionSingle(PendingCertificationResultDTO.builder()
+                        .criterion(CertificationCriterionDTO.builder()
                                 .id(EDITION_2015_D_10)
                                 .number("170.315 (d)(10)")
                                 .build())
-                        .success(true)
+                        .meetsCriteria(true)
                         .build())
                 .build();
+        listing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(listing);
 
