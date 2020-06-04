@@ -1,0 +1,129 @@
+{
+	"info": {
+		"_postman_id": "9846a5c6-895e-4e18-8460-f0654c3be816",
+		"name": "activity-controller",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Version report",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "64d00ad9-b5a7-4cf1-b903-b0d8d11edd27",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Pagenum and Pagesize validation\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.pageNum).to.eql(0);\r",
+							"    pm.expect(jsonData.pageSize).to.eql(50);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-KEY",
+						"value": "12909a978483dfb8ecd0596c98ae9094",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://chpl-qa.ahrqdev.org/rest/activity/metadata/beta/versions?START=05/18/2020&END=05/18/2020&PAGENUM=0&PAGESIZE=30",
+					"protocol": "https",
+					"host": [
+						"chpl-qa",
+						"ahrqdev",
+						"org"
+					],
+					"path": [
+						"rest",
+						"activity",
+						"metadata",
+						"beta",
+						"versions"
+					],
+					"query": [
+						{
+							"key": "START",
+							"value": "05/18/2020"
+						},
+						{
+							"key": "END",
+							"value": "05/18/2020"
+						},
+						{
+							"key": "PAGENUM",
+							"value": "0"
+						},
+						{
+							"key": "PAGESIZE",
+							"value": "30"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Audit record for a specific version",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-KEY",
+						"value": "12909a978483dfb8ecd0596c98ae9094",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://chpl-qa.ahrqdev.org/rest/activity/metadata/versions/7720",
+					"protocol": "https",
+					"host": [
+						"chpl-qa",
+						"ahrqdev",
+						"org"
+					],
+					"path": [
+						"rest",
+						"activity",
+						"metadata",
+						"versions",
+						"7720"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "e9c6c332-fecf-4f71-a360-b7bfadc2a590",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "093940bb-f3c6-433c-abe9-e2f5a64f94d0",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
