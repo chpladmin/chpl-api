@@ -54,6 +54,7 @@ public class SchedulerManager extends SecuredManager {
 
     private static final String AUTHORITY_DELIMITER = ";";
     private static final String DATA_DELIMITER = "\u263A";
+    public static final String CHPL_BACKGROUND_JOBS_KEY = "chplBackgroundJobs";
     public static final String CHPL_JOBS_KEY = "chplJobs";
     public static final String SYSTEM_JOBS_KEY = "systemJobs";
 
@@ -242,11 +243,13 @@ public class SchedulerManager extends SecuredManager {
 
         // Get all the jobs (no security - it is handled with @PostFilter)
         for (String group : scheduler.getJobGroupNames()) {
-            for (JobKey jobKey : scheduler.getJobKeys(groupEquals(group))) {
-                JobDetail jobDetail = scheduler.getJobDetail(jobKey);
-                ChplJob chplJob = new ChplJob(jobDetail);
-                chplJob.setJobDataMap(jobDetail.getJobDataMap());
-                jobs.add(chplJob);
+            if (!CHPL_BACKGROUND_JOBS_KEY.equals(group)) {
+                for (JobKey jobKey : scheduler.getJobKeys(groupEquals(group))) {
+                    JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+                    ChplJob chplJob = new ChplJob(jobDetail);
+                    chplJob.setJobDataMap(jobDetail.getJobDataMap());
+                    jobs.add(chplJob);
+                }
             }
         }
 

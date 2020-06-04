@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.FeatureList;
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -52,15 +51,14 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.DeveloperStatusEventsHelper;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.manager.rules.developer.DeveloperValidationContext;
 import gov.healthit.chpl.manager.rules.developer.DeveloperValidationFactory;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.scheduler.job.SplitDeveloperJob;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -74,7 +72,6 @@ public class DeveloperManager extends SecuredManager {
     public static final String NEW_DEVELOPER_CODE = "XXXX";
 
     private DeveloperDAO developerDao;
-    private UserManager userManager;
     private ProductManager productManager;
     private CertificationBodyManager acbManager;
     private CertificationBodyDAO certificationBodyDao;
@@ -90,7 +87,7 @@ public class DeveloperManager extends SecuredManager {
     private FF4j ff4j;
 
     @Autowired
-    public DeveloperManager(DeveloperDAO developerDao, UserManager userManager, ProductManager productManager,
+    public DeveloperManager(DeveloperDAO developerDao, ProductManager productManager,
             CertificationBodyManager acbManager, CertificationBodyDAO certificationBodyDao,
             CertifiedProductDAO certifiedProductDAO, ChplProductNumberUtil chplProductNumberUtil,
             ActivityManager activityManager, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
@@ -98,7 +95,6 @@ public class DeveloperManager extends SecuredManager {
             TransparencyAttestationManager transparencyAttestationManager, SchedulerManager schedulerManager,
             FF4j ff4j) {
         this.developerDao = developerDao;
-        this.userManager = userManager;
         this.productManager = productManager;
         this.acbManager = acbManager;
         this.certificationBodyDao = certificationBodyDao;
@@ -415,25 +411,13 @@ public class DeveloperManager extends SecuredManager {
 
         ChplOneTimeTrigger splitDeveloperTrigger = new ChplOneTimeTrigger();
         ChplJob splitDeveloperJob = new ChplJob();
-        splitDeveloperJob.setName("splitDeveloperJob");
-        splitDeveloperJob.setGroup("chplBackgroundJobs");
+        splitDeveloperJob.setName(SplitDeveloperJob.JOB_NAME);
+        splitDeveloperJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
         JobDataMap jobDataMap = new JobDataMap();
-        jobDataMap.put("oldDeveloper", oldDeveloper);
-        jobDataMap.put("newDeveloper", developerToCreate);
-        jobDataMap.put("productIdsToMove", productIdsToMove);
-        String email = "";
-        User user = AuthUtil.getCurrentUser();
-        if (user != null) {
-            try {
-                UserDTO userDto = userManager.getById(user.getId());
-                if (userDto != null) {
-                    email = userDto.getEmail();
-                }
-            } catch (UserRetrievalException ex) {
-                LOGGER.error("Could not find user by id " + user.getId(), ex);
-            }
-        }
-        jobDataMap.put("email", email);
+        jobDataMap.put(SplitDeveloperJob.OLD_DEVELOPER_KEY, oldDeveloper);
+        jobDataMap.put(SplitDeveloperJob.NEW_DEVELOPER_KEY, developerToCreate);
+        jobDataMap.put(SplitDeveloperJob.PRODUCT_IDS_TO_MOVE_KEY, productIdsToMove);
+        jobDataMap.put(SplitDeveloperJob.USER_ID_KEY, AuthUtil.getCurrentUser().getId());
         splitDeveloperJob.setJobDataMap(jobDataMap);
         splitDeveloperTrigger.setJob(splitDeveloperJob);
         splitDeveloperTrigger.setRunDateMillis(System.currentTimeMillis() + 5000); //5 secs from now

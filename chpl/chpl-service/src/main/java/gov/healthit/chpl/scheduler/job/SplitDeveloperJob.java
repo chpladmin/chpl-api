@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,18 +21,23 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
@@ -41,6 +47,11 @@ import gov.healthit.chpl.util.EmailBuilder;
 import net.sf.ehcache.CacheManager;
 
 public class SplitDeveloperJob implements Job {
+    public static final String JOB_NAME = "splitDeveloperJob";
+    public static final String OLD_DEVELOPER_KEY = "oldDeveloper";
+    public static final String NEW_DEVELOPER_KEY = "newDeveloper";
+    public static final String PRODUCT_IDS_TO_MOVE_KEY = "productIdsToMove";
+    public static final String USER_ID_KEY = "userId";
     private static final Logger LOGGER = LogManager.getLogger("splitDeveloperJobLogger");
 
     @Autowired
@@ -59,6 +70,9 @@ public class SplitDeveloperJob implements Job {
     private CertifiedProductDetailsManager cpdManager;
 
     @Autowired
+    private UserDAO userDao;
+
+    @Autowired
     private ActivityManager activityManager;
 
     @Override
@@ -67,36 +81,67 @@ public class SplitDeveloperJob implements Job {
 
         LOGGER.info("********* Starting the Split Developer job. *********");
 
-        //do the split
         JobDataMap jobDataMap = jobContext.getMergedJobDataMap();
-        DeveloperDTO oldDeveloper = (DeveloperDTO) jobDataMap.get("oldDeveloper");
-        DeveloperDTO newDeveloper = (DeveloperDTO) jobDataMap.get("newDeveloper");
-        List<Long> productIdsToMove = (List<Long>) jobDataMap.get("productIdsToMove");
-        DeveloperDTO createdDeveloper = null;
-        Exception splitException = null;
-        try {
-            createdDeveloper = splitDeveloper(oldDeveloper, newDeveloper, productIdsToMove);
-        } catch (Exception e) {
-            LOGGER.error("Error completing split of old developer '" + oldDeveloper.getName() + "' to new developer '"
-                    + newDeveloper.getName() + "'.", e);
-            splitException = e;
+        Long userId = (Long) jobDataMap.get(USER_ID_KEY);
+        UserDTO user = null;
+        if (userId != null) {
+            try {
+                //using user DAO instead of manager because we don't
+                //have security at this point
+                user = userDao.getById(userId);
+                LOGGER.info("Using user '" + user.getUsername() + "' to perform the split.");
+            } catch (UserRetrievalException ex) {
+                LOGGER.error("User with ID " + userId + " was not found.", ex);
+            }
         }
+        if (user == null) {
+            LOGGER.fatal("No user could be found in the job data.");
+        } else {
+            setSecurityContext(user);
 
-        if (createdDeveloper != null) {
-            //evict all caches
-            CacheManager.getInstance().clearAll();
+            DeveloperDTO oldDeveloper = (DeveloperDTO) jobDataMap.get(OLD_DEVELOPER_KEY);
+            DeveloperDTO newDeveloper = (DeveloperDTO) jobDataMap.get(NEW_DEVELOPER_KEY);
+            List<Long> productIdsToMove = (List<Long>) jobDataMap.get(PRODUCT_IDS_TO_MOVE_KEY);
+            DeveloperDTO createdDeveloper = null;
+            Exception splitException = null;
+            try {
+                createdDeveloper = splitDeveloper(oldDeveloper, newDeveloper, productIdsToMove);
+            } catch (Exception e) {
+                LOGGER.error("Error completing split of old developer '" + oldDeveloper.getName() + "' to new developer '"
+                        + newDeveloper.getName() + "'.", e);
+                splitException = e;
+            }
+
+            if (createdDeveloper != null) {
+                CacheManager.getInstance().clearAll();
+            }
+
+            //send email about success/failure of job
+            if (!StringUtils.isEmpty(user.getEmail())) {
+                String[] recipients = new String[] {user.getEmail()};
+                try {
+                    sendEmails(oldDeveloper, createdDeveloper != null ? createdDeveloper : newDeveloper,
+                            productIdsToMove, splitException, recipients);
+                } catch (IOException | MessagingException e) {
+                    LOGGER.error(e);
+                }
+            } else {
+                LOGGER.warn("The user " + user.getUsername() + " does not have a configured email address so no email will be sent.");
+            }
         }
-
-        //send email about success/failure of job
-        String[] recipients = jobContext.getMergedJobDataMap().getString("email").split("\u263A");
-        try {
-            sendEmails(oldDeveloper, createdDeveloper != null ? createdDeveloper : newDeveloper,
-                    productIdsToMove, splitException, recipients);
-        } catch (IOException | MessagingException e) {
-            LOGGER.error(e);
-        }
-
         LOGGER.info("********* Completed the Split Developer job. *********");
+    }
+
+    private void setSecurityContext(UserDTO user) {
+        JWTAuthenticatedUser splitUser = new JWTAuthenticatedUser();
+        splitUser.setFullName(user.getFullName());
+        splitUser.setId(user.getId());
+        splitUser.setFriendlyName(user.getFriendlyName());
+        splitUser.setSubjectName(user.getUsername());
+        splitUser.getPermissions().add(user.getPermission().getGrantedPermission());
+
+        SecurityContextHolder.getContext().setAuthentication(splitUser);
+        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 
     private DeveloperDTO splitDeveloper(DeveloperDTO oldDeveloper, DeveloperDTO developerToCreate,
@@ -106,6 +151,7 @@ public class SplitDeveloperJob implements Job {
         //but the security on that only allows ADMIN and ACB
         //whereas ONC should also be allowed to split (create is a part of split)
         //so can I change the security on the manager create method?
+        LOGGER.info("Creating new developer " + developerToCreate.getName());
         DeveloperDTO createdDeveloper = devManager.create(developerToCreate);
 
         // re-assign products to the new developer
@@ -113,10 +159,12 @@ public class SplitDeveloperJob implements Job {
         Date splitDate = new Date();
         for (Long productIdToMove : productIdsToMove) {
             List<CertifiedProductDetailsDTO> affectedListings = cpManager.getByProduct(productIdToMove);
+            LOGGER.info("Found " + affectedListings.size() + " affected listings");
             // need to get details for affected listings now before the product is re-assigned
             // so that any listings with a generated new-style CHPL ID have the old developer code
             Map<Long, CertifiedProductSearchDetails> beforeListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
             for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
+                LOGGER.info("Getting pre-split details for affected listing " + affectedListing.getChplProductNumber());
                 CertifiedProductSearchDetails beforeListing = cpdManager
                         .getCertifiedProductDetails(affectedListing.getId());
                 beforeListingDetails.put(beforeListing.getId(), beforeListing);
@@ -134,10 +182,12 @@ public class SplitDeveloperJob implements Job {
             //update is ok for admin/onc and is only okay for acb
             //if the developer associated with this product is Active
             //but i guess since the developer associated is a new one it must be Active
+            LOGGER.info("Moving product " + productToMove.getName());
             productManager.update(productToMove);
 
             // get the listing details again - this time they will have the new developer code
             for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
+                LOGGER.info("Getting post-split details for affected listing " + affectedListing.getChplProductNumber());
                 CertifiedProductSearchDetails afterListing = cpdManager
                         .getCertifiedProductDetails(affectedListing.getId());
                 CertifiedProductSearchDetails beforeListing = beforeListingDetails.get(afterListing.getId());
@@ -147,6 +197,7 @@ public class SplitDeveloperJob implements Job {
             }
         }
 
+        LOGGER.info("Logging developer split activity.");
         DeveloperDTO afterDeveloper = null;
         // the split is complete - log split activity
         // get the original developer object from the db to make sure it's all filled in
@@ -166,15 +217,17 @@ public class SplitDeveloperJob implements Job {
             Exception splitException, String[] recipients)
             throws IOException, AddressException, MessagingException {
 
+        List<String> emailAddresses = Arrays.asList(recipients);
         String subject = "Developer Split Complete";
         String htmlMessage = "";
         if (splitException == null) {
             htmlMessage = createHtmlEmailBodySuccess(oldDeveloper, newDeveloper, productIds);
         } else {
+            List<String> errorEmailRecipients = Arrays.asList(env.getProperty("splitDeveloperErrorEmailRecipients").split(","));
+            emailAddresses.addAll(errorEmailRecipients);
             htmlMessage = createHtmlEmailBodyFailure(oldDeveloper, newDeveloper, splitException);
         }
 
-        List<String> emailAddresses = Arrays.asList(recipients);
         for (String emailAddress : emailAddresses) {
             try {
                 sendEmail(emailAddress, subject, htmlMessage);
