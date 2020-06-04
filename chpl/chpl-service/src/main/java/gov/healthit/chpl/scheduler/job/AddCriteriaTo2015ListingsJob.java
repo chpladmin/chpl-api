@@ -484,9 +484,6 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         addTestFunctionalityMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "(b)(1)(iii)(E)");
         addTestFunctionalityMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "(b)(1)(iii)(F)");
         addTestFunctionalityMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "(b)(1)(iii)(G)(1)(ii)");
-        addTestFunctionalityMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "170.102(13)(ii)(C)");
-        addTestFunctionalityMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "170.102(19)(i)");
-        addTestFunctionalityMap("170.315 (b)(1)", "Transitions of Care (Cures Update)", "170.102(19)(ii)");
 
         addTestFunctionalityMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "(b)(3)(ii)(B)(1)");
         addTestFunctionalityMap("170.315 (b)(3)", "Electronic Prescribing (Cures Update)", "(b)(3)(ii)(B)(2)");
@@ -505,21 +502,6 @@ public class AddCriteriaTo2015ListingsJob extends QuartzJob {
         addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "(e)(1)(i)(B)(2)(ii)");
         addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "(e)(1)(i)(B)(3)");
         addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "(e)(1)(i)(C)(2)");
-        addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "170.102(13)(ii)(C)");
-        addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "170.102(19)(i)");
-        addTestFunctionalityMap("170.315 (e)(1)", "View, Download, and Transmit to 3rd Party (Cures Update)", "170.102(19)(ii)");
-
-        addTestFunctionalityMap("170.315 (f)(5)", "Transmission to Public Health Agencies - Electronic Case Reporting (Cures Update)", "170.102(13)(ii)(C)");
-        addTestFunctionalityMap("170.315 (f)(5)", "Transmission to Public Health Agencies - Electronic Case Reporting (Cures Update)", "170.102(19)(i)");
-        addTestFunctionalityMap("170.315 (f)(5)", "Transmission to Public Health Agencies - Electronic Case Reporting (Cures Update)", "170.102(19)(ii)");
-
-        addTestFunctionalityMap("170.315 (g)(6)", "Consolidated CDA Creation Performance (Cures Update)", "170.102(13)(ii)(C)");
-        addTestFunctionalityMap("170.315 (g)(6)", "Consolidated CDA Creation Performance (Cures Update)", "170.102(19)(i)");
-        addTestFunctionalityMap("170.315 (g)(6)", "Consolidated CDA Creation Performance (Cures Update)", "170.102(19)(ii)");
-
-        addTestFunctionalityMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "170.102(13)(ii)(C)");
-        addTestFunctionalityMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "170.102(19)(i)");
-        addTestFunctionalityMap("170.315 (g)(9)", "Application Access - All Data Request (Cures Update)", "170.102(19)(ii)");
     }
 
     private void addTestFunctionality(String number, String title) {
