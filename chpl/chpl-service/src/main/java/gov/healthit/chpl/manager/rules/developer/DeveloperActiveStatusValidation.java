@@ -16,11 +16,16 @@ public class DeveloperActiveStatusValidation extends ValidationRule<DeveloperVal
     @Override
     public boolean isValid(DeveloperValidationContext context) {
         ErrorMessageUtil msgUtil = context.getErrorMessageUtil();
-        DeveloperDTO beforeDev = context.getBeforeDev();
-        DeveloperStatusEventDTO currDevStatus = beforeDev.getStatus();
-        if (currDevStatus != null && currDevStatus.getStatus() != null
+        DeveloperDTO developer = context.getDeveloperDTO();
+        DeveloperStatusEventDTO currDevStatus = developer.getStatus();
+        if (currDevStatus == null || currDevStatus.getStatus() == null) {
+            String msg = msgUtil.getMessage("developer.noStatusFound", developer.getName());
+            getMessages().add(msg);
+            LOGGER.error(msg);
+            return false;
+        } else if (currDevStatus != null && currDevStatus.getStatus() != null
                 && !StringUtils.equals(currDevStatus.getStatus().getStatusName(), DeveloperStatusType.Active.getName())) {
-            String msg = msgUtil.getMessage("developer.notActive", beforeDev.getName());
+            String msg = msgUtil.getMessage("developer.notActive", developer.getName());
             getMessages().add(msg);
             LOGGER.error(msg);
             return false;

@@ -171,6 +171,19 @@ public class DeveloperController {
         newDeveloper.setName(splitRequest.getNewDeveloper().getName());
         newDeveloper.setWebsite(splitRequest.getNewDeveloper().getWebsite());
         newDeveloper.setSelfDeveloper(splitRequest.getNewDeveloper().getSelfDeveloper());
+        List<DeveloperStatusEvent> newDeveloperStatusEvents = splitRequest.getNewDeveloper().getStatusEvents();
+        if (newDeveloperStatusEvents != null && newDeveloperStatusEvents.size() > 0) {
+            for (DeveloperStatusEvent newDeveloperStatusEvent : newDeveloperStatusEvents) {
+                DeveloperStatusEventDTO statusEvent = new DeveloperStatusEventDTO();
+                DeveloperStatusDTO statusDto = new DeveloperStatusDTO();
+                statusDto.setId(newDeveloperStatusEvent.getStatus().getId());
+                statusDto.setStatusName(newDeveloperStatusEvent.getStatus().getStatus());
+                statusEvent.setStatus(statusDto);
+                statusEvent.setReason(newDeveloperStatusEvent.getReason());
+                statusEvent.setStatusDate(newDeveloperStatusEvent.getStatusDate());
+                newDeveloper.getStatusEvents().add(statusEvent);
+            }
+        }
         for (TransparencyAttestationMap attMap : splitRequest.getNewDeveloper().getTransparencyAttestations()) {
             DeveloperACBMapDTO devMap = new DeveloperACBMapDTO();
             devMap.setAcbId(attMap.getAcbId());

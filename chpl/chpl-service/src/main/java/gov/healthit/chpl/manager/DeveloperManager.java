@@ -411,7 +411,7 @@ public class DeveloperManager extends SecuredManager {
 
         UserDTO jobUser = null;
         try {
-            userManager.getById(AuthUtil.getCurrentUser().getId());
+            jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
         } catch (UserRetrievalException ex) {
             LOGGER.error("Could not find user to execute job.");
         }
@@ -634,7 +634,6 @@ public class DeveloperManager extends SecuredManager {
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.WEBSITE_WELL_FORMED));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.CONTACT));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.ADDRESS));
-        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.HAS_STATUS));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.ACTIVE_STATUS));
         return runValidations(rules, dto);
     }
