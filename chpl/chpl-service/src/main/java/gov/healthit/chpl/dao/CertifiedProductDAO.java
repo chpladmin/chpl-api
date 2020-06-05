@@ -6,8 +6,6 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,10 +23,11 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.urlStatus.UrlType;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Repository(value = "certifiedProductDAO")
 public class CertifiedProductDAO extends BaseDAOImpl {
-    private static final Logger LOGGER = LogManager.getLogger(CertifiedProductDAO.class);
     private static final int CHPL_ID_LENGTH = 9;
     private ErrorMessageUtil msgUtil;
 
@@ -188,17 +187,39 @@ public class CertifiedProductDAO extends BaseDAOImpl {
 
     @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> findByDeveloperId(final Long developerId) {
-        Query query = entityManager.createQuery("SELECT cpd " + "FROM CertifiedProductDetailsEntity cpd "
-                + "WHERE (NOT deleted = true) " + "AND cpd.developerId = :developerId ",
+        Query query = entityManager.createQuery("SELECT cpd "
+                + "FROM CertifiedProductDetailsEntity cpd "
+                + "WHERE cpd.deleted = false "
+                + "AND cpd.developerId = :developerId ",
                 CertifiedProductDetailsEntity.class);
         query.setParameter("developerId", developerId);
         List<CertifiedProductDetailsEntity> entities = query.getResultList();
-        List<CertifiedProductDetailsDTO> products = new ArrayList<>(entities.size());
-
+        List<CertifiedProductDetailsDTO> products = new ArrayList<CertifiedProductDetailsDTO>(entities.size());
         for (CertifiedProductDetailsEntity entity : entities) {
             CertifiedProductDetailsDTO product = new CertifiedProductDetailsDTO(entity);
             products.add(product);
         }
+        return products;
+    }
+
+    @Transactional(readOnly = true)
+    public List<CertifiedProductSummaryDTO> findListingSummariesByDeveloperId(final Long developerId) {
+        LOGGER.info("Starting query for all listings for developer " + developerId);
+        Query query = entityManager.createQuery("SELECT cpd "
+                + "FROM CertifiedProductDetailsEntity cpd "
+                + "WHERE cpd.deleted = false "
+                + "AND cpd.developerId = :developerId ",
+                CertifiedProductDetailsEntity.class);
+        query.setParameter("developerId", developerId);
+        List<CertifiedProductDetailsEntity> entities = query.getResultList();
+        LOGGER.info("Got query results");
+        LOGGER.info("Making DTOs");
+        List<CertifiedProductSummaryDTO> products = new ArrayList<CertifiedProductSummaryDTO>(entities.size());
+        for (CertifiedProductDetailsEntity entity : entities) {
+            CertifiedProductSummaryDTO product = new CertifiedProductSummaryDTO(entity);
+            products.add(product);
+        }
+        LOGGER.info("Finished making DTOs");
         return products;
     }
 

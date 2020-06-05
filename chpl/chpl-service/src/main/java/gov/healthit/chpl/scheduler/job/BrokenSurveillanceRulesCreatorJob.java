@@ -23,8 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.dao.scheduler.BrokenSurveillanceRulesDAO;
-import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.OversightRuleResult;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;

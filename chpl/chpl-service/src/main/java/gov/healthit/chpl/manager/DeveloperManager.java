@@ -421,7 +421,7 @@ public class DeveloperManager extends SecuredManager {
         splitDeveloperJob.setJobDataMap(jobDataMap);
         splitDeveloperTrigger.setJob(splitDeveloperJob);
         splitDeveloperTrigger.setRunDateMillis(System.currentTimeMillis() + 5000); //5 secs from now
-        splitDeveloperTrigger = schedulerManager.createOneTimeTrigger(splitDeveloperTrigger);
+        splitDeveloperTrigger = schedulerManager.createBackgroundJobTrigger(splitDeveloperTrigger);
         return splitDeveloperTrigger;
     }
 
