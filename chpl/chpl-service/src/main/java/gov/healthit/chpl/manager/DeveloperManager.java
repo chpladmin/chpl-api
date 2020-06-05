@@ -51,7 +51,9 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.DeveloperStatusEventsHelper;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.manager.rules.ValidationRule;
@@ -73,6 +75,7 @@ public class DeveloperManager extends SecuredManager {
 
     private DeveloperDAO developerDao;
     private ProductManager productManager;
+    private UserManager userManager;
     private CertificationBodyManager acbManager;
     private CertificationBodyDAO certificationBodyDao;
     private CertifiedProductDAO certifiedProductDAO;
@@ -87,7 +90,7 @@ public class DeveloperManager extends SecuredManager {
     private FF4j ff4j;
 
     @Autowired
-    public DeveloperManager(DeveloperDAO developerDao, ProductManager productManager,
+    public DeveloperManager(DeveloperDAO developerDao, ProductManager productManager, UserManager userManager,
             CertificationBodyManager acbManager, CertificationBodyDAO certificationBodyDao,
             CertifiedProductDAO certifiedProductDAO, ChplProductNumberUtil chplProductNumberUtil,
             ActivityManager activityManager, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
@@ -96,6 +99,7 @@ public class DeveloperManager extends SecuredManager {
             FF4j ff4j) {
         this.developerDao = developerDao;
         this.productManager = productManager;
+        this.userManager = userManager;
         this.acbManager = acbManager;
         this.certificationBodyDao = certificationBodyDao;
         this.certifiedProductDAO = certifiedProductDAO;
@@ -399,15 +403,18 @@ public class DeveloperManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).SPLIT, #oldDeveloper)")
     public ChplOneTimeTrigger split(DeveloperDTO oldDeveloper, DeveloperDTO developerToCreate,
             List<Long> productIdsToMove) throws ValidationException, SchedulerException {
-        //TODO: add other permission checks to the SPLIT preauth?
-
-        // check developer fields for all valid values (except transparency attestation)
+        // check developer fields for all valid values
         Set<String> devErrors = runCreateValidations(developerToCreate);
         if (devErrors != null && devErrors.size() > 0) {
             throw new ValidationException(devErrors);
         }
 
-        //TODO: any other permission or validation-type checks we need to do here?
+        UserDTO jobUser = null;
+        try {
+            userManager.getById(AuthUtil.getCurrentUser().getId());
+        } catch (UserRetrievalException ex) {
+            LOGGER.error("Could not find user to execute job.");
+        }
 
         ChplOneTimeTrigger splitDeveloperTrigger = new ChplOneTimeTrigger();
         ChplJob splitDeveloperJob = new ChplJob();
@@ -417,7 +424,7 @@ public class DeveloperManager extends SecuredManager {
         jobDataMap.put(SplitDeveloperJob.OLD_DEVELOPER_KEY, oldDeveloper);
         jobDataMap.put(SplitDeveloperJob.NEW_DEVELOPER_KEY, developerToCreate);
         jobDataMap.put(SplitDeveloperJob.PRODUCT_IDS_TO_MOVE_KEY, productIdsToMove);
-        jobDataMap.put(SplitDeveloperJob.USER_ID_KEY, AuthUtil.getCurrentUser().getId());
+        jobDataMap.put(SplitDeveloperJob.USER_KEY, jobUser);
         splitDeveloperJob.setJobDataMap(jobDataMap);
         splitDeveloperTrigger.setJob(splitDeveloperJob);
         splitDeveloperTrigger.setRunDateMillis(System.currentTimeMillis() + 5000); //5 secs from now
@@ -627,6 +634,8 @@ public class DeveloperManager extends SecuredManager {
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.WEBSITE_WELL_FORMED));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.CONTACT));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.ADDRESS));
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.HAS_STATUS));
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.ACTIVE_STATUS));
         return runValidations(rules, dto);
     }
 

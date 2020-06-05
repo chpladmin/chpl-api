@@ -9,7 +9,9 @@ public class CreateActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess() {
-        return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleAcbAdmin();
+        return getResourcePermissions().isUserRoleAdmin()
+                || getResourcePermissions().isUserRoleOnc()
+                || getResourcePermissions().isUserRoleAcbAdmin();
     }
 
     @Override

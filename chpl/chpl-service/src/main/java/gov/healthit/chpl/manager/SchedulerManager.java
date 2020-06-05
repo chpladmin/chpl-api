@@ -177,7 +177,8 @@ public class SchedulerManager extends SecuredManager {
         Scheduler scheduler = getScheduler();
         for (String group : scheduler.getTriggerGroupNames()) {
             for (TriggerKey triggerKey : scheduler.getTriggerKeys(groupEquals(group))) {
-                if (scheduler.getTrigger(triggerKey).getJobKey().getGroup().equalsIgnoreCase(SYSTEM_JOBS_KEY)) {
+                String jobGroup = scheduler.getTrigger(triggerKey).getJobKey().getGroup();
+                if (jobGroup.equalsIgnoreCase(SYSTEM_JOBS_KEY) || jobGroup.equalsIgnoreCase(CHPL_BACKGROUND_JOBS_KEY)) {
                     Trigger curTrigger = getScheduler().getTrigger(triggerKey);
                     String jobName = curTrigger.getKey().getName();
                     JobDetail jobDetail = getScheduler().getJobDetail(getScheduler().getTrigger(triggerKey).getJobKey());

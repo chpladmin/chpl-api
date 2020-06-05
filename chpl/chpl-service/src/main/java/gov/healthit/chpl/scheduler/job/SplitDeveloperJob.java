@@ -27,7 +27,6 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -37,7 +36,6 @@ import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
@@ -51,7 +49,7 @@ public class SplitDeveloperJob implements Job {
     public static final String OLD_DEVELOPER_KEY = "oldDeveloper";
     public static final String NEW_DEVELOPER_KEY = "newDeveloper";
     public static final String PRODUCT_IDS_TO_MOVE_KEY = "productIdsToMove";
-    public static final String USER_ID_KEY = "userId";
+    public static final String USER_KEY = "user";
     private static final Logger LOGGER = LogManager.getLogger("splitDeveloperJobLogger");
 
     @Autowired
@@ -70,9 +68,6 @@ public class SplitDeveloperJob implements Job {
     private CertifiedProductDetailsManager cpdManager;
 
     @Autowired
-    private UserDAO userDao;
-
-    @Autowired
     private ActivityManager activityManager;
 
     @Override
@@ -82,18 +77,7 @@ public class SplitDeveloperJob implements Job {
         LOGGER.info("********* Starting the Split Developer job. *********");
 
         JobDataMap jobDataMap = jobContext.getMergedJobDataMap();
-        Long userId = (Long) jobDataMap.get(USER_ID_KEY);
-        UserDTO user = null;
-        if (userId != null) {
-            try {
-                //using user DAO instead of manager because we don't
-                //have security at this point
-                user = userDao.getById(userId);
-                LOGGER.info("Using user '" + user.getUsername() + "' to perform the split.");
-            } catch (UserRetrievalException ex) {
-                LOGGER.error("User with ID " + userId + " was not found.", ex);
-            }
-        }
+        UserDTO user = (UserDTO) jobDataMap.get(USER_KEY);
         if (user == null) {
             LOGGER.fatal("No user could be found in the job data.");
         } else {
@@ -146,11 +130,6 @@ public class SplitDeveloperJob implements Job {
 
     private DeveloperDTO splitDeveloper(DeveloperDTO oldDeveloper, DeveloperDTO developerToCreate,
             List<Long> productIdsToMove) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
-
-        //TODO: would like to call the manager method create here
-        //but the security on that only allows ADMIN and ACB
-        //whereas ONC should also be allowed to split (create is a part of split)
-        //so can I change the security on the manager create method?
         LOGGER.info("Creating new developer " + developerToCreate.getName());
         DeveloperDTO createdDeveloper = devManager.create(developerToCreate);
 
@@ -162,6 +141,7 @@ public class SplitDeveloperJob implements Job {
             LOGGER.info("Found " + affectedListings.size() + " affected listings");
             // need to get details for affected listings now before the product is re-assigned
             // so that any listings with a generated new-style CHPL ID have the old developer code
+            //TODO:make getting all these listing details async
             Map<Long, CertifiedProductSearchDetails> beforeListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
             for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
                 LOGGER.info("Getting pre-split details for affected listing " + affectedListing.getChplProductNumber());
@@ -178,10 +158,8 @@ public class SplitDeveloperJob implements Job {
             newOwner.setDeveloper(oldDeveloper);
             newOwner.setTransferDate(splitDate.getTime());
             productToMove.getOwnerHistory().add(newOwner);
-
-            //update is ok for admin/onc and is only okay for acb
-            //if the developer associated with this product is Active
-            //but i guess since the developer associated is a new one it must be Active
+            //TODO: we can split a developer and make the new developer be not active
+            //so i'm not sure if this will work
             LOGGER.info("Moving product " + productToMove.getName());
             productManager.update(productToMove);
 
@@ -198,11 +176,8 @@ public class SplitDeveloperJob implements Job {
         }
 
         LOGGER.info("Logging developer split activity.");
-        DeveloperDTO afterDeveloper = null;
-        // the split is complete - log split activity
-        // get the original developer object from the db to make sure it's all filled in
         DeveloperDTO origDeveloper = devManager.getById(oldDeveloper.getId());
-        afterDeveloper = devManager.getById(createdDeveloper.getId());
+        DeveloperDTO afterDeveloper = devManager.getById(createdDeveloper.getId());
         List<DeveloperDTO> splitDevelopers = new ArrayList<DeveloperDTO>();
         splitDevelopers.add(origDeveloper);
         splitDevelopers.add(afterDeveloper);
