@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
@@ -41,6 +42,7 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
+import gov.healthit.chpl.scheduler.SchedulerCertifiedProductSearchDetailsAsync;
 import gov.healthit.chpl.util.EmailBuilder;
 import net.sf.ehcache.CacheManager;
 
@@ -66,6 +68,9 @@ public class SplitDeveloperJob implements Job {
 
     @Autowired
     private CertifiedProductDetailsManager cpdManager;
+
+    @Autowired
+    private SchedulerCertifiedProductSearchDetailsAsync schedulerCertifiedProductSearchDetailsAsync;
 
     @Autowired
     private ActivityManager activityManager;
@@ -129,7 +134,8 @@ public class SplitDeveloperJob implements Job {
     }
 
     private DeveloperDTO splitDeveloper(DeveloperDTO oldDeveloper, DeveloperDTO developerToCreate,
-            List<Long> productIdsToMove) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
+            List<Long> productIdsToMove) throws JsonProcessingException, EntityCreationException,
+            EntityRetrievalException, Exception {
         LOGGER.info("Creating new developer " + developerToCreate.getName());
         DeveloperDTO createdDeveloper = devManager.create(developerToCreate);
 
@@ -139,15 +145,15 @@ public class SplitDeveloperJob implements Job {
         for (Long productIdToMove : productIdsToMove) {
             List<CertifiedProductDetailsDTO> affectedListings = cpManager.getByProduct(productIdToMove);
             LOGGER.info("Found " + affectedListings.size() + " affected listings");
+
             // need to get details for affected listings now before the product is re-assigned
             // so that any listings with a generated new-style CHPL ID have the old developer code
-            //TODO:make getting all these listing details async
             Map<Long, CertifiedProductSearchDetails> beforeListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
-            for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
-                LOGGER.info("Getting pre-split details for affected listing " + affectedListing.getChplProductNumber());
-                CertifiedProductSearchDetails beforeListing = cpdManager
-                        .getCertifiedProductDetails(affectedListing.getId());
-                beforeListingDetails.put(beforeListing.getId(), beforeListing);
+            List<Future<CertifiedProductSearchDetails>> beforeListingFutures = getCertifiedProductSearchDetailsFutures(affectedListings);
+            for (Future<CertifiedProductSearchDetails> future : beforeListingFutures) {
+                CertifiedProductSearchDetails details = future.get();
+                LOGGER.info("Complete retrieving details for id: " + details.getId());
+                beforeListingDetails.put(details.getId(), details);
             }
 
             // move the product to be owned by the new developer
@@ -158,16 +164,14 @@ public class SplitDeveloperJob implements Job {
             newOwner.setDeveloper(oldDeveloper);
             newOwner.setTransferDate(splitDate.getTime());
             productToMove.getOwnerHistory().add(newOwner);
-            //TODO: we can split a developer and make the new developer be not active
-            //so i'm not sure if this will work
             LOGGER.info("Moving product " + productToMove.getName());
             productManager.update(productToMove);
 
             // get the listing details again - this time they will have the new developer code
-            for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
-                LOGGER.info("Getting post-split details for affected listing " + affectedListing.getChplProductNumber());
-                CertifiedProductSearchDetails afterListing = cpdManager
-                        .getCertifiedProductDetails(affectedListing.getId());
+            List<Future<CertifiedProductSearchDetails>> afterListingFutures = getCertifiedProductSearchDetailsFutures(affectedListings);
+            for (Future<CertifiedProductSearchDetails> future : afterListingFutures) {
+                CertifiedProductSearchDetails afterListing = future.get();
+                LOGGER.info("Complete retrieving details for id: " + afterListing.getId());
                 CertifiedProductSearchDetails beforeListing = beforeListingDetails.get(afterListing.getId());
                 activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeListing.getId(),
                         "Updated certified product " + afterListing.getChplProductNumber() + ".", beforeListing,
@@ -186,6 +190,22 @@ public class SplitDeveloperJob implements Job {
                         + " and " + afterDeveloper.getName(),
                 origDeveloper, splitDevelopers);
         return afterDeveloper;
+    }
+
+    private List<Future<CertifiedProductSearchDetails>> getCertifiedProductSearchDetailsFutures(
+            List<CertifiedProductDetailsDTO> listings) throws Exception {
+
+        List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
+        for (CertifiedProductDetailsDTO currListing : listings) {
+            try {
+                LOGGER.info("Getting pre-split details for affected listing " + currListing.getChplProductNumber());
+                futures.add(schedulerCertifiedProductSearchDetailsAsync.getCertifiedProductDetail(
+                        currListing.getId(), cpdManager));
+            } catch (EntityRetrievalException e) {
+                LOGGER.error("Could not retrieve certified product details for id: " + currListing.getId(), e);
+            }
+        }
+        return futures;
     }
 
     private void sendEmails(DeveloperDTO oldDeveloper, DeveloperDTO newDeveloper, List<Long> productIds,
