@@ -67,7 +67,7 @@ public class TestFunctionalityAllowedByRoleReviewer implements Reviewer {
             // Is there a match on the test functionality
             return foundBasedOnCriteriaId.get().getRestrictedTestFunctionalities().stream()
                     .filter(x -> x.getTestFunctionalityId().equals(testFunctionalityId)
-                            && resourcePermissions.doesUserHaveRole(x.allowedRoleNames))
+                            && !resourcePermissions.doesUserHaveRole(x.allowedRoleNames))
                     .findAny();
         } else {
             return Optional.empty();
