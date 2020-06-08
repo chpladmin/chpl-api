@@ -467,6 +467,32 @@ public class DeveloperDAO extends BaseDAOImpl {
         return dto;
     }
 
+    @Transactional(readOnly = true)
+    public DeveloperDTO getSimpleDeveloperById(Long id, boolean includeDeleted) throws EntityRetrievalException {
+        DeveloperDTO result = null;
+        String queryStr = "SELECT DISTINCT de "
+                + "FROM DeveloperEntitySimple de "
+                + "WHERE de.id = :entityid ";
+        if (!includeDeleted) {
+            queryStr += " AND de.deleted = false";
+        }
+
+        Query query = entityManager.createQuery(queryStr, DeveloperEntitySimple.class);
+        query.setParameter("entityid", id);
+        List<DeveloperEntitySimple> entities = query.getResultList();
+
+        if (entities == null || entities.size() == 0) {
+            String msg = msgUtil.getMessage("developer.notFound");
+            throw new EntityRetrievalException(msg);
+        } else if (entities.size() > 1) {
+            throw new EntityRetrievalException("Data error. Duplicate developer id in database.");
+        } else if (entities.size() == 1) {
+            result = new DeveloperDTO(entities.get(0));
+        }
+
+        return result;
+    }
+
     public DeveloperDTO getByName(String name) {
         DeveloperEntity entity = getEntityByName(name);
         DeveloperDTO dto = null;

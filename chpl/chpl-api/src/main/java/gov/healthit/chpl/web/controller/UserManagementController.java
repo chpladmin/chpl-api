@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -30,7 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.FeatureList;
-import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
@@ -53,50 +51,44 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.InvitationManager;
-import gov.healthit.chpl.manager.UserPermissionsManager;
+import gov.healthit.chpl.manager.auth.AuthenticationManager;
 import gov.healthit.chpl.manager.auth.UserManager;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.log4j.Log4j2;
 
 @Api(value = "users")
 @RestController
 @RequestMapping("/users")
+@Log4j2
 public class UserManagementController {
-
-    @Autowired
-    private UserManager userManager;
-
-    @Autowired
-    private InvitationManager invitationManager;
-
-    @Autowired
-    private Authenticator authenticator;
-
-    @Autowired
-    private ActivityManager activityManager;
-
-    @Autowired
-    private FF4j ff4j;
-
-    @Autowired
-    private Environment env;
-
-    @Autowired
-    private ErrorMessageUtil errorMessageUtil;
-
-    @Autowired
-    private UserPermissionsManager userPermissionsManager;
-
-    @Autowired
-    private ResourcePermissions resourcePermissions;
-
-    private static final Logger LOGGER = LogManager.getLogger(UserManagementController.class);
     private static final long VALID_INVITATION_LENGTH = 3L * 24L * 60L * 60L * 1000L;
     private static final long VALID_CONFIRMATION_LENGTH = 30L * 24L * 60L * 60L * 1000L;
+
+    private UserManager userManager;
+    private InvitationManager invitationManager;
+    private AuthenticationManager authenticationManager;
+    private ActivityManager activityManager;
+    private FF4j ff4j;
+    private Environment env;
+    private ErrorMessageUtil errorMessageUtil;
+
+
+    @Autowired
+    public UserManagementController(UserManager userManager, InvitationManager invitationManager,
+            AuthenticationManager authenticationManager, ActivityManager activityManager, FF4j ff4j,
+            Environment env, ErrorMessageUtil errorMessageUtil) {
+        this.userManager = userManager;
+        this.invitationManager = invitationManager;
+        this.authenticationManager = authenticationManager;
+        this.activityManager = activityManager;
+        this.ff4j = ff4j;
+        this.env = env;
+        this.errorMessageUtil = errorMessageUtil;
+    }
 
     @ApiOperation(value = "Create a new user account from an invitation.",
             notes = "An individual who has been invited to the CHPL has a special user key in their invitation email. "
@@ -238,39 +230,22 @@ public class UserManagementController {
                             + "it is assigned.");
         }
 
-        String jwtToken = null;
-        if (loggedInUser == null) {
-            //there's no logged in user - they are logging in at the same time
-            //they are accepting the invitation for additional access
-            UserDTO userToUpdate = authenticator.getUser(credentials);
-            if (userToUpdate == null) {
-                throw new UserRetrievalException(
-                        "The user " + credentials.getUserName() + " could not be authenticated.");
-            }
-            //invitation manager method has security on it
-            //so it cannot be called without some user in the security context;
-            //in this case the user is logging in at the same time as accepting the invitation
-            //so there will not be any user in the security context until the call completes
-            //put in this one so that the permissions security can work
-            Authentication invitedUserAuthenticator =
-                    AuthUtil.getInvitedUserAuthenticator(invitation.getLastModifiedUserId());
+        // Log the user in, if they are not logged in
+        if (Objects.isNull(loggedInUser)) {
+            authenticationManager.authenticate(credentials);
+            UserDTO user = authenticationManager.getUser(credentials);
+            Authentication invitedUserAuthenticator = AuthUtil.getInvitedUserAuthenticator(user.getId());
             SecurityContextHolder.getContext().setAuthentication(invitedUserAuthenticator);
-            invitationManager.updateUserFromInvitation(new UserInvitationDTO(userToUpdate, invitation));
-            SecurityContextHolder.getContext().setAuthentication(null);
-            jwtToken = authenticator.getJWT(credentials);
-        } else {
-            // add authorization to the currently logged in user
-            UserDTO userToUpdate = userManager.getById(loggedInUser.getId());
-            if (loggedInUser.getImpersonatingUser() != null) {
-                userToUpdate = loggedInUser.getImpersonatingUser();
-            }
-            invitationManager.updateUserFromInvitation(new UserInvitationDTO(userToUpdate, invitation));
-            UserDTO updatedUser = userManager.getById(userToUpdate.getId());
-            jwtToken = authenticator.getJWT(updatedUser);
+            loggedInUser = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
         }
 
-        String jwtJSON = "{\"token\": \"" + jwtToken + "\"}";
-        return jwtJSON;
+        UserDTO userToUpdate = userManager.getById(loggedInUser.getId());
+        if (loggedInUser.getImpersonatingUser() != null) {
+            userToUpdate = loggedInUser.getImpersonatingUser();
+        }
+        invitationManager.updateUserFromInvitation(new UserInvitationDTO(userToUpdate, invitation));
+        UserDTO updatedUser = userManager.getById(userToUpdate.getId());
+        return "{\"token\": \"" + authenticationManager.getJWT(updatedUser) + "\"}";
     }
 
     @ApiOperation(value = "Invite a user to the CHPL.",
@@ -300,18 +275,18 @@ public class UserManagementController {
         } else if (invitation.getRole().equals(Authority.ROLE_CMS_STAFF)) {
             createdInvite = invitationManager.inviteCms(invitation.getEmailAddress());
         } else if (invitation.getRole().equals(Authority.ROLE_ACB)
-                    && invitation.getPermissionObjectId() != null) {
+                && invitation.getPermissionObjectId() != null) {
             createdInvite = invitationManager.inviteWithAcbAccess(invitation.getEmailAddress(),
                     invitation.getPermissionObjectId());
         } else if (invitation.getRole().equals(Authority.ROLE_ATL)
-                    && invitation.getPermissionObjectId() != null) {
-                createdInvite = invitationManager.inviteWithAtlAccess(invitation.getEmailAddress(),
-                        invitation.getPermissionObjectId());
+                && invitation.getPermissionObjectId() != null) {
+            createdInvite = invitationManager.inviteWithAtlAccess(invitation.getEmailAddress(),
+                    invitation.getPermissionObjectId());
         } else if (invitation.getRole().equals(Authority.ROLE_DEVELOPER)
                 && invitation.getPermissionObjectId() != null) {
             createdInvite = invitationManager.inviteWithDeveloperAccess(invitation.getEmailAddress(),
                     invitation.getPermissionObjectId());
-    }
+        }
 
         // send email
         String htmlMessage = "<p>Hi,</p>" + "<p>You have been granted a new role on ONC's CHPL "
@@ -342,38 +317,13 @@ public class UserManagementController {
     produces = "application/json; charset=utf-8")
     public User updateUserDetails(@RequestBody final User userInfo)
             throws UserRetrievalException, UserPermissionRetrievalException, JsonProcessingException,
-            EntityCreationException, EntityRetrievalException {
+            EntityCreationException, EntityRetrievalException, ValidationException {
 
         if (userInfo.getUserId() <= 0) {
             throw new UserRetrievalException("Cannot update user with ID less than 0");
         }
 
-        UserDTO before = userManager.getById(userInfo.getUserId());
-        UserDTO toUpdate = new UserDTO();
-        toUpdate.setId(before.getId());
-        toUpdate.setPasswordResetRequired(userInfo.getPasswordResetRequired());
-        toUpdate.setAccountEnabled(userInfo.getAccountEnabled());
-        toUpdate.setAccountExpired(before.isAccountExpired());
-        toUpdate.setAccountLocked(userInfo.getAccountLocked());
-        toUpdate.setCredentialsExpired(userInfo.getCredentialsExpired());
-        toUpdate.setEmail(userInfo.getEmail());
-        toUpdate.setFailedLoginCount(before.getFailedLoginCount());
-        toUpdate.setFriendlyName(userInfo.getFriendlyName());
-        toUpdate.setFullName(userInfo.getFullName());
-        toUpdate.setPasswordResetRequired(userInfo.getPasswordResetRequired());
-        toUpdate.setPermission(before.getPermission());
-        toUpdate.setPhoneNumber(userInfo.getPhoneNumber());
-        toUpdate.setSignatureDate(before.getSignatureDate());
-        toUpdate.setSubjectName(before.getSubjectName());
-        toUpdate.setTitle(userInfo.getTitle());
-        //Client not should be able to change this value, so we'll always use the on from the DB
-        toUpdate.setLastLoggedInDate(before.getLastLoggedInDate());
-        UserDTO updated = userManager.update(toUpdate);
-
-        String activityDescription = "User " + userInfo.getSubjectName() + " was updated.";
-        activityManager.addActivity(ActivityConcept.USER, before.getId(), activityDescription, before,
-                updated);
-
+        UserDTO updated = userManager.update(userInfo);
         return new User(updated);
     }
 
