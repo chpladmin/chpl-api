@@ -2,10 +2,16 @@ package gov.healthit.chpl.scheduler.job;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Future;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,11 +19,13 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.scheduler.presenter.Sed2015CsvPresenter;
 import gov.healthit.chpl.service.CertificationCriterionService;
 
@@ -32,28 +40,41 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
     @Autowired
     private CertificationCriterionService criterionService;
 
+    @Autowired
+    private Environment env;
+
+    @Autowired
+    private CertifiedProductDetailsManager certifiedProductDetailsManager;
+
+    //private ExecutorService executorService;
+
     public G3Sed2015DownloadableResourceCreatorJob() throws Exception {
         super(LOGGER);
     }
 
     @Override
-    public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+    public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
         Date start = new Date();
         LOGGER.info("********* Starting the G3 SED 2015 Downloadable Resource Creator job. *********");
+        ExecutorService executorService = getExecutorService();
         try {
-            List<Long> listingIds = getRelevantListingIds();
+            List<CertifiedProductSearchDetails> orderedListings =
+                    getCertifiedProductSearchDetails(getRelevantListingIds(), executorService).stream()
+                    .map(optionalListingFuture -> getListingFromFuture(optionalListingFuture))
+                    .filter(optionalListing -> optionalListing.isPresent())
+                    .map(optionalListing -> optionalListing.get())
+                    .sorted(Comparator.comparing(CertifiedProductSearchDetails::getId))
+                    .collect(Collectors.toList());
 
-            List<Future<CertifiedProductSearchDetails>> futures = getCertifiedProductSearchDetailsFuturesFromIds(listingIds);
-            Map<Long, CertifiedProductSearchDetails> cpMap = getMapFromFutures(futures);
-            List<CertifiedProductSearchDetails> orderedListings = createOrderedListOfCertifiedProductsFromIds(cpMap, listingIds);
-
-            File downloadFolder = getDownloadFolder();
-            writeToFile(downloadFolder, orderedListings);
+            writeToFile(getDownloadFolder(), orderedListings);
         } catch (Exception e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
+        } finally {
+            executorService.shutdown();
         }
+
         Date end = new Date();
         LOGGER.info("Time to create download file for G3 SED: {} seconds, or {} minutes",
                 (end.getTime() - start.getTime()) / MILLIS_PER_SECOND,
@@ -61,12 +82,41 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
         LOGGER.info("********* Completed the G3 SED 2015 Downloadable Resource Creator job. *********");
     }
 
-    /**
-     * Gets all listings that have certified to 170.315 (g)(3)
-     * 
-     * @return
-     * @throws EntityRetrievalException
-     */
+    private Optional<CertifiedProductSearchDetails> getListingFromFuture(
+            CompletableFuture<Optional<CertifiedProductSearchDetails>> future) {
+
+        try {
+            Optional<CertifiedProductSearchDetails> optionalListing = future.get();
+            LOGGER.info("Completed retrieving listing: " + optionalListing.get().getId());
+            return optionalListing;
+        } catch (InterruptedException | ExecutionException e) {
+            LOGGER.info(e.getMessage(), e);
+            return Optional.empty();
+        }
+    }
+
+    private List<CompletableFuture<Optional<CertifiedProductSearchDetails>>> getCertifiedProductSearchDetails(
+            List<Long> listingIds, ExecutorService executorService) {
+
+        List<CompletableFuture<Optional<CertifiedProductSearchDetails>>> futures =
+                new ArrayList<CompletableFuture<Optional<CertifiedProductSearchDetails>>>();
+
+        for (Long currListingId : listingIds) {
+            futures.add(
+                    CompletableFuture.supplyAsync(() -> getCertifiedProductDetails(currListingId), executorService));
+        }
+        return futures;
+    }
+
+    private Optional<CertifiedProductSearchDetails> getCertifiedProductDetails(Long id) {
+        try {
+            return Optional.of(certifiedProductDetailsManager.getCertifiedProductDetails(id));
+        } catch (EntityRetrievalException e) {
+            LOGGER.error("Could not retrieve certified product details for id: " + id, e);
+            return Optional.empty();
+        }
+    }
+
     private List<Long> getRelevantListingIds() throws EntityRetrievalException {
         LOGGER.info("Finding all listings attesting to " + CRITERIA_NAME + ".");
         CertificationCriterionDTO certCrit = getCriteriaDao().getByNumberAndTitle(CRITERIA_NAME, TITLE);
@@ -75,8 +125,7 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
         return listingIds;
     }
 
-    private void writeToFile(final File downloadFolder, final List<CertifiedProductSearchDetails> results)
-            throws IOException {
+    private void writeToFile(File downloadFolder, List<CertifiedProductSearchDetails> results) throws IOException {
         String csvFilename = downloadFolder.getAbsolutePath()
                 + File.separator
                 + "chpl-sed-all-details-"
@@ -88,7 +137,7 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
         LOGGER.info("Wrote G3 SED 2015 CSV file.");
     }
 
-    private File getFile(final String fileName) throws IOException {
+    private File getFile(String fileName) throws IOException {
         File file = new File(fileName);
         if (file.exists()) {
             if (!file.delete()) {
@@ -99,5 +148,13 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
             throw new IOException("File can not be created");
         }
         return file;
+    }
+
+    private Integer getThreadCountForJob() throws NumberFormatException {
+        return Integer.parseInt(env.getProperty("executorThreadCountForQuartzJobs"));
+    }
+
+    private ExecutorService getExecutorService() {
+        return Executors.newFixedThreadPool(getThreadCountForJob());
     }
 }
