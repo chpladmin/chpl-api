@@ -105,7 +105,37 @@ public class ActivityDAO extends BaseDAOImpl {
 
     public List<ActivityDTO> findPageByConcept(ActivityConcept concept, Date startDate, Date endDate,
             Integer pageNum, Integer pageSize) {
-        List<ActivityEntity> entities = this.getEntityPageByConcept(concept, startDate, endDate, pageNum, pageSize);
+        Query query = entityManager.createNamedQuery("getPageOfActivity", ActivityEntity.class);
+        query.setParameter("conceptName", concept.name());
+        query.setParameter("startDate", startDate);
+        query.setParameter("endDate", endDate);
+        int firstRecord = (pageNum * pageSize) + 1;
+        int lastRecord = firstRecord + pageSize;
+        query.setParameter("firstRecord", firstRecord);
+        query.setParameter("lastRecord", lastRecord);
+        List<ActivityEntity> entities = query.getResultList();
+
+        List<ActivityDTO> activities = new ArrayList<>();
+        for (ActivityEntity entity : entities) {
+            ActivityDTO result = mapEntityToDto(entity);
+            activities.add(result);
+        }
+        return activities;
+    }
+
+    public List<ActivityDTO> findPageByConceptAndObject(ActivityConcept concept, List<Long> objectIds, Date startDate, Date endDate,
+            Integer pageNum, Integer pageSize) {
+        Query query = entityManager.createNamedQuery("getPageOfActivityByObjectId", ActivityEntity.class);
+        query.setParameter("conceptName", concept.name());
+        query.setParameter("startDate", startDate);
+        query.setParameter("endDate", endDate);
+        query.setParameter("objectIds", objectIds);
+        int firstRecord = (pageNum * pageSize) + 1;
+        int lastRecord = firstRecord + pageSize;
+        query.setParameter("firstRecord", firstRecord);
+        query.setParameter("lastRecord", lastRecord);
+        List<ActivityEntity> entities = query.getResultList();
+
         List<ActivityDTO> activities = new ArrayList<>();
         for (ActivityEntity entity : entities) {
             ActivityDTO result = mapEntityToDto(entity);
@@ -132,6 +162,35 @@ public class ActivityDAO extends BaseDAOImpl {
         }
         if (endDate != null) {
             query.setParameter("endDate", endDate);
+        }
+        return (Long) query.getSingleResult();
+    }
+
+    public Long findResultSetSizeByConceptAndObject(ActivityConcept concept, List<Long> objectIds,
+            Date startDate, Date endDate) {
+        String queryStr = "SELECT COUNT(ae) "
+                + "FROM ActivityEntity ae "
+                + "JOIN ae.concept ac "
+                + "WHERE (ac.concept = :conceptName) ";
+        if (startDate != null) {
+            queryStr += "AND (ae.activityDate >= :startDate) ";
+        }
+        if (endDate != null) {
+            queryStr += "AND (ae.activityDate <= :endDate) ";
+        }
+        if (objectIds != null && objectIds.size() > 0) {
+            queryStr += "AND (ae.activity_object_id IN (:objectIds) ";
+        }
+        Query query = entityManager.createQuery(queryStr, Long.class);
+        query.setParameter("conceptName", concept.name());
+        if (startDate != null) {
+            query.setParameter("startDate", startDate);
+        }
+        if (endDate != null) {
+            query.setParameter("endDate", endDate);
+        }
+        if (objectIds != null && objectIds.size() > 0) {
+            query.setParameter("objectIds", objectIds);
         }
         return (Long) query.getSingleResult();
     }
@@ -407,20 +466,6 @@ public class ActivityDAO extends BaseDAOImpl {
         if (endDate != null) {
             query.setParameter("endDate", endDate);
         }
-        List<ActivityEntity> result = query.getResultList();
-        return result;
-    }
-
-    private List<ActivityEntity> getEntityPageByConcept(ActivityConcept concept, Date startDate,
-            Date endDate, Integer pageNum, Integer pageSize) {
-        Query query = entityManager.createNamedQuery("getPageOfActivity", ActivityEntity.class);
-        query.setParameter("conceptName", concept.name());
-        query.setParameter("startDate", startDate);
-        query.setParameter("endDate", endDate);
-        int firstRecord = (pageNum * pageSize) + 1;
-        int lastRecord = firstRecord + pageSize;
-        query.setParameter("firstRecord", firstRecord);
-        query.setParameter("lastRecord", lastRecord);
         List<ActivityEntity> result = query.getResultList();
         return result;
     }

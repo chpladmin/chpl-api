@@ -439,9 +439,22 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get metadata about auditable records in the system for certification bodies.",
+            notes = "All parameters are optional and will default to the first page of ONC-ACB activity "
+                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
+                    + "with the most recent activity first.")
+    @RequestMapping(value = "/metadata/beta/acbs", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public ActivityMetadataPage metadataForAcbs(@RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+        return pagedMetadataManager.getCertificationBodyActivityMetadata(start, end, pageNum, pageSize);
+    }
+
+    @ApiOperation(value = "Get metadata about auditable records in the system for certification bodies.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all certification bodies.  "
                     + "ROLE_ACB can see activity for their own ACBs.")
+    @Deprecated
     @RequestMapping(value = "/metadata/acbs", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForAcbs(@RequestParam(required = false) final Long start,
             @RequestParam(required = false) final Long end)
