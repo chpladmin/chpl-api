@@ -1,18 +1,16 @@
 package gov.healthit.chpl.manager.rules.developer;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public class DeveloperActiveStatusValidation extends ValidationRule<DeveloperValidationContext> {
-    private static final Logger LOGGER = LogManager.getLogger(DeveloperActiveStatusValidation.class);
-
     @Override
     public boolean isValid(DeveloperValidationContext context) {
         ErrorMessageUtil msgUtil = context.getErrorMessageUtil();
