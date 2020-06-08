@@ -16,8 +16,6 @@ import java.util.Map.Entry;
 import javax.persistence.EntityNotFoundException;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.ff4j.FF4j;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
@@ -168,11 +166,11 @@ import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.Validator;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Service("certifiedProductManager")
 public class CertifiedProductManager extends SecuredManager {
-    private static Logger LOGGER = LogManager.getLogger(CertifiedProductManager.class);
-
     private ErrorMessageUtil msgUtil;
     private CertifiedProductDAO cpDao;
     private CertifiedProductSearchDAO searchDao;
@@ -216,11 +214,11 @@ public class CertifiedProductManager extends SecuredManager {
     private CuresUpdateService curesUpdateService;
     private FF4j ff4j;
 
-    private static int PROD_CODE_LOC = 4;
-    private static int VER_CODE_LOC = 5;
-    private static int ICS_CODE_LOC = 6;
-    private static int SW_CODE_LOC = 7;
-    private static int DATE_CODE_LOC = 8;
+    private static final int PROD_CODE_LOC = 4;
+    private static final int VER_CODE_LOC = 5;
+    private static final int ICS_CODE_LOC = 6;
+    private static final int SW_CODE_LOC = 7;
+    private static final int DATE_CODE_LOC = 8;
 
     public CertifiedProductManager() {
     }

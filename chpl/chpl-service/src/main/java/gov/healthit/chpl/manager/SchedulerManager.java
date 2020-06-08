@@ -52,11 +52,11 @@ import gov.healthit.chpl.util.AuthUtil;
 @Service
 public class SchedulerManager extends SecuredManager {
 
-    private static String AUTHORITY_DELIMITER = ";";
-    private static String DATA_DELIMITER = "\u263A";
-    public static String CHPL_BACKGROUND_JOBS_KEY = "chplBackgroundJobs";
-    public static String CHPL_JOBS_KEY = "chplJobs";
-    public static String SYSTEM_JOBS_KEY = "systemJobs";
+    private static final String AUTHORITY_DELIMITER = ";";
+    private static final String DATA_DELIMITER = "\u263A";
+    public static final String CHPL_BACKGROUND_JOBS_KEY = "chplBackgroundJobs";
+    public static final String CHPL_JOBS_KEY = "chplJobs";
+    public static final String SYSTEM_JOBS_KEY = "systemJobs";
 
     private ChplSchedulerReference chplScheduler;
     private ResourcePermissions resourcePermissions;
