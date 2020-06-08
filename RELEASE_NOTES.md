@@ -1,5 +1,24 @@
 # Release Notes
 
+## Version 25.5.0
+_1 June 2020_
+
+### Features
+* Reset user's failed log in account when their accout is unlocked
+* Stop distinguishing between bad un/pw combination and non-existent user
+* Update BrokenSurveillanceRulesCreatorJob job to be non-blocking
+* Add /activity/metadata/beta/versions endpoint
+
+### Flagged Features
+* Stop generating some stats for 2014 Charts
+
+### Bug Fixes
+* Lockout user after too many failed login attempts
+* Update validation of user data when updating user and fix security responses on User endpoints
+* Add e2 criterion into v19 upload template
+
+---
+
 ## Version 25.4.0
 _18 May 2020_
 

@@ -53,15 +53,35 @@ public final class ChartDataCreatorJob extends QuartzJob {
         List<CertifiedProductFlatSearchResult> certifiedProducts = certifiedProductSearchDAO.getAllCertifiedProducts();
         LOGGER.info("Certified Product Count: " + certifiedProducts.size());
 
-        analyzeSed(certifiedProducts);
+        try {
+            analyzeSed(certifiedProducts);
+        } catch (Exception e) {
+            LOGGER.error("Problem analyzing sed " + e.getMessage());
+        }
+
         try {
             analyzeProducts(certifiedProducts);
-        } catch (NumberFormatException | EntityRetrievalException e) {
-            LOGGER.error("Problem analyzing products" + e.getMessage());
+        } catch (Exception e) {
+            LOGGER.error("Problem analyzing products " + e.getMessage());
         }
-        analyzeDevelopers(certifiedProducts);
-        analyzeListingCounts(certifiedProducts);
-        analyzeNonconformity();
+
+        try {
+            analyzeDevelopers(certifiedProducts);
+        } catch (Exception e) {
+            LOGGER.error("Problem analyzing developers " + e.getMessage());
+        }
+
+        try {
+            analyzeListingCounts(certifiedProducts);
+        } catch (Exception e) {
+            LOGGER.error("Problem analyzing listing counts " + e.getMessage());
+        }
+
+        try {
+            analyzeNonconformity();
+        } catch (Exception e) {
+            LOGGER.error("Problem analyzing nonconformities " + e.getMessage());
+        }
 
         LOGGER.info("*****Chart Data Generator is done running.*****");
     }
@@ -73,7 +93,7 @@ public final class ChartDataCreatorJob extends QuartzJob {
         incumbentDevelopersStatisticsCalculator.save(dtos);
     }
 
-    private static void analyzeListingCounts(final List<CertifiedProductFlatSearchResult> listings) {
+    private static void analyzeListingCounts(List<CertifiedProductFlatSearchResult> listings) {
         ListingCountDataFilter listingCountDataFilter = new ListingCountDataFilter();
         List<CertifiedProductFlatSearchResult> filteredListings = listingCountDataFilter.filterData(listings);
         ListingCountStatisticsCalculator listingCountStatisticsCalculator = new ListingCountStatisticsCalculator();
@@ -89,9 +109,9 @@ public final class ChartDataCreatorJob extends QuartzJob {
         nonconformityStatisticsCalculator.saveCounts(dtos);
     }
 
-    private static void analyzeProducts(final List<CertifiedProductFlatSearchResult> listings) throws NumberFormatException, EntityRetrievalException {
-        CriterionProductStatisticsCalculator criterionProductStatisticsCalculator = new CriterionProductStatisticsCalculator();
+    private static void analyzeProducts(List<CertifiedProductFlatSearchResult> listings) throws NumberFormatException, EntityRetrievalException {
         CriterionProductDataFilter criterionProductDataFilter = new CriterionProductDataFilter();
+        CriterionProductStatisticsCalculator criterionProductStatisticsCalculator = new CriterionProductStatisticsCalculator();
         List<CertifiedProductFlatSearchResult> filteredListings = criterionProductDataFilter.filterData(listings);
         Map<String, Long> productCounts = criterionProductStatisticsCalculator.getCounts(filteredListings);
         criterionProductStatisticsCalculator.logCounts(productCounts);

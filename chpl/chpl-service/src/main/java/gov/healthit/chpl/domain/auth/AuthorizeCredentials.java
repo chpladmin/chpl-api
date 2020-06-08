@@ -13,5 +13,4 @@ public class AuthorizeCredentials extends LoginCredentials implements Serializab
     public void setHash(final String hash) {
         this.hash = hash;
     }
-
 }
