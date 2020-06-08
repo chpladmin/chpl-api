@@ -296,6 +296,32 @@ public class ProductDAO extends BaseDAOImpl {
     }
 
     @Transactional(readOnly = true)
+    public ProductDTO getSimpleProductById(Long id, boolean includeDeleted) throws EntityRetrievalException {
+        ProductDTO result = null;
+        String queryStr = "SELECT DISTINCT pe "
+                + "FROM ProductEntitySimple pe "
+                + "WHERE pe.id = :entityid ";
+        if (!includeDeleted) {
+            queryStr += " AND pe.deleted = false";
+        }
+
+        Query query = entityManager.createQuery(queryStr, ProductEntitySimple.class);
+        query.setParameter("entityid", id);
+        List<ProductEntitySimple> entities = query.getResultList();
+
+        if (entities == null || entities.size() == 0) {
+            String msg = msgUtil.getMessage("product.notFound");
+            throw new EntityRetrievalException(msg);
+        } else if (entities.size() > 1) {
+            throw new EntityRetrievalException("Data error. Duplicate product id in database.");
+        } else if (entities.size() == 1) {
+            result = new ProductDTO(entities.get(0));
+        }
+
+        return result;
+    }
+
+    @Transactional(readOnly = true)
     public ProductDTO getById(final Long id, final boolean includeDeleted) throws EntityRetrievalException {
 
         ProductEntity entity = getEntityById(id, includeDeleted);

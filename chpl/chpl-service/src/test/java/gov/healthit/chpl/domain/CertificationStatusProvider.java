@@ -3,29 +3,30 @@ package gov.healthit.chpl.domain;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings({ "checkstyle:linelength" })
 public class CertificationStatusProvider {
-    public static Long ACTIVE = 1L;
-    public static Long RETIRED = 2L;
-    public static Long WITHDRAWN_BY_DEVELOPER = 3L;
-    public static Long WITHDRAWN_BY_ACB = 4L;
-    public static Long PENDING = 5L;
-    public static Long SUSPENDED_BY_ACB = 6L;
-    public static Long SUSPENDED_BY_ONC = 7L;
-    public static Long TERMINATED_BY_ONC = 8L;
-    public static Long WITHDRAWN_BY_DEVELOPER_UNDER_REVIEW = 9L;
+    public static final Long ACTIVE = 1L;
+    public static final Long RETIRED = 2L;
+    public static final Long WITHDRAWN_BY_DEVELOPER = 3L;
+    public static final Long WITHDRAWN_BY_ACB = 4L;
+    public static final Long PENDING = 5L;
+    public static final Long SUSPENDED_BY_ACB = 6L;
+    public static final Long SUSPENDED_BY_ONC = 7L;
+    public static final Long TERMINATED_BY_ONC = 8L;
+    public static final Long WITHDRAWN_BY_DEVELOPER_UNDER_REVIEW = 9L;
 
     private Map<Long, CertificationStatus> certificationStatuses = new HashMap<Long, CertificationStatus>();
 
     public CertificationStatusProvider() {
-        certificationStatuses.put(1L, createCertificationStatus(1L, "Active"));
-        certificationStatuses.put(2L, createCertificationStatus(2L, "Retired"));
-        certificationStatuses.put(3L, createCertificationStatus(3L, "Withdrawn by Developer"));
-        certificationStatuses.put(4L, createCertificationStatus(4L, "Withdrawn by ONC-ACB"));
-        certificationStatuses.put(5L, createCertificationStatus(5L, "Pending"));
-        certificationStatuses.put(6L, createCertificationStatus(6L, "Suspended by ONC-ACB"));
-        certificationStatuses.put(7L, createCertificationStatus(7L, "Suspended by ONC"));
-        certificationStatuses.put(8L, createCertificationStatus(8L, "Terminated by ONC"));
-        certificationStatuses.put(9L, createCertificationStatus(9L, "Withdrawn by Developer Under Surveillance/Review"));
+        certificationStatuses.put(ACTIVE, createCertificationStatus(ACTIVE, "Active"));
+        certificationStatuses.put(RETIRED, createCertificationStatus(RETIRED, "Retired"));
+        certificationStatuses.put(WITHDRAWN_BY_DEVELOPER, createCertificationStatus(WITHDRAWN_BY_DEVELOPER, "Withdrawn by Developer"));
+        certificationStatuses.put(WITHDRAWN_BY_ACB, createCertificationStatus(WITHDRAWN_BY_ACB, "Withdrawn by ONC-ACB"));
+        certificationStatuses.put(PENDING, createCertificationStatus(PENDING, "Pending"));
+        certificationStatuses.put(SUSPENDED_BY_ACB, createCertificationStatus(SUSPENDED_BY_ACB, "Suspended by ONC-ACB"));
+        certificationStatuses.put(SUSPENDED_BY_ONC, createCertificationStatus(SUSPENDED_BY_ONC, "Suspended by ONC"));
+        certificationStatuses.put(TERMINATED_BY_ONC, createCertificationStatus(TERMINATED_BY_ONC, "Terminated by ONC"));
+        certificationStatuses.put(WITHDRAWN_BY_DEVELOPER_UNDER_REVIEW, createCertificationStatus(WITHDRAWN_BY_DEVELOPER_UNDER_REVIEW, "Withdrawn by Developer Under Surveillance/Review"));
     }
 
     public CertificationStatus get(Long id) {
@@ -36,9 +37,6 @@ public class CertificationStatusProvider {
     }
 
     private CertificationStatus createCertificationStatus(Long id, String name) {
-        return CertificationStatus.builder()
-                .id(id)
-                .name(name)
-                .build();
+        return CertificationStatus.builder().id(id).name(name).build();
     }
 }
