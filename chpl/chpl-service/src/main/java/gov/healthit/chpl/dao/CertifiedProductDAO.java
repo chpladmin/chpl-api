@@ -23,11 +23,9 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.urlStatus.UrlType;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-@NoArgsConstructor
 @Repository(value = "certifiedProductDAO")
 public class CertifiedProductDAO extends BaseDAOImpl {
     private static final int CHPL_ID_LENGTH = 9;
