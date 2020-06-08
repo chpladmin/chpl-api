@@ -125,7 +125,7 @@ public class ActivityDAO extends BaseDAOImpl {
 
     public List<ActivityDTO> findPageByConceptAndObject(ActivityConcept concept, List<Long> objectIds, Date startDate, Date endDate,
             Integer pageNum, Integer pageSize) {
-        Query query = entityManager.createNamedQuery("getPageOfActivityByObjectId", ActivityEntity.class);
+        Query query = entityManager.createNamedQuery("getPageOfActivityByObjectIds", ActivityEntity.class);
         query.setParameter("conceptName", concept.name());
         query.setParameter("startDate", startDate);
         query.setParameter("endDate", endDate);
@@ -148,7 +148,8 @@ public class ActivityDAO extends BaseDAOImpl {
         String queryStr = "SELECT COUNT(ae) "
                 + "FROM ActivityEntity ae "
                 + "JOIN ae.concept ac "
-                + "WHERE (ac.concept = :conceptName) ";
+                + "WHERE ae.deleted = false "
+                + "AND (ac.concept = :conceptName) ";
         if (startDate != null) {
             queryStr += "AND (ae.activityDate >= :startDate) ";
         }
@@ -171,7 +172,8 @@ public class ActivityDAO extends BaseDAOImpl {
         String queryStr = "SELECT COUNT(ae) "
                 + "FROM ActivityEntity ae "
                 + "JOIN ae.concept ac "
-                + "WHERE (ac.concept = :conceptName) ";
+                + "WHERE ae.deleted = false "
+                + "AND (ac.concept = :conceptName) ";
         if (startDate != null) {
             queryStr += "AND (ae.activityDate >= :startDate) ";
         }
@@ -179,7 +181,7 @@ public class ActivityDAO extends BaseDAOImpl {
             queryStr += "AND (ae.activityDate <= :endDate) ";
         }
         if (objectIds != null && objectIds.size() > 0) {
-            queryStr += "AND (ae.activity_object_id IN (:objectIds) ";
+            queryStr += "AND (ae.activityObjectId IN (:objectIds)) ";
         }
         Query query = entityManager.createQuery(queryStr, Long.class);
         query.setParameter("conceptName", concept.name());

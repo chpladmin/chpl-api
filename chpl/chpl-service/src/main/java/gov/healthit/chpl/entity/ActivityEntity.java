@@ -46,7 +46,7 @@ import gov.healthit.chpl.util.Util;
                 resultClass = ActivityEntity.class
             ),
     @NamedNativeQuery(
-            name = "getPageOfActivityByObjectId",
+            name = "getPageOfActivityByObjectIds",
             query = "SELECT * FROM ( "
                     + "SELECT row_number() OVER(ORDER BY a.activity_date DESC) as \"record_num\", * "
                     + "FROM " + BaseDAOImpl.SCHEMA_NAME + ".activity a "
