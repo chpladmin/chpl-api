@@ -204,7 +204,6 @@ public class CertifiedProductDAO extends BaseDAOImpl {
 
     @Transactional(readOnly = true)
     public List<CertifiedProductSummaryDTO> findListingSummariesByDeveloperId(final Long developerId) {
-        LOGGER.info("Starting query for all listings for developer " + developerId);
         Query query = entityManager.createQuery("SELECT cpd "
                 + "FROM CertifiedProductDetailsEntity cpd "
                 + "WHERE cpd.deleted = false "
@@ -212,14 +211,11 @@ public class CertifiedProductDAO extends BaseDAOImpl {
                 CertifiedProductDetailsEntity.class);
         query.setParameter("developerId", developerId);
         List<CertifiedProductDetailsEntity> entities = query.getResultList();
-        LOGGER.info("Got query results");
-        LOGGER.info("Making DTOs");
         List<CertifiedProductSummaryDTO> products = new ArrayList<CertifiedProductSummaryDTO>(entities.size());
         for (CertifiedProductDetailsEntity entity : entities) {
             CertifiedProductSummaryDTO product = new CertifiedProductSummaryDTO(entity);
             products.add(product);
         }
-        LOGGER.info("Finished making DTOs");
         return products;
     }
 
