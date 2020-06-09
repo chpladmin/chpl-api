@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -74,6 +75,14 @@ public class CertificationCriterionService {
         String result = criterion.getNumber();
         if (hasCuresInTitle(criterion)) {
             result += CURES_SUFFIX;
+        }
+        return result;
+    }
+
+    public static String formatCriteriaNumber(CertificationCriterion criterion, boolean formatForRemoved) {
+        String result = formatCriteriaNumber(criterion);
+        if (formatForRemoved && Objects.nonNull(criterion.getRemoved()) && criterion.getRemoved()) {
+            result = "Removed | " + result;
         }
         return result;
     }
