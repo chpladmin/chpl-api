@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 
 import org.junit.Before;
@@ -12,16 +13,22 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
+import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
+import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class OldCriteriaWithoutIcsReviewerTest {
 
     private Environment env;
     private ErrorMessageUtil msgUtil;
+    private CertificationCriterionDAO certificationCriterionDAO;
+    private CertificationCriterionService criteriaService;
 
     private OldCriteriaWithoutIcsReviewer reviewer;
 
@@ -43,13 +50,26 @@ public class OldCriteriaWithoutIcsReviewerTest {
         env = Mockito.mock(Environment.class);
         Mockito.when(env.getProperty(ArgumentMatchers.eq("questionableActivity.b3ChangeDate"))).thenReturn("01/01/2020");
         Mockito.when(env.getProperty(ArgumentMatchers.eq("cures.ruleEffectiveDate"))).thenReturn("07/07/2020");
+        Mockito.when(env.getProperty(Criteria2015.B_3_OLD)).thenReturn(String.valueOf(EDITION_2015_B_3));
+        Mockito.when(env.getProperty(Criteria2015.D_2_OLD)).thenReturn(String.valueOf(EDITION_2015_D_2));
+        Mockito.when(env.getProperty(Criteria2015.D_3_OLD)).thenReturn(String.valueOf(EDITION_2015_D_3));
+        Mockito.when(env.getProperty(Criteria2015.D_10_OLD)).thenReturn(String.valueOf(EDITION_2015_D_10));
+        Mockito.when(env.getProperty("criteria.sortOrder")).thenReturn("");
 
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(msgUtil.getMessage(
                 ArgumentMatchers.eq("listing.criteria.hasOldVersionOfCriteria"),
                 ArgumentMatchers.any())).thenAnswer(i -> i.getArguments()[1]);
 
-        reviewer = new OldCriteriaWithoutIcsReviewer(env, msgUtil);
+        certificationCriterionDAO = Mockito.mock(CertificationCriterionDAO.class);
+        Mockito.when(certificationCriterionDAO.findAll()).thenReturn(makeAllCriteria());
+
+        criteriaService = new CertificationCriterionService(certificationCriterionDAO, env);
+        criteriaService.postConstruct();
+
+        reviewer = new OldCriteriaWithoutIcsReviewer(env, msgUtil, criteriaService);
+        reviewer.postConstruct();
+
         beforeBoth = Date.from(LocalDate.of(BEFORE_YEAR, MIDDLE_MONTH, 1).atStartOfDay(ZoneId.systemDefault()).toInstant());
         betweenBoth = Date.from(LocalDate.of(RELEVANT_YEAR, MIDDLE_MONTH, 1).atStartOfDay(ZoneId.systemDefault()).toInstant());
         afterBoth = Date.from(LocalDate.of(RELEVANT_YEAR, AFTER_MONTH, 1).atStartOfDay(ZoneId.systemDefault()).toInstant());
@@ -260,5 +280,26 @@ public class OldCriteriaWithoutIcsReviewerTest {
         reviewer.review(listing);
 
         assertEquals(4, listing.getErrorMessages().size());
+    }
+
+    private ArrayList<CertificationCriterionDTO> makeAllCriteria() {
+        ArrayList<CertificationCriterionDTO> criteria = new ArrayList<CertificationCriterionDTO>();
+        criteria.add(CertificationCriterionDTO.builder()
+                .id(EDITION_2015_B_3)
+                .number("170.315 (b)(3)")
+                .build());
+        criteria.add(CertificationCriterionDTO.builder()
+                .id(EDITION_2015_D_2)
+                .number("170.315 (d)(2)")
+                .build());
+        criteria.add(CertificationCriterionDTO.builder()
+                .id(EDITION_2015_D_3)
+                .number("170.315 (d)(3)")
+                .build());
+        criteria.add(CertificationCriterionDTO.builder()
+                .id(EDITION_2015_D_10)
+                .number("170.315 (d)(10)")
+                .build());
+        return criteria;
     }
 }
