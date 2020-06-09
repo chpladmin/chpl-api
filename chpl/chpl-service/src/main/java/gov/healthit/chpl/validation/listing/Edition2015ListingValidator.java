@@ -28,6 +28,7 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.AttestedCriteri
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.CqmAttestedCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.InvalidCriteriaCombinationReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.MacraMeasureComparisonReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.OldCriteriaWithoutIcsReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.PrivacyAndSecurityCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaTestTaskComparisonReviewer;
@@ -117,6 +118,10 @@ public class Edition2015ListingValidator extends Validator {
     private MacraMeasureComparisonReviewer macraComparisonReviewer;
 
     @Autowired
+    @Qualifier("oldCriteriaWithoutIcsReviewer")
+    private OldCriteriaWithoutIcsReviewer oldCriteriaWithoutIcsReviewer;
+
+    @Autowired
     @Qualifier("removedCriteriaComparisonReviewer")
     private RemovedCriteriaComparisonReviewer criteriaComparisonReviewer;
 
@@ -167,6 +172,7 @@ public class Edition2015ListingValidator extends Validator {
             reviewers.add(testingLabReviewer);
             reviewers.add(validDataReviewer);
             reviewers.add(sedG3Reviewer);
+            reviewers.add(oldCriteriaWithoutIcsReviewer);
             reviewers.add(certStatusReviewer);
             reviewers.add(certDateReviewer);
             reviewers.add(unattestedCriteriaWithDataReviewer);

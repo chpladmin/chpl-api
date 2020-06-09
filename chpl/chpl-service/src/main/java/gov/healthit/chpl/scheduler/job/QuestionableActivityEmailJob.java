@@ -72,9 +72,9 @@ public class QuestionableActivityEmailJob extends QuartzJob {
     private static final int ACTIVITY_CERT_STATUS_CHANGE_REASON_COL = 12;
     private static final int ACTIVITY_REASON_COL = 13;
 
-    // private Integer minRangeInDays = 1;
-    // private Integer maxRangeInDays = 365;
-    private Range<Integer> rangeInDays = Range.between(1, 365);
+    private static final Integer MIN_RANGE_IN_DAYS = 1;
+    private static final Integer MAX_RANGE_IN_DAYS = 365;
+    private Range<Integer> rangeInDays = Range.between(MIN_RANGE_IN_DAYS, MAX_RANGE_IN_DAYS);
     private static final Integer DEFAULT_RANGE = 7;
 
     /**
@@ -479,17 +479,6 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.TESTING_LAB_CHANGED
                 .getName())) {
             currRow.set(ACTIVITY_DESCRIPTION_COL, "From " + activity.getBefore() + " to " + activity.getAfter());
-            currRow.set(ACTIVITY_CERT_STATUS_CHANGE_REASON_COL, activity.getCertificationStatusChangeReason());
-        } else if (activity.getTrigger().getName()
-                .equals(QuestionableActivityTriggerConcept.NON_CURES_CRITERIA_ADDED_TO_NEW_LISTING.getName())) {
-            currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getAfter());
-        } else if (activity.getTrigger().getName()
-                .equals(QuestionableActivityTriggerConcept.NON_CURES_CRITERIA_ADDED_TO_EXISTING_LISTING.getName())) {
-            currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getAfter());
-            currRow.set(ACTIVITY_CERT_STATUS_CHANGE_REASON_COL, activity.getCertificationStatusChangeReason());
-        } else if (activity.getTrigger().getName()
-                .equals(QuestionableActivityTriggerConcept.NON_CURES_CRITERIA_AND_ICS_ADDED_TO_EXISTING_LISTING.getName())) {
-            currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getAfter());
             currRow.set(ACTIVITY_CERT_STATUS_CHANGE_REASON_COL, activity.getCertificationStatusChangeReason());
         }
 
