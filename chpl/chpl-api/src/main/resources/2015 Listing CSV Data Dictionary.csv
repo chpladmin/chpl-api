@@ -46,13 +46,13 @@ Open Nonconformities,Yes,<int>,"The total number of open (unresolved) non-confor
 170.315 (b)(3): Electronic Prescribing (Cures Update),Yes,TRUE; FALSE,Electronic Prescribing (Cures Update)
 170.315 (b)(3): Electronic Prescribing,Yes,TRUE; FALSE,Electronic Prescribing
 170.315 (b)(6): Data Export,Yes,TRUE; FALSE,Data Export
-170.315 (b)(7): Data Segmentation for Privacy - Send (Cures Update),Yes,TRUE; FALSE,Data Segmentation for Privacy - Send (Cures Update)
+170.315 (b)(7): Security Tags - Summary of Care - Send (Cures Update),Yes,TRUE; FALSE,Data Segmentation for Privacy - Send (Cures Update)
 170.315 (b)(7): Data Segmentation for Privacy - Send,Yes,TRUE; FALSE,Data Segmentation for Privacy - Send
-170.315 (b)(8): Data Segmentation for Privacy - Receive (Cures Update),Yes,TRUE; FALSE,Data Segmentation for Privacy - Receive (Cures Update)
+170.315 (b)(8): Security Tags - Summary of Care - Receive (Cures Update),Yes,TRUE; FALSE,Data Segmentation for Privacy - Receive (Cures Update)
 170.315 (b)(8): Data Segmentation for Privacy - Receive,Yes,TRUE; FALSE,Data Segmentation for Privacy - Receive
 170.315 (b)(9): Care Plan (Cures Update),Yes,TRUE; FALSE,Care Plan (Cures Update)
 170.315 (b)(9): Care Plan,Yes,TRUE; FALSE,Care Plan
-170.315 (b)(10): Clinical Information export,Yes,TRUE; FALSE,Clinical Information export
+170.315 (b)(10): Electronic Health Information Export,Yes,TRUE; FALSE,Clinical Information export
 170.315 (c)(1): Clinical Quality Measures - Record and Export,Yes,TRUE; FALSE,Clinical Quality Measures - Record and Export
 170.315 (c)(2): Clinical Quality Measures - Import and Calculate,Yes,TRUE; FALSE,Clinical Quality Measures - Import and Calculate
 170.315 (c)(3): Clinical Quality Measures - Report (Cures Update),Yes,TRUE; FALSE,Clinical Quality Measures - Report (Cures Update)
@@ -91,7 +91,7 @@ Open Nonconformities,Yes,<int>,"The total number of open (unresolved) non-confor
 170.315 (g)(3): Safety-Enhanced Design,Yes,TRUE; FALSE,Safety-Enhanced Design
 170.315 (g)(4): Quality Management System,Yes,TRUE; FALSE,Quality Management System
 170.315 (g)(5): Accessibility-Centered Design,Yes,TRUE; FALSE,Accessibility-Centered Design
-170.315 (g)(6): Consolidated CDA Creation (Cures Update),Yes,TRUE; FALSE,Consolidated CDA Creation (Cures Update)
+170.315 (g)(6): Consolidated CDA Creation Performance (Cures Update),Yes,TRUE; FALSE,Consolidated CDA Creation (Cures Update)
 170.315 (g)(6): Consolidated CDA Creation,Yes,TRUE; FALSE,Consolidated CDA Creation
 170.315 (g)(7): Application Access - Patient Selection,Yes,TRUE; FALSE,Application Access - Patient Selection
 170.315 (g)(8): Application Access - Data Category Request,Yes,TRUE; FALSE,Application Access - Data Category Request

@@ -1,21 +1,35 @@
 package gov.healthit.chpl.permissions.domains.developer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("developerSplitActionPermissions")
 public class SplitActionPermissions extends ActionPermissions {
+    private ErrorMessageUtil msgUtil;
+    private List<CertificationStatusType> allowedCertStatuses;
 
     @Autowired
-    private DeveloperDAO developerDao;
+    public SplitActionPermissions(ErrorMessageUtil msgUtil) {
+        this.msgUtil = msgUtil;
 
-    @Autowired
-    private CertifiedProductDAO certifiedProductDao;
+        allowedCertStatuses = new ArrayList<CertificationStatusType>();
+        allowedCertStatuses.add(CertificationStatusType.Active);
+        allowedCertStatuses.add(CertificationStatusType.SuspendedByAcb);
+        allowedCertStatuses.add(CertificationStatusType.SuspendedByOnc);
+        allowedCertStatuses.add(CertificationStatusType.TerminatedByOnc);
+        allowedCertStatuses.add(CertificationStatusType.WithdrawnByAcb);
+        allowedCertStatuses.add(CertificationStatusType.WithdrawnByDeveloper);
+        allowedCertStatuses.add(CertificationStatusType.WithdrawnByDeveloperUnderReview);
+    }
 
     @Override
     public boolean hasAccess() {
@@ -30,14 +44,15 @@ public class SplitActionPermissions extends ActionPermissions {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             DeveloperDTO developer = (DeveloperDTO) obj;
-            if (getResourcePermissions().isDeveloperActive(developer.getId())) {
-                // ACB can only split developer if original developer is active and all listings owned by the developer
-                // belong to the user's ACB
-                return doesCurrentUserHaveAccessToAllOfDevelopersListings(developer.getId());
-            } else {
-                // ACB can never split developer if original developer is not active
+            if (!getResourcePermissions().isDeveloperActive(developer.getId())) {
+                //ACB can never split developer if original developer is not active
                 return false;
+            } else if (!doesCurrentUserHaveAccessToAllOfDevelopersListings(developer.getId(), allowedCertStatuses)) {
+                //ACB can only split developer if original developer is active and all non-retired
+                //listings owned by the developer belong to the user's ACB
+                throw new AccessDeniedException(msgUtil.getMessage("developer.split.notAllowedMultipleAcbs"));
             }
+            return true;
         } else {
             return false;
         }
