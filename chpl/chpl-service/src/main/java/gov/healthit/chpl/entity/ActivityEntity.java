@@ -46,25 +46,6 @@ import gov.healthit.chpl.util.Util;
                 resultClass = ActivityEntity.class
             ),
     @NamedNativeQuery(
-            name = "getPageOfActivityByObjectIds",
-            query = "SELECT * FROM ( "
-                    + "SELECT row_number() OVER(ORDER BY a.activity_date DESC) as \"record_num\", * "
-                    + "FROM " + BaseDAOImpl.SCHEMA_NAME + ".activity a "
-                    + "JOIN " + BaseDAOImpl.SCHEMA_NAME + ".activity_concept ac "
-                            + " ON a.activity_object_concept_id = ac.activity_concept_id "
-                            + "AND ac.concept = :conceptName "
-                    + "LEFT OUTER JOIN " + BaseDAOImpl.SCHEMA_NAME + ".user u "
-                            + "ON a.last_modified_user = u.user_id "
-                    + "WHERE a.deleted = false "
-                    + "AND (a.activity_date >= :startDate) "
-                    + "AND (a.activity_date <= :endDate) "
-                    + "AND a.activity_object_id IN (:objectIds) "
-                    + "ORDER BY a.activity_date DESC "
-                    + ") as \"results\" "
-                + "WHERE record_num >= :firstRecord and record_num < :lastRecord",
-                resultClass = ActivityEntity.class
-            ),
-    @NamedNativeQuery(
             name = "getPublicAnnouncementActivityByDate",
             query = "SELECT * "
                     + "FROM " + BaseDAOImpl.SCHEMA_NAME + ".activity a "

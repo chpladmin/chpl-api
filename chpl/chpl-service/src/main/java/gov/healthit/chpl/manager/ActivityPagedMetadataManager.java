@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,10 +27,8 @@ import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.ActivityMetadataPage;
 import gov.healthit.chpl.dto.ActivityDTO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Service("activityPagedMetadataManager")
@@ -40,7 +37,6 @@ public class ActivityPagedMetadataManager extends SecuredManager {
 
     private ActivityDAO activityDao;
     private ActivityMetadataBuilderFactory metadataBuilderFactory;
-    private ResourcePermissions resourcePermissions;
     private ErrorMessageUtil msgUtil;
 
     @Value("${maxActivityPageSize}")
@@ -51,10 +47,9 @@ public class ActivityPagedMetadataManager extends SecuredManager {
 
     @Autowired
     public ActivityPagedMetadataManager(ActivityDAO activityDao, ActivityMetadataBuilderFactory metadataBuilderFactory,
-            ResourcePermissions resourcePermissions, ErrorMessageUtil msgUtil) {
+            ErrorMessageUtil msgUtil) {
         this.activityDao = activityDao;
         this.metadataBuilderFactory = metadataBuilderFactory;
-        this.resourcePermissions = resourcePermissions;
         this.msgUtil = msgUtil;
     }
 
@@ -84,11 +79,8 @@ public class ActivityPagedMetadataManager extends SecuredManager {
         if (errors.size() > 0) {
             throw new ValidationException(errors);
         }
-        List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
-        List<Long> allowedAcbIds = allowedAcbs.stream().map(allowedAcb -> allowedAcb.getId())
-                .collect(Collectors.<Long>toList());
-        return getActivityMetadataPageByConceptAndObject(ActivityConcept.CERTIFICATION_BODY,
-                allowedAcbIds, startMillis, endMillis, pageNum, pageSize);
+        return getActivityMetadataPageByConcept(ActivityConcept.CERTIFICATION_BODY,
+                startMillis, endMillis, pageNum, pageSize);
     }
 
     private ActivityMetadataPage getActivityMetadataPageByConcept(ActivityConcept concept,
@@ -118,49 +110,6 @@ public class ActivityPagedMetadataManager extends SecuredManager {
         page.setPageSize(pageSize);
         page.setResultSetSize(activityDao.findResultSetSizeByConcept(concept, startDate, endDate));
         List<ActivityDTO> activityDtos = activityDao.findPageByConcept(concept, startDate, endDate, pageNum, pageSize);
-        Set<ActivityMetadata> activityMetas = new LinkedHashSet<ActivityMetadata>();
-        ActivityMetadataBuilder builder = null;
-        if (activityDtos != null && activityDtos.size() > 0) {
-            LOGGER.info("Found " + activityDtos.size() + " activity events");
-            builder = metadataBuilderFactory.getBuilder(activityDtos.get(0));
-            for (ActivityDTO dto : activityDtos) {
-                ActivityMetadata activityMeta = builder.build(dto);
-                activityMetas.add(activityMeta);
-            }
-        } else {
-            LOGGER.info("Found no activity events");
-        }
-        page.setActivities(activityMetas);
-        return page;
-    }
-
-    private ActivityMetadataPage getActivityMetadataPageByConceptAndObject(ActivityConcept concept, List<Long> objectIds,
-            Long startMillis, Long endMillis, Integer pageNumParam, Integer pageSizeParam)
-                    throws JsonParseException, IOException {
-        Date startDate = new Date(0);
-        if (startMillis != null) {
-            startDate = new Date(startMillis);
-        }
-        Date endDate = new Date();
-        if (endMillis != null) {
-            endDate = new Date(endMillis);
-        }
-        Integer pageNum = 0;
-        if (pageNumParam != null) {
-            pageNum = pageNumParam;
-        }
-        Integer pageSize = defaultActivityPageSize;
-        if (pageSizeParam != null) {
-            pageSize = pageSizeParam;
-        }
-        LOGGER.info("Getting " + concept.name() + " activity: page " + pageNum
-                + ", " + pageSize + " records, from " + startDate + " through " + endDate);
-
-        ActivityMetadataPage page = new ActivityMetadataPage();
-        page.setPageNum(pageNum);
-        page.setPageSize(pageSize);
-        page.setResultSetSize(activityDao.findResultSetSizeByConceptAndObject(concept, objectIds, startDate, endDate));
-        List<ActivityDTO> activityDtos = activityDao.findPageByConceptAndObject(concept, objectIds, startDate, endDate, pageNum, pageSize);
         Set<ActivityMetadata> activityMetas = new LinkedHashSet<ActivityMetadata>();
         ActivityMetadataBuilder builder = null;
         if (activityDtos != null && activityDtos.size() > 0) {
