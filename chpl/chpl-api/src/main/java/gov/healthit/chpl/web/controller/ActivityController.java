@@ -290,7 +290,7 @@ public class ActivityController {
     }
 
     @Deprecated
-    @ApiOperation(value = "Get metadata about auditable records in the system for developers.",
+    @ApiOperation(value = "DEPRECATED. Get metadata about auditable records in the system for developers.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
     @RequestMapping(value = "/metadata/developers", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -344,7 +344,7 @@ public class ActivityController {
     }
 
     @Deprecated
-    @ApiOperation(value = "Get metadata about auditable records in the system for products.",
+    @ApiOperation(value = "DEPRECATED. Get metadata about auditable records in the system for products.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
     @RequestMapping(value = "/metadata/products", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -398,7 +398,7 @@ public class ActivityController {
     }
 
     @Deprecated
-    @ApiOperation(value = "Get metadata about auditable records in the system for version.",
+    @ApiOperation(value = "DEPRECATED. Get metadata about auditable records in the system for version.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
     @RequestMapping(value = "/metadata/versions", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -450,7 +450,7 @@ public class ActivityController {
         return pagedMetadataManager.getCertificationBodyActivityMetadata(start, end, pageNum, pageSize);
     }
 
-    @ApiOperation(value = "Get metadata about auditable records in the system for certification bodies.",
+    @ApiOperation(value = "DEPRECATED. Get metadata about auditable records in the system for certification bodies.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all certification bodies.  "
                     + "ROLE_ACB can see activity for their own ACBs.")
