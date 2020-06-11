@@ -91,6 +91,7 @@ public class BrokenSurveillanceRulesDAO extends BaseDAOImpl{
     private List<BrokenSurveillanceRulesEntity> findAllEntities() {
         Query query = entityManager.createQuery("from BrokenSurveillanceRulesEntity bsre "
                 + "join fetch bsre.certificationBody cb "
+                + "join fetch cb.address a "
                 + "where (bsre.deleted = false)",
                 BrokenSurveillanceRulesEntity.class);
         return query.getResultList();
