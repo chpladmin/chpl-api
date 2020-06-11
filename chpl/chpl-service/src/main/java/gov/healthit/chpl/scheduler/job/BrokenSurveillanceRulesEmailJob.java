@@ -36,7 +36,7 @@ import gov.healthit.chpl.util.EmailBuilder;
 /**
  * The BrokenSurveillanceRulesEmailJob implements a Quartz job and is available to ROLE_ADMIN and ROLE_ACB. When invoked
  * it emails relevant individuals with Surveillance error reports.
- * 
+ *
  * @author alarned
  *
  */
@@ -67,7 +67,7 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
 
     /**
      * Constructor that initializes the BrokenSurveillanceRulesEmailJob object.
-     * 
+     *
      * @throws Exception
      *             if thrown
      */
@@ -136,10 +136,10 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
 
             EmailBuilder emailBuilder = new EmailBuilder(env);
             emailBuilder.recipients(addresses)
-                    .subject(subject)
-                    .htmlMessage(htmlMessage)
-                    .fileAttachments(files)
-                    .sendEmail();
+            .subject(subject)
+            .htmlMessage(htmlMessage)
+            .fileAttachments(files)
+            .sendEmail();
         } catch (MessagingException e) {
             LOGGER.error(e);
         }
@@ -164,8 +164,9 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
             filteredErrors.addAll(allErrors);
         }
         if (jobContext.getMergedJobDataMap().getBooleanValue("acbSpecific")) {
+            Long certificationBodyId = jobContext.getMergedJobDataMap().getLong("acb");
             for (BrokenSurveillanceRulesDTO error : filteredErrors) {
-                if (jobContext.getMergedJobDataMap().getString("acb").indexOf(error.getAcb()) > -1) {
+                if (error.getCertificationBody().getId().equals(certificationBodyId)) {
                     errors.add(error);
                 }
             }
@@ -269,7 +270,7 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         result.add(data.getVersion());
         result.add(data.getChplProductNumber());
         result.add(data.getUrl());
-        result.add(data.getAcb());
+        result.add(data.getCertificationBody().getName());
         result.add(data.getCertificationStatus());
         result.add(data.getDateOfLastStatusChange());
         result.add(data.getSurveillanceId());

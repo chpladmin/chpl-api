@@ -3,10 +3,16 @@ package gov.healthit.chpl.entity.scheduler;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import gov.healthit.chpl.entity.CertificationBodyEntity;
+import lombok.Data;
 
 /**
  * Entity containing needed data for Broken Surveillance Rules reports.
@@ -15,6 +21,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "broken_surveillance_rules")
+@Data
 public class BrokenSurveillanceRulesEntity {
 
     @Id
@@ -43,9 +50,10 @@ public class BrokenSurveillanceRulesEntity {
     @Column(name = "url")
     private String url;
 
-    @Basic(optional = false)
-    @Column(name = "acb")
-    private String acb;
+    @Basic(optional = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "certification_body_id", nullable = false, insertable = true, updatable = true)
+    private CertificationBodyEntity certificationBody;
 
     @Basic(optional = false)
     @Column(name = "certification_status")
@@ -162,293 +170,4 @@ public class BrokenSurveillanceRulesEntity {
     @Basic(optional = false)
     @Column(name = "last_modified_user")
     private Long lastModifiedUser;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getDeveloper() {
-        return developer;
-    }
-
-    public void setDeveloper(final String developer) {
-        this.developer = developer;
-    }
-
-    public String getProduct() {
-        return product;
-    }
-
-    public void setProduct(final String product) {
-        this.product = product;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(final String version) {
-        this.version = version;
-    }
-
-    public String getChplProductNumber() {
-        return chplProductNumber;
-    }
-
-    public void setChplProductNumber(final String chplProductNumber) {
-        this.chplProductNumber = chplProductNumber;
-    }
-
-    public String getAcb() {
-        return acb;
-    }
-
-    public void setAcb(final String acb) {
-        this.acb = acb;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(final String url) {
-        this.url = url;
-    }
-
-    public String getCertificationStatus() {
-        return certificationStatus;
-    }
-
-    public void setCertificationStatus(final String certificationStatus) {
-        this.certificationStatus = certificationStatus;
-    }
-
-    public String getDateOfLastStatusChange() {
-        return dateOfLastStatusChange;
-    }
-
-    public void setDateOfLastStatusChange(final String dateOfLastStatusChange) {
-        this.dateOfLastStatusChange = dateOfLastStatusChange;
-    }
-
-    public String getSurveillanceId() {
-        return surveillanceId;
-    }
-
-    public void setSurveillanceId(final String surveillanceId) {
-        this.surveillanceId = surveillanceId;
-    }
-
-    public String getDateSurveillanceBegan() {
-        return dateSurveillanceBegan;
-    }
-
-    public void setDateSurveillanceBegan(final String dateSurveillanceBegan) {
-        this.dateSurveillanceBegan = dateSurveillanceBegan;
-    }
-
-    public String getDateSurveillanceEnded() {
-        return dateSurveillanceEnded;
-    }
-
-    public void setDateSurveillanceEnded(final String dateSurveillanceEnded) {
-        this.dateSurveillanceEnded = dateSurveillanceEnded;
-    }
-
-    public String getSurveillanceType() {
-        return surveillanceType;
-    }
-
-    public void setSurveillanceType(final String surveillanceType) {
-        this.surveillanceType = surveillanceType;
-    }
-
-    public String getLengthySuspensionRule() {
-        return lengthySuspensionRule;
-    }
-
-    public void setLengthySuspensionRule(final String lengthySuspensionRule) {
-        this.lengthySuspensionRule = lengthySuspensionRule;
-    }
-
-    public String getCapNotApprovedRule() {
-        return capNotApprovedRule;
-    }
-
-    public void setCapNotApprovedRule(final String capNotApprovedRule) {
-        this.capNotApprovedRule = capNotApprovedRule;
-    }
-
-    public String getCapNotStartedRule() {
-        return capNotStartedRule;
-    }
-
-    public void setCapNotStartedRule(final String capNotStartedRule) {
-        this.capNotStartedRule = capNotStartedRule;
-    }
-
-    public String getCapNotCompletedRule() {
-        return capNotCompletedRule;
-    }
-
-    public void setCapNotCompletedRule(final String capNotCompletedRule) {
-        this.capNotCompletedRule = capNotCompletedRule;
-    }
-
-    public String getCapNotClosedRule() {
-        return capNotClosedRule;
-    }
-
-    public void setCapNotClosedRule(final String capNotClosedRule) {
-        this.capNotClosedRule = capNotClosedRule;
-    }
-
-    public String getClosedCapWithOpenNonconformityRule() {
-        return closedCapWithOpenNonconformityRule;
-    }
-
-    public void setClosedCapWithOpenNonconformityRule(final String closedCapWithOpenNonconformityRule) {
-        this.closedCapWithOpenNonconformityRule = closedCapWithOpenNonconformityRule;
-    }
-
-    public Boolean getNonconformity() {
-        return nonconformity;
-    }
-
-    public void setNonconformity(final Boolean nonconformity) {
-        this.nonconformity = nonconformity;
-    }
-
-    public String getNonconformityStatus() {
-        return nonconformityStatus;
-    }
-
-    public void setNonconformityStatus(final String nonconformityStatus) {
-        this.nonconformityStatus = nonconformityStatus;
-    }
-
-    public String getNonconformityCriteria() {
-        return nonconformityCriteria;
-    }
-
-    public void setNonconformityCriteria(final String nonconformityCriteria) {
-        this.nonconformityCriteria = nonconformityCriteria;
-    }
-
-    public String getDateOfDeterminationOfNonconformity() {
-        return dateOfDeterminationOfNonconformity;
-    }
-
-    public void setDateOfDeterminationOfNonconformity(final String dateOfDeterminationOfNonconformity) {
-        this.dateOfDeterminationOfNonconformity = dateOfDeterminationOfNonconformity;
-    }
-
-    public String getCorrectiveActionPlanApprovedDate() {
-        return correctiveActionPlanApprovedDate;
-    }
-
-    public void setCorrectiveActionPlanApprovedDate(final String correctiveActionPlanApprovedDate) {
-        this.correctiveActionPlanApprovedDate = correctiveActionPlanApprovedDate;
-    }
-
-    public String getDateCorrectiveActionBegan() {
-        return dateCorrectiveActionBegan;
-    }
-
-    public void setDateCorrectiveActionBegan(final String dateCorrectiveActionBegan) {
-        this.dateCorrectiveActionBegan = dateCorrectiveActionBegan;
-    }
-
-    public String getDateCorrectiveActionMustBeCompleted() {
-        return dateCorrectiveActionMustBeCompleted;
-    }
-
-    public void setDateCorrectiveActionMustBeCompleted(final String dateCorrectiveActionMustBeCompleted) {
-        this.dateCorrectiveActionMustBeCompleted = dateCorrectiveActionMustBeCompleted;
-    }
-
-    public String getDateCorrectiveActionWasCompleted() {
-        return dateCorrectiveActionWasCompleted;
-    }
-
-    public void setDateCorrectiveActionWasCompleted(final String dateCorrectiveActionWasCompleted) {
-        this.dateCorrectiveActionWasCompleted = dateCorrectiveActionWasCompleted;
-    }
-
-    public long getNumberOfDaysFromDeterminationToCapApproval() {
-        return numberOfDaysFromDeterminationToCapApproval;
-    }
-
-    public void setNumberOfDaysFromDeterminationToCapApproval(final long numberOfDaysFromDeterminationToCapApproval) {
-        this.numberOfDaysFromDeterminationToCapApproval = numberOfDaysFromDeterminationToCapApproval;
-    }
-
-    public long getNumberOfDaysFromDeterminationToPresent() {
-        return numberOfDaysFromDeterminationToPresent;
-    }
-
-    public void setNumberOfDaysFromDeterminationToPresent(final long numberOfDaysFromDeterminationToPresent) {
-        this.numberOfDaysFromDeterminationToPresent = numberOfDaysFromDeterminationToPresent;
-    }
-
-    public long getNumberOfDaysFromCapApprovalToCapBegan() {
-        return numberOfDaysFromCapApprovalToCapBegan;
-    }
-
-    public void setNumberOfDaysFromCapApprovalToCapBegan(final long numberOfDaysFromCapApprovalToCapBegan) {
-        this.numberOfDaysFromCapApprovalToCapBegan = numberOfDaysFromCapApprovalToCapBegan;
-    }
-
-    public long getNumberOfDaysFromCapApprovalToPresent() {
-        return numberOfDaysFromCapApprovalToPresent;
-    }
-
-    public void setNumberOfDaysFromCapApprovalToPresent(final long numberOfDaysFromCapApprovalToPresent) {
-        this.numberOfDaysFromCapApprovalToPresent = numberOfDaysFromCapApprovalToPresent;
-    }
-
-    public long getNumberOfDaysFromCapBeganToCapCompleted() {
-        return numberOfDaysFromCapBeganToCapCompleted;
-    }
-
-    public void setNumberOfDaysFromCapBeganToCapCompleted(final long numberOfDaysFromCapBeganToCapCompleted) {
-        this.numberOfDaysFromCapBeganToCapCompleted = numberOfDaysFromCapBeganToCapCompleted;
-    }
-
-    public long getNumberOfDaysFromCapBeganToPresent() {
-        return numberOfDaysFromCapBeganToPresent;
-    }
-
-    public void setNumberOfDaysFromCapBeganToPresent(final long numberOfDaysFromCapBeganToPresent) {
-        this.numberOfDaysFromCapBeganToPresent = numberOfDaysFromCapBeganToPresent;
-    }
-
-    public long getDifferenceFromCapCompletedAndCapMustBeCompleted() {
-        return differenceFromCapCompletedAndCapMustBeCompleted;
-    }
-
-    public void setDifferenceFromCapCompletedAndCapMustBeCompleted(
-            final long differenceFromCapCompletedAndCapMustBeCompleted) {
-        this.differenceFromCapCompletedAndCapMustBeCompleted = differenceFromCapCompletedAndCapMustBeCompleted;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
 }
