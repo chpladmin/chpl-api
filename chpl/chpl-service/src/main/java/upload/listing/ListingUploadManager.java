@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -11,6 +12,7 @@ import javax.transaction.Transactional;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import gov.healthit.chpl.domain.ListingUpload;
@@ -21,10 +23,13 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ListingUploadManager {
 
+    private ListingUploadHandler listingUploadHandler;
     private ListingUploadDao listingUploadDao;
     private ErrorMessageUtil msgUtil;
 
-    public ListingUploadManager(ListingUploadDao listingUploadDao, ErrorMessageUtil msgUtil) {
+    public ListingUploadManager(ListingUploadHandler listingUploadHandler,
+            ListingUploadDao listingUploadDao, ErrorMessageUtil msgUtil) {
+        this.listingUploadHandler = listingUploadHandler;
         this.listingUploadDao = listingUploadDao;
         this.msgUtil = msgUtil;
     }
@@ -34,7 +39,14 @@ public class ListingUploadManager {
         List<CSVRecord> allCsvRecords = getFileAsCsvRecords(file);
         List<ListingUpload> uploadMetadatas = new ArrayList<ListingUpload>();
 
-        int currIndex = 0;
+        int headingIndex = listingUploadHandler.getHeadingRecordIndex(allCsvRecords);
+        if (headingIndex < 0) {
+            LOGGER.warn("Cannot continue parsing upload file " + file.getName() + " without heading.");
+            //TODO: move to errors.properties
+            throw new ValidationException("No records with allowed heading values were found in the file.");
+        }
+
+        int currIndex = headingIndex+1;
         while (currIndex < allCsvRecords.size()) {
             List<CSVRecord> singleListingCsvRecords = getNextListingRecords(allCsvRecords, currIndex);
             currIndex += singleListingCsvRecords.size();
@@ -52,13 +64,26 @@ public class ListingUploadManager {
     }
 
     private List<CSVRecord> getNextListingRecords(List<CSVRecord> allCsvRecords, int startIndex) {
-        if (startIndex >= allCsvRecords.size()) {
+        if (startIndex < 0 || startIndex >= allCsvRecords.size()) {
             LOGGER.error("Cannot look for listing CSV records starting at "
-                    + startIndex + " but there are only " + allCsvRecords.size() + " records.");
+                    + startIndex + ". There are " + allCsvRecords.size() + " records.");
             return null;
         }
+        CSVRecord heading = listingUploadHandler.getHeadingRecord(allCsvRecords);
         List<CSVRecord> listingCsvRecords = new ArrayList<CSVRecord>();
-        //TODO: get the records that make up the next listing
+        Iterator<CSVRecord> remainingRecords = allCsvRecords.stream().skip(startIndex).iterator();
+        while (remainingRecords.hasNext()) {
+            CSVRecord record = remainingRecords.next();
+            //TODO: call handler getUniqueId, getStatus methods
+            String recordUniqueId = listingUploadHandler.parseChplProductNumber(heading, record);
+            String recordStatus = listingUploadHandler.parseStatus(heading, record);
+            if (!StringUtils.isEmpty(recordUniqueId)) {
+                if (recordStatus.equalsIgnoreCase("NEW") && listingCsvRecords.size() > 0) {
+                    break;
+                }
+            }
+            listingCsvRecords.add(record);
+        }
         return listingCsvRecords;
     }
 
