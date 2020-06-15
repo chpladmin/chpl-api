@@ -2,12 +2,6 @@ package gov.healthit.chpl.domain.concept;
 
 import java.io.Serializable;
 
-/**
- * Concepts for triggering Questionable Activity.
- * 
- * @author alarned
- *
- */
 public enum QuestionableActivityTriggerConcept implements Serializable {
     CRITERIA_ADDED(
             "Certification Criteria Added"
@@ -23,24 +17,6 @@ public enum QuestionableActivityTriggerConcept implements Serializable {
     ),
     CRITERIA_B3_ADDED_TO_EXISTING_LISTING_WITH_ICS(
             "Certification Criteria 170.315 (b)(3) added with ICS for current listing"
-    ),
-    CRITERIA_B3_ADDED_TO_EXISTING_LISTING_WITHOUT_ICS(
-            "Certification Criteria 170.315 (b)(3) added without ICS for current listing"
-    ),
-    CRITERIA_B3_ADDED_TO_NEW_LISTING(
-            "Certification Criteria 170.315 (b)(3) added without ICS for new listing"
-    ),
-    ICS_ADDED_TO_EXISTING_LISTING_WITH_CRITERIA_B3(
-            "ICS added when Certification Criteria 170.315(b)(3) is on a current listing"
-    ),
-    NON_CURES_CRITERIA_ADDED_TO_NEW_LISTING(
-            "Old version of Certification Criteria added for new listing"
-    ),
-    NON_CURES_CRITERIA_ADDED_TO_EXISTING_LISTING(
-            "Old version of Certification Criteria added for existing listing"
-    ),
-    NON_CURES_CRITERIA_AND_ICS_ADDED_TO_EXISTING_LISTING(
-            "Old version of Certification Criteria changed to ICS"
     ),
     G1_SUCCESS_EDITED(
             "Measure Successfully Tested for 170.314 (g)(1) Edited"
@@ -124,13 +100,6 @@ public enum QuestionableActivityTriggerConcept implements Serializable {
         this.name = input;
     }
 
-    /**
-     * Find Questionable Activity Trigger Concept.
-     * 
-     * @param jobTypeName
-     *            job type to find
-     * @return result of search
-     */
     public static QuestionableActivityTriggerConcept findByName(final String jobTypeName) {
         QuestionableActivityTriggerConcept result = null;
         QuestionableActivityTriggerConcept[] availableValues = values();

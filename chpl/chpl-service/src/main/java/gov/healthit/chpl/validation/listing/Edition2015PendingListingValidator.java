@@ -24,10 +24,12 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.Attested
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.CqmAttestedCriteriaReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.DuplicateData2015Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.InvalidCriteriaCombinationReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.OldCriteriaWithoutIcsReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.PrivacyAndSecurityCriteriaReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.SedG32015Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.TestFunctionality2015Reviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.TestFunctionalityAllowedByRoleReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.TestTool2015Reviewer;
 
 /**
@@ -73,6 +75,10 @@ public class Edition2015PendingListingValidator extends PendingValidator {
     @Autowired
     @Qualifier("pendingSedG32015Reviewer")
     private SedG32015Reviewer sedG3Reviewer;
+
+    @Autowired
+    @Qualifier("pendingOldCriteriaWithoutIcsReviewer")
+    private OldCriteriaWithoutIcsReviewer oldCriteriaWithoutIcsReviewer;
 
     @Autowired
     @Qualifier("pendingRequiredData2015Reviewer")
@@ -122,6 +128,10 @@ public class Edition2015PendingListingValidator extends PendingValidator {
     @Qualifier("pendingPrivacyAndSecurityCriteriaReviewer")
     private PrivacyAndSecurityCriteriaReviewer privacyAndSecurityCriteriaReviewer;
 
+    @Autowired
+    @Qualifier("pendingTestFunctionalityAllowedByRoleReviewer")
+    private TestFunctionalityAllowedByRoleReviewer testFunctionalityAllowedByRoleReviewer;
+
     private List<Reviewer> reviewers;
 
     @Override
@@ -138,6 +148,7 @@ public class Edition2015PendingListingValidator extends PendingValidator {
             reviewers.add(validDataReviewer);
             reviewers.add(fieldLengthReviewer);
             reviewers.add(requiredDataReviewer);
+            reviewers.add(oldCriteriaWithoutIcsReviewer);
             reviewers.add(sedG3Reviewer);
             reviewers.add(ttReviewer);
             reviewers.add(tt2015Reviewer);
@@ -149,6 +160,7 @@ public class Edition2015PendingListingValidator extends PendingValidator {
             reviewers.add(cqmAttestedCriteriaReviewer);
             reviewers.add(attestedCriteriaCqmReviewer);
             reviewers.add(privacyAndSecurityCriteriaReviewer);
+            reviewers.add(testFunctionalityAllowedByRoleReviewer);
         }
         return reviewers;
     }
