@@ -1,5 +1,24 @@
 # Release Notes
 
+## Version 25.6.0
+_15 June 2020_
+
+### Features
+* Update G3Sed2015DownloadableResourceCreatorJob to be non-blocking
+* Update DownloadableResourceCreatorJob to be non-blocking
+* Restrict use of old Criteria based on Certification Date & ICS
+* Allow developer split without considering retired listings
+
+### Flagged Features
+* Use updated titles for new criteria
+
+### Bug Fixes
+* Provide error for invalid additional software source grouping length
+* Show full criterion (incl. Cures Update) for test functionality mismatch
+* Inappropriate test functionality should not be saved
+
+---
+
 ## Version 25.5.0
 _1 June 2020_
 
