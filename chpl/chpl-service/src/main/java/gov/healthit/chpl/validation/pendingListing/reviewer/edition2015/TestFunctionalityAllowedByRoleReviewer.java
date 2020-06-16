@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
 import lombok.Data;
 import lombok.ToString;
@@ -29,11 +30,13 @@ public class TestFunctionalityAllowedByRoleReviewer implements Reviewer {
     private FF4j ff4j;
     private Environment env;
     private List<RestrictedCriteriaTestFunctionality> restrictedCriteriaTestFunctionality;
+    private ResourcePermissions resourcePermissions;
 
     @Autowired
-    public TestFunctionalityAllowedByRoleReviewer(FF4j ff4j, Environment env) {
+    public TestFunctionalityAllowedByRoleReviewer(FF4j ff4j, Environment env, ResourcePermissions resourcePermissions) {
         this.ff4j = ff4j;
         this.env = env;
+        this.resourcePermissions = resourcePermissions;
     }
 
     @PostConstruct
@@ -63,7 +66,8 @@ public class TestFunctionalityAllowedByRoleReviewer implements Reviewer {
         if (foundBasedOnCriteriaId.isPresent()) {
             // Is there a match on the test functionality
             return foundBasedOnCriteriaId.get().getRestrictedTestFunctionalities().stream()
-                    .filter(x -> x.getTestFunctionalityId().equals(testFunctionalityId))
+                    .filter(x -> x.getTestFunctionalityId().equals(testFunctionalityId)
+                            && !resourcePermissions.doesUserHaveRole(x.allowedRoleNames))
                     .findAny();
         } else {
             return Optional.empty();
