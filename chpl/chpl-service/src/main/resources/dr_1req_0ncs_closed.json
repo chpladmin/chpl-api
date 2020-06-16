@@ -1,0 +1,31 @@
+{
+	"id": 1,
+	"startDate": 1590969600000,
+	"endDate": 1591920000000,
+	"circumstances": [
+		{
+			"id": 2,
+			"name": "Impediment to ONC-ACB"
+		}
+	],
+	"requirements": [
+		{
+			"type": {
+				"id": 25,
+				"name": "170.405(b)(8)",
+				"description": "Real world testing Maintenance of Certification",
+				"type": "MoC",
+				"category": "Real world testing"
+			},
+			//Slide 3 says a a DR without a nonconformity would not be posted to the CHPL
+			//but the ticket description says to include a file with 0 nonconformities
+			"nonconformities": []
+		}
+	],
+	//Why is result outside of "requirements"?
+	//Each requirement could have a different "result" right?
+	"result": {
+		"id": 2,
+		"name": "No Non-Conformity"
+	}
+}
