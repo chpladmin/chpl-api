@@ -1,17 +1,15 @@
 {
-	"id": 1,
+	"key": "DR-6",
 	"startDate": 1588291200000,
 	"endDate": 1590883200000,
 	"circumstances": [
 		{
-			"id": 1,
 			"name": "Patient Safety issue"
 		}
 	],
 	"requirements": [
 		{
 			"type": {
-				"id": 4,
 				"name": "170.402(a)(3)"
 				"description": "Assurances Condition of Certification",
 				"type": "CoC",
@@ -21,7 +19,6 @@
 		},
 		{
 			"type": {
-				"id": 16,
 				"name": "170.404(a)(1)",
 				"description": "Application programming interfaces Condition of Certification",
 				"type": "CoC",
@@ -29,9 +26,5 @@
 			},
 			"nonconformities": []
 		}
-	],
-	"result": {
-		"id": 2,
-		"name": "No Non-Conformity"
-	}
+	]
 }

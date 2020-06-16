@@ -1,0 +1,65 @@
+{
+	"key": "DR-2",
+	"startDate": 1586908800000,
+	"endDate": null,
+	"circumstances": [
+		{
+			"name": "Impediment to ONC-ACB"
+		},
+		{
+			"name": "Noncompliance to Conditions and Maintenance of Certification"
+		}
+	],
+	"requirements": [
+		{
+			"type": {
+				"name": "170.403(b)(1)",
+				"description": "Communications Maintenance of Certification",
+				"type": "MoC",
+				"category": "Communications"
+			},
+			"nonconformities": [
+				{
+					"type": {
+						"name": "170.405(b)(6)",
+						"description": "Real world testing Maintenance of Certification",
+						"type": "MoC",
+						"category": "Real world testing"
+					},
+					"dateOfDetermination": 1587081600000,
+					"status": {
+						"name": "Closed"
+					},
+					"summary": "A summary of this closed nonconformity.",
+					"findings": "This is a detailed description of ONC's findings related to this closed non-conformity.",
+					"capApprovalDate": 1587168000000,
+					"capEndDate": 1588204800000,
+					"capMustCompleteDate": 1588204800000,
+					"capStartDate": 1587340800000
+					"developerExplanation": "Developer-provided explanation.",
+					"resolution": "A detailed description of resolution."
+				},
+				{
+					"type": {
+						"name": "170.403(b)(1)",
+						"description": "Communications Maintenance of Certification",
+						"type": "MoC",
+						"category": "Communications"
+					},
+					"dateOfDetermination": 1587081600000,
+					"status": {
+						"name": "Open"
+					},
+					"summary": "A summary of this open nonconformity.",
+					"findings": "This is a detailed description of ONC's findings related to this open non-conformity.",
+					"capApprovalDate": 1587340800000,
+					"capEndDate": null,
+					"capMustCompleteDate": 1589932800000,
+					"capStartDate": 1587340800000
+					"developerExplanation": null,
+					"resolution": null
+				}
+			]
+		}
+	]
+}

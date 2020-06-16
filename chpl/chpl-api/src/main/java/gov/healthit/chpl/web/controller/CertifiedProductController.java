@@ -70,6 +70,7 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.service.DirectReviewService;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandler;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFactory;
 import gov.healthit.chpl.util.AuthUtil;
@@ -110,6 +111,7 @@ public class CertifiedProductController {
     private FileUtils fileUtils;
     private ChplProductNumberUtil chplProductNumberUtil;
     private DeveloperManager developerManager;
+    private DirectReviewService directReviewService;
 
     /**
      * Autowired constructor for dependency injection.
@@ -128,12 +130,13 @@ public class CertifiedProductController {
      * @param developerManager
      */
     @Autowired
-    public CertifiedProductController(final CertifiedProductUploadHandlerFactory uploadHandlerFactory,
-            final CertifiedProductDetailsManager cpdManager, final CertifiedProductManager cpManager,
-            final ResourcePermissions resourcePermissions, final PendingCertifiedProductManager pcpManager,
-            final ActivityManager activityManager, final ListingValidatorFactory validatorFactory,
-            final Environment env, final ErrorMessageUtil msgUtil, final FileUtils fileUtils,
-            final ChplProductNumberUtil chplProductNumberUtil, final DeveloperManager developerManager) {
+    public CertifiedProductController(CertifiedProductUploadHandlerFactory uploadHandlerFactory,
+            CertifiedProductDetailsManager cpdManager, CertifiedProductManager cpManager,
+            ResourcePermissions resourcePermissions, PendingCertifiedProductManager pcpManager,
+            ActivityManager activityManager, ListingValidatorFactory validatorFactory,
+            Environment env, ErrorMessageUtil msgUtil, FileUtils fileUtils,
+            ChplProductNumberUtil chplProductNumberUtil, DeveloperManager developerManager,
+            DirectReviewService directReviewService) {
         this.uploadHandlerFactory = uploadHandlerFactory;
         this.cpdManager = cpdManager;
         this.cpManager = cpManager;
@@ -146,6 +149,7 @@ public class CertifiedProductController {
         this.fileUtils = fileUtils;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.developerManager = developerManager;
+        this.directReviewService = directReviewService;
     }
 
     /**
@@ -191,11 +195,15 @@ public class CertifiedProductController {
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductById(
-            @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
+            @PathVariable("certifiedProductId") Long certifiedProductId,
+            @RequestParam(value = "includeDirectReviews", required = false, defaultValue = "false") Boolean includeDirectReviews)
+                    throws EntityRetrievalException {
 
         CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetails(certifiedProductId);
         certifiedProduct = validateCertifiedProduct(certifiedProduct);
-
+        if (includeDirectReviews != null && includeDirectReviews.booleanValue()) {
+            directReviewService.populateDirectReviews(certifiedProduct);
+        }
         return certifiedProduct;
     }
 
@@ -226,15 +234,17 @@ public class CertifiedProductController {
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumber(
-            @PathVariable("year") final String year,
-            @PathVariable("testingLab") final String testingLab,
-            @PathVariable("certBody") final String certBody,
-            @PathVariable("vendorCode") final String vendorCode,
-            @PathVariable("productCode") final String productCode,
-            @PathVariable("versionCode") final String versionCode,
-            @PathVariable("icsCode") final String icsCode,
-            @PathVariable("addlSoftwareCode") final String addlSoftwareCode,
-            @PathVariable("certDateCode") final String certDateCode) throws EntityRetrievalException  {
+            @PathVariable("year") String year,
+            @PathVariable("testingLab") String testingLab,
+            @PathVariable("certBody") String certBody,
+            @PathVariable("vendorCode") String vendorCode,
+            @PathVariable("productCode") String productCode,
+            @PathVariable("versionCode") String versionCode,
+            @PathVariable("icsCode") String icsCode,
+            @PathVariable("addlSoftwareCode") String addlSoftwareCode,
+            @PathVariable("certDateCode") String certDateCode,
+            @RequestParam(value = "includeDirectReviews", required = false, defaultValue = "false") Boolean includeDirectReviews)
+                    throws EntityRetrievalException  {
 
         String chplProductNumber =
                 chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode,
@@ -247,7 +257,9 @@ public class CertifiedProductController {
         if (validator != null) {
             validator.validate(certifiedProduct);
         }
-
+        if (includeDirectReviews != null && includeDirectReviews.booleanValue()) {
+            directReviewService.populateDirectReviews(certifiedProduct);
+        }
         return certifiedProduct;
     }
 
@@ -260,16 +272,19 @@ public class CertifiedProductController {
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumber2(
-            @PathVariable("chplPrefix") final String chplPrefix,
-            @PathVariable("identifier") final String identifier) throws EntityRetrievalException {
+            @PathVariable("chplPrefix") String chplPrefix,
+            @PathVariable("identifier") String identifier,
+            @RequestParam(value = "includeDirectReviews", required = false, defaultValue = "false") Boolean includeDirectReviews)
+                    throws EntityRetrievalException {
 
         String chplProductNumber = chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
 
         CertifiedProductSearchDetails certifiedProduct =
                 cpdManager.getCertifiedProductDetailsByChplProductNumber(chplProductNumber);
-
         certifiedProduct = validateCertifiedProduct(certifiedProduct);
-
+        if (includeDirectReviews != null && includeDirectReviews.booleanValue()) {
+            directReviewService.populateDirectReviews(certifiedProduct);
+        }
         return certifiedProduct;
     }
 
