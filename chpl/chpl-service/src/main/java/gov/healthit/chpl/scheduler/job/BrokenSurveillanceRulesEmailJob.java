@@ -10,10 +10,13 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
 
@@ -28,18 +31,13 @@ import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.scheduler.BrokenSurveillanceRulesDAO;
 import gov.healthit.chpl.domain.surveillance.SurveillanceOversightRule;
 import gov.healthit.chpl.dto.scheduler.BrokenSurveillanceRulesDTO;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.EmailBuilder;
 
-/**
- * The BrokenSurveillanceRulesEmailJob implements a Quartz job and is available to ROLE_ADMIN and ROLE_ACB. When invoked
- * it emails relevant individuals with Surveillance error reports.
- *
- * @author alarned
- *
- */
 public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("brokenSurveillanceRulesEmailJobLogger");
     private DateTimeFormatter dateFormatter;
@@ -47,6 +45,9 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
 
     @Autowired
     private BrokenSurveillanceRulesDAO brokenSurveillanceRulesDAO;
+
+    @Autowired
+    private CertificationBodyDAO certificationBodyDAO;
 
     @Autowired
     private Environment env;
@@ -65,12 +66,6 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
             + SurveillanceOversightRule.NONCONFORMITY_OPEN_CAP_COMPLETE.getTitle() + ": "
             + SurveillanceOversightRule.NONCONFORMITY_OPEN_CAP_COMPLETE.getDescription() + "</li>" + "</ol>";
 
-    /**
-     * Constructor that initializes the BrokenSurveillanceRulesEmailJob object.
-     *
-     * @throws Exception
-     *             if thrown
-     */
     public BrokenSurveillanceRulesEmailJob() throws Exception {
         super();
         allBrokenRulesCounts = new HashMap<SurveillanceOversightRule, Integer>();
@@ -84,7 +79,7 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
     }
 
     @Override
-    public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+    public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Broken Surveillance Rules Email job. *********");
         LOGGER.info("Sending email to: " + jobContext.getMergedJobDataMap().getString("email"));
@@ -108,8 +103,7 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         if (jobContext.getMergedJobDataMap().getString("type").equalsIgnoreCase("All")) {
             if (jobContext.getMergedJobDataMap().getBoolean("acbSpecific")) {
                 String subjectSuffix = env.getProperty("oversightEmailAcbWeeklySubjectSuffix");
-                subject = jobContext.getMergedJobDataMap().getString("acb").replaceAll("\u263A", ", ") + " "
-                        + subjectSuffix;
+                subject = getAcbNamesAsCommaSeparatedList(jobContext) + " " + subjectSuffix;
                 htmlMessage = env.getProperty("oversightEmailAcbWeeklyHtmlMessage");
             } else {
                 subject = env.getProperty("oversightEmailWeeklySubject");
@@ -119,8 +113,7 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         } else {
             if (jobContext.getMergedJobDataMap().getBoolean("acbSpecific")) {
                 String subjectSuffix = env.getProperty("oversightEmailAcbDailySubjectSuffix");
-                subject = jobContext.getMergedJobDataMap().getString("acb").replaceAll("\u263A", ", ") + " "
-                        + subjectSuffix;
+                subject = getAcbNamesAsCommaSeparatedList(jobContext) + " " + subjectSuffix;
                 htmlMessage = env.getProperty("oversightEmailAcbDailyHtmlMessage");
             } else {
                 subject = env.getProperty("oversightEmailDailySubject");
@@ -146,7 +139,7 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         LOGGER.info("********* Completed the Broken Surveillance Rules Email job. *********");
     }
 
-    private List<BrokenSurveillanceRulesDTO> getAppropriateErrors(final JobExecutionContext jobContext) {
+    private List<BrokenSurveillanceRulesDTO> getAppropriateErrors(JobExecutionContext jobContext) {
         List<BrokenSurveillanceRulesDTO> allErrors = brokenSurveillanceRulesDAO.findAll();
         List<BrokenSurveillanceRulesDTO> filteredErrors = new ArrayList<BrokenSurveillanceRulesDTO>();
         List<BrokenSurveillanceRulesDTO> errors = new ArrayList<BrokenSurveillanceRulesDTO>();
@@ -164,19 +157,20 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
             filteredErrors.addAll(allErrors);
         }
         if (jobContext.getMergedJobDataMap().getBooleanValue("acbSpecific")) {
-            Long certificationBodyId = jobContext.getMergedJobDataMap().getLong("acb");
-            for (BrokenSurveillanceRulesDTO error : filteredErrors) {
-                if (error.getCertificationBody().getId().equals(certificationBodyId)) {
-                    errors.add(error);
-                }
-            }
+            List<Long> acbIds = Arrays.asList(jobContext.getMergedJobDataMap().getString("acb").split("\u263A")).stream()
+                    .map(acb -> Long.parseLong(acb))
+                    .collect(Collectors.toList());
+
+            errors = filteredErrors.stream()
+                    .filter(error -> acbIds.contains(error.getCertificationBody().getId()))
+                    .collect(Collectors.toList());
         } else {
             errors.addAll(filteredErrors);
         }
         return errors;
     }
 
-    private boolean happenedOvernight(final BrokenSurveillanceRulesDTO error, final String formattedToday) {
+    private boolean happenedOvernight(BrokenSurveillanceRulesDTO error, String formattedToday) {
         if (formattedToday.equalsIgnoreCase(error.getLengthySuspensionRule())) {
             return true;
         }
@@ -198,7 +192,7 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         return false;
     }
 
-    private File getOutputFile(final List<BrokenSurveillanceRulesDTO> errors, final String reportFilename) {
+    private File getOutputFile(List<BrokenSurveillanceRulesDTO> errors, String reportFilename) {
         File temp = null;
         try {
             temp = File.createTempFile(reportFilename, ".csv");
@@ -263,7 +257,7 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         return result;
     }
 
-    private List<String> generateRowValue(final BrokenSurveillanceRulesDTO data) {
+    private List<String> generateRowValue(BrokenSurveillanceRulesDTO data) {
         List<String> result = new ArrayList<String>();
         result.add(data.getDeveloper());
         result.add(data.getProduct());
@@ -316,7 +310,7 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         return result;
     }
 
-    private void updateSummary(final BrokenSurveillanceRulesDTO data) {
+    private void updateSummary(BrokenSurveillanceRulesDTO data) {
         if (!StringUtils.isEmpty(data.getLengthySuspensionRule())) {
             allBrokenRulesCounts.put(SurveillanceOversightRule.LONG_SUSPENSION,
                     allBrokenRulesCounts.get(SurveillanceOversightRule.LONG_SUSPENSION) + 1);
@@ -343,7 +337,7 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         }
     }
 
-    private String createHtmlEmailBody(final int numRecords, final String noContentMsg) {
+    private String createHtmlEmailBody(int numRecords, String noContentMsg) {
         String htmlMessage = "";
         if (numRecords == 0) {
             htmlMessage = noContentMsg;
@@ -368,7 +362,20 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         return htmlMessage;
     }
 
-    private void setBrokenSurveillanceRulesDAO(final BrokenSurveillanceRulesDAO brokenSurveillanceRulesDAO) {
-        this.brokenSurveillanceRulesDAO = brokenSurveillanceRulesDAO;
+    private String getAcbNamesAsCommaSeparatedList(JobExecutionContext jobContext) {
+        if (Objects.nonNull(jobContext.getMergedJobDataMap().getString("acb"))) {
+            return Arrays.asList(jobContext.getMergedJobDataMap().getString("acb").split("\u263A")).stream()
+                    .map(acbId -> {
+                        try {
+                            return certificationBodyDAO.getById(Long.parseLong(acbId)).getName();
+                        } catch (NumberFormatException | EntityRetrievalException e) {
+                            LOGGER.error("Could not retreive ACB name based on value: " + acbId, e);
+                            return "";
+                        }
+                    })
+                    .collect(Collectors.joining(", "));
+        } else {
+            return "";
+        }
     }
 }
