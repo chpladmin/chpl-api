@@ -85,12 +85,7 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         LOGGER.info("Sending email to: " + jobContext.getMergedJobDataMap().getString("email"));
 
         List<BrokenSurveillanceRulesDTO> errors = getAppropriateErrors(jobContext);
-        String filename = null;
-        if (jobContext.getMergedJobDataMap().getString("type").equalsIgnoreCase("All")) {
-            filename = env.getProperty("oversightEmailWeeklyFileName");
-        } else {
-            filename = env.getProperty("oversightEmailDailyFileName");
-        }
+        String filename = getFileName(jobContext);
         File output = null;
         List<File> files = new ArrayList<File>();
         if (errors.size() > 0) {
@@ -376,6 +371,14 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
                     .collect(Collectors.joining(", "));
         } else {
             return "";
+        }
+    }
+
+    private String getFileName(JobExecutionContext jobContext) {
+        if (jobContext.getMergedJobDataMap().getString("type").equalsIgnoreCase("All")) {
+            return env.getProperty("oversightEmailWeeklyFileName");
+        } else {
+            return  env.getProperty("oversightEmailDailyFileName");
         }
     }
 }

@@ -21,13 +21,16 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.SpecialProperties;
+import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.scheduler.InheritanceErrorsReportDAO;
 import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.scheduler.InheritanceErrorsReportDTO;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -35,7 +38,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 /**
  * Initiates and runs the the Quartz job that generates the data that is used to to create the Inheritance Errors Report
  * notification.
- * 
+ *
  * @author alarned
  *
  */
@@ -58,6 +61,9 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
     private ListingGraphDAO listingGraphDAO;
 
     @Autowired
+    private CertificationBodyDAO certificationBodyDAO;
+
+    @Autowired
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
@@ -68,19 +74,13 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
 
     private Date curesRuleEffectiveDate;
 
-    /**
-     * Constructor to initialize InheritanceErrorsReportCreatorJob object.
-     * 
-     * @throws Exception
-     *             is thrown
-     */
     public InheritanceErrorsReportCreatorJob() throws Exception {
         super();
     }
 
     @Override
     @Transactional
-    public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+    public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
         LOGGER.info("********* Starting the Inheritance Error Report Creator job. *********");
@@ -101,8 +101,8 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
 
             for (CertifiedProductFlatSearchResult result : certifiedProducts) {
                 CompletableFuture.supplyAsync(() -> getCertifiedProductSearchDetails(result.getId()), executorService)
-                        .thenApply(cp -> check(cp))
-                        .thenAccept(error -> saveInheritanceErrorsReportSingle(error));
+                .thenApply(cp -> check(cp))
+                .thenAccept(error -> saveInheritanceErrorsReportSingle(error));
             }
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -137,7 +137,11 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
                 item.setDeveloper(listing.getDeveloper().getName());
                 item.setProduct(listing.getProduct().getName());
                 item.setVersion(listing.getVersion().getVersion());
-                item.setAcb(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
+                item.setCertificationBody(
+                        getCertificationBody(
+                                Long.parseLong(
+                                        listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString())));
+
                 String productDetailsUrl = env.getProperty("chplUrlBegin").trim();
                 LOGGER.info("productDetailsUrl = " + productDetailsUrl);
                 if (!productDetailsUrl.endsWith("/")) {
@@ -154,7 +158,7 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
         return item;
     }
 
-    private void saveInheritanceErrorsReportSingle(final InheritanceErrorsReportDTO item) {
+    private void saveInheritanceErrorsReportSingle(InheritanceErrorsReportDTO item) {
         if (item == null) {
             return;
         }
@@ -167,14 +171,13 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
         }
     }
 
-    private List<CertifiedProductFlatSearchResult> filterData(
-            final List<CertifiedProductFlatSearchResult> certifiedProducts) {
+    private List<CertifiedProductFlatSearchResult> filterData(List<CertifiedProductFlatSearchResult> certifiedProducts) {
         return certifiedProducts.stream()
                 .filter(cp -> cp.getEdition().equalsIgnoreCase(EDITION_2015))
                 .collect(Collectors.toList());
     }
 
-    private String breaksIcsRules(final CertifiedProductSearchDetails listing) {
+    private String breaksIcsRules(CertifiedProductSearchDetails listing) {
         String uniqueId = listing.getChplProductNumber();
         String[] uniqueIdParts = uniqueId.split("\\.");
         if (uniqueIdParts.length != ChplProductNumberUtil.CHPL_PRODUCT_ID_PARTS) {
@@ -237,6 +240,10 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
         Date effectiveRuleDate = specialProperties.getEffectiveRuleDate();
         LOGGER.info("cures.ruleEffectiveDate = " + sdf.format(effectiveRuleDate));
         return effectiveRuleDate;
+    }
+
+    private CertificationBodyDTO getCertificationBody(long certificationBodyId) throws EntityRetrievalException {
+        return certificationBodyDAO.getById(certificationBodyId);
     }
 
     private Integer getThreadCountForJob() throws NumberFormatException {

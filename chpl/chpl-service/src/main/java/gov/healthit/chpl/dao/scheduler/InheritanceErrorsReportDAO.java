@@ -11,13 +11,14 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.scheduler.InheritanceErrorsReportDTO;
+import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.entity.scheduler.InheritanceErrorsReportEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 /**
  * The implementation for InheritanceErrorsReportDAO.
- * 
+ *
  * @author alarned
  *
  */
@@ -35,15 +36,13 @@ public class InheritanceErrorsReportDAO extends BaseDAOImpl {
 
     @Transactional
     public void deleteAll() {
-        List<InheritanceErrorsReportEntity> entities = this.findAllEntities();
-
-        for (InheritanceErrorsReportEntity entity : entities) {
-            if (!entity.getDeleted()) {
-                entity.setDeleted(true);
-                entityManager.merge(entity);
-                entityManager.flush();
-            }
-        }
+        this.findAllEntities().stream()
+        .filter(entity -> !entity.getDeleted())
+        .forEach(entity -> {
+            entity.setDeleted(true);
+            entityManager.merge(entity);
+        });
+        entityManager.flush();
     }
 
     @Transactional
@@ -55,7 +54,7 @@ public class InheritanceErrorsReportDAO extends BaseDAOImpl {
             entity.setDeveloper(dto.getDeveloper());
             entity.setProduct(dto.getProduct());
             entity.setVersion(dto.getVersion());
-            entity.setAcb(dto.getAcb());
+            entity.setCertificationBody(CertificationBodyEntity.getNewAcbEntity(dto.getCertificationBody()));
             entity.setUrl(dto.getUrl());
             entity.setReason(dto.getReason());
             entity.setDeleted(false);
@@ -67,14 +66,14 @@ public class InheritanceErrorsReportDAO extends BaseDAOImpl {
     }
 
     @Transactional
-    public void create(final InheritanceErrorsReportDTO dto)
+    public void create(InheritanceErrorsReportDTO dto)
             throws EntityCreationException, EntityRetrievalException {
         InheritanceErrorsReportEntity entity = new InheritanceErrorsReportEntity();
         entity.setChplProductNumber(dto.getChplProductNumber());
         entity.setDeveloper(dto.getDeveloper());
         entity.setProduct(dto.getProduct());
         entity.setVersion(dto.getVersion());
-        entity.setAcb(dto.getAcb());
+        entity.setCertificationBody(CertificationBodyEntity.getNewAcbEntity(dto.getCertificationBody()));
         entity.setUrl(dto.getUrl());
         entity.setReason(dto.getReason());
         entity.setDeleted(false);
@@ -86,6 +85,8 @@ public class InheritanceErrorsReportDAO extends BaseDAOImpl {
 
     private List<InheritanceErrorsReportEntity> findAllEntities() {
         Query query = entityManager.createQuery("from InheritanceErrorsReportEntity iere "
+                + "join fetch iere.certificationBody cb "
+                + "join fetch cb.address "
                 + "where (iere.deleted = false)",
                 InheritanceErrorsReportEntity.class);
         return query.getResultList();

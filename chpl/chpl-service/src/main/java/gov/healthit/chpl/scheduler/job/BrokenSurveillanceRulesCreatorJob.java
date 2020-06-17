@@ -129,7 +129,9 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
 
     }
 
-    private List<BrokenSurveillanceRulesDTO> brokenRules(CertifiedProductSearchDetails listing) throws NumberFormatException, EntityRetrievalException {
+    private List<BrokenSurveillanceRulesDTO> brokenRules(CertifiedProductSearchDetails listing)
+            throws NumberFormatException, EntityRetrievalException {
+
         List<BrokenSurveillanceRulesDTO> errors = new ArrayList<BrokenSurveillanceRulesDTO>();
 
         if (listing.getSurveillance().size() == 0) {

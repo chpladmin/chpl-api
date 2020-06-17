@@ -6,7 +6,10 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
 
@@ -20,17 +23,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.scheduler.InheritanceErrorsReportDAO;
 import gov.healthit.chpl.dto.scheduler.InheritanceErrorsReportDTO;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.EmailBuilder;
 
-/**
- * The InheritanceErrorsReportEmailJob implements a Quartz job and is available to ROLE_ADMIN and ROLE_ACB. When invoked
- * it emails relevant individuals with ICS error reports.
- * 
- * @author alarned
- *
- */
 public class InheritanceErrorsReportEmailJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("inheritanceErrorsReportEmailJobLogger");
 
@@ -38,20 +36,17 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
     private InheritanceErrorsReportDAO inheritanceErrorsReportDAO;
 
     @Autowired
+    private CertificationBodyDAO certificationBodyDAO;
+
+    @Autowired
     private Environment env;
 
-    /**
-     * Constructor that initializes the InheritanceErrorsReportEmailJob object.
-     * 
-     * @throws Exception
-     *             if thrown
-     */
     public InheritanceErrorsReportEmailJob() throws Exception {
         super();
     }
 
     @Override
-    public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+    public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
         LOGGER.info("********* Starting the Inheritance Error Report Email job. *********");
@@ -68,7 +63,7 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
         String subject = env.getProperty("inheritanceReportEmailWeeklySubject");
         String htmlMessage;
         if (jobContext.getMergedJobDataMap().getBoolean("acbSpecific")) {
-            subject = jobContext.getMergedJobDataMap().getString("acb").replaceAll("\u263A", ", ") + " " + subject;
+            subject = getAcbNamesAsCommaSeparatedList(jobContext) + " " + subject;
             htmlMessage = env.getProperty("inheritanceReportEmailAcbWeeklyHtmlMessage");
         } else {
             htmlMessage = env.getProperty("inheritanceReportEmailWeeklyHtmlMessage");
@@ -84,32 +79,34 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
 
             EmailBuilder emailBuilder = new EmailBuilder(env);
             emailBuilder.recipients(addresses)
-                    .subject(subject)
-                    .htmlMessage(htmlMessage)
-                    .fileAttachments(files)
-                    .sendEmail();
+            .subject(subject)
+            .htmlMessage(htmlMessage)
+            .fileAttachments(files)
+            .sendEmail();
         } catch (IOException | MessagingException e) {
             LOGGER.error(e);
         }
         LOGGER.info("********* Completed the Inheritance Error Report Email job. *********");
     }
 
-    private List<InheritanceErrorsReportDTO> getAppropriateErrors(final JobExecutionContext jobContext) {
+    private List<InheritanceErrorsReportDTO> getAppropriateErrors(JobExecutionContext jobContext) {
         List<InheritanceErrorsReportDTO> allErrors = inheritanceErrorsReportDAO.findAll();
         List<InheritanceErrorsReportDTO> errors = new ArrayList<InheritanceErrorsReportDTO>();
         if (jobContext.getMergedJobDataMap().getBooleanValue("acbSpecific")) {
-            for (InheritanceErrorsReportDTO error : allErrors) {
-                if (jobContext.getMergedJobDataMap().getString("acb").indexOf(error.getAcb()) > -1) {
-                    errors.add(error);
-                }
-            }
+            List<Long> acbIds = Arrays.asList(jobContext.getMergedJobDataMap().getString("acb").split("\u263A")).stream()
+                    .map(acb -> Long.parseLong(acb))
+                    .collect(Collectors.toList());
+
+            errors = allErrors.stream()
+                    .filter(error -> acbIds.contains(error.getCertificationBody().getId()))
+                    .collect(Collectors.toList());
         } else {
             errors.addAll(allErrors);
         }
         return errors;
     }
 
-    private File getOutputFile(final List<InheritanceErrorsReportDTO> errors) {
+    private File getOutputFile(List<InheritanceErrorsReportDTO> errors) {
         String reportFilename = env.getProperty("inheritanceReportEmailWeeklyFileName");
         File temp = null;
         try {
@@ -148,13 +145,13 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
         return result;
     }
 
-    private List<String> generateRowValue(final InheritanceErrorsReportDTO data) {
+    private List<String> generateRowValue(InheritanceErrorsReportDTO data) {
         List<String> result = new ArrayList<String>();
         result.add(data.getChplProductNumber());
         result.add(data.getDeveloper());
         result.add(data.getProduct());
         result.add(data.getVersion());
-        result.add(data.getAcb());
+        result.add(data.getCertificationBody().getName());
         result.add(data.getUrl());
         result.add(data.getReason());
         return result;
@@ -169,4 +166,22 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
         }
         return htmlMessage;
     }
+
+    private String getAcbNamesAsCommaSeparatedList(JobExecutionContext jobContext) {
+        if (Objects.nonNull(jobContext.getMergedJobDataMap().getString("acb"))) {
+            return Arrays.asList(jobContext.getMergedJobDataMap().getString("acb").split("\u263A")).stream()
+                    .map(acbId -> {
+                        try {
+                            return certificationBodyDAO.getById(Long.parseLong(acbId)).getName();
+                        } catch (NumberFormatException | EntityRetrievalException e) {
+                            LOGGER.error("Could not retreive ACB name based on value: " + acbId, e);
+                            return "";
+                        }
+                    })
+                    .collect(Collectors.joining(", "));
+        } else {
+            return "";
+        }
+    }
+
 }
