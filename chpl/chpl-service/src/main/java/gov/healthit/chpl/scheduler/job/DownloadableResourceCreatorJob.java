@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -22,12 +23,11 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.scheduler.SchedulerCertifiedProductSearchDetailsAsync;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-/**
- * Basic class for any Job to create downloadable files.
- * @author alarned
- *
- */
+@Data
+@EqualsAndHashCode(callSuper = false)
 public abstract class DownloadableResourceCreatorJob extends QuartzJob {
     private SimpleDateFormat filenameTimestampFormat;
 
@@ -49,13 +49,12 @@ public abstract class DownloadableResourceCreatorJob extends QuartzJob {
     @Autowired
     private CertificationResultDetailsDAO certificationResultDetailsDao;
 
+    @Autowired
+    private CertifiedProductDetailsManager certifiedProductDetailsManager;
+
     private Logger logger;
 
-    /**
-     * Default constructor. Notifies CHPL-Service that Job was invoked, sets time stamp format, sets up Job logger
-     * @param logger the specific job's logger
-     */
-    public DownloadableResourceCreatorJob(final Logger logger) {
+    public DownloadableResourceCreatorJob(Logger logger) {
         Logger rootLogger = LogManager.getLogger(DownloadableResourceCreatorJob.class);
         rootLogger.info("Constructor for DownloadableResourceCreatorJob invoked");
         filenameTimestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
@@ -76,6 +75,15 @@ public abstract class DownloadableResourceCreatorJob extends QuartzJob {
             }
         }
         return futures;
+    }
+
+    protected Optional<CertifiedProductSearchDetails> getCertifiedProductSearchDetails(Long listingId) {
+        try {
+            return Optional.of(certifiedProductDetailsManager.getCertifiedProductDetails(listingId));
+        } catch (EntityRetrievalException e) {
+            logger.error(String.format("Could not retrieve listing: %s", listingId), e);
+            return Optional.empty();
+        }
     }
 
     protected List<Future<CertifiedProductSearchDetails>> getCertifiedProductSearchDetailsFuturesFromIds(
@@ -134,60 +142,6 @@ public abstract class DownloadableResourceCreatorJob extends QuartzJob {
         }
 
         return ordered;
-    }
-
-    public CertifiedProductDAO getCertifiedProductDao() {
-        return certifiedProductDao;
-    }
-
-    public void setCertifiedProductDao(final CertifiedProductDAO certifiedProductDao) {
-        this.certifiedProductDao = certifiedProductDao;
-    }
-
-    public SimpleDateFormat getFilenameTimestampFormat() {
-        return filenameTimestampFormat;
-    }
-
-    public void setFilenameTimestampFormat(final SimpleDateFormat filenameTimestampFormat) {
-        this.filenameTimestampFormat = filenameTimestampFormat;
-    }
-
-    public CertifiedProductDetailsManager getCpdManager() {
-        return cpdManager;
-    }
-
-    public void setCpdManager(final CertifiedProductDetailsManager cpdManager) {
-        this.cpdManager = cpdManager;
-    }
-
-    public CertificationCriterionDAO getCriteriaDao() {
-        return criteriaDao;
-    }
-
-    public void setCriteriaDao(final CertificationCriterionDAO criteriaDao) {
-        this.criteriaDao = criteriaDao;
-    }
-
-    public CertificationResultDAO getCertificationResultDao() {
-        return certificationResultDao;
-    }
-
-    public void setCertificationResultDao(
-            final CertificationResultDAO certificationResultDao) {
-        this.certificationResultDao = certificationResultDao;
-    }
-
-    public CertificationResultDetailsDAO getCertificationResultDetailsDao() {
-        return certificationResultDetailsDao;
-    }
-
-    public void setCertificationResultDetailsDao(
-            final CertificationResultDetailsDAO certificationResultDetailsDao) {
-        this.certificationResultDetailsDao = certificationResultDetailsDao;
-    }
-
-    protected void setLogger(final Logger logger) {
-        this.logger = logger;
     }
 
     protected SchedulerCertifiedProductSearchDetailsAsync getCertifiedProductDetailsAsyncRetrievalHelper()

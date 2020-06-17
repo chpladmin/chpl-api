@@ -54,7 +54,11 @@ public class FieldLengthReviewer implements Reviewer {
         for (PendingCertifiedProductQmsStandardDTO qms : listing.getQmsStandards()) {
             checkField(listing, qms.getName(), "qmsStandard", ERROR);
         }
-
+        listing.getCertificationCriterion().stream()
+                .flatMap(pendingCertificationResult -> pendingCertificationResult.getAdditionalSoftware().stream())
+                .forEach(additionalSoftware -> {
+                    checkField(listing, additionalSoftware.getGrouping(), "cpSourceGrouping", ERROR);
+                });
     }
 
     private void checkField(final PendingCertifiedProductDTO listing, final Object field, final String errorField, String type) {

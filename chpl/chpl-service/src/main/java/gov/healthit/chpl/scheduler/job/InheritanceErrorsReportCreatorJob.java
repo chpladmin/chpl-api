@@ -99,17 +99,27 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
             Integer threadPoolSize = getThreadCountForJob();
             executorService = Executors.newFixedThreadPool(threadPoolSize);
 
+            List<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
+
             for (CertifiedProductFlatSearchResult result : certifiedProducts) {
-                CompletableFuture.supplyAsync(() -> getCertifiedProductSearchDetails(result.getId()), executorService)
+                futures.add(CompletableFuture.supplyAsync(() -> getCertifiedProductSearchDetails(result.getId()), executorService)
                         .thenApply(cp -> check(cp))
-                        .thenAccept(error -> saveInheritanceErrorsReportSingle(error));
+                        .thenAccept(error -> saveInheritanceErrorsReportSingle(error)));
             }
+
+            CompletableFuture<Void> combinedFutures = CompletableFuture
+                    .allOf(futures.toArray(new CompletableFuture[futures.size()]));
+
+            // This is not blocking - presumably because the job executes using it's own ExecutorService
+            // This is necessary so that the system can indicate that the job and it's threads are still running
+            combinedFutures.get();
+            LOGGER.info("All processes have completed");
+
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         } finally {
             executorService.shutdown();
         }
-
         LOGGER.info("Completed the Inheritance Error Report Creator job. *********");
     }
 

@@ -165,7 +165,7 @@ public class TestFunctionality2015Reviewer extends PermissionBasedReviewer {
 
         Iterator<CertificationCriterionDTO> iter = certDTOs.iterator();
         while (iter.hasNext()) {
-            criteria.append(iter.next().getNumber());
+            criteria.append(Util.formatCriteriaNumber(iter.next()));
             if (iter.hasNext()) {
                 criteria.append(", ");
             }
