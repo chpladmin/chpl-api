@@ -66,7 +66,7 @@ public class CertificationCriterionService {
         return criterion.getTitle() != null && criterion.getTitle().contains(CURES_TITLE);
     }
 
-    public boolean hasCuresInTitle(CertificationCriterionDTO criterion) {
+    public static boolean hasCuresInTitle(CertificationCriterionDTO criterion) {
         return hasCuresInTitle(new CertificationCriterion(criterion));
     }
 

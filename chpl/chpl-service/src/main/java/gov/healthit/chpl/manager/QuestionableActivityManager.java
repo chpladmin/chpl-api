@@ -3,8 +3,6 @@ package gov.healthit.chpl.manager;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
@@ -31,10 +29,11 @@ import gov.healthit.chpl.questionableactivity.ListingQuestionableActivityProvide
 import gov.healthit.chpl.questionableactivity.ProductQuestionableActivityProvider;
 import gov.healthit.chpl.questionableactivity.VersionQuestionableActivityProvider;
 import gov.healthit.chpl.util.CertificationResultRules;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Service("questionableActivityManager")
 public class QuestionableActivityManager implements EnvironmentAware {
-    private static final Logger LOGGER = LogManager.getLogger(QuestionableActivityManager.class);
     private static final long MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
     private long listingActivityThresholdMillis = -1;
     private List<QuestionableActivityTriggerDTO> triggerTypes;
@@ -202,25 +201,10 @@ public class QuestionableActivityManager implements EnvironmentAware {
                 createListingActivity(activity, origListing.getId(), activityDate, activityUser,
                         QuestionableActivityTriggerConcept.TESTING_LAB_CHANGED, activityReason);
             }
-            activity = listingQuestionableActivityProvider.checkCriteriaB3WithoutIcsChangedOnEdit(origListing, newListing);
-            if (activity != null) {
-                createListingActivity(activity, origListing.getId(), activityDate, activityUser,
-                        QuestionableActivityTriggerConcept.CRITERIA_B3_ADDED_TO_EXISTING_LISTING_WITHOUT_ICS, activityReason);
-            }
             activity = listingQuestionableActivityProvider.checkCriteriaB3WithIcsChangedOnEdit(origListing, newListing);
             if (activity != null) {
                 createListingActivity(activity, origListing.getId(), activityDate, activityUser,
                         QuestionableActivityTriggerConcept.CRITERIA_B3_ADDED_TO_EXISTING_LISTING_WITH_ICS, activityReason);
-            }
-            activity = listingQuestionableActivityProvider.checkNonCuresAuditCriteriaOnEdit(origListing, newListing);
-            if (activity != null) {
-                createListingActivity(activity, origListing.getId(), activityDate, activityUser,
-                        QuestionableActivityTriggerConcept.NON_CURES_CRITERIA_ADDED_TO_EXISTING_LISTING, activityReason);
-            }
-            activity = listingQuestionableActivityProvider.checkNonCuresAuditCriteriaAndAddedIcsOnEdit(origListing, newListing);
-            if (activity != null) {
-                createListingActivity(activity, origListing.getId(), activityDate, activityUser,
-                        QuestionableActivityTriggerConcept.NON_CURES_CRITERIA_AND_ICS_ADDED_TO_EXISTING_LISTING, activityReason);
             }
 
             // finally check for other changes that are only questionable
@@ -280,22 +264,6 @@ public class QuestionableActivityManager implements EnvironmentAware {
                             activityReason);
                 }
             }
-        }
-    }
-
-    public void checkListingQuestionableActivityOnAdd(CertifiedProductSearchDetails newListing, Date activityDate,
-            Long activityUser) {
-
-        QuestionableActivityListingDTO activity = listingQuestionableActivityProvider.checkCriteriaB3SuccessOnCreate(newListing);
-        if (activity != null) {
-            createListingActivity(activity, newListing.getId(), activityDate, activityUser,
-                    QuestionableActivityTriggerConcept.CRITERIA_B3_ADDED_TO_NEW_LISTING, null);
-        }
-
-        activity = listingQuestionableActivityProvider.checkNonCuresAuditCriteriaOnCreate(newListing);
-        if (activity != null) {
-            createListingActivity(activity, newListing.getId(), activityDate, activityUser,
-                    QuestionableActivityTriggerConcept.NON_CURES_CRITERIA_ADDED_TO_NEW_LISTING, null);
         }
     }
 

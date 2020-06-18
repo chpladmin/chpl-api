@@ -84,9 +84,19 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
             List<CertifiedProductFlatSearchResult> listingsForReport = getListingsForReport();
             LOGGER.info(String.format("Found %s listings to process", listingsForReport.size()));
 
+            List<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
             for (CertifiedProductFlatSearchResult listing : listingsForReport) {
-                CompletableFuture.runAsync(() -> processListing(listing.getId()), executorService);
+                futures.add(CompletableFuture.runAsync(() -> processListing(listing.getId()), executorService));
             }
+
+            CompletableFuture<Void> combinedFutures = CompletableFuture
+                    .allOf(futures.toArray(new CompletableFuture[futures.size()]));
+
+            // This is not blocking - presumably because the job executes using it's own ExecutorService
+            // This is necessary so that the system can indicate that the job and it's threads are still running
+            combinedFutures.get();
+            LOGGER.info("All processes have completed");
+
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         } finally {
