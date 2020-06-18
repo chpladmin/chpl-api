@@ -1,4 +1,4 @@
-{
+[{
 	"key": "DR-4",
 	"startDate": 1589068800000,
 	"endDate": null,
@@ -32,11 +32,11 @@
 					"capApprovalDate": 1589241600000,
 					"capEndDate": null,
 					"capMustCompleteDate": 1590969600000,
-					"capStartDate": 1589414400000
-					"developerExplanation": null
+					"capStartDate": 1589414400000,
+					"developerExplanation": null,
 					"resolution": null
 				}
 			]
 		}
 	]
-}
+}]

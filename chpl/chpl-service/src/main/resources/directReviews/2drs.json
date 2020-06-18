@@ -1,11 +1,8 @@
 [{
-	"key": "DR-10",
+	"key": "DR-9",
 	"startDate": 1591228800000,
-	"endDate": null,
+	"endDate": 1591747200000,
 	"circumstances": [
-		{
-			"name": "Impediment to ONC-ACB"
-		},
 		{
 			"name": "Noncompliance to Conditions and Maintenance of Certification"
 		}
@@ -48,16 +45,16 @@
 					},
 					"dateOfDetermination": 1587081600000,
 					"status": {
-						"name": "Open"
+						"name": "Closed"
 					},
-					"summary": "A summary of this open nonconformity.",
-					"findings": "This is a detailed description of ONC's findings related to this open non-conformity.",
-					"capApprovalDate": 1587340800000,
-					"capEndDate": null,
-					"capMustCompleteDate": 1589932800000,
-					"capStartDate": 1587340800000,
-					"developerExplanation": null,
-					"resolution": null
+					"summary": "A summary of this closed nonconformity.",
+					"findings": "This is a detailed description of ONC's findings related to this closed non-conformity.",
+					"capApprovalDate": 1591401600000,
+					"capEndDate": 1591660800000,
+					"capMustCompleteDate": 1591660800000,
+					"capStartDate": 1591401600000,
+					"developerExplanation": "Developer-provided explanation.",
+					"resolution": "A detailed description of resolution."
 				}
 			]
 		},
@@ -88,6 +85,47 @@
 					"capStartDate": 1587340800000,
 					"developerExplanation": "Developer-provided explanation.",
 					"resolution": "A detailed description of resolution."
+				}
+			]
+		}
+	]
+},{
+	"key": "DR-10",
+	"startDate": 1589068800000,
+	"endDate": null,
+	"circumstances": [
+		{
+			"name": "Impediment to ONC-ACB"
+		}
+	],
+	"requirements": [
+		{
+			"type": {
+				"name": "170.405(b)(7)",
+				"description": "Real world testing Maintenance of Certification",
+				"type": "MoC",
+				"category": "Real world testing"
+			},
+			"nonconformities": [
+				{
+					"type": {
+						"name": "170.405(b)(7)",
+						"description": "Real world testing Maintenance of Certification",
+						"type": "MoC",
+						"category": "Real world testing"
+					},
+					"dateOfDetermination": 1589241600000,
+					"status": {
+						"name": "Open"
+					},
+					"summary": "A summary of this open nonconformity.",
+					"findings": "This is a detailed description of ONC's findings related to this open non-conformity.",
+					"capApprovalDate": 1589241600000,
+					"capEndDate": null,
+					"capMustCompleteDate": 1590969600000,
+					"capStartDate": 1589414400000,
+					"developerExplanation": null,
+					"resolution": null
 				}
 			]
 		}

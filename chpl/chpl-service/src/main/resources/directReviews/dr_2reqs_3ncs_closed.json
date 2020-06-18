@@ -1,4 +1,4 @@
-{
+[{
 	"key": "DR-5",
 	"startDate": 1591228800000,
 	"endDate": 1591747200000,
@@ -32,7 +32,7 @@
 					"capApprovalDate": 1587168000000,
 					"capEndDate": 1588204800000,
 					"capMustCompleteDate": 1588204800000,
-					"capStartDate": 1587340800000
+					"capStartDate": 1587340800000,
 					"developerExplanation": "Developer-provided explanation.",
 					"resolution": "A detailed description of resolution."
 				},
@@ -52,7 +52,7 @@
 					"capApprovalDate": 1591401600000,
 					"capEndDate": 1591660800000,
 					"capMustCompleteDate": 1591660800000,
-					"capStartDate": 1591401600000
+					"capStartDate": 1591401600000,
 					"developerExplanation": "Developer-provided explanation.",
 					"resolution": "A detailed description of resolution."
 				}
@@ -82,11 +82,11 @@
 					"capApprovalDate": 1587168000000,
 					"capEndDate": 1588204800000,
 					"capMustCompleteDate": 1588204800000,
-					"capStartDate": 1587340800000
+					"capStartDate": 1587340800000,
 					"developerExplanation": "Developer-provided explanation.",
 					"resolution": "A detailed description of resolution."
 				}
 			]
 		}
 	]
-}
+}]

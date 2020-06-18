@@ -1,92 +1,51 @@
 package gov.healthit.chpl.domain.compliance;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
-@JsonIgnoreProperties(ignoreUnknown = true)
+@Data
+@NoArgsConstructor
 public class DirectReview implements Serializable {
     private static final long serialVersionUID = 7018071377912371691L;
 
-    /**
-     * Direct Review JIRA internal key
-     */
-    @XmlElement(required = true)
+    @JsonProperty(value = "key")
     private String key;
 
-    /**
-     * Date direct review began
-     */
-    @XmlElement(required = true)
-    private Date startDate;
+    @JsonProperty(value = "chplProductNumber")
+    @JsonAlias("customfield_10213")
+    private String chplProductNumber;
 
-    /**
-     * Date direct review ended
-     */
-    @XmlElement(required = false, nillable = true)
-    private Date endDate;
+    @JsonProperty(value = "startDate")
+    @JsonAlias("customfield_10919")
+    @JsonDeserialize(using = DateDeserializer.class)
+    private LocalDate startDate;
 
-    /**
-     * Date the direct review was created.
-     */
-    @XmlElement(required = true)
-    private Date createdDate;
+    @JsonProperty(value = "endDate")
+    @JsonAlias("customfield_10920")
+    @JsonDeserialize(using = DateDeserializer.class)
+    private LocalDate endDate;
 
-    /**
-     * Date of the last modification of the direct review.
-     */
-    @XmlElement(required = true)
-    private Date lastModifiedDate;
+    @JsonProperty(value = "circumstances")
+    @JsonAlias("customfield_10932")
+    @JsonDeserialize(using = CircumstancesDeserializer.class)
+    private List<String> circumstances = new ArrayList<String>();
 
-    public DirectReview() {
+    @JsonProperty(value = "lastUpdated")
+    @JsonAlias("updated")
+    @JsonDeserialize(using = TimestampDeserializer.class)
+    private Date lastUpdated;
 
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
-
-    public Date getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public Date getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
+    @JsonProperty(value = "created")
+    @JsonDeserialize(using = TimestampDeserializer.class)
+    private Date created;
 }

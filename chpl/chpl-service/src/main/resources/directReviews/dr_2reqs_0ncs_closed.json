@@ -1,4 +1,4 @@
-{
+[{
 	"key": "DR-6",
 	"startDate": 1588291200000,
 	"endDate": 1590883200000,
@@ -10,7 +10,7 @@
 	"requirements": [
 		{
 			"type": {
-				"name": "170.402(a)(3)"
+				"name": "170.402(a)(3)",
 				"description": "Assurances Condition of Certification",
 				"type": "CoC",
 				"category": "Assurances"
@@ -27,4 +27,4 @@
 			"nonconformities": []
 		}
 	]
-}
+}]

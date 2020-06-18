@@ -52,6 +52,7 @@ import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.PendingCertifiedProductMetadata;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
@@ -195,16 +196,51 @@ public class CertifiedProductController {
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductById(
-            @PathVariable("certifiedProductId") Long certifiedProductId,
-            @RequestParam(value = "includeDirectReviews", required = false, defaultValue = "false") Boolean includeDirectReviews)
-                    throws EntityRetrievalException {
+            @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
 
         CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetails(certifiedProductId);
         certifiedProduct = validateCertifiedProduct(certifiedProduct);
-        if (includeDirectReviews != null && includeDirectReviews.booleanValue()) {
-            directReviewService.populateDirectReviews(certifiedProduct);
-        }
         return certifiedProduct;
+    }
+
+    @ApiOperation(value = "Get all direct reviews for a specified certified product.")
+    @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/directReviews",
+    method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody ResponseEntity<List<DirectReview>> getDirectReviews(
+            @PathVariable("certifiedProductId") Long certifiedProductId) throws InvalidArgumentsException {
+        String chplProductNumber = chplProductNumberUtil.generate(certifiedProductId);
+        return new ResponseEntity<List<DirectReview>>(
+                directReviewService.getDirectReviews(chplProductNumber), HttpStatus.OK);
+    }
+
+    @SuppressWarnings({"checkstyle:parameternumber"})
+    @ApiOperation(value = "Get all direct reviews for a specified certified product.",
+    notes = "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
+            + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number.  A valid call "
+            + "to this service would look like "
+            + "/certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD/directReviews")
+    @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
+            + "{addlSoftwareCode}.{certDateCode}/directReviews",
+    method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody ResponseEntity<List<DirectReview>> getDirectReviews(
+            @PathVariable("year") String year,
+            @PathVariable("testingLab") String testingLab,
+            @PathVariable("certBody") String certBody,
+            @PathVariable("vendorCode") String vendorCode,
+            @PathVariable("productCode") String productCode,
+            @PathVariable("versionCode") String versionCode,
+            @PathVariable("icsCode") String icsCode,
+            @PathVariable("addlSoftwareCode") String addlSoftwareCode,
+            @PathVariable("certDateCode") String certDateCode) throws InvalidArgumentsException {
+        String chplProductNumber =
+                chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode,
+                        versionCode, icsCode, addlSoftwareCode, certDateCode);
+        return new ResponseEntity<List<DirectReview>>(
+                directReviewService.getDirectReviews(chplProductNumber), HttpStatus.OK);
     }
 
     /**
@@ -242,9 +278,7 @@ public class CertifiedProductController {
             @PathVariable("versionCode") String versionCode,
             @PathVariable("icsCode") String icsCode,
             @PathVariable("addlSoftwareCode") String addlSoftwareCode,
-            @PathVariable("certDateCode") String certDateCode,
-            @RequestParam(value = "includeDirectReviews", required = false, defaultValue = "false") Boolean includeDirectReviews)
-                    throws EntityRetrievalException  {
+            @PathVariable("certDateCode") String certDateCode) throws EntityRetrievalException  {
 
         String chplProductNumber =
                 chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode,
@@ -256,9 +290,6 @@ public class CertifiedProductController {
         Validator validator = validatorFactory.getValidator(certifiedProduct);
         if (validator != null) {
             validator.validate(certifiedProduct);
-        }
-        if (includeDirectReviews != null && includeDirectReviews.booleanValue()) {
-            directReviewService.populateDirectReviews(certifiedProduct);
         }
         return certifiedProduct;
     }
@@ -273,18 +304,13 @@ public class CertifiedProductController {
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumber2(
             @PathVariable("chplPrefix") String chplPrefix,
-            @PathVariable("identifier") String identifier,
-            @RequestParam(value = "includeDirectReviews", required = false, defaultValue = "false") Boolean includeDirectReviews)
-                    throws EntityRetrievalException {
+            @PathVariable("identifier") String identifier)throws EntityRetrievalException {
 
         String chplProductNumber = chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
 
         CertifiedProductSearchDetails certifiedProduct =
                 cpdManager.getCertifiedProductDetailsByChplProductNumber(chplProductNumber);
         certifiedProduct = validateCertifiedProduct(certifiedProduct);
-        if (includeDirectReviews != null && includeDirectReviews.booleanValue()) {
-            directReviewService.populateDirectReviews(certifiedProduct);
-        }
         return certifiedProduct;
     }
 

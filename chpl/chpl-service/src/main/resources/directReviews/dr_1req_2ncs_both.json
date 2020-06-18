@@ -1,4 +1,4 @@
-{
+[{
 	"key": "DR-2",
 	"startDate": 1586908800000,
 	"endDate": null,
@@ -35,7 +35,7 @@
 					"capApprovalDate": 1587168000000,
 					"capEndDate": 1588204800000,
 					"capMustCompleteDate": 1588204800000,
-					"capStartDate": 1587340800000
+					"capStartDate": 1587340800000,
 					"developerExplanation": "Developer-provided explanation.",
 					"resolution": "A detailed description of resolution."
 				},
@@ -55,11 +55,11 @@
 					"capApprovalDate": 1587340800000,
 					"capEndDate": null,
 					"capMustCompleteDate": 1589932800000,
-					"capStartDate": 1587340800000
+					"capStartDate": 1587340800000,
 					"developerExplanation": null,
 					"resolution": null
 				}
 			]
 		}
 	]
-}
+}]
