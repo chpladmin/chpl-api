@@ -53,7 +53,7 @@ import gov.healthit.chpl.util.AuthUtil;
 public class SchedulerManager extends SecuredManager {
 
     private static final String AUTHORITY_DELIMITER = ";";
-    private static final String DATA_DELIMITER = "\u263A";
+    public static final String DATA_DELIMITER = "\u263A";
     public static final String CHPL_JOBS_KEY = "chplJobs";
     public static final String SYSTEM_JOBS_KEY = "systemJobs";
 

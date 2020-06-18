@@ -27,6 +27,7 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.scheduler.InheritanceErrorsReportDAO;
 import gov.healthit.chpl.dto.scheduler.InheritanceErrorsReportDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.util.EmailBuilder;
 
 public class InheritanceErrorsReportEmailJob extends QuartzJob {
@@ -93,7 +94,9 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
         List<InheritanceErrorsReportDTO> allErrors = inheritanceErrorsReportDAO.findAll();
         List<InheritanceErrorsReportDTO> errors = new ArrayList<InheritanceErrorsReportDTO>();
         if (jobContext.getMergedJobDataMap().getBooleanValue("acbSpecific")) {
-            List<Long> acbIds = Arrays.asList(jobContext.getMergedJobDataMap().getString("acb").split("\u263A")).stream()
+            List<Long> acbIds =
+                    Arrays.asList(
+                            jobContext.getMergedJobDataMap().getString("acb").split(SchedulerManager.DATA_DELIMITER)).stream()
                     .map(acb -> Long.parseLong(acb))
                     .collect(Collectors.toList());
 
@@ -169,7 +172,8 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
 
     private String getAcbNamesAsCommaSeparatedList(JobExecutionContext jobContext) {
         if (Objects.nonNull(jobContext.getMergedJobDataMap().getString("acb"))) {
-            return Arrays.asList(jobContext.getMergedJobDataMap().getString("acb").split("\u263A")).stream()
+            return Arrays.asList(
+                    jobContext.getMergedJobDataMap().getString("acb").split(SchedulerManager.DATA_DELIMITER)).stream()
                     .map(acbId -> {
                         try {
                             return certificationBodyDAO.getById(Long.parseLong(acbId)).getName();

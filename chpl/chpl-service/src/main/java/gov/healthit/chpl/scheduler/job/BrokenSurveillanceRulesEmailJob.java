@@ -36,6 +36,7 @@ import gov.healthit.chpl.dao.scheduler.BrokenSurveillanceRulesDAO;
 import gov.healthit.chpl.domain.surveillance.SurveillanceOversightRule;
 import gov.healthit.chpl.dto.scheduler.BrokenSurveillanceRulesDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.util.EmailBuilder;
 
 public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
@@ -152,7 +153,8 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
             filteredErrors.addAll(allErrors);
         }
         if (jobContext.getMergedJobDataMap().getBooleanValue("acbSpecific")) {
-            List<Long> acbIds = Arrays.asList(jobContext.getMergedJobDataMap().getString("acb").split("\u263A")).stream()
+            List<Long> acbIds = Arrays.asList(
+                    jobContext.getMergedJobDataMap().getString("acb").split(SchedulerManager.DATA_DELIMITER)).stream()
                     .map(acb -> Long.parseLong(acb))
                     .collect(Collectors.toList());
 
@@ -359,7 +361,8 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
 
     private String getAcbNamesAsCommaSeparatedList(JobExecutionContext jobContext) {
         if (Objects.nonNull(jobContext.getMergedJobDataMap().getString("acb"))) {
-            return Arrays.asList(jobContext.getMergedJobDataMap().getString("acb").split("\u263A")).stream()
+            return Arrays.asList(
+                    jobContext.getMergedJobDataMap().getString("acb").split(SchedulerManager.DATA_DELIMITER)).stream()
                     .map(acbId -> {
                         try {
                             return certificationBodyDAO.getById(Long.parseLong(acbId)).getName();
