@@ -30,15 +30,13 @@ public class BrokenSurveillanceRulesDAO extends BaseDAOImpl{
 
     @Transactional
     public void deleteAll() {
-        List<BrokenSurveillanceRulesEntity> entities = this.findAllEntities();
-
-        for (BrokenSurveillanceRulesEntity entity : entities) {
-            if (!entity.getDeleted()) {
-                entity.setDeleted(true);
-                entityManager.merge(entity);
-                entityManager.flush();
-            }
-        }
+        findAllEntities().stream()
+        .filter(entity -> !entity.getDeleted())
+        .forEach(entity -> {
+            entity.setDeleted(true);
+            entityManager.merge(entity);
+        });
+        entityManager.flush();
     }
 
     @Transactional
