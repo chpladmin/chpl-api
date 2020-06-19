@@ -1,13 +1,17 @@
 package gov.healthit.chpl.service;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -18,11 +22,10 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil.ChplProductNumberParts;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import lombok.extern.log4j.Log4j2;
 
-@Component
-@Log4j2
+@Component("directReviewService")
 public class DirectReviewService {
+    private static final Logger LOGGER = LogManager.getLogger(DirectReviewService.class);
     private static final String EDITION_2014 = "14";
 
     private ObjectMapper mapper;
@@ -53,17 +56,32 @@ public class DirectReviewService {
         String jsonResult = "";
         //The actual code will replace what is below, which is just selecting a sample JSON file
         //to serialize and return.
-        File sampleFile = getSampleFile("jira-" + chplProductNumber + ".json");
-        if (sampleFile != null && sampleFile.exists()) {
-                jsonResult = readFileContents(sampleFile);
-        } else {
+
+        String dashedChplProductNumber = chplProductNumber.replaceAll("\\.", "-");
+        String sampleFileName = "jira-" + dashedChplProductNumber + ".json";
+        Resource resource = new ClassPathResource("directReviews/" + sampleFileName);
+        InputStream sampleJsonInputStream = null;
+        try {
+            sampleJsonInputStream = resource.getInputStream();
+            if (sampleJsonInputStream != null) {
+                jsonResult = IOUtils.toString(sampleJsonInputStream);
+            }
+        } catch (IOException ex) {
+            LOGGER.warn("Can't find resource " + sampleFileName);
+        }
+
+        if (StringUtils.isEmpty(jsonResult)) {
             LOGGER.info("Sample file cannot be found. Sending back empty direct review results.");
-            File noResultsSampleFile = getSampleFile("jira-no-results.json");
-            if (noResultsSampleFile != null && noResultsSampleFile.exists()) {
-                jsonResult = readFileContents(noResultsSampleFile);
-            } else {
-                LOGGER.fatal("jira-no-results.json could not be found on the classpath.");
-                return null;
+            String defaultSampleFile = "directReviews/jira-no-results.json";
+            resource = new ClassPathResource(defaultSampleFile);
+            InputStream noResultsInputStream = null;
+            try {
+                noResultsInputStream = resource.getInputStream();
+                if (noResultsInputStream != null) {
+                    jsonResult = IOUtils.toString(noResultsInputStream);
+                }
+            } catch (IOException ex) {
+                LOGGER.fatal("Can't find resource " + defaultSampleFile, ex);
             }
         }
 
@@ -94,23 +112,5 @@ public class DirectReviewService {
             }
         }
         return drs;
-    }
-
-    //
-    //TODO: all below methods will be thrown away once we connect to Jira
-    //
-
-    private File getSampleFile(String filename) {
-        return new File(getClass().getResource("directReviews" + File.separator + filename).getFile());
-    }
-
-    private String readFileContents(File file) {
-        String contents = "";
-        try {
-            contents = new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return contents;
     }
 }

@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
@@ -15,11 +16,9 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DirectReview implements Serializable {
     private static final long serialVersionUID = 7018071377912371691L;
-
-    @JsonProperty(value = "key")
-    private String key;
 
     @JsonProperty(value = "chplProductNumber")
     @JsonAlias("customfield_10213")
