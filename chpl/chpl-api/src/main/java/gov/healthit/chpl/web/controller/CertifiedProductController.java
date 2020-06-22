@@ -321,7 +321,7 @@ public class CertifiedProductController {
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumber2(
             @PathVariable("chplPrefix") String chplPrefix,
-            @PathVariable("identifier") String identifier)throws EntityRetrievalException {
+            @PathVariable("identifier") String identifier) throws EntityRetrievalException {
 
         String chplProductNumber = chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
 
