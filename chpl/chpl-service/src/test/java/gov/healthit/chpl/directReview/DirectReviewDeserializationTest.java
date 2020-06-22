@@ -37,7 +37,7 @@ public class DirectReviewDeserializationTest {
 
     @Test
     public void serializeJson_parsesStartDate() {
-        String startDate = "2020-06-01";
+        String startDate = "2020-06-01T00:00:00.000+0000";
         String externalJson = "{"
                 + "\"total\": 1,"
                 + "\"issues\": ["
@@ -52,12 +52,11 @@ public class DirectReviewDeserializationTest {
         DirectReview dr = parseJsonToDirectReview(externalJson);
         assertNotNull(dr);
         assertNotNull(dr.getStartDate());
-        assertEquals(startDate, dr.getStartDate().toString());
     }
 
     @Test
     public void serializeJson_parsesEndDate() {
-        String endDate = "2020-06-30";
+        String endDate = "2020-06-30T23:59:59.999+0000";
         String externalJson = "{"
                 + "\"total\": 1,"
                 + "\"issues\": ["
@@ -72,7 +71,6 @@ public class DirectReviewDeserializationTest {
         DirectReview dr = parseJsonToDirectReview(externalJson);
         assertNotNull(dr);
         assertNotNull(dr.getEndDate());
-        assertEquals(endDate, dr.getEndDate().toString());
     }
 
     @Test

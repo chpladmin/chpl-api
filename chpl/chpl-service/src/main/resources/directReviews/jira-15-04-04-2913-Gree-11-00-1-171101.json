@@ -205,7 +205,7 @@
                     "description": "",
                     "name": "Direct Review"
                 },
-                "customfield_10920": "2020-05-22",
+                "customfield_10920": "2020-05-22T23:59:59.999+0000",
                 "customfield_10403": null,
                 "customfield_10800": {
                     "self": "https://oncprojectracking.ahrqdev.org/support-jsd/rest/api/2/customFieldOption/10601",
@@ -242,7 +242,7 @@
                 "customfield_10916": null,
                 "customfield_10917": null,
                 "customfield_10918": null,
-                "customfield_10919": "2020-05-04"
+                "customfield_10919": "2020-05-04T00:00:00.000+0000"
             }
         }
     ]
