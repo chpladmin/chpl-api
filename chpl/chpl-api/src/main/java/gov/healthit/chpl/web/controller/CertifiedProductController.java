@@ -204,7 +204,7 @@ public class CertifiedProductController {
     }
 
     @ApiOperation(value = "Get all direct reviews for a specified certified product.")
-    @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/directReviews",
+    @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/direct-reviews",
     method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -222,7 +222,7 @@ public class CertifiedProductController {
             + "to this service would look like "
             + "/certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD/directReviews")
     @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
-            + "{addlSoftwareCode}.{certDateCode}/directReviews",
+            + "{addlSoftwareCode}.{certDateCode}/direct-reviews",
     method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
