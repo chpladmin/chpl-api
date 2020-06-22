@@ -69,3 +69,8 @@ $ mvn package
 ```sh
 $ cp chpl-service/target/chpl-service.war TOMCAT-INSTALLATION/webapps
 ```
+
+## Run E2E autoamtion tests on API
+1. npm install -g newman
+2. newman run e2e/acb-controller.postman_collection.json --env-var "url=ENVURL" --env-var "apiKey=YOURAPIKEY"
+
