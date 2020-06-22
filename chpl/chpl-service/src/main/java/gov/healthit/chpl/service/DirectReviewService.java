@@ -53,10 +53,10 @@ public class DirectReviewService {
 
         //Code to query jira goes here.
         //Example of how to query by CHPL ID: /search?jql=cf[10213]~15.04.04.2858.Tsys.06.01.1.191223
-        String jsonResult = "";
         //The actual code will replace what is below, which is just selecting a sample JSON file
         //to serialize and return.
 
+        String jsonResult = "";
         String dashedChplProductNumber = chplProductNumber.replaceAll("\\.", "-");
         String sampleFileName = "jira-" + dashedChplProductNumber + ".json";
         Resource resource = new ClassPathResource("directReviews/" + sampleFileName);
@@ -88,7 +88,6 @@ public class DirectReviewService {
         return convertFromJira(jsonResult);
     }
 
-    //TODO: modify this method to convert all Jira json into CHPL json
     private List<DirectReview> convertFromJira(String json) {
         List<DirectReview> drs = new ArrayList<DirectReview>();
         JsonNode root = null;
