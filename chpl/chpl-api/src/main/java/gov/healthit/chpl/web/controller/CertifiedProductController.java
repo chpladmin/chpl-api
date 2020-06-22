@@ -21,8 +21,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
@@ -42,6 +44,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchBasicDetails;
@@ -113,23 +116,8 @@ public class CertifiedProductController {
     private ChplProductNumberUtil chplProductNumberUtil;
     private DeveloperManager developerManager;
     private DirectReviewService directReviewService;
+    private FF4j ff4j;
 
-    /**
-     * Autowired constructor for dependency injection.
-     *
-     * @param uploadHandlerFactory
-     * @param cpdManager
-     * @param cpManager
-     * @param resourcePermissions
-     * @param pcpManager
-     * @param activityManager
-     * @param validatorFactory
-     * @param env
-     * @param msgUtil
-     * @param fileUtils
-     * @param chplProductNumberUtil
-     * @param developerManager
-     */
     @Autowired
     public CertifiedProductController(CertifiedProductUploadHandlerFactory uploadHandlerFactory,
             CertifiedProductDetailsManager cpdManager, CertifiedProductManager cpManager,
@@ -137,7 +125,7 @@ public class CertifiedProductController {
             ActivityManager activityManager, ListingValidatorFactory validatorFactory,
             Environment env, ErrorMessageUtil msgUtil, FileUtils fileUtils,
             ChplProductNumberUtil chplProductNumberUtil, DeveloperManager developerManager,
-            DirectReviewService directReviewService) {
+            DirectReviewService directReviewService, FF4j ff4j) {
         this.uploadHandlerFactory = uploadHandlerFactory;
         this.cpdManager = cpdManager;
         this.cpManager = cpManager;
@@ -151,6 +139,7 @@ public class CertifiedProductController {
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.developerManager = developerManager;
         this.directReviewService = directReviewService;
+        this.ff4j = ff4j;
     }
 
     /**
@@ -209,7 +198,11 @@ public class CertifiedProductController {
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody ResponseEntity<List<DirectReview>> getDirectReviews(
-            @PathVariable("certifiedProductId") Long certifiedProductId) throws InvalidArgumentsException {
+            @PathVariable("certifiedProductId") Long certifiedProductId) {
+        if (!ff4j.check(FeatureList.DIRECT_REVIEW)) {
+            throw new NotImplementedException();
+        }
+
         String chplProductNumber = chplProductNumberUtil.generate(certifiedProductId);
         return new ResponseEntity<List<DirectReview>>(
                 directReviewService.getDirectReviews(chplProductNumber), HttpStatus.OK);
@@ -235,10 +228,34 @@ public class CertifiedProductController {
             @PathVariable("versionCode") String versionCode,
             @PathVariable("icsCode") String icsCode,
             @PathVariable("addlSoftwareCode") String addlSoftwareCode,
-            @PathVariable("certDateCode") String certDateCode) throws InvalidArgumentsException {
+            @PathVariable("certDateCode") String certDateCode) {
+        if (!ff4j.check(FeatureList.DIRECT_REVIEW)) {
+            throw new NotImplementedException();
+        }
+
         String chplProductNumber =
                 chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode,
                         versionCode, icsCode, addlSoftwareCode, certDateCode);
+        return new ResponseEntity<List<DirectReview>>(
+                directReviewService.getDirectReviews(chplProductNumber), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Get all direct reviews for a specified certified product.",
+            notes = "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call "
+                    + "to this service would look like /certified_products/CHP-999999.")
+    @RequestMapping(value = "/{chplPrefix}-{identifier}/direct-reviews",
+    method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody ResponseEntity<List<DirectReview>> getDirectReviews(
+            @PathVariable("chplPrefix") String chplPrefix,
+            @PathVariable("identifier") String identifier)throws EntityRetrievalException {
+        if (!ff4j.check(FeatureList.DIRECT_REVIEW)) {
+            throw new NotImplementedException();
+        }
+
+        String chplProductNumber = chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
+
         return new ResponseEntity<List<DirectReview>>(
                 directReviewService.getDirectReviews(chplProductNumber), HttpStatus.OK);
     }
