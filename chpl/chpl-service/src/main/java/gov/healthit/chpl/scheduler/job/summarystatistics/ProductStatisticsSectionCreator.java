@@ -70,7 +70,7 @@ public class ProductStatisticsSectionCreator extends StatisticsSectionCreator {
             List<CertifiedBodyStatistics> productsWithoutCuresUpdatedListing = massager
                     .getStatistics(stats.getUniqueProductsCountWithoutCuresUpdatedListingsByAcb());
             section.append(buildSection(
-                    "Total # of Unique Products with 2015 Listings",
+                    "Total # of Unique Products with 2015 Listings (Regardless of Status)",
                     sumTotalListings(productsWithoutCuresUpdatedListing),
                     productsWithoutCuresUpdatedListing));
 
@@ -91,7 +91,7 @@ public class ProductStatisticsSectionCreator extends StatisticsSectionCreator {
             List<CertifiedBodyStatistics> productsWithCuresUpdatedListing = massager
                     .getStatistics(stats.getUniqueProductsCountWithCuresUpdatedListingsByAcb());
             section.append(buildSection(
-                    "Total # of Unique Products with 2015 Cures Update Listings",
+                    "Total # of Unique Products with 2015 Cures Update Listings (Regardless of Status)",
                     sumTotalListings(productsWithCuresUpdatedListing),
                     productsWithCuresUpdatedListing));
 
