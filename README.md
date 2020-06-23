@@ -70,7 +70,13 @@ $ mvn package
 $ cp chpl-service/target/chpl-service.war TOMCAT-INSTALLATION/webapps
 ```
 
-## Run E2E autoamtion tests on API
-1. npm install -g newman
-2. newman run e2e/acb-controller.postman_collection.json --env-var "url=ENVURL" --env-var "apiKey=YOURAPIKEY"
+# E2E automation tests
 
+API automation tests are run via newman, using yarn as an installation and execution system
+
+To set up:
+
+1. `yarn install` needs to be run once on any given system
+1. copy the `e2e/env/sample.postman_environment.json` file to various formats of `e2e/env/ENVIRONMENT.postman_environment.json` and change the url and apiKey values to be valid
+
+To run tests, use `yarn e2e:ENVIRONMENT`
