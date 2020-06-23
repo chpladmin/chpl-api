@@ -91,21 +91,21 @@ public class ProductStatisticsSectionCreator extends StatisticsSectionCreator {
             List<CertifiedBodyStatistics> productsWithCuresUpdatedListing = massager
                     .getStatistics(stats.getUniqueProductsCountWithCuresUpdatedListingsByAcb());
             section.append(buildSection(
-                    "Total # of Unique Products with 2015-Cures Update Listings",
+                    "Total # of Unique Products with 2015 Cures Update Listings",
                     sumTotalListings(productsWithCuresUpdatedListing),
                     productsWithCuresUpdatedListing));
 
             List<CertifiedBodyStatistics> productsWithCuresUpdatedActiveListing = massager
                     .getStatistics(stats.getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb());
             section.append(buildSection(
-                    "Total # of Unique Products with Active 2015-Cures Update Listings",
+                    "Total # of Unique Products with Active 2015 Cures Update Listings",
                     sumTotalListings(productsWithCuresUpdatedActiveListing),
                     productsWithCuresUpdatedActiveListing));
 
             List<CertifiedBodyStatistics> productsWithCuresUpdatedSuspendedListing = massager
                     .getStatistics(stats.getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb());
             section.append(buildSection(
-                    "Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015-Cures Update Listings",
+                    "Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015 Cures Update Listings",
                     sumTotalListings(productsWithCuresUpdatedSuspendedListing),
                     productsWithCuresUpdatedSuspendedListing));
         } else {

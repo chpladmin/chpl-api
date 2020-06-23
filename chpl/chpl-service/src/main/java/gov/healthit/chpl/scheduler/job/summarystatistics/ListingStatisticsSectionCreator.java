@@ -55,14 +55,14 @@ public class ListingStatisticsSectionCreator extends StatisticsSectionCreator {
             List<CertifiedBodyStatistics> activeListingCountWithCuresUpdatedByAcb = massager
                     .getStatistics(stats.getActiveListingCountWithCuresUpdatedByAcb());
             section.append(buildSection(
-                    "Total # of Active (Including Suspended by ONC/ONC-ACB 2015-Cures Update Listings)",
+                    "Total # of Active (Including Suspended by ONC/ONC-ACB 2015 Cures Update Listings)",
                     sumTotalListings(activeListingCountWithCuresUpdatedByAcb),
                     activeListingCountWithCuresUpdatedByAcb));
 
             List<CertifiedBodyStatistics> listingCountWithCuresUpdatedAndAltTestMethodsByAcb = massager
                     .getStatistics(stats.getListingCountWithCuresUpdatedAndAltTestMethodsByAcb());
             section.append(buildSection(
-                    "Total # of 2015-Cures Update Listings with Alternative Test Methods",
+                    "Total # of 2015 Cures Update Listings with Alternative Test Methods",
                     sumTotalListings(listingCountWithCuresUpdatedAndAltTestMethodsByAcb),
                     listingCountWithCuresUpdatedAndAltTestMethodsByAcb));
 
@@ -71,14 +71,14 @@ public class ListingStatisticsSectionCreator extends StatisticsSectionCreator {
 
             section.append(buildItem("Total # of 2015 Listings (Regardless of Status)",
                     stats.getAllListingsCountWithoutCuresUpdated()));
-            
+
             section.append(buildItem("Total # of 2015 Cures Updated Listings (Regardless of Status)",
                     stats.getAllListingsCountWithCuresUpdated()));
         } else {
             section.append(buildItem("Total # of 2015 Listings (Regardless of Status)", stats.getTotal2015Listings()));
         }
 
-        
+
         section.append(buildItem("Total # of 2014 Listings (Regardless of Status)", stats.getTotal2014Listings()));
         section.append(buildItem("Total # of 2011 Listings (Regardless of Status)", stats.getTotal2011Listings()));
 

@@ -111,13 +111,13 @@ public class EmailStatisticsCreator {
             //**********************
             // 2015 Cures Listings
             //**********************
-            // Total # of Developers with 2015-Cures Update Listings (Regardless of Status)
+            // Total # of Developers with 2015 Cures Update Listings (Regardless of Status)
             futures.add(CompletableFuture.supplyAsync(() -> getUniqueDevelopersCountFor2015ListingsByAcb(listingsAll2015, Edition2015Criteria.CURES), executorService)
                     .thenAccept(result -> stats.setUniqueDevelopersCountWithCuresUpdatedListingsByAcb(result)));
-            // Total # of Developers with Active 2015-Cures Update Listings
+            // Total # of Developers with Active 2015 Cures Update Listings
             futures.add(CompletableFuture.supplyAsync(() -> getUniqueDevelopersCountFor2015ActiveListingsByAcb(listingsAll2015, Edition2015Criteria.CURES), executorService)
                     .thenAccept(result -> stats.setUniqueDevelopersCountWithCuresUpdatedActiveListingsByAcb(result)));
-            // Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015-Cures Update Listings
+            // Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015 Cures Update Listings
             futures.add(CompletableFuture.supplyAsync(() -> getUniqueDevelopersCountFor2015SuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.CURES), executorService)
                     .thenAccept(result -> stats.setUniqueDevelopersCountWithCuresUpdatedSuspendedListingsByAcb(result)));
 
@@ -184,13 +184,13 @@ public class EmailStatisticsCreator {
             //**********************
             // 2015 Cures Listings
             //**********************
-            // Total # of Unique Products with 2015-Cures Update Listings
+            // Total # of Unique Products with 2015 Cures Update Listings
             futures.add(CompletableFuture.supplyAsync(() -> getUniqueProductsCountFor2015ListingsByAcb(listingsAll2015, Edition2015Criteria.CURES), executorService)
                     .thenAccept(result -> stats.setUniqueProductsCountWithCuresUpdatedListingsByAcb(result)));
-            // Total # of Unique Products with Active 2015-Cures Update Listings
+            // Total # of Unique Products with Active 2015 Cures Update Listings
             futures.add(CompletableFuture.supplyAsync(() -> getUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(listingsAll2015, Edition2015Criteria.CURES), executorService)
                     .thenAccept(result -> stats.setUniqueProductsCountWithCuresUpdatedActiveListingsByAcb(result)));
-            // Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015-Cures Update Listings
+            // Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015 Cures Update Listings
             futures.add(CompletableFuture.supplyAsync(() -> getUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(listingsAll2015, Edition2015Criteria.CURES), executorService)
                     .thenAccept(result -> stats.setUniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb(result)));
 
@@ -218,10 +218,10 @@ public class EmailStatisticsCreator {
             // Total # of 2015 Listings with Alternative Test Methods
             futures.add(CompletableFuture.supplyAsync(() -> getTotalListingsWithCertifiedBodyAndAlternativeTestMethods(), executorService)
                     .thenAccept(result -> stats.setTotalListingsWithCertifiedBodyAndAlternativeTestMethods(result)));
-            // Total # of Active (Including Suspended by ONC/ONC-ACB 2015-Cures Update Listings)
+            // Total # of Active (Including Suspended by ONC/ONC-ACB 2015 Cures Update Listings)
             futures.add(CompletableFuture.supplyAsync(() -> getActiveListingCountWithCuresUpdatedByAcb(listingsAll2015), executorService)
                     .thenAccept(result -> stats.setActiveListingCountWithCuresUpdatedByAcb(result)));
-            // Total # of 2015-Cures Update Listings with Alternative Test Methods
+            // Total # of 2015 Cures Update Listings with Alternative Test Methods
             futures.add(CompletableFuture.supplyAsync(() -> getListingCountFor2015AndAltTestMethodsByAcb(listingsAll2015), executorService)
                     .thenAccept(result -> stats.setListingCountWithCuresUpdatedAndAltTestMethodsByAcb(result)));
             // Total # of 2015 Listings and 2015 Cures Update listings(Regardless of Status)
