@@ -7,9 +7,6 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -18,23 +15,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.domain.compliance.DirectReview;
-import gov.healthit.chpl.util.ChplProductNumberUtil;
-import gov.healthit.chpl.util.ErrorMessageUtil;
+import lombok.extern.log4j.Log4j2;
 
 @Component("directReviewService")
+@Log4j2
 public class DirectReviewService {
-    private static final Logger LOGGER = LogManager.getLogger(DirectReviewService.class);
-    private static final String EDITION_2014 = "14";
-
     private ObjectMapper mapper;
-    private ErrorMessageUtil msgUtil;
-    private ChplProductNumberUtil chplNumberUtil;
 
-    @Autowired
-    public DirectReviewService(ChplProductNumberUtil chplNumberUtil, ErrorMessageUtil msgUtil) {
+    public DirectReviewService() {
         this.mapper = new ObjectMapper();
-        this.chplNumberUtil = chplNumberUtil;
-        this.msgUtil = msgUtil;
     }
 
     public List<DirectReview> getDirectReviews(String chplProductNumber) {
