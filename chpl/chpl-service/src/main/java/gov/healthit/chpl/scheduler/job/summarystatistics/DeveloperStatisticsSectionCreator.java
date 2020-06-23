@@ -92,21 +92,21 @@ public class DeveloperStatisticsSectionCreator extends StatisticsSectionCreator 
             List<CertifiedBodyStatistics> devsWithCuresUpdatedListing = massager
                     .getStatistics(stats.getUniqueDevelopersCountWithCuresUpdatedListingsByAcb());
             section.append(buildSection(
-                    "Total # of Developers with 2015-Cures Update Listings (Regardless of Status)",
+                    "Total # of Developers with 2015 Cures Update Listings (Regardless of Status)",
                     sumTotalDeveloperWithListings(devsWithCuresUpdatedListing),
                     devsWithCuresUpdatedListing));
 
             List<CertifiedBodyStatistics> devsWithCuresUpdatedActiveListing = massager
                     .getStatistics(stats.getUniqueDevelopersCountWithCuresUpdatedActiveListingsByAcb());
             section.append(buildSection(
-                    "Total # of Developers with Active 2015-Cures Update Listings",
+                    "Total # of Developers with Active 2015 Cures Update Listings",
                     sumTotalDeveloperWithListings(devsWithCuresUpdatedActiveListing),
                     devsWithCuresUpdatedActiveListing));
 
             List<CertifiedBodyStatistics> devsWithCuresUpdatedSuspendedListing = massager
                     .getStatistics(stats.getUniqueDevelopersCountWithCuresUpdatedSuspendedListingsByAcb());
             section.append(buildSection(
-                    "Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015-Cures Update Listings",
+                    "Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015 Cures Update Listings",
                     sumTotalDeveloperWithListings(devsWithCuresUpdatedSuspendedListing),
                     devsWithCuresUpdatedSuspendedListing));
         } else {

@@ -66,7 +66,7 @@ public class ListingStatisticsSectionCreator extends StatisticsSectionCreator {
                     sumTotalListings(listingCountWithCuresUpdatedAndAltTestMethodsByAcb),
                     listingCountWithCuresUpdatedAndAltTestMethodsByAcb));
 
-            section.append(buildItem("Total # of 2015 Listings and Cures Updated Listings (Regardless of Status)",
+            section.append(buildItem("Total # of 2015 Listings and Cures Update Listings (Regardless of Status)",
                     stats.getTotal2015Listings()));
 
             section.append(buildItem("Total # of 2015 Listings (Regardless of Status)",
