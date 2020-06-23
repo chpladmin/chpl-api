@@ -76,7 +76,7 @@ public class DeveloperStatisticsSectionCreator extends StatisticsSectionCreator 
                     devsWithoutCuresUpdatedListing));
 
             List<CertifiedBodyStatistics> devsWithoutCuresUpdatedActiveListing = massager
-                    .getStatistics(stats.getUniqueDevelopersCountWithCuresUpdatedActiveListingsByAcb());
+                    .getStatistics(stats.getUniqueDevelopersCountWithoutCuresUpdatedActiveListingsByAcb());
             section.append(buildSection(
                     "Total # of Developers with Active 2015 Listings",
                     sumTotalDeveloperWithListings(devsWithoutCuresUpdatedActiveListing),
