@@ -149,6 +149,54 @@ public class CertificationCriterionServiceTest {
         assertEquals(expectedResult, formattedResult);
     }
 
+    @Test
+    public void formatCriteriaNumber_WantToFormatForRemovedAndCriteriaIsRemoved_ResultStartsWithRemoved() {
+        criterion = CertificationCriterion.builder()
+                .number("170.315(a)(6)")
+                .removed(true)
+                .build();
+
+        String result = CertificationCriterionService.formatCriteriaNumber(criterion, true);
+
+        assertEquals(true, result.startsWith("Removed | "));
+    }
+
+    @Test
+    public void formatCriteriaNumber_WantToFormatForRemovedAndCriteriaIsNotRemoved_ResultDoesNotStartWithRemoved() {
+        criterion = CertificationCriterion.builder()
+                .number("170.315(a)(6)")
+                .removed(false)
+                .build();
+
+        String result = CertificationCriterionService.formatCriteriaNumber(criterion, true);
+
+        assertEquals(false, result.startsWith("Removed | "));
+    }
+
+    @Test
+    public void formatCriteriaNumber_DoNotWantToFormatForRemovedAndCriteriaIsRemoved_ResultDoesNotStartWithRemoved() {
+        criterion = CertificationCriterion.builder()
+                .number("170.315(a)(6)")
+                .removed(true)
+                .build();
+
+        String result = CertificationCriterionService.formatCriteriaNumber(criterion, false);
+
+        assertEquals(false, result.startsWith("Removed | "));
+    }
+
+    @Test
+    public void formatCriteriaNumber_DoNotWantToFormatForRemovedAndCriteriaIsNotRemoved_ResultDoesNotStartWithRemoved() {
+        criterion = CertificationCriterion.builder()
+                .number("170.315(a)(6)")
+                .removed(false)
+                .build();
+
+        String result = CertificationCriterionService.formatCriteriaNumber(criterion, false);
+
+        assertEquals(false, result.startsWith("Removed | "));
+    }
+
     private String sortOrderFromProperty() {
         return "170.302 (a),170.302 (b),170.302 (c),170.302 (d),170.302 (e),170.302 (f)(1),170.302 (f)(2),170.302 (f)(3),"
                 + "170.302 (g),170.302 (h),170.302 (i),170.302 (j),170.302 (k),170.302 (l),170.302 (m),170.302 (n),170.302 (o),"
