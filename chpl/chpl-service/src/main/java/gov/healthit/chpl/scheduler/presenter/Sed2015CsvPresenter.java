@@ -91,7 +91,7 @@ public class Sed2015CsvPresenter {
         for (TestTask testTask : listing.getSed().getTestTasks()) {
             if (testTask.getTestParticipants() == null || testTask.getTestParticipants().size() == 0) {
                 LOGGER.warn("No participants were found for listing " + listing.getChplProductNumber()
-                        + " test task ID " + testTask.getId());
+                + " test task ID " + testTask.getId());
             } else {
                 for (TestParticipant participant : testTask.getTestParticipants()) {
                     List<String> row = new ArrayList<String>();
@@ -104,7 +104,7 @@ public class Sed2015CsvPresenter {
                         if (assocCriteriaStr.length() > 0) {
                             assocCriteriaStr.append(";");
                         }
-                        assocCriteriaStr.append(criterionService.formatCriteriaNumber(criteria));
+                        assocCriteriaStr.append(CertificationCriterionService.formatCriteriaNumber(criteria, true));
                     }
                     row.add(assocCriteriaStr.toString());
                     row.add(testTask.getDescription());
