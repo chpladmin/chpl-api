@@ -28,7 +28,6 @@ import gov.healthit.chpl.dao.statistics.ListingStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.domain.concept.NonconformityStatusConcept;
-import gov.healthit.chpl.domain.statistics.CertifiedBodyAltTestStatistics;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import gov.healthit.chpl.domain.statistics.Statistics;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -212,17 +211,13 @@ public class EmailStatisticsCreator {
             // Total # of Active (Including Suspended by ONC/ONC-ACB 2015 Listings)
             futures.add(CompletableFuture.supplyAsync(() -> getTotalActive2015Listings(), executorService)
                     .thenAccept(result -> stats.setTotalActive2015Listings(result)));
-            //Total # of 2015 Listings with Alternative Test Methods
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalListingsWithAlternateTestMethods(), executorService)
-                    .thenAccept(result -> stats.setTotalListingsWithAlternativeTestMethods(result)));
-            // Total # of 2015 Listings with Alternative Test Methods
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalListingsWithCertifiedBodyAndAlternativeTestMethods(), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getListingCountFor2015AndAltTestMethodsByAcb(listingsAll2015), executorService)
                     .thenAccept(result -> stats.setTotalListingsWithCertifiedBodyAndAlternativeTestMethods(result)));
             // Total # of Active (Including Suspended by ONC/ONC-ACB 2015 Cures Update Listings)
             futures.add(CompletableFuture.supplyAsync(() -> getActiveListingCountWithCuresUpdatedByAcb(listingsAll2015), executorService)
                     .thenAccept(result -> stats.setActiveListingCountWithCuresUpdatedByAcb(result)));
             // Total # of 2015 Cures Update Listings with Alternative Test Methods
-            futures.add(CompletableFuture.supplyAsync(() -> getListingCountFor2015AndAltTestMethodsByAcb(listingsAll2015), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getListingCountFor2015CuresUpdateAndAltTestMethodsByAcb(listingsAll2015), executorService)
                     .thenAccept(result -> stats.setListingCountWithCuresUpdatedAndAltTestMethodsByAcb(result)));
             // Total # of 2015 Listings and 2015 Cures Update listings(Regardless of Status)
             futures.add(CompletableFuture.supplyAsync(() -> getTotal2015ListingsCount(listingsAll2015), executorService)
@@ -231,7 +226,7 @@ public class EmailStatisticsCreator {
             futures.add(CompletableFuture.supplyAsync(() -> getTotal2015ListingsCountWithoutCuresUpdated(listingsAll2015), executorService)
                     .thenAccept(result -> stats.setAllListingsCountWithoutCuresUpdated(result)));
             // Total # of 2015 Cures Updated Listings (Regardless of Status)
-            futures.add(CompletableFuture.supplyAsync(() -> getAllListingsCountWithCuresUpdated(listingsAll2015), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getAllListingsCountWithCuresUpdate(listingsAll2015), executorService)
                     .thenAccept(result -> stats.setAllListingsCountWithCuresUpdated(result)));
             // Total # of 2014 Listings (Regardless of Status)
             futures.add(CompletableFuture.supplyAsync(() -> getTotal2014Listings(), executorService)
@@ -379,15 +374,7 @@ public class EmailStatisticsCreator {
         activeStatuses.add(CertificationStatusType.Active.getName().toUpperCase());
         activeStatuses.add(CertificationStatusType.SuspendedByAcb.getName().toUpperCase());
         activeStatuses.add(CertificationStatusType.SuspendedByOnc.getName().toUpperCase());
-        return listingStatisticsDAO.getTotalListingsByEditionAndStatus(null, "2015", activeStatuses);
-    }
-
-    private Long getTotalListingsWithAlternateTestMethods() {
-        return listingStatisticsDAO.getTotalListingsWithAlternateTestMethods();
-    }
-
-    private List<CertifiedBodyAltTestStatistics> getTotalListingsWithCertifiedBodyAndAlternativeTestMethods() {
-        return listingStatisticsDAO.getTotalListingsWithCertifiedBodyAndAlternativeTestMethods();
+        return listingStatisticsDAO.getTotal2015ListingsByStatus(activeStatuses);
     }
 
     private List<CertifiedBodyStatistics> getTotalActiveListingsByCertifiedBody() {
@@ -688,9 +675,10 @@ public class EmailStatisticsCreator {
     private List<CertifiedBodyStatistics> getActiveListingCountWithCuresUpdatedByAcb(
             List<CertifiedProductDetailsDTO> certifiedProducts) {
         return certifiedProducts.stream()
-                .filter(cp -> cp.getCertificationStatusName().equals(CertificationStatusType.Active.getName())
+                .filter(cp -> (cp.getCertificationStatusName().equals(CertificationStatusType.Active.getName())
                         || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByAcb.getName())
                         || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByOnc.getName()))
+                        && cp.getCuresUpdate())
                 .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
                 .entrySet().stream()
                 .map(entry -> {
@@ -706,7 +694,25 @@ public class EmailStatisticsCreator {
     private List<CertifiedBodyStatistics> getListingCountFor2015AndAltTestMethodsByAcb(
             List<CertifiedProductDetailsDTO> certifiedProducts) {
         return certifiedProducts.stream()
-                .filter(cp -> doesListingHaveAlternativeTestMethod(cp.getId()))
+                .filter(cp -> doesListingHaveAlternativeTestMethod(cp.getId())
+                        && !cp.getCuresUpdate())
+                .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
+                .entrySet().stream()
+                .map(entry -> {
+                    CertifiedBodyStatistics stat = new CertifiedBodyStatistics();
+                    stat.setName(entry.getKey());
+                    stat.setTotalListings(entry.getValue().stream()
+                            .collect(Collectors.counting()));
+                    return stat;
+                })
+                .collect(Collectors.toList());
+    }
+
+    private List<CertifiedBodyStatistics> getListingCountFor2015CuresUpdateAndAltTestMethodsByAcb(
+            List<CertifiedProductDetailsDTO> certifiedProducts) {
+        return certifiedProducts.stream()
+                .filter(cp -> doesListingHaveAlternativeTestMethod(cp.getId())
+                        && cp.getCuresUpdate())
                 .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
                 .entrySet().stream()
                 .map(entry -> {
@@ -734,7 +740,7 @@ public class EmailStatisticsCreator {
                 .count();
     }
 
-    private Long getAllListingsCountWithCuresUpdated(List<CertifiedProductDetailsDTO> certifiedProducts) {
+    private Long getAllListingsCountWithCuresUpdate(List<CertifiedProductDetailsDTO> certifiedProducts) {
         return certifiedProducts.stream()
                 .filter(listing -> listing.getCertificationEditionId().equals(
                         CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId())

@@ -5,7 +5,6 @@ import java.util.List;
 import org.ff4j.FF4j;
 
 import gov.healthit.chpl.FeatureList;
-import gov.healthit.chpl.domain.statistics.CertifiedBodyAltTestStatistics;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import gov.healthit.chpl.domain.statistics.Statistics;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -38,18 +37,12 @@ public class ListingStatisticsSectionCreator extends StatisticsSectionCreator {
                 stats.getTotalActive2015Listings(),
                 massager.getStatisticsByEdition(stats.getTotalActiveListingsByCertifiedBody(), get2015EditionAsInteger())));
 
-        section.append(buildItem("Total # of 2015 Listings with Alternative Test Methods",
-                stats.getTotalListingsWithAlternativeTestMethods()));
-
-        section.append("<ul>");
-        for (CertifiedBodyAltTestStatistics cbStat : massager.getStatisticsWithAltTestMethods(stats)) {
-            section.append("<li>Certified by ")
-            .append(cbStat.getName())
-            .append(" - ")
-            .append(cbStat.getTotalListings())
-            .append("</li>");
-        }
-        section.append("</ul>");
+        List<CertifiedBodyStatistics> listingCountWith2015AndAltTestMethodsByAcb = massager
+                .getStatistics(stats.getTotalListingsWithCertifiedBodyAndAlternativeTestMethods());
+        section.append(buildSection(
+                "Total # of 2015 Listings with Alternative Test Methods",
+                sumTotalListings(listingCountWith2015AndAltTestMethodsByAcb),
+                listingCountWith2015AndAltTestMethodsByAcb));
 
         if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
             List<CertifiedBodyStatistics> activeListingCountWithCuresUpdatedByAcb = massager

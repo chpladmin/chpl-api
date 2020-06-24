@@ -5,9 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import gov.healthit.chpl.domain.statistics.CertifiedBodyAltTestStatistics;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
-import gov.healthit.chpl.domain.statistics.Statistics;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import lombok.Data;
 
@@ -79,41 +77,5 @@ public class StatisticsMassager {
         stat.setTotalListings(0L);
         stat.setYear(year);
         return stat;
-    }
-
-    public List<CertifiedBodyAltTestStatistics> getStatisticsWithAltTestMethods(Statistics stats) {
-        List<CertifiedBodyAltTestStatistics> acbStats = new ArrayList<CertifiedBodyAltTestStatistics>(
-                stats.getTotalListingsWithCertifiedBodyAndAlternativeTestMethods());
-
-        acbStats.addAll(getMissingAcbWithAltTestMethodsStats(acbStats));
-
-        return acbStats.stream()
-                .sorted(Comparator.comparing(CertifiedBodyAltTestStatistics::getName))
-                .collect(Collectors.toList());
-    }
-
-    private List<CertifiedBodyAltTestStatistics> getMissingAcbWithAltTestMethodsStats(
-            List<CertifiedBodyAltTestStatistics> statistics) {
-
-        return activeAcbs.stream()
-                .filter(acb -> !isAcbWithAltTestMethodsInStatistics(acb, statistics))
-                .map(acb -> getNewCertifiedBodyWithAltTestMethodsStatistic(acb.getName()))
-                .collect(Collectors.toList());
-    }
-
-    private CertifiedBodyAltTestStatistics getNewCertifiedBodyWithAltTestMethodsStatistic(String acbName) {
-        CertifiedBodyAltTestStatistics stat = new CertifiedBodyAltTestStatistics();
-        stat.setName(acbName);
-        stat.setTotalDevelopersWithListings(0L);
-        stat.setTotalListings(0L);
-        return stat;
-    }
-
-    private Boolean isAcbWithAltTestMethodsInStatistics(CertificationBodyDTO acb,
-            List<CertifiedBodyAltTestStatistics> stats) {
-        return stats.stream()
-                .filter(stat -> stat.getName().equals(acb.getName()))
-                .findAny()
-                .isPresent();
     }
 }

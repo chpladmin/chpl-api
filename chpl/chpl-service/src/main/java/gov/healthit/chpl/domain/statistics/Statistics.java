@@ -55,8 +55,7 @@ public class Statistics implements Serializable {
     private Long averageTimeToCloseSurveillance;
     private List<CertifiedBodyStatistics> totalOpenNonconformitiesByAcb;
     private Long totalClosedNonconformities;
-    private Long totalListingsWithAlternativeTestMethods;
-    private List<CertifiedBodyAltTestStatistics> totalListingsWithCertifiedBodyAndAlternativeTestMethods;
+    private List<CertifiedBodyStatistics> totalListingsWithCertifiedBodyAndAlternativeTestMethods;
 
     private List<CertifiedBodyStatistics> uniqueDevelopersCountWithoutCuresUpdatedListingsByAcb;
     private List<CertifiedBodyStatistics> uniqueDevelopersCountWithoutCuresUpdatedActiveListingsByAcb;
