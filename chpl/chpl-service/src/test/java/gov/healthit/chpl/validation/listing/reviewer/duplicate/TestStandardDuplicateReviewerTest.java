@@ -57,6 +57,58 @@ public class TestStandardDuplicateReviewerTest {
     }
 
     @Test
+    public void review_duplicateNameExists_differentIds_warningFoundAndDuplicateRemoved() {
+        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
+
+        CertificationResult cert = getCertResult();
+
+        CertificationResultTestStandard testStandard1 = new CertificationResultTestStandard();
+        testStandard1.setTestStandardId(1L);
+        testStandard1.setTestStandardName("TestStandard1");
+
+        CertificationResultTestStandard testStandard2 = new CertificationResultTestStandard();
+        testStandard2.setTestStandardId(2L);
+        testStandard2.setTestStandardName("TestStandard1");
+
+        cert.getTestStandards().add(testStandard1);
+        cert.getTestStandards().add(testStandard2);
+
+        reviewer.review(listing, cert);
+
+        assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(1, listing.getWarningMessages().stream()
+                .filter(warning -> warning.equals(String.format(ERR_MSG, CRITERION_NUMBER, "TestStandard1")))
+                .count());
+        assertEquals(1, cert.getTestStandards().size());
+    }
+
+    @Test
+    public void review_duplicateNameExists_nullIds_warningFoundAndDuplicateRemoved() {
+        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
+
+        CertificationResult cert = getCertResult();
+
+        CertificationResultTestStandard testStandard1 = new CertificationResultTestStandard();
+        testStandard1.setTestStandardId(null);
+        testStandard1.setTestStandardName("TestStandard1");
+
+        CertificationResultTestStandard testStandard2 = new CertificationResultTestStandard();
+        testStandard2.setTestStandardId(null);
+        testStandard2.setTestStandardName("TestStandard1");
+
+        cert.getTestStandards().add(testStandard1);
+        cert.getTestStandards().add(testStandard2);
+
+        reviewer.review(listing, cert);
+
+        assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(1, listing.getWarningMessages().stream()
+                .filter(warning -> warning.equals(String.format(ERR_MSG, CRITERION_NUMBER, "TestStandard1")))
+                .count());
+        assertEquals(1, cert.getTestStandards().size());
+    }
+
+    @Test
     public void review_noDuplicates_noWarning() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         CertificationResult cert = getCertResult();
