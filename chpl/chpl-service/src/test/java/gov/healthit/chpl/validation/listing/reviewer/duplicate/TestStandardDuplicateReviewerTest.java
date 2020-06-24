@@ -12,6 +12,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.TestStandardDuplicateReviewer;
 
 public class TestStandardDuplicateReviewerTest {
     private static final String CRITERION_NUMBER = "170.315 (a)(1)";
@@ -57,7 +58,7 @@ public class TestStandardDuplicateReviewerTest {
     }
 
     @Test
-    public void review_duplicateNameExists_differentIds_warningFoundAndDuplicateRemoved() {
+    public void review_duplicateNameExistsWithDifferentIds_warningFoundAndDuplicateRemoved() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
 
         CertificationResult cert = getCertResult();
@@ -83,7 +84,7 @@ public class TestStandardDuplicateReviewerTest {
     }
 
     @Test
-    public void review_duplicateNameExists_nullIds_warningFoundAndDuplicateRemoved() {
+    public void review_duplicateNameExistsWithNullIds_warningFoundAndDuplicateRemoved() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
 
         CertificationResult cert = getCertResult();
