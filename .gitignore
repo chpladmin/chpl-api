@@ -275,3 +275,4 @@ reset-qa.sh
 reset-local.sh
 ready-for-integration.sh
 e2e/env/*.postman_environment.json
+newman/
