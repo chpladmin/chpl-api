@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version 25.7.1
+_25 June 2020_
+
+### Bug Fixes
+* Update removeCriteriaJob parameters
+
+---
+
 ## Version 25.7.0
 _24 June 2020_
 
