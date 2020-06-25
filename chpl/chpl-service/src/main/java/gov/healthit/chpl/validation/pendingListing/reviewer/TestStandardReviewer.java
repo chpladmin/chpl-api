@@ -1,6 +1,7 @@
 package gov.healthit.chpl.validation.pendingListing.reviewer;
 
-import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,29 +28,33 @@ public class TestStandardReviewer implements Reviewer {
 
     @Override
     public void review(PendingCertifiedProductDTO listing) {
-        for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
-            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria().equals(Boolean.TRUE)) {
-                if (cert.getTestStandards() != null && cert.getTestStandards().size() > 0) {
-                    Iterator<PendingCertificationResultTestStandardDTO> testStandardIter = cert.getTestStandards().iterator();
-                    while (testStandardIter.hasNext()) {
-                        PendingCertificationResultTestStandardDTO testStandard = testStandardIter.next();
-                        if (StringUtils.isEmpty(testStandard.getName())) {
-                            listing.getErrorMessages().add(
-                                    msgUtil.getMessage("listing.criteria.missingTestStandardName",
-                                    Util.formatCriteriaNumber(cert.getCriterion())));
-                        } else {
-                            TestStandardDTO foundTestStandard =
-                                    testStandardDao.getByNumberAndEdition(testStandard.getName(), listing.getCertificationEditionId());
-                            if (foundTestStandard == null) {
-                                listing.getWarningMessages().add(
-                                        msgUtil.getMessage("listing.criteria.testStandardNotFound",
-                                        Util.formatCriteriaNumber(cert.getCriterion()),
-                                        testStandard.getName(),
-                                        listing.getCertificationEdition()));
-                            }
-                        }
-                    }
-                }
+        List<PendingCertificationResultDTO> attestedCriteriaWithTestStandards =
+                listing.getCertificationCriterion().stream()
+                    .filter(cert -> (cert.getMeetsCriteria() != null && cert.getMeetsCriteria().equals(Boolean.TRUE)))
+                    .filter(cert -> (cert.getTestStandards() != null && cert.getTestStandards().size() > 0))
+                    .collect(Collectors.<PendingCertificationResultDTO>toList());
+
+        for (PendingCertificationResultDTO criterion : attestedCriteriaWithTestStandards) {
+            criterion.getTestStandards().stream()
+                .forEach(testStandard -> reviewTestStandard(listing, criterion, testStandard));
+        }
+    }
+
+    private void reviewTestStandard(PendingCertifiedProductDTO listing, PendingCertificationResultDTO certResult,
+            PendingCertificationResultTestStandardDTO testStandard) {
+        if (StringUtils.isEmpty(testStandard.getName())) {
+            listing.getErrorMessages().add(
+                    msgUtil.getMessage("listing.criteria.missingTestStandardName",
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
+        } else {
+            TestStandardDTO foundTestStandard =
+                    testStandardDao.getByNumberAndEdition(testStandard.getName(), listing.getCertificationEditionId());
+            if (foundTestStandard == null) {
+                listing.getWarningMessages().add(
+                        msgUtil.getMessage("listing.criteria.testStandardNotFound",
+                        Util.formatCriteriaNumber(certResult.getCriterion()),
+                        testStandard.getName(),
+                        listing.getCertificationEdition()));
             }
         }
     }
