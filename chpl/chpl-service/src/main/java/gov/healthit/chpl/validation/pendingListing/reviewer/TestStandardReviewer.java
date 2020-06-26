@@ -1,8 +1,5 @@
 package gov.healthit.chpl.validation.pendingListing.reviewer;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -28,16 +25,11 @@ public class TestStandardReviewer implements Reviewer {
 
     @Override
     public void review(PendingCertifiedProductDTO listing) {
-        List<PendingCertificationResultDTO> attestedCriteriaWithTestStandards =
-                listing.getCertificationCriterion().stream()
-                    .filter(cert -> (cert.getMeetsCriteria() != null && cert.getMeetsCriteria().equals(Boolean.TRUE)))
-                    .filter(cert -> (cert.getTestStandards() != null && cert.getTestStandards().size() > 0))
-                    .collect(Collectors.<PendingCertificationResultDTO>toList());
-
-        for (PendingCertificationResultDTO criterion : attestedCriteriaWithTestStandards) {
-            criterion.getTestStandards().stream()
-                .forEach(testStandard -> reviewTestStandard(listing, criterion, testStandard));
-        }
+        listing.getCertificationCriterion().stream()
+            .filter(cert -> (cert.getMeetsCriteria() != null && cert.getMeetsCriteria().equals(Boolean.TRUE)))
+            .filter(cert -> (cert.getTestStandards() != null && cert.getTestStandards().size() > 0))
+            .forEach(certResult -> certResult.getTestStandards().stream()
+                    .forEach(testStandard -> reviewTestStandard(listing, certResult, testStandard)));
     }
 
     private void reviewTestStandard(PendingCertifiedProductDTO listing, PendingCertificationResultDTO certResult,
