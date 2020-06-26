@@ -198,10 +198,8 @@ public class UserManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE_PASSWORD, #user)")
-    public void updateUserPassword(String userName, String password) throws UserRetrievalException {
-        String encodedPassword = encodePassword(password);
-        UserDTO userToUpdate = userDAO.getByName(userName);
-        userDAO.updatePassword(userToUpdate.getSubjectName(), encodedPassword);
+    public void updateUserPassword(UserDTO user, String password) throws UserRetrievalException {
+        updateUserPasswordUnsecured(user.getSubjectName(), password);
     }
 
     @Transactional
