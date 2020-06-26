@@ -32,10 +32,12 @@ public class ListingStatisticsSectionCreator extends StatisticsSectionCreator {
                 stats.getTotalActive2014Listings(),
                 massager.getStatisticsByEdition(stats.getTotalActiveListingsByCertifiedBody(), get2014EditionAsInteger())));
 
+        List<CertifiedBodyStatistics> activeListingCountFor2015ByAcb = massager
+                .getStatistics(stats.getActiveListingCountFor2015ByAcb());
         section.append(buildSection(
                 "Total # of Active (Including Suspended by ONC/ONC-ACB 2015 Listings)",
-                stats.getTotalActive2015Listings(),
-                massager.getStatisticsByEdition(stats.getTotalActiveListingsByCertifiedBody(), get2015EditionAsInteger())));
+                sumTotalListings(activeListingCountFor2015ByAcb),
+                activeListingCountFor2015ByAcb));
 
         List<CertifiedBodyStatistics> listingCountWith2015AndAltTestMethodsByAcb = massager
                 .getStatistics(stats.getTotalListingsWithCertifiedBodyAndAlternativeTestMethods());

@@ -33,7 +33,7 @@ public class Statistics implements Serializable {
     private Long totalCPsActiveListings;
     private Long totalListings;
     private Long totalActive2014Listings;
-    private Long totalActive2015Listings;
+    //private Long totalActive2015Listings;
     private List<CertifiedBodyStatistics> totalActiveListingsByCertifiedBody;
     private Long total2014Listings;
     private Long total2015Listings;
@@ -79,6 +79,7 @@ public class Statistics implements Serializable {
     private List<CertifiedBodyStatistics> uniqueProductsCountForAny2015SuspendedListingsByAcb;
 
     private List<CertifiedBodyStatistics> activeListingCountWithCuresUpdatedByAcb;
+    private List<CertifiedBodyStatistics> activeListingCountFor2015ByAcb;
     private List<CertifiedBodyStatistics> listingCountWithCuresUpdatedAndAltTestMethodsByAcb;
     private Long allListingsCountWithCuresUpdated;
     private Long allListingsCountWithoutCuresUpdated;

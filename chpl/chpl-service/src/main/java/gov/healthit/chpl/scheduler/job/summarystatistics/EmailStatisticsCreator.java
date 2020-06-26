@@ -209,8 +209,8 @@ public class EmailStatisticsCreator {
             futures.add(CompletableFuture.supplyAsync(() -> getTotalActiveListingsByCertifiedBody(), executorService)
                     .thenAccept(result -> stats.setTotalActiveListingsByCertifiedBody(result)));
             // Total # of Active (Including Suspended by ONC/ONC-ACB 2015 Listings)
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalActive2015Listings(), executorService)
-                    .thenAccept(result -> stats.setTotalActive2015Listings(result)));
+            futures.add(CompletableFuture.supplyAsync(() -> getActiveListingCountFor2015ByAcb(listingsAll2015), executorService)
+                    .thenAccept(result -> stats.setActiveListingCountFor2015ByAcb(result)));
             futures.add(CompletableFuture.supplyAsync(() -> getListingCountFor2015AndAltTestMethodsByAcb(listingsAll2015), executorService)
                     .thenAccept(result -> stats.setTotalListingsWithCertifiedBodyAndAlternativeTestMethods(result)));
             // Total # of Active (Including Suspended by ONC/ONC-ACB 2015 Cures Update Listings)
@@ -603,6 +603,7 @@ public class EmailStatisticsCreator {
             List<CertifiedProductDetailsDTO> certifiedProducts, Edition2015Criteria listingsToInclude) {
         return certifiedProducts.stream()
                 .filter(cp -> includeListing(cp, listingsToInclude)
+                        && !cp.getCuresUpdate()
                         && (cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByAcb.getName())
                                 || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByOnc.getName())))
                 .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
@@ -679,6 +680,25 @@ public class EmailStatisticsCreator {
                         || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByAcb.getName())
                         || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByOnc.getName()))
                         && cp.getCuresUpdate())
+                .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
+                .entrySet().stream()
+                .map(entry -> {
+                    CertifiedBodyStatistics stat = new CertifiedBodyStatistics();
+                    stat.setName(entry.getKey());
+                    stat.setTotalListings(entry.getValue().stream()
+                            .collect(Collectors.counting()));
+                    return stat;
+                })
+                .collect(Collectors.toList());
+    }
+
+    private List<CertifiedBodyStatistics> getActiveListingCountFor2015ByAcb(
+            List<CertifiedProductDetailsDTO> certifiedProducts) {
+        return certifiedProducts.stream()
+                .filter(cp -> (cp.getCertificationStatusName().equals(CertificationStatusType.Active.getName())
+                        || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByAcb.getName())
+                        || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByOnc.getName()))
+                        && !cp.getCuresUpdate())
                 .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
                 .entrySet().stream()
                 .map(entry -> {
