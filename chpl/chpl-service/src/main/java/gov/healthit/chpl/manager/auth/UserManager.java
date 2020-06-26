@@ -207,6 +207,8 @@ public class UserManager extends SecuredManager {
             throws UserRetrievalException {
         String encodedPassword = encodePassword(password);
         userDAO.updatePassword(userName, encodedPassword);
+        userDAO.updateFailedLoginCount(userName, 0);
+        userDAO.updateAccountLockedStatus(userName, false);
     }
 
     // no auth needed. create a random string and create a new reset token row
