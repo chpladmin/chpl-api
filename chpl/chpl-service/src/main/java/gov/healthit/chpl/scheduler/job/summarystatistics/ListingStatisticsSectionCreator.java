@@ -65,7 +65,7 @@ public class ListingStatisticsSectionCreator extends StatisticsSectionCreator {
             section.append(buildItem("Total # of 2015 Listings (Regardless of Status)",
                     stats.getAllListingsCountWithoutCuresUpdated()));
 
-            section.append(buildItem("Total # of 2015 Cures Updated Listings (Regardless of Status)",
+            section.append(buildItem("Total # of 2015 Cures Update Listings (Regardless of Status)",
                     stats.getAllListingsCountWithCuresUpdated()));
         } else {
             section.append(buildItem("Total # of 2015 Listings (Regardless of Status)", stats.getTotal2015Listings()));
