@@ -144,7 +144,7 @@ public class EmailBuilder {
                 multipart.addBodyPart(messageBodyPart);
             }
         }
-        message.setContent(multipart, "text/html");
+        message.setContent(multipart, "text/html; charset=UTF-8");
 
         return this;
     }
