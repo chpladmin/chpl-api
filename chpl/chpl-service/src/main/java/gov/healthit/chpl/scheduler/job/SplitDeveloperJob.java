@@ -2,7 +2,6 @@ package gov.healthit.chpl.scheduler.job;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +12,6 @@ import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.Job;
@@ -22,6 +20,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -107,7 +106,8 @@ public class SplitDeveloperJob implements Job {
 
             //send email about success/failure of job
             if (!StringUtils.isEmpty(user.getEmail())) {
-                String[] recipients = new String[] {user.getEmail()};
+                List<String> recipients = new ArrayList<String>();
+                recipients.add(user.getEmail());
                 try {
                     sendEmails(oldDeveloper, createdDeveloper != null ? createdDeveloper : newDeveloper,
                             productIdsToMove, splitException, recipients);
@@ -158,6 +158,10 @@ public class SplitDeveloperJob implements Job {
 
             // move the product to be owned by the new developer
             ProductDTO productToMove = productManager.getById(productIdToMove);
+            if (productToMove.getDeveloperId().longValue() != oldDeveloper.getId()) {
+                throw new AccessDeniedException("The product " + productToMove.getName()
+                    + " is not owned by " + oldDeveloper.getName());
+            }
             productToMove.setDeveloperId(createdDeveloper.getId());
             ProductOwnerDTO newOwner = new ProductOwnerDTO();
             newOwner.setProductId(productToMove.getId());
@@ -209,21 +213,22 @@ public class SplitDeveloperJob implements Job {
     }
 
     private void sendEmails(DeveloperDTO oldDeveloper, DeveloperDTO newDeveloper, List<Long> productIds,
-            Exception splitException, String[] recipients)
+            Exception splitException, List<String> recipients)
             throws IOException, AddressException, MessagingException {
 
-        List<String> emailAddresses = Arrays.asList(recipients);
         String subject = "Developer Split Complete";
         String htmlMessage = "";
         if (splitException == null) {
             htmlMessage = createHtmlEmailBodySuccess(oldDeveloper, newDeveloper, productIds);
         } else {
-            List<String> errorEmailRecipients = Arrays.asList(env.getProperty("splitDeveloperErrorEmailRecipients").split(","));
-            emailAddresses.addAll(errorEmailRecipients);
+            String[] errorEmailRecipients = env.getProperty("splitDeveloperErrorEmailRecipients").split(",");
+            for (int i = 0; i < errorEmailRecipients.length; i++) {
+                recipients.add(errorEmailRecipients[i].trim());
+            }
             htmlMessage = createHtmlEmailBodyFailure(oldDeveloper, newDeveloper, splitException);
         }
 
-        for (String emailAddress : emailAddresses) {
+        for (String emailAddress : recipients) {
             try {
                 sendEmail(emailAddress, subject, htmlMessage);
             } catch (Exception ex) {
@@ -277,14 +282,12 @@ public class SplitDeveloperJob implements Job {
             Exception ex) {
         String htmlMessage = String.format("<p>The Developer <a href=\"%s/#/organizations/developers/%d\">%s</a> could not "
                 + "be split into a new developer \"%s\".</p>"
-                + "<p>The error was: %s</p>"
-                + "<p>%s</p>",
+                + "<p>The error was: %s</p>",
                 env.getProperty("chplUrlBegin"), // root of URL
                 oldDeveloper.getId(),
                 oldDeveloper.getName(),
                 newDeveloper.getName(),
-                ex.getMessage(),
-                ExceptionUtils.getStackTrace(ex));
+                ex.getMessage());
         return htmlMessage;
     }
 }
