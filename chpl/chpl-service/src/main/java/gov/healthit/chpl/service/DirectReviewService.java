@@ -29,7 +29,8 @@ public class DirectReviewService {
     public List<DirectReview> getDirectReviews(String chplProductNumber) {
         LOGGER.info("Fetching direct review data for listing " + chplProductNumber);
         //Code to query jira goes here.
-        //Example of how to query by CHPL ID: /search?jql=cf[10213]~15.04.04.2858.Tsys.06.01.1.191223
+        //Example of how to query by CHPL ID: /search?jql=cf[10941]~1914
+        //where 1914 is the developer ID and cf[10941] is the custom field name for developer ID.
         //The actual code will replace what is below, which is just selecting a sample JSON file
         //to serialize and return.
 
@@ -49,7 +50,7 @@ public class DirectReviewService {
 
         if (StringUtils.isEmpty(jsonResult)) {
             LOGGER.info("Sample file cannot be found. Sending back empty direct review results.");
-            String defaultSampleFile = "directReviews/jira-no-results.json";
+            String defaultSampleFile = "directReviews/no-results.json";
             resource = new ClassPathResource(defaultSampleFile);
             InputStream noResultsInputStream = null;
             try {
