@@ -603,7 +603,6 @@ public class EmailStatisticsCreator {
             List<CertifiedProductDetailsDTO> certifiedProducts, Edition2015Criteria listingsToInclude) {
         return certifiedProducts.stream()
                 .filter(cp -> includeListing(cp, listingsToInclude)
-                        && !cp.getCuresUpdate()
                         && (cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByAcb.getName())
                                 || cp.getCertificationStatusName().equals(CertificationStatusType.SuspendedByOnc.getName())))
                 .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))

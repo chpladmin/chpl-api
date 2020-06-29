@@ -62,7 +62,7 @@ public class DeveloperStatisticsSectionCreator extends StatisticsSectionCreator 
                     devsForAll2015ActiveListing));
 
             List<CertifiedBodyStatistics> devsWithForAllSuspendedListing = massager
-                    .getStatistics(stats.getUniqueDevelopersCountWithCuresUpdatedSuspendedListingsByAcb());
+                    .getStatistics(stats.getUniqueDevelopersCountForAny2015SuspendedListingsByAcb());
             section.append(buildSection(
                     "Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015 Listings or 2015 Cures Update Listings",
                     sumTotalDeveloperWithListings(devsWithForAllSuspendedListing),
@@ -83,7 +83,7 @@ public class DeveloperStatisticsSectionCreator extends StatisticsSectionCreator 
                     devsWithoutCuresUpdatedActiveListing));
 
             List<CertifiedBodyStatistics> devsWithoutCuresUpdatedSuspendedListing = massager
-                    .getStatistics(stats.getUniqueDevelopersCountWithCuresUpdatedSuspendedListingsByAcb());
+                    .getStatistics(stats.getUniqueDevelopersCountWithoutCuresUpdatedSuspendedListingsByAcb());
             section.append(buildSection(
                     "Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015 Listings",
                     sumTotalDeveloperWithListings(devsWithoutCuresUpdatedSuspendedListing),
