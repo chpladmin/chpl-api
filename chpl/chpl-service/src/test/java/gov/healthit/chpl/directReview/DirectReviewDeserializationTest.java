@@ -16,28 +16,8 @@ import gov.healthit.chpl.domain.compliance.DirectReview;
 public class DirectReviewDeserializationTest {
 
     @Test
-    public void serializeJson_parsesChplNumber() {
-        String chplProductNumber = "15.04.04.2858.Tsys.06.01.1.191223";
-        String externalJson = "{"
-                + "\"total\": 1,"
-                + "\"issues\": ["
-                + "{ "
-                + "\"fields\": {"
-                + "\"key\": \"DR-12345\", "
-                + "\"customfield_10213\": \"" + chplProductNumber + "\" }"
-                + "}"
-                + "]"
-                + "}";
-
-        DirectReview dr = parseJsonToDirectReview(externalJson);
-        assertNotNull(dr);
-        assertNotNull(dr.getChplProductNumber());
-        assertEquals(chplProductNumber, dr.getChplProductNumber());
-    }
-
-    @Test
     public void serializeJson_parsesStartDate() {
-        String startDate = "2020-06-01T00:00:00.000+0000";
+        String startDate = "2020-06-01";
         String externalJson = "{"
                 + "\"total\": 1,"
                 + "\"issues\": ["
@@ -56,7 +36,7 @@ public class DirectReviewDeserializationTest {
 
     @Test
     public void serializeJson_parsesEndDate() {
-        String endDate = "2020-06-30T23:59:59.999+0000";
+        String endDate = "2020-06-30";
         String externalJson = "{"
                 + "\"total\": 1,"
                 + "\"issues\": ["

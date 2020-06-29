@@ -26,17 +26,14 @@ public class DirectReviewService {
         this.mapper = new ObjectMapper();
     }
 
-    public List<DirectReview> getDirectReviews(String chplProductNumber) {
-        LOGGER.info("Fetching direct review data for listing " + chplProductNumber);
+    public List<DirectReview> getDirectReviews(Long developerId) {
+        LOGGER.info("Fetching direct review data for developer " + developerId);
         //Code to query jira goes here.
-        //Example of how to query by CHPL ID: /search?jql=cf[10941]~1914
-        //where 1914 is the developer ID and cf[10941] is the custom field name for developer ID.
         //The actual code will replace what is below, which is just selecting a sample JSON file
         //to serialize and return.
 
         String jsonResult = "";
-        String dashedChplProductNumber = chplProductNumber.replaceAll("\\.", "-");
-        String sampleFileName = "jira-" + dashedChplProductNumber + ".json";
+        String sampleFileName = developerId + ".json";
         Resource resource = new ClassPathResource("directReviews/" + sampleFileName);
         InputStream sampleJsonInputStream = null;
         try {
