@@ -25,7 +25,7 @@
                 "customfield_10907": null,
                 "customfield_10908": null,
                 "customfield_10909": null,
-                "lastViewed": "2020-06-29T17:15:48.061+0000",
+                "lastViewed": "2020-06-30T12:24:48.314+0000",
                 "customfield_10100": null,
                 "priority": {
                     "self": "https://oncprojectracking.ahrqdev.org/support-jsd/rest/api/2/priority/3",
@@ -37,7 +37,7 @@
                 "customfield_10102": null,
                 "customfield_10103": null,
                 "labels": [],
-                "customfield_10214": "8.0\n",
+                "customfield_10214": "8.0",
                 "customfield_10610": null,
                 "customfield_10215": "Name: Acumen Physician Solutions \nWebsite: http://www.acumenmd.com \nSelf Developer: false \nAddress: 541 E. Charleston Rd #4, Palo Alto, CA, 94303 \nContact Info: Johanna Ferman, MD, johannaf@healthmetricssystems.com, 650-799-0008 \n",
                 "customfield_10216": "||Criterion Number||Description|| \n|170.315 (a)(1)|Computerized Provider Order Entry (CPOE) - Medications| \n|170.315 (a)(2)|CPOE - Laboratory| \n|170.315 (a)(3)|CPOE - Diagnostic Imaging| \n|170.315 (a)(4)|Drug-Drug, Drug-Allergy Interaction Checks for CPOE| \n|170.315 (a)(5)|Demographics| \n|170.315 (a)(6)|Problem List| \n|170.315 (a)(7)|Medication List| \n|170.315 (a)(8)|Medication Allergy List| \n|170.315 (a)(9)|Clinical Decision Support| \n|170.315 (a)(10)|Drug-Formulary and Preferred Drug List Checks| \n|170.315 (a)(11)|Smoking Status| \n|170.315 (a)(12)|Family Health History| \n|170.315 (a)(13)|Patient-Specific Education Resources| \n|170.315 (a)(14)|Implantable Device List| \n|170.315 (b)(1)|Transitions of Care| \n|170.315 (b)(2)|Clinical Information Reconciliation and Incorporation| \n|170.315 (b)(6)|Data Export| \n|170.315 (c)(1)|Clinical Quality Measures - Record and Export| \n|170.315 (c)(2)|Clinical Quality Measures - Import and Calculate| \n|170.315 (c)(3)|Clinical Quality Measures - Report| \n|170.315 (d)(1)|Authentication, Access Control, Authorization| \n|170.315 (d)(2)|Auditable Events and Tamper-Resistance| \n|170.315 (d)(3)|Audit Report(s)| \n|170.315 (d)(4)|Amendments| \n|170.315 (d)(5)|Automatic Access Time-out| \n|170.315 (d)(6)|Emergency Access| \n|170.315 (d)(7)|End-User Device Encryption| \n|170.315 (d)(8)|Integrity| \n|170.315 (d)(9)|Trusted Connection| \n|170.315 (d)(10)|Auditing Actions on Health Information| \n|170.315 (e)(1)|View, Download, and Transmit to 3rd Party| \n|170.315 (e)(2)|Secure Messaging| \n|170.315 (e)(3)|Patient Health Information Capture| \n|170.315 (f)(1)|Transmission to Immunization Registries| \n|170.315 (g)(2)|Automated Measure Calculation| \n|170.315 (g)(3)|Safety-Enhanced Design| \n|170.315 (g)(4)|Quality Management System| \n|170.315 (g)(5)|Accessibility-Centered Design| \n|170.315 (g)(6)|Consolidated CDA Creation| \n|170.315 (g)(7)|Application Access - Patient Selection| \n|170.315 (g)(8)|Application Access - Data Category Request| \n|170.315 (g)(9)|Application Access - All Data Request| \n",
@@ -66,7 +66,7 @@
                 "components": [],
                 "customfield_10210": null,
                 "customfield_10211": null,
-                "customfield_10212": "Acumen EHR\n",
+                "customfield_10212": "Acumen EHR",
                 "customfield_10213": "15.04.04.1039.Acum.08.00.1.171231",
                 "customfield_10203": null,
                 "customfield_10204": null,
@@ -170,8 +170,10 @@
                 "customfield_10307": null,
                 "customfield_10945": null,
                 "customfield_10308": null,
+                "customfield_10946": "2020-06-01T12:24:00.000+0000",
                 "resolutiondate": null,
                 "customfield_10309": null,
+                "customfield_10947": "2020-06-25T20:24:00.000+0000",
                 "workratio": -1,
                 "watches": {
                     "self": "https://oncprojectracking.ahrqdev.org/support-jsd/rest/api/2/issue/R4SDR-101/watchers",
@@ -200,7 +202,7 @@
                 },
                 "customfield_10937": null,
                 "customfield_10938": null,
-                "updated": "2020-06-29T17:15:33.000+0000",
+                "updated": "2020-06-30T12:24:47.000+0000",
                 "timeoriginalestimate": null,
                 "description": null,
                 "customfield_10411": null,
@@ -211,7 +213,6 @@
                     "description": "",
                     "name": "Direct Review"
                 },
-                "customfield_10920": "2020-06-10",
                 "customfield_10403": null,
                 "customfield_10800": {
                     "self": "https://oncprojectracking.ahrqdev.org/support-jsd/rest/api/2/customFieldOption/10601",
@@ -247,8 +248,7 @@
                 "customfield_10915": null,
                 "customfield_10916": null,
                 "customfield_10917": null,
-                "customfield_10918": null,
-                "customfield_10919": "2020-05-20"
+                "customfield_10918": null
             }
         }
     ]

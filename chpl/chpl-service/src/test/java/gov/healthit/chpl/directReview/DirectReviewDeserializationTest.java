@@ -17,14 +17,14 @@ public class DirectReviewDeserializationTest {
 
     @Test
     public void serializeJson_parsesStartDate() {
-        String startDate = "2020-06-01";
+        String startDate = "2020-06-01T00:00:00.000+0000";
         String externalJson = "{"
                 + "\"total\": 1,"
                 + "\"issues\": ["
                 + "{ "
                 + "\"fields\": {"
                 + "\"key\": \"DR-12345\", "
-                + "\"customfield_10919\": \"" + startDate + "\" }"
+                + "\"customfield_10946\": \"" + startDate + "\" }"
                 + "}"
                 + "]"
                 + "}";
@@ -36,14 +36,14 @@ public class DirectReviewDeserializationTest {
 
     @Test
     public void serializeJson_parsesEndDate() {
-        String endDate = "2020-06-30";
+        String endDate = "2020-06-30T12:24:00.000+0000";
         String externalJson = "{"
                 + "\"total\": 1,"
                 + "\"issues\": ["
                 + "{ "
                 + "\"fields\": {"
                 + "\"key\": \"DR-12345\", "
-                + "\"customfield_10920\": \"" + endDate + "\" }"
+                + "\"customfield_10947\": \"" + endDate + "\" }"
                 + "}"
                 + "]"
                 + "}";

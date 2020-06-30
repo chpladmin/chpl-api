@@ -1,7 +1,6 @@
 package gov.healthit.chpl.domain.compliance;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -21,14 +20,14 @@ public class DirectReview implements Serializable {
     private static final long serialVersionUID = 7018071377912371691L;
 
     @JsonProperty(value = "startDate")
-    @JsonAlias("customfield_10919")
-    @JsonDeserialize(using = DateDeserializer.class)
-    private LocalDate startDate;
+    @JsonAlias("customfield_10946")
+    @JsonDeserialize(using = TimestampDeserializer.class)
+    private Date startDate;
 
     @JsonProperty(value = "endDate")
-    @JsonAlias("customfield_10920")
-    @JsonDeserialize(using = DateDeserializer.class)
-    private LocalDate endDate;
+    @JsonAlias("customfield_10947")
+    @JsonDeserialize(using = TimestampDeserializer.class)
+    private Date endDate;
 
     @JsonProperty(value = "circumstances")
     @JsonAlias("customfield_10932")
