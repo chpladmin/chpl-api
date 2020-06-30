@@ -3,10 +3,10 @@
   "license": "SEE LICENSE IN LICENSE",
   "repository": "chpladmin/chpl-api",
   "scripts": {
-    "e2e:local": "newman run e2e/acb-controller.postman_collection.json -e e2e/env/local.postman_environment.json -r junit,cli",
-    "e2e:DEV": "newman run e2e/acb-controller.postman_collection.json -e e2e/env/DEV.postman_environment.json -r junit,cli",
-    "e2e:QA": "newman run e2e/acb-controller.postman_collection.json -e e2e/env/QA.postman_environment.json -r junit,cli",
-    "e2e:STG": "newman run e2e/acb-controller.postman_collection.json -e e2e/env/STG.postman_environment.json -r junit,cli"
+    "e2e:local": "newman run chpl/chpl-api/e2e/collections/acb-controller.postman_collection.json -e chpl/chpl-api/e2e/env/local.postman_environment.json -r junit,cli",
+    "e2e:DEV": "newman run chpl/chpl-api/e2e/collections/acb-controller.postman_collection.json -e chpl/chpl-api/e2e/env/DEV.postman_environment.json -r junit,cli",
+    "e2e:QA": "newman run chpl/chpl-api/e2e/collections/acb-controller.postman_collection.json -e chpl/chpl-api/e2e/env/QA.postman_environment.json -r junit,cli",
+    "e2e:STG": "newman run chpl/chpl-api/e2e/collections/acb-controller.postman_collection.json -e chpl/chpl-api/e2e/env/STG.postman_environment.json -r junit,cli"
   },
   "devDependencies": {
     "newman": "^5.1.0"
