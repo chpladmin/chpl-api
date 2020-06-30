@@ -216,7 +216,7 @@ public class SplitDeveloperJob implements Job {
             Exception splitException, List<String> recipients)
             throws IOException, AddressException, MessagingException {
 
-        String subject = "Developer Split Complete";
+        String subject = getSubject(splitException == null);
         String htmlMessage = "";
         if (splitException == null) {
             htmlMessage = createHtmlEmailBodySuccess(oldDeveloper, newDeveloper, productIds);
@@ -247,6 +247,14 @@ public class SplitDeveloperJob implements Job {
                 .subject(subject)
                 .htmlMessage(htmlMessage)
                 .sendEmail();
+    }
+
+    private String getSubject(boolean success) {
+        if (success) {
+            return env.getProperty("splitDeveloper.success.emailSubject");
+        } else {
+            return env.getProperty("splitDeveloper.failed.emailSubject");
+        }
     }
 
     private String createHtmlEmailBodySuccess(DeveloperDTO oldDeveloper, DeveloperDTO createdDeveloper,
