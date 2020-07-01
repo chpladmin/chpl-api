@@ -49,7 +49,7 @@ public class ProductStatisticsSectionCreator extends StatisticsSectionCreator {
             List<CertifiedBodyStatistics> productsForAny2015Listing = massager
                     .getStatistics(stats.getUniqueProductsCountForAny2015ListingsByAcb());
             section.append(buildSection(
-                    "Total # of Unique Products with 2015 Listings or 2015 Cures Update Listings",
+                    "Total # of Unique Products with 2015 Listings or 2015 Cures Update Listings (Regardless of Status)",
                     sumTotalListings(productsForAny2015Listing),
                     productsForAny2015Listing));
 
