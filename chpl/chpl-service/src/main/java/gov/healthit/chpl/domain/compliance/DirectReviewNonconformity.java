@@ -33,6 +33,11 @@ public class DirectReviewNonconformity implements Serializable {
     @JsonDeserialize(using = SimpleValueDeserializer.class)
     private String nonconformityType;
 
+    @JsonProperty(value = "dateOfDetermination")
+    @JsonAlias("customfield_10921")
+    @JsonDeserialize(using = DateDeserializer.class)
+    private LocalDate dateOfDetermination;
+
     @JsonProperty(value = "nonconformityStatus")
     @JsonAlias("customfield_10935")
     @JsonDeserialize(using = SimpleValueDeserializer.class)

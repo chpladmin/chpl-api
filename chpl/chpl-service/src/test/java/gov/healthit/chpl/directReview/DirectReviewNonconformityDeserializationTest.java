@@ -86,6 +86,26 @@ public class DirectReviewNonconformityDeserializationTest {
     }
 
     @Test
+    public void deserializeJson_parsesDateOfDetermination() {
+        String dateOfDetermination = "2020-06-24";
+        String json = "{"
+                + "\"total\": 1,"
+                + "\"issues\": ["
+                + "{ "
+                + "\"key\": \"DR-12345\", "
+                + "\"fields\": {"
+                + "\"customfield_10921\": \"" + dateOfDetermination + "\""
+                + "}"
+                + "}"
+                + "]"
+                + "}";
+
+        DirectReviewNonconformity nc = parseJsonToNonconformity(json);
+        assertNotNull(nc);
+        assertNotNull(nc.getDateOfDetermination());
+    }
+
+    @Test
     public void deserializeJson_parsesNonconformityStatus() {
         String nonconformityStatus = "Closed";
         String json = "{"
