@@ -21,6 +21,9 @@ import lombok.extern.log4j.Log4j2;
 @Component("directReviewService")
 @Log4j2
 public class DirectReviewService {
+    private static final String JIRA_KEY_FIELD = "key";
+    private static final String JIRA_ISSUES_FIELD = "issues";
+    private static final String JIRA_FIELDS_FIELD = "fields";
     private ObjectMapper mapper;
 
     public DirectReviewService() {
@@ -121,12 +124,12 @@ public class DirectReviewService {
             LOGGER.error("Could not convert " + json + " to JsonNode object.", ex);
         }
         if (root != null) {
-            JsonNode issuesNode = root.get("issues");
+            JsonNode issuesNode = root.get(JIRA_ISSUES_FIELD);
             if (issuesNode.isArray() && issuesNode.size() > 0) {
                 for (JsonNode issueNode : issuesNode) {
                     try {
-                        String jiraKey = issueNode.get("key").textValue();
-                        JsonNode fields = issueNode.get("fields");
+                        String jiraKey = issueNode.get(JIRA_KEY_FIELD).textValue();
+                        JsonNode fields = issueNode.get(JIRA_FIELDS_FIELD);
                         DirectReview dr = mapper.readValue(fields.toString(), DirectReview.class);
                         dr.setJiraKey(jiraKey);
                         drs.add(dr);
@@ -148,11 +151,11 @@ public class DirectReviewService {
             LOGGER.error("Could not convert " + json + " to JsonNode object.", ex);
         }
         if (root != null) {
-            JsonNode issuesNode = root.get("issues");
+            JsonNode issuesNode = root.get(JIRA_ISSUES_FIELD);
             if (issuesNode.isArray() && issuesNode.size() > 0) {
                 for (JsonNode issueNode : issuesNode) {
                     try {
-                        String fieldsJson = issueNode.get("fields").toString();
+                        String fieldsJson = issueNode.get(JIRA_FIELDS_FIELD).toString();
                         DirectReviewNonconformity nc = mapper.readValue(fieldsJson, DirectReviewNonconformity.class);
                         ncs.add(nc);
                     } catch (IOException ex) {
