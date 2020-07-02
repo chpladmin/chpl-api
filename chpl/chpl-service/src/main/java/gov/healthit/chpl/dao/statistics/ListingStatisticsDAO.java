@@ -66,6 +66,18 @@ public class ListingStatisticsDAO extends BaseDAOImpl {
         return (long) query.getResultList().size();
     }
 
+    public Long getTotalUniqueProducts(List<String> statuses) {
+        String hql = "SELECT DISTINCT productId,  developerId "
+                + "FROM CertifiedProductDetailsEntity "
+                + "WHERE UPPER(certificationStatusName) IN (:statuses) "
+                + "AND  deleted = false ";
+
+        Query query = entityManager.createQuery(hql);
+        query.setParameter("statuses", statuses);
+        return (long) query.getResultList().size();
+    }
+
+
     public List<CertifiedBodyStatistics> getTotalCPListingsEachYearByCertifiedBody(final DateRange dateRange) {
         String sql = "SELECT t.certification_body_name, t.year, count(DISTINCT t.products) "
                 + "FROM( "

@@ -345,7 +345,9 @@ public class EmailStatisticsCreator {
     }
 
     private Long getTotalCPs2014Listings() {
-        return listingStatisticsDAO.getTotalUniqueProductsByEditionAndStatus(null, "2014", null);
+        List<String> activeStatuses = new ArrayList<String>();
+        activeStatuses.add(CertificationStatusType.Active.getName().toUpperCase());
+        return listingStatisticsDAO.getTotalUniqueProductsByEditionAndStatus(null, "2014", activeStatuses);
     }
 
     private Long getTotalCPsSuspended2014Listings() {
@@ -358,7 +360,7 @@ public class EmailStatisticsCreator {
     private Long getTotalCPsActiveListings() {
         List<String> activeStatuses = new ArrayList<String>();
         activeStatuses.add(CertificationStatusType.Active.getName().toUpperCase());
-        return listingStatisticsDAO.getTotalUniqueProductsByEditionAndStatus(null, null, activeStatuses);
+        return listingStatisticsDAO.getTotalUniqueProducts(activeStatuses);
     }
 
     private Long getTotalActive2014Listings() {
@@ -382,7 +384,7 @@ public class EmailStatisticsCreator {
     }
 
     private Long getTotal2014Listings() {
-        return listingStatisticsDAO.getTotalListingsByEditionAndStatus(null, "2014", null);
+        return listingStatisticsDAO.getTotalUniqueProductsByEditionAndStatus(null, "2014", null);
     }
 
     private Long getTotalSurveillanceActivities() {
