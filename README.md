@@ -69,3 +69,16 @@ $ mvn package
 ```sh
 $ cp chpl-service/target/chpl-service.war TOMCAT-INSTALLATION/webapps
 ```
+
+# E2E automation tests
+
+API automation tests are run via newman, using yarn as an installation and execution system
+
+To set up:
+
+1. `yarn install` needs to be run once on any given system
+1. copy the `e2e/env/sample.postman_environment.json` file to various formats of `e2e/env/environment.postman_environment.json` and change the url and apiKey values to be valid
+
+To run tests, use `yarn e2e:environment`
+
+NOTE: environment is case sensitive to the script in package.json file. so make sure to have environments file saved as in lowercase as well as yarn commands will be run with lowercase environments

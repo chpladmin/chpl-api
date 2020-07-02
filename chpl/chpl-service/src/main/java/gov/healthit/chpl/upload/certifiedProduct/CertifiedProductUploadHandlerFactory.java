@@ -20,7 +20,7 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
-public final class CertifiedProductUploadHandlerFactory {
+public class CertifiedProductUploadHandlerFactory {
     private UploadTemplateVersionDAO templateVersionDao;
     private CertifiedProductHandler2014Version1 handler2014Version1;
     private CertifiedProductHandler2014Version2 handler2014Version2;
@@ -33,7 +33,7 @@ public final class CertifiedProductUploadHandlerFactory {
 
     @Autowired
     public CertifiedProductUploadHandlerFactory(
-            final UploadTemplateVersionDAO templateVersionDao,
+            UploadTemplateVersionDAO templateVersionDao,
             @Qualifier("certifiedProductHandler2014Version1") CertifiedProductHandler2014Version1 handler2014Version1,
             @Qualifier("certifiedProductHandler2014Version2") CertifiedProductHandler2014Version2 handler2014Version2,
             @Qualifier("certifiedProductHandler2015Version1") CertifiedProductHandler2015Version1 handler2015Version1,
@@ -53,6 +53,10 @@ public final class CertifiedProductUploadHandlerFactory {
         this.msgUtil = msgUtil;
     }
 
+    public CertifiedProductUploadHandler getHandler(CSVRecord heading) throws InvalidArgumentsException {
+        return getHandler(heading, null);
+    }
+
     /**
      * Find the appropriate class to handle parsing this CSV file.
      * @param heading the heading parsed from the CSV file
@@ -60,7 +64,7 @@ public final class CertifiedProductUploadHandlerFactory {
      * @return the handler or an exception if none is found
      * @throws InvalidArgumentsException if no matching parser is found
      */
-    public CertifiedProductUploadHandler getHandler(final CSVRecord heading, final List<CSVRecord> cpRecords)
+    public CertifiedProductUploadHandler getHandler(CSVRecord heading, List<CSVRecord> cpRecords)
             throws InvalidArgumentsException {
         if (heading == null) {
             String msg = msgUtil.getMessage("listing.upload.badHeader", "null");
