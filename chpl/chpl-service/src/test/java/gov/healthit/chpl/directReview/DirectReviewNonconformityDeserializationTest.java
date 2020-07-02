@@ -40,6 +40,28 @@ public class DirectReviewNonconformityDeserializationTest {
     }
 
     @Test
+    public void deserializeJson_parsesDeveloperAssociatedListings() {
+        String dalValue = "15.02.02.3007.A056.01.00.0.180214";
+        String json = "{"
+                + "\"total\": 1,"
+                + "\"issues\": ["
+                + "{ "
+                + "\"key\": \"DR-12345\", "
+                + "\"fields\": {"
+                + "\"customfield_10943\": [\"" + dalValue + "\"] "
+                + "}"
+                + "}"
+                + "]"
+                + "}";
+
+        DirectReviewNonconformity nc = parseJsonToNonconformity(json);
+        assertNotNull(nc);
+        assertNotNull(nc.getDeveloperAssociatedListings());
+        assertEquals(1, nc.getDeveloperAssociatedListings().size());
+        assertEquals(dalValue, nc.getDeveloperAssociatedListings().get(0));
+    }
+
+    @Test
     public void deserializeJson_parsesNonconformityType() {
         String nonconformityType = "170.406(b)(1)";
         String json = "{"
