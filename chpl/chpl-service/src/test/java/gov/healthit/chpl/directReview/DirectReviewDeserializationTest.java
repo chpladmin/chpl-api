@@ -16,52 +16,69 @@ import gov.healthit.chpl.domain.compliance.DirectReview;
 public class DirectReviewDeserializationTest {
 
     @Test
-    public void serializeJson_parsesStartDate() {
-        String startDate = "2020-06-01T00:00:00.000+0000";
-        String externalJson = "{"
+    public void deserializeJson_parsesKey() {
+        String key = "R4SDR-98";
+        String json = "{"
                 + "\"total\": 1,"
                 + "\"issues\": ["
                 + "{ "
-                + "\"fields\": {"
+                + "\"key\": \"" + key + "\", "
+                + "\"fields\": {}"
+                + "}"
+                + "]"
+                + "}";
+        DirectReview dr = parseJsonToDirectReview(json);
+        assertNotNull(dr);
+        assertNotNull(dr.getJiraKey());
+    }
+
+    @Test
+    public void deserializeJson_parsesStartDate() {
+        String startDate = "2020-06-01T00:00:00.000+0000";
+        String json = "{"
+                + "\"total\": 1,"
+                + "\"issues\": ["
+                + "{ "
                 + "\"key\": \"DR-12345\", "
+                + "\"fields\": {"
                 + "\"customfield_10946\": \"" + startDate + "\" }"
                 + "}"
                 + "]"
                 + "}";
 
-        DirectReview dr = parseJsonToDirectReview(externalJson);
+        DirectReview dr = parseJsonToDirectReview(json);
         assertNotNull(dr);
         assertNotNull(dr.getStartDate());
     }
 
     @Test
-    public void serializeJson_parsesEndDate() {
+    public void deserializeJson_parsesEndDate() {
         String endDate = "2020-06-30T12:24:00.000+0000";
-        String externalJson = "{"
+        String json = "{"
                 + "\"total\": 1,"
                 + "\"issues\": ["
                 + "{ "
-                + "\"fields\": {"
                 + "\"key\": \"DR-12345\", "
+                + "\"fields\": {"
                 + "\"customfield_10947\": \"" + endDate + "\" }"
                 + "}"
                 + "]"
                 + "}";
 
-        DirectReview dr = parseJsonToDirectReview(externalJson);
+        DirectReview dr = parseJsonToDirectReview(json);
         assertNotNull(dr);
         assertNotNull(dr.getEndDate());
     }
 
     @Test
-    public void serializeJson_parsesCircumstances() {
+    public void deserializeJson_parsesCircumstances() {
         String circumstanceName = "Noncompliance to Conditions and Maintenance of Certification";
-        String externalJson = "{"
+        String json = "{"
                 + "\"total\": 1,"
                 + "\"issues\": ["
                 + "{ "
-                + "\"fields\": {"
                 + "\"key\": \"DR-12345\", "
+                + "\"fields\": {"
                 + "\"customfield_10932\": [{"
                 + "  \"self\": \"https://oncprojectracking.ahrqdev.org/support-jsd/rest/api/2/customFieldOption/10718\","
                 + "  \"value\": \"" + circumstanceName + "\","
@@ -72,7 +89,7 @@ public class DirectReviewDeserializationTest {
                 + "]"
                 + "}";
 
-        DirectReview dr = parseJsonToDirectReview(externalJson);
+        DirectReview dr = parseJsonToDirectReview(json);
         assertNotNull(dr);
         assertNotNull(dr.getCircumstances());
         assertEquals(1, dr.getCircumstances().size());
@@ -80,39 +97,39 @@ public class DirectReviewDeserializationTest {
     }
 
     @Test
-    public void serializeJson_parsesLastUpdatedDate() {
+    public void deserializeJson_parsesLastUpdatedDate() {
         String lastUpdatedDate = "2020-06-18T13:08:51.000+0000";
-        String externalJson = "{"
+        String json = "{"
                 + "\"total\": 1,"
                 + "\"issues\": ["
                 + "{ "
-                + "\"fields\": {"
                 + "\"key\": \"DR-12345\", "
+                + "\"fields\": {"
                 + "\"updated\": \"" + lastUpdatedDate + "\" }"
                 + "}"
                 + "]"
                 + "}";
 
-        DirectReview dr = parseJsonToDirectReview(externalJson);
+        DirectReview dr = parseJsonToDirectReview(json);
         assertNotNull(dr);
         assertNotNull(dr.getLastUpdated());
     }
 
     @Test
-    public void serializeJson_parsesCreatedDate() {
+    public void deserializeJson_parsesCreatedDate() {
         String createdDate = "2020-06-18T13:08:51.000+0000";
-        String externalJson = "{"
+        String json = "{"
                 + "\"total\": 1,"
                 + "\"issues\": ["
                 + "{ "
-                + "\"fields\": {"
                 + "\"key\": \"DR-12345\", "
+                + "\"fields\": {"
                 + "\"created\": \"" + createdDate + "\" }"
                 + "}"
                 + "]"
                 + "}";
 
-        DirectReview dr = parseJsonToDirectReview(externalJson);
+        DirectReview dr = parseJsonToDirectReview(json);
         assertNotNull(dr);
         assertNotNull(dr.getCreated());
     }
@@ -132,8 +149,10 @@ public class DirectReviewDeserializationTest {
             assertEquals(1, issuesNode.size());
             for (JsonNode issueNode : issuesNode) {
                 try {
-                    String fields = issueNode.get("fields").toString();
-                    dr = mapper.readValue(fields, DirectReview.class);
+                    String jiraKey = issueNode.get("key").textValue();
+                    JsonNode fields = issueNode.get("fields");
+                    dr = mapper.readValue(fields.toString(), DirectReview.class);
+                    dr.setJiraKey(jiraKey);
                 } catch (IOException ex) {
                     ex.printStackTrace();
                     fail("Cannot map issue JSON to DirectReview class");

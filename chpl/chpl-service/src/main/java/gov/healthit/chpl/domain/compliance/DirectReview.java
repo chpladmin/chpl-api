@@ -42,4 +42,8 @@ public class DirectReview implements Serializable {
     @JsonProperty(value = "created")
     @JsonDeserialize(using = TimestampDeserializer.class)
     private Date created;
+
+    private String jiraKey;
+
+    private List<DirectReviewNonconformity> nonconformities = new ArrayList<DirectReviewNonconformity>();
 }

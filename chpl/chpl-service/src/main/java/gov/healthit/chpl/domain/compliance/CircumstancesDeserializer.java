@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 public class CircumstancesDeserializer extends StdDeserializer<List<String>> {
     private static final long serialVersionUID = 1551090128532873867L;
+    private static final String FIELD_NAME = "value";
 
     public CircumstancesDeserializer() {
         this(null);
@@ -28,9 +29,9 @@ public class CircumstancesDeserializer extends StdDeserializer<List<String>> {
         JsonNode circumstancesNode = jsonParser.getCodec().readTree(jsonParser);
         if (circumstancesNode != null && circumstancesNode.isArray() && circumstancesNode.size() > 0) {
             for (JsonNode circumstanceObj : circumstancesNode) {
-                JsonNode circumstanceValue = circumstanceObj.get("value");
-                if (circumstanceValue != null) {
-                    circumstanceValues.add(circumstanceValue.textValue());
+                JsonNode circumstanceField = circumstanceObj.get(FIELD_NAME);
+                if (circumstanceField != null) {
+                    circumstanceValues.add(circumstanceField.textValue());
                 }
             }
         }
