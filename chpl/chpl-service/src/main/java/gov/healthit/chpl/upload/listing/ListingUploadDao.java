@@ -1,4 +1,4 @@
-package upload.listing;
+package gov.healthit.chpl.upload.listing;
 
 import org.springframework.stereotype.Repository;
 

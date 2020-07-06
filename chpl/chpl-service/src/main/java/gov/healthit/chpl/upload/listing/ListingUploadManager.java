@@ -1,4 +1,4 @@
-package upload.listing;
+package gov.healthit.chpl.upload.listing;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -46,7 +46,7 @@ public class ListingUploadManager {
             throw new ValidationException("No records with allowed heading values were found in the file.");
         }
 
-        int currIndex = headingIndex+1;
+        int currIndex = headingIndex + 1;
         while (currIndex < allCsvRecords.size()) {
             List<CSVRecord> singleListingCsvRecords = getNextListingRecords(allCsvRecords, currIndex);
             currIndex += singleListingCsvRecords.size();
@@ -74,7 +74,6 @@ public class ListingUploadManager {
         Iterator<CSVRecord> remainingRecords = allCsvRecords.stream().skip(startIndex).iterator();
         while (remainingRecords.hasNext()) {
             CSVRecord record = remainingRecords.next();
-            //TODO: call handler getUniqueId, getStatus methods
             String recordUniqueId = listingUploadHandler.parseChplProductNumber(heading, record);
             String recordStatus = listingUploadHandler.parseStatus(heading, record);
             if (!StringUtils.isEmpty(recordUniqueId)) {
