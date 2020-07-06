@@ -8,6 +8,7 @@ public final class CacheNames {
     public static final String ALL_DEVELOPERS = "allDevelopers";
     public static final String ALL_DEVELOPERS_INCLUDING_DELETED = "allDevelopersIncludingDeleted";
     public static final String JOB_TYPES = "jobTypes";
+    public static final String EDITIONS = "editions";
     public static final String EDITION_NAMES = "editionNames";
     public static final String CERTIFICATION_STATUSES = "certificationStatuses";
     public static final String PRACTICE_TYPE_NAMES = "practiceTypeNames";
@@ -15,6 +16,7 @@ public final class CacheNames {
     public static final String PRODUCT_NAMES = "productNames";
     public static final String DEVELOPER_NAMES = "developerNames";
     public static final String MACRA_MEASURES = "macrameasures";
+    public static final String CQM_CRITERION = "cqmCriterion";
     public static final String CQM_CRITERION_NUMBERS = "cqmCriterionNumbers";
     public static final String CERTIFICATION_CRITERION_NUMBERS = "certificationCriterionNumbers";
     public static final String CERTIFICATION_CRITERION_WITH_EDITIONS = "certificationCriterionWithEditions";

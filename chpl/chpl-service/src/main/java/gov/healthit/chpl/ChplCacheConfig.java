@@ -4,7 +4,6 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
-import org.springframework.context.annotation.AdviceMode;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -46,8 +45,10 @@ public class ChplCacheConfig {
         backingManager.addCacheIfAbsent(createCache(CacheNames.CLASSIFICATION_NAMES));
         backingManager.addCacheIfAbsent(createCache(CacheNames.COLLECTIONS_DEVELOPERS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.COLLECTIONS_LISTINGS));
+        backingManager.addCacheIfAbsent(createCache(CacheNames.CQM_CRITERION));
         backingManager.addCacheIfAbsent(createCache(CacheNames.CQM_CRITERION_NUMBERS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.DEVELOPER_NAMES));
+        backingManager.addCacheIfAbsent(createCache(CacheNames.EDITIONS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.EDITION_NAMES));
         backingManager.addCacheIfAbsent(createCache(CacheNames.FIND_SURVEILLANCE_NONCONFORMITY_STATUS_TYPE));
         backingManager.addCacheIfAbsent(createCache(CacheNames.FIND_SURVEILLANCE_REQ_TYPE));

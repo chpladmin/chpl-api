@@ -1,11 +1,10 @@
 package gov.healthit.chpl.manager;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -14,8 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.AgeRangeDAO;
+import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
+import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
@@ -33,8 +34,10 @@ import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.dao.UploadTemplateVersionDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.dao.surveillance.report.QuarterDAO;
+import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.DimensionalData;
@@ -56,8 +59,10 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AgeRangeDTO;
+import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
+import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
@@ -75,57 +80,71 @@ import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
 import gov.healthit.chpl.dto.job.JobTypeDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Service("dimensionalDataManager")
 public class DimensionalDataManager {
-    private static final Logger LOGGER = LogManager.getLogger(DimensionalDataManager.class);
-
-    @Autowired
     private PrecacheableDimensionalDataManager precache;
-
-    @Autowired
-    private CertificationBodyDAO certificationBodyDAO;
-
-    @Autowired
+    private CertificationBodyDAO certificationBodyDao;
     private CertificationCriterionDAO certificationCriterionDao;
-
-    @Autowired
     private EducationTypeDAO educationTypeDao;
-    @Autowired
     private AgeRangeDAO ageRangeDao;
-    @Autowired
     private TestFunctionalityDAO testFuncDao;
-    @Autowired
     private TestStandardDAO testStandardDao;
-    @Autowired
-    private TestToolDAO testToolsDao;
-    @Autowired private TestProcedureDAO testProcedureDao;
-    @Autowired private TestDataDAO testDataDao;
+    private TestToolDAO testToolDao;
+    private TestProcedureDAO testProcedureDao;
+    private TestDataDAO testDataDao;
+    private AccessibilityStandardDAO asDao;
+    private UcdProcessDAO ucdDao;
+    private QmsStandardDAO qmsDao;
+    private TargetedUserDAO tuDao;
+    private DeveloperStatusDAO devStatusDao;
+    private SurveillanceDAO survDao;
+    private UploadTemplateVersionDAO uploadTemplateDao;
+    private QuarterDAO quarterDao;
+    private ProductDAO productDao;
+    private DeveloperDAO devDao;
+    private JobDAO jobDao;
+    private MacraMeasureDAO macraDao;
+    private CQMCriterionDAO cqmCriterionDao;
+    private CertificationEditionDAO certEditionDao;
 
     @Autowired
-    private AccessibilityStandardDAO asDao;
-    @Autowired
-    private UcdProcessDAO ucdDao;
-    @Autowired
-    private QmsStandardDAO qmsDao;
-    @Autowired
-    private TargetedUserDAO tuDao;
-    @Autowired
-    private DeveloperStatusDAO devStatusDao;
-    @Autowired
-    private SurveillanceDAO survDao;
-    @Autowired
-    private UploadTemplateVersionDAO uploadTemplateDao;
-    @Autowired
-    private QuarterDAO quarterDao;
-    @Autowired
-    private ProductDAO productDao;
-    @Autowired
-    private DeveloperDAO devDao;
-    @Autowired
-    private JobDAO jobDao;
-    @Autowired
-    private MacraMeasureDAO macraDao;
+    public DimensionalDataManager(PrecacheableDimensionalDataManager precache,
+            CertificationBodyDAO certificationBodyDao, CertificationCriterionDAO certificationCriterionDao,
+            EducationTypeDAO educationTypeDao, AgeRangeDAO ageRangeDao, TestFunctionalityDAO testFuncDao,
+            TestStandardDAO testStandardDao, TestToolDAO testToolDao, TestProcedureDAO testProcedureDao,
+            TestDataDAO testDataDao, AccessibilityStandardDAO asDao, UcdProcessDAO ucdDao,
+            QmsStandardDAO qmsDao, TargetedUserDAO tuDao, DeveloperStatusDAO devStatusDao,
+            SurveillanceDAO survDao, UploadTemplateVersionDAO uploadTemplateDao, QuarterDAO quarterDao,
+            ProductDAO productDao, DeveloperDAO devDao, JobDAO jobDao, MacraMeasureDAO macraDao,
+            CQMCriterionDAO cqmCriterionDao, CertificationEditionDAO certEditionDao) {
+        this.precache = precache;
+        this.certificationBodyDao = certificationBodyDao;
+        this.certificationCriterionDao = certificationCriterionDao;
+        this.educationTypeDao = educationTypeDao;
+        this.ageRangeDao = ageRangeDao;
+        this.testFuncDao = testFuncDao;
+        this.testStandardDao = testStandardDao;
+        this.testToolDao = testToolDao;
+        this.testProcedureDao = testProcedureDao;
+        this.testDataDao = testDataDao;
+        this.asDao = asDao;
+        this.ucdDao = ucdDao;
+        this.qmsDao = qmsDao;
+        this.tuDao = tuDao;
+        this.devStatusDao = devStatusDao;
+        this.survDao = survDao;
+        this.uploadTemplateDao = uploadTemplateDao;
+        this.quarterDao = quarterDao;
+        this.productDao = productDao;
+        this.devDao = devDao;
+        this.jobDao = jobDao;
+        this.macraDao = macraDao;
+        this.cqmCriterionDao = cqmCriterionDao;
+        this.certEditionDao = certEditionDao;
+    }
 
     @Transactional
     @Cacheable(value = CacheNames.JOB_TYPES)
@@ -155,7 +174,7 @@ public class DimensionalDataManager {
     @Transactional
     public Set<CertificationBody> getCertBodyNames() {
         LOGGER.debug("Getting all certification body names from the database (not cached).");
-        List<CertificationBodyDTO> dtos = this.certificationBodyDAO.findAll();
+        List<CertificationBodyDTO> dtos = this.certificationBodyDao.findAll();
         Set<CertificationBody> acbNames = new HashSet<CertificationBody>();
 
         for (CertificationBodyDTO dto : dtos) {
@@ -206,7 +225,7 @@ public class DimensionalDataManager {
     @Transactional
     public Set<KeyValueModel> getTestTools() {
         LOGGER.debug("Getting all test tools from the database (not cached).");
-        List<TestToolDTO> dtos = this.testToolsDao.findAll();
+        List<TestToolDTO> dtos = this.testToolDao.findAll();
         Set<KeyValueModel> testTools = new HashSet<KeyValueModel>();
 
         for (TestToolDTO dto : dtos) {
@@ -526,6 +545,40 @@ public class DimensionalDataManager {
         }
 
         return criterion;
+    }
+
+    @Transactional
+    @Cacheable(value = CacheNames.CQM_CRITERION)
+    public List<CQMCriterion> getCQMCriteria() {
+        List<CQMCriterion> result = new ArrayList<CQMCriterion>();
+        List<CQMCriterionDTO> dtos = cqmCriterionDao.findAll();
+        for (CQMCriterionDTO dto : dtos) {
+            CQMCriterion criterion = new CQMCriterion();
+            criterion.setCmsId(dto.getCmsId());
+            criterion.setCqmCriterionTypeId(dto.getCqmCriterionTypeId());
+            criterion.setCqmDomain(dto.getCqmDomain());
+            criterion.setCqmVersionId(dto.getCqmVersionId());
+            criterion.setCqmVersion(dto.getCqmVersion());
+            criterion.setCriterionId(dto.getId());
+            criterion.setDescription(dto.getDescription());
+            criterion.setNqfNumber(dto.getNqfNumber());
+            criterion.setNumber(dto.getNumber());
+            criterion.setTitle(dto.getTitle());
+            result.add(criterion);
+        }
+        return result;
+    }
+
+    @Transactional
+    @Cacheable(value = CacheNames.EDITIONS)
+    public List<CertificationEdition> getCertificationEditions() {
+        List<CertificationEdition> result = new ArrayList<CertificationEdition>();
+        List<CertificationEditionDTO> dtos = certEditionDao.findAll();
+        for (CertificationEditionDTO dto : dtos) {
+            CertificationEdition edition = new CertificationEdition(dto);
+            result.add(edition);
+        }
+        return result;
     }
 
     public DimensionalData getDimensionalData(final Boolean simple) throws EntityRetrievalException {
