@@ -7,19 +7,18 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
-import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.TestFunctionalityCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.manager.TestingFunctionalityManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
@@ -30,32 +29,24 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
  *
  */
 @Component("pendingTestFunctionality2014Reviewer")
-public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListener<ContextRefreshedEvent> {
-    private static final String EDITION_2014 = "2014";
-
+public class TestFunctionality2014Reviewer implements Reviewer {
     private TestFunctionalityDAO testFunctionalityDAO;
     private TestingFunctionalityManager testFunctionalityManager;
+    private DimensionalDataManager dimensionalDataManager;
     private ErrorMessageUtil msgUtil;
-    private CertificationEditionDAO editionDAO;
-    private List<CertificationEditionDTO> editionDTOs;
 
     @Autowired
     public TestFunctionality2014Reviewer(TestFunctionalityDAO testFunctionalityDAO,
             TestingFunctionalityManager testFunctionalityManager, CertificationEditionDAO editionDAO,
-            ErrorMessageUtil msgUtil) {
+            DimensionalDataManager dimensionalDataManager, ErrorMessageUtil msgUtil) {
         this.testFunctionalityDAO = testFunctionalityDAO;
         this.testFunctionalityManager = testFunctionalityManager;
-        this.editionDAO = editionDAO;
+        this.dimensionalDataManager = dimensionalDataManager;
         this.msgUtil = msgUtil;
     }
 
     @Override
-    public void onApplicationEvent(ContextRefreshedEvent event) {
-        editionDTOs = editionDAO.findAll();
-    }
-
-    @Override
-    public void review(final PendingCertifiedProductDTO listing) {
+    public void review(PendingCertifiedProductDTO listing) {
         if (listing.getCertificationCriterion() != null) {
             for (PendingCertificationResultDTO cr : listing.getCertificationCriterion()) {
                 if (cr.getTestFunctionality() != null) {
@@ -85,13 +76,13 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
         }
     }
 
-    private Set<String> getTestingFunctionalityErrorMessages(final PendingCertificationResultTestFunctionalityDTO crtf,
-            final PendingCertificationResultDTO cr, final PendingCertifiedProductDTO listing) {
+    private Set<String> getTestingFunctionalityErrorMessages(PendingCertificationResultTestFunctionalityDTO crtf,
+            PendingCertificationResultDTO cr, PendingCertifiedProductDTO listing) {
 
         Set<String> errors = new HashSet<String>();
 
-        CertificationEditionDTO edition = getEditionDTO(getEditionFromListing(listing));
-        TestFunctionalityDTO tf = getTestFunctionality(crtf.getNumber(), edition.getId());
+        CertificationEdition edition = getEdition(getEditionFromListing(listing));
+        TestFunctionalityDTO tf = getTestFunctionality(crtf.getNumber(), edition.getCertificationEditionId());
 
         Long practiceTypeId = listing.getPracticeTypeId();
         if (!isTestFunctionalityPracticeTypeValid(practiceTypeId, tf)) {
@@ -100,12 +91,12 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
         return errors;
     }
 
-    private Set<String> getTestingFunctionalityWarningMessages(final PendingCertificationResultTestFunctionalityDTO crtf,
-            final PendingCertificationResultDTO cr, final PendingCertifiedProductDTO listing) {
+    private Set<String> getTestingFunctionalityWarningMessages(PendingCertificationResultTestFunctionalityDTO crtf,
+            PendingCertificationResultDTO cr, PendingCertifiedProductDTO listing) {
 
         Set<String> warnings = new HashSet<String>();
-        CertificationEditionDTO edition = getEditionDTO(getEditionFromListing(listing));
-        TestFunctionalityDTO tf = getTestFunctionality(crtf.getNumber(), edition.getId());
+        CertificationEdition edition = getEdition(getEditionFromListing(listing));
+        TestFunctionalityDTO tf = getTestFunctionality(crtf.getNumber(), edition.getCertificationEditionId());
 
         if (!isTestFunctionalityCritierionValid(cr.getCriterion().getId(), tf, edition.getYear())) {
             warnings.add(getTestFunctionalityCriterionErrorMessage(crtf, cr, listing, edition));
@@ -122,8 +113,8 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
         return validTestFunctionalityForCriteria.contains(tf);
     }
 
-    private Boolean isTestFunctionalityPracticeTypeValid(final Long practiceTypeId,
-            final TestFunctionalityDTO tf) {
+    private Boolean isTestFunctionalityPracticeTypeValid(Long practiceTypeId,
+            TestFunctionalityDTO tf) {
 
         if (tf.getPracticeType() != null) {
             if (!practiceTypeId.equals(tf.getPracticeType().getId())) {
@@ -133,10 +124,10 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
         return true;
     }
 
-    private String getTestFunctionalityPracticeTypeErrorMessage(final PendingCertificationResultTestFunctionalityDTO crtf,
-            final PendingCertificationResultDTO cr, final PendingCertifiedProductDTO cp) {
-        CertificationEditionDTO editionDTO = getEditionDTO(getEditionFromListing(cp));
-        TestFunctionalityDTO tf = getTestFunctionality(crtf.getNumber(), editionDTO.getId());
+    private String getTestFunctionalityPracticeTypeErrorMessage(PendingCertificationResultTestFunctionalityDTO crtf,
+            PendingCertificationResultDTO cr, PendingCertifiedProductDTO cp) {
+        CertificationEdition edition = getEdition(getEditionFromListing(cp));
+        TestFunctionalityDTO tf = getTestFunctionality(crtf.getNumber(), edition.getCertificationEditionId());
 
         return getTestFunctionalityPracticeTypeErrorMessage(
                 cr.getCriterion().getNumber(),
@@ -145,19 +136,19 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
                 cp.getPracticeType());
     }
 
-    private String getTestFunctionalityPracticeTypeErrorMessage(final String criteriaNumber,
-            final String testFunctionalityNumber, final String validPracticeTypeName,
-            final String currentPracticeTypeName) {
+    private String getTestFunctionalityPracticeTypeErrorMessage(String criteriaNumber,
+            String testFunctionalityNumber, String validPracticeTypeName,
+            String currentPracticeTypeName) {
 
         return msgUtil.getMessage("listing.criteria.testFunctionalityPracticeTypeMismatch",
                 criteriaNumber, testFunctionalityNumber, validPracticeTypeName, currentPracticeTypeName);
     }
 
-    private String getTestFunctionalityCriterionErrorMessage(final PendingCertificationResultTestFunctionalityDTO crtf,
-            final PendingCertificationResultDTO cr, final PendingCertifiedProductDTO cp,
-            final CertificationEditionDTO edition) {
+    private String getTestFunctionalityCriterionErrorMessage(PendingCertificationResultTestFunctionalityDTO crtf,
+            PendingCertificationResultDTO cr, PendingCertifiedProductDTO cp,
+            CertificationEdition edition) {
 
-        TestFunctionalityDTO tf = getTestFunctionality(crtf.getNumber(), edition.getId());
+        TestFunctionalityDTO tf = getTestFunctionality(crtf.getNumber(), edition.getCertificationEditionId());
         return getTestFunctionalityCriterionErrorMessage(
                 cr.getCriterion().getNumber(),
                 crtf.getNumber(),
@@ -165,32 +156,32 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
                 cr.getCriterion().getNumber());
     }
 
-    private String getTestFunctionalityCriterionErrorMessage(final String criteriaNumber,
-            final String testFunctionalityNumber, final String listOfValidCriteria, final String currentCriterion) {
+    private String getTestFunctionalityCriterionErrorMessage(String criteriaNumber,
+            String testFunctionalityNumber, String listOfValidCriteria, String currentCriterion) {
 
         return msgUtil.getMessage("listing.criteria.testFunctionalityCriterionMismatch",
                 criteriaNumber, testFunctionalityNumber, listOfValidCriteria, currentCriterion);
     }
 
-    private CertificationEditionDTO getEditionDTO(final String year) {
-        for (CertificationEditionDTO dto : editionDTOs) {
-            if (dto.getYear().equals(year)) {
-                return dto;
+    private CertificationEdition getEdition(String year) {
+        for (CertificationEdition edition : dimensionalDataManager.getCertificationEditions()) {
+            if (edition.getYear().equals(year)) {
+                return edition;
             }
         }
         return null;
     }
 
-    private String getEditionFromListing(final PendingCertifiedProductDTO listing) {
+    private String getEditionFromListing(PendingCertifiedProductDTO listing) {
         return listing.getCertificationEdition();
     }
 
-    private TestFunctionalityDTO getTestFunctionality(final String number, final Long editionId) {
+    private TestFunctionalityDTO getTestFunctionality(String number, Long editionId) {
         return testFunctionalityDAO.getByNumberAndEdition(number, editionId);
     }
 
-    private String getDelimitedListOfValidCriteriaNumbers(final TestFunctionalityDTO tfDTO,
-            final CertificationEditionDTO edition) {
+    private String getDelimitedListOfValidCriteriaNumbers(TestFunctionalityDTO tfDTO,
+            CertificationEdition edition) {
 
         StringBuilder criteria = new StringBuilder();
         List<CertificationCriterionDTO> certDTOs = new ArrayList<CertificationCriterionDTO>();
@@ -214,7 +205,7 @@ public class TestFunctionality2014Reviewer implements Reviewer, ApplicationListe
         return criteria.toString();
     }
 
-    private TestFunctionalityDTO getTestFunctionality(final String number) {
+    private TestFunctionalityDTO getTestFunctionality(String number) {
         Long editionId = 2L;
         return testFunctionalityDAO.getByNumberAndEdition(number, editionId);
     }
