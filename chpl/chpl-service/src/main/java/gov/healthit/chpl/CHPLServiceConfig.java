@@ -61,7 +61,6 @@ import gov.healthit.chpl.job.MeaningfulUseUploadJob;
         @PropertySource(value = "classpath:/environment-override.properties", ignoreResourceNotFound = true),
         @PropertySource("classpath:/lookup.properties"),
         @PropertySource(value = "classpath:/lookup-override.properties", ignoreResourceNotFound = true),
-        @PropertySource("classpath:/directReview.properties"),
         @PropertySource("classpath:/email.properties"),
         @PropertySource(value = "classpath:/email-override.properties", ignoreResourceNotFound = true),
 })
