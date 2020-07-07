@@ -12,14 +12,26 @@ public enum Headings {
     RECORD_STATUS("RECORD_STATUS__C", "RECORD_STATUS"),
     DEVELOPER("VENDOR__C", "VENDOR", "DEVELOPER__C", "DEVELOPER");
 
-    //Note: we could even make the column names defined here be regex's for more flexibility
-    //in the future and easily handle things like '1 or 2 underscore characters'
     private List<String> colNames;
     Headings(String...csvColNames) {
         colNames = new ArrayList<String>();
         for (String csvColName : csvColNames) {
             colNames.add(csvColName);
         }
+    }
+
+    public String getNamesAsString() {
+        String names = "";
+        for (int i = 0; i < this.colNames.size(); i++) {
+            names += this.colNames.get(i);
+            if (i < this.colNames.size() - 1) {
+                names += ", ";
+            }
+            if (i == this.colNames.size() - 1) {
+                names += " or ";
+            }
+        }
+        return names;
     }
 
     public static Headings getHeading(String colName) {

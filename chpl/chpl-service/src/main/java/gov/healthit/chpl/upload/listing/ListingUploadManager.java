@@ -39,18 +39,19 @@ public class ListingUploadManager {
         List<CSVRecord> allCsvRecords = getFileAsCsvRecords(file);
         List<ListingUpload> uploadMetadatas = new ArrayList<ListingUpload>();
 
-        int headingIndex = listingUploadHandler.getHeadingRecordIndex(allCsvRecords);
-        if (headingIndex < 0) {
+        CSVRecord heading = listingUploadHandler.getHeadingRecord(allCsvRecords);
+        if (heading == null) {
             LOGGER.warn("Cannot continue parsing upload file " + file.getName() + " without heading.");
-            //TODO: move to errors.properties
-            throw new ValidationException("No records with allowed heading values were found in the file.");
+            throw new ValidationException(msgUtil.getMessage("listingUpload.noHeadingFound"));
         }
 
-        int currIndex = headingIndex + 1;
+        long currIndex = heading.getRecordNumber() + 1;
         while (currIndex < allCsvRecords.size()) {
             List<CSVRecord> singleListingCsvRecords = getNextListingRecords(allCsvRecords, currIndex);
             currIndex += singleListingCsvRecords.size();
-            ListingUpload uploadMetadata = null;
+            ListingUpload uploadMetadata = new ListingUpload();
+            uploadMetadata.setChplProductNumber(
+                    listingUploadHandler.parseChplProductNumber(heading, singleListingCsvRecords));
             //TODO: parse the csv record list to fill in metadata we need for the upload object
             uploadMetadatas.add(uploadMetadata);
         }
@@ -63,7 +64,7 @@ public class ListingUploadManager {
         listingUploadDao.create(uploadMetadata, fileContents);
     }
 
-    private List<CSVRecord> getNextListingRecords(List<CSVRecord> allCsvRecords, int startIndex) {
+    private List<CSVRecord> getNextListingRecords(List<CSVRecord> allCsvRecords, long startIndex) {
         if (startIndex < 0 || startIndex >= allCsvRecords.size()) {
             LOGGER.error("Cannot look for listing CSV records starting at "
                     + startIndex + ". There are " + allCsvRecords.size() + " records.");
