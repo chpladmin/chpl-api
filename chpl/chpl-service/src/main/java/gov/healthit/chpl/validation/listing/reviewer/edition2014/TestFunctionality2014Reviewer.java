@@ -16,11 +16,11 @@ import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.TestFunctionalityCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.manager.DimensionalDataManager;
-import gov.healthit.chpl.manager.TestingFunctionalityManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
@@ -34,16 +34,14 @@ import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 @Transactional
 public class TestFunctionality2014Reviewer implements Reviewer {
     private TestFunctionalityDAO testFunctionalityDAO;
-    private TestingFunctionalityManager testFunctionalityManager;
     private ErrorMessageUtil msgUtil;
     private DimensionalDataManager dimensionalDataManager;
 
     @Autowired
     public TestFunctionality2014Reviewer(TestFunctionalityDAO testFunctionalityDAO,
-            TestingFunctionalityManager testFunctionalityManager, CertificationEditionDAO editionDAO,
+            CertificationEditionDAO editionDAO,
             DimensionalDataManager dimensionalDataManager, ErrorMessageUtil msgUtil) {
         this.testFunctionalityDAO = testFunctionalityDAO;
-        this.testFunctionalityManager = testFunctionalityManager;
         this.dimensionalDataManager = dimensionalDataManager;
         this.msgUtil = msgUtil;
     }
@@ -84,7 +82,8 @@ public class TestFunctionality2014Reviewer implements Reviewer {
     private Boolean isTestFunctionalityCritierionValid(Long criteriaId, TestFunctionalityDTO tf, String year) {
 
         List<TestFunctionalityDTO> validTestFunctionalityForCriteria =
-                testFunctionalityManager.getTestFunctionalityCriteriaMap2014().get(criteriaId);
+                testFunctionalityDAO.getTestFunctionalityCriteriaMaps(
+                        CertificationEditionConcept.CERTIFICATION_EDITION_2014.getYear()).get(criteriaId);
 
         //Is the TestFunctionalityDTO in the valid list (relies on the TestFunctionalityDTO.equals()
         if (validTestFunctionalityForCriteria == null) {

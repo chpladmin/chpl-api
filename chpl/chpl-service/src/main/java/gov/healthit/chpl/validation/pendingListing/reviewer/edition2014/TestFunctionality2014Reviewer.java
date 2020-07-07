@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.domain.CertificationEdition;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.TestFunctionalityCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
@@ -19,7 +20,6 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.manager.DimensionalDataManager;
-import gov.healthit.chpl.manager.TestingFunctionalityManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
 
@@ -31,16 +31,14 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
 @Component("pendingTestFunctionality2014Reviewer")
 public class TestFunctionality2014Reviewer implements Reviewer {
     private TestFunctionalityDAO testFunctionalityDAO;
-    private TestingFunctionalityManager testFunctionalityManager;
     private DimensionalDataManager dimensionalDataManager;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
     public TestFunctionality2014Reviewer(TestFunctionalityDAO testFunctionalityDAO,
-            TestingFunctionalityManager testFunctionalityManager, CertificationEditionDAO editionDAO,
+            CertificationEditionDAO editionDAO,
             DimensionalDataManager dimensionalDataManager, ErrorMessageUtil msgUtil) {
         this.testFunctionalityDAO = testFunctionalityDAO;
-        this.testFunctionalityManager = testFunctionalityManager;
         this.dimensionalDataManager = dimensionalDataManager;
         this.msgUtil = msgUtil;
     }
@@ -107,7 +105,8 @@ public class TestFunctionality2014Reviewer implements Reviewer {
     private Boolean isTestFunctionalityCritierionValid(Long criteriaId, TestFunctionalityDTO tf, String year) {
 
         List<TestFunctionalityDTO> validTestFunctionalityForCriteria =
-                testFunctionalityManager.getTestFunctionalityCriteriaMap2014().get(criteriaId);
+                testFunctionalityDAO.getTestFunctionalityCriteriaMaps(
+                        CertificationEditionConcept.CERTIFICATION_EDITION_2014.getYear()).get(criteriaId);
 
         //Is the TestFunctionalityDTO in the valid list (relies on the TestFunctionalityDTO.equals()
         return validTestFunctionalityForCriteria.contains(tf);

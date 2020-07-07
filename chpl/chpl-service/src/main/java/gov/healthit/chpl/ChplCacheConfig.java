@@ -61,6 +61,7 @@ public class ChplCacheConfig {
         backingManager.addCacheIfAbsent(createCache(CacheNames.PRODUCT_NAMES));
         backingManager.addCacheIfAbsent(createCache(CacheNames.TEST_DATA));
         backingManager.addCacheIfAbsent(createCache(CacheNames.TEST_PROCEDURES));
+        backingManager.addCacheIfAbsent(createCache(CacheNames.TEST_FUNCTIONALITY_MAPS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.UPLOAD_TEMPLATE_VERSIONS));
 
         backingManager.addCacheIfAbsent(createCache(CacheNames.PREFETCHED_COLLECTIONS_LISTINGS));

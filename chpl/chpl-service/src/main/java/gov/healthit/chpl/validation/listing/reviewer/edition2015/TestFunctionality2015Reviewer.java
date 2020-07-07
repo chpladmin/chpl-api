@@ -17,11 +17,11 @@ import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.TestFunctionalityCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.manager.DimensionalDataManager;
-import gov.healthit.chpl.manager.TestingFunctionalityManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
@@ -37,17 +37,15 @@ import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 @DependsOn("certificationEditionDAO")
 public class TestFunctionality2015Reviewer extends PermissionBasedReviewer {
     private TestFunctionalityDAO testFunctionalityDAO;
-    private TestingFunctionalityManager testFunctionalityManager;
     private DimensionalDataManager dimensionalDataManager;
 
     @Autowired
     public TestFunctionality2015Reviewer(TestFunctionalityDAO testFunctionalityDAO,
-            TestingFunctionalityManager testFunctionalityManager, CertificationEditionDAO editionDAO,
+            CertificationEditionDAO editionDAO,
             DimensionalDataManager dimensionalDataManager,
             ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
         super(msgUtil, resourcePermissions);
         this.testFunctionalityDAO = testFunctionalityDAO;
-        this.testFunctionalityManager = testFunctionalityManager;
         this.dimensionalDataManager = dimensionalDataManager;
     }
 
@@ -85,7 +83,8 @@ public class TestFunctionality2015Reviewer extends PermissionBasedReviewer {
     private Boolean isTestFunctionalityCritierionValid(Long criteriaId, TestFunctionalityDTO tf, String year) {
 
         List<TestFunctionalityDTO> validTestFunctionalityForCriteria =
-                testFunctionalityManager.getTestFunctionalityCriteriaMap2015().get(criteriaId);
+                testFunctionalityDAO.getTestFunctionalityCriteriaMaps(
+                        CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).get(criteriaId);
 
         if (validTestFunctionalityForCriteria == null) {
             return false;
