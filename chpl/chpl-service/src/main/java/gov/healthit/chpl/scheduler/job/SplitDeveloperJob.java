@@ -246,6 +246,7 @@ public class SplitDeveloperJob implements Job {
         emailBuilder.recipient(recipientEmail)
                 .subject(subject)
                 .htmlMessage(htmlMessage)
+                .htmlFooter()
                 .sendEmail();
     }
 
@@ -283,7 +284,6 @@ public class SplitDeveloperJob implements Job {
             htmlMessage += String.format("<li>%s</li>", product.getName());
         }
         htmlMessage += "</ul>";
-        htmlMessage += createHtmlEmailFooter();
         return htmlMessage;
     }
 
@@ -297,19 +297,6 @@ public class SplitDeveloperJob implements Job {
                 oldDeveloper.getName(),
                 newDeveloper.getName(),
                 ex.getMessage());
-        htmlMessage += createHtmlEmailFooter();
         return htmlMessage;
-    }
-
-    private String createHtmlEmailFooter() {
-        String html = String.format("<p>"
-                + "If there are any questions about this process, please visit the "
-                + "<a href=\"%s\">"
-                + "ONC-ACB & ONC-ATL Portal</a> to submit a ticket."
-                + "</p>"
-                + "<p>Thank you!</p>"
-                + "ONC CHPL Team",
-                env.getProperty("splitDeveloper.help.url"));
-        return html;
     }
 }
