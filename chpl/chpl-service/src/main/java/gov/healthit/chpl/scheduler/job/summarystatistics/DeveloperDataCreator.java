@@ -7,8 +7,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.domain.statistics.AcbStat;
-import gov.healthit.chpl.domain.statistics.Stat;
+import gov.healthit.chpl.domain.statistics.EmailCertificationBodyStatistic;
+import gov.healthit.chpl.domain.statistics.EmailStatistic;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 
@@ -16,15 +16,15 @@ import gov.healthit.chpl.entity.CertificationStatusType;
 public class DeveloperDataCreator extends StatisticsDataCreator{
     private static final Logger LOGGER = LogManager.getLogger("summaryStatisticsCreatorJobLogger");
 
-    public Stat getUniqueDeveloperCount(List<CertifiedProductDetailsDTO> certifiedProducts,
+    public EmailStatistic getUniqueDeveloperCount(List<CertifiedProductDetailsDTO> certifiedProducts,
             EditionCriteria listingsToInclude, List<CertificationStatusType> statuses) {
-        Stat stat = new Stat();
+        EmailStatistic stat = new EmailStatistic();
         stat.setCount(getUniqueDeveloperCountTotal(certifiedProducts, listingsToInclude, statuses));
         stat.setAcbStatistics(getUniqueDeveloperCountTotalsByAcb(certifiedProducts, listingsToInclude, statuses));
         return stat;
     }
 
-    public List<AcbStat> getUniqueDeveloperCountTotalsByAcb(
+    public List<EmailCertificationBodyStatistic> getUniqueDeveloperCountTotalsByAcb(
             List<CertifiedProductDetailsDTO> certifiedProducts,
             EditionCriteria listingsToInclude, List<CertificationStatusType> statuses) {
 
@@ -34,7 +34,7 @@ public class DeveloperDataCreator extends StatisticsDataCreator{
                 .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
                 .entrySet().stream()
                 .map(entry -> {
-                    AcbStat stat = new AcbStat();
+                    EmailCertificationBodyStatistic stat = new EmailCertificationBodyStatistic();
                     stat.setAcbName(entry.getKey());
                     stat.setCount(entry.getValue().stream()
                             .filter(distinctByKey(cp -> cp.getDeveloper().getId()))

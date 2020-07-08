@@ -5,7 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import gov.healthit.chpl.domain.statistics.AcbStat;
+import gov.healthit.chpl.domain.statistics.EmailCertificationBodyStatistic;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import lombok.Data;
 
@@ -18,39 +18,39 @@ public class StatisticsMassager {
         this.activeAcbs = activeAcbs;
     }
 
-    public List<AcbStat> getStatistics(List<AcbStat> stats) {
-        List<AcbStat> acbStats = new ArrayList<AcbStat>(stats);
+    public List<EmailCertificationBodyStatistic> getStatistics(List<EmailCertificationBodyStatistic> stats) {
+        List<EmailCertificationBodyStatistic> acbStats = new ArrayList<EmailCertificationBodyStatistic>(stats);
         addMissingAcbStatistics(acbStats);
         acbStats.sort((a, b) -> a.getAcbName().compareTo(b.getAcbName()));
         return acbStats;
     }
 
-    private void addMissingAcbStatistics(List<AcbStat> acbStats) {
+    private void addMissingAcbStatistics(List<EmailCertificationBodyStatistic> acbStats) {
         // Add statistics for missing active ACBs
         acbStats.addAll(getMissingAcbStats(acbStats));
 
         acbStats = acbStats.stream()
-                .sorted(Comparator.comparing(AcbStat::getAcbName))
+                .sorted(Comparator.comparing(EmailCertificationBodyStatistic::getAcbName))
                 .collect(Collectors.toList());
     }
 
-    private List<AcbStat> getMissingAcbStats(List<AcbStat> statistics) {
-        List<AcbStat> updatedStats = activeAcbs.stream()
+    private List<EmailCertificationBodyStatistic> getMissingAcbStats(List<EmailCertificationBodyStatistic> statistics) {
+        List<EmailCertificationBodyStatistic> updatedStats = activeAcbs.stream()
                 .filter(acb -> !isAcbInStatistics(acb, statistics))
                 .map(acb -> getNewCertifiedBodyStatistic(acb.getName()))
                 .collect(Collectors.toList());
         return updatedStats;
     }
 
-    private Boolean isAcbInStatistics(CertificationBodyDTO acb, List<AcbStat> stats) {
+    private Boolean isAcbInStatistics(CertificationBodyDTO acb, List<EmailCertificationBodyStatistic> stats) {
         return stats.stream()
                 .filter(stat -> stat.getAcbName().equals(acb.getName()))
                 .findAny()
                 .isPresent();
     }
 
-    private AcbStat getNewCertifiedBodyStatistic(String acbName) {
-        AcbStat stat = new AcbStat();
+    private EmailCertificationBodyStatistic getNewCertifiedBodyStatistic(String acbName) {
+        EmailCertificationBodyStatistic stat = new EmailCertificationBodyStatistic();
         stat.setAcbName(acbName);
         stat.setCount(0L);
         return stat;

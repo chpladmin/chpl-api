@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
-import gov.healthit.chpl.domain.statistics.AcbStat;
+import gov.healthit.chpl.domain.statistics.EmailCertificationBodyStatistic;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 
 public abstract class StatisticsSectionCreator {
@@ -20,7 +20,7 @@ public abstract class StatisticsSectionCreator {
                 .toString();
     }
 
-    public String buildSection(String header, Long headerCount, List<AcbStat> stats) {
+    public String buildSection(String header, Long headerCount, List<EmailCertificationBodyStatistic> stats) {
         StringBuilder section = new StringBuilder();
 
         section.append(buildSectionHeader(header, headerCount))

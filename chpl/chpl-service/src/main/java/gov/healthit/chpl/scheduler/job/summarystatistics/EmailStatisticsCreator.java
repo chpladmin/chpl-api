@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.domain.statistics.Statistics;
+import gov.healthit.chpl.domain.statistics.EmailStatistics;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 
@@ -50,12 +50,12 @@ public class EmailStatisticsCreator {
 
     @SuppressWarnings({"checkstyle:linelength", "checkstyle:methodlength"})
     @Transactional(readOnly = true)
-    public Statistics getStatistics() throws InterruptedException, ExecutionException {
+    public EmailStatistics getStatistics() throws InterruptedException, ExecutionException {
         ExecutorService executorService = Executors.newFixedThreadPool(getThreadCountForJob());
 
         LOGGER.info("Getting all current statistics.");
 
-        Statistics stats = new Statistics();
+        EmailStatistics stats = new EmailStatistics();
         List<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
 
         LOGGER.info("Getting all listings.");

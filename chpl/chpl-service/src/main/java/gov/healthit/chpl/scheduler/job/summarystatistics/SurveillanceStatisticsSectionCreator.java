@@ -2,16 +2,16 @@ package gov.healthit.chpl.scheduler.job.summarystatistics;
 
 import java.util.List;
 
-import gov.healthit.chpl.domain.statistics.Statistics;
+import gov.healthit.chpl.domain.statistics.EmailStatistics;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 
 public class SurveillanceStatisticsSectionCreator extends StatisticsSectionCreator {
 
-    public String build(Statistics stats, List<CertificationBodyDTO> activeAcbs) {
+    public String build(EmailStatistics stats, List<CertificationBodyDTO> activeAcbs) {
         return buildSurveillanceSection(stats, new StatisticsMassager(activeAcbs));
     }
 
-    private String buildSurveillanceSection(Statistics stats, StatisticsMassager massager) {
+    private String buildSurveillanceSection(EmailStatistics stats, StatisticsMassager massager) {
         StringBuilder section = new StringBuilder();
 
         section.append(buildHeader("Total # of Surveillance Activities", stats.getSurveillanceAllStatusTotal()));

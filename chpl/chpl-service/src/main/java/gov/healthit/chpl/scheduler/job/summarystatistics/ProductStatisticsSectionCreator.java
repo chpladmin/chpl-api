@@ -2,16 +2,16 @@ package gov.healthit.chpl.scheduler.job.summarystatistics;
 
 import java.util.List;
 
-import gov.healthit.chpl.domain.statistics.Statistics;
+import gov.healthit.chpl.domain.statistics.EmailStatistics;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 
 public class ProductStatisticsSectionCreator extends StatisticsSectionCreator {
 
-    public String build(Statistics stats, List<CertificationBodyDTO> activeAcbs) {
+    public String build(EmailStatistics stats, List<CertificationBodyDTO> activeAcbs) {
         return buildUniqueProductSection(stats, new StatisticsMassager(activeAcbs));
     }
 
-    private String buildUniqueProductSection(Statistics stats, StatisticsMassager massager) {
+    private String buildUniqueProductSection(EmailStatistics stats, StatisticsMassager massager) {
         StringBuilder section = new StringBuilder();
 
         section.append(buildHeader("Total # of Certified Unique Products Regardless of Status or Edition - Including 2011)",

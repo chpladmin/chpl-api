@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CertificationResultDAO;
-import gov.healthit.chpl.domain.statistics.AcbStat;
-import gov.healthit.chpl.domain.statistics.Stat;
+import gov.healthit.chpl.domain.statistics.EmailCertificationBodyStatistic;
+import gov.healthit.chpl.domain.statistics.EmailStatistic;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 
@@ -23,11 +23,11 @@ public class ListingDataCreator extends StatisticsDataCreator {
         this.certificationResultsDAO = certificationResultsDAO;
     }
 
-    public Stat getUniqueListingCount(List<CertifiedProductDetailsDTO> certifiedProducts,
+    public EmailStatistic getUniqueListingCount(List<CertifiedProductDetailsDTO> certifiedProducts,
             EditionCriteria listingsToInclude, List<CertificationStatusType> statuses,
             boolean onlyIncludeAlternativeTestMethods) {
 
-        Stat stat = new Stat();
+        EmailStatistic stat = new EmailStatistic();
         stat.setCount(getUniqueListingCountTotal(
                 certifiedProducts, listingsToInclude, statuses, onlyIncludeAlternativeTestMethods));
         stat.setAcbStatistics(getUniqueListingCountTotalsByAcb(
@@ -35,7 +35,7 @@ public class ListingDataCreator extends StatisticsDataCreator {
         return stat;
     }
 
-    public List<AcbStat> getUniqueListingCountTotalsByAcb(
+    public List<EmailCertificationBodyStatistic> getUniqueListingCountTotalsByAcb(
             List<CertifiedProductDetailsDTO> certifiedProducts,
             EditionCriteria listingsToInclude, List<CertificationStatusType> statuses,
             boolean onlyIncludeAlternativeTestMethods) {
@@ -47,7 +47,7 @@ public class ListingDataCreator extends StatisticsDataCreator {
                 .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
                 .entrySet().stream()
                 .map(entry -> {
-                    AcbStat stat = new AcbStat();
+                    EmailCertificationBodyStatistic stat = new EmailCertificationBodyStatistic();
                     stat.setAcbName(entry.getKey());
                     stat.setCount(entry.getValue().stream()
                             .collect(Collectors.counting()));

@@ -28,7 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
 import gov.healthit.chpl.domain.DateRange;
-import gov.healthit.chpl.domain.statistics.Statistics;
+import gov.healthit.chpl.domain.statistics.EmailStatistics;
 import gov.healthit.chpl.entity.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -71,7 +71,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
             Date endDate = new Date();
             Integer numDaysInPeriod = Integer.valueOf(env.getProperty("summaryEmailPeriodInDays").toString());
 
-            Statistics emailBodyStats = emailStatisticsCreator.getStatistics();
+            EmailStatistics emailBodyStats = emailStatisticsCreator.getStatistics();
 
             if (generateCsv) {
                 createSummaryStatisticsFile(startDate, endDate, numDaysInPeriod);
@@ -119,12 +119,12 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         LOGGER.info("Completed statistics CSV");
     }
 
-    private String getJson(final Statistics statistics) throws JsonProcessingException {
+    private String getJson(final EmailStatistics statistics) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(statistics);
     }
 
-    public void saveSummaryStatistics(final Statistics statistics, final Date endDate)
+    public void saveSummaryStatistics(final EmailStatistics statistics, final Date endDate)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
 
         // We need to manually create a transaction in this case because of how AOP works. When a method is

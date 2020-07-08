@@ -27,7 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
-import gov.healthit.chpl.domain.statistics.Statistics;
+import gov.healthit.chpl.domain.statistics.EmailStatistics;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.entity.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -65,7 +65,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
             activeAcbs = certificationBodyDAO.findAllActive();
 
             SummaryStatisticsEntity summaryStatistics = summaryStatisticsDAO.getCurrentSummaryStatistics();
-            Statistics stats = getStatistics(summaryStatistics);
+            EmailStatistics stats = getStatistics(summaryStatistics);
             String message = createHtmlMessage(stats, summaryStatistics.getEndDate());
             LOGGER.info("Message to be sent: " + message);
             sendEmail(message, jobContext.getMergedJobDataMap().getString("email"));
@@ -95,13 +95,13 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         return files;
     }
 
-    private Statistics getStatistics(SummaryStatisticsEntity summaryStatistics)
+    private EmailStatistics getStatistics(SummaryStatisticsEntity summaryStatistics)
             throws JsonParseException, JsonMappingException, IOException {
         ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(summaryStatistics.getSummaryStatistics(), Statistics.class);
+        return mapper.readValue(summaryStatistics.getSummaryStatistics(), EmailStatistics.class);
     }
 
-    private String createHtmlMessage(Statistics stats, Date endDate) throws EntityRetrievalException {
+    private String createHtmlMessage(EmailStatistics stats, Date endDate) throws EntityRetrievalException {
         StringBuilder emailMessage = new StringBuilder();
         DeveloperStatisticsSectionCreator developerStatisticsSectionCreator = new DeveloperStatisticsSectionCreator();
         ProductStatisticsSectionCreator productStatisticsSectionCreator = new ProductStatisticsSectionCreator();

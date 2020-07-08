@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
-import gov.healthit.chpl.domain.statistics.AcbStat;
-import gov.healthit.chpl.domain.statistics.Stat;
+import gov.healthit.chpl.domain.statistics.EmailCertificationBodyStatistic;
+import gov.healthit.chpl.domain.statistics.EmailStatistic;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 
 @Component
@@ -26,8 +26,8 @@ public class SurveillanceDataCreator {
         return surveillanceStatisticsDAO.getTotalSurveillanceActivities(null);
     }
 
-    public Stat getTotalOpenSurveillanceActivities() {
-        Stat openSurvs = new Stat();
+    public EmailStatistic getTotalOpenSurveillanceActivities() {
+        EmailStatistic openSurvs = new EmailStatistic();
         openSurvs.setCount(surveillanceStatisticsDAO.getTotalOpenSurveillanceActivities(null));
         openSurvs.setAcbStatistics(getTotalOpenSurveillancesByAcb());
         return openSurvs;
@@ -49,7 +49,7 @@ public class SurveillanceDataCreator {
         return totalDuration / surveillances.size();
     }
 
-    private List<AcbStat> getTotalOpenSurveillancesByAcb() {
+    private List<EmailCertificationBodyStatistic> getTotalOpenSurveillancesByAcb() {
         return surveillanceStatisticsDAO.getTotalOpenSurveillanceActivitiesByAcb(null);
     }
 

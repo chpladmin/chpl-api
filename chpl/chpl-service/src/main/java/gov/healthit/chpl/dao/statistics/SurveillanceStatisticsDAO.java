@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.DateRange;
-import gov.healthit.chpl.domain.statistics.AcbStat;
+import gov.healthit.chpl.domain.statistics.EmailCertificationBodyStatistic;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
 import gov.healthit.chpl.entity.surveillance.NonconformityAggregatedStatisticsEntity;
@@ -117,7 +117,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
     /**
      * Open NCs By ACB.
      */
-    public List<AcbStat> getTotalOpenNonconformitiesByAcb(final DateRange dateRange) {
+    public List<EmailCertificationBodyStatistic> getTotalOpenNonconformitiesByAcb(final DateRange dateRange) {
         String hql = "SELECT cb.name, count(*) "
                 + "FROM CertifiedProductEntity cp, "
                 + "CertificationBodyEntity cb, "
@@ -147,9 +147,9 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         }
 
         List<Object[]> results = query.getResultList();
-        List<AcbStat> cbStats = new ArrayList<AcbStat>();
+        List<EmailCertificationBodyStatistic> cbStats = new ArrayList<EmailCertificationBodyStatistic>();
         for (Object[] obj : results) {
-            AcbStat stat = new AcbStat();
+            EmailCertificationBodyStatistic stat = new EmailCertificationBodyStatistic();
             stat.setAcbName(obj[0].toString());
             stat.setCount(Long.valueOf(obj[1].toString()));
             cbStats.add(stat);
@@ -179,7 +179,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
     /**
      * Open Surveillance Activities By ACB.
      */
-    public List<AcbStat> getTotalOpenSurveillanceActivitiesByAcb(final DateRange dateRange) {
+    public List<EmailCertificationBodyStatistic> getTotalOpenSurveillanceActivitiesByAcb(final DateRange dateRange) {
         String hql = "SELECT cb.name, count(*) "
                 + "FROM CertifiedProductEntity cp, "
                 + "CertificationBodyEntity cb, "
@@ -206,9 +206,9 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         }
 
         List<Object[]> results = query.getResultList();
-        List<AcbStat> cbStats = new ArrayList<AcbStat>();
+        List<EmailCertificationBodyStatistic> cbStats = new ArrayList<EmailCertificationBodyStatistic>();
         for (Object[] obj : results) {
-            AcbStat stat = new AcbStat();
+            EmailCertificationBodyStatistic stat = new EmailCertificationBodyStatistic();
             stat.setAcbName(obj[0].toString());
             stat.setCount(Long.valueOf(obj[1].toString()));
             cbStats.add(stat);
