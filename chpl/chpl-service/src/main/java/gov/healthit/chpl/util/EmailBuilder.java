@@ -117,7 +117,7 @@ public class EmailBuilder {
                 + "</p>"
                 + "<p>Thank you!</p>"
                 + "ONC CHPL Team",
-                env.getProperty("splitDeveloper.help.url"));
+                env.getProperty("footer.url"));
         return this;
     }
 
