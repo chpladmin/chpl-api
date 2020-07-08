@@ -295,21 +295,9 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
      * @return
      */
     private boolean hasAccessToCertificationBody(final JsonNode acbJson) {
-        boolean hasAccess = getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc();
-
-        if (!hasAccess) {
-            CertificationBodyDTO acb = null;
-            try {
-                acb = jsonMapper.convertValue(acbJson, CertificationBodyDTO.class);
-            } catch (final Exception ex) {
-                LOGGER.error("Could not parse activity as CertificationBodyDTO. " + "JSON was: " + acbJson, ex);
-            }
-
-            if (acb != null && acb.getId() != null) {
-                hasAccess = isAcbValidForCurrentUser(acb.getId());
-            }
-        }
-        return hasAccess;
+        return getResourcePermissions().isUserRoleAdmin()
+                || getResourcePermissions().isUserRoleOnc()
+                || getResourcePermissions().isUserRoleAcbAdmin();
     }
 
     /**

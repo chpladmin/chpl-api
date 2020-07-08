@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -66,17 +65,25 @@ public class ActivityPagedMetadataManager extends SecuredManager {
         if (errors.size() > 0) {
             throw new ValidationException(errors);
         }
-        return getActivityMetadataPageByConceptWithoutSecurity(concept, startMillis, endMillis, pageNum, pageSize);
+        return getActivityMetadataPageByConcept(concept, startMillis, endMillis, pageNum, pageSize);
     }
 
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ACB_METADATA)")
     @Transactional
-    public List<ActivityMetadata> getActivityMetadataByObject(final Long objectId, final ActivityConcept concept,
-            final Date startDate, final Date endDate) throws JsonParseException, IOException {
-
-        return getActivityMetadataByObjectWithoutSecurity(objectId, concept, startDate, endDate);
+    public ActivityMetadataPage getCertificationBodyActivityMetadata(Long startMillis, Long endMillis,
+            Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
+        Set<String> errors = new HashSet<String>();
+        errors.addAll(validateActivityDates(startMillis, endMillis));
+        errors.addAll(validatePagingParameters(pageNum, pageSize));
+        if (errors.size() > 0) {
+            throw new ValidationException(errors);
+        }
+        return getActivityMetadataPageByConcept(ActivityConcept.CERTIFICATION_BODY,
+                startMillis, endMillis, pageNum, pageSize);
     }
 
-    private ActivityMetadataPage getActivityMetadataPageByConceptWithoutSecurity(ActivityConcept concept,
+    private ActivityMetadataPage getActivityMetadataPageByConcept(ActivityConcept concept,
             Long startMillis, Long endMillis, Integer pageNumParam, Integer pageSizeParam)
                     throws JsonParseException, IOException {
         Date startDate = new Date(0);
@@ -117,29 +124,6 @@ public class ActivityPagedMetadataManager extends SecuredManager {
         }
         page.setActivities(activityMetas);
         return page;
-    }
-
-    private List<ActivityMetadata> getActivityMetadataByObjectWithoutSecurity(final Long objectId,
-            final ActivityConcept concept, final Date startDate, final Date endDate)
-            throws JsonParseException, IOException {
-
-        LOGGER.info("Getting " + concept.name() + " activity for id " + objectId + " from " + startDate + " through "
-                + endDate);
-        // get the activity
-        List<ActivityDTO> activityDtos = activityDao.findByObjectId(objectId, concept, startDate, endDate);
-        List<ActivityMetadata> activityMetas = new ArrayList<ActivityMetadata>();
-        ActivityMetadataBuilder builder = null;
-        if (activityDtos != null && activityDtos.size() > 0) {
-            // excpect all dtos to have the same
-            // since we've searched based on activity concept
-            builder = metadataBuilderFactory.getBuilder(activityDtos.get(0));
-            // convert to domain object
-            for (ActivityDTO dto : activityDtos) {
-                ActivityMetadata activityMeta = builder.build(dto);
-                activityMetas.add(activityMeta);
-            }
-        }
-        return activityMetas;
     }
 
     private Set<String> validateActivityDates(Long startMillis, Long endMillis) {
