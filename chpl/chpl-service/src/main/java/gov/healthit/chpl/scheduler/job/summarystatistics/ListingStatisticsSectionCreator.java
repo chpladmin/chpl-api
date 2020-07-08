@@ -2,80 +2,63 @@ package gov.healthit.chpl.scheduler.job.summarystatistics;
 
 import java.util.List;
 
-import org.ff4j.FF4j;
-
-import gov.healthit.chpl.FeatureList;
-import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import gov.healthit.chpl.domain.statistics.Statistics;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 
 public class ListingStatisticsSectionCreator extends StatisticsSectionCreator {
 
-    public String build(Statistics stats, List<CertificationBodyDTO> activeAcbs, FF4j ff4j) {
-        return buildListingSection(stats, new StatisticsMassager(activeAcbs), ff4j);
+    public String build(Statistics stats, List<CertificationBodyDTO> activeAcbs) {
+        return buildListingSection(stats, new StatisticsMassager(activeAcbs));
     }
 
-    @Override
-    public Long getStatistic(CertifiedBodyStatistics stat) {
-        return stat.getTotalListings();
-    }
-
-    private String buildListingSection(Statistics stats, StatisticsMassager massager, FF4j ff4j) {
+    private String buildListingSection(Statistics stats, StatisticsMassager massager) {
         StringBuilder section = new StringBuilder();
 
         section.append(buildHeader("Total # of Listings (Regardless of Status or Edition)",
-                stats.getTotalListings()));
+                stats.getListingsForEditionAnyTotal()));
         section.append("<ul>");
 
         section.append(buildSection(
                 "Total # of Active (Including Suspended by ONC/ONC-ACB 2014 Listings)",
-                stats.getTotalActive2014Listings(),
-                massager.getStatisticsByEdition(stats.getTotalActiveListingsByCertifiedBody(), get2014EditionAsInteger())));
+                stats.getListingsForEdition2014WithActiveAndSuspendedStatuses().getCount(),
+                massager.getStatistics(stats.getListingsForEdition2014WithActiveAndSuspendedStatuses().getAcbStatistics())));
 
-        List<CertifiedBodyStatistics> activeListingCountFor2015ByAcb = massager
-                .getStatistics(stats.getActiveListingCountFor2015ByAcb());
         section.append(buildSection(
                 "Total # of Active (Including Suspended by ONC/ONC-ACB 2015 Listings)",
-                sumTotalListings(activeListingCountFor2015ByAcb),
-                activeListingCountFor2015ByAcb));
+                stats.getListingsForEdition2015NonCuresWithActiveAndSuspendedStatuses().getCount(),
+                massager.getStatistics(
+                        stats.getListingsForEdition2015NonCuresWithActiveAndSuspendedStatuses().getAcbStatistics())));
 
-        List<CertifiedBodyStatistics> listingCountWith2015AndAltTestMethodsByAcb = massager
-                .getStatistics(stats.getTotalListingsWithCertifiedBodyAndAlternativeTestMethods());
         section.append(buildSection(
                 "Total # of 2015 Listings with Alternative Test Methods",
-                sumTotalListings(listingCountWith2015AndAltTestMethodsByAcb),
-                listingCountWith2015AndAltTestMethodsByAcb));
+                stats.getListingsForEdition2015NonCuresWithAllStatusesAndAltTestMethods().getCount(),
+                massager.getStatistics(
+                        stats.getListingsForEdition2015NonCuresWithAllStatusesAndAltTestMethods().getAcbStatistics())));
 
-        if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
-            List<CertifiedBodyStatistics> activeListingCountWithCuresUpdatedByAcb = massager
-                    .getStatistics(stats.getActiveListingCountWithCuresUpdatedByAcb());
-            section.append(buildSection(
-                    "Total # of Active (Including Suspended by ONC/ONC-ACB 2015 Cures Update Listings)",
-                    sumTotalListings(activeListingCountWithCuresUpdatedByAcb),
-                    activeListingCountWithCuresUpdatedByAcb));
+        section.append(buildSection(
+                "Total # of Active (Including Suspended by ONC/ONC-ACB 2015 Cures Update Listings)",
+                stats.getListingsForEdition2015CuresWithActiveAndSuspendedStatuses().getCount(),
+                massager.getStatistics(stats.getListingsForEdition2015CuresWithActiveAndSuspendedStatuses().getAcbStatistics())));
 
-            List<CertifiedBodyStatistics> listingCountWithCuresUpdatedAndAltTestMethodsByAcb = massager
-                    .getStatistics(stats.getListingCountWithCuresUpdatedAndAltTestMethodsByAcb());
-            section.append(buildSection(
-                    "Total # of 2015 Cures Update Listings with Alternative Test Methods",
-                    sumTotalListings(listingCountWithCuresUpdatedAndAltTestMethodsByAcb),
-                    listingCountWithCuresUpdatedAndAltTestMethodsByAcb));
-
-            section.append(buildItem("Total # of 2015 Listings and 2015 Cures Update Listings (Regardless of Status)",
-                    stats.getTotal2015Listings()));
-
-            section.append(buildItem("Total # of 2015 Listings (Regardless of Status)",
-                    stats.getAllListingsCountWithoutCuresUpdated()));
-
-            section.append(buildItem("Total # of 2015 Cures Update Listings (Regardless of Status)",
-                    stats.getAllListingsCountWithCuresUpdated()));
-        } else {
-            section.append(buildItem("Total # of 2015 Listings (Regardless of Status)", stats.getTotal2015Listings()));
-        }
+        section.append(buildSection(
+                "Total # of 2015 Cures Update Listings with Alternative Test Methods",
+                stats.getListingsForEdition2015CuresWithAllStatusesAndAltTestMethods().getCount(),
+                massager.getStatistics(
+                        stats.getListingsForEdition2015CuresWithAllStatusesAndAltTestMethods().getAcbStatistics())));
 
 
-        section.append(buildItem("Total # of 2014 Listings (Regardless of Status)", stats.getTotal2014Listings()));
-        section.append(buildItem("Total # of 2011 Listings (Regardless of Status)", stats.getTotal2011Listings()));
+        section.append(buildItem("Total # of 2015 Listings and 2015 Cures Update Listings (Regardless of Status)",
+                stats.getListingsForEdition2015NonCuresAndCuresTotal()));
+
+        section.append(buildItem("Total # of 2015 Listings (Regardless of Status)",
+                stats.getListingsForEdition2015NonCuresTotal()));
+
+        section.append(buildItem("Total # of 2015 Cures Update Listings (Regardless of Status)",
+                stats.getListingsForEdition2015CuresTotal()));
+
+
+        section.append(buildItem("Total # of 2014 Listings (Regardless of Status)", stats.getListingsForEdition2014Total()));
+        section.append(buildItem("Total # of 2011 Listings (Regardless of Status)", stats.getListingsForEdition2011Total()));
 
         section.append("</ul>");
         return section.toString();

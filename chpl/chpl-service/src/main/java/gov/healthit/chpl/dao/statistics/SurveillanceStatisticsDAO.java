@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.DateRange;
-import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
+import gov.healthit.chpl.domain.statistics.AcbStat;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
 import gov.healthit.chpl.entity.surveillance.NonconformityAggregatedStatisticsEntity;
@@ -117,7 +117,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
     /**
      * Open NCs By ACB.
      */
-    public List<CertifiedBodyStatistics> getTotalOpenNonconformitiesByAcb(final DateRange dateRange) {
+    public List<AcbStat> getTotalOpenNonconformitiesByAcb(final DateRange dateRange) {
         String hql = "SELECT cb.name, count(*) "
                 + "FROM CertifiedProductEntity cp, "
                 + "CertificationBodyEntity cb, "
@@ -147,13 +147,11 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         }
 
         List<Object[]> results = query.getResultList();
-        List<CertifiedBodyStatistics> cbStats = new ArrayList<CertifiedBodyStatistics>();
+        List<AcbStat> cbStats = new ArrayList<AcbStat>();
         for (Object[] obj : results) {
-            CertifiedBodyStatistics stat = new CertifiedBodyStatistics();
-            stat.setName(obj[0].toString());
-            stat.setYear(null);
-            stat.setTotalListings(Long.valueOf(obj[1].toString()));
-            stat.setCertificationStatusName(null);
+            AcbStat stat = new AcbStat();
+            stat.setAcbName(obj[0].toString());
+            stat.setCount(Long.valueOf(obj[1].toString()));
             cbStats.add(stat);
         }
         return cbStats;
@@ -181,7 +179,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
     /**
      * Open Surveillance Activities By ACB.
      */
-    public List<CertifiedBodyStatistics> getTotalOpenSurveillanceActivitiesByAcb(final DateRange dateRange) {
+    public List<AcbStat> getTotalOpenSurveillanceActivitiesByAcb(final DateRange dateRange) {
         String hql = "SELECT cb.name, count(*) "
                 + "FROM CertifiedProductEntity cp, "
                 + "CertificationBodyEntity cb, "
@@ -208,13 +206,11 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         }
 
         List<Object[]> results = query.getResultList();
-        List<CertifiedBodyStatistics> cbStats = new ArrayList<CertifiedBodyStatistics>();
+        List<AcbStat> cbStats = new ArrayList<AcbStat>();
         for (Object[] obj : results) {
-            CertifiedBodyStatistics stat = new CertifiedBodyStatistics();
-            stat.setName(obj[0].toString());
-            stat.setYear(null);
-            stat.setTotalListings(Long.valueOf(obj[1].toString()));
-            stat.setCertificationStatusName(null);
+            AcbStat stat = new AcbStat();
+            stat.setAcbName(obj[0].toString());
+            stat.setCount(Long.valueOf(obj[1].toString()));
             cbStats.add(stat);
         }
         return cbStats;

@@ -86,7 +86,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
 
     private void createSummaryStatisticsFile(final Date startDate, final Date endDate, final Integer numDaysInPeriod)
             throws InterruptedException, ExecutionException {
-        List<Statistics> csvStats = new ArrayList<Statistics>();
+        List<CsvStatistics> csvStats = new ArrayList<CsvStatistics>();
         Calendar startDateCal = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
         startDateCal.setTime(startDate);
         Calendar endDateCal = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
@@ -97,7 +97,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
             LOGGER.info("Getting csvRecord for start date " + startDateCal.getTime().toString() + " end date "
                     + endDateCal.getTime().toString());
             DateRange csvRange = new DateRange(startDateCal.getTime(), new Date(endDateCal.getTimeInMillis()));
-            Statistics historyStat = new Statistics();
+            CsvStatistics historyStat = new CsvStatistics();
             historyStat.setDateRange(csvRange);
             historyStat = historicalStatisticsCreator.getStatistics(csvRange);
             csvStats.add(historyStat);

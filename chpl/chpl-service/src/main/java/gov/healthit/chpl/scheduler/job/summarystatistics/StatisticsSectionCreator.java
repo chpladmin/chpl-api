@@ -1,14 +1,14 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
+import gov.healthit.chpl.domain.statistics.AcbStat;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 
 public abstract class StatisticsSectionCreator {
-
-    public abstract Long getStatistic(CertifiedBodyStatistics stat);
 
     public String buildHeader(String text, Long count) {
         StringBuilder header = new StringBuilder();
@@ -20,14 +20,14 @@ public abstract class StatisticsSectionCreator {
                 .toString();
     }
 
-    public String buildSection(String header, Long headerCount, List<CertifiedBodyStatistics> stats) {
+    public String buildSection(String header, Long headerCount, List<AcbStat> stats) {
         StringBuilder section = new StringBuilder();
 
         section.append(buildSectionHeader(header, headerCount))
-                .append("<ul>");
+        .append("<ul>");
 
         stats.stream()
-                .forEach(stat -> section.append(buildAcbCount(stat.getName(), getStatistic(stat))));
+        .forEach(stat -> section.append(buildAcbCount(stat.getAcbName(), stat.getCount())));
 
         section.append("</ul>");
         return section.toString();
@@ -48,7 +48,7 @@ public abstract class StatisticsSectionCreator {
         return section.append("<li>")
                 .append(header)
                 .append(" - ")
-                .append(count)
+                .append(Objects.nonNull(count) ? count.toString() : "")
                 .append("</li>")
                 .toString();
     }

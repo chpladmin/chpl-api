@@ -110,9 +110,9 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         NonConformityStatisticsSectionCreator nonConformityStatisticsSectionCreator = new NonConformityStatisticsSectionCreator();
 
         emailMessage.append(createMessageHeader(endDate));
-        emailMessage.append(developerStatisticsSectionCreator.build(stats, activeAcbs, ff4j));
-        emailMessage.append(productStatisticsSectionCreator.build(stats, activeAcbs, ff4j));
-        emailMessage.append(listingStatisticsSectionCreator.build(stats, activeAcbs, ff4j));
+        emailMessage.append(developerStatisticsSectionCreator.build(stats, activeAcbs));
+        emailMessage.append(productStatisticsSectionCreator.build(stats, activeAcbs));
+        emailMessage.append(listingStatisticsSectionCreator.build(stats, activeAcbs));
         emailMessage.append(surveillanceStatisticsSectionCreator.build(stats, activeAcbs));
         emailMessage.append(nonConformityStatisticsSectionCreator.build(stats, activeAcbs));
 

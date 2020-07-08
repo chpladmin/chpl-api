@@ -2,9 +2,7 @@ package gov.healthit.chpl.domain.statistics;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
-import gov.healthit.chpl.domain.DateRange;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,75 +10,82 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Statistics implements Serializable {
     private static final long serialVersionUID = 6977674702447513779L;
-    private DateRange dateRange;
-    private Long totalDevelopers;
-    private Long totalDevelopersWith2014Listings;
-    private Long totalDevelopersWithActive2014Listings;
-    private List<CertifiedBodyStatistics> totalDevelopersByCertifiedBodyWithListingsEachYear;
-    private List<CertifiedBodyStatistics> totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear;
-    private Long totalSuspendedDevelopersWith2014Listings;
-    private Long totalDevelopersWith2015Listings;
-    private Long totalDevelopersWithActive2015Listings;
-    private Long totalCertifiedProducts;
-    private List<CertifiedBodyStatistics> totalCPListingsEachYearByCertifiedBody;
-    private List<CertifiedBodyStatistics> totalCPListingsEachYearByCertifiedBodyAndCertificationStatus;
-    private Long totalCPs2014Listings;
-    private Long totalCPsActive2014Listings;
-    private Long totalCPsSuspended2014Listings;
-    private Long totalCPs2015Listings;
-    private Long totalCPsActive2015Listings;
-    private Long totalCPsSuspended2015Listings;
-    private Long totalCPsActiveListings;
-    private Long totalListings;
-    private Long totalActive2014Listings;
-    //private Long totalActive2015Listings;
-    private List<CertifiedBodyStatistics> totalActiveListingsByCertifiedBody;
-    private Long total2014Listings;
-    private Long total2015Listings;
-    private Long total2011Listings;
-    private Long totalSurveillanceActivities;
-    private Long totalOpenSurveillanceActivities;
-    private List<CertifiedBodyStatistics> totalOpenSurveillanceActivitiesByAcb;
-    private Long totalClosedSurveillanceActivities;
-    private Long totalNonConformities;
-    private Long totalOpenNonconformities;
-    private Long averageTimeToAssessConformity;
-    private Long averageTimeToApproveCAP;
-    private Long averageDurationOfCAP;
-    private Long averageTimeFromCAPApprovalToSurveillanceEnd;
-    private Long averageTimeFromCAPEndToSurveillanceEnd;
-    private Long averageTimeFromSurveillanceOpenToSurveillanceClose;
-    private Map<Long, Long> openCAPCountByAcb;
-    private Map<Long, Long> closedCAPCountByAcb;
-    private Long averageTimeToCloseSurveillance;
-    private List<CertifiedBodyStatistics> totalOpenNonconformitiesByAcb;
-    private Long totalClosedNonconformities;
-    private List<CertifiedBodyStatistics> totalListingsWithCertifiedBodyAndAlternativeTestMethods;
 
-    private List<CertifiedBodyStatistics> uniqueDevelopersCountWithoutCuresUpdatedListingsByAcb;
-    private List<CertifiedBodyStatistics> uniqueDevelopersCountWithoutCuresUpdatedActiveListingsByAcb;
-    private List<CertifiedBodyStatistics> uniqueDevelopersCountWithoutCuresUpdatedSuspendedListingsByAcb;
-    private List<CertifiedBodyStatistics> uniqueProductsCountWithoutCuresUpdatedListingsByAcb;
-    private List<CertifiedBodyStatistics> uniqueProductsCountWithoutCuresUpdatedActiveListingsByAcb;
-    private List<CertifiedBodyStatistics> uniqueProductsCountWithoutCuresUpdatedSuspendedListingsByAcb;
+    //////////////////////////////////////////////////////////////////////
+    private Stat developersForEdition2014WithAllStatuses;
+    private Stat developersForEdition2014WithActiveStatuses;
+    private Stat developersForEdition2014WithSuspendedStatuses;
 
-    private List<CertifiedBodyStatistics> uniqueDevelopersCountWithCuresUpdatedListingsByAcb;
-    private List<CertifiedBodyStatistics> uniqueDevelopersCountWithCuresUpdatedActiveListingsByAcb;
-    private List<CertifiedBodyStatistics> uniqueDevelopersCountWithCuresUpdatedSuspendedListingsByAcb;
-    private List<CertifiedBodyStatistics> uniqueProductsCountWithCuresUpdatedListingsByAcb;
-    private List<CertifiedBodyStatistics> uniqueProductsCountWithCuresUpdatedActiveListingsByAcb;
-    private List<CertifiedBodyStatistics> uniqueProductsCountWithCuresUpdatedSuspendedListingsByAcb;
+    private Stat developersForEdition2015CuresWithAllStatuses;
+    private Stat developersForEdition2015CuresWithActiveStatuses;
+    private Stat developersForEdition2015CuresWithSuspendedStatuses;
 
-    private List<CertifiedBodyStatistics> uniqueDevelopersCountForAny2015ListingsByAcb;
-    private List<CertifiedBodyStatistics> uniqueDevelopersCountForAny2015ActiveListingsByAcb;
-    private List<CertifiedBodyStatistics> uniqueDevelopersCountForAny2015SuspendedListingsByAcb;
-    private List<CertifiedBodyStatistics> uniqueProductsCountForAny2015ListingsByAcb;
-    private List<CertifiedBodyStatistics> uniqueProductsCountForAny2015ActiveListingsByAcb;
-    private List<CertifiedBodyStatistics> uniqueProductsCountForAny2015SuspendedListingsByAcb;
+    private Stat developersForEdition2015NonCuresWithAllStatuses;
+    private Stat developersForEdition2015NonCuresWithActiveStatuses;
+    private Stat developersForEdition2015NonCuresWithSuspendedStatuses;
 
-    private List<CertifiedBodyStatistics> activeListingCountWithCuresUpdatedByAcb;
-    private List<CertifiedBodyStatistics> activeListingCountFor2015ByAcb;
-    private List<CertifiedBodyStatistics> listingCountWithCuresUpdatedAndAltTestMethodsByAcb;
-    private Long allListingsCountWithCuresUpdated;
-    private Long allListingsCountWithoutCuresUpdated;
+    private Stat developersForEdition2015CuresAndNonCuresWithAllStatuses;
+    private Stat developersForEdition2015CuresAndNonCuresWithActiveStatuses;
+    private Stat developersForEdition2015CuresAndNonCuresWithSuspendedStatuses;
+
+    private Long developersForEditionAllAndAllStatuses;
+
+    //////////////////////////////////////////////////////////////////////
+    private Stat productsForEdition2014WithAllStatuses;
+    private Stat productsForEdition2014WithActiveStatuses;
+    private Stat productsForEdition2014WithSuspendedStatuses;
+
+    private Stat productsForEdition2015CuresWithAllStatuses;
+    private Stat productsForEdition2015CuresWithActiveStatuses;
+    private Stat productsForEdition2015CuresWithSuspendedStatuses;
+
+    private Stat productsForEdition2015NonCuresWithAllStatuses;
+    private Stat productsForEdition2015NonCuresWithActiveStatuses;
+    private Stat productsForEdition2015NonCuresWithSuspendedStatuses;
+
+    private Stat productsForEdition2015CuresAndNonCuresWithAllStatuses;
+    private Stat productsForEdition2015CuresAndNonCuresWithActiveStatuses;
+    private Stat productsForEdition2015CuresAndNonCuresWithSuspendedStatuses;
+
+    private Long productsForEditionAllAndActiveStatuses;
+    private Long productsForEditionAllAndAllStatuses;
+
+    //////////////////////////////////////////////////////////////////////
+
+    private Stat listingsForEdition2014WithActiveAndSuspendedStatuses;
+    private Stat listingsForEdition2015NonCuresWithActiveAndSuspendedStatuses;
+    private Stat listingsForEdition2015CuresWithActiveAndSuspendedStatuses;
+
+    private Stat listingsForEdition2015NonCuresWithAllStatusesAndAltTestMethods;
+    private Stat listingsForEdition2015CuresWithAllStatusesAndAltTestMethods;
+
+    private Long listingsForEdition2015CuresTotal; // allListingsCountWithCuresUpdated;
+    private Long listingsForEdition2015NonCuresTotal; // allListingsCountWithoutCuresUpdated;
+    private Long listingsForEdition2015NonCuresAndCuresTotal; // total2015Listings;
+    private Long listingsForEdition2014Total; // total2014Listings;
+    private Long listingsForEdition2011Total; //total2011Listings;
+    private Long listingsForEditionAnyTotal; //totalListings;
+
+    //////////////////////////////////////////////////////////////////////
+
+    private Long surveillanceAllStatusTotal;  //totalSurveillanceActivities;
+    private Stat surveillanceOpenStatus; //totalOpenSurveillanceActivities & totalOpenSurveillanceActivitiesByAcb;
+    private Long surveillanceClosedStatusTotal; //totalClosedSurveillanceActivities
+    private Long surveillanceAvgTimeToClose; //averageTimeToCloseSurveillance
+
+    //////////////////////////////////////////////////////////////////////
+
+    private Long nonconfStatusAllTotal; //totalNonConformities
+    private Stat nonconfStatusOpen; // totalOpenNonconformities; & totalOpenNonconformitiesByAcb
+    private Long nonconfStatusClosedTotal; //totalClosedNonconformities
+    private Long nonconfAvgTimeToAssessConformity; //averageTimeToAssessConformity
+    private Long nonconfAvgTimeToApproveCAP; //averageTimeToApproveCAP
+    private Long nonconfAvgDurationOfCAP; //averageDurationOfCAP
+    private Long nonconfAvgTimeFromCAPAprrovalToSurveillanceEnd; //averageTimeFromCAPApprovalToSurveillanceEnd
+    private Long nonconfAvgTimeFromCAPEndToSurveillanceEnd; //averageTimeFromCAPEndToSurveillanceEnd
+    private Long nonconfAvgTimeFromSurveillanceOpenToSurveillanceClose; //averageTimeFromSurveillanceOpenToSurveillanceClose
+    private List<AcbStat> nonconfCAPStatusOpen; //openCAPCountByAcb
+    private List<AcbStat> nonconfCAPStatusClosed; //closedCAPCountByAcb
+
+
 }

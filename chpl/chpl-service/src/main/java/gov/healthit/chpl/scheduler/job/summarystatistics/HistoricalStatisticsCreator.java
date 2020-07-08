@@ -19,7 +19,6 @@ import gov.healthit.chpl.dao.statistics.DeveloperStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.ListingStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
 import gov.healthit.chpl.domain.DateRange;
-import gov.healthit.chpl.domain.statistics.Statistics;
 import gov.healthit.chpl.entity.CertificationStatusType;
 
 @Component()
@@ -41,10 +40,10 @@ public class HistoricalStatisticsCreator {
     }
 
     @Transactional(readOnly = true)
-    public Statistics getStatistics(DateRange dateRange) throws InterruptedException, ExecutionException {
+    public CsvStatistics getStatistics(DateRange dateRange) throws InterruptedException, ExecutionException {
         ExecutorService executorService = Executors.newFixedThreadPool(getThreadCountForJob());
 
-        Statistics stats = new Statistics();
+        CsvStatistics stats = new CsvStatistics();
         stats.setDateRange(dateRange);
         List<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
 
