@@ -91,11 +91,11 @@ public class EmailStatisticsCreator {
                     .thenAccept(result -> stats.setDevelopersForEdition2015NonCuresWithSuspendedStatuses(result)));
 
             // 2015 Cures And Non-Cures Statistics
-            futures.add(CompletableFuture.supplyAsync(() -> developerDataCreator.getUniqueDeveloperCount(allListings, EditionCriteria.EDITION_2015_CURES_N_NON_CURES, getAllStatuses()), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> developerDataCreator.getUniqueDeveloperCount(allListings, EditionCriteria.EDITION_2015_CURES_AND_NON_CURES, getAllStatuses()), executorService)
                     .thenAccept(result -> stats.setDevelopersForEdition2015CuresAndNonCuresWithAllStatuses(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> developerDataCreator.getUniqueDeveloperCount(allListings, EditionCriteria.EDITION_2015_CURES_N_NON_CURES, getActiveStatuses()), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> developerDataCreator.getUniqueDeveloperCount(allListings, EditionCriteria.EDITION_2015_CURES_AND_NON_CURES, getActiveStatuses()), executorService)
                     .thenAccept(result -> stats.setDevelopersForEdition2015CuresAndNonCuresWithActiveStatuses(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> developerDataCreator.getUniqueDeveloperCount(allListings, EditionCriteria.EDITION_2015_CURES_N_NON_CURES, getSuspendedStatuses()), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> developerDataCreator.getUniqueDeveloperCount(allListings, EditionCriteria.EDITION_2015_CURES_AND_NON_CURES, getSuspendedStatuses()), executorService)
                     .thenAccept(result -> stats.setDevelopersForEdition2015CuresAndNonCuresWithSuspendedStatuses(result)));
 
             // Total # of Unique Developers (Regardless of Edition)
@@ -135,11 +135,11 @@ public class EmailStatisticsCreator {
                     .thenAccept(result -> stats.setProductsForEdition2015NonCuresWithSuspendedStatuses(result)));
 
             // 2015 Cures And Non-Cures Statistics
-            futures.add(CompletableFuture.supplyAsync(() -> productDataCreator.getUniqueProductCount(allListings, EditionCriteria.EDITION_2015_CURES_N_NON_CURES, getAllStatuses()), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> productDataCreator.getUniqueProductCount(allListings, EditionCriteria.EDITION_2015_CURES_AND_NON_CURES, getAllStatuses()), executorService)
                     .thenAccept(result -> stats.setProductsForEdition2015CuresAndNonCuresWithAllStatuses(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> productDataCreator.getUniqueProductCount(allListings, EditionCriteria.EDITION_2015_CURES_N_NON_CURES, getActiveStatuses()), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> productDataCreator.getUniqueProductCount(allListings, EditionCriteria.EDITION_2015_CURES_AND_NON_CURES, getActiveStatuses()), executorService)
                     .thenAccept(result -> stats.setProductsForEdition2015CuresAndNonCuresWithActiveStatuses(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> productDataCreator.getUniqueProductCount(allListings, EditionCriteria.EDITION_2015_CURES_N_NON_CURES, getSuspendedStatuses()), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> productDataCreator.getUniqueProductCount(allListings, EditionCriteria.EDITION_2015_CURES_AND_NON_CURES, getSuspendedStatuses()), executorService)
                     .thenAccept(result -> stats.setProductsForEdition2015CuresAndNonCuresWithSuspendedStatuses(result)));
 
             //Total # of Unique Products with Active Listings (Regardless of Edition)
@@ -166,7 +166,7 @@ public class EmailStatisticsCreator {
                     allListings, EditionCriteria.EDITION_2014, getAllStatuses(), false), executorService)
                     .thenAccept(result -> stats.setListingsForEdition2014Total(result)));
             futures.add(CompletableFuture.supplyAsync(() -> listingDataCreator.getUniqueListingCountTotal(
-                    allListings, EditionCriteria.EDITION_2015_CURES_N_NON_CURES, getAllStatuses(), false), executorService)
+                    allListings, EditionCriteria.EDITION_2015_CURES_AND_NON_CURES, getAllStatuses(), false), executorService)
                     .thenAccept(result -> stats.setListingsForEdition2015NonCuresAndCuresTotal(result)));
             futures.add(CompletableFuture.supplyAsync(() -> listingDataCreator.getUniqueListingCountTotal(
                     allListings, EditionCriteria.EDITION_2015_CURES, getAllStatuses(), false), executorService)

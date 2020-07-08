@@ -38,7 +38,7 @@ public abstract class StatisticsDataCreator {
         case EDITION_2015_NON_CURES :
             return listing.getCertificationEditionId().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId())
                     && !listing.getCuresUpdate();
-        case EDITION_2015_CURES_N_NON_CURES :
+        case EDITION_2015_CURES_AND_NON_CURES :
             return listing.getCertificationEditionId().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId());
         default :
             return false;

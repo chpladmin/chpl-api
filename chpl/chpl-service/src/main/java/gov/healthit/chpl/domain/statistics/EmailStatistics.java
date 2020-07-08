@@ -59,33 +59,33 @@ public class EmailStatistics implements Serializable {
     private EmailStatistic listingsForEdition2015NonCuresWithAllStatusesAndAltTestMethods;
     private EmailStatistic listingsForEdition2015CuresWithAllStatusesAndAltTestMethods;
 
-    private Long listingsForEdition2015CuresTotal; // allListingsCountWithCuresUpdated;
-    private Long listingsForEdition2015NonCuresTotal; // allListingsCountWithoutCuresUpdated;
-    private Long listingsForEdition2015NonCuresAndCuresTotal; // total2015Listings;
-    private Long listingsForEdition2014Total; // total2014Listings;
-    private Long listingsForEdition2011Total; //total2011Listings;
-    private Long listingsForEditionAnyTotal; //totalListings;
+    private Long listingsForEdition2015CuresTotal;
+    private Long listingsForEdition2015NonCuresTotal;
+    private Long listingsForEdition2015NonCuresAndCuresTotal;
+    private Long listingsForEdition2014Total;
+    private Long listingsForEdition2011Total;
+    private Long listingsForEditionAnyTotal;
 
     //////////////////////////////////////////////////////////////////////
 
-    private Long surveillanceAllStatusTotal;  //totalSurveillanceActivities;
-    private EmailStatistic surveillanceOpenStatus; //totalOpenSurveillanceActivities & totalOpenSurveillanceActivitiesByAcb;
-    private Long surveillanceClosedStatusTotal; //totalClosedSurveillanceActivities
-    private Long surveillanceAvgTimeToClose; //averageTimeToCloseSurveillance
+    private Long surveillanceAllStatusTotal;
+    private EmailStatistic surveillanceOpenStatus;
+    private Long surveillanceClosedStatusTotal;
+    private Long surveillanceAvgTimeToClose;
 
     //////////////////////////////////////////////////////////////////////
 
-    private Long nonconfStatusAllTotal; //totalNonConformities
-    private EmailStatistic nonconfStatusOpen; // totalOpenNonconformities; & totalOpenNonconformitiesByAcb
-    private Long nonconfStatusClosedTotal; //totalClosedNonconformities
-    private Long nonconfAvgTimeToAssessConformity; //averageTimeToAssessConformity
-    private Long nonconfAvgTimeToApproveCAP; //averageTimeToApproveCAP
-    private Long nonconfAvgDurationOfCAP; //averageDurationOfCAP
-    private Long nonconfAvgTimeFromCAPAprrovalToSurveillanceEnd; //averageTimeFromCAPApprovalToSurveillanceEnd
-    private Long nonconfAvgTimeFromCAPEndToSurveillanceEnd; //averageTimeFromCAPEndToSurveillanceEnd
-    private Long nonconfAvgTimeFromSurveillanceOpenToSurveillanceClose; //averageTimeFromSurveillanceOpenToSurveillanceClose
-    private List<EmailCertificationBodyStatistic> nonconfCAPStatusOpen; //openCAPCountByAcb
-    private List<EmailCertificationBodyStatistic> nonconfCAPStatusClosed; //closedCAPCountByAcb
+    private Long nonconfStatusAllTotal;
+    private EmailStatistic nonconfStatusOpen;
+    private Long nonconfStatusClosedTotal;
+    private Long nonconfAvgTimeToAssessConformity;
+    private Long nonconfAvgTimeToApproveCAP;
+    private Long nonconfAvgDurationOfCAP;
+    private Long nonconfAvgTimeFromCAPAprrovalToSurveillanceEnd;
+    private Long nonconfAvgTimeFromCAPEndToSurveillanceEnd;
+    private Long nonconfAvgTimeFromSurveillanceOpenToSurveillanceClose;
+    private List<EmailCertificationBodyStatistic> nonconfCAPStatusOpen;
+    private List<EmailCertificationBodyStatistic> nonconfCAPStatusClosed;
 
 
 }
