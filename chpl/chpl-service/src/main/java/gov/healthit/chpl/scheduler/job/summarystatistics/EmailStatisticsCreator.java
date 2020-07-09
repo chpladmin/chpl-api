@@ -24,8 +24,6 @@ import gov.healthit.chpl.entity.CertificationStatusType;
 public class EmailStatisticsCreator {
     private static final Logger LOGGER = LogManager.getLogger("summaryStatisticsCreatorJobLogger");
 
-
-
     private DeveloperDataCreator developerDataCreator;
     private ProductDataCreator productDataCreator;
     private ListingDataCreator listingDataCreator;

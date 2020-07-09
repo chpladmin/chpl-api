@@ -13,5 +13,4 @@ public class EmailCertificationBodyStatistic implements Serializable {
     private Long count;
     private String acbName;
     private Long acbId;
-
 }

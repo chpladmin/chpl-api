@@ -11,6 +11,7 @@ public class DeveloperStatisticsSectionCreator extends StatisticsSectionCreator 
         return buildUniqueDeveloperSection(stats, new StatisticsMassager(activeAcbs));
     }
 
+    @SuppressWarnings({"checkstyle:linelength"})
     private String buildUniqueDeveloperSection(EmailStatistics stats, StatisticsMassager massager) {
         StringBuilder section = new StringBuilder();
 
@@ -71,7 +72,6 @@ public class DeveloperStatisticsSectionCreator extends StatisticsSectionCreator 
                 "Total # of Developers with 2015 Cures Update Listings (Regardless of Status)",
                 stats.getDevelopersForEdition2015CuresWithAllStatuses().getCount(),
                 massager.getStatistics(stats.getDevelopersForEdition2015CuresWithAllStatuses().getAcbStatistics())));
-
 
         section.append(buildSection(
                 "Total # of Developers with Active 2015 Cures Update Listings",
