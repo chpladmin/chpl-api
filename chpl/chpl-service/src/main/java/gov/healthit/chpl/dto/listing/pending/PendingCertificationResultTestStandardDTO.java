@@ -3,16 +3,19 @@ package gov.healthit.chpl.dto.listing.pending;
 import java.io.Serializable;
 
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestStandardEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PendingCertificationResultTestStandardDTO implements Serializable {
     private static final long serialVersionUID = -4957314047711686694L;
     private Long id;
     private Long pendingCertificationResultId;
     private Long testStandardId;
     private String name;
-
-    public PendingCertificationResultTestStandardDTO() {
-    }
 
     public PendingCertificationResultTestStandardDTO(PendingCertificationResultTestStandardEntity entity) {
         this.setId(entity.getId());
