@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.summarystatistics;
+package gov.healthit.chpl.scheduler.job.summarystatistics.data;
 
 import java.util.List;
 import java.util.Map;
@@ -10,6 +10,7 @@ import java.util.function.Predicate;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.scheduler.job.summarystatistics.EditionCriteria;
 
 public abstract class StatisticsDataCreator {
 

@@ -1,12 +1,10 @@
-package gov.healthit.chpl.scheduler.job.summarystatistics;
+package gov.healthit.chpl.scheduler.job.summarystatistics.email;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
-import gov.healthit.chpl.domain.statistics.EmailCertificationBodyStatistic;
-import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
+import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailCertificationBodyStatistic;
 
 public abstract class StatisticsSectionCreator {
 
@@ -61,16 +59,6 @@ public abstract class StatisticsSectionCreator {
                 .append(count)
                 .append("</li>")
                 .toString();
-    }
-
-    public Long sumTotalListings(List<CertifiedBodyStatistics> stats) {
-        return stats.stream()
-                .collect(Collectors.summingLong(CertifiedBodyStatistics::getTotalListings));
-    }
-
-    public Long sumTotalDeveloperWithListings(List<CertifiedBodyStatistics> stats) {
-        return stats.stream()
-                .collect(Collectors.summingLong(CertifiedBodyStatistics::getTotalDevelopersWithListings));
     }
 
     public Integer get2015EditionAsInteger() {

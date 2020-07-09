@@ -12,6 +12,8 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import gov.healthit.chpl.scheduler.job.summarystatistics.data.CsvStatistics;
+
 public class StatsCsvFileWriter {
     private Logger logger;
     // Delimiter used in CSV file

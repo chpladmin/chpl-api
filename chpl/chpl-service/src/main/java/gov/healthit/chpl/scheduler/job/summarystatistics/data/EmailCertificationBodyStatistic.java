@@ -1,4 +1,4 @@
-package gov.healthit.chpl.domain.statistics;
+package gov.healthit.chpl.scheduler.job.summarystatistics.data;
 
 import java.io.Serializable;
 

@@ -1,9 +1,9 @@
-package gov.healthit.chpl.scheduler.job.summarystatistics;
+package gov.healthit.chpl.scheduler.job.summarystatistics.email;
 
 import java.util.List;
 
-import gov.healthit.chpl.domain.statistics.EmailStatistics;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatistics;
 
 public class SurveillanceStatisticsSectionCreator extends StatisticsSectionCreator {
 

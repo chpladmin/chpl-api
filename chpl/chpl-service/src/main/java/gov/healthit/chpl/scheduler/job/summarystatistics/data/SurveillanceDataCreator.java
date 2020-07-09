@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.summarystatistics;
+package gov.healthit.chpl.scheduler.job.summarystatistics.data;
 
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
-import gov.healthit.chpl.domain.statistics.EmailCertificationBodyStatistic;
-import gov.healthit.chpl.domain.statistics.EmailStatistic;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 
 @Component

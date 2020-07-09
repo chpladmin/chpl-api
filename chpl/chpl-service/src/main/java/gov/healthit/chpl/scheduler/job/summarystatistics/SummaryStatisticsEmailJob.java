@@ -14,7 +14,6 @@ import javax.mail.internet.AddressException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.ff4j.FF4j;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,15 +26,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
-import gov.healthit.chpl.domain.statistics.EmailStatistics;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.entity.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
+import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatistics;
+import gov.healthit.chpl.scheduler.job.summarystatistics.email.DeveloperStatisticsSectionCreator;
+import gov.healthit.chpl.scheduler.job.summarystatistics.email.ListingStatisticsSectionCreator;
+import gov.healthit.chpl.scheduler.job.summarystatistics.email.NonConformityStatisticsSectionCreator;
+import gov.healthit.chpl.scheduler.job.summarystatistics.email.ProductStatisticsSectionCreator;
+import gov.healthit.chpl.scheduler.job.summarystatistics.email.SurveillanceStatisticsSectionCreator;
 import gov.healthit.chpl.util.EmailBuilder;
 
 public class SummaryStatisticsEmailJob extends QuartzJob {
-    private static Logger LOGGER = LogManager.getLogger("summaryStatisticsEmailJobLogger");
+    private static final Logger LOGGER = LogManager.getLogger("summaryStatisticsEmailJobLogger");
 
     @Autowired
     private SummaryStatisticsDAO summaryStatisticsDAO;
@@ -45,9 +49,6 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
 
     @Autowired
     private Environment env;
-
-    @Autowired
-    private FF4j ff4j;
 
     private List<CertificationBodyDTO> activeAcbs;
 

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.summarystatistics;
+package gov.healthit.chpl.scheduler.job.summarystatistics.data;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -14,8 +14,6 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
 import gov.healthit.chpl.domain.concept.NonconformityStatusConcept;
-import gov.healthit.chpl.domain.statistics.EmailCertificationBodyStatistic;
-import gov.healthit.chpl.domain.statistics.EmailStatistic;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.summarystatistics;
+package gov.healthit.chpl.scheduler.job.summarystatistics.data;
 
 import java.util.ArrayList;
 import java.util.List;

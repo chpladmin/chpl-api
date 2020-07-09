@@ -1,12 +1,12 @@
-package gov.healthit.chpl.scheduler.job.summarystatistics;
+package gov.healthit.chpl.scheduler.job.summarystatistics.email;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import gov.healthit.chpl.domain.statistics.EmailCertificationBodyStatistic;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailCertificationBodyStatistic;
 import lombok.Data;
 
 @Data
@@ -37,7 +37,7 @@ public class StatisticsMassager {
     private List<EmailCertificationBodyStatistic> getMissingAcbStats(List<EmailCertificationBodyStatistic> statistics) {
         List<EmailCertificationBodyStatistic> updatedStats = activeAcbs.stream()
                 .filter(acb -> !isAcbInStatistics(acb, statistics))
-                .map(acb -> getNewCertifiedBodyStatistic(acb.getName()))
+                .map(acb -> getNewCertificationBodyStatistic(acb.getName()))
                 .collect(Collectors.toList());
         return updatedStats;
     }
@@ -49,7 +49,7 @@ public class StatisticsMassager {
                 .isPresent();
     }
 
-    private EmailCertificationBodyStatistic getNewCertifiedBodyStatistic(String acbName) {
+    private EmailCertificationBodyStatistic getNewCertificationBodyStatistic(String acbName) {
         EmailCertificationBodyStatistic stat = new EmailCertificationBodyStatistic();
         stat.setAcbName(acbName);
         stat.setCount(0L);

@@ -9,11 +9,11 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.DateRange;
-import gov.healthit.chpl.domain.statistics.EmailCertificationBodyStatistic;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
 import gov.healthit.chpl.entity.surveillance.NonconformityAggregatedStatisticsEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
+import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailCertificationBodyStatistic;
 
 @Repository("surveillanceStatisticsDAO")
 public class SurveillanceStatisticsDAO extends BaseDAOImpl {

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.summarystatistics;
+package gov.healthit.chpl.scheduler.job.summarystatistics.data;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -7,10 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CertificationResultDAO;
-import gov.healthit.chpl.domain.statistics.EmailCertificationBodyStatistic;
-import gov.healthit.chpl.domain.statistics.EmailStatistic;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.scheduler.job.summarystatistics.EditionCriteria;
 
 @Component
 public class ListingDataCreator extends StatisticsDataCreator {
