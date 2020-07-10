@@ -47,6 +47,7 @@ public class EmailBuilder {
     //optional parameters set to default
     private String subject = "";
     private String htmlBody = "";
+    private String htmlFooter = "";
     private List<File> fileAttachments = null;
     private Environment env = null;
 
@@ -108,6 +109,18 @@ public class EmailBuilder {
         return this;
     }
 
+    public EmailBuilder htmlFooter() {
+        htmlFooter = String.format("<p>"
+                + "If there are any questions about this process, please visit the "
+                + "<a href=\"%s\">"
+                + "ONC-ACB & ONC-ATL Portal</a> to submit a ticket."
+                + "</p>"
+                + "<p>Thank you!</p>"
+                + "ONC CHPL Team",
+                env.getProperty("footer.url"));
+        return this;
+    }
+
     /**
      * Sets the files to send as attachments with the email.
      * @param val - List of File objects
@@ -132,7 +145,7 @@ public class EmailBuilder {
 
         Multipart multipart = new MimeMultipart();
 
-        multipart.addBodyPart(overrider.getBody(htmlBody, recipients));
+        multipart.addBodyPart(overrider.getBody(htmlBody + htmlFooter, recipients));
 
         if (fileAttachments != null) {
             // Add file attachments to email
@@ -144,7 +157,7 @@ public class EmailBuilder {
                 multipart.addBodyPart(messageBodyPart);
             }
         }
-        message.setContent(multipart, "text/html");
+        message.setContent(multipart, "text/html; charset=UTF-8");
 
         return this;
     }
