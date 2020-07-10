@@ -165,6 +165,17 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <RollingFile name="splitDeveloperJob"
+            fileName="${logDir}/scheduler/splitDeveloperJob.log"
+            filePattern="${logDir}/scheduler/history/splitDeveloperJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
         <RollingFile name="apiKeyWarningEmailJob"
             fileName="${logDir}/scheduler/apiKeyWarningEmailJob.log"
             filePattern="${logDir}/scheduler/history/apiKeyWarningEmailJob-%d{yyyy-MM-dd}.log">
@@ -448,6 +459,10 @@
         <Logger name="triggerDeveloperBanJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="triggerDeveloperBanJob" />
+        </Logger>
+        <Logger name="splitDeveloperJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="splitDeveloperJob" />
         </Logger>
         <Logger name="apiKeyWarningEmailJobLogger" level="INFO"
             additivity="false">
