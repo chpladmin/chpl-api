@@ -27,13 +27,15 @@ public class ListingUploadHandler {
 
     public int getHeadingRecordIndex(List<CSVRecord> allCsvRecords) {
         int headingIndex = -1;
-        Optional<CSVRecord> headingRecord =
-                allCsvRecords.stream().filter(currRecord -> hasHeading(currRecord))
-                .findFirst();
-        if (headingRecord.isPresent() && headingRecord.get() != null) {
-            headingIndex = (int) headingRecord.get().getRecordNumber();
-        } else {
-            LOGGER.warn("No heading row was found.");
+        if (allCsvRecords != null) {
+            Optional<CSVRecord> headingRecord =
+                    allCsvRecords.stream().filter(currRecord -> hasHeading(currRecord))
+                    .findFirst();
+            if (headingRecord.isPresent() && headingRecord.get() != null) {
+                headingIndex = (int) headingRecord.get().getRecordNumber() - 1;
+            } else {
+                LOGGER.warn("No heading row was found.");
+            }
         }
         return headingIndex;
     }
