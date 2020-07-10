@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
-import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.domain.search.SearchRequest;

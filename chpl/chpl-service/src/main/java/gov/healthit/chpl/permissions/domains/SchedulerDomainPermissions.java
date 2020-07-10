@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.permissions.domains.scheduler.CreateBackgroundJobTriggerActionPermissions;
 import gov.healthit.chpl.permissions.domains.scheduler.CreateOneTimeTriggerActionPermissions;
 import gov.healthit.chpl.permissions.domains.scheduler.CreateTriggerActionPermissions;
 import gov.healthit.chpl.permissions.domains.scheduler.DeleteTriggerActionPermissions;
@@ -18,6 +19,7 @@ import gov.healthit.chpl.permissions.domains.scheduler.UpdateTriggerActionPermis
 public class SchedulerDomainPermissions extends DomainPermissions {
     public static final String GET_ALL = "GET_ALL";
     public static final String CREATE_ONE_TIME_TRIGGER = "CREATE_ONE_TIME_TRIGGER";
+    public static final String CREATE_BACKGROUND_JOB_TRIGGER = "CREATE_BACKGROUND_JOB_TRIGGER";
     public static final String CREATE_TRIGGER = "CREATE_TRIGGER";
     public static final String DELETE_TRIGGER = "DELETE_TRIGGER";
     public static final String GET_ALL_SYSTEM_TRIGGERS = "GET_ALL_SYSTEM_TRIGGERS";
@@ -30,6 +32,7 @@ public class SchedulerDomainPermissions extends DomainPermissions {
     public SchedulerDomainPermissions(
             @Qualifier("schedulerGetAllActionPermissions") GetAllActionPermissions getAllActionPermissions,
             @Qualifier("schedulerCreateOneTimeTriggerActionPermissions") CreateOneTimeTriggerActionPermissions createOneTimeTriggerActionPermissions,
+            @Qualifier("schedulerCreateBackgroundJobTriggerActionPermissions") CreateBackgroundJobTriggerActionPermissions createBackgroundJobTriggerActionPermissions,
             @Qualifier("schedulerCreateTriggerActionPermissions") CreateTriggerActionPermissions createTriggerActionPermissions,
             @Qualifier("schedulerDeleteTriggerActionPermissions") DeleteTriggerActionPermissions deleteTriggerActionPermissions,
             @Qualifier("schedulerGetAllSystemTriggersActionPermissions") GetAllSystemTriggersActionPermissions getAllSystemTriggersActionPermissions,
@@ -40,6 +43,7 @@ public class SchedulerDomainPermissions extends DomainPermissions {
 
         getActionPermissions().put(GET_ALL, getAllActionPermissions);
         getActionPermissions().put(CREATE_ONE_TIME_TRIGGER, createOneTimeTriggerActionPermissions);
+        getActionPermissions().put(CREATE_BACKGROUND_JOB_TRIGGER, createBackgroundJobTriggerActionPermissions);
         getActionPermissions().put(CREATE_TRIGGER, createTriggerActionPermissions);
         getActionPermissions().put(DELETE_TRIGGER, deleteTriggerActionPermissions);
         getActionPermissions().put(GET_ALL_SYSTEM_TRIGGERS, getAllSystemTriggersActionPermissions);

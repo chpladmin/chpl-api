@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CertificationEditionDAO;
+import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
-import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationEditionDTO;

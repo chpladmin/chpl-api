@@ -16,8 +16,6 @@ import java.util.Map.Entry;
 import javax.persistence.EntityNotFoundException;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.ff4j.FF4j;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
@@ -48,6 +46,7 @@ import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
+import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
@@ -68,7 +67,6 @@ import gov.healthit.chpl.dao.TestTaskDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
-import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -168,11 +166,11 @@ import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.Validator;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Service("certifiedProductManager")
 public class CertifiedProductManager extends SecuredManager {
-    private static final Logger LOGGER = LogManager.getLogger(CertifiedProductManager.class);
-
     private ErrorMessageUtil msgUtil;
     private CertifiedProductDAO cpDao;
     private CertifiedProductSearchDAO searchDao;
@@ -296,29 +294,29 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     @Transactional(readOnly = true)
-    public CertifiedProductDTO getById(final Long id) throws EntityRetrievalException {
+    public CertifiedProductDTO getById(Long id) throws EntityRetrievalException {
         CertifiedProductDTO result = cpDao.getById(id);
         return result;
     }
 
     @Transactional(readOnly = true)
-    public CertifiedProductDTO getByChplProductNumber(final String chplProductNumber) throws EntityRetrievalException {
+    public CertifiedProductDTO getByChplProductNumber(String chplProductNumber) throws EntityRetrievalException {
         CertifiedProductDTO result = cpDao.getByChplNumber(chplProductNumber);
         return result;
     }
 
     @Transactional(readOnly = true)
-    public List<CertifiedProductDetailsDTO> getByDeveloperId(final Long developerId) throws EntityRetrievalException {
+    public List<CertifiedProductDetailsDTO> getByDeveloperId(Long developerId) throws EntityRetrievalException {
         return cpDao.findByDeveloperId(developerId);
     }
 
     @Transactional(readOnly = true)
-    public List<CertifiedProductDetailsDTO> getDetailsByIds(final List<Long> ids) throws EntityRetrievalException {
+    public List<CertifiedProductDetailsDTO> getDetailsByIds(List<Long> ids) throws EntityRetrievalException {
         return cpDao.getDetailsByIds(ids);
     }
 
     @Transactional(readOnly = true)
-    public CertifiedProductDetailsDTO getDetailsById(final Long ids) throws EntityRetrievalException {
+    public CertifiedProductDetailsDTO getDetailsById(Long ids) throws EntityRetrievalException {
         return cpDao.getDetailsById(ids);
     }
 
@@ -328,19 +326,19 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     @Transactional(readOnly = true)
-    public List<CertifiedProduct> getByVersion(final Long versionId) throws EntityRetrievalException {
+    public List<CertifiedProduct> getByVersion(Long versionId) throws EntityRetrievalException {
         versionManager.getById(versionId); // throws 404 if bad id
         return cpDao.getDetailsByVersionId(versionId);
     }
 
     @Transactional(readOnly = true)
-    public List<CertifiedProductDetailsDTO> getByProduct(final Long productId) throws EntityRetrievalException {
+    public List<CertifiedProductDetailsDTO> getByProduct(Long productId) throws EntityRetrievalException {
         productManager.getById(productId); // throws 404 if bad id
         return cpDao.getDetailsByProductId(productId);
     }
 
     @Transactional(readOnly = true)
-    public List<CertifiedProduct> getByVersionWithEditPermission(final Long versionId)
+    public List<CertifiedProduct> getByVersionWithEditPermission(Long versionId)
             throws EntityRetrievalException {
         versionManager.getById(versionId); // throws 404 if bad id
         List<CertificationBodyDTO> userAcbs = resourcePermissions.getAllAcbsForCurrentUser();
@@ -355,7 +353,7 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     @Transactional
-    public List<IcsFamilyTreeNode> getIcsFamilyTree(final String chplProductNumber) throws EntityRetrievalException {
+    public List<IcsFamilyTreeNode> getIcsFamilyTree(String chplProductNumber) throws EntityRetrievalException {
 
         CertifiedProductDetailsDTO dto = getCertifiedProductDetailsDtoByChplProductNumber(chplProductNumber);
 
@@ -363,7 +361,7 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     @Transactional
-    public List<IcsFamilyTreeNode> getIcsFamilyTree(final Long certifiedProductId) throws EntityRetrievalException {
+    public List<IcsFamilyTreeNode> getIcsFamilyTree(Long certifiedProductId) throws EntityRetrievalException {
         getById(certifiedProductId); // sends back 404 if bad id
 
         List<IcsFamilyTreeNode> familyTree = new ArrayList<IcsFamilyTreeNode>();
@@ -412,7 +410,7 @@ public class CertifiedProductManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS
     }, allEntries = true)
-    public CertifiedProductDTO createFromPending(final PendingCertifiedProductDTO pendingCp)
+    public CertifiedProductDTO createFromPending(PendingCertifiedProductDTO pendingCp)
             throws EntityRetrievalException, EntityCreationException, IOException {
 
         CertifiedProductDTO toCreate = new CertifiedProductDTO();
@@ -1018,8 +1016,8 @@ public class CertifiedProductManager extends SecuredManager {
         return newCertifiedProduct;
     }
 
-    private CertificationResultDTO addG1G2MacraMeasures(final PendingCertificationResultDTO certResult,
-            final CertificationResultDTO createdCert) throws EntityCreationException {
+    private CertificationResultDTO addG1G2MacraMeasures(PendingCertificationResultDTO certResult,
+            CertificationResultDTO createdCert) throws EntityCreationException {
         if (certResult.getG1MacraMeasures() != null && certResult.getG1MacraMeasures().size() > 0) {
             for (PendingCertificationResultMacraMeasureDTO pendingMeasure : certResult.getG1MacraMeasures()) {
                 // the validator set the macraMeasure value so it's
@@ -1061,14 +1059,14 @@ public class CertifiedProductManager extends SecuredManager {
     // listings collection is not evicted here because it's pre-fetched and
     // handled in a listener
     // no other caches have ACB data so we do not need to clear all
-    public CertifiedProductDTO changeOwnership(final Long certifiedProductId, final Long acbId)
+    public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         CertifiedProductDTO toUpdate = cpDao.getById(certifiedProductId);
         toUpdate.setCertificationBodyId(acbId);
         return cpDao.update(toUpdate);
     }
 
-    private void sanitizeUpdatedListingData(final CertifiedProductSearchDetails listing)
+    private void sanitizeUpdatedListingData(CertifiedProductSearchDetails listing)
             throws EntityNotFoundException {
         // make sure the ui didn't send any error or warning messages back
         listing.setErrorMessages(new HashSet<String>());
@@ -1119,7 +1117,7 @@ public class CertifiedProductManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS
     }, allEntries = true)
-    public CertifiedProductDTO update(final ListingUpdateRequest updateRequest)
+    public CertifiedProductDTO update(ListingUpdateRequest updateRequest)
             throws AccessDeniedException, EntityRetrievalException, JsonProcessingException, EntityCreationException,
             InvalidArgumentsException, IOException, ValidationException, MissingReasonException {
 
@@ -1147,8 +1145,8 @@ public class CertifiedProductManager extends SecuredManager {
         return result;
     }
 
-    private void logCertifiedProductUpdateActivity(final CertifiedProductSearchDetails existingListing,
-            final String reason) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
+    private void logCertifiedProductUpdateActivity(CertifiedProductSearchDetails existingListing,
+            String reason) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
         CertifiedProductSearchDetails changedProduct = certifiedProductDetailsManager
                 .getCertifiedProductDetails(existingListing.getId());
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
@@ -1180,8 +1178,8 @@ public class CertifiedProductManager extends SecuredManager {
         updateCqms(updatedListing, existingListing.getCqmResults(), updatedListing.getCqmResults());
     }
 
-    private void performSecondaryActionsBasedOnStatusChanges(final CertifiedProductSearchDetails existingListing,
-            final CertifiedProductSearchDetails updatedListing, final String reason)
+    private void performSecondaryActionsBasedOnStatusChanges(CertifiedProductSearchDetails existingListing,
+            CertifiedProductSearchDetails updatedListing, String reason)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
         Long listingId = updatedListing.getId();
         Long productVersionId = updatedListing.getVersion().getVersionId();
@@ -1246,8 +1244,8 @@ public class CertifiedProductManager extends SecuredManager {
 
     }
 
-    private void validateListingForUpdate(final CertifiedProductSearchDetails existingListing,
-            final CertifiedProductSearchDetails updatedListing) throws ValidationException {
+    private void validateListingForUpdate(CertifiedProductSearchDetails existingListing,
+            CertifiedProductSearchDetails updatedListing) throws ValidationException {
         Validator validator = validatorFactory.getValidator(updatedListing);
         if (validator != null) {
             validator.validate(existingListing, updatedListing);
@@ -1261,8 +1259,8 @@ public class CertifiedProductManager extends SecuredManager {
         }
     }
 
-    private int updateTestingLabs(final Long listingId, final List<CertifiedProductTestingLab> existingTestingLabs,
-            final List<CertifiedProductTestingLab> updatedTestingLabs)
+    private int updateTestingLabs(Long listingId, List<CertifiedProductTestingLab> existingTestingLabs,
+            List<CertifiedProductTestingLab> updatedTestingLabs)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         int numChanges = 0;
@@ -1335,8 +1333,8 @@ public class CertifiedProductManager extends SecuredManager {
      * @param existingIcs
      * @param updatedIcs
      */
-    private void updateIcsParents(final Long listingId, final InheritedCertificationStatus existingIcs,
-            final InheritedCertificationStatus updatedIcs) throws EntityCreationException {
+    private void updateIcsParents(Long listingId, InheritedCertificationStatus existingIcs,
+            InheritedCertificationStatus updatedIcs) throws EntityCreationException {
         // update ics parents as necessary
         List<Long> parentIdsToAdd = new ArrayList<Long>();
         List<Long> parentIdsToRemove = new ArrayList<Long>();
@@ -1412,8 +1410,8 @@ public class CertifiedProductManager extends SecuredManager {
      * @param existingIcs
      * @param updatedIcs
      */
-    private void updateIcsChildren(final Long listingId, final InheritedCertificationStatus existingIcs,
-            final InheritedCertificationStatus updatedIcs) throws EntityCreationException {
+    private void updateIcsChildren(Long listingId, InheritedCertificationStatus existingIcs,
+            InheritedCertificationStatus updatedIcs) throws EntityCreationException {
         // update ics children as necessary
         List<Long> childIdsToAdd = new ArrayList<Long>();
         List<Long> childIdsToRemove = new ArrayList<Long>();
@@ -1484,8 +1482,8 @@ public class CertifiedProductManager extends SecuredManager {
         }
     }
 
-    private int updateQmsStandards(final Long listingId, final List<CertifiedProductQmsStandard> existingQmsStandards,
-            final List<CertifiedProductQmsStandard> updatedQmsStandards)
+    private int updateQmsStandards(Long listingId, List<CertifiedProductQmsStandard> existingQmsStandards,
+            List<CertifiedProductQmsStandard> updatedQmsStandards)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
 
         int numChanges = 0;
@@ -1591,9 +1589,9 @@ public class CertifiedProductManager extends SecuredManager {
         return numChanges;
     }
 
-    private int updateTargetedUsers(final Long listingId,
-            final List<CertifiedProductTargetedUser> existingTargetedUsers,
-            final List<CertifiedProductTargetedUser> updatedTargetedUsers)
+    private int updateTargetedUsers(Long listingId,
+            List<CertifiedProductTargetedUser> existingTargetedUsers,
+            List<CertifiedProductTargetedUser> updatedTargetedUsers)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         int numChanges = 0;
@@ -1659,9 +1657,9 @@ public class CertifiedProductManager extends SecuredManager {
         return numChanges;
     }
 
-    private int updateAccessibilityStandards(final Long listingId,
-            final List<CertifiedProductAccessibilityStandard> existingAccessibilityStandards,
-            final List<CertifiedProductAccessibilityStandard> updatedAccessibilityStandards)
+    private int updateAccessibilityStandards(Long listingId,
+            List<CertifiedProductAccessibilityStandard> existingAccessibilityStandards,
+            List<CertifiedProductAccessibilityStandard> updatedAccessibilityStandards)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
 
         int numChanges = 0;
@@ -1739,7 +1737,7 @@ public class CertifiedProductManager extends SecuredManager {
         return numChanges;
     }
 
-    private void updateCertificationDate(final Long listingId, final Date existingCertDate, final Date newCertDate)
+    private void updateCertificationDate(Long listingId, Date existingCertDate, Date newCertDate)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
         if (existingCertDate != null && newCertDate != null && existingCertDate.getTime() != newCertDate.getTime()) {
             CertificationStatusEventDTO certificationEvent = statusEventDao
@@ -1751,9 +1749,9 @@ public class CertifiedProductManager extends SecuredManager {
         }
     }
 
-    private int updateCertificationStatusEvents(final Long listingId,
-            final List<CertificationStatusEvent> existingStatusEvents,
-            final List<CertificationStatusEvent> updatedStatusEvents)
+    private int updateCertificationStatusEvents(Long listingId,
+            List<CertificationStatusEvent> existingStatusEvents,
+            List<CertificationStatusEvent> updatedStatusEvents)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         int numChanges = 0;
@@ -1908,8 +1906,8 @@ public class CertifiedProductManager extends SecuredManager {
         return numChanges;
     }
 
-    private int updateMeaningfulUseUserHistory(final Long listingId, final List<MeaningfulUseUser> existingMuuHistory,
-            final List<MeaningfulUseUser> updatedMuuHistory)
+    private int updateMeaningfulUseUserHistory(Long listingId, List<MeaningfulUseUser> existingMuuHistory,
+            List<MeaningfulUseUser> updatedMuuHistory)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         int numChanges = 0;
@@ -1997,9 +1995,9 @@ public class CertifiedProductManager extends SecuredManager {
         return numChanges;
     }
 
-    private int updateCertifications(final CertifiedProductSearchDetails existingListing,
-            final CertifiedProductSearchDetails updatedListing, final List<CertificationResult> existingCertifications,
-            final List<CertificationResult> updatedCertifications)
+    private int updateCertifications(CertifiedProductSearchDetails existingListing,
+            CertifiedProductSearchDetails updatedListing, List<CertificationResult> existingCertifications,
+            List<CertificationResult> updatedCertifications)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
 
         int numChanges = 0;
@@ -2219,7 +2217,7 @@ public class CertifiedProductManager extends SecuredManager {
         return numChanges;
     }
 
-    private Long findCqmCriterionId(final CQMResultCriteriaDTO cqm) throws EntityRetrievalException {
+    private Long findCqmCriterionId(CQMResultCriteriaDTO cqm) throws EntityRetrievalException {
         if (cqm.getCriterionId() != null) {
             return cqm.getCriterionId();
         } else if (cqm.getCriterion() != null && cqm.getCriterion().getId() != null) {
@@ -2239,7 +2237,7 @@ public class CertifiedProductManager extends SecuredManager {
         }
     }
 
-    private List<CQMResultDetailsDTO> convert(final CQMResultDetails cqm) {
+    private List<CQMResultDetailsDTO> convert(CQMResultDetails cqm) {
         List<CQMResultDetailsDTO> result = new ArrayList<CQMResultDetailsDTO>();
 
         if (!StringUtils.isEmpty(cqm.getCmsId()) && cqm.getSuccessVersions() != null
@@ -2280,7 +2278,7 @@ public class CertifiedProductManager extends SecuredManager {
         return result;
     }
 
-    private CertifiedProductDetailsDTO getCertifiedProductDetailsDtoByChplProductNumber(final String chplProductNumber)
+    private CertifiedProductDetailsDTO getCertifiedProductDetailsDtoByChplProductNumber(String chplProductNumber)
             throws EntityRetrievalException {
 
         List<CertifiedProductDetailsDTO> dtos = certifiedProductSearchResultDAO
@@ -2292,7 +2290,7 @@ public class CertifiedProductManager extends SecuredManager {
         return dtos.get(0);
     }
 
-    private void triggerDeveloperBan(final CertifiedProductSearchDetails updatedListing, final String reason) {
+    private void triggerDeveloperBan(CertifiedProductSearchDetails updatedListing, String reason) {
         Scheduler scheduler;
         try {
             scheduler = getScheduler();
@@ -2335,7 +2333,7 @@ public class CertifiedProductManager extends SecuredManager {
         CertificationStatusEventPair() {
         }
 
-        CertificationStatusEventPair(final CertificationStatusEvent orig, final CertificationStatusEvent updated) {
+        CertificationStatusEventPair(CertificationStatusEvent orig, CertificationStatusEvent updated) {
 
             this.orig = orig;
             this.updated = updated;
@@ -2345,7 +2343,7 @@ public class CertifiedProductManager extends SecuredManager {
             return orig;
         }
 
-        public void setOrig(final CertificationStatusEvent orig) {
+        public void setOrig(CertificationStatusEvent orig) {
             this.orig = orig;
         }
 
@@ -2353,7 +2351,7 @@ public class CertifiedProductManager extends SecuredManager {
             return updated;
         }
 
-        public void setUpdated(final CertificationStatusEvent updated) {
+        public void setUpdated(CertificationStatusEvent updated) {
             this.updated = updated;
         }
 
@@ -2366,7 +2364,7 @@ public class CertifiedProductManager extends SecuredManager {
         MeaningfulUseUserPair() {
         }
 
-        MeaningfulUseUserPair(final MeaningfulUseUser orig, final MeaningfulUseUser updated) {
+        MeaningfulUseUserPair(MeaningfulUseUser orig, MeaningfulUseUser updated) {
 
             this.orig = orig;
             this.updated = updated;
@@ -2376,7 +2374,7 @@ public class CertifiedProductManager extends SecuredManager {
             return orig;
         }
 
-        public void setOrig(final MeaningfulUseUser orig) {
+        public void setOrig(MeaningfulUseUser orig) {
             this.orig = orig;
         }
 
@@ -2384,7 +2382,7 @@ public class CertifiedProductManager extends SecuredManager {
             return updated;
         }
 
-        public void setUpdated(final MeaningfulUseUser updated) {
+        public void setUpdated(MeaningfulUseUser updated) {
             this.updated = updated;
         }
 
@@ -2397,7 +2395,7 @@ public class CertifiedProductManager extends SecuredManager {
         QmsStandardPair() {
         }
 
-        QmsStandardPair(final CertifiedProductQmsStandard orig, final CertifiedProductQmsStandard updated) {
+        QmsStandardPair(CertifiedProductQmsStandard orig, CertifiedProductQmsStandard updated) {
             this.orig = orig;
             this.updated = updated;
         }
@@ -2406,7 +2404,7 @@ public class CertifiedProductManager extends SecuredManager {
             return orig;
         }
 
-        public void setOrig(final CertifiedProductQmsStandard orig) {
+        public void setOrig(CertifiedProductQmsStandard orig) {
             this.orig = orig;
         }
 
@@ -2414,7 +2412,7 @@ public class CertifiedProductManager extends SecuredManager {
             return updated;
         }
 
-        public void setUpdated(final CertifiedProductQmsStandard updated) {
+        public void setUpdated(CertifiedProductQmsStandard updated) {
             this.updated = updated;
         }
 
@@ -2427,7 +2425,7 @@ public class CertifiedProductManager extends SecuredManager {
         CQMResultDetailsPair() {
         }
 
-        CQMResultDetailsPair(final CQMResultDetailsDTO orig, final CQMResultDetailsDTO updated) {
+        CQMResultDetailsPair(CQMResultDetailsDTO orig, CQMResultDetailsDTO updated) {
             this.orig = orig;
             this.updated = updated;
         }
@@ -2436,7 +2434,7 @@ public class CertifiedProductManager extends SecuredManager {
             return orig;
         }
 
-        public void setOrig(final CQMResultDetailsDTO orig) {
+        public void setOrig(CQMResultDetailsDTO orig) {
             this.orig = orig;
         }
 
@@ -2444,7 +2442,7 @@ public class CertifiedProductManager extends SecuredManager {
             return updated;
         }
 
-        public void setUpdated(final CQMResultDetailsDTO updated) {
+        public void setUpdated(CQMResultDetailsDTO updated) {
             this.updated = updated;
         }
     }
