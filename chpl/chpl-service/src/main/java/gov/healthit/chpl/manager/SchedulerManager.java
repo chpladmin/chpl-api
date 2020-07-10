@@ -54,6 +54,7 @@ public class SchedulerManager extends SecuredManager {
 
     private static final String AUTHORITY_DELIMITER = ";";
     public static final String DATA_DELIMITER = "\u263A";
+    public static final String CHPL_BACKGROUND_JOBS_KEY = "chplBackgroundJobs";
     public static final String CHPL_JOBS_KEY = "chplJobs";
     public static final String SYSTEM_JOBS_KEY = "systemJobs";
 
@@ -61,15 +62,15 @@ public class SchedulerManager extends SecuredManager {
     private ResourcePermissions resourcePermissions;
 
     @Autowired
-    public SchedulerManager(final ChplSchedulerReference chplScheduler,
-            final ResourcePermissions resourcePermissions) {
+    public SchedulerManager(ChplSchedulerReference chplScheduler,
+            ResourcePermissions resourcePermissions) {
         this.chplScheduler = chplScheduler;
         this.resourcePermissions = resourcePermissions;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
             + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).CREATE_TRIGGER)")
-    public ChplRepeatableTrigger createTrigger(final ChplRepeatableTrigger trigger)
+    public ChplRepeatableTrigger createTrigger(ChplRepeatableTrigger trigger)
             throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
 
@@ -113,7 +114,7 @@ public class SchedulerManager extends SecuredManager {
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
             + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).CREATE_ONE_TIME_TRIGGER)")
-    public ChplOneTimeTrigger createOneTimeTrigger(final ChplOneTimeTrigger chplTrigger)
+    public ChplOneTimeTrigger createOneTimeTrigger(ChplOneTimeTrigger chplTrigger)
             throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
 
@@ -129,8 +130,15 @@ public class SchedulerManager extends SecuredManager {
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).CREATE_BACKGROUND_JOB_TRIGGER, #chplTrigger)")
+    public ChplOneTimeTrigger createBackgroundJobTrigger(ChplOneTimeTrigger chplTrigger)
+            throws SchedulerException, ValidationException {
+        return createOneTimeTrigger(chplTrigger);
+    }
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
             + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).DELETE_TRIGGER)")
-    public void deleteTrigger(final String triggerGroup, final String triggerName)
+    public void deleteTrigger(String triggerGroup, String triggerName)
             throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
         TriggerKey triggerKey = triggerKey(triggerName, triggerGroup);
@@ -169,7 +177,8 @@ public class SchedulerManager extends SecuredManager {
         Scheduler scheduler = getScheduler();
         for (String group : scheduler.getTriggerGroupNames()) {
             for (TriggerKey triggerKey : scheduler.getTriggerKeys(groupEquals(group))) {
-                if (scheduler.getTrigger(triggerKey).getJobKey().getGroup().equalsIgnoreCase(SYSTEM_JOBS_KEY)) {
+                String jobGroup = scheduler.getTrigger(triggerKey).getJobKey().getGroup();
+                if (jobGroup.equalsIgnoreCase(SYSTEM_JOBS_KEY) || jobGroup.equalsIgnoreCase(CHPL_BACKGROUND_JOBS_KEY)) {
                     Trigger curTrigger = getScheduler().getTrigger(triggerKey);
                     String jobName = curTrigger.getKey().getName();
                     JobDetail jobDetail = getScheduler().getJobDetail(getScheduler().getTrigger(triggerKey).getJobKey());
@@ -191,7 +200,7 @@ public class SchedulerManager extends SecuredManager {
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
             + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).UPDATE_TRIGGER)")
-    public ChplRepeatableTrigger updateTrigger(final ChplRepeatableTrigger trigger)
+    public ChplRepeatableTrigger updateTrigger(ChplRepeatableTrigger trigger)
             throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
         Trigger oldTrigger = scheduler.getTrigger(triggerKey(trigger.getName(), trigger.getGroup()));
@@ -242,11 +251,13 @@ public class SchedulerManager extends SecuredManager {
 
         // Get all the jobs (no security - it is handled with @PostFilter)
         for (String group : scheduler.getJobGroupNames()) {
-            for (JobKey jobKey : scheduler.getJobKeys(groupEquals(group))) {
-                JobDetail jobDetail = scheduler.getJobDetail(jobKey);
-                ChplJob chplJob = new ChplJob(jobDetail);
-                chplJob.setJobDataMap(jobDetail.getJobDataMap());
-                jobs.add(chplJob);
+            if (!CHPL_BACKGROUND_JOBS_KEY.equals(group)) {
+                for (JobKey jobKey : scheduler.getJobKeys(groupEquals(group))) {
+                    JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+                    ChplJob chplJob = new ChplJob(jobDetail);
+                    chplJob.setJobDataMap(jobDetail.getJobDataMap());
+                    jobs.add(chplJob);
+                }
             }
         }
 
@@ -255,7 +266,7 @@ public class SchedulerManager extends SecuredManager {
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
             + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).UPDATE_JOB)")
-    public ChplJob updateJob(final ChplJob job) throws SchedulerException {
+    public ChplJob updateJob(ChplJob job) throws SchedulerException {
         Scheduler scheduler = getScheduler();
         JobKey jobId = jobKey(job.getName(), job.getGroup());
         JobDetail oldJob = scheduler.getJobDetail(jobId);
@@ -273,7 +284,7 @@ public class SchedulerManager extends SecuredManager {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public void retireAcb(final String acb) throws SchedulerException, ValidationException {
+    public void retireAcb(String acb) throws SchedulerException, ValidationException {
         List<ChplRepeatableTrigger> allTriggers = getAllTriggersForUser();
         for (ChplRepeatableTrigger trigger : allTriggers) {
             if (!StringUtils.isEmpty(trigger.getAcb()) && trigger.getAcb().indexOf(acb) > -1) {
@@ -290,7 +301,7 @@ public class SchedulerManager extends SecuredManager {
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
             + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).UPDATE_ACB_NAME)")
-    public void changeAcbName(final String oldAcb, final String newAcb) throws SchedulerException, ValidationException {
+    public void changeAcbName(String oldAcb, String newAcb) throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
 
         // have to get all triggers in the system here without a permission check because
@@ -343,7 +354,7 @@ public class SchedulerManager extends SecuredManager {
         return allTriggers;
     }
 
-    private ChplRepeatableTrigger getChplTrigger(final TriggerKey triggerKey) throws SchedulerException {
+    private ChplRepeatableTrigger getChplTrigger(TriggerKey triggerKey) throws SchedulerException {
         CronTrigger cronTrigger = (CronTrigger) getScheduler().getTrigger(triggerKey);
         ChplRepeatableTrigger chplTrigger = new ChplRepeatableTrigger(cronTrigger);
 
@@ -366,7 +377,7 @@ public class SchedulerManager extends SecuredManager {
         return merged;
     }
 
-    private Boolean doesUserHavePermissionToJob(final JobDetail jobDetail) {
+    private Boolean doesUserHavePermissionToJob(JobDetail jobDetail) {
         // Get the authorities from the job
         if (jobDetail.getJobDataMap().containsKey("authorities")) {
             List<String> authorities = new ArrayList<String>(
@@ -390,7 +401,7 @@ public class SchedulerManager extends SecuredManager {
         return false;
     }
 
-    private Boolean doesUserHavePermissionToTrigger(final Trigger trigger) throws SchedulerException {
+    private Boolean doesUserHavePermissionToTrigger(Trigger trigger) throws SchedulerException {
         // first check user has permission on job
         if (doesUserHavePermissionToJob(getScheduler().getJobDetail(trigger.getJobKey()))) {
             if (!StringUtils.isEmpty(trigger.getJobDataMap().getString("acb"))) {
@@ -416,17 +427,17 @@ public class SchedulerManager extends SecuredManager {
         return false;
     }
 
-    private String createTriggerGroup(final ChplJob job) {
+    private String createTriggerGroup(ChplJob job) {
         return createTriggerGroup(job.getName());
     }
 
-    private String createTriggerGroup(final String triggerName) {
+    private String createTriggerGroup(String triggerName) {
         String group = triggerName.replaceAll(" ", "");
         group += "Trigger";
         return group;
     }
 
-    private String createTriggerName(final ChplRepeatableTrigger trigger) {
+    private String createTriggerName(ChplRepeatableTrigger trigger) {
         String name = trigger.getEmail().replaceAll("\\.", "_");
         if (!StringUtils.isEmpty(trigger.getAcb())) {
             name += trigger.getAcb();
@@ -434,7 +445,7 @@ public class SchedulerManager extends SecuredManager {
         return name;
     }
 
-    private String createTriggerName(final ChplOneTimeTrigger trigger) {
+    private String createTriggerName(ChplOneTimeTrigger trigger) {
         Date toFormat = new Date(trigger.getRunDateMillis());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
         return sdf.format(toFormat);

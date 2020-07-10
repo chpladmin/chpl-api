@@ -274,3 +274,5 @@ ready-for-test.sh
 reset-qa.sh
 reset-local.sh
 ready-for-integration.sh
+/chpl/chpl-api/e2e/env/*.postman_environment.json
+newman/
