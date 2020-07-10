@@ -16,6 +16,7 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.FuzzyMatchReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.InheritedCertificationStatusReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.RemovedCriteriaReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.TestStandardReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.TestToolReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.UnattestedCriteriaWithDataReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.UnsupportedCharacterReviewer;
@@ -109,6 +110,10 @@ public class Edition2015PendingListingValidator extends PendingValidator {
     private DuplicateDataReviewer duplicateDataReviewer;
 
     @Autowired
+    @Qualifier("pendingTestStandardReviewer")
+    private TestStandardReviewer testStandardReviewer;
+
+    @Autowired
     @Qualifier("removedCriteriaReviewer")
     private RemovedCriteriaReviewer removedCriteriaReviewer;
 
@@ -161,6 +166,7 @@ public class Edition2015PendingListingValidator extends PendingValidator {
             reviewers.add(privacyAndSecurityCriteriaReviewer);
             reviewers.add(duplicateDataReviewer);
             reviewers.add(testFunctionalityAllowedByRoleReviewer);
+            reviewers.add(testStandardReviewer);
         }
         return reviewers;
     }

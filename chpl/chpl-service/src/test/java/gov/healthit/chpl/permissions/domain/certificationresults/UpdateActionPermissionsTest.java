@@ -9,7 +9,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -21,7 +20,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
     private ResourcePermissions resourcePermissions;;
 
-    @Spy
+    @Mock
     private CertifiedProductDAO cpDAO;
 
     @InjectMocks

@@ -1,7 +1,6 @@
 package gov.healthit.chpl.manager;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -11,11 +10,12 @@ import java.util.Set;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ff4j.FF4j;
+import org.quartz.JobDataMap;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +34,8 @@ import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.DeveloperTransparency;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.schedule.ChplJob;
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
@@ -49,13 +51,17 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.DeveloperStatusEventsHelper;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.manager.rules.developer.DeveloperValidationContext;
 import gov.healthit.chpl.manager.rules.developer.DeveloperValidationFactory;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.scheduler.job.SplitDeveloperJob;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -69,9 +75,8 @@ public class DeveloperManager extends SecuredManager {
 
     private DeveloperDAO developerDao;
     private ProductManager productManager;
+    private UserManager userManager;
     private CertificationBodyManager acbManager;
-    private CertifiedProductManager cpManager;
-    private CertifiedProductDetailsManager cpdManager;
     private CertificationBodyDAO certificationBodyDao;
     private CertifiedProductDAO certifiedProductDAO;
     private ChplProductNumberUtil chplProductNumberUtil;
@@ -80,22 +85,22 @@ public class DeveloperManager extends SecuredManager {
     private ResourcePermissions resourcePermissions;
     private DeveloperValidationFactory developerValidationFactory;
     private ValidationUtils validationUtils;
-    private FF4j ff4j;
     private TransparencyAttestationManager transparencyAttestationManager;
+    private SchedulerManager schedulerManager;
+    private FF4j ff4j;
 
     @Autowired
-    public DeveloperManager(DeveloperDAO developerDao, ProductManager productManager,
-            CertificationBodyManager acbManager, CertifiedProductManager cpManager,
-            CertifiedProductDetailsManager cpdManager, CertificationBodyDAO certificationBodyDao,
+    public DeveloperManager(DeveloperDAO developerDao, ProductManager productManager, UserManager userManager,
+            CertificationBodyManager acbManager, CertificationBodyDAO certificationBodyDao,
             CertifiedProductDAO certifiedProductDAO, ChplProductNumberUtil chplProductNumberUtil,
             ActivityManager activityManager, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
-            DeveloperValidationFactory developerValidationFactory, ValidationUtils validationUtils, FF4j ff4j,
-            TransparencyAttestationManager transparencyAttestationManager) {
+            DeveloperValidationFactory developerValidationFactory, ValidationUtils validationUtils,
+            TransparencyAttestationManager transparencyAttestationManager, SchedulerManager schedulerManager,
+            FF4j ff4j) {
         this.developerDao = developerDao;
         this.productManager = productManager;
+        this.userManager = userManager;
         this.acbManager = acbManager;
-        this.cpManager = cpManager;
-        this.cpdManager = cpdManager;
         this.certificationBodyDao = certificationBodyDao;
         this.certifiedProductDAO = certifiedProductDAO;
         this.chplProductNumberUtil = chplProductNumberUtil;
@@ -104,8 +109,9 @@ public class DeveloperManager extends SecuredManager {
         this.resourcePermissions = resourcePermissions;
         this.developerValidationFactory = developerValidationFactory;
         this.validationUtils = validationUtils;
-        this.ff4j = ff4j;
         this.transparencyAttestationManager = transparencyAttestationManager;
+        this.schedulerManager = schedulerManager;
+        this.ff4j = ff4j;
     }
 
     @Transactional(readOnly = true)
@@ -393,100 +399,37 @@ public class DeveloperManager extends SecuredManager {
         return createdDeveloper;
     }
 
-    /**
-     * Splits a developer into two. The new developer will have at least one product assigned to it that used to be
-     * assigned to the original developer along with the versions and listings associated with those products. At least
-     * one product along with its versions and listings will remain assigned to the original developer. Since the
-     * developer code is auto-generated in the database, any listing that gets transferred to the new developer will
-     * automatically have a unique ID (no other developer can have the same developer code).
-     */
-    @Transactional(rollbackFor = {
-            EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
-            AccessDeniedException.class
-    })
-    @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
-            CacheNames.GET_DECERTIFIED_DEVELOPERS
-    }, allEntries = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).SPLIT, #oldDeveloper)")
-    public DeveloperDTO split(DeveloperDTO oldDeveloper, DeveloperDTO developerToCreate,
-            List<Long> productIdsToMove) throws ValidationException, AccessDeniedException,
-            EntityRetrievalException, EntityCreationException, JsonProcessingException {
-        // check developer fields for all valid values (except transparency attestation)
+    public ChplOneTimeTrigger split(DeveloperDTO oldDeveloper, DeveloperDTO developerToCreate,
+            List<Long> productIdsToMove) throws ValidationException, SchedulerException {
+        // check developer fields for all valid values
         Set<String> devErrors = runCreateValidations(developerToCreate);
         if (devErrors != null && devErrors.size() > 0) {
             throw new ValidationException(devErrors);
         }
 
-        // create the new developer and log activity
-        DeveloperDTO createdDeveloper = create(developerToCreate);
-
-        // re-assign products to the new developer
-        // log activity for all listings whose ID will have changed
-        Date splitDate = new Date();
-        List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
-        for (Long productIdToMove : productIdsToMove) {
-            List<CertifiedProductDetailsDTO> affectedListings = cpManager.getByProduct(productIdToMove);
-            // need to get details for affected listings now before the product is re-assigned
-            // so that any listings with a generated new-style CHPL ID have the old developer code
-            Map<Long, CertifiedProductSearchDetails> beforeListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
-            for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
-                CertifiedProductSearchDetails beforeListing = cpdManager
-                        .getCertifiedProductDetails(affectedListing.getId());
-
-                // make sure each listing associated with the new developer
-                boolean hasAccessToAcb = false;
-                for (CertificationBodyDTO allowedAcb : allowedAcbs) {
-                    if (allowedAcb.getId().longValue() == affectedListing.getCertificationBodyId().longValue()) {
-                        hasAccessToAcb = true;
-                    }
-                }
-                if (!hasAccessToAcb) {
-                    throw new AccessDeniedException(
-                            msgUtil.getMessage("acb.accessDenied.listingUpdate", beforeListing.getChplProductNumber(),
-                                    beforeListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)));
-                }
-
-                beforeListingDetails.put(beforeListing.getId(), beforeListing);
-            }
-
-            // move the product to be owned by the new developer
-            ProductDTO productToMove = productManager.getById(productIdToMove);
-            productToMove.setDeveloperId(createdDeveloper.getId());
-            // add owner history for old developer
-            ProductOwnerDTO newOwner = new ProductOwnerDTO();
-            newOwner.setProductId(productToMove.getId());
-            newOwner.setDeveloper(oldDeveloper);
-            newOwner.setTransferDate(splitDate.getTime());
-            productToMove.getOwnerHistory().add(newOwner);
-            productManager.update(productToMove);
-
-            // get the listing details again - this time they will have the new developer code
-            // so the change will show up in activity reports
-            for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
-                CertifiedProductSearchDetails afterListing = cpdManager
-                        .getCertifiedProductDetails(affectedListing.getId());
-                CertifiedProductSearchDetails beforeListing = beforeListingDetails.get(afterListing.getId());
-                activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeListing.getId(),
-                        "Updated certified product " + afterListing.getChplProductNumber() + ".", beforeListing,
-                        afterListing);
-            }
+        UserDTO jobUser = null;
+        try {
+            jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
+        } catch (UserRetrievalException ex) {
+            LOGGER.error("Could not find user to execute job.");
         }
 
-        DeveloperDTO afterDeveloper = null;
-        // the split is complete - log split activity
-        // get the original developer object from the db to make sure it's all filled in
-        DeveloperDTO origDeveloper = getById(oldDeveloper.getId());
-        afterDeveloper = getById(createdDeveloper.getId());
-        List<DeveloperDTO> splitDevelopers = new ArrayList<DeveloperDTO>();
-        splitDevelopers.add(origDeveloper);
-        splitDevelopers.add(afterDeveloper);
-        activityManager.addActivity(ActivityConcept.DEVELOPER, afterDeveloper.getId(),
-                "Split developer " + origDeveloper.getName() + " into " + origDeveloper.getName()
-                        + " and " + afterDeveloper.getName(),
-                origDeveloper, splitDevelopers);
-        return afterDeveloper;
+        ChplOneTimeTrigger splitDeveloperTrigger = new ChplOneTimeTrigger();
+        ChplJob splitDeveloperJob = new ChplJob();
+        splitDeveloperJob.setName(SplitDeveloperJob.JOB_NAME);
+        splitDeveloperJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
+        JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put(SplitDeveloperJob.OLD_DEVELOPER_KEY, oldDeveloper);
+        jobDataMap.put(SplitDeveloperJob.NEW_DEVELOPER_KEY, developerToCreate);
+        jobDataMap.put(SplitDeveloperJob.PRODUCT_IDS_TO_MOVE_KEY, productIdsToMove);
+        jobDataMap.put(SplitDeveloperJob.USER_KEY, jobUser);
+        splitDeveloperJob.setJobDataMap(jobDataMap);
+        splitDeveloperTrigger.setJob(splitDeveloperJob);
+        splitDeveloperTrigger.setRunDateMillis(System.currentTimeMillis() + 5000); //5 secs from now
+        splitDeveloperTrigger = schedulerManager.createBackgroundJobTrigger(splitDeveloperTrigger);
+        return splitDeveloperTrigger;
     }
 
     public static List<DeveloperStatusEventDTO> cloneDeveloperStatusEventList(List<DeveloperStatusEventDTO> original) {
@@ -691,6 +634,7 @@ public class DeveloperManager extends SecuredManager {
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.WEBSITE_WELL_FORMED));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.CONTACT));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.ADDRESS));
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.ACTIVE_STATUS));
         return runValidations(rules, dto);
     }
 

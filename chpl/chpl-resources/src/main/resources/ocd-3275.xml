@@ -1,0 +1,27 @@
+<job-scheduling-data
+    xmlns="http://www.quartz-scheduler.org/xml/JobSchedulingData"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData http://www.quartz-scheduler.org/xml/job_scheduling_data_2_0.xsd"
+    version="2.0">
+    <schedule>
+        <!-- Job fired when developer is split -->
+        <job>
+            <name>splitDeveloperJob</name>
+            <group>chplBackgroundJobs</group>
+            <description>Complete the work of splitting a developer and send an email notification to indicate if the operation was successful.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.SplitDeveloperJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
+                </entry>
+                <entry>
+                    <key>email</key>
+                    <value></value>
+                </entry>
+            </job-data-map>
+        </job>
+    </schedule>
+</job-scheduling-data>
