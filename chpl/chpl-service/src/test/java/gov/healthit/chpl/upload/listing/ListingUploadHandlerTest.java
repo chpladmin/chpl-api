@@ -62,59 +62,36 @@ public class ListingUploadHandlerTest {
     }
 
     @Test
-    public void getHeadingRecordIndex_HeadingOnly_ReturnsCorrectValue() throws IOException {
-        List<CSVRecord> records = null;
-        StringReader in = new StringReader(HEADER_COMMON_NAMES);
-        CSVParser csvParser = CSVFormat.EXCEL.parse(in);
-        records = csvParser.getRecords();
-
+    public void getHeadingRecordIndex_HeadingOnly_ReturnsCorrectValue() {
+        List<CSVRecord> records = getRecordsFromString(HEADER_COMMON_NAMES);
         int index = handler.getHeadingRecordIndex(records);
         assertEquals(0, index);
     }
 
     @Test
-    public void getHeadingRecordIndex_HeadingOnlyAlternateNames_ReturnsCorrectValue()
-            throws IOException {
-        List<CSVRecord> records = null;
-        StringReader in = new StringReader(HEADER_ALT_NAMES);
-        CSVParser csvParser = CSVFormat.EXCEL.parse(in);
-        records = csvParser.getRecords();
-
+    public void getHeadingRecordIndex_HeadingOnlyAlternateNames_ReturnsCorrectValue() {
+        List<CSVRecord> records = getRecordsFromString(HEADER_ALT_NAMES);
         int index = handler.getHeadingRecordIndex(records);
         assertEquals(0, index);
     }
 
     @Test
-    public void getHeadingRecordIndex_HeadingOnlySingleColumn_ReturnsCorrectValue()
-            throws IOException {
-        List<CSVRecord> records = null;
-        StringReader in = new StringReader(HEADER_SINGLE_COLUMN);
-        CSVParser csvParser = CSVFormat.EXCEL.parse(in);
-        records = csvParser.getRecords();
-
+    public void getHeadingRecordIndex_HeadingOnlySingleColumn_ReturnsCorrectValue() {
+        List<CSVRecord> records = getRecordsFromString(HEADER_SINGLE_COLUMN);
         int index = handler.getHeadingRecordIndex(records);
         assertEquals(0, index);
     }
 
     @Test
-    public void getHeadingRecordIndex_MultiRowData_ReturnsCorrectValue()
-            throws IOException {
-        List<CSVRecord> records = null;
-        StringReader in = new StringReader(MULTIPLE_ROWS);
-        CSVParser csvParser = CSVFormat.EXCEL.parse(in);
-        records = csvParser.getRecords();
-
+    public void getHeadingRecordIndex_MultiRowData_ReturnsCorrectValue() {
+        List<CSVRecord> records = getRecordsFromString(MULTIPLE_ROWS);
         int index = handler.getHeadingRecordIndex(records);
         assertEquals(0, index);
     }
 
     @Test
-    public void getHeadingRecord_MultiRowData_ReturnsCorrectValue()
-            throws IOException {
-        List<CSVRecord> records = null;
-        StringReader in = new StringReader(MULTIPLE_ROWS);
-        CSVParser csvParser = CSVFormat.EXCEL.parse(in);
-        records = csvParser.getRecords();
+    public void getHeadingRecord_MultiRowData_ReturnsCorrectValue() {
+        List<CSVRecord> records = getRecordsFromString(MULTIPLE_ROWS);
         assertEquals(2, records.size());
 
         CSVRecord heading = handler.getHeadingRecord(records);
@@ -125,21 +102,19 @@ public class ListingUploadHandlerTest {
     @Test
     public void getChplProductNumber_MultiRowData_ReturnsCorrectValue()
             throws IOException {
-        List<CSVRecord> records = null;
-        StringReader in = new StringReader(HEADER_ALT_NAMES);
-        CSVParser csvParser = CSVFormat.EXCEL.parse(in);
-        records = csvParser.getRecords();
-        assertEquals(2, records.size());
-
-        CSVRecord heading = handler.parseChplProductNumber(headingRecord, listingRecord)
-        assertNotNull(heading);
-        assertEquals("UNIQUE_CHPL_ID__C", heading.get(0));
+        List<CSVRecord> headingRecords = getRecordsFromString(HEADER_COMMON_NAMES);
+        assertNotNull(headingRecords);
+        assertEquals(1, headingRecords.size());
+        List<CSVRecord> listingRecords = getRecordsFromString(LISTING_ROW);
+        String chplProductNumber = handler.parseChplProductNumber(headingRecords.get(0), listingRecords);
+        assertNotNull(chplProductNumber);
+        assertEquals("15.02.02.3007.A056.01.00.0.180214", chplProductNumber);
     }
 
     private List<CSVRecord> getRecordsFromString(String str) {
         List<CSVRecord> records = null;
         try {
-            StringReader in = new StringReader(HEADER_ALT_NAMES);
+            StringReader in = new StringReader(str);
             CSVParser csvParser = CSVFormat.EXCEL.parse(in);
             records = csvParser.getRecords();
         } catch (IOException ex) {
