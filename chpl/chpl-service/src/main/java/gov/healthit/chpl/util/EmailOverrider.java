@@ -66,7 +66,7 @@ public class EmailOverrider {
         }
         message.append(htmlBody);
         BodyPart messageBodyPartWithMessage = new MimeBodyPart();
-        messageBodyPartWithMessage.setContent(message.toString(), "text/html");
+        messageBodyPartWithMessage.setContent(message.toString(), "text/html; charset=UTF-8");
         return messageBodyPartWithMessage;
     }
 

@@ -11,7 +11,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
+import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.SimpleCertificationId;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;

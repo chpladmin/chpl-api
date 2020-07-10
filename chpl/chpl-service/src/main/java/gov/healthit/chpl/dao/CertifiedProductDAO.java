@@ -7,15 +7,11 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertifiedProduct;
-import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductSummaryDTO;
@@ -26,18 +22,22 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.urlStatus.UrlType;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
-@Repository(value = "certifiedProductDAO")
 @Log4j2
+@Repository(value = "certifiedProductDAO")
 public class CertifiedProductDAO extends BaseDAOImpl {
     private static final int CHPL_ID_LENGTH = 9;
+    private ErrorMessageUtil msgUtil;
+
     @Autowired
-    private MessageSource messageSource;
+    public CertifiedProductDAO(ErrorMessageUtil msgUtil) {
+        this.msgUtil = msgUtil;
+    }
 
     @Transactional(readOnly = false)
     public CertifiedProductDTO create(final CertifiedProductDTO dto) throws EntityCreationException {
-
         CertifiedProductEntity entity = null;
         try {
             if (dto.getId() != null) {
@@ -114,9 +114,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             try {
                 create(entity);
             } catch (Exception ex) {
-                String msg = String
-                        .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badListingData"),
-                                LocaleContextHolder.getLocale()), dto.getChplProductNumber(), ex.getMessage());
+                String msg = msgUtil.getMessage("listing.badListingData", dto.getChplProductNumber(), ex.getMessage());
                 LOGGER.error(msg, ex);
                 throw new EntityCreationException(msg);
             }
@@ -126,7 +124,6 @@ public class CertifiedProductDAO extends BaseDAOImpl {
 
     @Transactional(readOnly = false)
     public CertifiedProductDTO update(final CertifiedProductDTO dto) throws EntityRetrievalException {
-
         CertifiedProductEntity entity = getEntityById(dto.getId());
         entity.setAcbCertificationId(dto.getAcbCertificationId());
         entity.setProductCode(dto.getProductCode());
@@ -156,9 +153,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         try {
             update(entity);
         } catch (Exception ex) {
-            String msg = String
-                    .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badListingData"),
-                            LocaleContextHolder.getLocale()), dto.getChplProductNumber(), ex.getMessage());
+            String msg = msgUtil.getMessage("listing.badListingData", dto.getChplProductNumber(), ex.getMessage());
             LOGGER.error(msg, ex);
             throw new EntityRetrievalException(msg);
         }
@@ -192,15 +187,33 @@ public class CertifiedProductDAO extends BaseDAOImpl {
 
     @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> findByDeveloperId(final Long developerId) {
-        Query query = entityManager.createQuery("SELECT cpd " + "FROM CertifiedProductDetailsEntity cpd "
-                + "WHERE (NOT deleted = true) " + "AND cpd.developerId = :developerId ",
+        Query query = entityManager.createQuery("SELECT cpd "
+                + "FROM CertifiedProductDetailsEntity cpd "
+                + "WHERE cpd.deleted = false "
+                + "AND cpd.developerId = :developerId ",
                 CertifiedProductDetailsEntity.class);
         query.setParameter("developerId", developerId);
         List<CertifiedProductDetailsEntity> entities = query.getResultList();
-        List<CertifiedProductDetailsDTO> products = new ArrayList<>(entities.size());
-
+        List<CertifiedProductDetailsDTO> products = new ArrayList<CertifiedProductDetailsDTO>(entities.size());
         for (CertifiedProductDetailsEntity entity : entities) {
             CertifiedProductDetailsDTO product = new CertifiedProductDetailsDTO(entity);
+            products.add(product);
+        }
+        return products;
+    }
+
+    @Transactional(readOnly = true)
+    public List<CertifiedProductSummaryDTO> findListingSummariesByDeveloperId(final Long developerId) {
+        Query query = entityManager.createQuery("SELECT cpd "
+                + "FROM CertifiedProductDetailsEntity cpd "
+                + "WHERE cpd.deleted = false "
+                + "AND cpd.developerId = :developerId ",
+                CertifiedProductDetailsEntity.class);
+        query.setParameter("developerId", developerId);
+        List<CertifiedProductDetailsEntity> entities = query.getResultList();
+        List<CertifiedProductSummaryDTO> products = new ArrayList<CertifiedProductSummaryDTO>(entities.size());
+        for (CertifiedProductDetailsEntity entity : entities) {
+            CertifiedProductSummaryDTO product = new CertifiedProductSummaryDTO(entity);
             products.add(product);
         }
         return products;
@@ -208,28 +221,9 @@ public class CertifiedProductDAO extends BaseDAOImpl {
 
     @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> findByEdition(final String edition) {
-        Query query = entityManager.createQuery("SELECT cpd "
-                + "FROM CertifiedProductDetailsEntity cpd "
-                + "WHERE (NOT deleted = true) "
-                + "AND cpd.year = :edition ", CertifiedProductDetailsEntity.class);
+        Query query = entityManager.createQuery("SELECT cpd " + "FROM CertifiedProductDetailsEntity cpd "
+                + "WHERE (NOT deleted = true) " + "AND cpd.year = :edition ", CertifiedProductDetailsEntity.class);
         query.setParameter("edition", edition.trim());
-        List<CertifiedProductDetailsEntity> entities = query.getResultList();
-        List<CertifiedProductDetailsDTO> products = new ArrayList<>(entities.size());
-
-        for (CertifiedProductDetailsEntity entity : entities) {
-            CertifiedProductDetailsDTO product = new CertifiedProductDetailsDTO(entity);
-            products.add(product);
-        }
-        return products;
-    }
-
-    @Transactional(readOnly = true)
-    public List<CertifiedProductDetailsDTO> findByEdition(CertificationEditionConcept edition) {
-        Query query = entityManager.createQuery("SELECT cpd "
-                + "FROM CertifiedProductDetailsEntity cpd "
-                + "WHERE (NOT deleted = true) "
-                + "AND cpd.certificationEditionId = :edition ", CertifiedProductDetailsEntity.class);
-        query.setParameter("edition", edition.getId());
         List<CertifiedProductDetailsEntity> entities = query.getResultList();
         List<CertifiedProductDetailsDTO> products = new ArrayList<>(entities.size());
 
@@ -275,7 +269,6 @@ public class CertifiedProductDAO extends BaseDAOImpl {
 
     @Transactional(readOnly = true)
     public CertifiedProductDTO getById(final Long productId) throws EntityRetrievalException {
-
         CertifiedProductDTO dto = null;
         CertifiedProductEntity entity = getEntityById(productId);
 
@@ -296,9 +289,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         List<CertifiedProductSummaryEntity> result = query.getResultList();
 
         if (result == null || result.size() == 0) {
-            String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.notFound"),
-                    LocaleContextHolder.getLocale()));
-            throw new EntityRetrievalException(msg);
+            throw new EntityRetrievalException(msgUtil.getMessage("listing.notFound"));
         }
         return new CertifiedProductSummaryDTO(result.get(0));
     }
@@ -314,6 +305,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         return dto;
     }
 
+    @SuppressWarnings({"checkstyle:magicnumber"})
     @Transactional(readOnly = true)
     public CertifiedProductDetailsDTO getByChplUniqueId(final String chplUniqueId) throws EntityRetrievalException {
         CertifiedProductDetailsDTO dto = null;
@@ -445,7 +437,6 @@ public class CertifiedProductDAO extends BaseDAOImpl {
                 dtos.add(dto);
             }
         }
-
         return dtos;
     }
 
@@ -600,9 +591,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         List<CertifiedProductEntity> result = query.getResultList();
 
         if (result == null || result.size() == 0) {
-            String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.notFound"),
-                    LocaleContextHolder.getLocale()));
-            throw new EntityRetrievalException(msg);
+            throw new EntityRetrievalException(msgUtil.getMessage("listing.notFound"));
         } else if (result.size() > 1) {
             throw new EntityRetrievalException("Data error. Duplicate Certified Product id in database.");
         }
@@ -632,6 +621,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         return entity;
     }
 
+    @SuppressWarnings({"checkstyle:parameternumber"})
     @Transactional(readOnly = true)
     private CertifiedProductDetailsEntity getEntityByUniqueIdParts(final String yearCode, final String atlCode,
             final String acbCode, final String developerCode, final String productCode, final String versionCode,

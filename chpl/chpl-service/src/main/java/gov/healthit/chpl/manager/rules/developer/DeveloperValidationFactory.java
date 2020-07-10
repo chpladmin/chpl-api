@@ -19,6 +19,7 @@ public class DeveloperValidationFactory {
 
     public static final String EDIT_TRANSPARENCY_ATTESTATION = "EDIT_TRANSPARENCY_ATTESTATION";
     public static final String HAS_STATUS = "HAS_STATUS";
+    public static final String ACTIVE_STATUS = "ACTIVE_STATUS";
     public static final String STATUS_MISSING_BAN_REASON = "STATUS_MISSING_BAN_REASON";
     public static final String PRIOR_STATUS_ACTIVE = "PRIOR_STATUS_ACTIVE";
     public static final String EDIT_STATUS_HISTORY = "EDIT_STATUS_HISTORY";
@@ -53,6 +54,8 @@ public class DeveloperValidationFactory {
             return new DeveloperEditTransparencyAttestationValidation(ff4j, resourcePermissions);
         case HAS_STATUS:
             return new DeveloperHasStatusValidation();
+        case ACTIVE_STATUS:
+            return new DeveloperActiveStatusValidation();
         case STATUS_MISSING_BAN_REASON:
             return new DeveloperStatusMissingBanReasonValidation();
         case PRIOR_STATUS_ACTIVE:

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.dao.search;
+package gov.healthit.chpl.dao;
 
 import java.math.BigInteger;
 import java.text.DateFormat;
@@ -16,8 +16,6 @@ import java.util.regex.Pattern;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.Query;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -36,14 +34,15 @@ import gov.healthit.chpl.domain.search.SearchSetOperator;
 import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
 import gov.healthit.chpl.entity.search.CertifiedProductListingSearchResultEntity;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import lombok.extern.log4j.Log4j2;
 
 
 @Repository("certifiedProductSearchDAO")
-public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements CertifiedProductSearchDAO {
-    private static final Logger LOGGER = LogManager.getLogger(CertifiedProductSearchDAOImpl.class);
+@Log4j2
+public class CertifiedProductSearchDAO extends BaseDAOImpl {
     private final DateFormat certificationDateFormatter =
             new SimpleDateFormat(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
-    @Override
+
     public Long getListingIdByUniqueChplNumber(final String chplProductNumber) {
         Long id = null;
         Query query = entityManager.createQuery(
@@ -59,7 +58,6 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         return id;
     }
 
-    @Override
     public CertifiedProduct getByChplProductNumber(final String chplProductNumber) throws EntityNotFoundException {
         Query query = entityManager.createQuery(
                 "SELECT cps " + "FROM CertifiedProductBasicSearchResultEntity cps "
@@ -81,7 +79,6 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         return result;
     }
 
-    @Override
     public IcsFamilyTreeNode getICSFamilyTree(final Long certifiedProductId) {
         Query query = entityManager.createQuery(
                 "SELECT cps " + "FROM CertifiedProductBasicSearchResultEntity cps "
@@ -98,7 +95,6 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         }
     }
 
-    @Override
     public List<CertifiedProductFlatSearchResult> getAllCertifiedProducts() {
         LOGGER.info("Starting basic search query.");
         Query query = entityManager.createQuery("SELECT cps "
@@ -119,7 +115,6 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         return domainResults;
     }
 
-    @Override
     public int getTotalResultCount(final SearchRequest searchRequest) {
         int totalCount = -1;
         String sql = "SELECT count(*) FROM ";
@@ -133,7 +128,6 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         return totalCount;
     }
 
-    @Override
     public Collection<CertifiedProductBasicSearchResult> search(final SearchRequest searchRequest) {
         //        List<CertifiedProductBasicSearchResult> results =
         //                new ArrayList<CertifiedProductBasicSearchResult>();
