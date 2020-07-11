@@ -45,13 +45,21 @@ public class ListingUploadManager {
             throw new ValidationException(msgUtil.getMessage("listingUpload.noHeadingFound"));
         }
 
+        //are there any heading values we don't recognize? Give error for that
+        //since that might mean we miss data that the user wants
+        List<String> unrecognizedHeadings = getUnrecognizedHeadings(heading);
+        if ((unrecognizedHeadings != null && unrecognizedHeadings.size() > 0)) {
+            throw new ValidationException(msgUtil.getMessage("listingUpload.unrecognizedHeadings",
+                    String.join(",", unrecognizedHeadings)));
+        }
+
         long currIndex = heading.getRecordNumber() + 1;
         while (currIndex < allCsvRecords.size()) {
             List<CSVRecord> singleListingCsvRecords = getNextListingRecords(allCsvRecords, currIndex);
             currIndex += singleListingCsvRecords.size();
             ListingUpload uploadMetadata = new ListingUpload();
-            uploadMetadata.setChplProductNumber(
-                    listingUploadHandler.parseChplProductNumber(heading, singleListingCsvRecords));
+            uploadMetadata.setChplProductNumber(listingUploadHandler.parseSingleValueField(
+                    Headings.UNIQUE_ID, heading, singleListingCsvRecords));
             //TODO: parse the csv record list to fill in metadata we need for the upload object
             uploadMetadatas.add(uploadMetadata);
         }
@@ -75,8 +83,10 @@ public class ListingUploadManager {
         Iterator<CSVRecord> remainingRecords = allCsvRecords.stream().skip(startIndex).iterator();
         while (remainingRecords.hasNext()) {
             CSVRecord record = remainingRecords.next();
-            String recordUniqueId = listingUploadHandler.parseChplProductNumber(heading, record);
-            String recordStatus = listingUploadHandler.parseStatus(heading, record);
+            String recordUniqueId = listingUploadHandler.parseSingleValueField(
+                    Headings.UNIQUE_ID, heading, record);
+            String recordStatus = listingUploadHandler.parseSingleValueField(
+                    Headings.RECORD_STATUS, heading, record);
             if (!StringUtils.isEmpty(recordUniqueId)) {
                 if (recordStatus.equalsIgnoreCase("NEW") && listingCsvRecords.size() > 0) {
                     break;
@@ -85,6 +95,18 @@ public class ListingUploadManager {
             listingCsvRecords.add(record);
         }
         return listingCsvRecords;
+    }
+
+    private List<String> getUnrecognizedHeadings(CSVRecord record) {
+        List<String> unrecognizedHeadings = new ArrayList<String>();
+        Iterator<String> recordIter = record.iterator();
+        while(recordIter.hasNext()) {
+            String val = recordIter.next();
+            if (Headings.getHeading(val) == null) {
+                unrecognizedHeadings.add(val);
+            }
+        }
+        return unrecognizedHeadings;
     }
 
     private List<CSVRecord> getFileAsCsvRecords(MultipartFile file) throws ValidationException {

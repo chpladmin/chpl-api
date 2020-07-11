@@ -1,5 +1,6 @@
 package gov.healthit.chpl.upload.listing;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -44,49 +45,49 @@ public class ListingUploadHandler {
         return allCsvRecords.get(getHeadingRecordIndex(allCsvRecords));
     }
 
-    public String parseChplProductNumber(CSVRecord headingRecord, List<CSVRecord> listingRecords)
+    public String parseSingleValueField(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords)
         throws ValidationException {
-        String chplProductNumber = null;
-        int chplProductNumberHeadingIndex = getColumnIndexOfHeading(Headings.UNIQUE_ID, headingRecord);
-        if (chplProductNumberHeadingIndex < 0) {
-            throw new ValidationException(msgUtil.getMessage("listing.upload.headingNotFound",
-                    Headings.UNIQUE_ID.getNamesAsString()));
+        String fieldValue = null;
+        int fieldHeadingIndex = getColumnIndexOfHeading(field, headingRecord);
+        if (fieldHeadingIndex < 0) {
+            throw new ValidationException(msgUtil.getMessage("listing.upload.requiredheadingNotFound",
+                    field.getNamesAsString()));
         }
         for (CSVRecord listingRecord : listingRecords) {
-            if (StringUtils.isEmpty(chplProductNumber)
-                    && !StringUtils.isEmpty(listingRecord.get(chplProductNumberHeadingIndex))) {
-                chplProductNumber = listingRecord.get(chplProductNumberHeadingIndex);
+            if (StringUtils.isEmpty(fieldValue)) {
+                String parsedFieldValue = listingRecord.get(fieldHeadingIndex);
+                if (parsedFieldValue != null && !StringUtils.isEmpty(parsedFieldValue.trim())) {
+                    fieldValue = parsedFieldValue.trim();
+                }
             }
         }
-        return chplProductNumber;
+        return fieldValue;
     }
 
-    public String parseChplProductNumber(CSVRecord headingRecord, CSVRecord listingRecord)
+    public String parseSingleValueField(Headings field, CSVRecord headingRecord, CSVRecord listingRecord)
         throws ValidationException {
-        String chplProductNumber = null;
-        int chplProductNumberHeadingIndex = getColumnIndexOfHeading(Headings.UNIQUE_ID, headingRecord);
-        if (chplProductNumberHeadingIndex < 0) {
-            throw new ValidationException(msgUtil.getMessage("listing.upload.headingNotFound",
-                    Headings.UNIQUE_ID.getNamesAsString()));
-        }
-        if (!StringUtils.isEmpty(listingRecord.get(chplProductNumberHeadingIndex))) {
-            chplProductNumber = listingRecord.get(chplProductNumberHeadingIndex);
-        }
-        return chplProductNumber;
+        List<CSVRecord> data = new ArrayList<CSVRecord>();
+        data.add(listingRecord);
+        return parseSingleValueField(field, headingRecord, data);
     }
 
-    public String parseStatus(CSVRecord headingRecord, CSVRecord listingRecord) {
-        String status = null;
-        int statusHeadingIndex = getColumnIndexOfHeading(Headings.RECORD_STATUS, headingRecord);
-        if (statusHeadingIndex < 0) {
-            throw new ValidationException(msgUtil.getMessage("listing.upload.headingNotFound",
-                    Headings.RECORD_STATUS.getNamesAsString()));
+    public List<String> parseMultiValueField(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords)
+            throws ValidationException {
+            List<String> fieldValues = null;
+            int fieldHeadingIndex = getColumnIndexOfHeading(field, headingRecord);
+            if (fieldHeadingIndex < 0) {
+                throw new ValidationException(msgUtil.getMessage("listing.upload.headingNotFound",
+                        field.getNamesAsString()));
+            }
+            fieldValues = new ArrayList<String>();
+            for (CSVRecord listingRecord : listingRecords) {
+                String parsedFieldValue = listingRecord.get(fieldHeadingIndex);
+                if (parsedFieldValue != null && !StringUtils.isEmpty(parsedFieldValue.trim())) {
+                    fieldValues.add(parsedFieldValue.trim());
+                }
+            }
+            return fieldValues;
         }
-        if (!StringUtils.isEmpty(listingRecord.get(statusHeadingIndex))) {
-            status = listingRecord.get(statusHeadingIndex);
-        }
-        return status;
-    }
 
     public PendingCertifiedProductDTO parse(List<CSVRecord> records) {
         PendingCertifiedProductDTO pendingListing = new PendingCertifiedProductDTO();
@@ -97,7 +98,9 @@ public class ListingUploadHandler {
     private boolean hasHeading(CSVRecord record) {
         Iterator<String> iter = record.iterator();
         while (iter.hasNext()) {
-            if (Headings.getHeading(iter.next()) != null) {
+            String currRecordValue = iter.next();
+            if (currRecordValue != null && !StringUtils.isEmpty(currRecordValue.trim())
+                    && Headings.getHeading(currRecordValue.trim()) != null) {
                 return true;
             }
         }
@@ -109,7 +112,8 @@ public class ListingUploadHandler {
         Iterator<String> iter = headingRecord.iterator();
         while (iter.hasNext()) {
             String currHeadingValue = iter.next();
-            if (Headings.getHeading(currHeadingValue).equals(heading)) {
+            if (currHeadingValue != null && !StringUtils.isEmpty(currHeadingValue.trim())
+                    && Headings.getHeading(currHeadingValue.trim()).equals(heading)) {
                 return index;
             }
             index++;
