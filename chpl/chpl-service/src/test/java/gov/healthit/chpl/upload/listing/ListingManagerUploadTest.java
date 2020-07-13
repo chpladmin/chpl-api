@@ -19,19 +19,12 @@ import org.springframework.mock.web.MockMultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
-import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
+import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.exception.DeprecatedUploadTemplateException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductHandler2015Version1;
-import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductHandler2015Version2;
-import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductHandler2015Version3;
-import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductHandler2015Version4;
-import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductHandler2015Version5;
-import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class ListingManagerUploadTest {
@@ -39,8 +32,9 @@ public class ListingManagerUploadTest {
 
     private String listing1Csv, listing2Csv, listingNewDeveloperCsv;
     private ErrorMessageUtil msgUtil;
-    private CertifiedProductUploadManager uploadManager;
-    private CertifiedProductUploadHandlerFactory uploadHandlerFactory;
+    private ListingUploadManager uploadManager;
+    private ListingUploadHandler uploadHandler;
+    private ListingUploadDao uploadDao;
 
     @Before
     public void setup() throws InvalidArgumentsException, JsonProcessingException,
@@ -48,38 +42,28 @@ public class ListingManagerUploadTest {
         loadFiles();
 
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        uploadHandlerFactory = Mockito.mock(CertifiedProductUploadHandlerFactory.class);
+        uploadDao = Mockito.mock(ListingUploadDao.class);
 
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("upload.emptyFile"))).thenReturn("Empty file message");
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("upload.notCSV"))).thenReturn("Not CSV message");
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.upload.emptyRows"))).thenReturn("Header only message");
 
-        PendingCertifiedProductEntity parsed = new PendingCertifiedProductEntity();
-        //had to do this because of lots of inheritance and super() getting called
-        //maybe an indication to refactor the upload handlers in the future
-        CertifiedProductHandler2015Version5 v19UploadHandler = Mockito.spy(new CertifiedProductHandler2015Version5(msgUtil));
-        Mockito.doReturn(parsed).when(((CertifiedProductHandler2015Version4) v19UploadHandler)).handle();
-        Mockito.doReturn(parsed).when(((CertifiedProductHandler2015Version3) v19UploadHandler)).handle();
-        Mockito.doReturn(parsed).when(((CertifiedProductHandler2015Version2) v19UploadHandler)).handle();
-        Mockito.doReturn(parsed).when(((CertifiedProductHandler2015Version1) v19UploadHandler)).handle();
-        Mockito.when(v19UploadHandler.handle()).thenReturn(parsed);
-        Mockito.when(uploadHandlerFactory.getHandler(ArgumentMatchers.any())).thenReturn(v19UploadHandler);
-
-        uploadManager = new CertifiedProductUploadManager(msgUtil, uploadHandlerFactory);
+        uploadHandler = new ListingUploadHandler(msgUtil);
+        uploadManager = new ListingUploadManager(uploadHandler, uploadDao, msgUtil);
     }
 
     @Test(expected = ValidationException.class)
     public void upload_EmptyData_Fails() throws JsonProcessingException, ValidationException,
         InvalidArgumentsException, DeprecatedUploadTemplateException {
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", "".getBytes());
-        uploadManager.parseListingsFromFile(file);
+        uploadManager.parseUploadFile(file);
     }
 
     @Test(expected = ValidationException.class)
     public void upload_HeaderOnly_Fails() throws JsonProcessingException, ValidationException,
         InvalidArgumentsException, DeprecatedUploadTemplateException {
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", HEADER_2015_V19.getBytes());
-        uploadManager.parseListingsFromFile(file);
+        uploadManager.parseUploadFile(file);
     }
 
     @Test(expected = ValidationException.class)
@@ -87,29 +71,7 @@ public class ListingManagerUploadTest {
         InvalidArgumentsException, DeprecatedUploadTemplateException {
         String fileContents = HEADER_2015_V19 + "\n" + listing1Csv;
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/plain", fileContents.getBytes());
-        uploadManager.parseListingsFromFile(file);
-    }
-
-    @Test(expected = DeprecatedUploadTemplateException.class)
-    public void upload_DeprecatedTemplate_Fails() throws JsonProcessingException, ValidationException,
-        InvalidArgumentsException, DeprecatedUploadTemplateException, EntityCreationException, EntityRetrievalException {
-        PendingCertifiedProductEntity parsed = new PendingCertifiedProductEntity();
-        CertifiedProductHandler2015Version5 v19UploadHandler = Mockito.spy(new CertifiedProductHandler2015Version5(msgUtil));
-        Mockito.doReturn(parsed).when(((CertifiedProductHandler2015Version4) v19UploadHandler)).handle();
-        Mockito.doReturn(parsed).when(((CertifiedProductHandler2015Version3) v19UploadHandler)).handle();
-        Mockito.doReturn(parsed).when(((CertifiedProductHandler2015Version2) v19UploadHandler)).handle();
-        Mockito.doReturn(parsed).when(((CertifiedProductHandler2015Version1) v19UploadHandler)).handle();
-        Mockito.when(v19UploadHandler.handle()).thenReturn(parsed);
-        //need upload template version to exist and be deprecated
-        UploadTemplateVersionDTO uploadTemplateVersion = Mockito.spy(new UploadTemplateVersionDTO());
-        Mockito.when(uploadTemplateVersion.getDeprecated()).thenReturn(Boolean.TRUE);
-        Mockito.when(v19UploadHandler.getUploadTemplateVersion()).thenReturn(uploadTemplateVersion);
-        Mockito.when(uploadHandlerFactory.getHandler(ArgumentMatchers.any())).thenReturn(v19UploadHandler);
-
-        String fileContents = HEADER_2015_V19 + "\n" + listing1Csv;
-        MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
-
-        uploadManager.parseListingsFromFile(file);
+        uploadManager.parseUploadFile(file);
     }
 
     @Test(expected = ValidationException.class)
@@ -117,7 +79,7 @@ public class ListingManagerUploadTest {
         InvalidArgumentsException, DeprecatedUploadTemplateException {
         String fileContents = HEADER_2015_V19 + "\n" + listing1Csv + "\n" + listing1Csv;
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
-        uploadManager.parseListingsFromFile(file);
+        uploadManager.parseUploadFile(file);
     }
 
     @Test
@@ -126,7 +88,7 @@ public class ListingManagerUploadTest {
         String fileContents = HEADER_2015_V19 + "\n" + listing1Csv;
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
 
-        List<PendingCertifiedProductEntity> parsedListings = uploadManager.parseListingsFromFile(file);
+        List<ListingUpload> parsedListings = uploadManager.parseUploadFile(file);
         assertNotNull(parsedListings);
         assertEquals(1, parsedListings.size());
     }
@@ -137,7 +99,7 @@ public class ListingManagerUploadTest {
         String fileContents = HEADER_2015_V19 + "\n" + listingNewDeveloperCsv + "\n" + listingNewDeveloperCsv;
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
 
-        List<PendingCertifiedProductEntity> parsedListings = uploadManager.parseListingsFromFile(file);
+        List<ListingUpload> parsedListings = uploadManager.parseUploadFile(file);
         assertNotNull(parsedListings);
         assertEquals(2, parsedListings.size());
     }
@@ -149,7 +111,7 @@ public class ListingManagerUploadTest {
                 + listing2Csv + "\n" + listingNewDeveloperCsv;
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
 
-        List<PendingCertifiedProductEntity> parsedListings = uploadManager.parseListingsFromFile(file);
+        List<ListingUpload> parsedListings = uploadManager.parseUploadFile(file);
         assertNotNull(parsedListings);
         assertEquals(3, parsedListings.size());
     }
