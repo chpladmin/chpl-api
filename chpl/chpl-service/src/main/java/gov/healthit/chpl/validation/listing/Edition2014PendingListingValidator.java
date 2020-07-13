@@ -13,6 +13,7 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.DeveloperStatusRevie
 import gov.healthit.chpl.validation.pendingListing.reviewer.FieldLengthReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.FuzzyMatchReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.TestStandardReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.TestToolReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.UnattestedCriteriaWithDataReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.UnsupportedCharacterReviewer;
@@ -84,6 +85,10 @@ public class Edition2014PendingListingValidator extends PendingValidator {
     private TestFunctionality2014Reviewer tfReviewer;
 
     @Autowired
+    @Qualifier("pendingTestStandardReviewer")
+    private TestStandardReviewer testStandardReviewer;
+
+    @Autowired
     @Qualifier("pendingUrlReviewer")
     private UrlReviewer urlReviewer;
 
@@ -111,6 +116,7 @@ public class Edition2014PendingListingValidator extends PendingValidator {
             reviewers.add(ttReviewer);
             reviewers.add(tt2014Reviewer);
             reviewers.add(tfReviewer);
+            reviewers.add(testStandardReviewer);
             reviewers.add(urlReviewer);
         }
         return reviewers;
