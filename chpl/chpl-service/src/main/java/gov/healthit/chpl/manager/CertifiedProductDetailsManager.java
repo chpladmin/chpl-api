@@ -119,6 +119,7 @@ public class CertifiedProductDetailsManager {
     private List<CQMCriterion> cqmCriteria = new ArrayList<CQMCriterion>();
     private List<MacraMeasure> macraMeasures = new ArrayList<MacraMeasure>();
 
+    @SuppressWarnings({"checkstyle:parameternumber"})
     @Autowired
     public CertifiedProductDetailsManager(
             CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
@@ -517,6 +518,7 @@ public class CertifiedProductDetailsManager {
         return criteria;
     }
 
+    @SuppressWarnings({"checkstyle:methodlength"})
     private CertificationResult getCertificationResult(CertificationResultDetailsDTO certResult,
             CertifiedProductSearchDetails searchDetails) {
 
@@ -777,6 +779,10 @@ public class CertifiedProductDetailsManager {
         searchDetails.setQmsStandards(getCertifiedProductQmsStandards(dto.getId()));
         searchDetails.setTargetedUsers(getCertifiedProductTargetedUsers(dto.getId()));
         searchDetails.setAccessibilityStandards(getCertifiedProductAccessibilityStandards(dto.getId()));
+        searchDetails.setRwtPlanUrl(dto.getRwtPlanUrl());
+        searchDetails.setRwtPlanSubmissionDate(dto.getRwtPlanSubmissionDate());
+        searchDetails.setRwtResultsUrl(dto.getRwtResultsUrl());
+        searchDetails.setRwtResultsSubmissionDate(dto.getRwtResultsSubmissionDate());
 
         InheritedCertificationStatus ics = new InheritedCertificationStatus();
         ics.setInherits(dto.getIcs());
@@ -864,6 +870,7 @@ public class CertifiedProductDetailsManager {
         return targetedUserResults;
     }
 
+    @SuppressWarnings({"checkstyle:linelength"})
     private List<CertifiedProductAccessibilityStandard> getCertifiedProductAccessibilityStandards(Long id)
             throws EntityRetrievalException {
 
