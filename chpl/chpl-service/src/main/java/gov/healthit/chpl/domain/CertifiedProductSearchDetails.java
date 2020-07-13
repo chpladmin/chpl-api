@@ -338,6 +338,30 @@ public class CertifiedProductSearchDetails implements Serializable {
     @XmlElement(name = "sed", nillable = true, required = false)
     private CertifiedProductSed sed = new CertifiedProductSed();
 
+    /**
+     * URL where the listing's Real World Testing Plan is located
+     */
+    @XmlElement(name = "rwt_plan_url", nillable = true, required = false)
+    private String rwtPlanUrl;
+
+    /**
+     * Date the listing's Real World Testing Plan was submitted
+     */
+    @XmlElement(name = "rwt_plan_submission_date", nillable = true, required = false)
+    private Date rwtPlanSubmissionDate;
+
+    /**
+     * URL where the listing's Real World Testing Results is located
+     */
+    @XmlElement(name = "rwt_results_url", nillable = true, required = false)
+    private String rwtResultsUrl;
+
+    /**
+     * Date the listing's Real World Testing Results was submitted
+     */
+    @XmlElement(name = "rwt_plan_results_date", nillable = true, required = false)
+    private Date rwtResultsSubmissionDate;
+
     @Builder.Default
     @XmlTransient
     private Set<String> warningMessages = new HashSet<String>();
@@ -801,5 +825,37 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     public void setCertificationStatus(LegacyCertificationStatus certificationStatus) {
         this.certificationStatus = certificationStatus;
+    }
+    
+    public String getRwtPlanUrl() {
+        return rwtPlanUrl;
+    }
+
+    public void setRwtPlanUrl(String rwtPlanUrl) {
+        this.rwtPlanUrl = rwtPlanUrl;
+    }
+
+    public Date getRwtPlanSubmissionDate() {
+        return rwtPlanSubmissionDate;
+    }
+
+    public void setRwtPlanSubmissionDate(Date rwtPlanSubmissionDate) {
+        this.rwtPlanSubmissionDate = rwtPlanSubmissionDate;
+    }
+
+    public String getRwtResultsUrl() {
+        return rwtResultsUrl;
+    }
+
+    public void setRwtResultsUrl(String rwtResultsUrl) {
+        this.rwtResultsUrl = rwtResultsUrl;
+    }
+
+    public Date getRwtResultsSubmissionDate() {
+        return rwtResultsSubmissionDate;
+    }
+
+    public void setRwtResultsSubmissionDate(Date rwtResultsSubmissionDate) {
+        this.rwtResultsSubmissionDate = rwtResultsSubmissionDate;
     }
 }

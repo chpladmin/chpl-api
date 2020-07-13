@@ -150,7 +150,23 @@ public class CertifiedProductEntity implements Serializable {
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
-   /**
+    @Basic(optional = true)
+    @Column(name = "rwt_plan_url", nullable = true)
+    private String rwtPlanUrl;
+
+    @Basic(optional = true)
+    @Column(name = "rwt_plan_submission_date", nullable = true)
+    private Date rwtPlanSubmissionDate;
+
+    @Basic(optional = true)
+    @Column(name = "rwt_results_url", nullable = true)
+    private String rwtResultsUrl;
+
+    @Basic(optional = true)
+    @Column(name = "rwt_results_submission_date", nullable = true)
+    private Date rwtResultsSubmissionDate;
+
+    /**
      * Default constructor, mainly for hibernate use.
      */
     public CertifiedProductEntity() {
@@ -411,5 +427,37 @@ public class CertifiedProductEntity implements Serializable {
 
     public void setPendingCertifiedProductId(final Long pendingCertifiedProductId) {
         this.pendingCertifiedProductId = pendingCertifiedProductId;
+    }
+
+    public String getRwtPlanUrl() {
+        return rwtPlanUrl;
+    }
+
+    public void setRwtPlanUrl(String rwtPlanUrl) {
+        this.rwtPlanUrl = rwtPlanUrl;
+    }
+
+    public Date getRwtPlanSubmissionDate() {
+        return rwtPlanSubmissionDate;
+    }
+
+    public void setRwtPlanSubmissionDate(Date rwtPlanSubmissionDate) {
+        this.rwtPlanSubmissionDate = rwtPlanSubmissionDate;
+    }
+
+    public String getRwtResultsUrl() {
+        return rwtResultsUrl;
+    }
+
+    public void setRwtResultsUrl(String rwtResultsUrl) {
+        this.rwtResultsUrl = rwtResultsUrl;
+    }
+
+    public Date getRwtResultsSubmissionDate() {
+        return rwtResultsSubmissionDate;
+    }
+
+    public void setRwtResultsSubmissionDate(Date rwtResultsSubmissionDate) {
+        this.rwtResultsSubmissionDate = rwtResultsSubmissionDate;
     }
 }

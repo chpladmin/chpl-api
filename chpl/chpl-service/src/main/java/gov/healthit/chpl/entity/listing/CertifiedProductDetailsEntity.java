@@ -259,6 +259,18 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "transparency_attestation_url")
     private String transparencyAttestationUrl;
 
+    @Column(name = "rwt_plan_url")
+    private String rwtPlanUrl;
+
+    @Column(name = "rwt_plan_submission_date")
+    private Date rwtPlanSubmissionDate;
+
+    @Column(name = "rwt_results_url")
+    private String rwtResultsUrl;
+
+    @Column(name = "rwt_results_submission_date")
+    private Date rwtResultsSubmissionDate;
+
     public Long getId() {
         return id;
     }
@@ -841,5 +853,37 @@ public class CertifiedProductDetailsEntity {
 
     public void setMeaningfulUseUsersDate(Date meaningfulUseUsersDate) {
         this.meaningfulUseUsersDate = Util.getNewDate(meaningfulUseUsersDate);
+    }
+
+    public String getRwtPlanUrl() {
+        return rwtPlanUrl;
+    }
+
+    public void setRwtPlanUrl(String rwtPlanUrl) {
+        this.rwtPlanUrl = rwtPlanUrl;
+    }
+
+    public Date getRwtPlanSubmissionDate() {
+        return rwtPlanSubmissionDate;
+    }
+
+    public void setRwtPlanSubmissionDate(Date rwtPlanSubmissionDate) {
+        this.rwtPlanSubmissionDate = rwtPlanSubmissionDate;
+    }
+
+    public String getRwtResultsUrl() {
+        return rwtResultsUrl;
+    }
+
+    public void setRwtResultsUrl(String rwtResultsUrl) {
+        this.rwtResultsUrl = rwtResultsUrl;
+    }
+
+    public Date getRwtResultsSubmissionDate() {
+        return rwtResultsSubmissionDate;
+    }
+
+    public void setRwtResultsSubmissionDate(Date rwtResultsSubmissionDate) {
+        this.rwtResultsSubmissionDate = rwtResultsSubmissionDate;
     }
 }

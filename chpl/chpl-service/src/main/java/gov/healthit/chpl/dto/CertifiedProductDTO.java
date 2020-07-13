@@ -52,6 +52,11 @@ public class CertifiedProductDTO implements Serializable {
     private String productAdditionalSoftware;
     private Long pendingCertifiedProductId;
     private Boolean transparencyAttestation = null;
+    private String rwtPlanUrl;
+    private Date rwtPlanSubmissionDate;
+    private String rwtResultsUrl;
+    private Date rwtResultsSubmissionDate;
+
 
     /**
      * Default constructor.
@@ -92,6 +97,10 @@ public class CertifiedProductDTO implements Serializable {
         this.setQmsTesting(entity.getQmsTesting());
         this.setAccessibilityCertified(entity.getAccessibilityCertified());
         this.setProductAdditionalSoftware(entity.getProductAdditionalSoftware());
+        this.setRwtPlanUrl(entity.getRwtPlanUrl());
+        this.setRwtPlanSubmissionDate(entity.getRwtPlanSubmissionDate());
+        this.setRwtResultsUrl(entity.getRwtResultsUrl());
+        this.setRwtResultsSubmissionDate(entity.getRwtResultsSubmissionDate());
     }
 
     /**
@@ -130,6 +139,10 @@ public class CertifiedProductDTO implements Serializable {
         this.setProductAdditionalSoftware(from.getProductAdditionalSoftware());
 
         this.setTransparencyAttestationUrl(from.getTransparencyAttestationUrl());
+        this.setRwtPlanUrl(from.getRwtPlanUrl());
+        this.setRwtPlanSubmissionDate(from.getRwtPlanSubmissionDate());
+        this.setRwtResultsUrl(from.getRwtResultsUrl());
+        this.setRwtResultsSubmissionDate(from.getRwtResultsSubmissionDate());
 
         // set the pieces of the unique id
         if (!StringUtils.isEmpty(from.getChplProductNumber())) {
@@ -419,5 +432,37 @@ public class CertifiedProductDTO implements Serializable {
 
     public void setPendingCertifiedProductId(final Long pendingCertifiedProductId) {
         this.pendingCertifiedProductId = pendingCertifiedProductId;
+    }
+
+    public String getRwtPlanUrl() {
+        return rwtPlanUrl;
+    }
+
+    public void setRwtPlanUrl(String rwtPlanUrl) {
+        this.rwtPlanUrl = rwtPlanUrl;
+    }
+
+    public Date getRwtPlanSubmissionDate() {
+        return rwtPlanSubmissionDate;
+    }
+
+    public void setRwtPlanSubmissionDate(Date rwtPlanSubmissionDate) {
+        this.rwtPlanSubmissionDate = rwtPlanSubmissionDate;
+    }
+
+    public String getRwtResultsUrl() {
+        return rwtResultsUrl;
+    }
+
+    public void setRwtResultsUrl(String rwtResultsUrl) {
+        this.rwtResultsUrl = rwtResultsUrl;
+    }
+
+    public Date getRwtResultsSubmissionDate() {
+        return rwtResultsSubmissionDate;
+    }
+
+    public void setRwtResultsSubmissionDate(Date rwtResultsSubmissionDate) {
+        this.rwtResultsSubmissionDate = rwtResultsSubmissionDate;
     }
 }

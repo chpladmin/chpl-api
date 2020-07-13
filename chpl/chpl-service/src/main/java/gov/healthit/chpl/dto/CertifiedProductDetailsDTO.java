@@ -85,6 +85,10 @@ public class CertifiedProductDetailsDTO implements Serializable {
     private TransparencyAttestationDTO transparencyAttestation;
     private String transparencyAttestationUrl;
     private Long numMeaningfulUse;
+    private String rwtPlanUrl;
+    private Date rwtPlanSubmissionDate;
+    private String rwtResultsUrl;
+    private Date rwtResultsSubmissionDate;
 
     private static final int FOUR_DIGIT_YEAR = 4;
 
@@ -187,7 +191,12 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.countClosedSurveillance = entity.getCountClosedSurveillance();
         this.countOpenNonconformities = entity.getCountOpenNonconformities();
         this.countClosedNonconformities = entity.getCountClosedNonconformities();
+        this.rwtPlanUrl = entity.getRwtPlanUrl();
+        this.rwtPlanSubmissionDate = entity.getRwtPlanSubmissionDate();
+        this.rwtResultsUrl = entity.getRwtResultsUrl();
+        this.rwtResultsSubmissionDate = entity.getRwtResultsSubmissionDate();
         this.lastModifiedDate = entity.getLastModifiedDate();
+
     }
 
     public Date getCreationDate() {
@@ -236,6 +245,38 @@ public class CertifiedProductDetailsDTO implements Serializable {
 
     public void setDecertificationDate(Date decertificationDate) {
         this.decertificationDate = Util.getNewDate(decertificationDate);
+    }
+
+    public String getRwtPlanUrl() {
+        return rwtPlanUrl;
+    }
+
+    public void setRwtPlanUrl(String rwtPlanUrl) {
+        this.rwtPlanUrl = rwtPlanUrl;
+    }
+
+    public Date getRwtPlanSubmissionDate() {
+        return rwtPlanSubmissionDate;
+    }
+
+    public void setRwtPlanSubmissionDate(Date rwtPlanSubmissionDate) {
+        this.rwtPlanSubmissionDate = rwtPlanSubmissionDate;
+    }
+
+    public String getRwtResultsUrl() {
+        return rwtResultsUrl;
+    }
+
+    public void setRwtResultsUrl(String rwtResultsUrl) {
+        this.rwtResultsUrl = rwtResultsUrl;
+    }
+
+    public Date getRwtResultsSubmissionDate() {
+        return rwtResultsSubmissionDate;
+    }
+
+    public void setRwtResultsSubmissionDate(Date rwtResultsSubmissionDate) {
+        this.rwtResultsSubmissionDate = rwtResultsSubmissionDate;
     }
 
     /**
