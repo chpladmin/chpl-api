@@ -379,10 +379,24 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <RollingFile name="cacheListenerActivity"
+                     fileName="${logDir}/cache/cacheListenerActivity.log"
+                     filePattern="${logDir}/cache/history/cacheListenerActivity-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                        interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
     </Appenders>
     <Loggers>
         <Logger name="org.jose4j" level="ERROR" additivity="false">
             <AppenderRef ref="FILE" />
+        </Logger>
+        <Logger name="net.sf.ehcache" level="TRACE" additivity="false">
+            <AppenderRef ref="cacheListenerActivity" />
         </Logger>
         <Logger name="org.hibernate" level="ERROR" additivity="false">
             <AppenderRef ref="FILE" />

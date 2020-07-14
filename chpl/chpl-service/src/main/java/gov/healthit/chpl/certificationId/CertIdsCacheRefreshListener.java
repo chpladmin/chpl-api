@@ -29,9 +29,9 @@ public class CertIdsCacheRefreshListener extends CacheRefreshListener {
      * @param productIds list of ids used to create the certification ID
      * @param year the year of the certification ID
      */
-    @AfterReturning(
+   /* @AfterReturning(
             pointcut = "execution(* gov.healthit.chpl.manager.CertificationIdManager.create(..)) && "
-            + "args(productIds,year,..)")
+            + "args(productIds,year,..)")*/
     public void afterCertificationIdCreated(final List<Long> productIds, final String year) {
         LOGGER.debug("A certification ID was created. Refreshing certification ID caches. ");
         refreshCache();

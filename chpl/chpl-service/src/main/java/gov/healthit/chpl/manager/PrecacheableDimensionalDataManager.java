@@ -194,12 +194,13 @@ public class PrecacheableDimensionalDataManager {
     }
 
     @Transactional
-    @Cacheable(CacheNames.DEVELOPER_NAMES)
+    @Deprecated
     public Set<KeyValueModelStatuses> getDevelopersCached() {
         return getDevelopers();
     }
 
     @Transactional
+    @Cacheable(CacheNames.DEVELOPER_NAMES)
     public Set<KeyValueModelStatuses> getDevelopers() {
         List<DeveloperDTO> developerDTOs = this.developerDao.findAll();
         Set<KeyValueModelStatuses> developerNames = new HashSet<KeyValueModelStatuses>();

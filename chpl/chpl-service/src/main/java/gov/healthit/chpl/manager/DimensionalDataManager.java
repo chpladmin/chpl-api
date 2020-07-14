@@ -587,7 +587,7 @@ public class DimensionalDataManager {
 
     @Transactional
     public Set<KeyValueModelStatuses> getDevelopers() {
-        return precache.getDevelopersCached();
+        return precache.getDevelopers();
     }
 
     public Set<CriteriaSpecificDescriptiveModel> getCertificationCriterionNumbers() throws EntityRetrievalException {

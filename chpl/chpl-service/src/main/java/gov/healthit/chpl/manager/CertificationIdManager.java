@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -124,6 +125,9 @@ public class CertificationIdManager {
     }
 
     @Transactional(readOnly = false)
+    @CacheEvict(value = {
+            CacheNames.COLLECTIONS_LISTINGS
+    }, allEntries = true)
     public CertificationIdDTO create(final List<Long> productIds, final String year)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 

@@ -26,132 +26,143 @@ import gov.healthit.chpl.domain.surveillance.Surveillance;
  * @author kekey
  *
  */
-@Component
-@Aspect
+/*@Component
+@Aspect*/
 public class ListingCollectionCacheRefreshListener extends CacheRefreshListener {
     private static final Logger LOGGER = LogManager.getLogger(ListingCollectionCacheRefreshListener.class);
     @Autowired
     private ListingsCollectionCacheUpdater cacheUpdater;
 
     /**
+     * DONE
      * After a developer is updated refresh the listings collection cache.
      * @param developerInfo developer request object
      */
-    @AfterReturning(
+   /* @AfterReturning(
             "execution(* gov.healthit.chpl.web.controller.DeveloperController.updateDeveloper(..)) && "
-            + "args(developerInfo,..)")
+            + "args(developerInfo,..)")*/
     public void afterDeveloperUpdate(final UpdateDevelopersRequest developerInfo) {
         LOGGER.debug("A developer was updated. Refreshing listings collection cache. ");
         refreshCache();
     }
 
     /**
+     * DONE
      * After a developer is split refresh the developer names cache.
      * @param developerId developer id getting split
      * @param splitRequest the split request data
      */
-    @AfterReturning(
+    /*@AfterReturning(
             "execution(* gov.healthit.chpl.web.controller.DeveloperController.splitDeveloper(..)) && "
-            + "args(developerId,splitRequest,..)")
+            + "args(developerId,splitRequest,..)")*/
     public void afterDeveloperSplit(final Long developerId, final SplitDeveloperRequest splitRequest) {
         LOGGER.debug("A developer was split. Refreshing developer names cache.");
         refreshCache();
     }
 
     /**
+     * DONE
      * After a product is updated refresh the listings collection cache.
      * @param productInfo product update request object
+     * @param productInfo product update request object
      */
-    @AfterReturning(
+    /*@AfterReturning(
             "execution(* gov.healthit.chpl.web.controller.ProductController.updateProduct(..)) && "
-            + "args(productInfo,..)")
+            + "args(productInfo,..)")*/
     public void afterProductUpdate(final UpdateProductsRequest productInfo) {
         LOGGER.debug("A product was updated. Refreshing listings collection cache.");
         refreshCache();
     }
 
     /**
+     * DONE
      * After a product is split refresh the listings collection cache.
      * @param productId product id to split
      * @param splitRequest other information what to split
      */
-    @AfterReturning(
+    /*@AfterReturning(
             "execution(* gov.healthit.chpl.web.controller.ProductController.splitProduct(..)) && "
-            + "args(productId,splitRequest,..)")
+            + "args(productId,splitRequest,..)")*/
     public void afterProductSplit(final Long productId, final SplitProductsRequest splitRequest) {
         LOGGER.debug("A product was split. Refreshing listings collection cache.");
         refreshCache();
     }
 
     /**
+     * DONE
      * After a version is updated refresh the listings collection cache.
      * @param versionInfo version update request object
      */
-    @AfterReturning(
+    /*@AfterReturning(
             "execution(* gov.healthit.chpl.web.controller.ProductVersionController.updateVersion(..)) && "
-            + "args(versionInfo,..)")
+            + "args(versionInfo,..)")*/
     public void afterVersionUpdate(final UpdateVersionsRequest versionInfo) {
         LOGGER.debug("A version was updated. Refreshing listings collection cache.");
         refreshCache();
     }
 
     /**
+     * DONE
      * After a version is split refresh the listings collection cache.
      * @param versionId version id to split
      * @param splitRequest request object
      */
-    @AfterReturning(
+    /*@AfterReturning(
             "execution(* gov.healthit.chpl.web.controller.ProductVersionController.updateVersion(..)) && "
-            + "args(versionId,splitRequest,..)")
+            + "args(versionId,splitRequest,..)")*/
     public void afterVersionSplit(final Long versionId, final SplitVersionsRequest splitRequest) {
         LOGGER.debug("A version was split. Refreshing listings collection cache.");
         refreshCache();
     }
 
     /**
+     * DONE
      * After an acb is updated refresh the listings collection cache.
      * @param acbInfo certification body update request object
      */
-    @AfterReturning(
+    /*@AfterReturning(
             "execution(* gov.healthit.chpl.web.controller.CertificationBodyController.updateAcb(..)) && "
-            + "args(acbInfo,..)")
+            + "args(acbInfo,..)")*/
     public void afterCertificationBodyUpdate(final CertificationBody acbInfo) {
         LOGGER.debug("An ACB was updated. Refreshing listings collection cache.");
         refreshCache();
     }
 
     /**
+     * DONE
      * After a surveillance is created refresh the listings collection cache.
      * @param survToInsert surveillance that was inserted
      */
-    @AfterReturning(
+    /*@AfterReturning(
             "execution(* gov.healthit.chpl.web.controller.SurveillanceController.createSurveillance(..)) && "
-            + "args(survToInsert,..)")
+            + "args(survToInsert,..)")*/
     public void afterSurveillanceCreation(final Surveillance survToInsert) {
         LOGGER.debug("A surveillance was created. Refreshing listings collection cache.");
         refreshCache();
     }
 
     /**
+     * DONE
      * After a surveillance is updated refresh the listings collection cache.
      * @param survToUpdate surveillance that was updated
      */
-    @AfterReturning(
+    /*@AfterReturning(
             "execution(* gov.healthit.chpl.web.controller.SurveillanceController.updateSurveillance(..)) && "
-            + "args(survToUpdate,..)")
+            + "args(survToUpdate,..)")*/
     public void afterSurveillanceUpdate(final Surveillance survToUpdate) {
         LOGGER.debug("A surveillance was updated. Refreshing listings collection cache.");
         refreshCache();
     }
 
     /**
+     * DONE
      * After a surveillance is deleted refresh the listings collection cache.
      * @param surveillanceId surveillance id to deleted
      * @param requestBody user-supplied reason
      */
-    @AfterReturning(
+    /*@AfterReturning(
             "execution(* gov.healthit.chpl.web.controller.SurveillanceController.deleteSurveillance(..)) && "
-            + "args(surveillanceId,requestBody,..)")
+            + "args(surveillanceId,requestBody,..)")*/
     public void afterSurveillanceDeletion(final Long surveillanceId,
             final SimpleExplainableAction requestBody) {
         LOGGER.debug("A surveillance was deleted. Refreshing listings collection cache.");
@@ -159,24 +170,26 @@ public class ListingCollectionCacheRefreshListener extends CacheRefreshListener 
     }
 
     /**
+     * DONE
      * After a new listings is confirmed refresh the listings collection cache.
      * @param pendingCp pending listing object
      */
-    @AfterReturning(
+    /*@AfterReturning(
             "execution(* gov.healthit.chpl.web.controller.CertifiedProductController.confirmPendingCertifiedProduct(..)) && "
-            + "args(pendingCp,..)")
+            + "args(pendingCp,..)")*/
     public void afterListingConfirm(final PendingCertifiedProductDetails pendingCp) {
         LOGGER.debug("A listing was confirmed. Refreshing listings collection cache.");
         refreshCache();
     }
 
     /**
+     * DONE
      * After a listing is updated refresh the listings collection cache.
      * @param updateRequest listing update object
      */
-    @AfterReturning(
+    /*@AfterReturning(
             "execution(* gov.healthit.chpl.web.controller.CertifiedProductController.updateCertifiedProduct(..)) && "
-            + "args(updateRequest,..)")
+            + "args(updateRequest,..)")*/
     public void afterListingUpdate(final ListingUpdateRequest updateRequest) {
         LOGGER.debug("A listing was updated. Refreshing listings collection cache.");
         refreshCache();

@@ -33,9 +33,9 @@ public class ProductNamesCacheRefreshListener extends CacheRefreshListener {
      * After a product is updated refresh the product names cache.
      * @param productInfo product update request object
      */
-    @AfterReturning(
+    /*@AfterReturning(
             "execution(* gov.healthit.chpl.web.controller.ProductController.updateProduct(..)) && "
-            + "args(productInfo,..)")
+            + "args(productInfo,..)")*/
     public void afterProductUpdate(final UpdateProductsRequest productInfo) {
         LOGGER.debug("A product was updated or merged. Refreshing product names cache.");
         refreshCache();
@@ -46,9 +46,9 @@ public class ProductNamesCacheRefreshListener extends CacheRefreshListener {
      * @param productId product id that is being split
      * @param splitRequest request object with instructions how to split the product
      */
-    @AfterReturning(
+    /*@AfterReturning(
             "execution(* gov.healthit.chpl.web.controller.ProductController.splitProduct(..)) && "
-            + "args(productId,splitRequest,..)")
+            + "args(productId,splitRequest,..)")*/
     public void afterProductSplit(final Long productId, final SplitProductsRequest splitRequest) {
         LOGGER.debug("A product was split. Refreshing product names cache.");
         refreshCache();
@@ -59,9 +59,9 @@ public class ProductNamesCacheRefreshListener extends CacheRefreshListener {
      * The user may have created a new product in the process of confirmation.
      * @param pendingCp pending listing object
      */
-    @AfterReturning(
+    /*@AfterReturning(
             "execution(* gov.healthit.chpl.web.controller.CertifiedProductController.confirmPendingCertifiedProduct(..)) && "
-            + "args(pendingCp,..)")
+            + "args(pendingCp,..)")*/
     public void afterListingConfirm(final PendingCertifiedProductDetails pendingCp) {
         LOGGER.debug("A listing was confirmed. Refreshing product names cache.");
         refreshCache();

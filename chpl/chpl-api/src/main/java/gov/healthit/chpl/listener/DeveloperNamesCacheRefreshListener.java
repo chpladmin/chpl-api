@@ -33,9 +33,9 @@ public class DeveloperNamesCacheRefreshListener extends CacheRefreshListener {
      * After a developer is updated refresh the developer names cache.
      * @param developerInfo developer update request object
      */
-    @AfterReturning(
+    /*@AfterReturning(
             "execution(* gov.healthit.chpl.web.controller.DeveloperController.updateDeveloper(..)) && "
-            + "args(developerInfo,..)")
+            + "args(developerInfo,..)")*/
     public void afterDeveloperUpdate(final UpdateDevelopersRequest developerInfo) {
         LOGGER.debug("A developer was updated or merged. Refreshing developer names cache.");
         refreshCache();
@@ -46,9 +46,9 @@ public class DeveloperNamesCacheRefreshListener extends CacheRefreshListener {
      * @param developerId developer id that is getting split
      * @param splitRequest the split request data
      */
-    @AfterReturning(
+    /*@AfterReturning(
             "execution(* gov.healthit.chpl.web.controller.DeveloperController.splitDeveloper(..)) && "
-            + "args(developerId,splitRequest,..)")
+            + "args(developerId,splitRequest,..)")*/
     public void afterDeveloperSplit(final Long developerId, final SplitDeveloperRequest splitRequest) {
         LOGGER.debug("A developer was split. Refreshing developer names cache.");
         refreshCache();
@@ -59,9 +59,9 @@ public class DeveloperNamesCacheRefreshListener extends CacheRefreshListener {
      * The user may have created a new developer in the process of confirmation.
      * @param pendingCp pending listing object
      */
-    @AfterReturning(
+    /*@AfterReturning(
             "execution(* gov.healthit.chpl.web.controller.CertifiedProductController.confirmPendingCertifiedProduct(..)) && "
-            + "args(pendingCp,..)")
+            + "args(pendingCp,..)")*/
     public void afterListingConfirm(final PendingCertifiedProductDetails pendingCp) {
         LOGGER.debug("A listing was confirmed. Refreshing developer names cache.");
         refreshCache();

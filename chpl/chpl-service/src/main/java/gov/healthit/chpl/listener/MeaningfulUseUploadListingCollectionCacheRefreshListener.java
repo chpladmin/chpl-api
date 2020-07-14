@@ -27,7 +27,7 @@ public class MeaningfulUseUploadListingCollectionCacheRefreshListener {
      * upload job which has run in a separate thread behind the scenes
      * and refresh the cache when the entire job is completed.
      */
-    @AfterReturning("execution(* gov.healthit.chpl.job.MeaningfulUseUploadJob.run(..))")
+    /*@AfterReturning("execution(* gov.healthit.chpl.job.MeaningfulUseUploadJob.run(..))")*/
     public void afterMeaningfulUseUploadComplete() {
         LOGGER.debug("MUU Upload Complete. Refreshing listings collection cache.");
         if(propUtil.isAsyncCacheRefreshEnabled()) {
