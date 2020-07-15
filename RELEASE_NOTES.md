@@ -1,5 +1,16 @@
 # Release Notes
 
+## Version 25.8.0
+_13 July 2020_
+
+### Features
+* Split developer action moved to a quartz job
+* Do not allow ONC to upload listings
+* Generate warning on upload when test standard does not exist
+* Create secured endpoint /activity/metadata/beta/acbs
+
+---
+
 ## Version 25.7.1
 _25 June 2020_
 
