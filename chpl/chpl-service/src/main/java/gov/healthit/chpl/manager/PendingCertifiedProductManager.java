@@ -20,8 +20,6 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.dao.CQMCriterionDAO;
-import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
@@ -32,8 +30,6 @@ import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.dto.CQMCriterionDTO;
-import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
@@ -58,13 +54,9 @@ public class PendingCertifiedProductManager extends SecuredManager {
     private PendingCertifiedProductDAO pcpDao;
     private TestingFunctionalityManager testFunctionalityManager;
     private UserDAO userDAO;
-    private CQMCriterionDAO cqmCriterionDAO;
-    private MacraMeasureDAO macraDao;
     private ActivityManager activityManager;
     private CuresUpdateService curesUpdateService;
-
-    private List<CQMCriterion> cqmCriteria = new ArrayList<CQMCriterion>();
-    private List<MacraMeasure> macraMeasures = new ArrayList<MacraMeasure>();
+    private DimensionalDataManager dimensionalDataManager;
 
     @Autowired
     public PendingCertifiedProductManager(CertificationResultRules certRules,
@@ -72,30 +64,18 @@ public class PendingCertifiedProductManager extends SecuredManager {
             PendingCertifiedProductDAO pcpDao,
             TestingFunctionalityManager testFunctionalityManager,
             UserDAO userDAO,
-            CQMCriterionDAO cqmCriterionDAO,
-            MacraMeasureDAO macraDao,
             ActivityManager activityManager,
-            CuresUpdateService curesUpdateService) {
+            CuresUpdateService curesUpdateService,
+            DimensionalDataManager dimensionalDataManager) {
 
         this.certRules = certRules;
         this.validatorFactory = validatorFactory;
         this.pcpDao = pcpDao;
         this.testFunctionalityManager = testFunctionalityManager;
         this.userDAO = userDAO;
-        this.cqmCriterionDAO = cqmCriterionDAO;
-        this.macraDao = macraDao;
         this.activityManager = activityManager;
         this.curesUpdateService = curesUpdateService;
-
-        refreshData();
-    }
-
-    @Transactional
-    public void refreshData() {
-        cqmCriteria = new ArrayList<CQMCriterion>();
-        macraMeasures = new ArrayList<MacraMeasure>();
-        loadCQMCriteria();
-        loadCriteriaMacraMeasures();
+        this.dimensionalDataManager = dimensionalDataManager;
     }
 
     @Transactional(readOnly = true)
@@ -399,36 +379,10 @@ public class PendingCertifiedProductManager extends SecuredManager {
         }
     }
 
-    private void loadCriteriaMacraMeasures() {
-        List<MacraMeasureDTO> dtos = macraDao.findAll();
-        for (MacraMeasureDTO dto : dtos) {
-            MacraMeasure measure = new MacraMeasure(dto);
-            macraMeasures.add(measure);
-        }
-    }
-
-    private void loadCQMCriteria() {
-        List<CQMCriterionDTO> dtos = cqmCriterionDAO.findAll();
-        for (CQMCriterionDTO dto : dtos) {
-            CQMCriterion criterion = new CQMCriterion();
-            criterion.setCmsId(dto.getCmsId());
-            criterion.setCqmCriterionTypeId(dto.getCqmCriterionTypeId());
-            criterion.setCqmDomain(dto.getCqmDomain());
-            criterion.setCqmVersionId(dto.getCqmVersionId());
-            criterion.setCqmVersion(dto.getCqmVersion());
-            criterion.setCriterionId(dto.getId());
-            criterion.setDescription(dto.getDescription());
-            criterion.setNqfNumber(dto.getNqfNumber());
-            criterion.setNumber(dto.getNumber());
-            criterion.setTitle(dto.getTitle());
-            cqmCriteria.add(criterion);
-        }
-    }
-
     private List<CQMCriterion> getAvailableCQMVersions() {
         List<CQMCriterion> criteria = new ArrayList<CQMCriterion>();
 
-        for (CQMCriterion criterion : cqmCriteria) {
+        for (CQMCriterion criterion : dimensionalDataManager.getCQMCriteria()) {
             if (!StringUtils.isEmpty(criterion.getCmsId()) && criterion.getCmsId().startsWith("CMS")) {
                 criteria.add(criterion);
             }
@@ -487,7 +441,7 @@ public class PendingCertifiedProductManager extends SecuredManager {
     public void addAllMeasuresToCertificationCriteria(final PendingCertifiedProductDetails pcpDetails) {
         // now add allMeasures for criteria
         for (CertificationResult cert : pcpDetails.getCertificationResults()) {
-            for (MacraMeasure measure : macraMeasures) {
+            for (MacraMeasure measure : dimensionalDataManager.getMacraMeasures()) {
                 if (measure.getCriteria().getId().equals(cert.getCriterion().getId())) {
                     cert.getAllowedMacraMeasures().add(measure);
                 }

@@ -54,8 +54,10 @@ public class ChplCacheConfig {
         backingManager.addCacheIfAbsent(createCache(CacheNames.CLASSIFICATION_NAMES));
         backingManager.addCacheIfAbsent(createCache(CacheNames.COLLECTIONS_DEVELOPERS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.COLLECTIONS_LISTINGS));
+        backingManager.addCacheIfAbsent(createCache(CacheNames.CQM_CRITERION));
         backingManager.addCacheIfAbsent(createCache(CacheNames.CQM_CRITERION_NUMBERS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.DEVELOPER_NAMES));
+        backingManager.addCacheIfAbsent(createCache(CacheNames.EDITIONS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.EDITION_NAMES));
         backingManager.addCacheIfAbsent(createCache(CacheNames.FIND_SURVEILLANCE_NONCONFORMITY_STATUS_TYPE));
         backingManager.addCacheIfAbsent(createCache(CacheNames.FIND_SURVEILLANCE_REQ_TYPE));
@@ -68,6 +70,7 @@ public class ChplCacheConfig {
         backingManager.addCacheIfAbsent(createCache(CacheNames.PRODUCT_NAMES));
         backingManager.addCacheIfAbsent(createCache(CacheNames.TEST_DATA));
         backingManager.addCacheIfAbsent(createCache(CacheNames.TEST_PROCEDURES));
+        backingManager.addCacheIfAbsent(createCache(CacheNames.TEST_FUNCTIONALITY_MAPS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.UPLOAD_TEMPLATE_VERSIONS));
 
         backingManager.addCacheIfAbsent(createCache(CacheNames.PREFETCHED_COLLECTIONS_LISTINGS));
