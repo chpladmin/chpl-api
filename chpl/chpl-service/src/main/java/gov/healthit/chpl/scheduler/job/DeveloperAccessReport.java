@@ -33,8 +33,10 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.entity.auth.UserContactEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.EmailBuilder;
 import lombok.AllArgsConstructor;
@@ -178,8 +180,8 @@ public class DeveloperAccessReport extends QuartzJob {
         currRow.set(DEVELOPER_CONTACT_EMAIL, devAcbMap.getContactEmail());
         currRow.set(DEVELOPER_CONTACT_PHONE_NUMBER, devAcbMap.getContactPhoneNumber());
         currRow.set(DEVELOPER_USER_COUNT, developerAccessDao.getUserCountForDeveloper(devAcbMap.getDeveloperId())+"");
-        List<String> userEmailList = developerAccessDao.getEmailAddressesForDeveloperUsers(devAcbMap.developerId);
-        currRow.set(DEVELOPER_USER_EMAILS, (userEmailList == null) ? "" : String.join(";", userEmailList));
+        List<Contact> userContactList = developerAccessDao.getContactForDeveloperUsers(devAcbMap.developerId);
+        currRow.set(DEVELOPER_USER_EMAILS, (userContactList == null) ? "" : formatContacts(userContactList));
         Date lastLoginDate = developerAccessDao.getLastLoginDateForDeveloper(devAcbMap.getDeveloperId());
         currRow.set(LAST_LOGIN_DATE, lastLoginDate == null ? "" : getTimestampFormatter().format(lastLoginDate));
 
@@ -195,12 +197,19 @@ public class DeveloperAccessReport extends QuartzJob {
         }
     }
 
-    private List<String> createEmptyRow(final List<CertificationBodyDTO> activeAcbs) {
+    private List<String> createEmptyRow(List<CertificationBodyDTO> activeAcbs) {
         List<String> row = new ArrayList<String>(NUM_REPORT_COLS);
         for (int i = 0; i < NUM_REPORT_COLS + activeAcbs.size(); i++) {
             row.add("");
         }
         return row;
+    }
+
+    private String formatContacts(List<Contact> userContactList) {
+        List<String> contactStrings = new ArrayList<String>();
+        userContactList.stream()
+            .forEach(contact -> contactStrings.add(contact.getFullName() + " <" + contact.getEmail() + ">"));
+        return String.join("; ", contactStrings);
     }
 
     private DateFormat getTimestampFormatter() {
@@ -313,9 +322,9 @@ public class DeveloperAccessReport extends QuartzJob {
         }
 
         @Transactional
-        public List<String> getEmailAddressesForDeveloperUsers(Long developerId) {
-            List<String> emailAddresses = new ArrayList<String>();
-            Query query = entityManager.createQuery("SELECT contact.email "
+        public List<Contact> getContactForDeveloperUsers(Long developerId) {
+            List<Contact> contacts = new ArrayList<Contact>();
+            Query query = entityManager.createQuery("SELECT contact "
                     + "FROM UserDeveloperMapEntity udm "
                     + "JOIN udm.developer developer "
                     + "JOIN udm.user u "
@@ -326,16 +335,19 @@ public class DeveloperAccessReport extends QuartzJob {
                     + "AND u.accountExpired = false "
                     + "AND u.accountEnabled = true "
                     + "AND contact.deleted = false "
-                    + "AND (developer.id = :developerId)");
+                    + "AND (developer.id = :developerId)", UserContactEntity.class);
             query.setParameter("developerId", developerId);
-            List<String> queryResults = query.getResultList();
+            List<UserContactEntity> queryResults = query.getResultList();
             if (queryResults == null || queryResults.size() == 0) {
-                return emailAddresses;
+                return contacts;
             }
-            for (String queryResult : queryResults) {
-                emailAddresses.add(queryResult);
+            for (UserContactEntity queryResult : queryResults) {
+                Contact contact = new Contact();
+                contact.setEmail(queryResult.getEmail());
+                contact.setFullName(queryResult.getFullName());
+                contacts.add(contact);
             }
-            return emailAddresses;
+            return contacts;
         }
 
         @Transactional
