@@ -1,4 +1,4 @@
-package gov.healthit.chpl.validation.pendingListing.reviewer.duplicate;
+package gov.healthit.chpl.validation;
 
 import java.util.ArrayList;
 import java.util.List;

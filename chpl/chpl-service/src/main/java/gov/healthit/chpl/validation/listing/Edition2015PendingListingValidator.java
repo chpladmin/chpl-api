@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.validation.pendingListing.reviewer.CertificationDateReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.ChplNumberReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.DeveloperStatusReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.DuplicateDataReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.FieldLengthReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.FuzzyMatchReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.InheritedCertificationStatusReviewer;
@@ -23,7 +24,6 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.ValidDataReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.AttestedCriteriaCqmReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.CqmAttestedCriteriaReviewer;
-import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.DuplicateData2015Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.InvalidCriteriaCombinationReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.OldCriteriaWithoutIcsReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.PrivacyAndSecurityCriteriaReviewer;
@@ -106,12 +106,12 @@ public class Edition2015PendingListingValidator extends PendingValidator {
     private TestFunctionality2015Reviewer testFunctionalityReviewer;
 
     @Autowired
-    @Qualifier("pendingTestStandardReviewer")
-    private TestStandardReviewer testStandardReviewer;
+    @Qualifier("pendingDuplicateDataReviewer")
+    private DuplicateDataReviewer duplicateDataReviewer;
 
     @Autowired
-    @Qualifier("pendingDuplicateData2015Reviewer")
-    private DuplicateData2015Reviewer duplicateDataReviewer;
+    @Qualifier("pendingTestStandardReviewer")
+    private TestStandardReviewer testStandardReviewer;
 
     @Autowired
     @Qualifier("removedCriteriaReviewer")
@@ -143,7 +143,6 @@ public class Edition2015PendingListingValidator extends PendingValidator {
     public List<Reviewer> getReviewers() {
         if (reviewers == null) {
             reviewers = new ArrayList<Reviewer>();
-            reviewers.add(duplicateDataReviewer);
             reviewers.add(chplNumberReviewer);
             reviewers.add(devStatusReviewer);
             reviewers.add(certDateReviewer);
@@ -165,6 +164,7 @@ public class Edition2015PendingListingValidator extends PendingValidator {
             reviewers.add(cqmAttestedCriteriaReviewer);
             reviewers.add(attestedCriteriaCqmReviewer);
             reviewers.add(privacyAndSecurityCriteriaReviewer);
+            reviewers.add(duplicateDataReviewer);
             reviewers.add(testFunctionalityAllowedByRoleReviewer);
             reviewers.add(testStandardReviewer);
         }
