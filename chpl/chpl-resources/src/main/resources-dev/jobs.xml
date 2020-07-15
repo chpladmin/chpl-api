@@ -884,5 +884,24 @@
                 </entry>
             </job-data-map>
         </job>
+        <!-- Job fired when developer is split -->
+        <job>
+            <name>splitDeveloperJob</name>
+            <group>chplBackgroundJobs</group>
+            <description>Complete the work of splitting a developer and send an email notification to indicate if the operation was successful.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.SplitDeveloperJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
+                </entry>
+                <entry>
+                    <key>email</key>
+                    <value></value>
+                </entry>
+            </job-data-map>
+        </job>
     </schedule>
 </job-scheduling-data>
