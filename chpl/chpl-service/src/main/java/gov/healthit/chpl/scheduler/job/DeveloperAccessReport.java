@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -180,7 +179,7 @@ public class DeveloperAccessReport extends QuartzJob {
         currRow.set(DEVELOPER_CONTACT_PHONE_NUMBER, devAcbMap.getContactPhoneNumber());
         currRow.set(DEVELOPER_USER_COUNT, developerAccessDao.getUserCountForDeveloper(devAcbMap.getDeveloperId())+"");
         List<String> userEmailList = developerAccessDao.getEmailAddressesForDeveloperUsers(devAcbMap.developerId);
-        currRow.set(DEVELOPER_USER_EMAILS, (userEmailList == null) ? "" : String.join(",", userEmailList));
+        currRow.set(DEVELOPER_USER_EMAILS, (userEmailList == null) ? "" : String.join(";", userEmailList));
         Date lastLoginDate = developerAccessDao.getLastLoginDateForDeveloper(devAcbMap.getDeveloperId());
         currRow.set(LAST_LOGIN_DATE, lastLoginDate == null ? "" : getTimestampFormatter().format(lastLoginDate));
 
@@ -324,6 +323,8 @@ public class DeveloperAccessReport extends QuartzJob {
                     + "WHERE udm.deleted = false "
                     + "AND developer.deleted = false "
                     + "AND u.deleted = false "
+                    + "AND u.accountExpired = false "
+                    + "AND u.accountEnabled = true "
                     + "AND contact.deleted = false "
                     + "AND (developer.id = :developerId)");
             query.setParameter("developerId", developerId);
@@ -343,13 +344,17 @@ public class DeveloperAccessReport extends QuartzJob {
             Query query = entityManager.createQuery("SELECT count(*) "
                     + "FROM UserDeveloperMapEntity udm "
                     + "JOIN udm.developer developer "
+                    + "JOIN udm.user u "
                     + "WHERE udm.deleted = false "
                     + "AND developer.deleted = false "
+                    + "AND u.deleted = false "
+                    + "AND u.accountExpired = false "
+                    + "AND u.accountEnabled = true "
                     + "AND (developer.id = :developerId)");
             query.setParameter("developerId", developerId);
             Object userCountObj = query.getSingleResult();
-            if (userCountObj != null && userCountObj instanceof BigInteger) {
-                userCount = ((BigInteger) userCountObj).intValue();
+            if (userCountObj != null && userCountObj instanceof Long) {
+                userCount = ((Long) userCountObj).intValue();
             }
             return userCount;
         }
