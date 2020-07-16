@@ -49,6 +49,7 @@ public class ListingUploadManager {
         //since that might mean we miss data that the user wants
         List<String> unrecognizedHeadings = getUnrecognizedHeadings(heading);
         if ((unrecognizedHeadings != null && unrecognizedHeadings.size() > 0)) {
+            LOGGER.warn("User uploaded file with unrecognized headings: " + String.join(",", unrecognizedHeadings));
             throw new ValidationException(msgUtil.getMessage("listingUpload.unrecognizedHeadings",
                     String.join(",", unrecognizedHeadings)));
         }
@@ -63,6 +64,8 @@ public class ListingUploadManager {
             //TODO: parse the csv record list to fill in metadata we need for the upload object
             uploadMetadatas.add(uploadMetadata);
         }
+
+        //TODO: check for duplicate chpl ids in the file and throw ValidationException
         return uploadMetadatas;
     }
 
@@ -100,7 +103,7 @@ public class ListingUploadManager {
     private List<String> getUnrecognizedHeadings(CSVRecord record) {
         List<String> unrecognizedHeadings = new ArrayList<String>();
         Iterator<String> recordIter = record.iterator();
-        while(recordIter.hasNext()) {
+        while (recordIter.hasNext()) {
             String val = recordIter.next();
             if (Headings.getHeading(val) == null) {
                 unrecognizedHeadings.add(val);
