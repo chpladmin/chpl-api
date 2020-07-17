@@ -3,12 +3,10 @@ package gov.healthit.chpl.validation.surveillance.reviewer;
 import java.util.List;
 import java.util.Optional;
 
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
@@ -27,24 +25,20 @@ public class SurveillanceRemovedDataComparisonReviewer implements ComparisonRevi
     private CertificationCriterionDAO criterionDao;
     private ErrorMessageUtil msgUtil;
     private ResourcePermissions resourcePermissions;
-    private FF4j ff4j;
     private CertificationCriterionService criterionService;
 
     @Autowired
     public SurveillanceRemovedDataComparisonReviewer(CertificationCriterionDAO criterionDao, ErrorMessageUtil msgUtil,
-            ResourcePermissions resourcePermissions, FF4j ff4j, CertificationCriterionService criterionService) {
+            ResourcePermissions resourcePermissions, CertificationCriterionService criterionService) {
         this.criterionDao = criterionDao;
         this.msgUtil = msgUtil;
         this.resourcePermissions = resourcePermissions;
-        this.ff4j = ff4j;
         this.criterionService = criterionService;
     }
 
     @Override
     public void review(Surveillance existingSurveillance, Surveillance updatedSurveillance) {
         if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
-            return;
-        } else if (!ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)) {
             return;
         }
 

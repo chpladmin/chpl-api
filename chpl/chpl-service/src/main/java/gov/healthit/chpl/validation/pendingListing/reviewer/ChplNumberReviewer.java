@@ -5,12 +5,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
@@ -40,12 +38,11 @@ public class ChplNumberReviewer implements Reviewer {
     private ValidationUtils validationUtils;
     private ChplProductNumberUtil chplProductNumberUtil;
     private ErrorMessageUtil msgUtil;
-    private FF4j ff4j;
 
     @Autowired
     public ChplNumberReviewer(TestingLabDAO atlDao, CertificationBodyDAO acbDao, DeveloperDAO developerDao,
             CertificationEditionDAO certEditionDao, ValidationUtils validationUtils,
-            ChplProductNumberUtil chplProductNumberUtil, ErrorMessageUtil msgUtil, FF4j ff4j) {
+            ChplProductNumberUtil chplProductNumberUtil, ErrorMessageUtil msgUtil) {
         this.atlDao = atlDao;
         this.acbDao = acbDao;
         this.developerDao = developerDao;
@@ -53,7 +50,6 @@ public class ChplNumberReviewer implements Reviewer {
         this.validationUtils = validationUtils;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.msgUtil = msgUtil;
-        this.ff4j = ff4j;
     }
 
     /**
@@ -61,7 +57,8 @@ public class ChplNumberReviewer implements Reviewer {
      * is the correct value. May change the CHPL ID if necessary (if additional software was added or certification date
      * was changed) and if the CHPL ID is changed, confirms that the new ID is unique.
      */
-    public void review(final PendingCertifiedProductDTO listing) {
+    @SuppressWarnings({"checkstyle:methodlength"})
+    public void review(PendingCertifiedProductDTO listing) {
         String uniqueId = listing.getUniqueId();
         String[] uniqueIdParts = uniqueId.split("\\.");
         if (uniqueIdParts.length != ChplProductNumberUtil.CHPL_PRODUCT_ID_PARTS) {
@@ -142,12 +139,14 @@ public class ChplNumberReviewer implements Reviewer {
                     DeveloperStatusEventDTO mostRecentStatus = developer.getStatus();
                     if (mostRecentStatus == null || mostRecentStatus.getStatus() == null) {
                         listing.getErrorMessages().add("The current status of the developer " + developer.getName()
-                                + " cannot be determined. A developer must be listed as Active in order to create certified products belongong to it.");
+                                + " cannot be determined. A developer must be listed as Active "
+                                + "in order to create certified products belongong to it.");
                     } else if (!mostRecentStatus.getStatus().getStatusName()
                             .equals(DeveloperStatusType.Active.toString())) {
                         listing.getErrorMessages().add("The developer " + developer.getName() + " has a status of "
                                 + mostRecentStatus.getStatus().getStatusName()
-                                + ". Certified products belonging to this developer cannot be created until its status returns to Active.");
+                                + ". Certified products belonging to this developer cannot be "
+                                + "created until its status returns to Active.");
                     }
 
                     if (!developer.getDeveloperCode().equals(developerCode)) {
@@ -157,20 +156,19 @@ public class ChplNumberReviewer implements Reviewer {
                                         + listing.getDeveloperName() + ": '" + developer.getDeveloperCode() + "'.");
                     }
                     if (certificationBody != null) {
-                        if (!ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)) {
-                            DeveloperACBMapDTO mapping = developerDao.getTransparencyMapping(developer.getId(),
-                                    certificationBody.getId());
-                            if (mapping != null) {
-                                // check transparency attestation and url for warnings
-                                if (!areTransparencyAttestationsEqual(mapping.getTransparencyAttestation(),
-                                        listing.getTransparencyAttestation())) {
-                                    listing.getWarningMessages().add(msgUtil.getMessage("transparencyAttestation.save"));
-                                }
-                            } else if (!StringUtils.isEmpty(listing.getTransparencyAttestation())) {
-                                listing.getWarningMessages().add(msgUtil.getMessage(
-                                        "transparencyAttestation.save"));
+                        DeveloperACBMapDTO mapping = developerDao.getTransparencyMapping(developer.getId(),
+                                certificationBody.getId());
+                        if (mapping != null) {
+                            // check transparency attestation and url for warnings
+                            if (!areTransparencyAttestationsEqual(mapping.getTransparencyAttestation(),
+                                    listing.getTransparencyAttestation())) {
+                                listing.getWarningMessages().add(msgUtil.getMessage("transparencyAttestation.save"));
                             }
+                        } else if (!StringUtils.isEmpty(listing.getTransparencyAttestation())) {
+                            listing.getWarningMessages().add(msgUtil.getMessage(
+                                    "transparencyAttestation.save"));
                         }
+
                     }
                 }
             } else if (!developerCode.matches("X+")) {
@@ -242,7 +240,8 @@ public class ChplNumberReviewer implements Reviewer {
                 }
                 if (hasAS) {
                     listing.getErrorMessages().add(
-                            "The unique id indicates the product does not have additional software but some is specified in the upload file.");
+                            "The unique id indicates the product does not have additional "
+                            + "software but some is specified in the upload file.");
                 }
             } else if (additionalSoftwareCode.equals("1")) {
                 boolean hasAS = false;
@@ -253,7 +252,8 @@ public class ChplNumberReviewer implements Reviewer {
                 }
                 if (!hasAS) {
                     listing.getErrorMessages().add(
-                            "The unique id indicates the product has additional software but none is specified in the upload file.");
+                            "The unique id indicates the product has additional "
+                            + "software but none is specified in the upload file.");
                 }
             }
         }
@@ -271,7 +271,8 @@ public class ChplNumberReviewer implements Reviewer {
             if (listing.getCertificationDate() == null
                     || idDate.getTime() != listing.getCertificationDate().getTime()) {
                 listing.getErrorMessages().add(
-                        "The certification date provided in the unique id does not match the certification date in the upload file.");
+                        "The certification date provided in the unique id does not match the "
+                        + "certification date in the upload file.");
             }
         } catch (final ParseException pex) {
             listing.getErrorMessages()

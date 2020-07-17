@@ -5,103 +5,102 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Value;
 
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import lombok.Data;
 
+@Data
 public abstract class InvalidCriteriaCombination {
 
     @Value("${criterion.170_315_b_6}")
-    protected Integer criteriaB6Id;
+    private Integer criteriaB6Id;
 
     @Value("${criterion.170_315_b_10}")
-    protected Integer criteriaB10Id;
+    private Integer criteriaB10Id;
 
     @Value("${criterion.170_315_g_8}")
-    protected Integer criteriaG8Id;
+    private Integer criteriaG8Id;
 
     @Value("${criterion.170_315_g_10}")
-    protected Integer criteriaG10Id;
+    private Integer criteriaG10Id;
 
     @Value("${criterion.170_315_b_1_old}")
-    protected Integer criteriaB1Id;
+    private Integer criteriaB1Id;
     @Value("${criterion.170_315_b_1_cures}")
-    protected Integer criteriaB1RevisedId;
+    private Integer criteriaB1RevisedId;
 
     @Value("${criterion.170_315_b_2_old}")
-    protected Integer criteriaB2Id;
+    private Integer criteriaB2Id;
     @Value("${criterion.170_315_b_2_cures}")
-    protected Integer criteriaB2RevisedId;
+    private Integer criteriaB2RevisedId;
 
     @Value("${criterion.170_315_b_3_old}")
-    protected Integer criteriaB3Id;
+    private Integer criteriaB3Id;
     @Value("${criterion.170_315_b_3_cures}")
-    protected Integer criteriaB3RevisedId;
+    private Integer criteriaB3RevisedId;
 
     @Value("${criterion.170_315_b_7_old}")
-    protected Integer criteriaB7Id;
+    private Integer criteriaB7Id;
     @Value("${criterion.170_315_b_7_cures}")
-    protected Integer criteriaB7RevisedId;
+    private Integer criteriaB7RevisedId;
 
     @Value("${criterion.170_315_b_8_old}")
-    protected Integer criteriaB8Id;
+    private Integer criteriaB8Id;
     @Value("${criterion.170_315_b_8_cures}")
-    protected Integer criteriaB8RevisedId;
+    private Integer criteriaB8RevisedId;
 
     @Value("${criterion.170_315_b_9_old}")
-    protected Integer criteriaB9Id;
+    private Integer criteriaB9Id;
     @Value("${criterion.170_315_b_9_cures}")
-    protected Integer criteriaB9RevisedId;
+    private Integer criteriaB9RevisedId;
 
     @Value("${criterion.170_315_c_3_old}")
-    protected Integer criteriaC3Id;
+    private Integer criteriaC3Id;
     @Value("${criterion.170_315_c_3_cures}")
-    protected Integer criteriaC3RevisedId;
+    private Integer criteriaC3RevisedId;
 
     @Value("${criterion.170_315_e_1_old}")
-    protected Integer criteriaE1Id;
+    private Integer criteriaE1Id;
     @Value("${criterion.170_315_e_1_cures}")
-    protected Integer criteriaE1RevisedId;
+    private Integer criteriaE1RevisedId;
 
     @Value("${criterion.170_315_f_5_old}")
-    protected Integer criteriaF5Id;
+    private Integer criteriaF5Id;
     @Value("${criterion.170_315_f_5_cures}")
-    protected Integer criteriaF5RevisedId;
+    private Integer criteriaF5RevisedId;
 
     @Value("${criterion.170_315_g_6_old}")
-    protected Integer criteriaG6Id;
+    private Integer criteriaG6Id;
     @Value("${criterion.170_315_g_6_cures}")
-    protected Integer criteriaG6RevisedId;
+    private Integer criteriaG6RevisedId;
 
     @Value("${criterion.170_315_g_9_old}")
-    protected Integer criteriaG9Id;
+    private Integer criteriaG9Id;
     @Value("${criterion.170_315_g_9_cures}")
-    protected Integer criteriaG9RevisedId;
+    private Integer criteriaG9RevisedId;
 
     @Value("${criterion.170_315_d_2_old}")
-    protected Integer criteriaD2Id;
+    private Integer criteriaD2Id;
     @Value("${criterion.170_315_d_2_cures}")
-    protected Integer criteriaD2RevisedId;
+    private Integer criteriaD2RevisedId;
 
     @Value("${criterion.170_315_d_3_old}")
-    protected Integer criteriaD3Id;
+    private Integer criteriaD3Id;
     @Value("${criterion.170_315_d_3_cures}")
-    protected Integer criteriaD3RevisedId;
+    private Integer criteriaD3RevisedId;
 
     @Value("${criterion.170_315_d_10_old}")
-    protected Integer criteriaD10Id;
+    private Integer criteriaD10Id;
     @Value("${criterion.170_315_d_10_cures}")
-    protected Integer criteriaD10RevisedId;
+    private Integer criteriaD10RevisedId;
 
-    protected ErrorMessageUtil msgUtil;
-    protected FF4j ff4j;
+    private ErrorMessageUtil msgUtil;
 
-    protected Set<Pair<Integer, Integer>> oldAndNewcriteriaIdPairs;
+    private Set<Pair<Integer, Integer>> oldAndNewcriteriaIdPairs;
 
-    public InvalidCriteriaCombination(ErrorMessageUtil msgUtil, FF4j ff4j) {
+    public InvalidCriteriaCombination(ErrorMessageUtil msgUtil) {
         this.msgUtil = msgUtil;
-        this.ff4j = ff4j;
     }
 
     protected void initializeOldAndNewCriteriaPairs() {

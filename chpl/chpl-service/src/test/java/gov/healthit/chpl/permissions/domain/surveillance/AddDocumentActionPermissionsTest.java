@@ -3,7 +3,6 @@ package gov.healthit.chpl.permissions.domain.surveillance;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -12,9 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
@@ -31,9 +28,6 @@ public class AddDocumentActionPermissionsTest extends ActionPermissionsBaseTest 
     @Mock
     private SurveillanceDAO survDAO;
 
-    @Autowired
-    private FF4j ff4j;
-
     @InjectMocks
     private AddDocumentActionPermissions permissions;
 
@@ -42,7 +36,6 @@ public class AddDocumentActionPermissionsTest extends ActionPermissionsBaseTest 
         MockitoAnnotations.initMocks(this);
 
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
-        Mockito.doReturn(false).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK);
     }
 
     @Override

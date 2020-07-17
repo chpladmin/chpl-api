@@ -8,10 +8,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
@@ -32,7 +30,6 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
     private CertificationCriterionDAO certificationCriterionDao;
     private Environment env;
     private ErrorMessageUtil errorMessageUtil;
-    private FF4j ff4j;
     private ValidationUtils validationUtils;
 
     @Before
@@ -49,40 +46,18 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
 
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
 
-        ff4j = Mockito.mock(FF4j.class);
-
         validationUtils = new ValidationUtils(certificationCriterionDao);
     }
 
     @Test
-    public void review_ERDFlagIsOff_NoErrorMessages() {
-        // ERD Flag is Off
-        Mockito.when(ff4j.check(ArgumentMatchers.anyString())).thenReturn(false);
-
-        CertifiedProductSearchDetails updatedListing = Mockito.mock(CertifiedProductSearchDetails.class);
-
-        PrivacyAndSecurityCriteriaReviewer reviewer = new PrivacyAndSecurityCriteriaReviewer(certificationCriterionDao,
-                env, errorMessageUtil, ff4j, validationUtils);
-        reviewer.postConstruct();
-
-        // Test
-        reviewer.review(Mockito.mock(CertifiedProductSearchDetails.class), updatedListing);
-
-        assertTrue(updatedListing.getErrorMessages().isEmpty());
-    }
-
-    @Test
     public void review_NotAnActiveOrSuspendedStatus_NoErrorMessages() {
-        // ERD Flag is On
-        Mockito.when(ff4j.check(ArgumentMatchers.anyString())).thenReturn(true);
-
         // Updated Listing
         // 1: Certification Status Type is Retired | 2: All parent properties are non-null
         CertifiedProductSearchDetails updatedListing = new CertifiedProductSearchDetails();
         updatedListing.setCertificationEvents(getCertificationStatusEvents(CertificationStatusType.Retired.toString()));
 
         PrivacyAndSecurityCriteriaReviewer reviewer = new PrivacyAndSecurityCriteriaReviewer(certificationCriterionDao,
-                env, errorMessageUtil, ff4j, validationUtils);
+                env, errorMessageUtil, validationUtils);
         reviewer.postConstruct();
 
         // Test
@@ -93,9 +68,6 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
 
     @Test
     public void review_LE3NoCriteriaAdded_NoErrorMessages() {
-        // ERD Flag is On
-        Mockito.when(ff4j.check(ArgumentMatchers.anyString())).thenReturn(true);
-
         // Existing Listing
         // Attests to 170.315 (a)(1), 170.315 (a)(2)
         CertifiedProductSearchDetails existingListing = Mockito.mock(CertifiedProductSearchDetails.class);
@@ -113,7 +85,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
         updatedListing.setCertificationResults(updatedListingCertificationResults);
 
         PrivacyAndSecurityCriteriaReviewer reviewer = new PrivacyAndSecurityCriteriaReviewer(certificationCriterionDao,
-                env, errorMessageUtil, ff4j, validationUtils);
+                env, errorMessageUtil, validationUtils);
         reviewer.postConstruct();
 
         // Test
@@ -124,9 +96,6 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
 
     @Test
     public void review_RequiredCriteriaAddedInGeneral_NoErrorMessages() {
-        // ERD Flag is On
-        Mockito.when(ff4j.check(ArgumentMatchers.anyString())).thenReturn(true);
-
         // Existing Listing
         // Attests to 170.315 (a)(1), 170.315 (a)(2)
         CertifiedProductSearchDetails existingListing = Mockito.mock(CertifiedProductSearchDetails.class);
@@ -145,7 +114,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
         updatedListing.setCertificationResults(updatedListingCertificationResults);
 
         PrivacyAndSecurityCriteriaReviewer reviewer = new PrivacyAndSecurityCriteriaReviewer(certificationCriterionDao,
-                env, errorMessageUtil, ff4j, validationUtils);
+                env, errorMessageUtil, validationUtils);
         reviewer.postConstruct();
 
         // Test
@@ -156,9 +125,6 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
 
     @Test
     public void review_AddsCriteriaButDoesNotHaveRequiredCriteria_HasErrorMessages() {
-        // ERD Flag is On
-        Mockito.when(ff4j.check(ArgumentMatchers.anyString())).thenReturn(true);
-
         // Existing Listing
         // Attests to 170.315 (a)(1)
         CertifiedProductSearchDetails existingListing = Mockito.mock(CertifiedProductSearchDetails.class);
@@ -178,7 +144,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
         updatedListing.setErrorMessages(new HashSet<String>());
 
         PrivacyAndSecurityCriteriaReviewer reviewer = new PrivacyAndSecurityCriteriaReviewer(certificationCriterionDao,
-                env, errorMessageUtil, ff4j, validationUtils);
+                env, errorMessageUtil, validationUtils);
         reviewer.postConstruct();
 
         // Test
@@ -189,9 +155,6 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
 
     @Test
     public void review_LE1HasRequiredListCriteriaInExistingAndAddsCriteriaNotFromRequiredListButDoesNotHaveRequiredCriteria_HasErrorMessages() {
-        // ERD Flag is On
-        Mockito.when(ff4j.check(ArgumentMatchers.anyString())).thenReturn(true);
-
         // Existing Listing
         // Attests to 170.315 (a)(1)
         CertifiedProductSearchDetails existingListing = Mockito.mock(CertifiedProductSearchDetails.class);
@@ -209,7 +172,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
         updatedListing.setCertificationResults(updatedListingCertificationResults);
 
         PrivacyAndSecurityCriteriaReviewer reviewer = new PrivacyAndSecurityCriteriaReviewer(certificationCriterionDao,
-                env, errorMessageUtil, ff4j, validationUtils);
+                env, errorMessageUtil, validationUtils);
         reviewer.postConstruct();
 
         // Test
@@ -220,9 +183,6 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
 
     @Test
     public void review_LE2HasNonRequiredListCriteriaInExistingAndAddsCriteriaFromRequiredListButDoesNotHaveRequiredCriteria_HasErrorMessages() {
-        // ERD Flag is On
-        Mockito.when(ff4j.check(ArgumentMatchers.anyString())).thenReturn(true);
-
         // Existing Listing
         // Attests to 1 criteria NOT from the required list
         CertifiedProductSearchDetails existingListing = Mockito.mock(CertifiedProductSearchDetails.class);
@@ -240,7 +200,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
         updatedListing.setCertificationResults(updatedListingCertificationResults);
 
         PrivacyAndSecurityCriteriaReviewer reviewer = new PrivacyAndSecurityCriteriaReviewer(certificationCriterionDao,
-                env, errorMessageUtil, ff4j, validationUtils);
+                env, errorMessageUtil, validationUtils);
         reviewer.postConstruct();
 
         // Test
@@ -251,9 +211,6 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
 
     @Test
     public void review_LE4NoCriteriaAddedAndRemovedRequiredCriteria_NoErrorMessages() {
-        // ERD Flag is On
-        Mockito.when(ff4j.check(ArgumentMatchers.anyString())).thenReturn(true);
-
         // Existing Listing
         // Attests to 170.315 (a)(1), 170.315 (a)(2), 170.315 (d)(12), 170.315 (d)(13)
         CertifiedProductSearchDetails existingListing = Mockito.mock(CertifiedProductSearchDetails.class);
@@ -272,7 +229,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
         updatedListing.setCertificationResults(updatedListingCertificationResults);
 
         PrivacyAndSecurityCriteriaReviewer reviewer = new PrivacyAndSecurityCriteriaReviewer(certificationCriterionDao,
-                env, errorMessageUtil, ff4j, validationUtils);
+                env, errorMessageUtil, validationUtils);
         reviewer.postConstruct();
 
         // Test
@@ -283,9 +240,6 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
 
     @Test
     public void review_LE6NoRequiredCriteriaButNoCriteriaFromRequiredList_NoErrorMessages() {
-        // ERD Flag is On
-        Mockito.when(ff4j.check(ArgumentMatchers.anyString())).thenReturn(true);
-
         // Existing Listing
         // Attests to 1 criteria NOT from the required list
         CertifiedProductSearchDetails existingListing = Mockito.mock(CertifiedProductSearchDetails.class);
@@ -303,7 +257,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
         updatedListing.setCertificationResults(updatedListingCertificationResults);
 
         PrivacyAndSecurityCriteriaReviewer reviewer = new PrivacyAndSecurityCriteriaReviewer(certificationCriterionDao,
-                env, errorMessageUtil, ff4j, validationUtils);
+                env, errorMessageUtil, validationUtils);
         reviewer.postConstruct();
 
         // Test
