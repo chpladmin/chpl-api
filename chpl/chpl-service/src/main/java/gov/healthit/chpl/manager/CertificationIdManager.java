@@ -126,7 +126,7 @@ public class CertificationIdManager {
 
     @Transactional(readOnly = false)
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS
+            CacheNames.ALL_CERT_IDS, CacheNames.ALL_CERT_IDS_WITH_PRODUCTS
     }, allEntries = true)
     public CertificationIdDTO create(final List<Long> productIds, final String year)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
