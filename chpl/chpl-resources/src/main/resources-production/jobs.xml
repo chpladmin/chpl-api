@@ -9,23 +9,31 @@
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- Delete the below pre-processing command(s) after PROD push -->
         <delete-job>
-            <name>addCriteriaTo2015ListingsJob</name>
+            <name>addV18UploadTemplateJob</name>
             <group>systemJobs</group>
         </delete-job>
         <delete-job>
-            <name>addCriteriaToSingleListingJob</name>
-            <group>subordinateJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>addCriteriaToSinglePendingListingJob</name>
-            <group>subordinateJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>modifyTestFunctionalityJob</name>
+            <name>addV19UploadTemplateJob</name>
             <group>systemJobs</group>
         </delete-job>
         <delete-job>
-            <name>updateMacraMeasuresJob</name>
+            <name>addCuresUpdateToListings</name>
+            <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>removeCriteriaJob</name>
+            <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>removeV17UploadTemplateJob</name>
+            <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>createTestToolJob</name>
+            <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>update2014ListingStatusJob</name>
             <group>systemJobs</group>
         </delete-job>
         <!-- End delete pre-processing command(s). -->
