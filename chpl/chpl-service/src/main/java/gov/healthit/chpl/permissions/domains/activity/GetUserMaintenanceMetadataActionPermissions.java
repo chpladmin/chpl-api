@@ -33,12 +33,11 @@ public class GetUserMaintenanceMetadataActionPermissions extends ActionPermissio
 
     @Override
     public boolean hasAccess() {
-        if (getResourcePermissions().isUserAnonymous() || getResourcePermissions().isUserRoleDeveloperAdmin()) {
-            return false;
-        } else {
-            return true;
-        }
-
+        return getResourcePermissions().isUserRoleAdmin()
+                || getResourcePermissions().isUserRoleOnc()
+                || getResourcePermissions().isUserRoleAcbAdmin()
+                || getResourcePermissions().isUserRoleAtlAdmin()
+                || getResourcePermissions().isUserRoleCmsStaff();
     }
 
     @Override
