@@ -2,6 +2,7 @@ package gov.healthit.chpl.manager;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.EnvironmentAware;
@@ -48,6 +49,7 @@ public class QuestionableActivityManager implements EnvironmentAware {
     private CertifiedProductDAO listingDao;
 
     @Autowired
+    @SuppressWarnings({"checkstyle:parameternumber"})
     public QuestionableActivityManager(
             DeveloperQuestionableActivityProvider developerQuestionableActivityProvider,
             ProductQuestionableActivityProvider productQuestionableActivityProvider,
@@ -71,6 +73,7 @@ public class QuestionableActivityManager implements EnvironmentAware {
         triggerTypes = questionableActivityDao.getAllTriggers();
     }
 
+    @Override
     public void setEnvironment(final Environment e) {
         this.env = e;
         String activityThresholdDaysStr = env.getProperty("questionableActivityThresholdDays");
@@ -205,6 +208,16 @@ public class QuestionableActivityManager implements EnvironmentAware {
             if (activity != null) {
                 createListingActivity(activity, origListing.getId(), activityDate, activityUser,
                         QuestionableActivityTriggerConcept.CRITERIA_B3_ADDED_TO_EXISTING_LISTING_WITH_ICS, activityReason);
+            }
+            activity = listingQuestionableActivityProvider.checkRealWorldTestingPlanRemoved(origListing, newListing);
+            if (Objects.nonNull(activity)) {
+                createListingActivity(activity, origListing.getId(), activityDate, activityUser,
+                        QuestionableActivityTriggerConcept.REAL_WORLD_TESTING_REMOVED, activityReason);
+            }
+            activity = listingQuestionableActivityProvider.checkRealWorldTestingResultsRemoved(origListing, newListing);
+            if (Objects.nonNull(activity)) {
+                createListingActivity(activity, origListing.getId(), activityDate, activityUser,
+                        QuestionableActivityTriggerConcept.REAL_WORLD_TESTING_REMOVED, activityReason);
             }
 
             // finally check for other changes that are only questionable

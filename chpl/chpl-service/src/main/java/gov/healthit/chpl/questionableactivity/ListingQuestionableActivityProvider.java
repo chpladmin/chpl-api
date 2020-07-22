@@ -378,7 +378,7 @@ public class ListingQuestionableActivityProvider {
         QuestionableActivityListingDTO activity = null;
         if (origListing.getSurveillance() != null && origListing.getSurveillance().size() > 0
                 && (newListing.getSurveillance() == null
-                        || newListing.getSurveillance().size() < origListing.getSurveillance().size())) {
+                || newListing.getSurveillance().size() < origListing.getSurveillance().size())) {
 
             activity = new QuestionableActivityListingDTO();
             activity.setBefore(null);
@@ -452,6 +452,28 @@ public class ListingQuestionableActivityProvider {
         return activity;
     }
 
+    public QuestionableActivityListingDTO checkRealWorldTestingPlanRemoved(
+            CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
+
+        QuestionableActivityListingDTO activity = null;
+        if (!StringUtils.isEmpty(origListing.getRwtPlanUrl()) && StringUtils.isEmpty(newListing.getRwtPlanUrl())) {
+            activity = new QuestionableActivityListingDTO();
+            activity.setBefore("Removed Plan URL: " + origListing.getRwtPlanUrl());
+        }
+        return activity;
+    }
+
+    public QuestionableActivityListingDTO checkRealWorldTestingResultsRemoved(
+            CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
+
+        QuestionableActivityListingDTO activity = null;
+        if (!StringUtils.isEmpty(origListing.getRwtResultsUrl()) && StringUtils.isEmpty(newListing.getRwtResultsUrl())) {
+            activity = new QuestionableActivityListingDTO();
+            activity.setBefore("Removed Results URL: " + origListing.getRwtResultsUrl());
+        }
+        return activity;
+    }
+
     private Date getB3ChangeDate() throws ParseException {
         String dateAsString = env.getProperty(B3_CHANGE_DATE);
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
@@ -484,7 +506,7 @@ public class ListingQuestionableActivityProvider {
         public int compare(CertificationStatusEvent a, CertificationStatusEvent b) {
             return a.getEventDate().longValue() < b.getEventDate().longValue()
                     ? -1
-                    : a.getEventDate().longValue() == b.getEventDate().longValue() ? 0 : 1;
+                            : a.getEventDate().longValue() == b.getEventDate().longValue() ? 0 : 1;
         }
     }
 }
