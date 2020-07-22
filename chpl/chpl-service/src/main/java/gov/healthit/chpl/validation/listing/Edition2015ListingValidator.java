@@ -30,6 +30,7 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.InvalidCriteria
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.MacraMeasureComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.OldCriteriaWithoutIcsReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.PrivacyAndSecurityCriteriaReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.RealWorldTestingReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaTestTaskComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaUcdComparisonReviewer;
@@ -157,6 +158,10 @@ public class Edition2015ListingValidator extends Validator {
     @Qualifier("listingStatusAndUserRoleReviewer")
     private ListingStatusAndUserRoleReviewer listingStatusAndUserRoleReviewer;
 
+    @Autowired
+    @Qualifier("realWorldTestingReviewer")
+    private RealWorldTestingReviewer realWorldTestingReviewer;
+
     private List<Reviewer> reviewers;
     private List<ComparisonReviewer> comparisonReviewers;
 
@@ -201,6 +206,7 @@ public class Edition2015ListingValidator extends Validator {
             comparisonReviewers.add(testFunctionalityAllowedByRoleReviewer);
             comparisonReviewers.add(listingStatusAndUserRoleReviewer);
             comparisonReviewers.add(privacyAndSecurityCriteriaReviewer);
+            comparisonReviewers.add(realWorldTestingReviewer);
         }
         return comparisonReviewers;
     }
