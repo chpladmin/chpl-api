@@ -1,6 +1,7 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -69,6 +70,36 @@ public class CertifiedProduct implements Serializable {
     @XmlElement(required = false, nillable = true)
     private Boolean curesUpdate;
 
+    /**
+     * The first year that the listing is eligible Real World Testing
+     */
+    @XmlElement(required = false, nillable = true)
+    private Integer rwtEligibilityYear;
+
+    /**
+     * The current Real World Testing Plan URL
+     */
+    @XmlElement(required = false, nillable = true)
+    private String rwtPlanUrl;
+
+    /**
+     * The date the Real World Testing Plan submission was confirmed
+     */
+    @XmlElement(required = false, nillable = true)
+    private Date rwtPlanSubmissionDate;
+
+    /**
+     * The current Real World Testing Plan URL
+     */
+    @XmlElement(required = false, nillable = true)
+    private String rwtResultsUrl;
+
+    /**
+     * The date the Real World Testing Results submission was confirmed
+     */
+    @XmlElement(required = false, nillable = true)
+    private Date rwtResultsSubmissionDate;
+
     public CertifiedProduct() {
     }
 
@@ -87,6 +118,11 @@ public class CertifiedProduct implements Serializable {
         this.certificationDate = (dto.getCertificationDate() != null ? dto.getCertificationDate().getTime() : -1);
         this.certificationStatus = dto.getCertificationStatusName();
         this.curesUpdate = dto.getCuresUpdate();
+        this.rwtEligibilityYear = dto.getRwtEligibilityYear();
+        this.rwtPlanUrl = dto.getRwtPlanUrl();
+        this.rwtPlanSubmissionDate = dto.getRwtPlanSubmissionDate();
+        this.rwtResultsUrl = dto.getRwtResultsUrl();
+        this.rwtResultsSubmissionDate = dto.getRwtResultsSubmissionDate();
     }
 
     /**
