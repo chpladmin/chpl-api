@@ -89,6 +89,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
     private Date rwtPlanSubmissionDate;
     private String rwtResultsUrl;
     private Date rwtResultsSubmissionDate;
+    private Integer rwtEligibilityYear;
 
     private static final int FOUR_DIGIT_YEAR = 4;
 
@@ -195,6 +196,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.rwtPlanSubmissionDate = entity.getRwtPlanSubmissionDate();
         this.rwtResultsUrl = entity.getRwtResultsUrl();
         this.rwtResultsSubmissionDate = entity.getRwtResultsSubmissionDate();
+        this.rwtEligibilityYear = entity.getRwtEligibilityYear();
         this.lastModifiedDate = entity.getLastModifiedDate();
 
     }
@@ -277,6 +279,14 @@ public class CertifiedProductDetailsDTO implements Serializable {
 
     public void setRwtResultsSubmissionDate(Date rwtResultsSubmissionDate) {
         this.rwtResultsSubmissionDate = rwtResultsSubmissionDate;
+    }
+
+    public Integer getRwtEligibilityYear() {
+        return rwtEligibilityYear;
+    }
+
+    public void setRwtEligibilityYear(Integer rwtEligibilityYear) {
+        this.rwtEligibilityYear = rwtEligibilityYear;
     }
 
     /**

@@ -147,6 +147,10 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         entity.setCertificationBodyId(dto.getCertificationBodyId());
         entity.setCertificationEditionId(dto.getCertificationEditionId());
         entity.setProductVersionId(dto.getProductVersionId());
+        entity.setRwtPlanUrl(dto.getRwtPlanUrl());
+        entity.setRwtPlanSubmissionDate(dto.getRwtPlanSubmissionDate());
+        entity.setRwtResultsUrl(dto.getRwtResultsUrl());
+        entity.setRwtResultsSubmissionDate(dto.getRwtResultsSubmissionDate());
 
         entity.setLastModifiedDate(new Date());
         entity.setLastModifiedUser(AuthUtil.getAuditId());
@@ -239,7 +243,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         List<CertifiedProductDetailsEntity> entities = entityManager.createQuery(
                 "SELECT DISTINCT cp " + "FROM CertifiedProductDetailsEntity cp, SurveillanceEntity surv "
                         + "WHERE surv.certifiedProductId = cp.id " + "AND (NOT surv.deleted = true)",
-                CertifiedProductDetailsEntity.class).getResultList();
+                        CertifiedProductDetailsEntity.class).getResultList();
 
         List<CertifiedProductDetailsDTO> products = new ArrayList<>();
 
@@ -256,7 +260,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         List<CertifiedProductDetailsEntity> entities = entityManager.createQuery(
                 "SELECT DISTINCT cp " + "FROM CertifiedProductDetailsEntity cp "
                         + "WHERE (icsCode != '0' OR ics = true)",
-                CertifiedProductDetailsEntity.class).getResultList();
+                        CertifiedProductDetailsEntity.class).getResultList();
 
         List<CertifiedProductDetailsDTO> products = new ArrayList<>();
         for (CertifiedProductDetailsEntity entity : entities) {
@@ -358,7 +362,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
                 "FROM CertifiedProductEntity cpe, ProductVersionEntity pve," + "ProductEntity pe, DeveloperEntity ve "
                         + "WHERE (NOT cpe.deleted = true) " + "AND cpe.productVersion = pve.id "
                         + "AND pve.productId = pe.id " + "AND ve.id = pe.developerId " + "AND ve.id = :developerId",
-                CertifiedProductEntity.class);
+                        CertifiedProductEntity.class);
         getCertifiedProductsQuery.setParameter("developerId", developerId);
         List<CertifiedProductEntity> results = getCertifiedProductsQuery.getResultList();
 
@@ -423,7 +427,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
                         + "LEFT OUTER JOIN FETCH deets.product "
                         + "WHERE deets.chplProductNumber in (:chplProductNumbers) "
                         + "AND deets.deleted = false ",
-                CertifiedProductDetailsEntity.class);
+                        CertifiedProductDetailsEntity.class);
         prodQuery.setParameter("chplProductNumbers", chplProductNumbers);
         List<CertifiedProductDetailsEntity> results = prodQuery.getResultList();
 
@@ -484,9 +488,9 @@ public class CertifiedProductDAO extends BaseDAOImpl {
     public List<CertifiedProductDetailsDTO> getDetailsByAcbIds(final List<Long> acbIds) {
         Query query = entityManager.createQuery(
                 "from CertifiedProductDetailsEntity "
-                + "WHERE (NOT deleted = true) "
-                + "AND certification_body_id IN :idList",
-                CertifiedProductDetailsEntity.class);
+                        + "WHERE (NOT deleted = true) "
+                        + "AND certification_body_id IN :idList",
+                        CertifiedProductDetailsEntity.class);
         query.setParameter("idList", acbIds);
         List<CertifiedProductDetailsEntity> results = query.getResultList();
 
@@ -503,7 +507,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery(
                 "from CertifiedProductDetailsEntity WHERE (NOT deleted = true) and "
                         + "certification_body_id IN :idList and product_version_id = :versionId",
-                CertifiedProductDetailsEntity.class);
+                        CertifiedProductDetailsEntity.class);
         query.setParameter("idList", acbIds);
         query.setParameter("versionId", versionId);
         List<CertifiedProductDetailsEntity> results = query.getResultList();
@@ -539,7 +543,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             queryStr += " AND cp.reportFileLocation = :url ";
             break;
         default:
-                break;
+            break;
         }
 
         Query query = entityManager.createQuery(queryStr, CertifiedProductSummaryEntity.class);

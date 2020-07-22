@@ -361,6 +361,12 @@ public class CertifiedProductSearchDetails implements Serializable {
      */
     @XmlElement(name = "rwt_plan_results_date", nillable = true, required = false)
     private Date rwtResultsSubmissionDate;
+    
+    /**
+     * First year that the listing is eligible for Real World Testing data
+     */
+    @XmlElement(name = "rwt_eligibility_year", nillable = true, required = false)
+    private Integer rwtEligibilityYear;
 
     @Builder.Default
     @XmlTransient
@@ -857,5 +863,13 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     public void setRwtResultsSubmissionDate(Date rwtResultsSubmissionDate) {
         this.rwtResultsSubmissionDate = rwtResultsSubmissionDate;
+    }
+    
+    public Integer getRwtEligibilityYear() {
+        return rwtEligibilityYear;
+    }
+
+    public void setRwtEligibilityYear(Integer rwtEligibilityYear) {
+        this.rwtEligibilityYear = rwtEligibilityYear;
     }
 }

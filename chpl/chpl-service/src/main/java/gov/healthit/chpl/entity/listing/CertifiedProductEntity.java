@@ -166,6 +166,9 @@ public class CertifiedProductEntity implements Serializable {
     @Column(name = "rwt_results_submission_date", nullable = true)
     private Date rwtResultsSubmissionDate;
 
+    @Transient
+    private Integer rwtEligibilityYear;
+
     /**
      * Default constructor, mainly for hibernate use.
      */
@@ -459,5 +462,13 @@ public class CertifiedProductEntity implements Serializable {
 
     public void setRwtResultsSubmissionDate(Date rwtResultsSubmissionDate) {
         this.rwtResultsSubmissionDate = rwtResultsSubmissionDate;
+    }
+
+    public Integer getRwtEligibilityYear() {
+        return rwtEligibilityYear;
+    }
+
+    public void setRwtEligibilityYear(Integer rwtEligibilityYear) {
+        this.rwtEligibilityYear = rwtEligibilityYear;
     }
 }

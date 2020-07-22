@@ -783,6 +783,7 @@ public class CertifiedProductDetailsManager {
         searchDetails.setRwtPlanSubmissionDate(dto.getRwtPlanSubmissionDate());
         searchDetails.setRwtResultsUrl(dto.getRwtResultsUrl());
         searchDetails.setRwtResultsSubmissionDate(dto.getRwtResultsSubmissionDate());
+        searchDetails.setRwtEligibilityYear(dto.getRwtEligibilityYear());
 
         InheritedCertificationStatus ics = new InheritedCertificationStatus();
         ics.setInherits(dto.getIcs());

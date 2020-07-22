@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
@@ -270,6 +271,10 @@ public class CertifiedProductDetailsEntity {
 
     @Column(name = "rwt_results_submission_date")
     private Date rwtResultsSubmissionDate;
+
+    @SuppressWarnings("checkstyle:magicnumber")
+    @Transient
+    private Integer rwtEligibilityYear = 2021;
 
     public Long getId() {
         return id;
@@ -885,5 +890,13 @@ public class CertifiedProductDetailsEntity {
 
     public void setRwtResultsSubmissionDate(Date rwtResultsSubmissionDate) {
         this.rwtResultsSubmissionDate = rwtResultsSubmissionDate;
+    }
+
+    public Integer getRwtEligibilityYear() {
+        return rwtEligibilityYear;
+    }
+
+    public void setRwtEligibilityYear(Integer rwtEligibilityYear) {
+        this.rwtEligibilityYear = rwtEligibilityYear;
     }
 }
