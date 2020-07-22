@@ -7,10 +7,12 @@ import java.util.Date;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 import lombok.extern.log4j.Log4j2;
 
@@ -30,7 +32,14 @@ public class RealWorldTestingReviewer implements ComparisonReviewer {
     @Value("${rwtResultsRequiredDateOfYear}")
     private String rwtResultsRequiredDateOfYear;
 
+    private ValidationUtils validationUtils;
+
     private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+
+    @Autowired
+    public RealWorldTestingReviewer(ValidationUtils validationUtils) {
+        this.validationUtils = validationUtils;
+    }
 
     @Override
     public void review(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing) {
@@ -66,12 +75,11 @@ public class RealWorldTestingReviewer implements ComparisonReviewer {
         }
     }
 
-    //TODO: Need to figure out how we are validating URLs
     private boolean isUrlValid(String url) {
-        return !StringUtils.isBlank(url);
+        return !StringUtils.isBlank(url) && validationUtils.isWellFormedUrl(url);
     }
 
-    //TODO: Need to determine if we are doing any validation here (other than it being a valida date
+    //TODO: Need to determine if we are doing any validation here (other than it being a valid date)
     private boolean isDateValid(LocalDate date) {
         return Objects.nonNull(date);
     }
@@ -89,8 +97,7 @@ public class RealWorldTestingReviewer implements ComparisonReviewer {
     private boolean isListingCurrentlyRwtPlanEligible(CertifiedProductSearchDetails existingListing) {
         if (Objects.nonNull(existingListing.getRwtEligibilityYear())) {
             Integer calculatedYearBasedOnEligYear = existingListing.getRwtEligibilityYear() - 1;
-            LocalDate rwtPlanEligibilityStartDate =
-                    LocalDate.parse(rwtPlanStartDayOfYear + "/" + calculatedYearBasedOnEligYear.toString(), dateFormatter);
+            LocalDate rwtPlanEligibilityStartDate = getLocalDate(rwtPlanStartDayOfYear, calculatedYearBasedOnEligYear);
             return LocalDate.now().isAfter(rwtPlanEligibilityStartDate);
         }
         return false;
@@ -99,8 +106,7 @@ public class RealWorldTestingReviewer implements ComparisonReviewer {
     private boolean isListingCurrentlyRwtResultsEligible(CertifiedProductSearchDetails existingListing) {
         if (Objects.nonNull(existingListing.getRwtEligibilityYear())) {
             Integer calculatedYearBasedOnEligYear = existingListing.getRwtEligibilityYear() + 1;
-            LocalDate rwtResultsEligibilityStartDate =
-                    LocalDate.parse(rwtResultsStartDayOfYear + "/" + calculatedYearBasedOnEligYear.toString(), dateFormatter);
+            LocalDate rwtResultsEligibilityStartDate = getLocalDate(rwtResultsStartDayOfYear, calculatedYearBasedOnEligYear);
             return LocalDate.now().isAfter(rwtResultsEligibilityStartDate);
         }
         return false;
@@ -109,8 +115,7 @@ public class RealWorldTestingReviewer implements ComparisonReviewer {
     private boolean isListingCurrentlyRwtPlanPastDue(CertifiedProductSearchDetails existingListing) {
         if (Objects.nonNull(existingListing.getRwtEligibilityYear())) {
             Integer calculatedYearBasedOnEligYear = existingListing.getRwtEligibilityYear() - 1;
-            LocalDate rwtPlanEligibilityPastDueDate =
-                    LocalDate.parse(rwtPlanRequiredDateOfYear + "/" + calculatedYearBasedOnEligYear.toString(), dateFormatter);
+            LocalDate rwtPlanEligibilityPastDueDate = getLocalDate(rwtPlanRequiredDateOfYear, calculatedYearBasedOnEligYear);
             return LocalDate.now().isAfter(rwtPlanEligibilityPastDueDate);
         }
         return false;
@@ -120,8 +125,7 @@ public class RealWorldTestingReviewer implements ComparisonReviewer {
     private boolean isListingCurrentlyRwtResultsPastDue(CertifiedProductSearchDetails existingListing) {
         if (Objects.nonNull(existingListing.getRwtEligibilityYear())) {
             Integer calculatedYearBasedOnEligYear = existingListing.getRwtEligibilityYear() + 1;
-            LocalDate rwtResultsEligibilityPastDueDate =
-                    LocalDate.parse(rwtResultsRequiredDateOfYear + "/" + calculatedYearBasedOnEligYear.toString(), dateFormatter);
+            LocalDate rwtResultsEligibilityPastDueDate = getLocalDate(rwtResultsRequiredDateOfYear, calculatedYearBasedOnEligYear);
             return LocalDate.now().isAfter(rwtResultsEligibilityPastDueDate);
         }
         return false;
@@ -133,5 +137,10 @@ public class RealWorldTestingReviewer implements ComparisonReviewer {
         } else {
             return null;
         }
+    }
+
+    private LocalDate getLocalDate(String dayOfYear, Integer year) {
+        // dayOfYear s/b in MM/dd format
+        return LocalDate.parse(dayOfYear + "/" + year.toString(), dateFormatter);
     }
 }
