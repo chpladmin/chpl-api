@@ -1,8 +1,8 @@
-package gov.healthit.chpl.domain.statistics;
+package gov.healthit.chpl.scheduler.job.summarystatistics.data;
 
 public abstract class Statistic {
-    protected Integer year;
-    protected String name;
+    private Integer year;
+    private String name;
 
     public Integer getYear() {
         return year;
