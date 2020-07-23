@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.summarystatistics;
+package gov.healthit.chpl.scheduler.job.summarystatistics.email;
 
 import java.io.File;
 import java.time.ZoneOffset;
@@ -32,6 +32,7 @@ import gov.healthit.chpl.entity.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
+import gov.healthit.chpl.scheduler.job.summarystatistics.StatsCsvFileWriter;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.CsvStatistics;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatistics;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatisticsCreator;
