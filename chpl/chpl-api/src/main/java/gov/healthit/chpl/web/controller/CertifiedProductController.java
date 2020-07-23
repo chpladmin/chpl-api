@@ -180,7 +180,6 @@ public class CertifiedProductController {
 
         CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetails(certifiedProductId);
         certifiedProduct = validateCertifiedProduct(certifiedProduct);
-
         return certifiedProduct;
     }
 
@@ -232,7 +231,6 @@ public class CertifiedProductController {
         if (validator != null) {
             validator.validate(certifiedProduct);
         }
-
         return certifiedProduct;
     }
 
@@ -252,9 +250,7 @@ public class CertifiedProductController {
 
         CertifiedProductSearchDetails certifiedProduct =
                 cpdManager.getCertifiedProductDetailsByChplProductNumber(chplProductNumber);
-
         certifiedProduct = validateCertifiedProduct(certifiedProduct);
-
         return certifiedProduct;
     }
 
