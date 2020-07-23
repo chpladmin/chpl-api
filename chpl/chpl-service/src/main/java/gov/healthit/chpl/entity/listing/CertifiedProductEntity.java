@@ -134,6 +134,9 @@ public class CertifiedProductEntity implements Serializable {
     @JoinColumn(name = "certified_product_id", nullable = false, insertable = false, updatable = false)
     private CertifiedProductEntity certifiedProduct;
 
+    @Column(name = "rwt_eligibility_year")
+    private Integer rwtEligibilityYear;
+
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
     private Date creationDate;
@@ -150,7 +153,7 @@ public class CertifiedProductEntity implements Serializable {
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
-   /**
+    /**
      * Default constructor, mainly for hibernate use.
      */
     public CertifiedProductEntity() {
@@ -411,5 +414,13 @@ public class CertifiedProductEntity implements Serializable {
 
     public void setPendingCertifiedProductId(final Long pendingCertifiedProductId) {
         this.pendingCertifiedProductId = pendingCertifiedProductId;
+    }
+
+    public Integer getRwtEligibilityYear() {
+        return rwtEligibilityYear;
+    }
+
+    public void setRwtEligibilityYear(Integer rwtEligibilityYear) {
+        this.rwtEligibilityYear = rwtEligibilityYear;
     }
 }
