@@ -15,7 +15,7 @@ public class ProductStatisticsSectionCreator extends StatisticsSectionCreator {
     private String buildUniqueProductSection(EmailStatistics stats, StatisticsMassager massager) {
         StringBuilder section = new StringBuilder();
 
-        section.append(buildHeader("Total # of Certified Unique Products Regardless of Status or Edition - Including 2011)",
+        section.append(buildHeader("Total # of Certified Unique Products Regardless of Status or Edition - Including 2011",
                 stats.getProductsForEditionAllAndAllStatuses()));
         section.append("<i>The sum of the ONC-ACB breakdown may not match the total, since a product may be associated to more than one ONC-ACB</i>");
 
