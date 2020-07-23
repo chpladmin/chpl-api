@@ -53,7 +53,7 @@ public class ChplCacheConfig {
         backingManager.addCacheIfAbsent(createCache(CacheNames.FIND_SURVEILLANCE_NONCONFORMITY_STATUS_TYPE));
         backingManager.addCacheIfAbsent(createCache(CacheNames.FIND_SURVEILLANCE_REQ_TYPE));
         backingManager.addCacheIfAbsent(createCache(CacheNames.FIND_SURVEILLANCE_RESULT_TYPE));
-        backingManager.addCacheIfAbsent(createCache(CacheNames.GET_ALL_WHITELISTED));
+        backingManager.addCacheIfAbsent(createCache(CacheNames.GET_ALL_UNRESTRICTED_APIKEYS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.GET_DECERTIFIED_DEVELOPERS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.JOB_TYPES));
         backingManager.addCacheIfAbsent(createCache(CacheNames.MACRA_MEASURES));
@@ -74,7 +74,8 @@ public class ChplCacheConfig {
 
     private Cache createCache(String name) {
         int maxEntriesLocalHeap = (name.equals(CacheNames.COLLECTIONS_LISTINGS)
-                || name.equals(CacheNames.PREFETCHED_COLLECTIONS_LISTINGS)) ? MAX_ENTRIES_LOCAL_HEAP_LISTING_COLLECTION : MAX_ENTRIES_LOCAL_HEAP;
+                || name.equals(CacheNames.PREFETCHED_COLLECTIONS_LISTINGS))
+                ? MAX_ENTRIES_LOCAL_HEAP_LISTING_COLLECTION : MAX_ENTRIES_LOCAL_HEAP;
         Cache cache = new Cache(
                 new CacheConfiguration(name, maxEntriesLocalHeap)
                   .memoryStoreEvictionPolicy(MemoryStoreEvictionPolicy.LFU)
