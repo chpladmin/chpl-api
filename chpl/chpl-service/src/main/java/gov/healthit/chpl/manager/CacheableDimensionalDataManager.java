@@ -35,8 +35,8 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-@Service("precacheableDimensionalDataManager")
-public class PrecacheableDimensionalDataManager {
+@Service("CacheableDimensionalDataManager")
+public class CacheableDimensionalDataManager {
     private ProductClassificationTypeDAO productClassificationTypeDao;
     private CertificationEditionDAO certificationEditionDao;
     private CertificationStatusDAO certificationStatusDao;
@@ -47,7 +47,7 @@ public class PrecacheableDimensionalDataManager {
     private DeveloperDAO developerDao;
 
     @Autowired
-    public PrecacheableDimensionalDataManager(
+    public CacheableDimensionalDataManager(
             ProductClassificationTypeDAO productClassificationTypeDao,
             CertificationEditionDAO certificationEditionDao,
             CertificationStatusDAO certificationStatusDao,

@@ -16,7 +16,7 @@ import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.SimpleCertificationId;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.manager.CertificationIdManager;
-import gov.healthit.chpl.manager.PrecacheableDimensionalDataManager;
+import gov.healthit.chpl.manager.CacheableDimensionalDataManager;
 
 @Component
 public class PrefetchedCacheLoader {
@@ -26,7 +26,7 @@ public class PrefetchedCacheLoader {
     @Autowired
     private CertificationIdManager certIdManager;
     @Autowired
-    private PrecacheableDimensionalDataManager precacheableDataManager;
+    private CacheableDimensionalDataManager precacheableDataManager;
 
     @Transactional
     @CacheEvict(value = CacheNames.PREFETCHED_COLLECTIONS_LISTINGS, beforeInvocation = true, allEntries = true)

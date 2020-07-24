@@ -1,6 +1,5 @@
 package gov.healthit.chpl;
 
-import gov.healthit.chpl.manager.PrecacheableDimensionalDataManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.cache.CacheManager;
