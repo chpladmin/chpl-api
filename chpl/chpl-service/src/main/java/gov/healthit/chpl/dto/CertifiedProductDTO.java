@@ -115,7 +115,6 @@ public class CertifiedProductDTO implements Serializable {
         this.setAccessibilityCertified(from.getAccessibilityCertified());
         this.setProductAdditionalSoftware(from.getProductAdditionalSoftware());
         this.setTransparencyAttestationUrl(from.getTransparencyAttestationUrl());
-        this.setRwtEligiblityYear(from.getr);
 
         // set the pieces of the unique id
         if (!StringUtils.isEmpty(from.getChplProductNumber())) {
