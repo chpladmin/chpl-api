@@ -111,7 +111,7 @@ public class ProductManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).CREATE)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.PRODUCT_NAMES
     }, allEntries = true)
     public ProductDTO create(ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
@@ -142,7 +142,7 @@ public class ProductManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE, #dto)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.PRODUCT_NAMES
     }, allEntries = true)
     public ProductDTO update(ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {

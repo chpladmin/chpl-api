@@ -1,5 +1,6 @@
 package gov.healthit.chpl;
 
+import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.cache.CacheManager;
@@ -20,8 +21,8 @@ import org.springframework.core.io.ClassPathResource;
 
 @Configuration
 @EnableCaching
+@Log4j2
 public class ChplCacheConfig {
-    private static final Logger LOGGER = LogManager.getLogger(ChplCacheConfig.class);
     private static final int MAX_ENTRIES_LOCAL_HEAP = 10000;
     private static final int MAX_ENTRIES_LOCAL_HEAP_LISTING_COLLECTION = 300000;
     private static final int MAX_ENTRIES_LOCAL_DISK = 10000000;
