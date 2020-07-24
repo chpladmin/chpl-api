@@ -385,24 +385,10 @@
                         interval="1" modulate="true" />
             </Policies>
         </RollingFile>
-        <RollingFile name="springFrameworkActivity"
-                     fileName="${logDir}/spring/springFrameworkActivity.log"
-                     filePattern="${logDir}/spring/history/springFrameworkActivity-%d{yyyy-MM-dd}.log">
-            <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
-            </PatternLayout>
-            <Policies>
-                <TimeBasedTriggeringPolicy
-                        interval="1" modulate="true" />
-            </Policies>
-        </RollingFile>
     </Appenders>
     <Loggers>
         <Logger name="org.jose4j" level="ERROR" additivity="false">
             <AppenderRef ref="STDOUT" />
-        </Logger>
-        <Logger name="net.sf.ehcache" level="ALL" additivity="false">
-            <AppenderRef ref="cacheListenerActivity" />
         </Logger>
         <Logger name="org.hibernate" level="ERROR" additivity="false">
             <AppenderRef ref="STDOUT" />
@@ -410,6 +396,9 @@
         <Logger name="org.springframework" level="INFO"
             additivity="false">
             <AppenderRef ref="STDOUT" />
+        </Logger>
+        <Logger name="net.sf.ehcache" level="ALL" additivity="false">
+            <AppenderRef ref="cacheListenerActivity" />
         </Logger>
         <logger name="org.springframework.cache" level="ALL">
             <appender-ref ref="cacheListenerActivity" />
