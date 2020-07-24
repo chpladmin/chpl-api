@@ -90,7 +90,8 @@ public class SurveillanceRemovedDataComparisonReviewer implements ComparisonRevi
         for (SurveillanceNonconformity updatedNonconformity : updatedSurvNonconformities) {
             // look for an existing nonconformity that matches the updated nonconformity
             // and check for removed criteria and/or updates to the nonconformity
-            Optional<SurveillanceNonconformity> existingNonconformity = existingSurvNonconformities.stream()
+            Optional<SurveillanceNonconformity> existingNonconformity = existingSurvNonconformities == null
+                    ? Optional.empty() : existingSurvNonconformities.stream()
                     .filter(existingSurvNonconformity -> doNonconformitiesMatch(updatedNonconformity, existingSurvNonconformity))
                     .findFirst();
 
@@ -116,7 +117,8 @@ public class SurveillanceRemovedDataComparisonReviewer implements ComparisonRevi
         for (SurveillanceNonconformity updatedNonconformity : updatedSurvNonconformities) {
             // look for an existing nonconformity that matches the updated nonconformity
             // and check for removed transparency and/or updates to the nonconformity
-            Optional<SurveillanceNonconformity> existingNonconformity = existingSurvNonconformities.stream()
+            Optional<SurveillanceNonconformity> existingNonconformity = existingSurvNonconformities == null
+                    ? Optional.empty() : existingSurvNonconformities.stream()
                     .filter(existingSurvNonconformity -> doNonconformitiesMatch(updatedNonconformity, existingSurvNonconformity))
                     .findFirst();
 
