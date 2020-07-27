@@ -452,14 +452,17 @@
                     <verbose>true</verbose>
                     <createJavaDocAnnotations>true</createJavaDocAnnotations>
                     <sources>
+                        <source>src/main/java/gov/healthit/chpl/domain/MeaningfulUseUser.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/Address.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertifiedProductSed.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationResult.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationResultAdditionalSoftware.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestData.java</source>
+                        <source>src/main/java/gov/healthit/chpl/domain/TestData.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestFunctionality.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/TestParticipant.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestProcedure.java</source>
+                        <source>src/main/java/gov/healthit/chpl/domain/TestProcedure.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestStandard.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationStatusEvent.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/TestTask.java</source>

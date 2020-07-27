@@ -6,13 +6,9 @@ import java.util.Map.Entry;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 
 public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
-    private static final Logger LOGGER = LogManager.getLogger(CertifiedProductSearchDetailsXmlGenerator.class);
 
     public static void add(List<CertifiedProductSearchDetails> cps, String rootNodeName, XMLStreamWriter sw)
             throws XMLStreamException {
