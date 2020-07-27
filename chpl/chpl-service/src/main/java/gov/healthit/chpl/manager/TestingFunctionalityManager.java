@@ -1,43 +1,27 @@
 package gov.healthit.chpl.manager;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.domain.TestFunctionality;
-import gov.healthit.chpl.dto.TestFunctionalityCriteriaMapDTO;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 
 @Service
 @Transactional
-public class TestingFunctionalityManager implements ApplicationListener<ContextRefreshedEvent> {
+public class TestingFunctionalityManager {
 
     private TestFunctionalityDAO testFunctionalityDAO;
-
-    private Map<Long, List<TestFunctionalityDTO>> testFunctionalityByCriteria2015 =
-            new HashMap<Long, List<TestFunctionalityDTO>>();
-
-    private Map<Long, List<TestFunctionalityDTO>> testFunctionalityByCriteria2014 =
-            new HashMap<Long, List<TestFunctionalityDTO>>();
 
     @Autowired
     public TestingFunctionalityManager(TestFunctionalityDAO testFunctionalityDAO) {
         this.testFunctionalityDAO = testFunctionalityDAO;
-    }
-
-    @Override
-    public void onApplicationEvent(ContextRefreshedEvent event) {
-        List<TestFunctionalityCriteriaMapDTO> allMaps = testFunctionalityDAO.getTestFunctionalityCritieriaMaps();
-        testFunctionalityByCriteria2015 = getTestFunctionalityByCriteriaAndEdition(allMaps, "2015");
-        testFunctionalityByCriteria2014 = getTestFunctionalityByCriteriaAndEdition(allMaps, "2014");
     }
 
     public List<TestFunctionality> getTestFunctionalities(Long criteriaId, String certificationEdition, Long practiceTypeId) {
@@ -51,15 +35,9 @@ public class TestingFunctionalityManager implements ApplicationListener<ContextR
         }
     }
 
-    public Map<Long, List<TestFunctionalityDTO>> getTestFunctionalityCriteriaMap2015() {
-        return testFunctionalityByCriteria2015;
-    }
-
-    public Map<Long, List<TestFunctionalityDTO>> getTestFunctionalityCriteriaMap2014() {
-        return testFunctionalityByCriteria2014;
-    }
-
     private List<TestFunctionality> get2014TestFunctionalities(Long criteriaId, Long practiceTypeId) {
+        Map<Long, List<TestFunctionalityDTO>> testFunctionalityByCriteria2014 =
+                testFunctionalityDAO.getTestFunctionalityCriteriaMaps(CertificationEditionConcept.CERTIFICATION_EDITION_2014.getYear());
         List<TestFunctionality> allowedTestFunctionalities = new ArrayList<TestFunctionality>();
 
         if (testFunctionalityByCriteria2014.containsKey(criteriaId)) {
@@ -76,6 +54,8 @@ public class TestingFunctionalityManager implements ApplicationListener<ContextR
     }
 
     private List<TestFunctionality> get2015TestFunctionalities(Long criteriaId) {
+        Map<Long, List<TestFunctionalityDTO>> testFunctionalityByCriteria2015 =
+                testFunctionalityDAO.getTestFunctionalityCriteriaMaps(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
         List<TestFunctionality> allowedTestFunctionalities = new ArrayList<TestFunctionality>();
 
         if (testFunctionalityByCriteria2015.containsKey(criteriaId)) {
@@ -86,19 +66,5 @@ public class TestingFunctionalityManager implements ApplicationListener<ContextR
         }
 
         return allowedTestFunctionalities;
-    }
-
-    private Map<Long, List<TestFunctionalityDTO>> getTestFunctionalityByCriteriaAndEdition(List<TestFunctionalityCriteriaMapDTO> maps, String edition) {
-        Map<Long, List<TestFunctionalityDTO>> mapping = new HashMap<Long, List<TestFunctionalityDTO>>();
-
-        for (TestFunctionalityCriteriaMapDTO map : maps) {
-            if (map.getCriteria().getCertificationEdition().equals(edition)) {
-                if (!mapping.containsKey(map.getCriteria().getId())) {
-                    mapping.put(map.getCriteria().getId(), new ArrayList<TestFunctionalityDTO>());
-                }
-                mapping.get(map.getCriteria().getId()).add(map.getTestFunctionality());
-            }
-        }
-        return mapping;
     }
 }

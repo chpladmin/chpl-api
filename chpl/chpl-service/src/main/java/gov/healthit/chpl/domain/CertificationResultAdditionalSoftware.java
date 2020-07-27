@@ -120,6 +120,10 @@ public class CertificationResultAdditionalSoftware implements Serializable {
     // but i want to know if two additional software objects are the same as far
     // as a user would think
     public boolean matches(CertificationResultAdditionalSoftware other) {
+        if ((StringUtils.isEmpty(this.getGrouping()) && !StringUtils.isEmpty(other.getGrouping()))
+            || (!StringUtils.isEmpty(this.getGrouping()) && StringUtils.isEmpty(other.getGrouping()))) {
+            return false;
+        }
         boolean result = false;
         if ((StringUtils.isEmpty(this.getGrouping()) && StringUtils.isEmpty(other.getGrouping()))
                 || this.getGrouping().equals(other.getGrouping())) {

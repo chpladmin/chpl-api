@@ -4,8 +4,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -34,10 +32,11 @@ import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Service("precacheableDimensionalDataManager")
 public class PrecacheableDimensionalDataManager {
-    private static final Logger LOGGER = LogManager.getLogger(PrecacheableDimensionalDataManager.class);
     private ProductClassificationTypeDAO productClassificationTypeDao;
     private CertificationEditionDAO certificationEditionDao;
     private CertificationStatusDAO certificationStatusDao;
@@ -49,14 +48,14 @@ public class PrecacheableDimensionalDataManager {
 
     @Autowired
     public PrecacheableDimensionalDataManager(
-            final ProductClassificationTypeDAO productClassificationTypeDao,
-            final CertificationEditionDAO certificationEditionDao,
-            final CertificationStatusDAO certificationStatusDao,
-            final PracticeTypeDAO practiceTypeDao,
-            final CQMCriterionDAO cqmCriterionDao,
-            final CertificationCriterionDAO certificationCriterionDao,
-            final ProductDAO productDao,
-            final DeveloperDAO developerDao) {
+            ProductClassificationTypeDAO productClassificationTypeDao,
+            CertificationEditionDAO certificationEditionDao,
+            CertificationStatusDAO certificationStatusDao,
+            PracticeTypeDAO practiceTypeDao,
+            CQMCriterionDAO cqmCriterionDao,
+            CertificationCriterionDAO certificationCriterionDao,
+            ProductDAO productDao,
+            DeveloperDAO developerDao) {
         this.productClassificationTypeDao = productClassificationTypeDao;
         this.certificationEditionDao = certificationEditionDao;
         this.certificationStatusDao = certificationStatusDao;

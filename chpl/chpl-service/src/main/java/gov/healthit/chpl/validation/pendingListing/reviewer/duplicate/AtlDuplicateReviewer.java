@@ -11,17 +11,18 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTestingLabDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.validation.DuplicateReviewResult;
 
-@Component("atlDuplicateReviewer")
+@Component("pendingAtlDuplicateReviewer")
 public class AtlDuplicateReviewer {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public AtlDuplicateReviewer(final ErrorMessageUtil errorMessageUtil) {
+    public AtlDuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
-    public void review(final PendingCertifiedProductDTO listing) {
+    public void review(PendingCertifiedProductDTO listing) {
 
         DuplicateReviewResult<PendingCertifiedProductTestingLabDTO> atlDuplicateResults =
                 new DuplicateReviewResult<PendingCertifiedProductTestingLabDTO>(getPredicate());
@@ -38,7 +39,7 @@ public class AtlDuplicateReviewer {
         }
     }
 
-    private List<String> getWarnings(final List<PendingCertifiedProductTestingLabDTO> duplicates) {
+    private List<String> getWarnings(List<PendingCertifiedProductTestingLabDTO> duplicates) {
         List<String> warnings = new ArrayList<String>();
         for (PendingCertifiedProductTestingLabDTO duplicate : duplicates) {
             String warning = errorMessageUtil.getMessage("listing.duplicateTestingLab", duplicate.getTestingLabName());
@@ -50,10 +51,13 @@ public class AtlDuplicateReviewer {
     private BiPredicate<PendingCertifiedProductTestingLabDTO, PendingCertifiedProductTestingLabDTO> getPredicate() {
         return new BiPredicate<PendingCertifiedProductTestingLabDTO, PendingCertifiedProductTestingLabDTO>() {
             @Override
-            public boolean test(final PendingCertifiedProductTestingLabDTO dto1,
-                    final PendingCertifiedProductTestingLabDTO dto2) {
-                return ObjectUtils.allNotNull(dto1.getTestingLabName(), dto2.getTestingLabName())
-                        && dto1.getTestingLabName().equals(dto2.getTestingLabName());
+            public boolean test(PendingCertifiedProductTestingLabDTO dto1,
+                    PendingCertifiedProductTestingLabDTO dto2) {
+                return (ObjectUtils.allNotNull(dto1.getTestingLabId(), dto2.getTestingLabId())
+                        && dto1.getTestingLabId().equals(dto2.getTestingLabId()))
+                        || (dto1.getTestingLabId() == null && dto2.getTestingLabId() == null
+                        && ObjectUtils.allNotNull(dto1.getTestingLabName(), dto2.getTestingLabName())
+                        && dto1.getTestingLabName().equals(dto2.getTestingLabName()));
             }
         };
     }
