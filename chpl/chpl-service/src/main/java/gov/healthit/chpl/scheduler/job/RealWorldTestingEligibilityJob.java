@@ -48,7 +48,7 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
     @Autowired
     private CertificationCriterionService certificationCriterionService;
 
-    @Value("${realWorldTestingCriteria}")
+    @Value("${realWorldTestingCriteriaKeys}")
     private String[] eligibleCriteriaKeys;
 
     @Value("${rwtPlanStartDayOfYear}")
