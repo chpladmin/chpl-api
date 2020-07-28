@@ -255,6 +255,6 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "transparency_attestation_url")
     private String transparencyAttestationUrl;
 
-    @Column(name = "rwt_eligiblity_year")
+    @Column(name = "rwt_eligibility_year")
     private Integer rwtEligibilityYear;
 }

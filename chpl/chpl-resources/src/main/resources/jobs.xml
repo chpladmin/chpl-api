@@ -789,7 +789,7 @@
         <!-- Real World Testing Eligibility Job -->
         <job>
             <name>realWorldTestingEligibilityJob</name>
-            <group>chplJobs</group>
+            <group>systemJobs</group>
             <description>For 2015 listings, determines if the listing is eligible for Real World Testing for the following year.</description>
             <job-class>gov.healthit.chpl.scheduler.job.RealWorldTestingEligibilityJob</job-class>
             <durability>true</durability>
