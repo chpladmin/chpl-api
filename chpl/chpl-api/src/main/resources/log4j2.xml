@@ -375,7 +375,7 @@
             </Policies>
         </RollingFile>
         <RollingFile name="realWorldTestingEligibilityJob"
-            fileName="realWorldTestingEligibilityJob"
+            fileName="${logDir}/scheduler/realWorldTestingEligibilityJob.log"
             filePattern="${logDir}/scheduler/history/realWorldTestingEligibilityJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
                 <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
