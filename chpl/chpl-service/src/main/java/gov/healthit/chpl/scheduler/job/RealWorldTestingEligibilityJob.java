@@ -127,7 +127,6 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
     private CertifiedProductSearchDetails getCertifiedProductSearchDetails(Long listingId) {
         try {
             CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(listingId);
-            LOGGER.info("Listing: " + detail.getId() + " - Retreived details");
             return detail;
         } catch (Exception e) {
             LOGGER.error("Could not retrieve the details for listing: " + listingId);

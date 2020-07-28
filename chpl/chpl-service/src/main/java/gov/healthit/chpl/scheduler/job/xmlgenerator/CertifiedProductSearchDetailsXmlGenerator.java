@@ -122,6 +122,7 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
             TransparencyAttestationXmlGenerator.add(cp.getTransparencyAttestation(), "transparencyAttestation", sw);
             createSimpleElement(cp.getTransparencyAttestationUrl(), "transparencyAttestationUrl", sw);
             ProductVersionXmlGenerator.addProductVersion(cp.getVersion(), "version", sw);
+            createSimpleElement(cp.getRwtEligibilityYear(), "rwtEligibilityYear", sw);
             sw.writeEndElement();
         }
     }
