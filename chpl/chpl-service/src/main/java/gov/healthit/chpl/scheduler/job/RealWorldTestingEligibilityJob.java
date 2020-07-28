@@ -1,11 +1,15 @@
 package gov.healthit.chpl.scheduler.job;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.TimeZone;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -44,23 +48,27 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
     @Autowired
     private CertificationCriterionService certificationCriterionService;
 
-    @Value("${realWorldTesting.criteria}")
+    @Value("${realWorldTestingCriteria}")
     private String[] eligibleCriteriaKeys;
+
+    @Value("${rwtPlanStartDayOfYear}")
+    private String rwtPlanStartDayOfYear;
+
+    @Value("${executorThreadCountForQuartzJobs}")
+    private Integer threadCount;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         LOGGER.info("********* Starting the Real World Testing Eligibility job. *********");
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
-        Calendar asOfDate = Calendar.getInstance();
-        asOfDate.set(2020, 0, 1, 0, 0, 0);
-
+        Date asOfDate = getEligibilityAsOfDate();
         List<CertificationCriterion> eligibleCriteria = getRwtEligibleCriteria();
 
         //This will get us all of the listings that we still need to check criteria eligibility (reduce calls for details)
         List<CertifiedProductDetailsDTO> listings = getAllListingsWith2015Edition().stream()
                 .filter(listing -> !doesListingHaveExistingRwtEligibility(listing)
-                        && isListingStatusActiveAsOfDate(listing.getId(), asOfDate.getTime()))
+                        && isListingStatusActiveAsOfDate(listing.getId(), asOfDate))
                 .collect(Collectors.toList());
 
         getCertifiedProductDetails(listings).stream()
@@ -81,10 +89,20 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
     }
 
     private List<CertifiedProductSearchDetails> getCertifiedProductDetails(List<CertifiedProductDetailsDTO> listings) {
-        return listings.parallelStream()
-                .map(cp -> getCertifiedProductSearchDetails(cp.getId()))
-                .peek(cp -> LOGGER.info("Listing: " + cp.getId() + " - Retreived details"))
-                .collect(Collectors.toList());
+        //Using a `parallelStream` where we supply a ThreadPool to control the number of threads being used
+        ForkJoinPool customThreadPool = new ForkJoinPool(threadCount);
+
+        try {
+            return customThreadPool.submit(() ->
+            listings.parallelStream()
+            .map(cp -> getCertifiedProductSearchDetails(cp.getId()))
+            .peek(cp -> LOGGER.info("Listing: " + cp.getId() + " - Retreived details"))
+            .collect(Collectors.toList())).get();
+        } catch (Exception e) {
+            LOGGER.error("Could not retrieve details for listings.", e);
+            throw new RuntimeException("Could not retrieve details for listings.", e);
+        }
+
     }
 
     private boolean doesListingAttestToEligibleCriteria(
@@ -108,7 +126,9 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
 
     private CertifiedProductSearchDetails getCertifiedProductSearchDetails(Long listingId) {
         try {
-            return certifiedProductDetailsManager.getCertifiedProductDetails(listingId);
+            CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(listingId);
+            LOGGER.info("Listing: " + detail.getId() + " - Retreived details");
+            return detail;
         } catch (Exception e) {
             LOGGER.error("Could not retrieve the details for listing: " + listingId);
             throw new RuntimeException(e);
@@ -162,5 +182,20 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
     private Integer getEligibilityYear() {
         Calendar calendar = Calendar.getInstance();
         return calendar.get(Calendar.YEAR) + 1;
+    }
+
+    private Date getEligibilityAsOfDate() {
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        try {
+            calendar.setTime(sdf.parse(rwtPlanStartDayOfYear + "/" + calendar.get(Calendar.YEAR)));
+            calendar.set(Calendar.HOUR, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            return calendar.getTime();
+        } catch (ParseException e) {
+            LOGGER.error("Could not calculate 'asOfDate'.", e);
+            throw new RuntimeException("Could not calculate 'asOfDate'.", e);
+        }
     }
 }
