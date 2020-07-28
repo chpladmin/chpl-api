@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +27,9 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.service.CertificationCriterionService;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 public class RealWorldTestingEligibilityJob extends QuartzJob {
-    //private static final Logger LOGGER = LogManager.getLogger("realWorldTestingEligibilityJobLogger");
+    private static final Logger LOGGER = LogManager.getLogger("realWorldTestingEligibilityJobLogger");
     private static final String ACTIVE = "Active";
 
     @Autowired
@@ -66,7 +66,7 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
         getCertifiedProductDetails(listings).stream()
         .filter(detail -> doesListingAttestToEligibleCriteria(detail, eligibleCriteria))
         .forEach(detail -> updateRwtEligiblityYear(detail));
-
+        LOGGER.info("********* Completed the Real World Testing Eligibility job. *********");
     }
 
     private void updateRwtEligiblityYear(CertifiedProductSearchDetails detail) {
@@ -121,10 +121,10 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
                 .collect(Collectors.toList());
     }
     private List<CertifiedProductDetailsDTO> getAllListingsWith2015Edition() {
-        LOGGER.info("Getting all listings.");
+        LOGGER.info("Getting all 2015 listings.");
         List<CertifiedProductDetailsDTO> listings = certifiedProductDAO.findByEdition(
                 CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
-        LOGGER.info("Completing getting all listings. Found " + listings.size() + " listings.");
+        LOGGER.info("Completing getting all 2015 listings. Found " + listings.size() + " listings.");
         return listings;
     }
 
