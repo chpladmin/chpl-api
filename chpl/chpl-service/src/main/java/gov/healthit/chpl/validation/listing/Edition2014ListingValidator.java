@@ -14,6 +14,7 @@ import gov.healthit.chpl.validation.listing.reviewer.ChplNumberReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DeveloperBanComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DeveloperStatusReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.DuplicateDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.FieldLengthReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ListingStatusAndUserRoleReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
@@ -30,7 +31,7 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2014.TestTool2014Rev
 
 /**
  * Validation interface for any listing that is already uploaded and confirmed on the CHPL.
- * 
+ *
  * @author kekey
  *
  */
@@ -97,6 +98,10 @@ public abstract class Edition2014ListingValidator extends Validator {
     private UrlReviewer urlReviewer;
 
     @Autowired
+    @Qualifier("duplicateDataReviewer")
+    private DuplicateDataReviewer duplicateDataReviewer;
+
+    @Autowired
     @Qualifier("chplNumberComparisonReviewer")
     private ChplNumberComparisonReviewer chplNumberComparisonReviewer;
 
@@ -130,6 +135,7 @@ public abstract class Edition2014ListingValidator extends Validator {
             reviewers.add(tt2014Reviewer);
             reviewers.add(tfReviewer);
             reviewers.add(urlReviewer);
+            reviewers.add(duplicateDataReviewer);
         }
         return reviewers;
     }

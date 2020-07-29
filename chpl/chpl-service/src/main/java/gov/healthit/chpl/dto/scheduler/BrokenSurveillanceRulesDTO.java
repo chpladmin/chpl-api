@@ -4,8 +4,10 @@ import java.io.Serializable;
 
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.entity.scheduler.BrokenSurveillanceRulesEntity;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
+@AllArgsConstructor
 @Data
 public class BrokenSurveillanceRulesDTO implements Serializable {
 
@@ -47,10 +49,6 @@ public class BrokenSurveillanceRulesDTO implements Serializable {
     private long differenceFromCapCompletedAndCapMustBeCompleted;
     private Boolean deleted;
 
-
-    /**
-     * Default constructor.
-     */
     public BrokenSurveillanceRulesDTO() {
         this.nonconformity = false;
         this.numberOfDaysFromDeterminationToCapApproval = Long.MIN_VALUE;
@@ -62,11 +60,6 @@ public class BrokenSurveillanceRulesDTO implements Serializable {
         this.differenceFromCapCompletedAndCapMustBeCompleted = Long.MIN_VALUE;
     }
 
-    /**
-     * Constructor that will populate the created object based on the entity
-     * that is passed in as a parameter.
-     * @param entity BrokenSurveillanceRulesEntity entity
-     */
     public BrokenSurveillanceRulesDTO(BrokenSurveillanceRulesEntity entity) {
         this.id = entity.getId();
         this.developer = entity.getDeveloper();
@@ -104,5 +97,4 @@ public class BrokenSurveillanceRulesDTO implements Serializable {
         this.differenceFromCapCompletedAndCapMustBeCompleted = entity.getDifferenceFromCapCompletedAndCapMustBeCompleted();
         this.deleted = entity.getDeleted();
     }
-
 }

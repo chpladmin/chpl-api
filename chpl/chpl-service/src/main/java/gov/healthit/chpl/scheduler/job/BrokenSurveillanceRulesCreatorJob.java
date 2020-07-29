@@ -40,6 +40,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.scheduler.surveillance.rules.RuleComplianceCalculator;
+import gov.healthit.chpl.service.CertificationCriterionService;
 
 @DisallowConcurrentExecution
 public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
@@ -276,7 +277,11 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
     private BrokenSurveillanceRulesDTO addNcData(BrokenSurveillanceRulesDTO rule, SurveillanceNonconformity nc) {
 
         rule.setNonconformity(true);
-        rule.setNonconformityCriteria(nc.getNonconformityType());
+        if (nc.getCriterion() != null) {
+            rule.setNonconformityCriteria(CertificationCriterionService.formatCriteriaNumber(nc.getCriterion()));
+        } else {
+            rule.setNonconformityCriteria(nc.getNonconformityType());
+        }
         LocalDateTime ncDeterminationDate = null;
         if (nc.getDateOfDetermination() != null) {
             ncDeterminationDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getDateOfDetermination().getTime()),
@@ -361,5 +366,4 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         LOGGER.info("Deleting {} OBE rules", brokenSurveillanceRulesDAO.findAll().size());
         brokenSurveillanceRulesDAO.deleteAll();
     }
-
 }

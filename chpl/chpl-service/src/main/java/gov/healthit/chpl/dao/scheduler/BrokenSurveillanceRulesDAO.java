@@ -16,9 +16,8 @@ import gov.healthit.chpl.entity.scheduler.BrokenSurveillanceRulesEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
-@Repository
-public class BrokenSurveillanceRulesDAO extends BaseDAOImpl{
-
+@Repository("brokenSurveillanceRulesDAO")
+public class BrokenSurveillanceRulesDAO extends BaseDAOImpl {
     public List<BrokenSurveillanceRulesDTO> findAll() {
         List<BrokenSurveillanceRulesEntity> result = this.findAllEntities();
         List<BrokenSurveillanceRulesDTO> dtos = new ArrayList<BrokenSurveillanceRulesDTO>(result.size());
@@ -30,17 +29,19 @@ public class BrokenSurveillanceRulesDAO extends BaseDAOImpl{
 
     @Transactional
     public void deleteAll() {
-        findAllEntities().stream()
-        .filter(entity -> !entity.getDeleted())
-        .forEach(entity -> {
-            entity.setDeleted(true);
-            entityManager.merge(entity);
-        });
-        entityManager.flush();
+        List<BrokenSurveillanceRulesEntity> entities = this.findAllEntities();
+
+        for (BrokenSurveillanceRulesEntity entity : entities) {
+            if (!entity.getDeleted()) {
+                entity.setDeleted(true);
+                entityManager.merge(entity);
+                entityManager.flush();
+            }
+        }
     }
 
     @Transactional
-    public void create(final List<BrokenSurveillanceRulesDTO> dtos)
+    public void create(List<BrokenSurveillanceRulesDTO> dtos)
             throws EntityCreationException, EntityRetrievalException {
         for (BrokenSurveillanceRulesDTO dto : dtos) {
             BrokenSurveillanceRulesEntity entity = new BrokenSurveillanceRulesEntity();

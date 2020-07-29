@@ -14,11 +14,6 @@ import javax.persistence.Table;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 import lombok.Data;
 
-/**
- * Entity containing needed data for Broken Surveillance Rules reports.
- * @author alarned
- *
- */
 @Entity
 @Table(name = "broken_surveillance_rules")
 @Data
