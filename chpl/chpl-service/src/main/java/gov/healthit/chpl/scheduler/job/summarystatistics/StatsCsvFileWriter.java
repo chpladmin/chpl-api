@@ -12,7 +12,7 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import gov.healthit.chpl.domain.statistics.Statistics;
+import gov.healthit.chpl.scheduler.job.summarystatistics.data.CsvStatistics;
 
 public class StatsCsvFileWriter {
     private Logger logger;
@@ -21,15 +21,27 @@ public class StatsCsvFileWriter {
 
     // CSV file header
     private static final Object[] FILE_HEADER = {
-            "Date", "Total Developers", "Total Developers With 2014 Listings", "Total Developers With 2015 Listings",
-            "Total Unique Products", "Total Products With Active 2014 Listings",
-            "Total Products With Active 2015 Listings", "Total Products With Active Listings", "Total Listings",
-            "Total 2014 Listings", "Total 2015 Listings", "Total 2011 Listings", "Total Surveillance Activities",
-            "Total Open Surveillance Activities", "Total Closed Surveillance Activities", "Total NonConformities",
-            "Total Open NonConformities", "Total Closed NonConformities"
+            "Date",
+            "Total Developers",
+            "Total Developers With 2014 Listings",
+            "Total Developers With 2015 Listings",
+            "Total Unique Products",
+            "Total Products With Active 2014 Listings",
+            "Total Products With Active 2015 Listings",
+            "Total Products With Active Listings",
+            "Total Listings",
+            "Total 2014 Listings",
+            "Total 2015 Listings",
+            "Total 2011 Listings",
+            "Total Surveillance Activities",
+            "Total Open Surveillance Activities",
+            "Total Closed Surveillance Activities",
+            "Total NonConformities",
+            "Total Open NonConformities",
+            "Total Closed NonConformities"
     };
 
-    public void writeCsvFile(String fileName, List<Statistics> statsCsvOutput) {
+    public void writeCsvFile(String fileName, List<CsvStatistics> statsCsvOutput) {
         CSVFormat csvFileFormat = CSVFormat.DEFAULT.withRecordSeparator(NEW_LINE_SEPARATOR);
         SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM dd yyyy");
 
@@ -39,7 +51,7 @@ public class StatsCsvFileWriter {
             csvFilePrinter.printRecord(FILE_HEADER);
 
             // Write a new StatisticsCSVOutput object list to the CSV file
-            for (Statistics stat : statsCsvOutput) {
+            for (CsvStatistics stat : statsCsvOutput) {
                 List<String> statRecord = new ArrayList<String>();
                 dateFormat.setTimeZone(TimeZone.getTimeZone(ZoneOffset.UTC));
                 String dateString = dateFormat.format(stat.getDateRange().getEndDate());

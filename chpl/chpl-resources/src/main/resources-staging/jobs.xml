@@ -9,6 +9,8 @@
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- Delete the below pre-processing command(s) after activity has happened on PROD -->
         <!-- End delete pre-processing command(s). -->
+        <!-- Delete the below pre-processing command(s) after PROD push -->
+        <!-- End delete pre-processing command(s). -->
     </pre-processing-commands>
     <schedule>
         <!-- Download file generation: 2015, 2014, 2011 -->
