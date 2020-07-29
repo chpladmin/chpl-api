@@ -45,7 +45,6 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
                 sw.writeEndElement();
             }
             CertificationStatusEventXmlGenerator.add(cp.getCertificationEvents(), "certificationEvents", sw);
-            MeaningfulUseUserXmlGenerator.add(cp.getMeaningfulUseUserHistory(), "meaningfulUseUserHistory", sw);
             CertificationResultXmlGenerator.add(cp.getCertificationResults(), "certificationResults", sw);
             if (cp.getCertifyingBody() != null && cp.getCertifyingBody().size() > 0) {
                 sw.writeStartElement("certifyingBody");
@@ -84,11 +83,13 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
             createSimpleElement(cp.getCountOpenSurveillance(), "countOpenSurveillance", sw);
             createSimpleElement(cp.getCountSurveillance(), "countSurveillance", sw);
             CqmResultDetailsXmlGenerator.add(cp.getCqmResults(), "cqmResults", sw);
+            createSimpleElement(cp.getCuresUpdate() == null ? false : cp.getCuresUpdate(), "curesUpdate", sw);
             createSimpleElement(cp.getDecertificationDate(), "decertificationDate", sw);
             DeveloperXmlGenerator.addDeveloper(cp.getDeveloper(), "developer", sw);
             InheritedCertificationStatusXmlGenerator.add(cp.getIcs(), "ics", sw);
             createSimpleElement(cp.getId(), "id", sw);
             createSimpleElement(cp.getLastModifiedDate(), "lastModifiedDate", sw);
+            MeaningfulUseUserXmlGenerator.add(cp.getMeaningfulUseUserHistory(), "meaningfulUseUserHistory", sw);
             createSimpleElement(cp.getOtherAcb(), "otherAcb", sw);
             if (cp.getPracticeType() != null && cp.getPracticeType().size() > 0) {
                 sw.writeStartElement("practiceType");
@@ -118,7 +119,6 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
             TransparencyAttestationXmlGenerator.add(cp.getTransparencyAttestation(), "transparencyAttestation", sw);
             createSimpleElement(cp.getTransparencyAttestationUrl(), "transparencyAttestationUrl", sw);
             ProductVersionXmlGenerator.addProductVersion(cp.getVersion(), "version", sw);
-            createSimpleElement(cp.getCuresUpdate() == null ? false : cp.getCuresUpdate(), "curesUpdate", sw);
             sw.writeEndElement();
         }
     }
