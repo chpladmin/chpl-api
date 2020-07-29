@@ -53,7 +53,7 @@ public class CertifiedProductDTO implements Serializable {
     public CertifiedProductDTO() {
     }
 
-    public CertifiedProductDTO(final CertifiedProductEntity entity) {
+    public CertifiedProductDTO(CertifiedProductEntity entity) {
         this.id = entity.getId();
         this.productCode = entity.getProductCode();
         this.versionCode = entity.getVersionCode();
@@ -85,7 +85,7 @@ public class CertifiedProductDTO implements Serializable {
         this.setRwtEligiblityYear(entity.getRwtEligibilityYear());
     }
 
-    public CertifiedProductDTO(final CertifiedProductSearchDetails from) throws InvalidArgumentsException {
+    public CertifiedProductDTO(CertifiedProductSearchDetails from) throws InvalidArgumentsException {
         this.setId(from.getId());
         this.setCertificationBodyId(
                 Long.valueOf(from.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()));
