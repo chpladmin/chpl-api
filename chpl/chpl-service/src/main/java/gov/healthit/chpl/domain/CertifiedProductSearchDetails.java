@@ -342,7 +342,7 @@ public class CertifiedProductSearchDetails implements Serializable {
     /**
      * Real World Testing eligibility year.
      */
-    @XmlElement(name = "rwt_eligibility_year", nillable = true, required = false)
+    @XmlElement(nillable = true, required = false)
     private Integer rwtEligiblityYear;
 
     @Builder.Default
