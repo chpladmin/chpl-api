@@ -28,13 +28,13 @@ import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertificationStatusEventDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.service.CertificationCriterionService;
 
 public class RealWorldTestingEligibilityJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("realWorldTestingEligibilityJobLogger");
-    private static final String ACTIVE = "Active";
 
     @Autowired
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
@@ -159,7 +159,7 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
     private boolean isListingStatusActiveAsOfDate(Long listingId, Date asOfDate) {
         CertificationStatusEventDTO event = getListingStatusAsOf(listingId, asOfDate);
         if (Objects.nonNull(event)
-                && event.getStatus().getStatus().equals(RealWorldTestingEligibilityJob.ACTIVE)) {
+                && event.getStatus().getStatus().equals(CertificationStatusType.Active.getName())) {
             return true;
         } else {
             LOGGER.info("Listing: " + listingId + " - Not Active");
