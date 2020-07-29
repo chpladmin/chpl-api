@@ -4,7 +4,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -30,7 +29,6 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
-import gov.healthit.chpl.dto.CertificationStatusEventDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
@@ -171,17 +169,6 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
             LOGGER.info("Listing: " + listing.getId() + " - Not Active");
             return false;
         }
-    }
-
-    private CertificationStatusEventDTO getListingStatusAsOf(Long listingId, Date asOfDate) {
-        List<CertificationStatusEventDTO> events = certificationStatusEventDAO.findByCertifiedProductId(listingId);
-        CertificationStatusEventDTO event = null;
-        if (Objects.nonNull(events)) {
-            events.sort(Comparator.comparing(e -> e.getEventDate()));
-            event = events.stream()
-                    .reduce(null, (foundEvent, e) -> asOfDate.after(e.getEventDate()) ? e : foundEvent);
-        }
-        return event;
     }
 
     private Integer getEligibilityYear() {
