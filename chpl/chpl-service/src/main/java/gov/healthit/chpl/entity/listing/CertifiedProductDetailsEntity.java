@@ -15,6 +15,7 @@ import org.hibernate.annotations.Type;
 
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.ProductEntity;
+import gov.healthit.chpl.util.Util;
 import lombok.Data;
 
 @Entity
@@ -257,4 +258,60 @@ public class CertifiedProductDetailsEntity {
 
     @Column(name = "rwt_eligibility_year")
     private Integer rwtEligibilityYear;
+
+    public Date getCreationDate() {
+        return Util.getNewDate(creationDate);
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = Util.getNewDate(creationDate);
+    }
+
+    public Date getLastModifiedDate() {
+        return Util.getNewDate(lastModifiedDate);
+    }
+
+    public void setLastModifiedDate(Date lastModifiedDate) {
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
+    }
+
+    public Date getCertificationStatusDate() {
+        return Util.getNewDate(certificationStatusDate);
+    }
+
+    public void setCertificationStatusDate(Date certificationStatusDate) {
+        this.certificationStatusDate = Util.getNewDate(certificationStatusDate);
+    }
+
+    public Date getDecertificationDate() {
+        return Util.getNewDate(decertificationDate);
+    }
+
+    public void setDecertificationDate(Date decertificationDate) {
+        this.decertificationDate = Util.getNewDate(decertificationDate);
+    }
+
+    public Date getCertificationDate() {
+        return Util.getNewDate(certificationDate);
+    }
+
+    public void setCertificationDate(Date certificationDate) {
+        this.certificationDate = Util.getNewDate(certificationDate);
+    }
+
+    public Date getDeveloperStatusDate() {
+        return Util.getNewDate(developerStatusDate);
+    }
+
+    public void setDeveloperStatusDate(Date developerStatusDate) {
+        this.developerStatusDate = Util.getNewDate(developerStatusDate);
+    }
+
+    public Date getMeaningfulUseUsersDate() {
+        return Util.getNewDate(meaningfulUseUsersDate);
+    }
+
+    public void setMeaningfulUseUsersDate(Date meaningfulUseUsersDate) {
+        this.meaningfulUseUsersDate = Util.getNewDate(meaningfulUseUsersDate);
+    }
 }
