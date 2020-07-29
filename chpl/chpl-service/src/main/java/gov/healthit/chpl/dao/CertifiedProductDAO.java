@@ -7,6 +7,7 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @NoArgsConstructor
 @Repository(value = "certifiedProductDAO")
+@Primary
 public class CertifiedProductDAO extends BaseDAOImpl {
     private static final int CHPL_ID_LENGTH = 9;
     private ErrorMessageUtil msgUtil;

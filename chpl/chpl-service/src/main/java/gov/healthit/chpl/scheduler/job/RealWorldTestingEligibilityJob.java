@@ -19,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
@@ -26,6 +27,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertificationStatusEventDTO;
@@ -35,6 +37,7 @@ import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.service.CertificationCriterionService;
+import lombok.NoArgsConstructor;
 
 public class RealWorldTestingEligibilityJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("realWorldTestingEligibilityJobLogger");
@@ -43,9 +46,7 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
     @Autowired
-    private CertifiedProductDAO certifiedProductDAO;
-
-    @Autowired
+    @Qualifier("rwtEligibilityYearDAO")
     private RwtEligibilityYearDAO rwtEligibilityYearDAO;
 
     @Autowired
@@ -73,12 +74,12 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
 
         //This will get us all of the listings that we still need to check criteria eligibility (reduce calls for details)
         List<CertifiedProductDetailsDTO> listings = getAllListingsWith2015Edition().stream()
-                .filter(listing -> !doesListingHaveExistingRwtEligibility(listing)
-                        && isListingStatusActiveAsOfDate(listing.getId(), asOfDate))
+                .filter(listing -> !doesListingHaveExistingRwtEligibility(listing))
                 .collect(Collectors.toList());
 
         getCertifiedProductDetails(listings).stream()
-        .filter(detail -> doesListingAttestToEligibleCriteria(detail, eligibleCriteria))
+        .filter(detail -> isListingStatusActiveAsOfDate(detail, asOfDate)
+                && doesListingAttestToEligibleCriteria(detail, eligibleCriteria))
         .forEach(detail -> updateRwtEligiblityYear(detail));
         LOGGER.info("********* Completed the Real World Testing Eligibility job. *********");
     }
@@ -143,9 +144,10 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
                 .map(key -> certificationCriterionService.get(key))
                 .collect(Collectors.toList());
     }
+
     private List<CertifiedProductDetailsDTO> getAllListingsWith2015Edition() {
         LOGGER.info("Getting all 2015 listings.");
-        List<CertifiedProductDetailsDTO> listings = certifiedProductDAO.findByEdition(
+        List<CertifiedProductDetailsDTO> listings = rwtEligibilityYearDAO.findByEdition(
                 CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
         LOGGER.info("Completing getting all 2015 listings. Found " + listings.size() + " listings.");
         return listings;
@@ -160,13 +162,13 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
         }
     }
 
-    private boolean isListingStatusActiveAsOfDate(Long listingId, Date asOfDate) {
-        CertificationStatusEventDTO event = getListingStatusAsOf(listingId, asOfDate);
+    private boolean isListingStatusActiveAsOfDate(CertifiedProductSearchDetails listing, Date asOfDate) {
+        CertificationStatusEvent event = listing.getStatusOnDate(asOfDate);
         if (Objects.nonNull(event)
-                && event.getStatus().getStatus().equals(CertificationStatusType.Active.getName())) {
+                && event.getStatus().getName().equals(CertificationStatusType.Active.getName())) {
             return true;
         } else {
-            LOGGER.info("Listing: " + listingId + " - Not Active");
+            LOGGER.info("Listing: " + listing.getId() + " - Not Active");
             return false;
         }
     }
@@ -202,7 +204,8 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
         }
     }
 
-    @Component()
+    @Component("rwtEligibilityYearDAO")
+    @NoArgsConstructor
     private static class RwtEligibilityYearDAO extends CertifiedProductDAO {
         @Transactional
         public void updateRwtEligibilityYear(Long listingId, Integer year) throws EntityRetrievalException {
