@@ -12,12 +12,15 @@ import java.util.TimeZone;
 import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationStatusEventDAO;
@@ -26,9 +29,9 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertificationStatusEventDTO;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.service.CertificationCriterionService;
@@ -41,6 +44,9 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
 
     @Autowired
     private CertifiedProductDAO certifiedProductDAO;
+
+    @Autowired
+    private RwtEligibilityYearDAO rwtEligibilityYearDAO;
 
     @Autowired
     private CertificationStatusEventDAO certificationStatusEventDAO;
@@ -79,9 +85,7 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
 
     private void updateRwtEligiblityYear(CertifiedProductSearchDetails detail) {
         try {
-            CertifiedProductDTO dto = certifiedProductDAO.getById(detail.getId());
-            dto.setRwtEligiblityYear(getEligibilityYear());
-            certifiedProductDAO.update(dto);
+            rwtEligibilityYearDAO.updateRwtEligibilityYear(detail.getId(), getEligibilityYear());
             LOGGER.info("Listing: " + detail.getId() + " - Added eligibility");
         } catch (EntityRetrievalException e) {
             LOGGER.error("Listing: " + detail.getId() + " - Error setting eligibility", e);
@@ -197,4 +201,20 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
             throw new RuntimeException("Could not calculate 'asOfDate'.", e);
         }
     }
+
+    @Component()
+    private static class RwtEligibilityYearDAO extends CertifiedProductDAO {
+        @Transactional
+        public void updateRwtEligibilityYear(Long listingId, Integer year) throws EntityRetrievalException {
+            CertifiedProductEntity entity = getEntityById(listingId);
+            entity.setRwtEligibilityYear(year);
+            try {
+                update(entity);
+            } catch (Exception ex) {
+                LOGGER.error("Could not update rwtEligibilityYear for listing: " + listingId, ex);
+                throw new EntityRetrievalException("Could not update rwtEligibilityYear for listing: " + listingId, ex);
+            }
+        }
+    }
+
 }
