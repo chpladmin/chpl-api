@@ -37,6 +37,28 @@
             <group>systemJobs</group>
         </delete-job>
         <!-- End delete pre-processing command(s). -->
+        <!-- Delete the below pre-processing command(s) after PROD push -->
+        <delete-job>
+            <name>addCriteriaTo2015ListingsJob</name>
+            <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>addCriteriaToSingleListingJob</name>
+            <group>subordinateJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>addCriteriaToSinglePendingListingJob</name>
+            <group>subordinateJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>modifyTestFunctionalityJob</name>
+            <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>updateMacraMeasuresJob</name>
+            <group>systemJobs</group>
+        </delete-job>
+        <!-- End delete pre-processing command(s). -->
     </pre-processing-commands>
     <schedule>
         <!-- Download file generation: 2015, 2014, 2011 -->

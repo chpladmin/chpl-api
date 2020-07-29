@@ -35,6 +35,7 @@ import gov.healthit.chpl.domain.TransparencyAttestationMap;
 import gov.healthit.chpl.domain.UpdateDevelopersRequest;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UsersResponse;
+import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.ContactDTO;
@@ -49,9 +50,14 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
+import gov.healthit.chpl.service.DirectReviewService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.web.controller.annotation.CacheControl;
+import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
+import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -64,16 +70,20 @@ public class DeveloperController {
     private DeveloperManager developerManager;
     private ErrorMessageUtil msgUtil;
     private UserPermissionsManager userPermissionsManager;
+    private DirectReviewService directReviewService;
     private FF4j ff4j;
 
     @Autowired
     public DeveloperController(DeveloperManager developerManager,
+            CertifiedProductManager cpManager,
             UserPermissionsManager userPermissionsManager,
             ErrorMessageUtil msgUtil,
+            DirectReviewService directReviewService,
             FF4j ff4j) {
         this.developerManager = developerManager;
         this.userPermissionsManager = userPermissionsManager;
         this.msgUtil = msgUtil;
+        this.directReviewService = directReviewService;
         this.ff4j = ff4j;
     }
 
@@ -115,6 +125,21 @@ public class DeveloperController {
             result = new Developer(developer);
         }
         return result;
+    }
+
+    @ApiOperation(value = "Get all direct reviews for a specified developer.")
+    @RequestMapping(value = "/{developerId:^-?\\d+$}/direct-reviews",
+    method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody ResponseEntity<List<DirectReview>> getDirectReviews(
+            @PathVariable("developerId") Long developerId) {
+        if (!ff4j.check(FeatureList.DIRECT_REVIEW)) {
+            throw new NotImplementedException();
+        }
+
+        return new ResponseEntity<List<DirectReview>>(
+                directReviewService.getDirectReviews(developerId), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Update a developer or merge developers.",
