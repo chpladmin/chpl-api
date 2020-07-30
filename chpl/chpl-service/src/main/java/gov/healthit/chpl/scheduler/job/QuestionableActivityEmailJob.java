@@ -53,9 +53,6 @@ public class QuestionableActivityEmailJob extends QuartzJob {
     @Autowired
     private Environment env;
 
-    @Autowired
-    private CertificationCriterionService criterionService;
-
     private static final int NUM_REPORT_COLS = 14;
     private static final int ACB_COL = 0;
     private static final int DEVELOPER_COL = 1;
@@ -222,13 +219,15 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         LOGGER.debug("Found " + certResultActivities.size() + " questionable certification result activities");
 
         // create a bucket for each activity timestamp+trigger type
-        Map<ActivityDateTriggerGroup, List<QuestionableActivityCertificationResultDTO>> activityByGroup = new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityCertificationResultDTO>>();
+        Map<ActivityDateTriggerGroup, List<QuestionableActivityCertificationResultDTO>> activityByGroup
+            = new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityCertificationResultDTO>>();
         for (QuestionableActivityCertificationResultDTO activity : certResultActivities) {
             ActivityDateTriggerGroup groupKey = new ActivityDateTriggerGroup(activity.getActivityDate(), activity
                     .getTrigger());
 
             if (activityByGroup.get(groupKey) == null) {
-                List<QuestionableActivityCertificationResultDTO> activitiesForGroup = new ArrayList<QuestionableActivityCertificationResultDTO>();
+                List<QuestionableActivityCertificationResultDTO> activitiesForGroup
+                    = new ArrayList<QuestionableActivityCertificationResultDTO>();
                 activitiesForGroup.add(activity);
                 activityByGroup.put(groupKey, activitiesForGroup);
             } else {
@@ -263,7 +262,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         LOGGER.debug("Found " + listingActivities.size() + " questionable listing activities");
 
         // create a bucket for each activity timestamp+trigger type
-        Map<ActivityDateTriggerGroup, List<QuestionableActivityListingDTO>> activityByGroup = new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityListingDTO>>();
+        Map<ActivityDateTriggerGroup, List<QuestionableActivityListingDTO>> activityByGroup
+            = new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityListingDTO>>();
         for (QuestionableActivityListingDTO activity : listingActivities) {
             ActivityDateTriggerGroup groupKey = new ActivityDateTriggerGroup(activity.getActivityDate(), activity
                     .getTrigger());
@@ -303,7 +303,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         LOGGER.debug("Found " + developerActivities.size() + " questionable developer activities");
 
         // create a bucket for each activity timestamp+trigger type
-        Map<ActivityDateTriggerGroup, List<QuestionableActivityDeveloperDTO>> activityByGroup = new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityDeveloperDTO>>();
+        Map<ActivityDateTriggerGroup, List<QuestionableActivityDeveloperDTO>> activityByGroup
+            = new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityDeveloperDTO>>();
         for (QuestionableActivityDeveloperDTO activity : developerActivities) {
             ActivityDateTriggerGroup groupKey = new ActivityDateTriggerGroup(activity.getActivityDate(), activity
                     .getTrigger());
@@ -343,7 +344,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         LOGGER.debug("Found " + productActivities.size() + " questionable developer activities");
 
         // create a bucket for each activity timestamp+trigger type
-        Map<ActivityDateTriggerGroup, List<QuestionableActivityProductDTO>> activityByGroup = new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityProductDTO>>();
+        Map<ActivityDateTriggerGroup, List<QuestionableActivityProductDTO>> activityByGroup
+            = new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityProductDTO>>();
         for (QuestionableActivityProductDTO activity : productActivities) {
             ActivityDateTriggerGroup groupKey = new ActivityDateTriggerGroup(activity.getActivityDate(), activity
                     .getTrigger());
@@ -383,7 +385,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         LOGGER.debug("Found " + versionActivities.size() + " questionable developer activities");
 
         // create a bucket for each activity timestamp+trigger type
-        Map<ActivityDateTriggerGroup, List<QuestionableActivityVersionDTO>> activityByGroup = new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityVersionDTO>>();
+        Map<ActivityDateTriggerGroup, List<QuestionableActivityVersionDTO>> activityByGroup
+            = new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityVersionDTO>>();
         for (QuestionableActivityVersionDTO activity : versionActivities) {
             ActivityDateTriggerGroup groupKey = new ActivityDateTriggerGroup(activity.getActivityDate(), activity
                     .getTrigger());
@@ -609,9 +612,9 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         }
     }
 
-    private void putProductActivityInRow(final QuestionableActivityProductDTO activity,
-            final List<String> activityRow) {
-        activityRow.set(DEVELOPER_COL, activity.getProduct().getDeveloperName());
+    private void putProductActivityInRow(QuestionableActivityProductDTO activity,
+            List<String> activityRow) {
+        activityRow.set(DEVELOPER_COL, activity.getProduct().getOwner().getName());
         activityRow.set(PRODUCT_COL, activity.getProduct().getName());
         activityRow.set(ACTIVITY_USER_COL, activity.getUser().getSubjectName());
 
@@ -704,7 +707,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         criterion.setNumber(certResult.getNumber());
         criterion.setTitle(certResult.getTitle());
         criterion.setId(certResult.getCertificationCriterionId());
-        return criterionService.formatCriteriaNumber(criterion);
+        return CertificationCriterionService.formatCriteriaNumber(criterion);
     }
 
     private static class ActivityDateTriggerGroup {

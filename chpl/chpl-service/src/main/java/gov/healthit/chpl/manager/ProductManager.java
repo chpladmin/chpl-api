@@ -49,6 +49,7 @@ public class ProductManager extends SecuredManager {
     private ValidationUtils validationUtils;
 
     @Autowired
+    @SuppressWarnings({"checkstyle:parameternumber"})
     public ProductManager(ErrorMessageUtil msgUtil, ProductDAO productDao,
             ProductVersionDAO versionDao, DeveloperDAO devDao, CertifiedProductDAO cpDao,
             CertifiedProductDetailsManager cpdManager,
@@ -109,7 +110,7 @@ public class ProductManager extends SecuredManager {
     public ProductDTO create(ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         // check that the developer of this product is Active
-        if (dto.getDeveloperId() == null) {
+        if (dto.getOwner() == null || dto.getOwner().getId() == null) {
             throw new EntityCreationException("Cannot create a product without a developer ID.");
         }
 
@@ -276,13 +277,13 @@ public class ProductManager extends SecuredManager {
         ProductDTO beforeDTO = productDao.getById(dto.getId());
 
         // check that the developer of this product is Active
-        if (beforeDTO.getDeveloperId() == null) {
+        if (beforeDTO.getOwner() == null || beforeDTO.getOwner().getId() == null) {
             throw new EntityCreationException("Cannot update a product without a developer ID.");
         }
 
-        DeveloperDTO dev = devDao.getById(beforeDTO.getDeveloperId());
+        DeveloperDTO dev = devDao.getById(beforeDTO.getOwner().getId());
         if (dev == null) {
-            throw new EntityRetrievalException("Cannot find developer with id " + beforeDTO.getDeveloperId());
+            throw new EntityRetrievalException("Cannot find developer with id " + beforeDTO.getOwner().getId());
         }
         DeveloperStatusEventDTO currDevStatus = dev.getStatus();
         if (currDevStatus == null || currDevStatus.getStatus() == null) {
@@ -301,8 +302,8 @@ public class ProductManager extends SecuredManager {
         ProductDTO result = productDao.update(dto);
         // the developer name is not updated at this point until after
         // transaction commit so we have to set it
-        DeveloperDTO devDto = devDao.getById(result.getDeveloperId());
-        result.setDeveloperName(devDto.getName());
+        DeveloperDTO devDto = devDao.getById(result.getOwner().getId());
+        result.getOwner().setName(devDto.getName());
 
         String activityMsg = "Product " + dto.getName() + " was updated.";
         activityManager.addActivity(ActivityConcept.PRODUCT, result.getId(), activityMsg, beforeDTO, result);
@@ -311,9 +312,9 @@ public class ProductManager extends SecuredManager {
 
     private ProductDTO createProduct(ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-        DeveloperDTO dev = devDao.getById(dto.getDeveloperId());
+        DeveloperDTO dev = devDao.getById(dto.getOwner().getId());
         if (dev == null) {
-            throw new EntityRetrievalException("Cannot find developer with id " + dto.getDeveloperId());
+            throw new EntityRetrievalException("Cannot find developer with id " + dto.getOwner().getId());
         }
         DeveloperStatusEventDTO currDevStatus = dev.getStatus();
         if (currDevStatus == null || currDevStatus.getStatus() == null) {

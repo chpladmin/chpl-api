@@ -30,7 +30,7 @@ public class MergeActionPermissions extends ActionPermissions {
                 List<Long> productIds = (List<Long>) obj;
                 for (Long productId : productIds) {
                     ProductDTO productDTO = productDAO.getById(productId);
-                    if (!getResourcePermissions().isDeveloperActive(productDTO.getDeveloperId())) {
+                    if (!getResourcePermissions().isDeveloperActive(productDTO.getOwner().getId())) {
                         return false;
                     }
                 }

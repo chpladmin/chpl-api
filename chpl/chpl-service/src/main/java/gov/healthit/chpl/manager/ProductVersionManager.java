@@ -3,8 +3,6 @@ package gov.healthit.chpl.manager;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,10 +32,11 @@ import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil.ChplProductNumberParts;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
+import lombok.extern.log4j.Log4j2;
 
 @Service
+@Log4j2
 public class ProductVersionManager extends SecuredManager {
-    private static Logger LOGGER = LogManager.getLogger(ProductVersionManager.class);
     private ProductVersionDAO versionDao;
     private DeveloperDAO devDao;
     private ProductDAO prodDao;
@@ -50,6 +49,7 @@ public class ProductVersionManager extends SecuredManager {
     private ValidationUtils validationUtils;
 
     @Autowired
+    @SuppressWarnings({"checkstyle:parameternumber"})
     public ProductVersionManager(ProductVersionDAO versionDao, DeveloperDAO devDao,
             ProductDAO prodDao, CertifiedProductDAO cpDao, ActivityManager activityManager,
             CertifiedProductDetailsManager cpdManager, ResourcePermissions resourcePermissions,
@@ -113,9 +113,9 @@ public class ProductVersionManager extends SecuredManager {
         if (prod == null) {
             throw new EntityRetrievalException("Cannot find product with id " + dto.getProductId());
         }
-        DeveloperDTO dev = devDao.getById(prod.getDeveloperId());
+        DeveloperDTO dev = devDao.getById(prod.getOwner().getId());
         if (dev == null) {
-            throw new EntityRetrievalException("Cannot find developer with id " + prod.getDeveloperId());
+            throw new EntityRetrievalException("Cannot find developer with id " + prod.getOwner().getId());
         }
         DeveloperStatusEventDTO currDevStatus = dev.getStatus();
         if (currDevStatus == null || currDevStatus.getStatus() == null) {

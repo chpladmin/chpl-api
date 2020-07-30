@@ -72,6 +72,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class DeveloperManager extends SecuredManager {
     public static final String NEW_DEVELOPER_CODE = "XXXX";
+    private static final Integer FIVE_SECONDS = 5000;
 
     private DeveloperDAO developerDao;
     private ProductManager productManager;
@@ -90,6 +91,7 @@ public class DeveloperManager extends SecuredManager {
     private FF4j ff4j;
 
     @Autowired
+    @SuppressWarnings({"checkstyle:parameternumber"})
     public DeveloperManager(DeveloperDAO developerDao, ProductManager productManager, UserManager userManager,
             CertificationBodyManager acbManager, CertificationBodyDAO certificationBodyDao,
             CertifiedProductDAO certifiedProductDAO, ChplProductNumberUtil chplProductNumberUtil,
@@ -371,12 +373,12 @@ public class DeveloperManager extends SecuredManager {
             ProductOwnerDTO historyToAdd = new ProductOwnerDTO();
             historyToAdd.setProductId(product.getId());
             DeveloperDTO prevOwner = new DeveloperDTO();
-            prevOwner.setId(product.getDeveloperId());
+            prevOwner.setId(product.getOwner().getId());
             historyToAdd.setDeveloper(prevOwner);
             historyToAdd.setTransferDate(System.currentTimeMillis());
             product.getOwnerHistory().add(historyToAdd);
             // reassign those products to the new developer
-            product.setDeveloperId(createdDeveloper.getId());
+            product.getOwner().setId(createdDeveloper.getId());
             productManager.update(product);
 
         }
@@ -427,7 +429,7 @@ public class DeveloperManager extends SecuredManager {
         jobDataMap.put(SplitDeveloperJob.USER_KEY, jobUser);
         splitDeveloperJob.setJobDataMap(jobDataMap);
         splitDeveloperTrigger.setJob(splitDeveloperJob);
-        splitDeveloperTrigger.setRunDateMillis(System.currentTimeMillis() + 5000); //5 secs from now
+        splitDeveloperTrigger.setRunDateMillis(System.currentTimeMillis() + FIVE_SECONDS);
         splitDeveloperTrigger = schedulerManager.createBackgroundJobTrigger(splitDeveloperTrigger);
         return splitDeveloperTrigger;
     }

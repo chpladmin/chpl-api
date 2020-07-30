@@ -58,7 +58,7 @@ public class Developer implements Serializable {
     /**
      * Indication of whether a health IT developer is a "self-developer" or not.
      */
-    @XmlElement(required = true)
+    @XmlElement(required = true, nillable = true)
     private Boolean selfDeveloper;
 
     /**
