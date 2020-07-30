@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
@@ -15,7 +14,6 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
-import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
@@ -154,21 +152,6 @@ public class ChplNumberReviewer implements Reviewer {
                                 .add("The developer code '" + developerCode
                                         + "' does not match the assigned developer code for "
                                         + listing.getDeveloperName() + ": '" + developer.getDeveloperCode() + "'.");
-                    }
-                    if (certificationBody != null) {
-                        DeveloperACBMapDTO mapping = developerDao.getTransparencyMapping(developer.getId(),
-                                certificationBody.getId());
-                        if (mapping != null) {
-                            // check transparency attestation and url for warnings
-                            if (!areTransparencyAttestationsEqual(mapping.getTransparencyAttestation(),
-                                    listing.getTransparencyAttestation())) {
-                                listing.getWarningMessages().add(msgUtil.getMessage("transparencyAttestation.save"));
-                            }
-                        } else if (!StringUtils.isEmpty(listing.getTransparencyAttestation())) {
-                            listing.getWarningMessages().add(msgUtil.getMessage(
-                                    "transparencyAttestation.save"));
-                        }
-
                     }
                 }
             } else if (!developerCode.matches("X+")) {
