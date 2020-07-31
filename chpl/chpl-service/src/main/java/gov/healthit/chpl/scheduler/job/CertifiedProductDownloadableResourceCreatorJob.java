@@ -135,7 +135,8 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
     private List<CertifiedProductDetailsDTO> getRelevantListings() throws EntityRetrievalException {
         LOGGER.info("Finding all listings for edition " + edition + ".");
         Date start = new Date();
-        List<CertifiedProductDetailsDTO> listingsForEdition = getCertifiedProductDao().findByEdition(edition).subList(0, 2);
+        List<CertifiedProductDetailsDTO> listingsForEdition = getCertifiedProductDao().findWithSurveillance().subList(0, 5);
+        //findByEdition(edition);
         Date end = new Date();
         LOGGER.info("Found the " + listingsForEdition.size() + " listings from " + edition + " in "
                 + ((end.getTime() - start.getTime()) / MILLIS_PER_SECOND) + " seconds");

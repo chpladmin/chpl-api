@@ -24,9 +24,9 @@ public class MeaningfulUseUserXmlGenerator extends XmlGenerator {
             throws XMLStreamException {
         if (muu != null) {
             sw.writeStartElement(rootNodeName);
-            createSimpleElement(muu.getMuuDate(), "muuDate", sw);
             createSimpleElement(muu.getId(), "id", sw);
             createSimpleElement(muu.getMuuCount(), "muuCount", sw);
+            createSimpleElement(muu.getMuuDate(), "muuDate", sw);
             sw.writeEndElement();
         }
     }
