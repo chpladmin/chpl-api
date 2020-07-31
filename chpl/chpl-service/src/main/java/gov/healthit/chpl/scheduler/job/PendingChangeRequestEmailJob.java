@@ -32,6 +32,7 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.util.EmailBuilder;
 
 /**
@@ -67,8 +68,6 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
 
     private static final long MILLIS_PER_DAY = 1000 * 60 * 60 * 24;
 
-    private static final String SPLIT_CHAR = "\u263A";
-
     public PendingChangeRequestEmailJob() throws Exception {
         super();
     }
@@ -94,16 +93,18 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
     private List<CertificationBodyDTO> getAppropriateAcbs(JobExecutionContext jobContext) {
         List<CertificationBodyDTO> acbs = certificationBodyDAO.findAllActive();
         if (jobContext.getMergedJobDataMap().getBooleanValue("acbSpecific")) {
-            List<String> acbsFromJob = getAcbsFromJobContext(jobContext);
+            List<Long> acbsFromJob = getAcbsFromJobContext(jobContext);
             acbs = acbs.stream()
-                    .filter(acb -> acbsFromJob.contains(acb.getName()))
+                    .filter(acb -> acbsFromJob.contains(acb.getId()))
                     .collect(Collectors.toList());
         }
         return acbs;
     }
 
-    private List<String> getAcbsFromJobContext(JobExecutionContext jobContext) {
-        return Arrays.asList(jobContext.getMergedJobDataMap().getString("acb").split(SPLIT_CHAR));
+    private List<Long> getAcbsFromJobContext(JobExecutionContext jobContext) {
+        return Arrays.asList(jobContext.getMergedJobDataMap().getString("acb").split(SchedulerManager.DATA_DELIMITER)).stream()
+                .map(acbIdAsString -> Long.parseLong(acbIdAsString))
+                .collect(Collectors.toList());
     }
 
     private List<List<String>> getAppropriateActivities(final List<CertificationBodyDTO> activeAcbs,
@@ -159,7 +160,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
 
     private List<List<String>> createChangeRequestRows(final List<CertificationBodyDTO> activeAcbs,
             final Date currentDate)
-            throws EntityRetrievalException {
+                    throws EntityRetrievalException {
         LOGGER.debug("Getting pending change requests");
         List<ChangeRequest> requests = getChangeRequestsFilteredByACBs(activeAcbs);
         LOGGER.debug("Found " + requests.size() + "pending change requests");
@@ -184,7 +185,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         return changeRequestDAO.getAllPending().stream()
                 .filter(doesCrHaveAppropriateAcb)
                 .sorted((cr1, cr2) -> cr1.getSubmittedDate().compareTo(cr2.getSubmittedDate()))
-                .collect(Collectors.<ChangeRequest> toList());
+                .collect(Collectors.<ChangeRequest>toList());
     }
 
     private void putChangeRequestActivityInRow(final ChangeRequest activity,
@@ -243,10 +244,10 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
 
         EmailBuilder emailBuilder = new EmailBuilder(env);
         emailBuilder.recipients(getEmailRecipients(jobContext))
-                .subject(getSubject(jobContext))
-                .htmlMessage(getHtmlMessage(csvRows.size()))
-                .fileAttachments(getAttachments(csvRows, acbs))
-                .sendEmail();
+        .subject(getSubject(jobContext))
+        .htmlMessage(getHtmlMessage(csvRows.size()))
+        .fileAttachments(getAttachments(csvRows, acbs))
+        .sendEmail();
     }
 
     private String getSubject(JobExecutionContext jobContext) {

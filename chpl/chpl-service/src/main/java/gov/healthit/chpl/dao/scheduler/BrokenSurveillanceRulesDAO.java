@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.scheduler.BrokenSurveillanceRulesDTO;
+import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.entity.scheduler.BrokenSurveillanceRulesEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -48,7 +49,7 @@ public class BrokenSurveillanceRulesDAO extends BaseDAOImpl {
             entity.setDeveloper(dto.getDeveloper());
             entity.setProduct(dto.getProduct());
             entity.setVersion(dto.getVersion());
-            entity.setAcb(dto.getAcb());
+            entity.setCertificationBody(CertificationBodyEntity.getNewAcbEntity(dto.getCertificationBody()));
             entity.setUrl(dto.getUrl());
             entity.setCertificationStatus(dto.getCertificationStatus());
             entity.setDateOfLastStatusChange(dto.getDateOfLastStatusChange());
@@ -76,7 +77,8 @@ public class BrokenSurveillanceRulesDAO extends BaseDAOImpl {
             entity.setNumberOfDaysFromCapApprovalToPresent(dto.getNumberOfDaysFromCapApprovalToPresent());
             entity.setNumberOfDaysFromCapBeganToCapCompleted(dto.getNumberOfDaysFromCapBeganToCapCompleted());
             entity.setNumberOfDaysFromCapBeganToPresent(dto.getNumberOfDaysFromCapBeganToPresent());
-            entity.setDifferenceFromCapCompletedAndCapMustBeCompleted(dto.getDifferenceFromCapCompletedAndCapMustBeCompleted());
+            entity.setDifferenceFromCapCompletedAndCapMustBeCompleted(
+                    dto.getDifferenceFromCapCompletedAndCapMustBeCompleted());
             entity.setDeleted(false);
             entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
 
@@ -87,6 +89,8 @@ public class BrokenSurveillanceRulesDAO extends BaseDAOImpl {
 
     private List<BrokenSurveillanceRulesEntity> findAllEntities() {
         Query query = entityManager.createQuery("from BrokenSurveillanceRulesEntity bsre "
+                + "join fetch bsre.certificationBody cb "
+                + "join fetch cb.address a "
                 + "where (bsre.deleted = false)",
                 BrokenSurveillanceRulesEntity.class);
         return query.getResultList();
