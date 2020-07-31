@@ -223,6 +223,7 @@ public class CertifiedProductManager extends SecuredManager {
     public CertifiedProductManager() {
     }
 
+    @SuppressWarnings({"checkstyle:parameternumber"})
     @Autowired
     public CertifiedProductManager(ErrorMessageUtil msgUtil,
             CertifiedProductDAO cpDao, CertifiedProductSearchDAO searchDao,
@@ -404,6 +405,7 @@ public class CertifiedProductManager extends SecuredManager {
         return familyTree;
     }
 
+    @SuppressWarnings({"checkstyle:linelength", "checkstyle:methodlength"})
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).CREATE_FROM_PENDING, #pendingCp)")
     @Transactional(readOnly = false)
@@ -1129,7 +1131,7 @@ public class CertifiedProductManager extends SecuredManager {
         sanitizeUpdatedListingData(updatedListing);
 
         // validate - throws ValidationException if the listing cannot be updated
-        validateListingForUpdate(existingListing, updatedListing);
+        validateListingForUpdate(existingListing, updatedListing, updateRequest.isAcknowledgeWarnings());
 
         // if listing status has changed that may trigger other changes to developer status
         performSecondaryActionsBasedOnStatusChanges(existingListing, updatedListing, updateRequest.getReason());
@@ -1154,6 +1156,7 @@ public class CertifiedProductManager extends SecuredManager {
                 changedProduct, reason);
     }
 
+    @SuppressWarnings({"checkstyle:linelength"})
     private void updateListingsChildData(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing)
             throws EntityCreationException, EntityRetrievalException, IOException {
         updateTestingLabs(updatedListing.getId(), existingListing.getTestingLabs(), updatedListing.getTestingLabs());
@@ -1245,14 +1248,15 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     private void validateListingForUpdate(CertifiedProductSearchDetails existingListing,
-            CertifiedProductSearchDetails updatedListing) throws ValidationException {
+            CertifiedProductSearchDetails updatedListing, boolean acknowledgeWarnings) throws ValidationException {
         Validator validator = validatorFactory.getValidator(updatedListing);
         if (validator != null) {
             validator.validate(existingListing, updatedListing);
         }
 
         if ((updatedListing.getErrorMessages() != null && updatedListing.getErrorMessages().size() > 0)
-                || (updatedListing.getWarningMessages() != null && updatedListing.getWarningMessages().size() > 0)) {
+                || (!acknowledgeWarnings && updatedListing.getWarningMessages() != null
+                && updatedListing.getWarningMessages().size() > 0)) {
             for (String err : updatedListing.getErrorMessages()) {
                 LOGGER.error("Error updating listing " + updatedListing.getChplProductNumber() + ": " + err);
             }
