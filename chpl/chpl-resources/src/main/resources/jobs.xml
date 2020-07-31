@@ -12,8 +12,6 @@
         <!-- END OCD-2944 -->
         <!-- Delete the below pre-processing command(s) after activity has happened on PROD -->
         <!-- End delete pre-processing command(s). -->
-        <!-- Delete the below pre-processing command(s) after PROD push -->
-        <!-- End delete pre-processing command(s). -->
     </pre-processing-commands>
     <schedule>
         <!-- Download file generation: 2015, 2014, 2011 -->
@@ -38,7 +36,7 @@
                 <job-name>downloadFileJob2015</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 0 2 * * ?</cron-expression> <!-- At 0500 UTC every day -->
+                <cron-expression>0 0 5 * * ?</cron-expression> <!-- At 0500 UTC every day -->
             </cron>
         </trigger>
 
@@ -63,7 +61,7 @@
                 <job-name>downloadFileJob2014</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 30 3 * * ?</cron-expression> <!-- At 0630 UTC every day -->
+                <cron-expression>0 30 6 * * ?</cron-expression> <!-- At 0630 UTC every day -->
             </cron>
         </trigger>
 
@@ -88,7 +86,7 @@
                 <job-name>downloadFileJob2011</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
-                <cron-expression>0 45 1 * * ?</cron-expression> <!-- At 0445 UTC on the first Saturday of the quarter -->
+                <cron-expression>0 45 4 ? JAN,APR,JUL,OCT 7#1</cron-expression> <!-- At 0445 UTC on the first Saturday of the quarter -->
             </cron>
         </trigger>
 
