@@ -67,8 +67,6 @@ public class DeveloperAccessReport extends QuartzJob {
     private static final int ONC_ACB_START = 8;
     private static final int NUM_REPORT_COLS = 8;
 
-    private static final String SPLIT_CHAR = "\u263A";
-
     public DeveloperAccessReport() throws Exception {
         super();
     }
