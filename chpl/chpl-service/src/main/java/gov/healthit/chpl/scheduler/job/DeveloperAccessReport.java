@@ -38,6 +38,7 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.auth.UserContactEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.util.EmailBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -92,16 +93,18 @@ public class DeveloperAccessReport extends QuartzJob {
     private List<CertificationBodyDTO> getAppropriateAcbs(JobExecutionContext jobContext) {
         List<CertificationBodyDTO> acbs = certificationBodyDAO.findAllActive();
         if (jobContext.getMergedJobDataMap().getBooleanValue("acbSpecific")) {
-            List<String> acbsFromJob = getAcbsFromJobContext(jobContext);
+            List<Long> acbsFromJob = getAcbsFromJobContext(jobContext);
             acbs = acbs.stream()
-                    .filter(acb -> acbsFromJob.contains(acb.getName()))
+                    .filter(acb -> acbsFromJob.contains(acb.getId()))
                     .collect(Collectors.toList());
         }
         return acbs;
     }
 
-    private List<String> getAcbsFromJobContext(JobExecutionContext jobContext) {
-        return Arrays.asList(jobContext.getMergedJobDataMap().getString("acb").split(SPLIT_CHAR));
+    private List<Long> getAcbsFromJobContext(JobExecutionContext jobContext) {
+        return Arrays.asList(jobContext.getMergedJobDataMap().getString("acb").split(SchedulerManager.DATA_DELIMITER)).stream()
+                .map(acbIdAsString -> Long.parseLong(acbIdAsString))
+                .collect(Collectors.toList());
     }
 
     private File getOutputFile(final List<List<String>> rows, final String reportFilename,

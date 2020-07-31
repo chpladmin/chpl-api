@@ -17,6 +17,28 @@
     </pre-processing-commands>
     <schedule>
         <!-- Delete from here to "DELETE END MARKER" after PROD push -->
+        <job>
+            <name>Developer Access Report</name>
+            <group>chplJobs</group>
+            <description>Sends a report summarizing developer access data per ONC-ACB</description>
+            <job-class>gov.healthit.chpl.scheduler.job.DeveloperAccessReport</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+                <entry>
+                    <key>acbSpecific</key>
+                    <value>true</value>
+                </entry>
+            </job-data-map>
+        </job>
         <!-- DELETE END MARKER -->
     </schedule>
 </job-scheduling-data>

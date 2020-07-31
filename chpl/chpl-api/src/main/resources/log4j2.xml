@@ -342,7 +342,7 @@
             </Policies>
         </RollingFile>
         <RollingFile name="developerAccessEmailJob"
-            fileName="${logDir}/scheduler/developerAccessEmalJob.log"
+            fileName="${logDir}/scheduler/developerAccessEmailJob.log"
             filePattern="${logDir}/scheduler/history/developerAccessEmailJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
                 <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>

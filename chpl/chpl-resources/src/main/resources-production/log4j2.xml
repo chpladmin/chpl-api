@@ -379,6 +379,17 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <RollingFile name="developerAccessEmailJob"
+            fileName="${logDir}/scheduler/developerAccessEmailJob.log"
+            filePattern="${logDir}/scheduler/history/developerAccessEmailJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
     </Appenders>
     <Loggers>
         <Logger name="org.jose4j" level="ERROR" additivity="false">
@@ -526,6 +537,10 @@
         <Logger name="addCuresUpdateToListingsJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="addCuresUpdateToListingsJob" />
+        </Logger>
+        <Logger name="developerAccessEmailJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="developerAccessEmailJob" />
         </Logger>
     </Loggers>
 </Configuration>

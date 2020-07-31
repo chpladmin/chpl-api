@@ -12,8 +12,6 @@
         <!-- END OCD-2944 -->
         <!-- Delete the below pre-processing command(s) after activity has happened on PROD -->
         <!-- End delete pre-processing command(s). -->
-        <!-- Delete the below pre-processing command(s) after PROD push -->
-        <!-- End delete pre-processing command(s). -->
     </pre-processing-commands>
     <schedule>
         <!-- Download file generation: 2015, 2014, 2011 -->
@@ -905,6 +903,28 @@
                 <entry>
                     <key>email</key>
                     <value></value>
+                </entry>
+            </job-data-map>
+        </job>
+        <job>
+            <name>Developer Access Report</name>
+            <group>chplJobs</group>
+            <description>Sends a report summarizing developer access data per ONC-ACB</description>
+            <job-class>gov.healthit.chpl.scheduler.job.DeveloperAccessReport</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+                <entry>
+                    <key>acbSpecific</key>
+                    <value>true</value>
                 </entry>
             </job-data-map>
         </job>
