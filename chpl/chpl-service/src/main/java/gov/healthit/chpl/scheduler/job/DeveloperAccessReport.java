@@ -160,7 +160,8 @@ public class DeveloperAccessReport extends QuartzJob {
         return activityCsvRows;
     }
 
-    private List<DeveloperAcbMap> getDeveloperAccessFilteredByACBs(List<CertificationBodyDTO> acbs) throws EntityRetrievalException {
+    private List<DeveloperAcbMap> getDeveloperAccessFilteredByACBs(List<CertificationBodyDTO> acbs)
+            throws EntityRetrievalException {
         List<Long> acbIds = acbs.stream()
                 .map(CertificationBodyDTO::getId)
                 .collect(Collectors.toList());
@@ -176,11 +177,11 @@ public class DeveloperAccessReport extends QuartzJob {
             List<String> currRow, List<CertificationBodyDTO> activeAcbs) {
         // Straightforward data
         currRow.set(DEVELOPER_NAME, devAcbMap.getDeveloperName());
-        currRow.set(DEVELOPER_ID, devAcbMap.getDeveloperId()+"");
+        currRow.set(DEVELOPER_ID, devAcbMap.getDeveloperId() + "");
         currRow.set(DEVELOPER_CONTACT_NAME, devAcbMap.getContactName());
         currRow.set(DEVELOPER_CONTACT_EMAIL, devAcbMap.getContactEmail());
         currRow.set(DEVELOPER_CONTACT_PHONE_NUMBER, devAcbMap.getContactPhoneNumber());
-        currRow.set(DEVELOPER_USER_COUNT, developerAccessDao.getUserCountForDeveloper(devAcbMap.getDeveloperId())+"");
+        currRow.set(DEVELOPER_USER_COUNT, developerAccessDao.getUserCountForDeveloper(devAcbMap.getDeveloperId()) + "");
         List<Contact> userContactList = developerAccessDao.getContactForDeveloperUsers(devAcbMap.developerId);
         currRow.set(DEVELOPER_USER_EMAILS, (userContactList == null) ? "" : formatContacts(userContactList));
         Date lastLoginDate = developerAccessDao.getLastLoginDateForDeveloper(devAcbMap.getDeveloperId());
@@ -278,6 +279,7 @@ public class DeveloperAccessReport extends QuartzJob {
         }
 
         @Transactional
+        @SuppressWarnings("checkstyle:magicNumber")
         public List<DeveloperAcbMap> getDevelopersWithListingsInStatusForAcbs(
                 List<CertificationStatusType> listingStatuses, List<Long> acbIds) {
             String hql = "SELECT developerId, developerName, "
