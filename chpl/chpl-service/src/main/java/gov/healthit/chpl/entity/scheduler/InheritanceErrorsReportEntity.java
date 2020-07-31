@@ -3,10 +3,16 @@ package gov.healthit.chpl.entity.scheduler;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import gov.healthit.chpl.entity.CertificationBodyEntity;
+import lombok.Data;
 
 /**
  * Entity containing needed data for Listings with ICS errors.
@@ -15,6 +21,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "inheritance_errors_report")
+@Data
 public class InheritanceErrorsReportEntity {
 
     @Id
@@ -39,9 +46,10 @@ public class InheritanceErrorsReportEntity {
     @Column(name = "version")
     private String version;
 
-    @Basic(optional = false)
-    @Column(name = "acb")
-    private String acb;
+    @Basic(optional = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "certification_body_id", nullable = false, insertable = true, updatable = true)
+    private CertificationBodyEntity certificationBody;
 
     @Basic(optional = false)
     @Column(name = "url")
@@ -58,84 +66,4 @@ public class InheritanceErrorsReportEntity {
     @Basic(optional = false)
     @Column(name = "last_modified_user")
     private Long lastModifiedUser;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getChplProductNumber() {
-        return chplProductNumber;
-    }
-
-    public void setChplProductNumber(final String chplProductNumber) {
-        this.chplProductNumber = chplProductNumber;
-    }
-
-    public String getDeveloper() {
-        return developer;
-    }
-
-    public void setDeveloper(final String developer) {
-        this.developer = developer;
-    }
-
-    public String getProduct() {
-        return product;
-    }
-
-    public void setProduct(final String product) {
-        this.product = product;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(final String version) {
-        this.version = version;
-    }
-
-    public String getAcb() {
-        return acb;
-    }
-
-    public void setAcb(final String acb) {
-        this.acb = acb;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(final String url) {
-        this.url = url;
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(final String reason) {
-        this.reason = reason;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
 }
