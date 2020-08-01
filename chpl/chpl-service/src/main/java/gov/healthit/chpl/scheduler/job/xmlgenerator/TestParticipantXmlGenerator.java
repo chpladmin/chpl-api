@@ -32,7 +32,6 @@ public class TestParticipantXmlGenerator extends XmlGenerator {
             createSimpleElement(participant.getOccupation(), "occupation", sw);
             createSimpleElement(participant.getProductExperienceMonths(), "productExperienceMonths", sw);
             createSimpleElement(participant.getProfessionalExperienceMonths(), "professionalExperienceMonths", sw);
-            createSimpleElement(participant.getUniqueId(), "uniqueId", sw);
 
             sw.writeEndElement();
         }

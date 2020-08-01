@@ -43,7 +43,6 @@ public class TestTaskXmlGenerator extends XmlGenerator {
             //of the field not the name in the annotation (ordering it as if the name is 'testParticipants'
             //not 'participants')
             TestParticipantXmlGenerator.add(new ArrayList<TestParticipant>(task.getTestParticipants()), "participants", sw);
-            createSimpleElement(task.getUniqueId(), "uniqueId", sw);
             sw.writeEndElement();
         }
     }
