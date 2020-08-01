@@ -1,6 +1,6 @@
 package gov.healthit.chpl.scheduler.job.xmlgenerator;
 
-import java.util.List;
+import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -8,7 +8,7 @@ import javax.xml.stream.XMLStreamWriter;
 import gov.healthit.chpl.domain.CertificationCriterion;
 
 public class CertificationCriterionXmlGenerator extends XmlGenerator {
-    public static void add(List<CertificationCriterion> criterionList, String rootNodeName, XMLStreamWriter sw)
+    public static void add(Set<CertificationCriterion> criterionList, String rootNodeName, XMLStreamWriter sw)
             throws XMLStreamException {
         if (criterionList != null) {
             sw.writeStartElement(rootNodeName);

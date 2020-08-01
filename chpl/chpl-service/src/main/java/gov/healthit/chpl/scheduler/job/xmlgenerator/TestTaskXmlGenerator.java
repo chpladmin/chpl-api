@@ -6,7 +6,6 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 
@@ -24,7 +23,7 @@ public class TestTaskXmlGenerator extends XmlGenerator {
     public static void add(TestTask task, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (task != null) {
             sw.writeStartElement(rootNodeName);
-            CertificationCriterionXmlGenerator.add(new ArrayList<CertificationCriterion>(task.getCriteria()), "criteria", sw);
+            CertificationCriterionXmlGenerator.add(task.getCriteria(), "criteriaList", sw);
             createSimpleElement(task.getDescription(), "description", sw);
             createSimpleElement(task.getId(), "id", sw);
             createSimpleElement(task.getTaskErrors(), "taskErrors", sw);
@@ -36,6 +35,7 @@ public class TestTaskXmlGenerator extends XmlGenerator {
             createSimpleElement(task.getTaskRatingStddev(), "taskRatingStddev", sw);
             createSimpleElement(task.getTaskSuccessAverage(), "taskSuccessAverage", sw);
             createSimpleElement(task.getTaskSuccessStddev(), "taskSuccessStddev", sw);
+            createSimpleElement(task.getTaskTimeAvg(), "taskTimeAvg", sw);
             createSimpleElement(task.getTaskTimeDeviationObservedAvg(), "taskTimeDeviationObservedAvg", sw);
             createSimpleElement(task.getTaskTimeDeviationOptimalAvg(), "taskTimeDeviationOptimalAvg", sw);
             createSimpleElement(task.getTaskTimeStddev(), "taskTimeStddev", sw);

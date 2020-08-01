@@ -162,7 +162,8 @@ public class TestTask implements Serializable {
     /**
      * The set of criteria within a listing to which this task is applied.
      */
-    @XmlElement(required = true)
+    @XmlElementWrapper(name = "criteriaList", nillable = true, required = false)
+    @XmlElement(name = "criteria")
     private Set<CertificationCriterion> criteria;
 
     /**
