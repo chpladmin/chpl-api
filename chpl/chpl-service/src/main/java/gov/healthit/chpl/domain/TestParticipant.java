@@ -35,7 +35,7 @@ public class TestParticipant implements Serializable {
      * be unique to a particular participant. It is for internal use within an
      * upload file only.
      */
-    @XmlElement(required = true)
+    @XmlElement(required = false)
     private String uniqueId;
 
     /**

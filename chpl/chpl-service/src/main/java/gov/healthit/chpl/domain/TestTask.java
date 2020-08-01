@@ -43,7 +43,7 @@ public class TestTask implements Serializable {
      * be unique to a particular task. This variable is only applicable to 2015
      * Edition and for internal use within an upload file only.
      */
-    @XmlElement(required = true)
+    @XmlElement(required = false)
     private String uniqueId;
 
     /**
