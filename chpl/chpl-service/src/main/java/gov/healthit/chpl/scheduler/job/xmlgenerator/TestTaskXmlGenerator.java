@@ -15,7 +15,7 @@ public class TestTaskXmlGenerator extends XmlGenerator {
         if (tasks != null) {
             sw.writeStartElement(rootNodeName);
             for (TestTask task : tasks) {
-                add(task, "tasks", sw);
+                add(task, "testTask", sw);
             }
             sw.writeEndElement();
         }
@@ -27,6 +27,7 @@ public class TestTaskXmlGenerator extends XmlGenerator {
             CertificationCriterionXmlGenerator.add(new ArrayList<CertificationCriterion>(task.getCriteria()), "criteria", sw);
             createSimpleElement(task.getDescription(), "description", sw);
             createSimpleElement(task.getId(), "id", sw);
+            TestParticipantXmlGenerator.add(new ArrayList<TestParticipant>(task.getTestParticipants()), "participants", sw);
             createSimpleElement(task.getTaskErrors(), "taskErrors", sw);
             createSimpleElement(task.getTaskErrorsStddev(), "taskErrorsStddev", sw);
             createSimpleElement(task.getTaskPathDeviationObserved(), "taskPathDeviationObserved", sw);
@@ -39,7 +40,6 @@ public class TestTaskXmlGenerator extends XmlGenerator {
             createSimpleElement(task.getTaskTimeDeviationObservedAvg(), "taskTimeDeviationObservedAvg", sw);
             createSimpleElement(task.getTaskTimeDeviationOptimalAvg(), "taskTimeDeviationOptimalAvg", sw);
             createSimpleElement(task.getTaskTimeStddev(), "taskTimeStddev", sw);
-            TestParticipantXmlGenerator.add(new ArrayList<TestParticipant>(task.getTestParticipants()), "participants", sw);
             createSimpleElement(task.getUniqueId(), "uniqueId", sw);
             sw.writeEndElement();
         }
