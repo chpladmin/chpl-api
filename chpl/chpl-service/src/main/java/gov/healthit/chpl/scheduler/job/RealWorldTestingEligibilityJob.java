@@ -179,11 +179,16 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
     private Date getEligibilityAsOfDate() {
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        Calendar current = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         try {
             calendar.setTime(sdf.parse(rwtPlanStartDayOfYear + "/" + calendar.get(Calendar.YEAR)));
             calendar.set(Calendar.HOUR, 0);
             calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.SECOND, 0);
+            //If the calculated date in the future, use the previous year
+            if (calendar.after(current)) {
+                calendar.set(Calendar.YEAR, calendar.get(Calendar.YEAR) - 1);
+            }
             return calendar.getTime();
         } catch (ParseException e) {
             LOGGER.error("Could not calculate 'asOfDate'.", e);
