@@ -170,7 +170,6 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Service("certifiedProductManager")
-@SuppressWarnings({"checkstyle:filelength"})
 public class CertifiedProductManager extends SecuredManager {
     private ErrorMessageUtil msgUtil;
     private CertifiedProductDAO cpDao;
@@ -1668,7 +1667,7 @@ public class CertifiedProductManager extends SecuredManager {
     private int updateAccessibilityStandards(Long listingId,
             List<CertifiedProductAccessibilityStandard> existingAccessibilityStandards,
             List<CertifiedProductAccessibilityStandard> updatedAccessibilityStandards)
-                    throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
+             throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
 
         int numChanges = 0;
         List<CertifiedProductAccessibilityStandard> accStdsToAdd = new ArrayList<CertifiedProductAccessibilityStandard>();
@@ -2047,7 +2046,7 @@ public class CertifiedProductManager extends SecuredManager {
 
     private int updateCqms(CertifiedProductSearchDetails listing, List<CQMResultDetails> existingCqmDetails,
             List<CQMResultDetails> updatedCqmDetails)
-                    throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
         // convert to CQMResultDetailsDTO since CMS CQMs can have multiple entries
         // per success version. work with these objects instead of the passed-in
         // ones
