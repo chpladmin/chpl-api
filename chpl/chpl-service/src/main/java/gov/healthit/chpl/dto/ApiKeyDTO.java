@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.entity.ApiKeyEntity;
+import gov.healthit.chpl.util.Util;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -35,5 +36,37 @@ public class ApiKeyDTO implements Serializable {
         this.deleted = entity.getDeleted();
         this.setLastUsedDate(entity.getLastUsedDate());
         this.setDeleteWarningSentDate(entity.getDeleteWarningSentDate());
+    }
+
+    public Date getCreationDate() {
+        return Util.getNewDate(creationDate);
+    }
+
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = Util.getNewDate(creationDate);
+    }
+
+    public Date getLastModifiedDate() {
+        return Util.getNewDate(lastModifiedDate);
+    }
+
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
+    }
+
+    public Date getLastUsedDate() {
+        return Util.getNewDate(lastUsedDate);
+    }
+
+    public void setLastUsedDate(final Date lastUsedDate) {
+        this.lastUsedDate = Util.getNewDate(lastUsedDate);
+    }
+
+    public Date getDeleteWarningSentDate() {
+        return Util.getNewDate(deleteWarningSentDate);
+    }
+
+    public void setDeleteWarningSentDate(final Date deleteWarningSentDate) {
+        this.deleteWarningSentDate = Util.getNewDate(deleteWarningSentDate);
     }
 }

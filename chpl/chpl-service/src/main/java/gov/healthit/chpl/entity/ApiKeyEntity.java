@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.util.Util;
 import lombok.Data;
 
 @Entity
@@ -60,4 +61,36 @@ public class ApiKeyEntity {
 
     @Column(name = "delete_warning_sent_date", nullable = true)
     private Date deleteWarningSentDate;
+
+    public Date getLastUsedDate() {
+        return Util.getNewDate(lastUsedDate);
+    }
+
+    public void setLastUsedDate(final Date lastUsedDate) {
+        this.lastUsedDate = Util.getNewDate(lastUsedDate);
+    }
+
+    public Date getCreationDate() {
+        return Util.getNewDate(creationDate);
+    }
+
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = Util.getNewDate(creationDate);
+    }
+
+    public Date getLastModifiedDate() {
+        return Util.getNewDate(lastModifiedDate);
+    }
+
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
+    }
+
+    public Date getDeleteWarningSentDate() {
+        return Util.getNewDate(deleteWarningSentDate);
+    }
+
+    public void setDeleteWarningSentDate(final Date deleteWarningSentDate) {
+        this.deleteWarningSentDate = Util.getNewDate(deleteWarningSentDate);
+    }
 }
