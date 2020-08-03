@@ -12,6 +12,8 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 /**
  * The targeted users of a Health IT Module, as identified by the developer. For
@@ -21,6 +23,8 @@ import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
+@AllArgsConstructor
 public class CertifiedProductTargetedUser implements Serializable {
     private static final long serialVersionUID = -2078691100124619582L;
 

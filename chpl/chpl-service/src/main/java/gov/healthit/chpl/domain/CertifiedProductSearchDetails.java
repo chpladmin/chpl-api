@@ -149,6 +149,7 @@ public class CertifiedProductSearchDetails implements Serializable {
      */
     @XmlElementWrapper(name = "testingLabs", nillable = true, required = false)
     @XmlElement(name = "testingLab")
+    @Singular
     private List<CertifiedProductTestingLab> testingLabs = new ArrayList<CertifiedProductTestingLab>();
 
     /**
@@ -260,6 +261,7 @@ public class CertifiedProductSearchDetails implements Serializable {
      */
     @XmlElementWrapper(name = "accessibilityStandards", nillable = true, required = false)
     @XmlElement(name = "accessibilityStandard")
+    @Singular
     private List<CertifiedProductAccessibilityStandard> accessibilityStandards = new ArrayList<CertifiedProductAccessibilityStandard>();
 
     /**
@@ -269,6 +271,7 @@ public class CertifiedProductSearchDetails implements Serializable {
      */
     @XmlElementWrapper(name = "targetedUsers", nillable = true, required = false)
     @XmlElement(name = "targetedUser")
+    @Singular
     private List<CertifiedProductTargetedUser> targetedUsers = new ArrayList<CertifiedProductTargetedUser>();
 
     /**
@@ -278,6 +281,7 @@ public class CertifiedProductSearchDetails implements Serializable {
      */
     @XmlElementWrapper(name = "qmsStandards", nillable = true, required = false)
     @XmlElement(name = "qmsStandard")
+    @Singular
     private List<CertifiedProductQmsStandard> qmsStandards = new ArrayList<CertifiedProductQmsStandard>();
 
     /**
@@ -767,7 +771,7 @@ public class CertifiedProductSearchDetails implements Serializable {
                 if (currEvent.getEventDate() != null && currEvent.getEventDate().longValue() <= date
                         .getTime()
                         && nextEvent.getEventDate() != null && nextEvent.getEventDate().longValue() > date
-                                .getTime()) {
+                        .getTime()) {
                     result = currEvent;
                 }
             } else {

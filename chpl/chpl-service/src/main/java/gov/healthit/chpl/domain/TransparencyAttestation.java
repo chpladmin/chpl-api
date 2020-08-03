@@ -12,9 +12,13 @@ import org.ff4j.FF4j;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.SpringContext;
 import gov.healthit.chpl.dto.TransparencyAttestationDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
+@Builder
+@AllArgsConstructor
 public class TransparencyAttestation implements Serializable {
     private static final long serialVersionUID = 4734258569082877872L;
 

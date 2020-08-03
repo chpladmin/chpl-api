@@ -13,12 +13,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import gov.healthit.chpl.dto.TestParticipantDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 /**
  * Participant in a given test task.
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
+@Builder
+@AllArgsConstructor
 public class TestParticipant implements Serializable {
     private static final long serialVersionUID = -3771155258451736516L;
     private static final Logger LOGGER = LogManager.getLogger(TestParticipant.class);
