@@ -1,11 +1,9 @@
 package gov.healthit.chpl.permissions.domains.surveillance;
 
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
@@ -18,13 +16,11 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class DeleteActionPermissions extends ActionPermissions {
     private SurveillanceDAO survDao;
     private ErrorMessageUtil msgUtil;
-    private FF4j ff4j;
 
     @Autowired
-    public DeleteActionPermissions(SurveillanceDAO survDao, ErrorMessageUtil msgUtil, FF4j ff4j) {
+    public DeleteActionPermissions(SurveillanceDAO survDao, ErrorMessageUtil msgUtil) {
         this.survDao = survDao;
         this.msgUtil = msgUtil;
-        this.ff4j = ff4j;
     }
 
     @Override
@@ -59,10 +55,6 @@ public class DeleteActionPermissions extends ActionPermissions {
     }
 
     private boolean isListing2014Edition(SurveillanceEntity surv) {
-        if (!ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)) {
-            return false;
-        }
-
         return surv.getCertifiedProduct() != null
                 && surv.getCertifiedProduct().getCertificationEditionId().equals(
                 CertificationEditionConcept.CERTIFICATION_EDITION_2014.getId());

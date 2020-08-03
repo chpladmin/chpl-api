@@ -2,10 +2,6 @@ package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
 
-import org.ff4j.FF4j;
-
-import gov.healthit.chpl.FeatureList;
-import gov.healthit.chpl.SpringContext;
 import gov.healthit.chpl.domain.TransparencyAttestation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,12 +17,7 @@ public class TransparencyAttestationDTO implements Serializable {
     private Boolean removed;
 
     public TransparencyAttestationDTO() {
-        // This is a temporary bad solution, will be removed when flag is removed
-        if (SpringContext.getBean(FF4j.class).check(FeatureList.EFFECTIVE_RULE_DATE)) {
-            this.removed = true;
-        } else {
-            this.removed = false;
-        }
+        this.removed = true;
     }
 
     public TransparencyAttestationDTO(String attestation) {

@@ -8,12 +8,10 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.StringUtils;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -30,7 +28,6 @@ public class PrivacyAndSecurityCriteriaReviewer implements ComparisonReviewer {
     private Environment env;
     private ErrorMessageUtil errorMessageUtil;
     private CertificationCriterionDAO certificationCriterionDao;
-    private FF4j ff4j;
     private ValidationUtils validationUtils;
 
     private List<CertificationCriterion> privacyAndSecurityCriteria = new ArrayList<CertificationCriterion>();
@@ -50,41 +47,38 @@ public class PrivacyAndSecurityCriteriaReviewer implements ComparisonReviewer {
 
     @Autowired
     public PrivacyAndSecurityCriteriaReviewer(CertificationCriterionDAO certificationCriterionDao, Environment env,
-            ErrorMessageUtil errorMessageUtil, FF4j ff4j, ValidationUtils validationUtils) {
+            ErrorMessageUtil errorMessageUtil, ValidationUtils validationUtils) {
         this.certificationCriterionDao = certificationCriterionDao;
         this.env = env;
         this.errorMessageUtil = errorMessageUtil;
-        this.ff4j = ff4j;
         this.validationUtils = validationUtils;
     }
 
     @Override
     public void review(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing) {
-        if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
-            try {
-                if (isActiveOrSuspendedCertificationStatusType(updatedListing)) {
-                    List<CertificationCriterion> existingAttestedToCriteria = validationUtils.getAttestedCriteria(existingListing);
-                    List<CertificationCriterion> updatedAttestedToCriteria = validationUtils.getAttestedCriteria(updatedListing);
+        try {
+            if (isActiveOrSuspendedCertificationStatusType(updatedListing)) {
+                List<CertificationCriterion> existingAttestedToCriteria = validationUtils.getAttestedCriteria(existingListing);
+                List<CertificationCriterion> updatedAttestedToCriteria = validationUtils.getAttestedCriteria(updatedListing);
 
-                    List<CertificationCriterion> addedCriteria = new ArrayList<CertificationCriterion>(updatedAttestedToCriteria);
-                    addedCriteria.removeAll(existingAttestedToCriteria);
+                List<CertificationCriterion> addedCriteria = new ArrayList<CertificationCriterion>(updatedAttestedToCriteria);
+                addedCriteria.removeAll(existingAttestedToCriteria);
 
-                    if (!addedCriteria.isEmpty()) {
-                        LOGGER.info("Criteria of some kind were added");
-                        updatedListing.getErrorMessages()
-                                .addAll(validationUtils.checkSubordinateCriteriaAllRequired(
-                                        privacyAndSecurityCriteria, privacyAndSecurityRequiredCriteria,
-                                        updatedAttestedToCriteria, errorMessageUtil));
-                    } else {
-                        LOGGER.info("No criteria of any kind were added, no further review required");
-                    }
+                if (!addedCriteria.isEmpty()) {
+                    LOGGER.info("Criteria of some kind were added");
+                    updatedListing.getErrorMessages()
+                            .addAll(validationUtils.checkSubordinateCriteriaAllRequired(
+                                    privacyAndSecurityCriteria, privacyAndSecurityRequiredCriteria,
+                                    updatedAttestedToCriteria, errorMessageUtil));
                 } else {
-                    LOGGER.info("Certification Status is not Active or Suspended, no further review required");
+                    LOGGER.info("No criteria of any kind were added, no further review required");
                 }
-            } catch (ValidationException e) {
-                LOGGER.warn("Treating null or empty Status as not Active or Suspended.");
-                e.printStackTrace();
+            } else {
+                LOGGER.info("Certification Status is not Active or Suspended, no further review required");
             }
+        } catch (ValidationException e) {
+            LOGGER.warn("Treating null or empty Status as not Active or Suspended.");
+            e.printStackTrace();
         }
     }
 
