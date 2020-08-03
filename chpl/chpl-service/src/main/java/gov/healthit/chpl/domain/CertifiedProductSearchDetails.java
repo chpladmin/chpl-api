@@ -343,7 +343,7 @@ public class CertifiedProductSearchDetails implements Serializable {
      * Real World Testing eligibility year.
      */
     @XmlElement(nillable = true, required = false)
-    private Integer rwtEligiblityYear;
+    private Integer rwtEligibilityYear;
 
     @Builder.Default
     @XmlTransient
@@ -811,10 +811,10 @@ public class CertifiedProductSearchDetails implements Serializable {
     }
 
     public Integer getRwtEligibilityYear() {
-        return rwtEligiblityYear;
+        return rwtEligibilityYear;
     }
 
     public void setRwtEligibilityYear(Integer rwtEligibilityYear) {
-        this.rwtEligiblityYear = rwtEligibilityYear;
+        this.rwtEligibilityYear = rwtEligibilityYear;
     }
 }
