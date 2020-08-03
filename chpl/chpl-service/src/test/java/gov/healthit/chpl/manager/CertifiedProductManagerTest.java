@@ -1,14 +1,25 @@
 package gov.healthit.chpl.manager;
 
-import java.util.Date;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.ff4j.FF4j;
 import org.junit.Before;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.springframework.security.access.AccessDeniedException;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
@@ -42,35 +53,37 @@ import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.domain.Address;
-import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
-import gov.healthit.chpl.domain.CertifiedProduct;
-import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
-import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.CertifiedProductSed;
-import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
-import gov.healthit.chpl.domain.InheritedCertificationStatus;
+import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
-import gov.healthit.chpl.domain.TestParticipant;
-import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.TransparencyAttestation;
-import gov.healthit.chpl.domain.UcdProcess;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.FuzzyChoicesDTO;
+import gov.healthit.chpl.entity.FuzzyType;
+import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.MissingReasonException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CuresUpdateService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
+import gov.healthit.chpl.validation.listing.Validator;
 
 
 public class CertifiedProductManagerTest {
+    private static final long EDITION_2015_ID = 3L;
+    private static final long DRUMMOND_ACB_ID = 3L;
 
     private ErrorMessageUtil msgUtil;
     private CertifiedProductDAO cpDao;
@@ -172,46 +185,109 @@ public class CertifiedProductManagerTest {
                 certifiedProductDetailsManager, activityManager,  validatorFactory, curesUpdateService,  ff4j);
     }
 
-    @Test
-    public void update_HasValidationWarningsAndNoAck_ThrowsValidationException() throws EntityRetrievalException {
+    @Test(expected = ValidationException.class)
+    public void update_HasValidationWarningsAndNoAck_ThrowsValidationException()
+            throws EntityRetrievalException, AccessDeniedException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException, IOException, ValidationException, MissingReasonException {
+
         Mockito.when(certifiedProductDetailsManager.getCertifiedProductDetails(ArgumentMatchers.anyLong()))
-        .thenReturn(new CertifiedProductSearchDetails());
+        .thenReturn(getCertifiedProductSearchDetails());
 
+        Validator validator = Mockito.mock(Validator.class);
+        Mockito.when(validatorFactory.getValidator(ArgumentMatchers.any(CertifiedProductSearchDetails.class)))
+        .thenReturn(validator);
 
+        Mockito.doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                CertifiedProductSearchDetails listing = (CertifiedProductSearchDetails) invocation.getArgument(1);
+                listing.setWarningMessages(new HashSet<String>());
+                listing.getWarningMessages().add("This is a test warning");
+                return null;
+            }
+        }).when(validator).validate(ArgumentMatchers.any(CertifiedProductSearchDetails.class),
+                ArgumentMatchers.any(CertifiedProductSearchDetails.class));
+
+        ListingUpdateRequest request = new ListingUpdateRequest();
+        request.setAcknowledgeWarnings(false);
+        request.setListing(getCertifiedProductSearchDetails());
+
+        certifiedProductManager.update(request);
     }
 
+    @Test
+    public void update_HasValidationWarningsAndAck_ReturnsUpdatedListing()
+            throws EntityRetrievalException, AccessDeniedException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException, IOException, ValidationException, MissingReasonException {
+
+        Mockito.when(certifiedProductDetailsManager.getCertifiedProductDetails(ArgumentMatchers.anyLong()))
+        .thenReturn(getCertifiedProductSearchDetails());
+
+        Validator validator = Mockito.mock(Validator.class);
+        Mockito.when(validatorFactory.getValidator(ArgumentMatchers.any(CertifiedProductSearchDetails.class)))
+        .thenReturn(validator);
+
+        Mockito.doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                CertifiedProductSearchDetails listing = (CertifiedProductSearchDetails) invocation.getArgument(1);
+                listing.setWarningMessages(new HashSet<String>());
+                listing.getWarningMessages().add("This is a test warning");
+                return null;
+            }
+        }).when(validator).validate(ArgumentMatchers.any(CertifiedProductSearchDetails.class),
+                ArgumentMatchers.any(CertifiedProductSearchDetails.class));
+
+        FuzzyChoicesDTO fuzzyChoices = new FuzzyChoicesDTO();
+        fuzzyChoices.setChoices(Arrays.asList("choice1", "choice2"));
+        Mockito.when(fuzzyChoicesDao.getByType(FuzzyType.QMS_STANDARD))
+        .thenReturn(fuzzyChoices);
+        Mockito.when(fuzzyChoicesDao.getByType(FuzzyType.ACCESSIBILITY_STANDARD))
+        .thenReturn(fuzzyChoices);
+
+        ListingUpdateRequest request = new ListingUpdateRequest();
+        request.setAcknowledgeWarnings(true);
+        request.setListing(getCertifiedProductSearchDetails());
+
+        CertifiedProductDTO dto = new CertifiedProductDTO();
+        dto.setId(1L);
+        Mockito.when(cpDao.update(ArgumentMatchers.any(CertifiedProductDTO.class)))
+        .thenReturn(dto);
+
+        CertifiedProductDTO listing = certifiedProductManager.update(request);
+
+        assertNotNull(listing);
+    }
+
+    @SuppressWarnings({"checkstyle:magicnumber"}) // Used for setting dates
     private CertifiedProductSearchDetails getCertifiedProductSearchDetails() {
+        Calendar cal1 = Calendar.getInstance();
+        cal1.clear();
+        cal1.set(2019,  Calendar.MAY, 17, 0, 0, 0);
+
+        Calendar cal2 = Calendar.getInstance();
+        cal2.clear();
+        cal2.set(2019,  Calendar.JULY, 1, 0, 0, 0);
+
         return CertifiedProductSearchDetails.builder()
-                .id(10048L)
-                .acbCertificationId("Cert ID")
-                .accessibilityStandard(CertifiedProductAccessibilityStandard.builder()
-                        .id(931L)
-                        .accessibilityStandardId(8L)
-                        .accessibilityStandardName("None")
-                        .build())
-                .certificationDate(1558065600000L)
+                .id(1L)
+                .certificationDate(cal1.getTime().getTime())
                 .certificationEdition(getCertificationEdition())
                 .certificationEvent(CertificationStatusEvent.builder()
-                        .eventDate(1558065600000L)
-                        .id(18267L)
+                        .eventDate(cal1.getTime().getTime())
+                        .id(1L)
                         .status(CertificationStatus.builder()
-                                .id(1l)
+                                .id(1L)
                                 .name("Active")
                                 .build())
                         .build())
                 .certifyingBody(getCertifyingBody())
                 .chplProductNumber("15.04.04.3046.Acel.11.01.0.190517")
-                .curesUpdate(false)
-                .countCerts(14)
-                .countClosedNonconformities(0)
-                .countClosedSurveillance(0)
-                .countCqms(0)
-                .countOpenNonconformities(0)
-                .countSurveillance(0)
+                .cqmResults(new ArrayList<CQMResultDetails>())
                 .developer(Developer.builder()
-                        .developerId(2047L)
+                        .developerId(1L)
                         .address(Address.builder()
-                                .addressId(546L)
+                                .addressId(1L)
                                 .city("Westport")
                                 .country("US")
                                 .line1("49 Richmondville, Ste 307")
@@ -219,7 +295,7 @@ public class CertifiedProductManagerTest {
                                 .zipcode("68800")
                                 .build())
                         .contact(Contact.builder()
-                                .contactId(1270L)
+                                .contactId(1L)
                                 .email("fake@email.com")
                                 .fullName("Chris Ulisse")
                                 .phoneNumber("555-555-5555")
@@ -231,249 +307,23 @@ public class CertifiedProductManagerTest {
                                 .status("Active")
                                 .build())
                         .statusEvent(DeveloperStatusEvent.builder()
-                                .developerId(2047L)
+                                .developerId(1L)
                                 .id(1L)
                                 .status(DeveloperStatus.builder()
                                         .id(1L)
                                         .status("Active")
                                         .build())
-                                .statusDate(new Date(1562005630961L))
-                                .build())
-                        .build())
-                .ics(InheritedCertificationStatus.builder()
-                        .inherits(true)
-                        .parent(CertifiedProduct.builder()
-                                .certificationDate(1517720400000L)
-                                .chplProductNumber("15.04.04.2853.Aler.10.00.0.180204")
-                                .edition("2015")
-                                .id(9445L)
+                                .statusDate(cal2.getTime())
                                 .build())
                         .build())
                 .product(Product.builder()
-                        .productId(3086L)
+                        .productId(1L)
                         .name("Acelis Connected Health eSuite")
                         .owner(Developer.builder()
                                 .build())
                         .build())
-                .qmsStandard(CertifiedProductQmsStandard.builder()
-                        .id(2246L)
-                        .applicableCriteria("a5,a7,a8,a11,d1,d2,d3,d4,d5,d6,d7")
-                        .qmsModification("")
-                        .qmsStandardId(3L)
-                        .qmsStandardName("ISO 14971")
-                        .build())
-                .qmsStandard(CertifiedProductQmsStandard.builder()
-                        .id(2247L)
-                        .applicableCriteria("a5,a7,a8,a11,d1,d2,d3,d4,d5,d6,d7")
-                        .qmsModification("")
-                        .qmsStandardId(1L)
-                        .qmsStandardName("21 CFR Part 820")
-                        .build())
-                .qmsStandard(CertifiedProductQmsStandard.builder()
-                        .id(2248L)
-                        .applicableCriteria("a5,a7,a8,a11,d1,d2,d3,d4,d5,d6,d7")
-                        .qmsModification("")
-                        .qmsStandardId(4L)
-                        .qmsStandardName("ISO 13485")
-                        .build())
-                .qmsStandard(CertifiedProductQmsStandard.builder()
-                        .id(2249L)
-                        .applicableCriteria("a5,a7,a8,a11,d1,d2,d3,d4,d5,d6,d7")
-                        .qmsModification("")
-                        .qmsStandardId(5L)
-                        .qmsStandardName("IEC 62304")
-                        .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder()
-                                .id(15163L)
-                                .criterion(CertificationCriterion.builder()
-                                        .id(5L)
-                                        .certificationEdition("2015")
-                                        .certificationEditionId(3L)
-                                        .number("170.315 (a)(5)")
-                                        .title("Demographics")
-                                        .build())
-                                .description("Search and Select a Patient")
-                                .taskErrors(0F)
-                                .taskErrorsStddev(0F)
-                                .taskPathDeviationObserved(3)
-                                .taskPathDeviationOptimal(4)
-                                .taskRating(5F)
-                                .taskRatingScale("Likert")
-                                .taskRatingStddev(0F)
-                                .taskSuccessAverage(100F)
-                                .taskSuccessStddev(0F)
-                                .taskTimeAvg(7L)
-                                .taskTimeDeviationObservedAvg(5)
-                                .taskTimeDeviationOptimalAvg(5)
-                                .testParticipant(TestParticipant.builder()
-                                        .id(112432L)
-                                        .ageRange("40-49")
-                                        .ageRangeId(5L)
-                                        .assistiveTechnologyNeeds("No")
-                                        .computerExperienceMonths(240)
-                                        .educationTypeId(7L)
-                                        .educationTypeName("Master's Degree")
-                                        .gender("Female")
-                                        .occupation("RN")
-                                        .productExperienceMonths(144)
-                                        .professionalExperienceMonths(240)
-                                        .build())
-                                .testParticipant(TestParticipant.builder()
-                                        .id(112433L)
-                                        .ageRange("50-59")
-                                        .ageRangeId(6L)
-                                        .assistiveTechnologyNeeds("No")
-                                        .computerExperienceMonths(240)
-                                        .educationTypeId(9L)
-                                        .educationTypeName("Doctorate degree (e.g., MD, DNP, DMD, PhD)")
-                                        .gender("Male")
-                                        .occupation("PharmD")
-                                        .productExperienceMonths(120)
-                                        .professionalExperienceMonths(340)
-                                        .build())
-                                .testParticipant(TestParticipant.builder()
-                                        .id(112434L)
-                                        .ageRange("40-49")
-                                        .ageRangeId(5L)
-                                        .assistiveTechnologyNeeds("No")
-                                        .computerExperienceMonths(240)
-                                        .educationTypeId(5L)
-                                        .educationTypeName("Associate Degree")
-                                        .gender("Female")
-                                        .occupation("Clinical Pharmacist")
-                                        .productExperienceMonths(60)
-                                        .professionalExperienceMonths(240)
-                                        .build())
-                                .testParticipant(TestParticipant.builder()
-                                        .id(12435L)
-                                        .ageRange("60-69")
-                                        .ageRangeId(7L)
-                                        .assistiveTechnologyNeeds("No")
-                                        .computerExperienceMonths(240)
-                                        .educationTypeId(6L)
-                                        .educationTypeName("Bachelor's Degree")
-                                        .gender("Female")
-                                        .occupation("Clinical Specialist")
-                                        .productExperienceMonths(66)
-                                        .professionalExperienceMonths(480)
-                                        .build())
-                                .testParticipant(TestParticipant.builder()
-                                        .id(12436L)
-                                        .ageRange("50-59")
-                                        .ageRangeId(6L)
-                                        .assistiveTechnologyNeeds("No")
-                                        .computerExperienceMonths(240)
-                                        .educationTypeId(6L)
-                                        .educationTypeName("Bachelor's Degree")
-                                        .gender("Female")
-                                        .occupation("Pharmacy Manager")
-                                        .productExperienceMonths(144)
-                                        .professionalExperienceMonths(360)
-                                        .build())
-                                .testParticipant(TestParticipant.builder()
-                                        .id(12437L)
-                                        .ageRange("40-49")
-                                        .ageRangeId(5L)
-                                        .assistiveTechnologyNeeds("No")
-                                        .computerExperienceMonths(240)
-                                        .educationTypeId(9L)
-                                        .educationTypeName("Doctorate degree (e.g., MD, DNP, DMD, PhD)")
-                                        .gender("Male")
-                                        .occupation("PharmD")
-                                        .productExperienceMonths(72)
-                                        .professionalExperienceMonths(240)
-                                        .build())
-                                .testParticipant(TestParticipant.builder()
-                                        .id(12438L)
-                                        .ageRange("50-59")
-                                        .ageRangeId(6L)
-                                        .assistiveTechnologyNeeds("No")
-                                        .computerExperienceMonths(240)
-                                        .educationTypeId(7L)
-                                        .educationTypeName("Master's degree")
-                                        .gender("Female")
-                                        .occupation("RN")
-                                        .productExperienceMonths(48)
-                                        .professionalExperienceMonths(360)
-                                        .build())
-                                .testParticipant(TestParticipant.builder()
-                                        .id(12439L)
-                                        .ageRange("30-39")
-                                        .ageRangeId(4L)
-                                        .assistiveTechnologyNeeds("No")
-                                        .computerExperienceMonths(180)
-                                        .educationTypeId(6L)
-                                        .educationTypeName("Bachelor's degree")
-                                        .gender("Female")
-                                        .occupation("Operations Analyst")
-                                        .productExperienceMonths(42)
-                                        .professionalExperienceMonths(120)
-                                        .build())
-                                .testParticipant(TestParticipant.builder()
-                                        .id(12430L)
-                                        .ageRange("50-59")
-                                        .ageRangeId(6L)
-                                        .assistiveTechnologyNeeds("No")
-                                        .computerExperienceMonths(240)
-                                        .educationTypeId(6L)
-                                        .educationTypeName("Bachelor's degree")
-                                        .gender("Male")
-                                        .occupation("Clinic Manager")
-                                        .productExperienceMonths(120)
-                                        .professionalExperienceMonths(360)
-                                        .build())
-                                .testParticipant(TestParticipant.builder()
-                                        .id(12431L)
-                                        .ageRange("30-39")
-                                        .ageRangeId(4L)
-                                        .assistiveTechnologyNeeds("No")
-                                        .computerExperienceMonths(180)
-                                        .educationTypeId(7L)
-                                        .educationTypeName("Master's degree")
-                                        .gender("Female")
-                                        .occupation("RN")
-                                        .productExperienceMonths(24)
-                                        .professionalExperienceMonths(120)
-                                        .build())
-                                .build())
-                        .ucdProcess(UcdProcess.builder()
-                                .id(6L)
-                                .criterion(CertificationCriterion.builder()
-                                        .id(5L)
-                                        .certificationEdition("2015")
-                                        .certificationEditionId(3L)
-                                        .number("170.315 (a)(5)")
-                                        .title("Demographics")
-                                        .build())
-                                .criterion(CertificationCriterion.builder()
-                                        .id(7L)
-                                        .certificationEdition("2015")
-                                        .certificationEditionId(3L)
-                                        .number("170.315 (a)(7)")
-                                        .title("Medication List")
-                                        .build())
-                                .criterion(CertificationCriterion.builder()
-                                        .id(8L)
-                                        .certificationEdition("2015")
-                                        .certificationEditionId(3L)
-                                        .number("170.315 (a)(8)")
-                                        .title("Medication Allergy List")
-                                        .build())
-                                .details("NISTIR 7741 was used.")
-                                .name("NISTIR 7741")
-                                .build())
-                        .build())
-                .sedIntendedUserDescription("Outpatient Clinic")
-                .sedReportFileLocation("https://drummondgroup.com/wp-content/uploads/2018/01/NISTIR-7742-Usability-Test-Report-Standing-Stone-FINAL.pdf")
-                .sedTestingEndDate(new Date(1516597200000L))
-                .targetedUser(CertifiedProductTargetedUser.builder()
-                        .id(711L)
-                        .targetedUserId(5L)
-                        .targetedUserName("Ambulatory")
-                        .build())
                 .testingLab(CertifiedProductTestingLab.builder()
-                        .id(2342L)
+                        .id(1L)
                         .testingLabCode("04")
                         .testingLabId(1L)
                         .testingLabName("Drummond Group")
@@ -483,7 +333,7 @@ public class CertifiedProductManagerTest {
                         .transparencyAttestation("http://www.standingstoneinc.com/")
                         .build())
                 .version(ProductVersion.builder()
-                        .versionId(7801L)
+                        .versionId(1L)
                         .version("11.3")
                         .build())
                 .build();
@@ -492,13 +342,13 @@ public class CertifiedProductManagerTest {
     private Map<String, Object> getCertificationEdition() {
         Map<String, Object> edition = new HashMap<String, Object>();
         edition.put("name", "2015");
-        edition.put("id", 3l);
+        edition.put("id", EDITION_2015_ID);
         return edition;
     }
 
     private Map<String, Object> getCertifyingBody() {
         Map<String, Object> acb = new HashMap<String, Object>();
-        acb.put("id", 3L);
+        acb.put("id", DRUMMOND_ACB_ID);
         acb.put("acbCode", "O4");
         acb.put("name", "Drummond Group");
         return acb;
