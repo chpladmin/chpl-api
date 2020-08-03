@@ -1,12 +1,10 @@
 package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultTestData;
@@ -33,24 +31,17 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
     private CertificationResultRules certResultRules;
     private ResourcePermissions resourcePermissions;
     private ErrorMessageUtil msgUtil;
-    private FF4j ff4j;
 
     @Autowired
     public RemovedCriteriaComparisonReviewer(CertificationResultRules certResultRules,
-            ResourcePermissions resourcePermissions,
-            ErrorMessageUtil msgUtil, FF4j ff4j) {
+            ResourcePermissions resourcePermissions, ErrorMessageUtil msgUtil) {
         this.certResultRules = certResultRules;
         this.resourcePermissions = resourcePermissions;
         this.msgUtil = msgUtil;
-        this.ff4j = ff4j;
     }
 
     @Override
     public void review(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing) {
-        if (!ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)) {
-            return;
-        }
-
         //checking for the addition of a removed criteria
         //this is only disallowed if the user is not ADMIN/ONC, so first check the permissions
         if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {

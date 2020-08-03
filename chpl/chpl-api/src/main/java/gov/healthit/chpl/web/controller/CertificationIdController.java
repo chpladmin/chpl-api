@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationId.Validator;
 import gov.healthit.chpl.certificationId.ValidatorFactory;
 import gov.healthit.chpl.domain.SimpleCertificationId;
@@ -51,18 +49,15 @@ public class CertificationIdController {
     private CertificationIdManager certificationIdManager;
     private ResourcePermissions resourcePermissions;
     private ValidatorFactory validatorFactory;
-    private FF4j ff4j;
 
     @Autowired
-    public CertificationIdController(final CertifiedProductManager certifiedProductManager,
-            final CertificationIdManager certificationIdManager, final ValidatorFactory validatorFactory,
-            final FF4j ff4j,
-            final ResourcePermissions resourcePermissions) {
+    public CertificationIdController(CertifiedProductManager certifiedProductManager,
+            CertificationIdManager certificationIdManager, ValidatorFactory validatorFactory,
+            ResourcePermissions resourcePermissions) {
         this.certifiedProductManager = certifiedProductManager;
         this.certificationIdManager = certificationIdManager;
         this.resourcePermissions = resourcePermissions;
         this.validatorFactory = validatorFactory;
-        this.ff4j = ff4j;
     }
 
     // **********************************************************************************************************
@@ -314,7 +309,7 @@ public class CertificationIdController {
         SortedSet<Integer> yearSet = new TreeSet<Integer>();
         List<CertificationIdResults.Product> resultProducts = new ArrayList<CertificationIdResults.Product>();
         for (CertifiedProductDetailsDTO dto : productDtos) {
-            if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE) && create && !dto.getYear().equalsIgnoreCase("2015")) {
+            if (create && !dto.getYear().equalsIgnoreCase("2015")) {
                 throw new CertificationIdException("New Certification IDs can only be created using 2015 Edition Listings");
             }
             CertificationIdResults.Product p = new CertificationIdResults.Product(dto);
