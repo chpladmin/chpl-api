@@ -41,7 +41,6 @@ public class ProductDTO implements Serializable {
     private List<ProductOwnerDTO> ownerHistory;
 
     public ProductDTO() {
-        this.contact = new ContactDTO();
         this.owner = new DeveloperDTO();
         this.ownerHistory = new ArrayList<ProductOwnerDTO>();
     }
@@ -57,6 +56,7 @@ public class ProductDTO implements Serializable {
         this.name = entity.getName();
         this.reportFileLocation = entity.getReportFileLocation();
         this.owner.setId(entity.getDeveloperId());
+        this.contact = new ContactDTO();
         this.contact.setId(entity.getContactId());
     }
 
