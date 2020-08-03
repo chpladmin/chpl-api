@@ -768,10 +768,8 @@ public class CertifiedProductSearchDetails implements Serializable {
                 CertificationStatusEvent nextEvent = this.getCertificationEvents().get(i + 1);
                 // if the passed-in date is between currEvent and nextEvent then the currEvent
                 // gives the status on the passed-in date.
-                if (currEvent.getEventDate() != null && currEvent.getEventDate().longValue() <= date
-                        .getTime()
-                        && nextEvent.getEventDate() != null && nextEvent.getEventDate().longValue() > date
-                        .getTime()) {
+                if (currEvent.getEventDate() != null && currEvent.getEventDate().longValue() <= date.getTime()
+                        && nextEvent.getEventDate() != null && nextEvent.getEventDate().longValue() > date.getTime()) {
                     result = currEvent;
                 }
             } else {
