@@ -170,6 +170,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Service("certifiedProductManager")
+@SuppressWarnings({"checkstyle:filelength"})
 public class CertifiedProductManager extends SecuredManager {
     private ErrorMessageUtil msgUtil;
     private CertifiedProductDAO cpDao;
@@ -657,8 +658,7 @@ public class CertifiedProductManager extends SecuredManager {
                     certResultToCreate.setSed(isCertified ? certResult.getSed() : null);
                 }
                 certResultToCreate.setApiDocumentation(isCertified ? certResult.getApiDocumentation() : null);
-                certResultToCreate
-                .setPrivacySecurityFramework(isCertified ? certResult.getPrivacySecurityFramework() : null);
+                certResultToCreate.setPrivacySecurityFramework(isCertified ? certResult.getPrivacySecurityFramework() : null);
                 certResultToCreate.setAttestationAnswer(isCertified ? certResult.getAttestationAnswer() : null);
                 certResultToCreate.setDocumentationUrl(isCertified ? certResult.getDocumentationUrl() : null);
                 certResultToCreate.setExportDocumentation(isCertified ? certResult.getExportDocumentation() : null);
@@ -1183,7 +1183,7 @@ public class CertifiedProductManager extends SecuredManager {
 
     private void performSecondaryActionsBasedOnStatusChanges(CertifiedProductSearchDetails existingListing,
             CertifiedProductSearchDetails updatedListing, String reason)
-                    throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
         Long listingId = updatedListing.getId();
         Long productVersionId = updatedListing.getVersion().getVersionId();
         CertificationStatus updatedStatus = updatedListing.getCurrentStatus().getStatus();
@@ -1217,8 +1217,8 @@ public class CertifiedProductManager extends SecuredManager {
                     }
                 } else if (!resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
                     LOGGER.error("User " + AuthUtil.getUsername()
-                    + " does not have ROLE_ADMIN or ROLE_ONC and cannot change the status of developer for certified "
-                    + "product with id " + listingId);
+                            + " does not have ROLE_ADMIN or ROLE_ONC and cannot change the status of developer for certified "
+                            + "product with id " + listingId);
                     throw new AccessDeniedException(
                             "User does not have admin permission to change " + cpDeveloper.getName() + " status.");
                 }
@@ -1231,7 +1231,7 @@ public class CertifiedProductManager extends SecuredManager {
                 break;
             default:
                 LOGGER.info("New listing status is " + updatedStatusDto.getStatus()
-                + " which does not trigger a developer ban.");
+                        + " which does not trigger a developer ban.");
                 break;
             }
             if (newDevStatusDto != null) {
@@ -1269,7 +1269,7 @@ public class CertifiedProductManager extends SecuredManager {
 
     private int updateTestingLabs(Long listingId, List<CertifiedProductTestingLab> existingTestingLabs,
             List<CertifiedProductTestingLab> updatedTestingLabs)
-                    throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         int numChanges = 0;
         List<CertifiedProductTestingLab> tlsToAdd = new ArrayList<CertifiedProductTestingLab>();
@@ -1492,7 +1492,7 @@ public class CertifiedProductManager extends SecuredManager {
 
     private int updateQmsStandards(Long listingId, List<CertifiedProductQmsStandard> existingQmsStandards,
             List<CertifiedProductQmsStandard> updatedQmsStandards)
-                    throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
 
         int numChanges = 0;
         List<CertifiedProductQmsStandard> qmsToAdd = new ArrayList<CertifiedProductQmsStandard>();
@@ -1600,7 +1600,7 @@ public class CertifiedProductManager extends SecuredManager {
     private int updateTargetedUsers(Long listingId,
             List<CertifiedProductTargetedUser> existingTargetedUsers,
             List<CertifiedProductTargetedUser> updatedTargetedUsers)
-                    throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         int numChanges = 0;
         List<CertifiedProductTargetedUser> tusToAdd = new ArrayList<CertifiedProductTargetedUser>();
@@ -1760,7 +1760,7 @@ public class CertifiedProductManager extends SecuredManager {
     private int updateCertificationStatusEvents(Long listingId,
             List<CertificationStatusEvent> existingStatusEvents,
             List<CertificationStatusEvent> updatedStatusEvents)
-                    throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         int numChanges = 0;
         List<CertificationStatusEvent> statusEventsToAdd = new ArrayList<CertificationStatusEvent>();
@@ -1916,7 +1916,7 @@ public class CertifiedProductManager extends SecuredManager {
 
     private int updateMeaningfulUseUserHistory(Long listingId, List<MeaningfulUseUser> existingMuuHistory,
             List<MeaningfulUseUser> updatedMuuHistory)
-                    throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         int numChanges = 0;
         List<MeaningfulUseUser> itemsToAdd = new ArrayList<MeaningfulUseUser>();
@@ -2006,7 +2006,7 @@ public class CertifiedProductManager extends SecuredManager {
     private int updateCertifications(CertifiedProductSearchDetails existingListing,
             CertifiedProductSearchDetails updatedListing, List<CertificationResult> existingCertifications,
             List<CertificationResult> updatedCertifications)
-                    throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
 
         int numChanges = 0;
 
@@ -2311,8 +2311,7 @@ public class CertifiedProductManager extends SecuredManager {
                     .usingJobData("dbId", updatedListing.getId())
                     .usingJobData("chplId", updatedListing.getChplProductNumber())
                     .usingJobData("developer", updatedListing.getDeveloper().getName())
-                    .usingJobData("acb",
-                            updatedListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)
+                    .usingJobData("acb", updatedListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)
                             .toString())
                     .usingJobData("changeDate", new Date().getTime())
                     .usingJobData("fullName", AuthUtil.getCurrentUser().getFullName())

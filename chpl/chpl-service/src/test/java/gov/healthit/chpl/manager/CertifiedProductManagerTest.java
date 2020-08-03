@@ -191,11 +191,11 @@ public class CertifiedProductManagerTest {
             InvalidArgumentsException, IOException, ValidationException, MissingReasonException {
 
         Mockito.when(certifiedProductDetailsManager.getCertifiedProductDetails(ArgumentMatchers.anyLong()))
-        .thenReturn(getCertifiedProductSearchDetails());
+                .thenReturn(getCertifiedProductSearchDetails());
 
         Validator validator = Mockito.mock(Validator.class);
         Mockito.when(validatorFactory.getValidator(ArgumentMatchers.any(CertifiedProductSearchDetails.class)))
-        .thenReturn(validator);
+                .thenReturn(validator);
 
         Mockito.doAnswer(new Answer<Object>() {
             @Override
@@ -205,8 +205,8 @@ public class CertifiedProductManagerTest {
                 listing.getWarningMessages().add("This is a test warning");
                 return null;
             }
-        }).when(validator).validate(ArgumentMatchers.any(CertifiedProductSearchDetails.class),
-                ArgumentMatchers.any(CertifiedProductSearchDetails.class));
+         }).when(validator).validate(ArgumentMatchers.any(CertifiedProductSearchDetails.class),
+                 ArgumentMatchers.any(CertifiedProductSearchDetails.class));
 
         ListingUpdateRequest request = new ListingUpdateRequest();
         request.setAcknowledgeWarnings(false);
@@ -221,11 +221,11 @@ public class CertifiedProductManagerTest {
             InvalidArgumentsException, IOException, ValidationException, MissingReasonException {
 
         Mockito.when(certifiedProductDetailsManager.getCertifiedProductDetails(ArgumentMatchers.anyLong()))
-        .thenReturn(getCertifiedProductSearchDetails());
+                .thenReturn(getCertifiedProductSearchDetails());
 
         Validator validator = Mockito.mock(Validator.class);
         Mockito.when(validatorFactory.getValidator(ArgumentMatchers.any(CertifiedProductSearchDetails.class)))
-        .thenReturn(validator);
+                .thenReturn(validator);
 
         Mockito.doAnswer(new Answer<Object>() {
             @Override
@@ -241,9 +241,9 @@ public class CertifiedProductManagerTest {
         FuzzyChoicesDTO fuzzyChoices = new FuzzyChoicesDTO();
         fuzzyChoices.setChoices(Arrays.asList("choice1", "choice2"));
         Mockito.when(fuzzyChoicesDao.getByType(FuzzyType.QMS_STANDARD))
-        .thenReturn(fuzzyChoices);
+                .thenReturn(fuzzyChoices);
         Mockito.when(fuzzyChoicesDao.getByType(FuzzyType.ACCESSIBILITY_STANDARD))
-        .thenReturn(fuzzyChoices);
+                .thenReturn(fuzzyChoices);
 
         ListingUpdateRequest request = new ListingUpdateRequest();
         request.setAcknowledgeWarnings(true);
@@ -252,7 +252,7 @@ public class CertifiedProductManagerTest {
         CertifiedProductDTO dto = new CertifiedProductDTO();
         dto.setId(1L);
         Mockito.when(cpDao.update(ArgumentMatchers.any(CertifiedProductDTO.class)))
-        .thenReturn(dto);
+                .thenReturn(dto);
 
         CertifiedProductDTO listing = certifiedProductManager.update(request);
 
