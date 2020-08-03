@@ -4,9 +4,43 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.ff4j.FF4j;
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
-import org.springframework.scheduling.TaskScheduler;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 
+import gov.healthit.chpl.dao.AccessibilityStandardDAO;
+import gov.healthit.chpl.dao.CQMCriterionDAO;
+import gov.healthit.chpl.dao.CQMResultDAO;
+import gov.healthit.chpl.dao.CertificationCriterionDAO;
+import gov.healthit.chpl.dao.CertificationResultDAO;
+import gov.healthit.chpl.dao.CertificationStatusDAO;
+import gov.healthit.chpl.dao.CertificationStatusEventDAO;
+import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
+import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
+import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
+import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
+import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
+import gov.healthit.chpl.dao.CuresUpdateEventDAO;
+import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.dao.DeveloperStatusDAO;
+import gov.healthit.chpl.dao.FuzzyChoicesDAO;
+import gov.healthit.chpl.dao.ListingGraphDAO;
+import gov.healthit.chpl.dao.MeaningfulUseUserDAO;
+import gov.healthit.chpl.dao.QmsStandardDAO;
+import gov.healthit.chpl.dao.TargetedUserDAO;
+import gov.healthit.chpl.dao.TestDataDAO;
+import gov.healthit.chpl.dao.TestFunctionalityDAO;
+import gov.healthit.chpl.dao.TestParticipantDAO;
+import gov.healthit.chpl.dao.TestProcedureDAO;
+import gov.healthit.chpl.dao.TestStandardDAO;
+import gov.healthit.chpl.dao.TestTaskDAO;
+import gov.healthit.chpl.dao.TestToolDAO;
+import gov.healthit.chpl.dao.TestingLabDAO;
+import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationStatus;
@@ -24,18 +58,125 @@ import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.Product;
+import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.TransparencyAttestation;
 import gov.healthit.chpl.domain.UcdProcess;
-import gov.healthit.chpl.manager.rules.complaints.AcbComplaintIdValidation;
+import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.service.CuresUpdateService;
+import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 
 
 public class CertifiedProductManagerTest {
 
+    private ErrorMessageUtil msgUtil;
+    private CertifiedProductDAO cpDao;
+    private CertifiedProductSearchDAO searchDao;
+    private CertificationResultDAO certDao;
+    private CertificationCriterionDAO certCriterionDao;
+    private QmsStandardDAO qmsDao;
+    private TargetedUserDAO targetedUserDao;
+    private AccessibilityStandardDAO asDao;
+    private CertifiedProductQmsStandardDAO cpQmsDao;
+    private CertifiedProductTestingLabDAO cpTestingLabDao;
+    private CertifiedProductTargetedUserDAO cpTargetedUserDao;
+    private CertifiedProductAccessibilityStandardDAO cpAccStdDao;
+    private CQMResultDAO cqmResultDAO;
+    private CQMCriterionDAO cqmCriterionDao;
+    private TestingLabDAO atlDao;
+    private DeveloperDAO developerDao;
+    private DeveloperStatusDAO devStatusDao;
+    private DeveloperManager developerManager;
+    private ProductManager productManager;
+    private ProductVersionManager versionManager;
+    private CertificationStatusEventDAO statusEventDao;
+    private CuresUpdateEventDAO curesUpdateDao;
+    private MeaningfulUseUserDAO muuDao;
+    private CertificationResultManager certResultManager;
+    private TestToolDAO testToolDao;
+    private TestStandardDAO testStandardDao;
+    private TestProcedureDAO testProcDao;
+    private TestDataDAO testDataDao;
+    private TestFunctionalityDAO testFuncDao;
+    private UcdProcessDAO ucdDao;
+    private TestParticipantDAO testParticipantDao;
+    private TestTaskDAO testTaskDao;
+    private CertificationStatusDAO certStatusDao;
+    private ListingGraphDAO listingGraphDao;
+    private FuzzyChoicesDAO fuzzyChoicesDao;
+    private ResourcePermissions resourcePermissions;
+    private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
+    private CertifiedProductDetailsManager certifiedProductDetailsManager;
+    private ActivityManager activityManager;
+    private ListingValidatorFactory validatorFactory;
+    private CuresUpdateService curesUpdateService;
+    private FF4j ff4j;
+
+    private CertifiedProductManager certifiedProductManager;
+
+    @Before
+    public void before() {
+        msgUtil = Mockito.mock(ErrorMessageUtil.class);
+        cpDao = Mockito.mock(CertifiedProductDAO.class);
+        searchDao = Mockito.mock(CertifiedProductSearchDAO.class);
+        certDao = Mockito.mock(CertificationResultDAO.class);
+        certCriterionDao = Mockito.mock(CertificationCriterionDAO.class);
+        qmsDao = Mockito.mock(QmsStandardDAO.class);
+        targetedUserDao = Mockito.mock(TargetedUserDAO.class);
+        asDao = Mockito.mock(AccessibilityStandardDAO.class);
+        cpQmsDao = Mockito.mock(CertifiedProductQmsStandardDAO.class);
+        cpTestingLabDao = Mockito.mock(CertifiedProductTestingLabDAO.class);
+        cpTargetedUserDao = Mockito.mock(CertifiedProductTargetedUserDAO.class);
+        cpAccStdDao = Mockito.mock(CertifiedProductAccessibilityStandardDAO.class);
+        cqmResultDAO = Mockito.mock(CQMResultDAO.class);
+        cqmCriterionDao = Mockito.mock(CQMCriterionDAO.class);
+        atlDao = Mockito.mock(TestingLabDAO.class);
+        developerDao = Mockito.mock(DeveloperDAO.class);
+        devStatusDao = Mockito.mock(DeveloperStatusDAO.class);
+        developerManager = Mockito.mock(DeveloperManager.class);
+        productManager = Mockito.mock(ProductManager.class);
+        versionManager = Mockito.mock(ProductVersionManager.class);
+        statusEventDao = Mockito.mock(CertificationStatusEventDAO.class);
+        curesUpdateDao = Mockito.mock(CuresUpdateEventDAO.class);
+        muuDao = Mockito.mock(MeaningfulUseUserDAO.class);
+        certResultManager = Mockito.mock(CertificationResultManager.class);
+        testToolDao = Mockito.mock(TestToolDAO.class);
+        testStandardDao = Mockito.mock(TestStandardDAO.class);
+        testProcDao = Mockito.mock(TestProcedureDAO.class);
+        testDataDao = Mockito.mock(TestDataDAO.class);
+        testFuncDao = Mockito.mock(TestFunctionalityDAO.class);
+        ucdDao = Mockito.mock(UcdProcessDAO.class);
+        testParticipantDao = Mockito.mock(TestParticipantDAO.class);
+        testTaskDao = Mockito.mock(TestTaskDAO.class);
+        certStatusDao = Mockito.mock(CertificationStatusDAO.class);
+        listingGraphDao = Mockito.mock(ListingGraphDAO.class);
+        fuzzyChoicesDao = Mockito.mock(FuzzyChoicesDAO.class);
+        resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        certifiedProductSearchResultDAO = Mockito.mock(CertifiedProductSearchResultDAO.class);
+        certifiedProductDetailsManager = Mockito.mock(CertifiedProductDetailsManager.class);
+        activityManager = Mockito.mock(ActivityManager.class);
+        validatorFactory = Mockito.mock(ListingValidatorFactory.class);
+        curesUpdateService = Mockito.mock(CuresUpdateService.class);
+        ff4j = Mockito.mock(FF4j.class);
+
+        certifiedProductManager = new  CertifiedProductManager(msgUtil, cpDao,  searchDao, certDao,
+                certCriterionDao, qmsDao,  targetedUserDao, asDao,  cpQmsDao, cpTestingLabDao,
+                cpTargetedUserDao, cpAccStdDao,  cqmResultDAO, cqmCriterionDao,  atlDao,
+                developerDao,  devStatusDao, developerManager,  productManager, versionManager,
+                statusEventDao, curesUpdateDao, muuDao,  certResultManager, testToolDao,  testStandardDao,
+                testProcDao,  testDataDao, testFuncDao,  ucdDao, testParticipantDao,  testTaskDao, certStatusDao,
+                listingGraphDao, fuzzyChoicesDao,  resourcePermissions, certifiedProductSearchResultDAO,
+                certifiedProductDetailsManager, activityManager,  validatorFactory, curesUpdateService,  ff4j);
+    }
 
     @Test
-    public void update_HasValidationWarningsAndNoAck_ThrowsValidationException() {
+    public void update_HasValidationWarningsAndNoAck_ThrowsValidationException() throws EntityRetrievalException {
+        Mockito.when(certifiedProductDetailsManager.getCertifiedProductDetails(ArgumentMatchers.anyLong()))
+        .thenReturn(new CertifiedProductSearchDetails());
+
 
     }
 
@@ -337,12 +478,15 @@ public class CertifiedProductManagerTest {
                         .testingLabId(1L)
                         .testingLabName("Drummond Group")
                         .build())
-                .transparencyAttestation(TransparencyAttestation.)
-
-
-
-                )
-
+                .transparencyAttestation(TransparencyAttestation.builder()
+                        .removed(true)
+                        .transparencyAttestation("http://www.standingstoneinc.com/")
+                        .build())
+                .version(ProductVersion.builder()
+                        .versionId(7801L)
+                        .version("11.3")
+                        .build())
+                .build();
     }
 
     private Map<String, Object> getCertificationEdition() {
