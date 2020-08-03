@@ -91,6 +91,7 @@ public class ActivityController {
     private Integer maxActivityRangeInDays;
 
 
+    @SuppressWarnings({"checkstyle:parameternumber"})
     @Autowired
     public ActivityController(ActivityManager activityManager, ActivityMetadataManager activityMetadataManager,
             ActivityPagedMetadataManager pagedMetadataManager, AnnouncementManager announcementManager,
@@ -184,6 +185,7 @@ public class ActivityController {
                 id, ActivityConcept.CERTIFIED_PRODUCT, startDate, endDate);
     }
 
+    @SuppressWarnings({"checkstyle:parameternumber", "checkstyle:linelength"})
     @ApiOperation(value = "Get metadata about auditable records in the system for a specific listing given its "
             + "new-style CHPL product number.",
             notes = "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} "
@@ -548,6 +550,18 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get metadata about auditable records in the system for users.",
+            notes = "All parameters are optional and will default to the first page of user activity "
+                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
+                    + "with the most recent activity first.")
+    @RequestMapping(value = "/metadata/beta/users", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public ActivityMetadataPage metadataForUsers(@RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+        return pagedMetadataManager.getUserMaintenanceActivityMetadata(start, end, pageNum, pageSize);
+    }
+
+    @ApiOperation(value = "DEPRECATED. Get metadata about auditable records in the system for users.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
     @RequestMapping(value = "/metadata/users", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -922,6 +936,7 @@ public class ActivityController {
     }
 
     @Deprecated
+    @SuppressWarnings({"checkstyle:parameternumber", "checkstyle:linelength"})
     @ApiOperation(value = "DEPRECATED Get auditable data for a specific certified product based on CHPL Product Number.",
     notes = "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} "
             + "represents a valid CHPL Product Number.  A valid call to this service would look like "
@@ -971,7 +986,8 @@ public class ActivityController {
     }
 
     @Deprecated
-    @ApiOperation(value = "DEPRECATED. Get auditable data for a specific certified product based on a legacy CHPL Product Number.",
+    @ApiOperation(value = "DEPRECATED. Get auditable data for a specific certified product based "
+            + "on a legacy CHPL Product Number.",
     notes = "{chplPrefix}-{identifier} represents a valid CHPL Product Number.  "
             + "A valid call to this service "
             + "would look like activity/certified_products/CHP-999999. "

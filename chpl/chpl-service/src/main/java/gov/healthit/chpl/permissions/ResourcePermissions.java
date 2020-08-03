@@ -52,6 +52,7 @@ public class ResourcePermissions {
     private UserDAO userDAO;
     private DeveloperDAO developerDAO;
 
+    @SuppressWarnings({"checkstyle:parameternumber"})
     @Autowired
     public ResourcePermissions(PermissionEvaluator permissionEvaluator,
             UserCertificationBodyMapDAO userCertificationBodyMapDAO,
@@ -73,12 +74,8 @@ public class ResourcePermissions {
     public boolean isDeveloperActive(Long developerId) {
         try {
             DeveloperDTO developerDto = developerDAO.getById(developerId);
-            if (developerDto != null && developerDto.getStatus() != null && developerDto.getStatus().getStatus()
-                    .getStatusName().equals(DeveloperStatusType.Active.toString())) {
-                return true;
-            } else {
-                return false;
-            }
+            return developerDto != null && developerDto.getStatus() != null
+                    && developerDto.getStatus().getStatus().getStatusName().equals(DeveloperStatusType.Active.toString());
         } catch (EntityRetrievalException e) {
             return false;
         }
@@ -207,6 +204,41 @@ public class ResourcePermissions {
             devs.add(dto.getDeveloper());
         }
         return devs;
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserDTO> getAllUsersForCurrentUser() {
+        User user = AuthUtil.getCurrentUser();
+        List<UserDTO> users = new ArrayList<UserDTO>();
+
+        if (user != null) {
+            if (isUserRoleAdmin() || isUserRoleOnc()) {
+                users = userDAO.findAll();
+            } else if (isUserRoleAcbAdmin()) {
+                List<CertificationBodyDTO> acbs = getAllAcbsForCurrentUser();
+                for (CertificationBodyDTO acb : acbs) {
+                    users.addAll(getAllUsersOnAcb(acb));
+                }
+            } else if (isUserRoleAtlAdmin()) {
+                List<TestingLabDTO> atls = getAllAtlsForCurrentUser();
+                for (TestingLabDTO atl : atls) {
+                    users.addAll(getAllUsersOnAtl(atl));
+                }
+            }  else if (isUserRoleDeveloperAdmin()) {
+                List<DeveloperDTO> devs = getAllDevelopersForCurrentUser();
+                for (DeveloperDTO dev : devs) {
+                    users.addAll(getAllUsersOnDeveloper(dev));
+                }
+            } else {
+                //they just have permission on themselves
+                UserDTO thisUser = null;
+                try {
+                    thisUser = userDAO.getById(user.getId());
+                    users.add(thisUser);
+                } catch (UserRetrievalException ex) { }
+            }
+        }
+        return users;
     }
 
     @Transactional(readOnly = true)

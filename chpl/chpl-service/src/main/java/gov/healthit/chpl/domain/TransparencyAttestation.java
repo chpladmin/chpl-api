@@ -7,10 +7,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.ff4j.FF4j;
-
-import gov.healthit.chpl.FeatureList;
-import gov.healthit.chpl.SpringContext;
 import gov.healthit.chpl.dto.TransparencyAttestationDTO;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
@@ -31,12 +27,7 @@ public class TransparencyAttestation implements Serializable {
     private Boolean removed;
 
     public TransparencyAttestation() {
-        // This is a temporary bad solution, will be removed when flag is removed
-        if (SpringContext.getBean(FF4j.class).check(FeatureList.EFFECTIVE_RULE_DATE)) {
-            this.removed = true;
-        } else {
-            this.removed = false;
-        }
+        this.removed = true;
     }
 
     public TransparencyAttestation(String attestation) {

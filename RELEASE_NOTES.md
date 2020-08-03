@@ -1,5 +1,23 @@
 # Release Notes
 
+## Version 25.9.0
+_27 July 2020_
+
+### Features
+* Add 2015 Cures Edition metrics to Summary Statistics Report
+* Update summary statistics creator job to be non-blocking
+* Check for duplicate data on listing confirm and edit
+* Move data loaded on startup to caching framework
+
+### Flagged Features
+* Add endpoint to get direct reviews for any developer
+
+### Bug Fixes
+* Unlock user accounts on successful password reset
+* Allow users to change their passwords using provided workflow
+
+---
+
 ## Version 25.8.0
 _13 July 2020_
 

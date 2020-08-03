@@ -9,7 +9,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.ff4j.FF4j;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -87,7 +85,6 @@ public class DeveloperManager extends SecuredManager {
     private ValidationUtils validationUtils;
     private TransparencyAttestationManager transparencyAttestationManager;
     private SchedulerManager schedulerManager;
-    private FF4j ff4j;
 
     @Autowired
     public DeveloperManager(DeveloperDAO developerDao, ProductManager productManager, UserManager userManager,
@@ -95,8 +92,7 @@ public class DeveloperManager extends SecuredManager {
             CertifiedProductDAO certifiedProductDAO, ChplProductNumberUtil chplProductNumberUtil,
             ActivityManager activityManager, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
             DeveloperValidationFactory developerValidationFactory, ValidationUtils validationUtils,
-            TransparencyAttestationManager transparencyAttestationManager, SchedulerManager schedulerManager,
-            FF4j ff4j) {
+            TransparencyAttestationManager transparencyAttestationManager, SchedulerManager schedulerManager) {
         this.developerDao = developerDao;
         this.productManager = productManager;
         this.userManager = userManager;
@@ -111,7 +107,6 @@ public class DeveloperManager extends SecuredManager {
         this.validationUtils = validationUtils;
         this.transparencyAttestationManager = transparencyAttestationManager;
         this.schedulerManager = schedulerManager;
-        this.ff4j = ff4j;
     }
 
     @Transactional(readOnly = true)
@@ -210,11 +205,7 @@ public class DeveloperManager extends SecuredManager {
         developerDao.update(updatedDev);
         updateStatusHistory(beforeDev, updatedDev);
 
-        if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)) {
-            if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
-                createOrUpdateTransparencyMappings(updatedDev);
-            }
-        } else {
+        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
             createOrUpdateTransparencyMappings(updatedDev);
         }
 
@@ -292,11 +283,7 @@ public class DeveloperManager extends SecuredManager {
         DeveloperDTO created = developerDao.create(dto);
         dto.setId(created.getId());
 
-        if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)) {
-            if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
-                createOrUpdateTransparencyMappings(dto);
-            }
-        } else {
+        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
             createOrUpdateTransparencyMappings(dto);
         }
 
