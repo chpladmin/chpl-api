@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -20,7 +19,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -65,28 +63,24 @@ public class ListingUploadManager {
                     String.join(",", unrecognizedHeadings)));
         }
 
+        //check for duplicate chpl ids in the file
+        Set<String> duplicateChplIds = getDuplicateChplIds(heading, allCsvRecords);
+        if (duplicateChplIds != null && duplicateChplIds.size() > 0) {
+            throw new ValidationException(msgUtil.getMessage("upload.duplicateUniqueIds",
+                    String.join(",", duplicateChplIds)));
+        }
+
         long currIndex = heading.getRecordNumber() + 1;
         while (currIndex < allCsvRecords.size()) {
             List<CSVRecord> nextListingCsvRecords = getNextListingRecords(allCsvRecords, currIndex);
             currIndex += nextListingCsvRecords.size();
-            CertifiedProductSearchDetails parsedListing = uploadHandler.parseAsListing(heading, nextListingCsvRecords);
-            ListingUpload listing = new ListingUpload();
-            listing.setChplProductNumber(parsedListing.getChplProductNumber());
+            ListingUpload listingUploadMetadata = uploadHandler.parseAsListing(heading, nextListingCsvRecords);
             //TODO: parse the csv record list to fill in metadata we need for the upload object
             //acb
             //error count
             //warning count
             //for above we need the entire listing to be parsed and run through the validator
-            uploadedListings.add(listing);
-        }
-
-        //check for duplicate chpl ids in the file and throw ValidationException
-        Set<ListingUpload> duplicateListings = getDuplicateListings(uploadedListings);
-        if (duplicateListings != null && duplicateListings.size() > 0) {
-            throw new ValidationException(msgUtil.getMessage("upload.duplicateUniqueIds",
-                    String.join(",", duplicateListings.stream()
-                            .map(ListingUpload::getChplProductNumber)
-                            .collect(Collectors.toList()))));
+            uploadedListings.add(listingUploadMetadata);
         }
         return uploadedListings;
     }
@@ -108,9 +102,9 @@ public class ListingUploadManager {
         Iterator<CSVRecord> remainingRecords = allCsvRecords.stream().skip(startIndex).iterator();
         while (remainingRecords.hasNext()) {
             CSVRecord record = remainingRecords.next();
-            String recordUniqueId = uploadUtil.parseSingleValueField(
+            String recordUniqueId = uploadUtil.parseRequiredSingleValueField(
                     Headings.UNIQUE_ID, heading, record);
-            String recordStatus = uploadUtil.parseSingleValueField(
+            String recordStatus = uploadUtil.parseRequiredSingleValueField(
                     Headings.RECORD_STATUS, heading, record);
             if (!StringUtils.isEmpty(recordUniqueId)) {
                 if (recordStatus.equalsIgnoreCase("NEW") && listingCsvRecords.size() > 0) {
@@ -134,18 +128,25 @@ public class ListingUploadManager {
         return unrecognizedHeadings;
     }
 
-    private Set<ListingUpload> getDuplicateListings(List<ListingUpload> uploadedListings) {
-        List<ListingUpload> uploadedListingsExcludingNewDevelopers =
-                uploadedListings.stream()
-                    .filter(uploadMetadata -> !uploadMetadata.getChplProductNumber().contains(NEW_DEVELOPER_CODE))
-                    .collect(Collectors.toList());
+    private Set<String> getDuplicateChplIds(CSVRecord heading, List<CSVRecord> allCsvRecords) {
+        List<String> uploadedChplIdsExcludingNewDevelopers = new ArrayList<String>();
+        int currIndex = 0;
+        while (currIndex < allCsvRecords.size()) {
+            List<CSVRecord> nextListingCsvRecords = getNextListingRecords(allCsvRecords, currIndex);
+            currIndex += nextListingCsvRecords.size();
+            String chplId = uploadUtil.parseSingleValueField(Headings.UNIQUE_ID, heading, nextListingCsvRecords);
+            if (chplId != null && !StringUtils.isEmpty(chplId)
+                    && !chplId.contains(NEW_DEVELOPER_CODE)) {
+                uploadedChplIdsExcludingNewDevelopers.add(chplId);
+            }
+        }
 
-        Set<ListingUpload> distinctUploadedListings = new LinkedHashSet<ListingUpload>();
-        Set<ListingUpload> duplicates = new LinkedHashSet<ListingUpload>();
-        uploadedListingsExcludingNewDevelopers.stream()
-            .forEach(uploadedListing -> {
-                if (!distinctUploadedListings.add(uploadedListing)) {
-                    duplicates.add(uploadedListing);
+        Set<String> distinctUploadedIds = new LinkedHashSet<String>();
+        Set<String> duplicates = new LinkedHashSet<String>();
+        uploadedChplIdsExcludingNewDevelopers.stream()
+            .forEach(uploadedChplId -> {
+                if (!distinctUploadedIds.add(uploadedChplId)) {
+                    duplicates.add(uploadedChplId);
                 }
             });
         return duplicates;

@@ -25,8 +25,6 @@ public class AccessibilityCertificationsUploadHandler {
 
     public List<CertifiedProductAccessibilityStandard> handle(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
 
-        //TODO accessibility certifications
-
         return null;
     }
 }

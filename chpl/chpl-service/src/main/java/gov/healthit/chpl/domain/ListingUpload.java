@@ -1,6 +1,8 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -13,8 +15,14 @@ public class ListingUpload implements Serializable {
     private Long id;
     private String chplProductNumber;
     private CertificationBody acb;
-    private Integer errorCount;
     private Integer warningCount;
+    private Integer errorCount;
+    private Set<String> uploadErrors;
+    private CertifiedProductSearchDetails listing;
+
+    public ListingUpload() {
+        uploadErrors = new LinkedHashSet<String>();
+    }
 
     @Override
     public boolean equals(Object another) {
