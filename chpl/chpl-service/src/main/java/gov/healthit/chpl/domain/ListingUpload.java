@@ -2,6 +2,11 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.StringUtils;
+
+import lombok.Data;
+
+@Data
 public class ListingUpload implements Serializable {
     private static final long serialVersionUID = 7978604053959535573L;
 
@@ -11,35 +16,25 @@ public class ListingUpload implements Serializable {
     private Integer errorCount;
     private Integer warningCount;
 
-    public Long getId() {
-        return id;
+    @Override
+    public boolean equals(Object another) {
+        if (another == null || !(another instanceof ListingUpload)) {
+            return false;
+        }
+        ListingUpload anotherListingUpload = (ListingUpload) another;
+        if (StringUtils.isNotEmpty(this.getChplProductNumber())
+                && StringUtils.isNotEmpty(anotherListingUpload.getChplProductNumber())) {
+            return StringUtils.equals(this.getChplProductNumber(), anotherListingUpload.getChplProductNumber());
+        }
+        return false;
     }
-    public void setId(Long id) {
-        this.id = id;
-    }
-    public CertificationBody getAcb() {
-        return acb;
-    }
-    public void setAcb(CertificationBody acb) {
-        this.acb = acb;
-    }
-    public String getChplProductNumber() {
-        return chplProductNumber;
-    }
-    public void setChplProductNumber(String chplProductNumber) {
-        this.chplProductNumber = chplProductNumber;
-    }
-    public Integer getErrorCount() {
-        return errorCount;
-    }
-    public void setErrorCount(Integer errorCount) {
-        this.errorCount = errorCount;
-    }
-    public Integer getWarningCount() {
-        return warningCount;
-    }
-    public void setWarningCount(Integer warningCount) {
-        this.warningCount = warningCount;
+
+    @Override
+    public int hashCode() {
+        if (StringUtils.isEmpty(this.getChplProductNumber())) {
+            return -1;
+        }
+        return this.getChplProductNumber().hashCode();
     }
 
 }

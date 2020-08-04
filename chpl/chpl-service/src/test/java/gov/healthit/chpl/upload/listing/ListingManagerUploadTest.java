@@ -19,7 +19,10 @@ import org.springframework.mock.web.MockMultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.ListingUpload;
+import gov.healthit.chpl.dto.AddressDTO;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.DeprecatedUploadTemplateException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -35,6 +38,7 @@ public class ListingManagerUploadTest {
     private ListingUploadManager uploadManager;
     private ListingUploadHandler uploadHandler;
     private ListingUploadDao uploadDao;
+    private CertificationBodyDAO acbDao;
 
     @Before
     public void setup() throws InvalidArgumentsException, JsonProcessingException,
@@ -43,13 +47,15 @@ public class ListingManagerUploadTest {
 
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         uploadDao = Mockito.mock(ListingUploadDao.class);
+        acbDao = Mockito.mock(CertificationBodyDAO.class);
 
+        Mockito.when(acbDao.getByName(ArgumentMatchers.anyString())).thenReturn(createAcb());
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("upload.emptyFile"))).thenReturn("Empty file message");
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("upload.notCSV"))).thenReturn("Not CSV message");
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.upload.emptyRows"))).thenReturn("Header only message");
 
         uploadHandler = new ListingUploadHandler(msgUtil);
-        uploadManager = new ListingUploadManager(uploadHandler, uploadDao, msgUtil);
+        uploadManager = new ListingUploadManager(uploadHandler, uploadDao, acbDao, msgUtil);
     }
 
     @Test(expected = ValidationException.class)
@@ -114,6 +120,24 @@ public class ListingManagerUploadTest {
         List<ListingUpload> parsedListings = uploadManager.parseUploadFile(file);
         assertNotNull(parsedListings);
         assertEquals(3, parsedListings.size());
+    }
+
+    private CertificationBodyDTO createAcb() {
+        CertificationBodyDTO dto = new CertificationBodyDTO();
+        dto.setId(1L);
+        dto.setAcbCode("04");
+        dto.setName("Test");
+        dto.setRetired(false);
+        dto.setWebsite("http://www.test.com");
+        AddressDTO address = new AddressDTO();
+        address.setId(1L);
+        address.setStreetLineOne("111 Test Road");
+        address.setStreetLineTwo("Suite 4");
+        address.setCity("Baltimore");
+        address.setState("MD");
+        address.setZipcode("21008");
+        dto.setAddress(address);
+        return dto;
     }
 
     private void loadFiles() throws IOException, FileNotFoundException {

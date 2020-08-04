@@ -3,9 +3,13 @@ package gov.healthit.chpl.upload.listing;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -15,29 +19,35 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.ListingUpload;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class ListingUploadManager {
+    public static final String NEW_DEVELOPER_CODE = "XXXX";
 
     private ListingUploadHandler listingUploadHandler;
     private ListingUploadDao listingUploadDao;
+    private CertificationBodyDAO acbDao;
     private ErrorMessageUtil msgUtil;
 
     public ListingUploadManager(ListingUploadHandler listingUploadHandler,
-            ListingUploadDao listingUploadDao, ErrorMessageUtil msgUtil) {
+            ListingUploadDao listingUploadDao, CertificationBodyDAO acbDao, ErrorMessageUtil msgUtil) {
         this.listingUploadHandler = listingUploadHandler;
         this.listingUploadDao = listingUploadDao;
+        this.acbDao = acbDao;
         this.msgUtil = msgUtil;
     }
 
     //TODO: Security - admin, onc, or ANY acb can do this
     public List<ListingUpload> parseUploadFile(MultipartFile file) throws ValidationException {
         List<CSVRecord> allCsvRecords = getFileAsCsvRecords(file);
-        List<ListingUpload> uploadMetadatas = new ArrayList<ListingUpload>();
+        List<ListingUpload> uploadedListings = new ArrayList<ListingUpload>();
 
         CSVRecord heading = listingUploadHandler.getHeadingRecord(allCsvRecords);
         if (heading == null) {
@@ -58,15 +68,37 @@ public class ListingUploadManager {
         while (currIndex < allCsvRecords.size()) {
             List<CSVRecord> singleListingCsvRecords = getNextListingRecords(allCsvRecords, currIndex);
             currIndex += singleListingCsvRecords.size();
-            ListingUpload uploadMetadata = new ListingUpload();
-            uploadMetadata.setChplProductNumber(listingUploadHandler.parseSingleValueField(
+            ListingUpload listing = new ListingUpload();
+            listing.setChplProductNumber(listingUploadHandler.parseSingleValueField(
                     Headings.UNIQUE_ID, heading, singleListingCsvRecords));
+            String acbName = listingUploadHandler.parseSingleValueField(
+                    Headings.CERTIFICATION_BODY_NAME, heading, singleListingCsvRecords);
+            CertificationBodyDTO acbDto = null;
+            try {
+                acbDto = acbDao.getByName(acbName);
+            } catch (Exception ex) {
+                LOGGER.fatal("Cannot find ACB with name " + acbName);
+                throw new ValidationException("Cannot find ACB with name '" + acbName + "'.");
+            }
+            if (acbDto != null) {
+                listing.setAcb(new CertificationBody(acbDto));
+            }
             //TODO: parse the csv record list to fill in metadata we need for the upload object
-            uploadMetadatas.add(uploadMetadata);
+            //error count
+            //warning count
+            //for above we need the entire listing to be parsed and run through the validator
+            uploadedListings.add(listing);
         }
 
-        //TODO: check for duplicate chpl ids in the file and throw ValidationException
-        return uploadMetadatas;
+        //check for duplicate chpl ids in the file and throw ValidationException
+        Set<ListingUpload> duplicateListings = getDuplicateListings(uploadedListings);
+        if (duplicateListings != null && duplicateListings.size() > 0) {
+            throw new ValidationException(msgUtil.getMessage("upload.duplicateUniqueIds",
+                    String.join(",", duplicateListings.stream()
+                            .map(ListingUpload::getChplProductNumber)
+                            .collect(Collectors.toList()))));
+        }
+        return uploadedListings;
     }
 
     //TODO security - admin, onc, or OWNING acb can do this
@@ -112,6 +144,23 @@ public class ListingUploadManager {
         return unrecognizedHeadings;
     }
 
+    private Set<ListingUpload> getDuplicateListings(List<ListingUpload> uploadedListings) {
+        List<ListingUpload> uploadedListingsExcludingNewDevelopers =
+                uploadedListings.stream()
+                    .filter(uploadMetadata -> !uploadMetadata.getChplProductNumber().contains(NEW_DEVELOPER_CODE))
+                    .collect(Collectors.toList());
+
+        Set<ListingUpload> distinctUploadedListings = new LinkedHashSet<ListingUpload>();
+        Set<ListingUpload> duplicates = new LinkedHashSet<ListingUpload>();
+        uploadedListingsExcludingNewDevelopers.stream()
+            .forEach(uploadedListing -> {
+                if (!distinctUploadedListings.add(uploadedListing)) {
+                    duplicates.add(uploadedListing);
+                }
+            });
+        return duplicates;
+    }
+
     private List<CSVRecord> getFileAsCsvRecords(MultipartFile file) throws ValidationException {
         if (file.isEmpty()) {
             LOGGER.warn("User uploaded an empty file.");
@@ -125,7 +174,7 @@ public class ListingUploadManager {
         }
 
         List<CSVRecord> records = null;
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), "UTF-8"));
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8.name()));
                 CSVParser parser = new CSVParser(reader, CSVFormat.EXCEL)) {
             records = parser.getRecords();
             if (records.size() <= 1) {
