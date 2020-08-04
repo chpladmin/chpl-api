@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
@@ -46,9 +45,6 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
     @Autowired
     @Qualifier("rwtEligibilityYearDAO")
     private RwtEligibilityYearDAO rwtEligibilityYearDAO;
-
-    @Autowired
-    private CertificationStatusEventDAO certificationStatusEventDAO;
 
     @Autowired
     private CertificationCriterionService certificationCriterionService;
@@ -173,6 +169,7 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
 
     private Integer getEligibilityYear() {
         Calendar calendar = Calendar.getInstance();
+        calendar.setTime(getEligibilityAsOfDate());
         return calendar.get(Calendar.YEAR) + 1;
     }
 
