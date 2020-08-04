@@ -20,9 +20,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpload;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
@@ -31,14 +30,16 @@ import lombok.extern.log4j.Log4j2;
 public class ListingUploadManager {
     public static final String NEW_DEVELOPER_CODE = "XXXX";
 
-    private ListingUploadHandler listingUploadHandler;
+    private ListingDetailsUploadHandler uploadHandler;
+    private ListingUploadHandlerUtil uploadUtil;
     private ListingUploadDao listingUploadDao;
     private CertificationBodyDAO acbDao;
     private ErrorMessageUtil msgUtil;
 
-    public ListingUploadManager(ListingUploadHandler listingUploadHandler,
+    public ListingUploadManager(ListingDetailsUploadHandler uploadHandler, ListingUploadHandlerUtil uploadUtil,
             ListingUploadDao listingUploadDao, CertificationBodyDAO acbDao, ErrorMessageUtil msgUtil) {
-        this.listingUploadHandler = listingUploadHandler;
+        this.uploadHandler = uploadHandler;
+        this.uploadUtil = uploadUtil;
         this.listingUploadDao = listingUploadDao;
         this.acbDao = acbDao;
         this.msgUtil = msgUtil;
@@ -49,7 +50,7 @@ public class ListingUploadManager {
         List<CSVRecord> allCsvRecords = getFileAsCsvRecords(file);
         List<ListingUpload> uploadedListings = new ArrayList<ListingUpload>();
 
-        CSVRecord heading = listingUploadHandler.getHeadingRecord(allCsvRecords);
+        CSVRecord heading = uploadUtil.getHeadingRecord(allCsvRecords);
         if (heading == null) {
             LOGGER.warn("Cannot continue parsing upload file " + file.getName() + " without heading.");
             throw new ValidationException(msgUtil.getMessage("listingUpload.noHeadingFound"));
@@ -66,24 +67,13 @@ public class ListingUploadManager {
 
         long currIndex = heading.getRecordNumber() + 1;
         while (currIndex < allCsvRecords.size()) {
-            List<CSVRecord> singleListingCsvRecords = getNextListingRecords(allCsvRecords, currIndex);
-            currIndex += singleListingCsvRecords.size();
+            List<CSVRecord> nextListingCsvRecords = getNextListingRecords(allCsvRecords, currIndex);
+            currIndex += nextListingCsvRecords.size();
+            CertifiedProductSearchDetails parsedListing = uploadHandler.parseAsListing(heading, nextListingCsvRecords);
             ListingUpload listing = new ListingUpload();
-            listing.setChplProductNumber(listingUploadHandler.parseSingleValueField(
-                    Headings.UNIQUE_ID, heading, singleListingCsvRecords));
-            String acbName = listingUploadHandler.parseSingleValueField(
-                    Headings.CERTIFICATION_BODY_NAME, heading, singleListingCsvRecords);
-            CertificationBodyDTO acbDto = null;
-            try {
-                acbDto = acbDao.getByName(acbName);
-            } catch (Exception ex) {
-                LOGGER.fatal("Cannot find ACB with name " + acbName);
-                throw new ValidationException("Cannot find ACB with name '" + acbName + "'.");
-            }
-            if (acbDto != null) {
-                listing.setAcb(new CertificationBody(acbDto));
-            }
+            listing.setChplProductNumber(parsedListing.getChplProductNumber());
             //TODO: parse the csv record list to fill in metadata we need for the upload object
+            //acb
             //error count
             //warning count
             //for above we need the entire listing to be parsed and run through the validator
@@ -113,14 +103,14 @@ public class ListingUploadManager {
                     + startIndex + ". There are " + allCsvRecords.size() + " records.");
             return null;
         }
-        CSVRecord heading = listingUploadHandler.getHeadingRecord(allCsvRecords);
+        CSVRecord heading = uploadUtil.getHeadingRecord(allCsvRecords);
         List<CSVRecord> listingCsvRecords = new ArrayList<CSVRecord>();
         Iterator<CSVRecord> remainingRecords = allCsvRecords.stream().skip(startIndex).iterator();
         while (remainingRecords.hasNext()) {
             CSVRecord record = remainingRecords.next();
-            String recordUniqueId = listingUploadHandler.parseSingleValueField(
+            String recordUniqueId = uploadUtil.parseSingleValueField(
                     Headings.UNIQUE_ID, heading, record);
-            String recordStatus = listingUploadHandler.parseSingleValueField(
+            String recordStatus = uploadUtil.parseSingleValueField(
                     Headings.RECORD_STATUS, heading, record);
             if (!StringUtils.isEmpty(recordUniqueId)) {
                 if (recordStatus.equalsIgnoreCase("NEW") && listingCsvRecords.size() > 0) {

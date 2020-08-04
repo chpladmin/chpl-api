@@ -36,7 +36,7 @@ public class ListingManagerUploadTest {
     private String listing1Csv, listing2Csv, listingNewDeveloperCsv;
     private ErrorMessageUtil msgUtil;
     private ListingUploadManager uploadManager;
-    private ListingUploadHandler uploadHandler;
+    private ListingUploadHandlerUtil uploadHandler;
     private ListingUploadDao uploadDao;
     private CertificationBodyDAO acbDao;
 
@@ -54,7 +54,7 @@ public class ListingManagerUploadTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("upload.notCSV"))).thenReturn("Not CSV message");
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.upload.emptyRows"))).thenReturn("Header only message");
 
-        uploadHandler = new ListingUploadHandler(msgUtil);
+        uploadHandler = new ListingUploadHandlerUtil(msgUtil);
         uploadManager = new ListingUploadManager(uploadHandler, uploadDao, acbDao, msgUtil);
     }
 

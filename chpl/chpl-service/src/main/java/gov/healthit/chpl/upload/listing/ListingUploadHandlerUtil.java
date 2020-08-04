@@ -1,6 +1,10 @@
 package gov.healthit.chpl.upload.listing;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -12,18 +16,20 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
-@Component("listingUploadHandler")
+@Component("listingUploadHandlerUtil")
 @Log4j2
-public class ListingUploadHandler {
+public class ListingUploadHandlerUtil {
+    private static final String CERTIFICATION_DATE_FORMAT = "yyyyMMdd";
+    private DateFormat dateFormat;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public ListingUploadHandler(ErrorMessageUtil msgUtil) {
+    public ListingUploadHandlerUtil(ErrorMessageUtil msgUtil) {
         this.msgUtil = msgUtil;
+        this.dateFormat = new SimpleDateFormat(CERTIFICATION_DATE_FORMAT);
     }
 
     public int getHeadingRecordIndex(List<CSVRecord> allCsvRecords) {
@@ -64,6 +70,18 @@ public class ListingUploadHandler {
         return fieldValue;
     }
 
+    public Boolean parseSingleValueFieldAsBoolean(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords)
+            throws ValidationException {
+        String fieldValue = parseSingleValueField(field, headingRecord, listingRecords);
+        return parseBoolean(fieldValue);
+    }
+
+    public Date parseSingleValueFieldAsDate(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords)
+            throws ValidationException {
+        String fieldValue = parseSingleValueField(field, headingRecord, listingRecords);
+        return parseDate(fieldValue);
+    }
+
     public String parseSingleValueField(Headings field, CSVRecord headingRecord, CSVRecord listingRecord)
         throws ValidationException {
         List<CSVRecord> data = new ArrayList<CSVRecord>();
@@ -87,12 +105,6 @@ public class ListingUploadHandler {
                 }
             }
             return fieldValues;
-        }
-
-    public PendingCertifiedProductDTO parse(List<CSVRecord> records) {
-        PendingCertifiedProductDTO pendingListing = new PendingCertifiedProductDTO();
-
-        return pendingListing;
     }
 
     private boolean hasHeading(CSVRecord record) {
@@ -119,5 +131,45 @@ public class ListingUploadHandler {
             index++;
         }
         return -1;
+    }
+
+    private Boolean parseBoolean(String value) throws ValidationException {
+        if (value == null || StringUtils.isEmpty(value.trim())) {
+            return false;
+        }
+
+        if (value.equalsIgnoreCase("t") || value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes")
+                || value.equalsIgnoreCase("y")) {
+            return true;
+        } else if (value.equalsIgnoreCase("f") || value.equalsIgnoreCase("false") || value.equalsIgnoreCase("no")
+                || value.equalsIgnoreCase("n")) {
+            return false;
+        }
+
+        try {
+            double numValue = Double.parseDouble(value);
+            if (numValue > 0) {
+                return true;
+            }
+        } catch (NumberFormatException ex) {
+            LOGGER.error("Could not parse " + value + " as an integer. " + ex.getMessage());
+            throw new ValidationException(msgUtil.getMessage("listingUpload.invalidBoolean", value));
+        }
+        return false;
+    }
+
+    private Date parseDate(String value) {
+        if (value == null || StringUtils.isEmpty(value.trim())) {
+            return null;
+        }
+
+        //TODO: look for more date formats
+        Date certificationDate = null;
+        try {
+            certificationDate = dateFormat.parse(value);
+        } catch (ParseException ex) {
+            LOGGER.error("Could not parse date " + value, ex);
+        }
+        return certificationDate;
     }
 }

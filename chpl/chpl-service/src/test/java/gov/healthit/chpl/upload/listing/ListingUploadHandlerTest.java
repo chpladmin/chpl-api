@@ -39,7 +39,7 @@ public class ListingUploadHandlerTest {
     private static final String LISTING_ROW = "15.02.02.3007.A056.01.00.0.180214,New";
 
     private ErrorMessageUtil msgUtil;
-    private ListingUploadHandler handler;
+    private ListingUploadHandlerUtil handler;
 
     @Before
     public void setup() throws InvalidArgumentsException, JsonProcessingException,
@@ -51,7 +51,7 @@ public class ListingUploadHandlerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("upload.notCSV"))).thenReturn("Not CSV message");
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.upload.emptyRows"))).thenReturn("Header only message");
 
-        handler = new ListingUploadHandler(msgUtil);
+        handler = new ListingUploadHandlerUtil(msgUtil);
     }
 
     @Test

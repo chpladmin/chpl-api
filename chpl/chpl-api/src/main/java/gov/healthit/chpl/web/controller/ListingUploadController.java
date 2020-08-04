@@ -71,9 +71,7 @@ public class ListingUploadController {
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public void upload(@RequestParam("file") MultipartFile file)
             throws ValidationException, MaxUploadSizeExceededException {
-        List<ListingUpload> listingsToAdd = new ArrayList<ListingUpload>();
-        listingsToAdd = uploadManager.parseUploadFile(file);
-
+        List<ListingUpload> listingsToAdd = uploadManager.parseUploadFile(file);
         for (ListingUpload listingToAdd : listingsToAdd) {
             try {
                 String fileContents = getFileAsString(file);
