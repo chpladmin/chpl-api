@@ -70,7 +70,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class DeveloperManager extends SecuredManager {
     public static final String NEW_DEVELOPER_CODE = "XXXX";
-    private static final Integer FIVE_SECONDS = 5000;
+    private static final Integer DELAY_BEFORE_JOB_START = 5000;
 
     private DeveloperDAO developerDao;
     private ProductManager productManager;
@@ -416,7 +416,7 @@ public class DeveloperManager extends SecuredManager {
         jobDataMap.put(SplitDeveloperJob.USER_KEY, jobUser);
         splitDeveloperJob.setJobDataMap(jobDataMap);
         splitDeveloperTrigger.setJob(splitDeveloperJob);
-        splitDeveloperTrigger.setRunDateMillis(System.currentTimeMillis() + FIVE_SECONDS);
+        splitDeveloperTrigger.setRunDateMillis(System.currentTimeMillis() + DELAY_BEFORE_JOB_START);
         splitDeveloperTrigger = schedulerManager.createBackgroundJobTrigger(splitDeveloperTrigger);
         return splitDeveloperTrigger;
     }
