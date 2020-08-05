@@ -1,6 +1,5 @@
 package gov.healthit.chpl.manager.rules.developer;
 
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,12 +24,10 @@ public class DeveloperValidationFactory {
     public static final String EDIT_STATUS_HISTORY = "EDIT_STATUS_HISTORY";
     public static final String STATUS_CHANGED = "STATUS_CHANGED";
 
-    private FF4j ff4j;
     private ResourcePermissions resourcePermissions;
 
     @Autowired
-    public DeveloperValidationFactory(final FF4j ff4j, final ResourcePermissions resourcePermissions) {
-        this.ff4j = ff4j;
+    public DeveloperValidationFactory(ResourcePermissions resourcePermissions) {
         this.resourcePermissions = resourcePermissions;
     }
 
@@ -51,7 +48,7 @@ public class DeveloperValidationFactory {
         case STATUS_EVENTS:
             return new DeveloperStatusEventsValidation();
         case EDIT_TRANSPARENCY_ATTESTATION:
-            return new DeveloperEditTransparencyAttestationValidation(ff4j, resourcePermissions);
+            return new DeveloperEditTransparencyAttestationValidation(resourcePermissions);
         case HAS_STATUS:
             return new DeveloperHasStatusValidation();
         case ACTIVE_STATUS:

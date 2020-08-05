@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -27,14 +25,12 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class TestFunctionalityAllowedByRoleReviewer implements Reviewer {
 
-    private FF4j ff4j;
     private Environment env;
     private List<RestrictedCriteriaTestFunctionality> restrictedCriteriaTestFunctionality;
     private ResourcePermissions resourcePermissions;
 
     @Autowired
-    public TestFunctionalityAllowedByRoleReviewer(FF4j ff4j, Environment env, ResourcePermissions resourcePermissions) {
-        this.ff4j = ff4j;
+    public TestFunctionalityAllowedByRoleReviewer(Environment env, ResourcePermissions resourcePermissions) {
         this.env = env;
         this.resourcePermissions = resourcePermissions;
     }
@@ -46,14 +42,12 @@ public class TestFunctionalityAllowedByRoleReviewer implements Reviewer {
 
     @Override
     public void review(PendingCertifiedProductDTO listing) {
-        if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)) {
-            for (PendingCertificationResultDTO cr : listing.getCertificationCriterion()) {
-                if (cr.getTestFunctionality() != null) {
-                    cr.getTestFunctionality().removeIf(
-                            crtf -> findRestrictedTestFunctionality(
-                                    cr.getCriterion().getId(),
-                                    crtf.getTestFunctionalityId()).isPresent());
-                }
+        for (PendingCertificationResultDTO cr : listing.getCertificationCriterion()) {
+            if (cr.getTestFunctionality() != null) {
+                cr.getTestFunctionality().removeIf(
+                        crtf -> findRestrictedTestFunctionality(
+                                cr.getCriterion().getId(),
+                                crtf.getTestFunctionalityId()).isPresent());
             }
         }
     }

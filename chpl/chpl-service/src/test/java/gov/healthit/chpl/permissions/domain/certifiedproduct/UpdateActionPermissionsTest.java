@@ -3,7 +3,6 @@ package gov.healthit.chpl.permissions.domain.certifiedproduct;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -11,9 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -21,9 +18,6 @@ import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.certifiedproduct.UpdateActionPermissions;
 
 public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
-
-    @Autowired
-    private FF4j ff4j;
 
     @Mock
     private ResourcePermissions resourcePermissions;
@@ -36,7 +30,6 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         MockitoAnnotations.initMocks(this);
 
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
-        Mockito.doReturn(false).when(ff4j).check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK);
     }
 
     @Override
