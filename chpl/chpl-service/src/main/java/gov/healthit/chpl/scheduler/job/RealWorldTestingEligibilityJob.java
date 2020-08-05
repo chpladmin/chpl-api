@@ -72,9 +72,10 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
                 .collect(Collectors.toList());
 
         getCertifiedProductDetails(listings).stream()
-        .filter(detail -> isListingStatusActiveAsOfDate(detail, asOfDate)
-                && doesListingAttestToEligibleCriteria(detail, eligibleCriteria))
-        .forEach(detail -> updateRwtEligiblityYear(detail));
+            .filter(detail -> isCertificationDateBeforeAsOfDate(detail, asOfDate)
+                    && isListingStatusActiveAsOfDate(detail, asOfDate)
+                    && doesListingAttestToEligibleCriteria(detail, eligibleCriteria))
+            .forEach(detail -> updateRwtEligiblityYear(detail));
         LOGGER.info("********* Completed the Real World Testing Eligibility job. *********");
     }
 
@@ -153,6 +154,21 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
             return true;
         } else {
             return false;
+        }
+    }
+
+    private boolean isCertificationDateBeforeAsOfDate(CertifiedProductSearchDetails listing, Date asOfDate) {
+        if (Objects.isNull(listing) || Objects.isNull(listing.getCertificationDate())) {
+            LOGGER.info("Listing: " + listing.getId() + " - Certification date does not exist");
+            return false;
+        } else {
+            Date certDate = new Date(listing.getCertificationDate());
+            if (certDate.before(asOfDate)) {
+                return true;
+            } else {
+                LOGGER.info("Listing: " + listing.getId() + " - Certification date is after eligibility start date");
+                return false;
+            }
         }
     }
 
