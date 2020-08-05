@@ -2,12 +2,11 @@ package gov.healthit.chpl.dto.scheduler;
 
 import java.io.Serializable;
 
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.entity.scheduler.BrokenSurveillanceRulesEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
 @AllArgsConstructor
 @Data
 public class BrokenSurveillanceRulesDTO implements Serializable {
@@ -19,7 +18,7 @@ public class BrokenSurveillanceRulesDTO implements Serializable {
     private String developer;
     private String product;
     private String version;
-    private String acb;
+    private CertificationBodyDTO certificationBody;
     private String url;
     private String certificationStatus;
     private String dateOfLastStatusChange;
@@ -50,12 +49,23 @@ public class BrokenSurveillanceRulesDTO implements Serializable {
     private long differenceFromCapCompletedAndCapMustBeCompleted;
     private Boolean deleted;
 
+    public BrokenSurveillanceRulesDTO() {
+        this.nonconformity = false;
+        this.numberOfDaysFromDeterminationToCapApproval = Long.MIN_VALUE;
+        this.numberOfDaysFromDeterminationToPresent = Long.MIN_VALUE;
+        this.numberOfDaysFromCapApprovalToCapBegan = Long.MIN_VALUE;
+        this.numberOfDaysFromCapApprovalToPresent = Long.MIN_VALUE;
+        this.numberOfDaysFromCapBeganToCapCompleted = Long.MIN_VALUE;
+        this.numberOfDaysFromCapBeganToPresent = Long.MIN_VALUE;
+        this.differenceFromCapCompletedAndCapMustBeCompleted = Long.MIN_VALUE;
+    }
+
     public BrokenSurveillanceRulesDTO(BrokenSurveillanceRulesEntity entity) {
         this.id = entity.getId();
         this.developer = entity.getDeveloper();
         this.product = entity.getProduct();
         this.version = entity.getVersion();
-        this.acb = entity.getAcb();
+        this.certificationBody = new CertificationBodyDTO(entity.getCertificationBody());
         this.chplProductNumber = entity.getChplProductNumber();
         this.url = entity.getUrl();
         this.certificationStatus = entity.getCertificationStatus();

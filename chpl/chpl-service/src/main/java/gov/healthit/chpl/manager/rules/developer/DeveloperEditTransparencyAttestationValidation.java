@@ -3,9 +3,7 @@ package gov.healthit.chpl.manager.rules.developer;
 import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
-import org.ff4j.FF4j;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.TransparencyAttestationDTO;
@@ -14,12 +12,9 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class DeveloperEditTransparencyAttestationValidation extends ValidationRule<DeveloperValidationContext> {
-    private FF4j ff4j;
     private ResourcePermissions resourcePermissions;
 
-    public DeveloperEditTransparencyAttestationValidation(final FF4j ff4j,
-            final ResourcePermissions resourcePermissions) {
-        this.ff4j = ff4j;
+    public DeveloperEditTransparencyAttestationValidation(ResourcePermissions resourcePermissions) {
         this.resourcePermissions = resourcePermissions;
     }
 
@@ -27,12 +22,10 @@ public class DeveloperEditTransparencyAttestationValidation extends ValidationRu
     public boolean isValid(DeveloperValidationContext context) {
         ErrorMessageUtil msgUtil = context.getErrorMessageUtil();
         DeveloperDTO updatedDev = context.getDeveloperDTO();
-        if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)) {
-            if (resourcePermissions.isUserRoleAcbAdmin()) {
-                if (isTransparencyAttestationUpdated(context.getBeforeDev(), updatedDev)) {
-                    getMessages().add(msgUtil.getMessage("developer.transparencyAttestationEditNotAllowedForRoleACB"));
-                    return false;
-                }
+        if (resourcePermissions.isUserRoleAcbAdmin()) {
+            if (isTransparencyAttestationUpdated(context.getBeforeDev(), updatedDev)) {
+                getMessages().add(msgUtil.getMessage("developer.transparencyAttestationEditNotAllowedForRoleACB"));
+                return false;
             }
         }
         return true;

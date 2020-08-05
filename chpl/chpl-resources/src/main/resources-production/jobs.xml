@@ -36,6 +36,11 @@
             <name>update2014ListingStatusJob</name>
             <group>systemJobs</group>
         </delete-job>
+        <!-- For OCD-2944 -->
+        <delete-triggers-in-group>ONC-ACBOvernightBrokenSurveillanceRulesReportTrigger</delete-triggers-in-group>
+        <delete-triggers-in-group>ONC-ACBInheritedCertificationStatusErrorsReportTrigger</delete-triggers-in-group>
+        <delete-triggers-in-group>ONC-ACBAllBrokenSurveillanceRulesReportTrigger</delete-triggers-in-group>
+        <!-- END OCD-2944 -->
         <!-- End delete pre-processing command(s). -->
     </pre-processing-commands>
     <schedule>

@@ -1,11 +1,9 @@
 package gov.healthit.chpl.permissions.domains.surveillance;
 
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
@@ -21,13 +19,11 @@ public class AddDocumentActionPermissions extends ActionPermissions {
 
     private SurveillanceDAO survDao;
     private ErrorMessageUtil msgUtil;
-    private FF4j ff4j;
 
     @Autowired
-    public AddDocumentActionPermissions(SurveillanceDAO survDao, ErrorMessageUtil msgUtil, FF4j ff4j) {
+    public AddDocumentActionPermissions(SurveillanceDAO survDao, ErrorMessageUtil msgUtil) {
         this.survDao = survDao;
         this.msgUtil = msgUtil;
-        this.ff4j = ff4j;
     }
 
     @Override
@@ -89,10 +85,6 @@ public class AddDocumentActionPermissions extends ActionPermissions {
     }
 
     private boolean isNonconformityForRemovedCriteria(SurveillanceNonconformityEntity nonconformity) {
-        if (!ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)) {
-            return false;
-        }
-
         return nonconformity != null
                 && nonconformity.getCertificationCriterionEntity() != null
                 && nonconformity.getCertificationCriterionEntity().getRemoved() != null
@@ -100,19 +92,11 @@ public class AddDocumentActionPermissions extends ActionPermissions {
     }
 
     private boolean isNonconformityForRemovedRequirement(SurveillanceNonconformityEntity nonconformity) {
-        if (!ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)) {
-            return false;
-        }
-
         return nonconformity != null
                 && nonconformity.getType().equalsIgnoreCase(NonconformityType.K2.getName());
     }
 
     private boolean isListing2014Edition(SurveillanceEntity surv) {
-        if (!ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)) {
-            return false;
-        }
-
         return surv.getCertifiedProduct() != null
                 && surv.getCertifiedProduct().getCertificationEditionId().equals(
                 CertificationEditionConcept.CERTIFICATION_EDITION_2014.getId());
