@@ -3,16 +3,20 @@ package gov.healthit.chpl.entity.scheduler;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.entity.CertificationBodyEntity;
 import lombok.Data;
 
-@Data
 @Entity
 @Table(name = "broken_surveillance_rules")
+@Data
 public class BrokenSurveillanceRulesEntity {
 
     @Id
@@ -41,9 +45,10 @@ public class BrokenSurveillanceRulesEntity {
     @Column(name = "url")
     private String url;
 
-    @Basic(optional = false)
-    @Column(name = "acb")
-    private String acb;
+    @Basic(optional = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "certification_body_id", nullable = false, insertable = true, updatable = true)
+    private CertificationBodyEntity certificationBody;
 
     @Basic(optional = false)
     @Column(name = "certification_status")

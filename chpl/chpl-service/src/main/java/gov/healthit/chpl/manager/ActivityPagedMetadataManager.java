@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,8 +28,10 @@ import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.ActivityMetadataPage;
 import gov.healthit.chpl.dto.ActivityDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Service("activityPagedMetadataManager")
@@ -38,6 +41,7 @@ public class ActivityPagedMetadataManager extends SecuredManager {
     private ActivityDAO activityDao;
     private ActivityMetadataBuilderFactory metadataBuilderFactory;
     private ErrorMessageUtil msgUtil;
+    private ResourcePermissions resourcePermissions;
 
     @Value("${maxActivityPageSize}")
     private Integer maxActivityPageSize;
@@ -47,10 +51,11 @@ public class ActivityPagedMetadataManager extends SecuredManager {
 
     @Autowired
     public ActivityPagedMetadataManager(ActivityDAO activityDao, ActivityMetadataBuilderFactory metadataBuilderFactory,
-            ErrorMessageUtil msgUtil) {
+            ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
         this.activityDao = activityDao;
         this.metadataBuilderFactory = metadataBuilderFactory;
         this.msgUtil = msgUtil;
+        this.resourcePermissions = resourcePermissions;
     }
 
 
@@ -83,6 +88,29 @@ public class ActivityPagedMetadataManager extends SecuredManager {
                 startMillis, endMillis, pageNum, pageSize);
     }
 
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_USER_MAINTENANCE_METADATA)")
+    public ActivityMetadataPage getUserMaintenanceActivityMetadata(Long startMillis, Long endMillis,
+            Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
+        Set<String> errors = new HashSet<String>();
+        errors.addAll(validateActivityDates(startMillis, endMillis));
+        errors.addAll(validatePagingParameters(pageNum, pageSize));
+        if (errors.size() > 0) {
+            throw new ValidationException(errors);
+        }
+        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
+            return getActivityMetadataPageByConcept(ActivityConcept.USER, startMillis, endMillis, pageNum, pageSize);
+        } else {
+            List<UserDTO> allowedUsers = resourcePermissions.getAllUsersForCurrentUser();
+            List<Long> allowedUserIds = allowedUsers.stream()
+                .map(allowedUser -> allowedUser.getId())
+                .collect(Collectors.toList());
+            return getActivityMetadataPageByConceptAndObject(
+                    ActivityConcept.USER, allowedUserIds, startMillis, endMillis, pageNum, pageSize);
+        }
+    }
+
     private ActivityMetadataPage getActivityMetadataPageByConcept(ActivityConcept concept,
             Long startMillis, Long endMillis, Integer pageNumParam, Integer pageSizeParam)
                     throws JsonParseException, IOException {
@@ -110,6 +138,50 @@ public class ActivityPagedMetadataManager extends SecuredManager {
         page.setPageSize(pageSize);
         page.setResultSetSize(activityDao.findResultSetSizeByConcept(concept, startDate, endDate));
         List<ActivityDTO> activityDtos = activityDao.findPageByConcept(concept, startDate, endDate, pageNum, pageSize);
+        Set<ActivityMetadata> activityMetas = new LinkedHashSet<ActivityMetadata>();
+        ActivityMetadataBuilder builder = null;
+        if (activityDtos != null && activityDtos.size() > 0) {
+            LOGGER.info("Found " + activityDtos.size() + " activity events");
+            builder = metadataBuilderFactory.getBuilder(activityDtos.get(0));
+            for (ActivityDTO dto : activityDtos) {
+                ActivityMetadata activityMeta = builder.build(dto);
+                activityMetas.add(activityMeta);
+            }
+        } else {
+            LOGGER.info("Found no activity events");
+        }
+        page.setActivities(activityMetas);
+        return page;
+    }
+
+    private ActivityMetadataPage getActivityMetadataPageByConceptAndObject(ActivityConcept concept, List<Long> objectIds,
+            Long startMillis, Long endMillis, Integer pageNumParam, Integer pageSizeParam)
+                    throws JsonParseException, IOException {
+        Date startDate = new Date(0);
+        if (startMillis != null) {
+            startDate = new Date(startMillis);
+        }
+        Date endDate = new Date();
+        if (endMillis != null) {
+            endDate = new Date(endMillis);
+        }
+        Integer pageNum = 0;
+        if (pageNumParam != null) {
+            pageNum = pageNumParam;
+        }
+        Integer pageSize = defaultActivityPageSize;
+        if (pageSizeParam != null) {
+            pageSize = pageSizeParam;
+        }
+        LOGGER.info("Getting " + concept.name() + " activity: page " + pageNum
+                + ", " + pageSize + " records, from " + startDate + " through " + endDate);
+
+        ActivityMetadataPage page = new ActivityMetadataPage();
+        page.setPageNum(pageNum);
+        page.setPageSize(pageSize);
+        page.setResultSetSize(activityDao.findResultSetSizeByConceptAndObject(concept, objectIds, startDate, endDate));
+        List<ActivityDTO> activityDtos = activityDao.findPageByConceptAndObject(
+                concept, objectIds, startDate, endDate, pageNum, pageSize);
         Set<ActivityMetadata> activityMetas = new LinkedHashSet<ActivityMetadata>();
         ActivityMetadataBuilder builder = null;
         if (activityDtos != null && activityDtos.size() > 0) {

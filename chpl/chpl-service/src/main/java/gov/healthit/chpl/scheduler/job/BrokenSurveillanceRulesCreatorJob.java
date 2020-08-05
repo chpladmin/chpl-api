@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.dao.scheduler.BrokenSurveillanceRulesDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -32,6 +33,7 @@ import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.scheduler.BrokenSurveillanceRulesDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -51,6 +53,9 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
 
     @Autowired
     private BrokenSurveillanceRulesDAO brokenSurveillanceRulesDAO;
+
+    @Autowired
+    private CertificationBodyDAO certificationBodyDAO;
 
     @Autowired
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
@@ -135,7 +140,9 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
 
     }
 
-    private List<BrokenSurveillanceRulesDTO> brokenRules(CertifiedProductSearchDetails listing) {
+    private List<BrokenSurveillanceRulesDTO> brokenRules(CertifiedProductSearchDetails listing)
+            throws NumberFormatException, EntityRetrievalException {
+
         List<BrokenSurveillanceRulesDTO> errors = new ArrayList<BrokenSurveillanceRulesDTO>();
 
         if (listing.getSurveillance().size() == 0) {
@@ -211,12 +218,16 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         return errors;
     }
 
-    private BrokenSurveillanceRulesDTO getDefaultBrokenRule(CertifiedProductSearchDetails listing) {
+    private BrokenSurveillanceRulesDTO getDefaultBrokenRule(CertifiedProductSearchDetails listing)
+            throws NumberFormatException, EntityRetrievalException {
+
         BrokenSurveillanceRulesDTO base = new BrokenSurveillanceRulesDTO();
         base.setDeveloper(listing.getDeveloper().getName());
         base.setProduct(listing.getProduct().getName());
         base.setVersion(listing.getVersion().getVersion());
-        base.setAcb(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
+        base.setCertificationBody(
+                getCertificationBody(
+                        Long.parseLong(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString())));
         base.setChplProductNumber(listing.getChplProductNumber());
         String productDetailsUrl = env.getProperty("chplUrlBegin").trim();
         if (!productDetailsUrl.endsWith("/")) {
@@ -341,6 +352,10 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
             LOGGER.error("Unable to save Broken Surveillance Rules {} with error message {}",
                     items.toString(), e.getLocalizedMessage());
         }
+    }
+
+    private CertificationBodyDTO getCertificationBody(long certificationBodyId) throws EntityRetrievalException {
+        return certificationBodyDAO.getById(certificationBodyId);
     }
 
     private Integer getThreadCountForJob() throws NumberFormatException {

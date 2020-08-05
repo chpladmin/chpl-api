@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
@@ -36,7 +37,6 @@ import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
 import gov.healthit.chpl.domain.schedule.ScheduledSystemJob;
 import gov.healthit.chpl.domain.schedule.TriggerSchedule;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -53,7 +53,7 @@ import gov.healthit.chpl.util.AuthUtil;
 public class SchedulerManager extends SecuredManager {
 
     private static final String AUTHORITY_DELIMITER = ";";
-    private static final String DATA_DELIMITER = "\u263A";
+    public static final String DATA_DELIMITER = ",";
     public static final String CHPL_BACKGROUND_JOBS_KEY = "chplBackgroundJobs";
     public static final String CHPL_JOBS_KEY = "chplJobs";
     public static final String SYSTEM_JOBS_KEY = "systemJobs";
@@ -406,18 +406,20 @@ public class SchedulerManager extends SecuredManager {
         if (doesUserHavePermissionToJob(getScheduler().getJobDetail(trigger.getJobKey()))) {
             if (!StringUtils.isEmpty(trigger.getJobDataMap().getString("acb"))) {
                 // get acbs user has access to
-                List<CertificationBodyDTO> validAcbs = resourcePermissions.getAllAcbsForCurrentUser();
-                for (String acb : trigger.getJobDataMap().getString("acb").split(DATA_DELIMITER)) {
-                    boolean found = false;
-                    for (CertificationBodyDTO validAcb : validAcbs) {
-                        if (acb.equalsIgnoreCase(validAcb.getName())) {
-                            found = true;
-                        }
-                    }
-                    if (!found) {
-                        return false;
-                    }
-                }
+                List<Long> validAcbs = resourcePermissions.getAllAcbsForCurrentUser().stream()
+                        .map(acb -> acb.getId())
+                        .collect(Collectors.toList());
+                //get acbs that were selected
+                List<Long> selectedAcbs = Arrays.stream(trigger.getJobDataMap().getString("acb").split(DATA_DELIMITER))
+                        .map(acb -> Long.parseLong(acb))
+                        .collect(Collectors.toList());
+
+                // Make sure all selectedAcbs are in validaAcbs
+                return !selectedAcbs.stream()
+                        .filter(selectedAcb -> !validAcbs.contains(selectedAcb))
+                        .findAny()
+                        .isPresent();
+
             }
             // if not acb specific no need to check acbs
             return true;

@@ -4,11 +4,9 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -21,13 +19,11 @@ public class TransparencyAttestationManager {
 
     private DeveloperDAO developerDAO;
     private CertificationBodyDAO certificationBodyDAO;
-    private FF4j ff4j;
 
     @Autowired
-    public TransparencyAttestationManager(DeveloperDAO developerDAO, CertificationBodyDAO certificationBodyDAO, FF4j ff4j) {
+    public TransparencyAttestationManager(DeveloperDAO developerDAO, CertificationBodyDAO certificationBodyDAO) {
         this.developerDAO = developerDAO;
         this.certificationBodyDAO = certificationBodyDAO;
-        this.ff4j = ff4j;
     }
 
     public void save(DeveloperDTO developer) {
@@ -48,7 +44,7 @@ public class TransparencyAttestationManager {
                         .acbName(acb.get().getName())
                         .developerId(developerId)
                         .transparencyAttestation(TransparencyAttestationDTO.builder()
-                                .removed(getDerivedTransparencyAttestationRemovedAttribute())
+                                .removed(true)
                                 .transparencyAttestation(
                                         developerACBMapDTO.getTransparencyAttestation().getTransparencyAttestation())
                                 .build())
@@ -56,10 +52,6 @@ public class TransparencyAttestationManager {
                 developerDAO.createTransparencyMapping(developerMapACBMap);
             }
         }
-    }
-
-    private boolean getDerivedTransparencyAttestationRemovedAttribute() {
-        return ff4j.check(FeatureList.EFFECTIVE_RULE_DATE);
     }
 
     private boolean doesTransparenctAttestationExist(DeveloperACBMapDTO dto) {

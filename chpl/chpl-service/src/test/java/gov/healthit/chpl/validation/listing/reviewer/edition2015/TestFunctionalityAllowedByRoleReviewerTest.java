@@ -2,14 +2,12 @@ package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
 import java.util.List;
 
-import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
@@ -23,18 +21,12 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
     private static final String RESTRICTED_TEST_FUNCTIONALITY_JSON = "[{\"criteriaId\":27, \"restrictedTestFunctionalities\": [{\"testFunctionalityId\":56, \"allowedRoleNames\":[\"ROLE_ADMIN\",\"ROLE_ONC\"]}]}]";
     private static final String ERROR_MESSAGE = "Current user does not have permission to add/remove test functionality '%s' for Criteria '%s'.";
 
-    private FF4j ff4j;
-    private Environment env;
-    private ErrorMessageUtil errorMessages;
     private ResourcePermissions permissions;
     private TestFunctionalityAllowedByRoleReviewer reviewer;
 
     @Before
     public void before() {
         // Setup some common mocks - these can be changed in each test if necessary
-        ff4j = Mockito.mock(FF4j.class);
-        Mockito.when(ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)).thenReturn(true);
-
         Environment env = Mockito.mock(Environment.class);
         Mockito.when(env.getProperty("testFunctionalities.restrictions")).thenReturn(RESTRICTED_TEST_FUNCTIONALITY_JSON);
 
@@ -44,25 +36,11 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
         permissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(permissions.doesUserHaveRole(ArgumentMatchers.any(List.class))).thenReturn(true);
 
-        reviewer = new TestFunctionalityAllowedByRoleReviewer(ff4j, env, permissions, errorMessages);
+        reviewer = new TestFunctionalityAllowedByRoleReviewer(env, permissions, errorMessages);
     }
 
     @Test
-    public void review_BeforeEffectiveRuleDate_NoErrorMessages() {
-        // Setup
-        Mockito.when(ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)).thenReturn(false);
-
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder().build();
-
-        // Run
-        reviewer.review(null, listing);
-
-        // Check
-        Assert.assertEquals(0, listing.getErrorMessages().size());;
-    }
-
-    @Test
-    public void review_AfterRuleDateAndTestFunctionalityDidNotChange_NoErrorMessages() {
+    public void review_TestFunctionalityDidNotChange_NoErrorMessages() {
         // Setup
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -104,7 +82,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
     }
 
     @Test
-    public void review_AfterRuleDateAndUserIsAdminAndAddNonRestrictedTestFunctionality_NoErrorMessages() {
+    public void review_UserIsAdminAndAddNonRestrictedTestFunctionality_NoErrorMessages() {
         // Setup
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder().build();
 
@@ -132,7 +110,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
     }
 
     @Test
-    public void review_AfterRuleDateAndUserIsAdminAndRemoveNonRestrictedTestFunctionality_NoErrorMessages() {
+    public void review_UserIsAdminAndRemoveNonRestrictedTestFunctionality_NoErrorMessages() {
         // Setup
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -160,7 +138,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
     }
 
     @Test
-    public void review_AfterRuleDateAndUserIsAdminAndAddRestrictedTestFunctionality_NoErrorMessages() {
+    public void review_UserIsAdminAndAddRestrictedTestFunctionality_NoErrorMessages() {
         // Setup
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -198,7 +176,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
     }
 
     @Test
-    public void review_AfterRuleDateAndUserIsAdminAndRemoveRestrictedTestFunctionality_NoErrorMessages() {
+    public void review_UserIsAdminAndRemoveRestrictedTestFunctionality_NoErrorMessages() {
         // Setup
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -236,7 +214,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
     }
 
     @Test
-    public void review_AfterRuleDateAndUserIsAcbAndAddNonRestrictedTestFunctionality_NoErrorMessages() {
+    public void review_UserIsAcbAndAddNonRestrictedTestFunctionality_NoErrorMessages() {
         // Setup
         Mockito.when(permissions.doesUserHaveRole(ArgumentMatchers.any(List.class))).thenReturn(false);
 
@@ -266,7 +244,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
     }
 
     @Test
-    public void review_AfterRuleDateAndUserIsAcbAndRemoveNonRestrictedTestFunctionality_NoErrorMessages() {
+    public void review_UserIsAcbAndRemoveNonRestrictedTestFunctionality_NoErrorMessages() {
         // Setup
         Mockito.when(permissions.doesUserHaveRole(ArgumentMatchers.any(List.class))).thenReturn(false);
 
@@ -296,7 +274,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
     }
 
     @Test
-    public void review_AfterRuleDateAndUserIsAcbAndAddRestrictedTestFunctionality_ErrorMessageAdded() {
+    public void review_UserIsAcbAndAddRestrictedTestFunctionality_ErrorMessageAdded() {
         // Setup
         Mockito.when(permissions.doesUserHaveRole(ArgumentMatchers.any(List.class))).thenReturn(false);
 
@@ -336,7 +314,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
     }
 
     @Test
-    public void review_AfterRuleDateAndUserIsAcbAndRemoveRestrictedTestFunctionality_ErrorMessageCreated() {
+    public void review_UserIsAcbAndRemoveRestrictedTestFunctionality_ErrorMessageCreated() {
         // Setup
         Mockito.when(permissions.doesUserHaveRole(ArgumentMatchers.any(List.class))).thenReturn(false);
 
