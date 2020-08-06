@@ -40,6 +40,7 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchBasicDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.ConfirmCertifiedProductRequest;
 import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
@@ -743,7 +744,8 @@ public class CertifiedProductController {
 
     //TODO - We might want to take a look at reworking this.  Maybe should be a PUT and the parameters
     //should be re-evaluated
-    @ApiOperation(value = "Confirm a pending certified product.",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Confirm a pending certified product.",
             notes = "Creates a new certified product in the system based on all of the information "
                     + "passed in on the request. This information may differ from what was previously "
                     + "entered for the pending certified product during upload. It will first be validated "
@@ -758,33 +760,56 @@ public class CertifiedProductController {
                     EntityCreationException, EntityRetrievalException,
                     ObjectMissingValidationException, IOException {
 
-        return addPendingCertifiedProduct(pendingCp);
+        ConfirmCertifiedProductRequest request = new ConfirmCertifiedProductRequest();
+        request.setPendingListing(pendingCp);
+        request.setWarningAcknowledgement(false);
+        return addPendingCertifiedProduct(request);
+    }
+
+    @ApiOperation(value = "Confirm a pending certified product.",
+            notes = "Creates a new certified product in the system based on all of the information "
+                    + "passed in on the request. This information may differ from what was previously "
+                    + "entered for the pending certified product during upload. It will first be validated "
+                    + "to check for errors, then a new certified product is created, and the old pending certified"
+                    + "product will be removed. Security Restrictions:  ROLE_ADMIN or have ROLE_ACB and "
+                    + "administrative authority on the ACB for each pending certified product is required.")
+    @RequestMapping(value = "/pending/{pcpId}/beta/confirm", method = RequestMethod.POST,
+    produces = "application/json; charset=utf-8")
+    public synchronized ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProductRequest(
+            @RequestBody(required = true) ConfirmCertifiedProductRequest request)
+                    throws InvalidArgumentsException, ValidationException,
+                    EntityCreationException, EntityRetrievalException,
+                    ObjectMissingValidationException, IOException {
+
+        return addPendingCertifiedProduct(request);
     }
 
     private synchronized ResponseEntity<CertifiedProductSearchDetails> addPendingCertifiedProduct(
-            PendingCertifiedProductDetails pendingCp) throws InvalidArgumentsException, ValidationException,
-    EntityCreationException, EntityRetrievalException, ObjectMissingValidationException,
-    IOException {
+            ConfirmCertifiedProductRequest request)
+            throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, ObjectMissingValidationException,
+            IOException {
 
-        String acbIdStr = pendingCp.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString();
+        String acbIdStr = request.getPendingListing().getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString();
         if (StringUtils.isEmpty(acbIdStr)) {
             throw new InvalidArgumentsException("An ACB ID must be supplied in the request body");
         }
         Long acbId = Long.valueOf(acbIdStr);
-        if (pcpManager.isPendingListingAvailableForUpdate(acbId, pendingCp.getId())) {
-            PendingCertifiedProductDTO pcpDto = new PendingCertifiedProductDTO(pendingCp);
+        if (pcpManager.isPendingListingAvailableForUpdate(acbId, request.getPendingListing().getId())) {
+            PendingCertifiedProductDTO pcpDto = new PendingCertifiedProductDTO(request.getPendingListing());
             PendingValidator validator = validatorFactory.getValidator(pcpDto);
             if (validator != null) {
                 validator.validate(pcpDto, false);
             }
-            if (pcpDto.getErrorMessages() != null && pcpDto.getErrorMessages().size() > 0) {
+            if (pcpDto.getErrorMessages() != null && pcpDto.getErrorMessages().size() > 0
+                    || (pcpDto.getErrorMessages() != null && pcpDto.getErrorMessages().size() > 0
+                    && !request.isWarningAcknowledgement())) {
                 throw new ValidationException(pcpDto.getErrorMessages(), pcpDto.getWarningMessages());
             }
 
-            developerManager.validateDeveloperInSystemIfExists(pendingCp);
+            developerManager.validateDeveloperInSystemIfExists(request.getPendingListing());
 
-            CertifiedProductDTO createdProduct = cpManager.createFromPending(pcpDto);
-            pcpManager.confirm(acbId, pendingCp.getId());
+            CertifiedProductDTO createdProduct = cpManager.createFromPending(pcpDto, request.isWarningAcknowledgement());
+            pcpManager.confirm(acbId, request.getPendingListing().getId());
             CertifiedProductSearchDetails result = cpdManager.getCertifiedProductDetails(createdProduct.getId());
             activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, result.getId(),
                     "Created a certified product", null, result);

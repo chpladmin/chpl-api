@@ -412,7 +412,7 @@ public class CertifiedProductManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS
     }, allEntries = true)
-    public CertifiedProductDTO createFromPending(PendingCertifiedProductDTO pendingCp)
+    public CertifiedProductDTO createFromPending(PendingCertifiedProductDTO pendingCp, boolean acknowledgeWarnings)
             throws EntityRetrievalException, EntityCreationException, IOException {
 
         CertifiedProductDTO toCreate = new CertifiedProductDTO();
