@@ -17,6 +17,21 @@
     </pre-processing-commands>
     <schedule>
         <!-- Delete from here to "DELETE END MARKER" after PROD push -->
+        <!-- Real World Testing Eligibility Job -->
+        <job>
+            <name>realWorldTestingEligibilityJob</name>
+            <group>systemJobs</group>
+            <description>For 2015 listings, determines if the listing is eligible for Real World Testing for the following year.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.RealWorldTestingEligibilityJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+            </job-data-map>
+        </job>
         <!-- DELETE END MARKER -->
     </schedule>
 </job-scheduling-data>
