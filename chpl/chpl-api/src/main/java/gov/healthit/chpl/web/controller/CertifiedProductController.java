@@ -113,6 +113,7 @@ public class CertifiedProductController {
     private ChplProductNumberUtil chplProductNumberUtil;
     private DeveloperManager developerManager;
 
+    @SuppressWarnings({"checkstyle:parameternumber"})
     @Autowired
     public CertifiedProductController(CertifiedProductUploadManager uploadManager,
             CertifiedProductDetailsManager cpdManager, CertifiedProductManager cpManager,
@@ -359,6 +360,7 @@ public class CertifiedProductController {
         return results;
     }
 
+    @SuppressWarnings({"checkstyle:paramternumber"})
     @ApiOperation(value = "Get all of the CQM results for a specified certified product.",
             notes = "Returns all of the CQM results in the CHPL related to the specified certified product.  "
                     + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
@@ -428,6 +430,7 @@ public class CertifiedProductController {
      * @throws EntityRetrievalException if cannot retrieve entity
      * @throws IOException if IO Exception
      */
+    @SuppressWarnings({"checkstyle:linelength", "checkstyle:parameternumber"})
     @ApiOperation(value = "Get all of the certification results for a specified certified "
             + "product based on a CHPL Product Number.",
             notes = "Returns all of the certification results in the CHPL related to the specified certified product.  "
@@ -513,6 +516,7 @@ public class CertifiedProductController {
         return familyTree;
     }
 
+    @SuppressWarnings({"checkstyle:parameternumber"})
     @ApiOperation(value = "Get the ICS family tree for the specified certified product based on a CHPL Product Number.",
             notes = "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
                     + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number.  A valid call to this "
@@ -784,6 +788,7 @@ public class CertifiedProductController {
         return addPendingCertifiedProduct(request);
     }
 
+    @SuppressWarnings({"checkstyle:linelength"})
     private synchronized ResponseEntity<CertifiedProductSearchDetails> addPendingCertifiedProduct(
             ConfirmCertifiedProductRequest request)
             throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, ObjectMissingValidationException,
@@ -801,7 +806,7 @@ public class CertifiedProductController {
                 validator.validate(pcpDto, false);
             }
             if (pcpDto.getErrorMessages() != null && pcpDto.getErrorMessages().size() > 0
-                    || (pcpDto.getErrorMessages() != null && pcpDto.getErrorMessages().size() > 0
+                    || (pcpDto.getWarningMessages() != null && pcpDto.getWarningMessages().size() > 0
                     && !request.isWarningAcknowledgement())) {
                 throw new ValidationException(pcpDto.getErrorMessages(), pcpDto.getWarningMessages());
             }
@@ -942,7 +947,8 @@ public class CertifiedProductController {
         return certifiedProduct;
     }
 
-    private static Function<CertifiedProductSearchDetails, CertifiedProductSearchBasicDetails> mapCertifiedProductDetailsToBasic = (CertifiedProductSearchDetails e)-> {
+    @SuppressWarnings({"checkstyle:linelength"})
+    private static Function<CertifiedProductSearchDetails, CertifiedProductSearchBasicDetails> mapCertifiedProductDetailsToBasic = (CertifiedProductSearchDetails e) -> {
         CertifiedProductSearchBasicDetails certifiedProductSearchBasicDetails = new CertifiedProductSearchBasicDetails();
         certifiedProductSearchBasicDetails.setAcbCertificationId(e.getAcbCertificationId());
         certifiedProductSearchBasicDetails.setAccessibilityCertified(e.getAccessibilityCertified());
