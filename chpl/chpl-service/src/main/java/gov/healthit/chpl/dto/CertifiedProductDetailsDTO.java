@@ -85,6 +85,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
     private TransparencyAttestationDTO transparencyAttestation;
     private String transparencyAttestationUrl;
     private Long numMeaningfulUse;
+    private Integer rwtEligibilityYear;
 
     private static final int FOUR_DIGIT_YEAR = 4;
 
@@ -118,6 +119,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.sedIntendedUserDescription = entity.getSedIntendedUserDescription();
         this.sedTestingEnd = entity.getSedTestingEnd();
         this.numMeaningfulUse = entity.getMeaningfulUseUsers();
+        this.rwtEligibilityYear = entity.getRwtEligibilityYear();
 
         this.developer = new DeveloperDTO();
         this.developer.setId(entity.getDeveloperId());

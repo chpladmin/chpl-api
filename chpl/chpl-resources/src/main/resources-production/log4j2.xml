@@ -346,6 +346,17 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <RollingFile name="realWorldTestingEligibilityJob"
+            fileName="${logDir}/scheduler/realWorldTestingEligibilityJob.log"
+            filePattern="${logDir}/scheduler/history/realWorldTestingEligibilityJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
         <RollingFile name="developerAccessEmailJob"
             fileName="${logDir}/scheduler/developerAccessEmailJob.log"
             filePattern="${logDir}/scheduler/history/developerAccessEmailJob-%d{yyyy-MM-dd}.log">
@@ -492,6 +503,10 @@
         <Logger name="addCuresUpdateToListingsJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="addCuresUpdateToListingsJob" />
+        </Logger>
+        <Logger name="realWorldTestingEligibilityJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="realWorldTestingEligibilityJob" />
         </Logger>
         <Logger name="developerAccessEmailJobLogger" level="INFO"
             additivity="false">

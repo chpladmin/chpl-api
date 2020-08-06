@@ -112,6 +112,7 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
             createSimpleElement(cp.getProductAdditionalSoftware(), "productAdditionalSoftware", sw);
             CertifiedProductQmsStandardXmlGenerator.add(cp.getQmsStandards(), "qmsStandards", sw);
             createSimpleElement(cp.getReportFileLocation(), "reportFileLocation", sw);
+            createSimpleElement(cp.getRwtEligibilityYear(), "rwtEligibilityYear", sw);
             CertifiedProductSedXmlGenerator.add(cp.getSed(), "sed", sw);
             createSimpleElement(cp.getSedIntendedUserDescription(), "sedIntendedUserDescription", sw);
             createSimpleElement(cp.getSedReportFileLocation(), "sedReportFileLocation", sw);
