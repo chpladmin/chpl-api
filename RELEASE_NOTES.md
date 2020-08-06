@@ -8,6 +8,7 @@ _27 July 2020_
 * Update summary statistics creator job to be non-blocking
 * Check for duplicate data on listing confirm and edit
 * Move data loaded on startup to caching framework
+* Updated text on user invitation email messages
 
 ### Flagged Features
 * Add endpoint to get direct reviews for any developer
