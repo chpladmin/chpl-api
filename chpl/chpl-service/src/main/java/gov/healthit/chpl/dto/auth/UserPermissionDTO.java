@@ -1,12 +1,16 @@
 package gov.healthit.chpl.dto.auth;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.entity.auth.UserPermissionEntity;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UserPermissionDTO {
+public class UserPermissionDTO implements Serializable {
+    private static final long serialVersionUID = 4496309116471832170L;
+
     private Long id;
     private String authority;
     private String name;

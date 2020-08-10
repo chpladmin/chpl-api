@@ -208,7 +208,7 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
 
     /**
      * Get a task executor.
-     * 
+     *
      * @return TaskExecutor object
      */
     @Bean(name = "jobAsyncDataExecutor")

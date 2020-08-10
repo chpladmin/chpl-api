@@ -58,12 +58,10 @@ import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import lombok.extern.log4j.Log4j2;
 
 @Api(value = "users")
 @RestController
 @RequestMapping("/users")
-@Log4j2
 public class UserManagementController {
     private static final long VALID_INVITATION_LENGTH = 3L * 24L * 60L * 60L * 1000L;
     private static final long VALID_CONFIRMATION_LENGTH = 30L * 24L * 60L * 60L * 1000L;
@@ -122,11 +120,11 @@ public class UserManagementController {
         invitation = invitationManager.getById(invitation.getId());
 
         // send email for user to confirm email address
-        String htmlMessage = "<p>Thank you for setting up your administrator account on ONC's CHPL. "
+        String htmlMessage = "<p>Thank you for setting up your administrator account on ONC's Certified Health IT Product List (CHPL). "
                 + "Please click the link below to activate your account: <br/>" + env.getProperty("chplUrlBegin")
                 + "/#/registration/confirm-user/" + invitation.getConfirmToken() + "</p>"
                 + "<p>If you have any issues completing the registration, "
-                + "please contact the ONC CHPL Team at <a href=\"mailto:onc_chpl@hhs.gov\">onc_chpl@hhs.gov</a>.</p>"
+                + "please visit the <a href=\"https://inquiry.healthit.gov/\">Health IT Feedback and Inquiry Portal</a> and select \"Certified Health IT Product List (CHPL)\" to submit a ticket.</p>"
                 + "<p>The CHPL Team</p>";
 
         String[] toEmails = {
@@ -289,13 +287,13 @@ public class UserManagementController {
         }
 
         // send email
-        String htmlMessage = "<p>Hi,</p>" + "<p>You have been granted a new role on ONC's CHPL "
+        String htmlMessage = "<p>Hi,</p>" + "<p>You have been granted a new role on ONC's Certified Health IT Product List (CHPL) "
                 + "which will allow you to manage certified product listings on the CHPL. "
                 + "Please click the link below to create or update your account: <br/>"
                 + env.getProperty("chplUrlBegin") + "/#/registration/create-user/" + createdInvite.getInviteToken()
                 + "</p>"
                 + "<p>If you have any issues completing the registration, "
-                + "please contact the ONC CHPL Team at <a href=\"mailto:onc_chpl@hhs.gov\">onc_chpl@hhs.gov</a>.</p>"
+                + "please visit the <a href=\"https://inquiry.healthit.gov/\">Health IT Feedback and Inquiry Portal</a> and select \"Certified Health IT Product List (CHPL)\" to submit a ticket.</p>"
                 + "<p>Take care,<br/> " + "The CHPL Team</p>";
 
         String[] toEmails = {

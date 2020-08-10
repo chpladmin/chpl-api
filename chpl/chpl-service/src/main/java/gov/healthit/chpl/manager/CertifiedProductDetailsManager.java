@@ -12,10 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CQMResultDetailsDAO;
-import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertificationStatusEventDAO;
@@ -25,12 +23,12 @@ import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
-import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.MeaningfulUseUserDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultTestData;
@@ -56,10 +54,8 @@ import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.TransparencyAttestation;
 import gov.healthit.chpl.domain.UcdProcess;
-import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
-import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultMacraMeasureDTO;
@@ -78,7 +74,6 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
-import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.MeaningfulUseUserDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.impl.CertifiedProductDetailsManagerAsync;
@@ -111,15 +106,10 @@ public class CertifiedProductDetailsManager {
     private PropertyUtil propUtil;
     private ChplProductNumberUtil chplProductNumberUtil;
     private ResourcePermissions resourcePermissions;
-    private CertificationEditionDAO certificationEditionDAO;
-
-    private List<CertificationEditionDTO> editions = null;
-    private CQMCriterionDAO cqmCriterionDAO;
-    private MacraMeasureDAO macraDao;
-    private List<CQMCriterion> cqmCriteria = new ArrayList<CQMCriterion>();
-    private List<MacraMeasure> macraMeasures = new ArrayList<MacraMeasure>();
+    private DimensionalDataManager dimensionalDataManager;
 
     @Autowired
+    @SuppressWarnings({"checkstyle:parameternumber"})
     public CertifiedProductDetailsManager(
             CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
             CQMResultDetailsDAO cqmResultDetailsDAO,
@@ -141,9 +131,7 @@ public class CertifiedProductDetailsManager {
             PropertyUtil propUtil,
             ChplProductNumberUtil chplProductNumberUtil,
             ResourcePermissions resourcePermissions,
-            CQMCriterionDAO cqmCriterionDAO,
-            MacraMeasureDAO macraDao,
-            CertificationEditionDAO certificationEditionDAO) {
+            DimensionalDataManager dimensionalDataManager) {
 
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
         this.cqmResultDetailsDAO = cqmResultDetailsDAO;
@@ -165,20 +153,7 @@ public class CertifiedProductDetailsManager {
         this.propUtil = propUtil;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.resourcePermissions = resourcePermissions;
-        this.cqmCriterionDAO = cqmCriterionDAO;
-        this.macraDao = macraDao;
-        this.certificationEditionDAO = certificationEditionDAO;
-
-        refreshData();
-    }
-
-    @Transactional
-    public void refreshData() {
-        cqmCriteria = new ArrayList<CQMCriterion>();
-        macraMeasures = new ArrayList<MacraMeasure>();
-        loadCQMCriteria();
-        loadCriteriaMacraMeasures();
-        editions = certificationEditionDAO.findAll();
+        this.dimensionalDataManager = dimensionalDataManager;
     }
 
     @Transactional
@@ -400,14 +375,6 @@ public class CertifiedProductDetailsManager {
         }
     }
 
-    public List<CQMCriterion> getCqmCriteria() {
-        return cqmCriteria;
-    }
-
-    public void setCqmCriteria(List<CQMCriterion> cqmCriteria) {
-        this.cqmCriteria = cqmCriteria;
-    }
-
     private List<CQMResultDetails> getCqmResultDetails(Future<List<CQMResultDetailsDTO>> cqmResultsFuture,
             String year) throws EntityRetrievalException {
 
@@ -481,35 +448,9 @@ public class CertifiedProductDetailsManager {
         return muuHistory;
     }
 
-    private void loadCriteriaMacraMeasures() {
-        List<MacraMeasureDTO> dtos = macraDao.findAll();
-        for (MacraMeasureDTO dto : dtos) {
-            MacraMeasure measure = new MacraMeasure(dto);
-            macraMeasures.add(measure);
-        }
-    }
-
-    private void loadCQMCriteria() {
-        List<CQMCriterionDTO> dtos = cqmCriterionDAO.findAll();
-        for (CQMCriterionDTO dto : dtos) {
-            CQMCriterion criterion = new CQMCriterion();
-            criterion.setCmsId(dto.getCmsId());
-            criterion.setCqmCriterionTypeId(dto.getCqmCriterionTypeId());
-            criterion.setCqmDomain(dto.getCqmDomain());
-            criterion.setCqmVersionId(dto.getCqmVersionId());
-            criterion.setCqmVersion(dto.getCqmVersion());
-            criterion.setCriterionId(dto.getId());
-            criterion.setDescription(dto.getDescription());
-            criterion.setNqfNumber(dto.getNqfNumber());
-            criterion.setNumber(dto.getNumber());
-            criterion.setTitle(dto.getTitle());
-            cqmCriteria.add(criterion);
-        }
-    }
-
     private List<CQMCriterion> getAvailableCQMVersions() {
         List<CQMCriterion> criteria = new ArrayList<CQMCriterion>();
-        for (CQMCriterion criterion : cqmCriteria) {
+        for (CQMCriterion criterion : dimensionalDataManager.getCQMCriteria()) {
             if (!StringUtils.isEmpty(criterion.getCmsId()) && criterion.getCmsId().startsWith("CMS")) {
                 criteria.add(criterion);
             }
@@ -517,6 +458,7 @@ public class CertifiedProductDetailsManager {
         return criteria;
     }
 
+    @SuppressWarnings({"checkstyle:methodlength"})
     private CertificationResult getCertificationResult(CertificationResultDetailsDTO certResult,
             CertifiedProductSearchDetails searchDetails) {
 
@@ -709,7 +651,7 @@ public class CertifiedProductDetailsManager {
         }
 
         // set allowed macra measures (if any)
-        for (MacraMeasure measure : macraMeasures) {
+        for (MacraMeasure measure : dimensionalDataManager.getMacraMeasures()) {
             if (measure.getCriteria().getId().equals(result.getCriterion().getId())) {
                 result.getAllowedMacraMeasures().add(measure);
             }
@@ -777,6 +719,7 @@ public class CertifiedProductDetailsManager {
         searchDetails.setQmsStandards(getCertifiedProductQmsStandards(dto.getId()));
         searchDetails.setTargetedUsers(getCertifiedProductTargetedUsers(dto.getId()));
         searchDetails.setAccessibilityStandards(getCertifiedProductAccessibilityStandards(dto.getId()));
+        searchDetails.setRwtEligibilityYear(dto.getRwtEligibilityYear());
 
         InheritedCertificationStatus ics = new InheritedCertificationStatus();
         ics.setInherits(dto.getIcs());
@@ -867,11 +810,13 @@ public class CertifiedProductDetailsManager {
     private List<CertifiedProductAccessibilityStandard> getCertifiedProductAccessibilityStandards(Long id)
             throws EntityRetrievalException {
 
-        List<CertifiedProductAccessibilityStandardDTO> accessibilityStandardDtos = new ArrayList<CertifiedProductAccessibilityStandardDTO>();
+        List<CertifiedProductAccessibilityStandardDTO> accessibilityStandardDtos =
+                new ArrayList<CertifiedProductAccessibilityStandardDTO>();
 
         accessibilityStandardDtos = certifiedProductAsDao.getAccessibilityStandardsByCertifiedProductId(id);
 
-        List<CertifiedProductAccessibilityStandard> accessibilityStandardResults = new ArrayList<CertifiedProductAccessibilityStandard>();
+        List<CertifiedProductAccessibilityStandard> accessibilityStandardResults =
+                new ArrayList<CertifiedProductAccessibilityStandard>();
 
         for (CertifiedProductAccessibilityStandardDTO accessibilityStandardDto : accessibilityStandardDtos) {
             CertifiedProductAccessibilityStandard result = new CertifiedProductAccessibilityStandard(
@@ -1001,7 +946,7 @@ public class CertifiedProductDetailsManager {
         cp.setId(dto.getId());
         cp.setChplProductNumber(chplProductNumberUtil.generate(dto.getId()));
         cp.setLastModifiedDate(dto.getLastModifiedDate() != null ? dto.getLastModifiedDate().getTime() : null);
-        CertificationEditionDTO edition = getEdition(dto.getCertificationEditionId());
+        CertificationEdition edition = getEdition(dto.getCertificationEditionId());
         if (edition != null) {
             cp.setEdition(edition.getYear());
         }
@@ -1015,10 +960,10 @@ public class CertifiedProductDetailsManager {
         return cp;
     }
 
-    private CertificationEditionDTO getEdition(Long editionId) {
-        for (CertificationEditionDTO dto : this.editions) {
-            if (dto.getId().equals(editionId)) {
-                return dto;
+    private CertificationEdition getEdition(Long editionId) {
+        for (CertificationEdition edition : dimensionalDataManager.getCertificationEditions()) {
+            if (edition.getCertificationEditionId().equals(editionId)) {
+                return edition;
             }
         }
         return null;

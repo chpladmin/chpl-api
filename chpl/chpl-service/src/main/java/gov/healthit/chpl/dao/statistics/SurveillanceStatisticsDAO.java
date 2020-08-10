@@ -9,11 +9,11 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.DateRange;
-import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
 import gov.healthit.chpl.entity.surveillance.NonconformityAggregatedStatisticsEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
+import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailCertificationBodyStatistic;
 
 @Repository("surveillanceStatisticsDAO")
 public class SurveillanceStatisticsDAO extends BaseDAOImpl {
@@ -117,7 +117,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
     /**
      * Open NCs By ACB.
      */
-    public List<CertifiedBodyStatistics> getTotalOpenNonconformitiesByAcb(final DateRange dateRange) {
+    public List<EmailCertificationBodyStatistic> getTotalOpenNonconformitiesByAcb(final DateRange dateRange) {
         String hql = "SELECT cb.name, count(*) "
                 + "FROM CertifiedProductEntity cp, "
                 + "CertificationBodyEntity cb, "
@@ -147,13 +147,11 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         }
 
         List<Object[]> results = query.getResultList();
-        List<CertifiedBodyStatistics> cbStats = new ArrayList<CertifiedBodyStatistics>();
+        List<EmailCertificationBodyStatistic> cbStats = new ArrayList<EmailCertificationBodyStatistic>();
         for (Object[] obj : results) {
-            CertifiedBodyStatistics stat = new CertifiedBodyStatistics();
-            stat.setName(obj[0].toString());
-            stat.setYear(null);
-            stat.setTotalListings(Long.valueOf(obj[1].toString()));
-            stat.setCertificationStatusName(null);
+            EmailCertificationBodyStatistic stat = new EmailCertificationBodyStatistic();
+            stat.setAcbName(obj[0].toString());
+            stat.setCount(Long.valueOf(obj[1].toString()));
             cbStats.add(stat);
         }
         return cbStats;
@@ -181,7 +179,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
     /**
      * Open Surveillance Activities By ACB.
      */
-    public List<CertifiedBodyStatistics> getTotalOpenSurveillanceActivitiesByAcb(final DateRange dateRange) {
+    public List<EmailCertificationBodyStatistic> getTotalOpenSurveillanceActivitiesByAcb(final DateRange dateRange) {
         String hql = "SELECT cb.name, count(*) "
                 + "FROM CertifiedProductEntity cp, "
                 + "CertificationBodyEntity cb, "
@@ -208,13 +206,11 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         }
 
         List<Object[]> results = query.getResultList();
-        List<CertifiedBodyStatistics> cbStats = new ArrayList<CertifiedBodyStatistics>();
+        List<EmailCertificationBodyStatistic> cbStats = new ArrayList<EmailCertificationBodyStatistic>();
         for (Object[] obj : results) {
-            CertifiedBodyStatistics stat = new CertifiedBodyStatistics();
-            stat.setName(obj[0].toString());
-            stat.setYear(null);
-            stat.setTotalListings(Long.valueOf(obj[1].toString()));
-            stat.setCertificationStatusName(null);
+            EmailCertificationBodyStatistic stat = new EmailCertificationBodyStatistic();
+            stat.setAcbName(obj[0].toString());
+            stat.setCount(Long.valueOf(obj[1].toString()));
             cbStats.add(stat);
         }
         return cbStats;
@@ -253,6 +249,8 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         String hql = "FROM SurveillanceEntity se "
                 + "JOIN FETCH se.surveilledRequirements sre "
                 + "JOIN FETCH sre.nonconformities nc "
+                + "JOIN FETCH nc.nonconformityStatus ncs "
+                + "JOIN FETCH se.certifiedProduct cp "
                 + "WHERE se.deleted = false "
                 + "AND sre.deleted = false "
                 + "AND nc.deleted = false ";
@@ -262,6 +260,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
 
     public List<SurveillanceEntity> getAllSurveillances() {
         String hql = "FROM SurveillanceEntity se "
+                + "JOIN FETCH se.surveilledRequirements sre "
                 + "WHERE se.deleted = false ";
         return entityManager.createQuery(hql, SurveillanceEntity.class)
                 .getResultList();

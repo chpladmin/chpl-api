@@ -6,8 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
@@ -15,14 +13,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
-import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.TestFunctionalityCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
-import gov.healthit.chpl.manager.TestingFunctionalityManager;
+import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
@@ -38,27 +37,20 @@ import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 @DependsOn("certificationEditionDAO")
 public class TestFunctionality2015Reviewer extends PermissionBasedReviewer {
     private TestFunctionalityDAO testFunctionalityDAO;
-    private TestingFunctionalityManager testFunctionalityManager;
-    private CertificationEditionDAO editionDAO;
-    private List<CertificationEditionDTO> editionDTOs;
+    private DimensionalDataManager dimensionalDataManager;
 
     @Autowired
     public TestFunctionality2015Reviewer(TestFunctionalityDAO testFunctionalityDAO,
-            TestingFunctionalityManager testFunctionalityManager, CertificationEditionDAO editionDAO,
+            CertificationEditionDAO editionDAO,
+            DimensionalDataManager dimensionalDataManager,
             ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
         super(msgUtil, resourcePermissions);
         this.testFunctionalityDAO = testFunctionalityDAO;
-        this.testFunctionalityManager = testFunctionalityManager;
-        this.editionDAO = editionDAO;
-    }
-
-    @PostConstruct
-    public void init() {
-        editionDTOs = editionDAO.findAll();
+        this.dimensionalDataManager = dimensionalDataManager;
     }
 
     @Override
-    public void review(final CertifiedProductSearchDetails listing) {
+    public void review(CertifiedProductSearchDetails listing) {
         if (listing.getCertificationResults() != null) {
             for (CertificationResult cr : listing.getCertificationResults()) {
                 if (cr.isSuccess() != null && cr.isSuccess().equals(Boolean.TRUE)
@@ -74,13 +66,13 @@ public class TestFunctionality2015Reviewer extends PermissionBasedReviewer {
         }
     }
 
-    private Set<String> getTestingFunctionalityErrorMessages(final CertificationResultTestFunctionality crtf,
-            final CertificationResult cr, final CertifiedProductSearchDetails listing) {
+    private Set<String> getTestingFunctionalityErrorMessages(CertificationResultTestFunctionality crtf,
+            CertificationResult cr, CertifiedProductSearchDetails listing) {
 
         Set<String> errors = new HashSet<String>();
 
-        CertificationEditionDTO edition = getEditionDTO(getEditionFromListing(listing));
-        TestFunctionalityDTO tf = getTestFunctionality(crtf.getName(), edition.getId());
+        CertificationEdition edition = getEdition(getEditionFromListing(listing));
+        TestFunctionalityDTO tf = getTestFunctionality(crtf.getName(), edition.getCertificationEditionId());
 
         if (!isTestFunctionalityCritierionValid(cr.getCriterion().getId(), tf, edition.getYear())) {
             errors.add(getTestFunctionalityCriterionErrorMessage(crtf, cr, listing, edition));
@@ -91,7 +83,8 @@ public class TestFunctionality2015Reviewer extends PermissionBasedReviewer {
     private Boolean isTestFunctionalityCritierionValid(Long criteriaId, TestFunctionalityDTO tf, String year) {
 
         List<TestFunctionalityDTO> validTestFunctionalityForCriteria =
-                testFunctionalityManager.getTestFunctionalityCriteriaMap2015().get(criteriaId);
+                testFunctionalityDAO.getTestFunctionalityCriteriaMaps(
+                        CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).get(criteriaId);
 
         if (validTestFunctionalityForCriteria == null) {
             return false;
@@ -101,11 +94,11 @@ public class TestFunctionality2015Reviewer extends PermissionBasedReviewer {
         }
     }
 
-    private String getTestFunctionalityCriterionErrorMessage(final CertificationResultTestFunctionality crtf,
-            final CertificationResult cr, final CertifiedProductSearchDetails cp,
-            final CertificationEditionDTO edition) {
+    private String getTestFunctionalityCriterionErrorMessage(CertificationResultTestFunctionality crtf,
+            CertificationResult cr, CertifiedProductSearchDetails cp,
+            CertificationEdition edition) {
 
-        TestFunctionalityDTO tf = getTestFunctionality(crtf.getName(), edition.getId());
+        TestFunctionalityDTO tf = getTestFunctionality(crtf.getName(), edition.getCertificationEditionId());
         return getTestFunctionalityCriterionErrorMessage(
                 Util.formatCriteriaNumber(cr.getCriterion()),
                 crtf.getName(),
@@ -113,23 +106,23 @@ public class TestFunctionality2015Reviewer extends PermissionBasedReviewer {
                 Util.formatCriteriaNumber(cr.getCriterion()));
     }
 
-    private String getTestFunctionalityCriterionErrorMessage(final String criteriaNumber,
-            final String testFunctionalityNumber, final String listOfValidCriteria, final String currentCriterion) {
+    private String getTestFunctionalityCriterionErrorMessage(String criteriaNumber,
+            String testFunctionalityNumber, String listOfValidCriteria, String currentCriterion) {
 
         return msgUtil.getMessage("listing.criteria.testFunctionalityCriterionMismatch",
                 criteriaNumber, testFunctionalityNumber, listOfValidCriteria, currentCriterion);
     }
 
-    private CertificationEditionDTO getEditionDTO(final String year) {
-        for (CertificationEditionDTO dto : editionDTOs) {
-            if (dto.getYear().equals(year)) {
-                return dto;
+    private CertificationEdition getEdition(String year) {
+        for (CertificationEdition edition : dimensionalDataManager.getCertificationEditions()) {
+            if (edition.getYear().equals(year)) {
+                return edition;
             }
         }
         return null;
     }
 
-    private String getEditionFromListing(final CertifiedProductSearchDetails listing) {
+    private String getEditionFromListing(CertifiedProductSearchDetails listing) {
         String edition = "";
         if (listing.getCertificationEdition().containsKey(CertifiedProductSearchDetails.EDITION_NAME_KEY)) {
             edition = listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
@@ -137,12 +130,12 @@ public class TestFunctionality2015Reviewer extends PermissionBasedReviewer {
         return edition;
     }
 
-    private TestFunctionalityDTO getTestFunctionality(final String number, final Long editionId) {
+    private TestFunctionalityDTO getTestFunctionality(String number, Long editionId) {
         return testFunctionalityDAO.getByNumberAndEdition(number, editionId);
     }
 
-    private String getDelimitedListOfValidCriteriaNumbers(final TestFunctionalityDTO tfDTO,
-            final CertificationEditionDTO edition) {
+    private String getDelimitedListOfValidCriteriaNumbers(TestFunctionalityDTO tfDTO,
+            CertificationEdition edition) {
 
         StringBuilder criteria = new StringBuilder();
         List<CertificationCriterionDTO> certDTOs = new ArrayList<CertificationCriterionDTO>();
