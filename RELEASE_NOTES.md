@@ -1,5 +1,21 @@
 # Release Notes
 
+## Version 25.10.0
+_10 August 2020_
+
+### Features
+* Add Quartz job to set Real World Testing Eligibility Year for eligible listings
+* Add /metadata/beta/users endpoint for paged user activity
+* Remove ERD and ERD+1 week flags
+* Updated Quartz jobs to handle updated ONC-ACB selection requirements
+
+### Bug Fixes
+* Correctly handle error with k2 surveillance requirement
+* Upgrade jackson-core library to be compatible with databind lib
+* Show "Cures Update" on Broken Surveillance Report
+
+---
+
 ## Version 25.9.0
 _27 July 2020_
 
