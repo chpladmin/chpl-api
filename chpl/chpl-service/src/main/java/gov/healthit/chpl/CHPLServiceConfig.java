@@ -6,11 +6,13 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
 import javax.net.ssl.SSLContext;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -32,9 +34,12 @@ import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.ClientHttpRequestExecution;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.client.support.BasicAuthenticationInterceptor;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.castor.CastorMarshaller;
@@ -259,7 +264,18 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
 
         RestTemplate restTemplate = new RestTemplate(requestFactory);
         restTemplate.getInterceptors().add(
-                new BasicAuthenticationInterceptor("chpluser", "PASSWORD_HERE"));
+                new ClientHttpRequestInterceptor() {
+
+                    @Override
+                    public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
+                            throws IOException {
+                        String plainCredentials = "chpluser:1r3s7(*18ahsdui";
+                        String base64Credentials = new String(Base64.encodeBase64(plainCredentials.getBytes()));
+                        request.getHeaders().add("Authorization", "Basic " + base64Credentials);
+                        request.getHeaders().setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+                        return execution.execute(request, body);
+                    }
+                });
         restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory("https://oncprojectracking.ahrqdev.org/support-jsd/rest/api/2/issue"));
         return restTemplate;
     }
