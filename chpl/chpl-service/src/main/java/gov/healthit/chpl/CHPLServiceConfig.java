@@ -116,7 +116,8 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
     @Bean
     public org.springframework.orm.jpa.LocalEntityManagerFactoryBean entityManagerFactory() {
         LOGGER.info("get LocalEntityManagerFactoryBean");
-        org.springframework.orm.jpa.LocalEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
+        org.springframework.orm.jpa.LocalEntityManagerFactoryBean bean
+            = new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
         bean.setPersistenceUnitName(env.getRequiredProperty("persistenceUnitName"));
         return bean;
     }
@@ -254,7 +255,8 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
     }
 
     @Bean
-    public RestTemplate restTemplate() throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
+    public RestTemplate jiraAuthenticatedRestTemplate()
+            throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
         TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
         SSLContext sslContext = org.apache.http.ssl.SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
         SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext);
@@ -265,18 +267,19 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
         RestTemplate restTemplate = new RestTemplate(requestFactory);
         restTemplate.getInterceptors().add(
                 new ClientHttpRequestInterceptor() {
+                    private String jiraUsername = env.getRequiredProperty("jira.username");
+                    private String jiraPassword = env.getRequiredProperty("jira.password");
 
                     @Override
                     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
                             throws IOException {
-                        String plainCredentials = "chpluser:1r3s7(*18ahsdui";
+                        String plainCredentials = jiraUsername + ":" + jiraPassword;
                         String base64Credentials = new String(Base64.encodeBase64(plainCredentials.getBytes()));
                         request.getHeaders().add("Authorization", "Basic " + base64Credentials);
                         request.getHeaders().setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
                         return execution.execute(request, body);
                     }
                 });
-        restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory("https://oncprojectracking.ahrqdev.org/support-jsd/rest/api/2/issue"));
         return restTemplate;
     }
 }
