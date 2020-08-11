@@ -109,6 +109,7 @@ public class CertifiedProductDetailsManager {
     private DimensionalDataManager dimensionalDataManager;
 
     @Autowired
+    @SuppressWarnings({"checkstyle:parameternumber"})
     public CertifiedProductDetailsManager(
             CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
             CQMResultDetailsDAO cqmResultDetailsDAO,
@@ -457,6 +458,7 @@ public class CertifiedProductDetailsManager {
         return criteria;
     }
 
+    @SuppressWarnings({"checkstyle:methodlength"})
     private CertificationResult getCertificationResult(CertificationResultDetailsDTO certResult,
             CertifiedProductSearchDetails searchDetails) {
 
@@ -717,6 +719,7 @@ public class CertifiedProductDetailsManager {
         searchDetails.setQmsStandards(getCertifiedProductQmsStandards(dto.getId()));
         searchDetails.setTargetedUsers(getCertifiedProductTargetedUsers(dto.getId()));
         searchDetails.setAccessibilityStandards(getCertifiedProductAccessibilityStandards(dto.getId()));
+        searchDetails.setRwtEligibilityYear(dto.getRwtEligibilityYear());
 
         InheritedCertificationStatus ics = new InheritedCertificationStatus();
         ics.setInherits(dto.getIcs());
@@ -807,11 +810,13 @@ public class CertifiedProductDetailsManager {
     private List<CertifiedProductAccessibilityStandard> getCertifiedProductAccessibilityStandards(Long id)
             throws EntityRetrievalException {
 
-        List<CertifiedProductAccessibilityStandardDTO> accessibilityStandardDtos = new ArrayList<CertifiedProductAccessibilityStandardDTO>();
+        List<CertifiedProductAccessibilityStandardDTO> accessibilityStandardDtos =
+                new ArrayList<CertifiedProductAccessibilityStandardDTO>();
 
         accessibilityStandardDtos = certifiedProductAsDao.getAccessibilityStandardsByCertifiedProductId(id);
 
-        List<CertifiedProductAccessibilityStandard> accessibilityStandardResults = new ArrayList<CertifiedProductAccessibilityStandard>();
+        List<CertifiedProductAccessibilityStandard> accessibilityStandardResults =
+                new ArrayList<CertifiedProductAccessibilityStandard>();
 
         for (CertifiedProductAccessibilityStandardDTO accessibilityStandardDto : accessibilityStandardDtos) {
             CertifiedProductAccessibilityStandard result = new CertifiedProductAccessibilityStandard(
