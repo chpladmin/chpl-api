@@ -6,9 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import gov.healthit.chpl.caching.CacheNames;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -128,6 +130,9 @@ public class SurveillanceManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).CREATE, #survToInsert)")
+    @CacheEvict(value = {
+            CacheNames.COLLECTIONS_LISTINGS
+    }, allEntries = true)
     public Long createSurveillance(Surveillance survToInsert)
             throws UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException,
             EntityRetrievalException, JsonProcessingException, EntityCreationException,
@@ -167,6 +172,9 @@ public class SurveillanceManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).UPDATE, #survToUpdate)")
+    @CacheEvict(value = {
+            CacheNames.COLLECTIONS_LISTINGS
+    }, allEntries = true)
     public void updateSurveillance(final Surveillance survToUpdate) throws EntityRetrievalException,
             UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException,
             EntityCreationException, JsonProcessingException, ValidationException {
@@ -206,6 +214,9 @@ public class SurveillanceManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).DELETE, #surv)")
+    @CacheEvict(value = {
+            CacheNames.COLLECTIONS_LISTINGS
+    }, allEntries = true)
     public void deleteSurveillance(Surveillance surv)
             throws EntityRetrievalException, SurveillanceAuthorityAccessDeniedException {
         checkSurveillanceAuthority(surv);
