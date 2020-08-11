@@ -36,30 +36,10 @@
             <name>update2014ListingStatusJob</name>
             <group>systemJobs</group>
         </delete-job>
-        <!-- For OCD-2944 -->
-        <delete-triggers-in-group>ONC-ACBOvernightBrokenSurveillanceRulesReportTrigger</delete-triggers-in-group>
-        <delete-triggers-in-group>ONC-ACBInheritedCertificationStatusErrorsReportTrigger</delete-triggers-in-group>
-        <delete-triggers-in-group>ONC-ACBAllBrokenSurveillanceRulesReportTrigger</delete-triggers-in-group>
-        <!-- END OCD-2944 -->
         <!-- End delete pre-processing command(s). -->
     </pre-processing-commands>
     <schedule>
         <!-- Delete from here to "DELETE END MARKER" after PROD push -->
-        <!-- Real World Testing Eligibility Job -->
-        <job>
-            <name>realWorldTestingEligibilityJob</name>
-            <group>systemJobs</group>
-            <description>For 2015 listings, determines if the listing is eligible for Real World Testing for the following year.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.RealWorldTestingEligibilityJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC</value>
-                </entry>
-            </job-data-map>
-        </job>
         <!-- DELETE END MARKER -->
     </schedule>
 </job-scheduling-data>
