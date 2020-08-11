@@ -1,5 +1,50 @@
 # Release Notes
 
+## Version 25.10.0
+_10 August 2020_
+
+### Features
+* Add Quartz job to set Real World Testing Eligibility Year for eligible listings
+* Add /metadata/beta/users endpoint for paged user activity
+* Remove ERD and ERD+1 week flags
+* Updated Quartz jobs to handle updated ONC-ACB selection requirements
+
+### Bug Fixes
+* Correctly handle error with k2 surveillance requirement
+* Upgrade jackson-core library to be compatible with databind lib
+* Show "Cures Update" on Broken Surveillance Report
+
+---
+
+## Version 25.9.0
+_27 July 2020_
+
+### Features
+* Add 2015 Cures Edition metrics to Summary Statistics Report
+* Update summary statistics creator job to be non-blocking
+* Check for duplicate data on listing confirm and edit
+* Move data loaded on startup to caching framework
+
+### Flagged Features
+* Add endpoint to get direct reviews for any developer
+
+### Bug Fixes
+* Unlock user accounts on successful password reset
+* Allow users to change their passwords using provided workflow
+
+---
+
+## Version 25.8.0
+_13 July 2020_
+
+### Features
+* Split developer action moved to a quartz job
+* Do not allow ONC to upload listings
+* Generate warning on upload when test standard does not exist
+* Create secured endpoint /activity/metadata/beta/acbs
+
+---
+
 ## Version 25.7.1
 _25 June 2020_
 

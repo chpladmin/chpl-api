@@ -13,12 +13,9 @@ import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.Util;
+import lombok.Data;
 
-/**
- * Basic Certified Product DTO.
- * @author alarned
- *
- */
+@Data
 public class CertifiedProductDTO implements Serializable {
     private static final long serialVersionUID = 7918387302717979598L;
     private Long id;
@@ -58,18 +55,10 @@ public class CertifiedProductDTO implements Serializable {
     private Date rwtResultsSubmissionDate;
     private Integer rwtEligibilityYear;
 
-
-    /**
-     * Default constructor.
-     */
     public CertifiedProductDTO() {
     }
 
-    /**
-     * Construct from entity.
-     * @param entity starting point
-     */
-    public CertifiedProductDTO(final CertifiedProductEntity entity) {
+    public CertifiedProductDTO(CertifiedProductEntity entity) {
         this.id = entity.getId();
         this.productCode = entity.getProductCode();
         this.versionCode = entity.getVersionCode();
@@ -105,12 +94,7 @@ public class CertifiedProductDTO implements Serializable {
         this.setRwtEligibilityYear(entity.getRwtEligibilityYear());
     }
 
-    /**
-     * Construct from search details entity.
-     * @param from from entity
-     * @throws InvalidArgumentsException when CHPL ID isn't recognized
-     */
-    public CertifiedProductDTO(final CertifiedProductSearchDetails from) throws InvalidArgumentsException {
+    public CertifiedProductDTO(CertifiedProductSearchDetails from) throws InvalidArgumentsException {
         this.setId(from.getId());
         this.setCertificationBodyId(
                 Long.valueOf(from.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()));
@@ -139,7 +123,6 @@ public class CertifiedProductDTO implements Serializable {
         this.setIcs(from.getIcs() == null || from.getIcs().getInherits() == null ? Boolean.FALSE : from.getIcs().getInherits());
         this.setAccessibilityCertified(from.getAccessibilityCertified());
         this.setProductAdditionalSoftware(from.getProductAdditionalSoftware());
-
         this.setTransparencyAttestationUrl(from.getTransparencyAttestationUrl());
         this.setRwtPlanUrl(from.getRwtPlanUrl());
         this.setRwtPlanSubmissionDate(from.getRwtPlanSubmissionDate());
@@ -153,7 +136,8 @@ public class CertifiedProductDTO implements Serializable {
             } else {
                 String chplProductId = from.getChplProductNumber();
                 String[] chplProductIdComponents = chplProductId.split("\\.");
-                if (chplProductIdComponents == null || chplProductIdComponents.length != ChplProductNumberUtil.CHPL_PRODUCT_ID_PARTS) {
+                if (chplProductIdComponents == null
+                        || chplProductIdComponents.length != ChplProductNumberUtil.CHPL_PRODUCT_ID_PARTS) {
                     throw new InvalidArgumentsException(
                             "CHPL Product Id " + chplProductId + " is not in a format recognized by the system.");
                 } else {
@@ -188,60 +172,12 @@ public class CertifiedProductDTO implements Serializable {
         }
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getAcbCertificationId() {
-        return acbCertificationId;
-    }
-
-    public void setAcbCertificationId(final String acbCertificationId) {
-        this.acbCertificationId = acbCertificationId;
-    }
-
-    public Long getCertificationBodyId() {
-        return certificationBodyId;
-    }
-
-    public void setCertificationBodyId(final Long certificationBodyId) {
-        this.certificationBodyId = certificationBodyId;
-    }
-
-    public Long getCertificationEditionId() {
-        return certificationEditionId;
-    }
-
-    public void setCertificationEditionId(final Long certificationEditionId) {
-        this.certificationEditionId = certificationEditionId;
-    }
-
-    public String getChplProductNumber() {
-        return chplProductNumber;
-    }
-
-    public void setChplProductNumber(final String chplProductNumber) {
-        this.chplProductNumber = chplProductNumber;
-    }
-
     public Date getCreationDate() {
         return Util.getNewDate(creationDate);
     }
 
     public void setCreationDate(final Date creationDate) {
         this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
     }
 
     public Date getLastModifiedDate() {
@@ -252,227 +188,11 @@ public class CertifiedProductDTO implements Serializable {
         this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public Long getPracticeTypeId() {
-        return practiceTypeId;
-    }
-
-    public void setPracticeTypeId(final Long practiceTypeId) {
-        this.practiceTypeId = practiceTypeId;
-    }
-
-    public Long getProductClassificationTypeId() {
-        return productClassificationTypeId;
-    }
-
-    public void setProductClassificationTypeId(final Long productClassificationTypeId) {
-        this.productClassificationTypeId = productClassificationTypeId;
-    }
-
-    public Long getProductVersionId() {
-        return productVersionId;
-    }
-
-    public void setProductVersionId(final Long productVersionId) {
-        this.productVersionId = productVersionId;
-    }
-
-    public String getReportFileLocation() {
-        return reportFileLocation;
-    }
-
-    public void setReportFileLocation(final String reportFileLocation) {
-        this.reportFileLocation = reportFileLocation;
-    }
-
-    public String getOtherAcb() {
-        return otherAcb;
-    }
-
-    public void setOtherAcb(final String otherAcb) {
-        this.otherAcb = otherAcb;
-    }
-
-    public String getProductCode() {
-        return productCode;
-    }
-
-    public void setProductCode(final String productCode) {
-        this.productCode = productCode;
-    }
-
-    public String getVersionCode() {
-        return versionCode;
-    }
-
-    public void setVersionCode(final String versionCode) {
-        this.versionCode = versionCode;
-    }
-
-    public String getAdditionalSoftwareCode() {
-        return additionalSoftwareCode;
-    }
-
-    public void setAdditionalSoftwareCode(final String additionalSoftwareCode) {
-        this.additionalSoftwareCode = additionalSoftwareCode;
-    }
-
-    public String getCertifiedDateCode() {
-        return certifiedDateCode;
-    }
-
-    public void setCertifiedDateCode(final String certifiedDateCode) {
-        this.certifiedDateCode = certifiedDateCode;
-    }
-
-    public String getIcsCode() {
-        return icsCode;
-    }
-
-    public void setIcsCode(final String icsCode) {
-        this.icsCode = icsCode;
-    }
-
-    public Boolean getTransparencyAttestation() {
-        return transparencyAttestation;
-    }
-
-    public void setTransparencyAttestation(final Boolean transparencyAttestation) {
-        this.transparencyAttestation = transparencyAttestation;
-    }
-
-    public Boolean getIcs() {
-        return ics;
-    }
-
-    public void setIcs(final Boolean ics) {
-        this.ics = ics;
-    }
-
-    public Boolean getSedTesting() {
-        return sedTesting;
-    }
-
-    public void setSedTesting(final Boolean sedTesting) {
-        this.sedTesting = sedTesting;
-    }
-
-    public String getSedReportFileLocation() {
-        return sedReportFileLocation;
-    }
-
-    public void setSedReportFileLocation(final String sedReportFileLocation) {
-        this.sedReportFileLocation = sedReportFileLocation;
-    }
-
-    public Boolean getQmsTesting() {
-        return qmsTesting;
-    }
-
-    public void setQmsTesting(final Boolean qmsTesting) {
-        this.qmsTesting = qmsTesting;
-    }
-
-    public String getProductAdditionalSoftware() {
-        return productAdditionalSoftware;
-    }
-
-    public void setProductAdditionalSoftware(final String productAdditionalSoftware) {
-        this.productAdditionalSoftware = productAdditionalSoftware;
-    }
-
-    public String getTransparencyAttestationUrl() {
-        return transparencyAttestationUrl;
-    }
-
-    public void setTransparencyAttestationUrl(final String transparencyAttestationUrl) {
-        this.transparencyAttestationUrl = transparencyAttestationUrl;
-    }
-
-    public Boolean getAccessibilityCertified() {
-        return accessibilityCertified;
-    }
-
-    public void setAccessibilityCertified(final Boolean accessibilityCertified) {
-        this.accessibilityCertified = accessibilityCertified;
-    }
-
-    public String getSedIntendedUserDescription() {
-        return sedIntendedUserDescription;
-    }
-
-    public void setSedIntendedUserDescription(final String sedIntendedUserDescription) {
-        this.sedIntendedUserDescription = sedIntendedUserDescription;
-    }
-
     public Date getSedTestingEnd() {
         return Util.getNewDate(sedTestingEnd);
     }
 
     public void setSedTestingEnd(final Date sedTestingEnd) {
         this.sedTestingEnd = Util.getNewDate(sedTestingEnd);
-    }
-
-    public CertificationStatusDTO getCertificationStatus() {
-        return certificationStatus;
-    }
-
-    public void setCertificationStatus(final CertificationStatusDTO certificationStatus) {
-        this.certificationStatus = certificationStatus;
-    }
-
-    public Long getPendingCertifiedProductId() {
-        return pendingCertifiedProductId;
-    }
-
-    public void setPendingCertifiedProductId(final Long pendingCertifiedProductId) {
-        this.pendingCertifiedProductId = pendingCertifiedProductId;
-    }
-
-    public String getRwtPlanUrl() {
-        return rwtPlanUrl;
-    }
-
-    public void setRwtPlanUrl(String rwtPlanUrl) {
-        this.rwtPlanUrl = rwtPlanUrl;
-    }
-
-    public Date getRwtPlanSubmissionDate() {
-        return rwtPlanSubmissionDate;
-    }
-
-    public void setRwtPlanSubmissionDate(Date rwtPlanSubmissionDate) {
-        this.rwtPlanSubmissionDate = rwtPlanSubmissionDate;
-    }
-
-    public String getRwtResultsUrl() {
-        return rwtResultsUrl;
-    }
-
-    public void setRwtResultsUrl(String rwtResultsUrl) {
-        this.rwtResultsUrl = rwtResultsUrl;
-    }
-
-    public Date getRwtResultsSubmissionDate() {
-        return rwtResultsSubmissionDate;
-    }
-
-    public void setRwtResultsSubmissionDate(Date rwtResultsSubmissionDate) {
-        this.rwtResultsSubmissionDate = rwtResultsSubmissionDate;
-    }
-
-    public Integer getRwtEligibilityYear() {
-        return rwtEligibilityYear;
-    }
-
-    public void setRwtEligibilityYear(Integer rwtEligibilityYear) {
-        this.rwtEligibilityYear = rwtEligibilityYear;
     }
 }

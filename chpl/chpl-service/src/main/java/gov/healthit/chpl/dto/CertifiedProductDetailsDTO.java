@@ -123,6 +123,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.sedIntendedUserDescription = entity.getSedIntendedUserDescription();
         this.sedTestingEnd = entity.getSedTestingEnd();
         this.numMeaningfulUse = entity.getMeaningfulUseUsers();
+        this.rwtEligibilityYear = entity.getRwtEligibilityYear();
 
         this.developer = new DeveloperDTO();
         this.developer.setId(entity.getDeveloperId());

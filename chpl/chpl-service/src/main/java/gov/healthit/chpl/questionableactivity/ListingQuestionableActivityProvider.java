@@ -12,13 +12,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
@@ -35,14 +33,12 @@ public class ListingQuestionableActivityProvider {
     private static final String B3_CHANGE_DATE = "questionableActivity.b3ChangeDate";
     private static final String B3_CRITERIA_NUMER = "170.315 (b)(3)";
 
-    private FF4j ff4j;
     private Environment env;
     private CertificationCriterionService criterionService;
 
     @Autowired
-    public ListingQuestionableActivityProvider(FF4j ff4j, Environment env,
+    public ListingQuestionableActivityProvider(Environment env,
             CertificationCriterionService criterionService) {
-        this.ff4j = ff4j;
         this.env = env;
         this.criterionService = criterionService;
     }
@@ -62,10 +58,6 @@ public class ListingQuestionableActivityProvider {
 
     public QuestionableActivityListingDTO check2014EditionUpdated(
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
-        if (!ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
-            return null;
-        }
-
         QuestionableActivityListingDTO activity = null;
         if (origListing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).equals("2014")) {
             activity = new QuestionableActivityListingDTO();

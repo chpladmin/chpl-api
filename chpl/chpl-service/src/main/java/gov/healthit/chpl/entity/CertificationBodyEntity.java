@@ -15,11 +15,12 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import lombok.Data;
 
 /**
  * Certification body mapping to database.
- * 
+ *
  * @author kekey
  *
  */
@@ -73,6 +74,17 @@ public class CertificationBodyEntity implements Serializable {
     private Boolean deleted;
 
     public static CertificationBodyEntity getNewAcbEntity(CertificationBody acb) {
+        CertificationBodyEntity entity = new CertificationBodyEntity();
+        entity.setId(acb.getId());
+        entity.setAcbCode(acb.getAcbCode());
+        entity.setName(acb.getName());
+        entity.setWebsite(acb.getWebsite());
+        entity.setRetired(acb.isRetired());
+        entity.setRetirementDate(acb.getRetirementDate());
+        return entity;
+    }
+
+    public static CertificationBodyEntity getNewAcbEntity(CertificationBodyDTO acb) {
         CertificationBodyEntity entity = new CertificationBodyEntity();
         entity.setId(acb.getId());
         entity.setAcbCode(acb.getAcbCode());
