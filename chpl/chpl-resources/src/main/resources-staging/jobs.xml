@@ -7,32 +7,35 @@
     <pre-processing-commands>
         <delete-triggers-in-group>triggerJob</delete-triggers-in-group>
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
-        <!-- For OCD-2944 -->
-        <delete-triggers-in-group>*</delete-triggers-in-group>
-        <!-- END OCD-2944 -->
         <!-- Delete the below pre-processing command(s) after activity has happened on PROD -->
         <delete-job>
-            <name>addCriteriaTo2015ListingsJob</name>
+            <name>addV18UploadTemplateJob</name>
             <group>systemJobs</group>
         </delete-job>
         <delete-job>
-            <name>addCriteriaToSingleListingJob</name>
-            <group>subordinateJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>addCriteriaToSinglePendingListingJob</name>
-            <group>subordinateJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>modifyTestFunctionalityJob</name>
+            <name>addV19UploadTemplateJob</name>
             <group>systemJobs</group>
         </delete-job>
         <delete-job>
-            <name>updateMacraMeasuresJob</name>
+            <name>addCuresUpdateToListings</name>
             <group>systemJobs</group>
         </delete-job>
-        <!-- End delete pre-processing command(s). -->
-        <!-- Delete the below pre-processing command(s) after PROD push -->
+        <delete-job>
+            <name>removeCriteriaJob</name>
+            <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>removeV17UploadTemplateJob</name>
+            <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>createTestToolJob</name>
+            <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>update2014ListingStatusJob</name>
+            <group>systemJobs</group>
+        </delete-job>
         <!-- End delete pre-processing command(s). -->
     </pre-processing-commands>
     <schedule>
@@ -734,35 +737,6 @@
                 </entry>
             </job-data-map>
         </job>
-        
-        <!-- Job used to change status of 2014 listings to retired-->
-        <job>
-            <name>update2014ListingStatusJob</name>
-            <group>systemJobs</group>
-            <description>Updates the status for 2014 listings</description>
-            <job-class>gov.healthit.chpl.scheduler.job.Update2014ListingsStatusJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC</value>
-                </entry>
-                <entry>
-                    <key>emailCsvFileName</key>
-                    <value>2014ListingUpdateResults.csv</value>
-                </entry>
-                <entry>
-                    <key>emailSubject</key>
-                    <value>2014 Listing Update Output Results</value>
-                </entry>
-                <entry>
-                    <key>parameters</key>
-                    <value>[{"label": "Status Effective Date", "key": "effectiveDate", "type": "date"}, {"label": "New Listing Status", "key": "certificationStatus", "type": "select", "items": [{"id": 1, "name": "Active"}, {"id": 2, "name": "Retired"}, {"id": 3, "name": "Withdrawn by Developer"}, {"id": 4, "name": "Withdrawn by ONC-ACB"}, {"id": 5, "name": "Pending"}, {"id": 6, "name": "Suspended by ONC-ACB"}, {"id": 7, "name": "Suspended by ONC"}, {"id": 8, "name": "Terminated by ONC"}, {"id": 9, "name": "Withdrawn by Developer Under Surveillance/Review"}] }, {"label": "Reason For Change", "key": "reason", "type": "text"}, {"label": "Email Report To", "key": "email", "type": "text"}, {"label": "Send Update Every (x) Listings", "key": "statusInterval", "type": "text"} ]</value>
-                </entry>
-            </job-data-map>
-        </job>
- 
         <!-- Job used to change status of a single listings -->
         <job>
             <name>updateSingleListingStatusJob</name>
@@ -786,96 +760,6 @@
             <group>systemJobs</group>
             <description>Marks 2014 upload templates as deleted</description>
             <job-class>gov.healthit.chpl.scheduler.job.Remove2014UploadTemplateJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC</value>
-                </entry>
-            </job-data-map>
-        </job>
-        <!-- Job used to create Test Tools-->
-        <job>
-            <name>createTestToolJob</name>
-            <group>systemJobs</group>
-            <description>Create Test Tool(s)</description>
-            <job-class>gov.healthit.chpl.scheduler.job.CreateTestToolJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC</value>
-                </entry>
-            </job-data-map>
-        </job>
-        <!-- Job used to mark specific 2015 criteria as removed -->
-        <job>
-            <name>removeCriteriaJob</name>
-            <group>systemJobs</group>
-            <description>Sets the removed flag to 'true' for specific 2015 criteria</description>
-            <job-class>gov.healthit.chpl.scheduler.job.RemoveCriteriaJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC</value>
-                </entry>
-            </job-data-map>
-        </job>
-        <!-- Remove v17 Upload Template Job -->
-        <job>
-            <name>removeV17UploadTemplateJob</name>
-            <group>systemJobs</group>
-            <description>Marks v17 upload template as deleted</description>
-            <job-class>gov.healthit.chpl.scheduler.job.RemoveV17UploadTemplate</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC</value>
-                </entry>
-            </job-data-map>
-        </job>
-        <!--  Add V18 Upload Template -->
-        <job>
-            <name>addV18UploadTemplateJob</name>
-            <group>systemJobs</group>
-            <description>Makes 2015 V18 Upload Template Available</description>
-            <job-class>gov.healthit.chpl.scheduler.job.AddV18UploadTemplateJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC</value>
-                </entry>
-            </job-data-map>
-        </job>
-        <!--  Add V19 Upload Template -->
-        <job>
-            <name>addV19UploadTemplateJob</name>
-            <group>systemJobs</group>
-            <description>Makes 2015 V19 Upload Template Available</description>
-            <job-class>gov.healthit.chpl.scheduler.job.AddV19UploadTemplateJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC</value>
-                </entry>
-            </job-data-map>
-        </job>
-        <!--  Update 2015 listings as Cures Updated, where appropriate -->
-        <job>
-            <name>addCuresUpdateToListings</name>
-            <group>systemJobs</group>
-            <description>Updates existing 2015 listings as Cures Updated if they meet the necessary requirements</description>
-            <job-class>gov.healthit.chpl.scheduler.job.AddCuresUpdateToListingsJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>
