@@ -11,7 +11,7 @@ import org.junit.Test;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.healthit.chpl.domain.compliance.DirectReviewNonconformity;
+import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 
 public class DirectReviewNonconformityDeserializationTest {
 
@@ -33,7 +33,7 @@ public class DirectReviewNonconformityDeserializationTest {
                 + "]"
                 + "}";
 
-        DirectReviewNonconformity nc = parseJsonToNonconformity(json);
+        DirectReviewNonConformity nc = parseJsonToNonconformity(json);
         assertNotNull(nc);
         assertNotNull(nc.getRequirement());
         assertEquals(requirementValue, nc.getRequirement());
@@ -54,7 +54,7 @@ public class DirectReviewNonconformityDeserializationTest {
                 + "]"
                 + "}";
 
-        DirectReviewNonconformity nc = parseJsonToNonconformity(json);
+        DirectReviewNonConformity nc = parseJsonToNonconformity(json);
         assertNotNull(nc);
         assertNotNull(nc.getDeveloperAssociatedListings());
         assertEquals(1, nc.getDeveloperAssociatedListings().size());
@@ -79,7 +79,7 @@ public class DirectReviewNonconformityDeserializationTest {
                 + "]"
                 + "}";
 
-        DirectReviewNonconformity nc = parseJsonToNonconformity(json);
+        DirectReviewNonConformity nc = parseJsonToNonconformity(json);
         assertNotNull(nc);
         assertNotNull(nc.getNonconformityType());
         assertEquals(nonconformityType, nc.getNonconformityType());
@@ -100,7 +100,7 @@ public class DirectReviewNonconformityDeserializationTest {
                 + "]"
                 + "}";
 
-        DirectReviewNonconformity nc = parseJsonToNonconformity(json);
+        DirectReviewNonConformity nc = parseJsonToNonconformity(json);
         assertNotNull(nc);
         assertNotNull(nc.getDateOfDetermination());
     }
@@ -123,7 +123,7 @@ public class DirectReviewNonconformityDeserializationTest {
                 + "]"
                 + "}";
 
-        DirectReviewNonconformity nc = parseJsonToNonconformity(json);
+        DirectReviewNonConformity nc = parseJsonToNonconformity(json);
         assertNotNull(nc);
         assertNotNull(nc.getNonconformityStatus());
         assertEquals(nonconformityStatus, nc.getNonconformityStatus());
@@ -144,7 +144,7 @@ public class DirectReviewNonconformityDeserializationTest {
                 + "]"
                 + "}";
 
-        DirectReviewNonconformity nc = parseJsonToNonconformity(json);
+        DirectReviewNonConformity nc = parseJsonToNonconformity(json);
         assertNotNull(nc);
         assertNotNull(nc.getNonconformitySummary());
         assertEquals(nonconformitySummary, nc.getNonconformitySummary());
@@ -165,7 +165,7 @@ public class DirectReviewNonconformityDeserializationTest {
                 + "]"
                 + "}";
 
-        DirectReviewNonconformity nc = parseJsonToNonconformity(json);
+        DirectReviewNonConformity nc = parseJsonToNonconformity(json);
         assertNotNull(nc);
         assertNotNull(nc.getNonconformityFindings());
         assertEquals(nonconformityFindings, nc.getNonconformityFindings());
@@ -186,7 +186,7 @@ public class DirectReviewNonconformityDeserializationTest {
                 + "]"
                 + "}";
 
-        DirectReviewNonconformity nc = parseJsonToNonconformity(json);
+        DirectReviewNonConformity nc = parseJsonToNonconformity(json);
         assertNotNull(nc);
         assertNotNull(nc.getDeveloperExplanation());
         assertEquals(devExplanation, nc.getDeveloperExplanation());
@@ -207,7 +207,7 @@ public class DirectReviewNonconformityDeserializationTest {
                 + "]"
                 + "}";
 
-        DirectReviewNonconformity nc = parseJsonToNonconformity(json);
+        DirectReviewNonConformity nc = parseJsonToNonconformity(json);
         assertNotNull(nc);
         assertNotNull(nc.getResolution());
         assertEquals(resolution, nc.getResolution());
@@ -228,7 +228,7 @@ public class DirectReviewNonconformityDeserializationTest {
                 + "]"
                 + "}";
 
-        DirectReviewNonconformity nc = parseJsonToNonconformity(json);
+        DirectReviewNonConformity nc = parseJsonToNonconformity(json);
         assertNotNull(nc);
         assertNotNull(nc.getCapApprovalDate());
     }
@@ -248,7 +248,7 @@ public class DirectReviewNonconformityDeserializationTest {
                 + "]"
                 + "}";
 
-        DirectReviewNonconformity nc = parseJsonToNonconformity(json);
+        DirectReviewNonConformity nc = parseJsonToNonconformity(json);
         assertNotNull(nc);
         assertNotNull(nc.getCapStartDate());
     }
@@ -268,7 +268,7 @@ public class DirectReviewNonconformityDeserializationTest {
                 + "]"
                 + "}";
 
-        DirectReviewNonconformity nc = parseJsonToNonconformity(json);
+        DirectReviewNonConformity nc = parseJsonToNonconformity(json);
         assertNotNull(nc);
         assertNotNull(nc.getCapMustCompleteDate());
     }
@@ -288,14 +288,14 @@ public class DirectReviewNonconformityDeserializationTest {
                 + "]"
                 + "}";
 
-        DirectReviewNonconformity nc = parseJsonToNonconformity(json);
+        DirectReviewNonConformity nc = parseJsonToNonconformity(json);
         assertNotNull(nc);
         assertNotNull(nc.getCapEndDate());
     }
 
-    private DirectReviewNonconformity parseJsonToNonconformity(String json) {
+    private DirectReviewNonConformity parseJsonToNonconformity(String json) {
         ObjectMapper mapper = new ObjectMapper();
-        DirectReviewNonconformity nonconformity = null;
+        DirectReviewNonConformity nonconformity = null;
         JsonNode root = null;
         try {
             root = mapper.readTree(json);
@@ -309,7 +309,7 @@ public class DirectReviewNonconformityDeserializationTest {
             for (JsonNode issueNode : issuesNode) {
                 try {
                     String fields = issueNode.get("fields").toString();
-                    nonconformity = mapper.readValue(fields, DirectReviewNonconformity.class);
+                    nonconformity = mapper.readValue(fields, DirectReviewNonConformity.class);
                 } catch (IOException ex) {
                     ex.printStackTrace();
                     fail("Cannot map issue JSON to DirectReviewNonconformity class");

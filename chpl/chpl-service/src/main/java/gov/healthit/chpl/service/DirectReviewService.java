@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.domain.compliance.DirectReview;
-import gov.healthit.chpl.domain.compliance.DirectReviewNonconformity;
+import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import lombok.extern.log4j.Log4j2;
 
 @Component("directReviewService")
@@ -45,10 +45,10 @@ public class DirectReviewService {
         String directReviewsJson = fetchDirectReviews(developerId);
         List<DirectReview> drs = convertDirectReviewsFromJira(directReviewsJson);
         for (DirectReview dr : drs) {
-            String nonconformitiesJson = fetchNonconformities(dr.getJiraKey());
-            List<DirectReviewNonconformity> ncs = convertNonconformitiesFromJira(nonconformitiesJson);
+            String nonConformitiesJson = fetchNonConformities(dr.getJiraKey());
+            List<DirectReviewNonConformity> ncs = convertNonConformitiesFromJira(nonConformitiesJson);
             if (ncs != null && ncs.size() > 0) {
-                dr.getNonconformities().addAll(ncs);
+                dr.getNonConformities().addAll(ncs);
             }
         }
         return drs;
@@ -62,7 +62,7 @@ public class DirectReviewService {
         return response.getBody();
     }
 
-    private String fetchNonconformities(String directReviewKey) {
+    private String fetchNonConformities(String directReviewKey) {
         String url = String.format(jiraBaseUrl + JIRA_NONCONFORMITY_URL, directReviewKey + "");
         LOGGER.info("Making request to " + url);
         ResponseEntity<String> response = jiraAuthenticatedRestTemplate.getForEntity(url, String.class);
@@ -97,8 +97,8 @@ public class DirectReviewService {
         return drs;
     }
 
-    private List<DirectReviewNonconformity> convertNonconformitiesFromJira(String json) {
-        List<DirectReviewNonconformity> ncs = new ArrayList<DirectReviewNonconformity>();
+    private List<DirectReviewNonConformity> convertNonConformitiesFromJira(String json) {
+        List<DirectReviewNonConformity> ncs = new ArrayList<DirectReviewNonConformity>();
         JsonNode root = null;
         try {
             root = mapper.readTree(json);
@@ -111,7 +111,7 @@ public class DirectReviewService {
                 for (JsonNode issueNode : issuesNode) {
                     try {
                         String fieldsJson = issueNode.get(JIRA_FIELDS_FIELD).toString();
-                        DirectReviewNonconformity nc = mapper.readValue(fieldsJson, DirectReviewNonconformity.class);
+                        DirectReviewNonConformity nc = mapper.readValue(fieldsJson, DirectReviewNonConformity.class);
                         ncs.add(nc);
                     } catch (IOException ex) {
                         LOGGER.error("Cannot map issue JSON to DirectReviewNonconformity class", ex);

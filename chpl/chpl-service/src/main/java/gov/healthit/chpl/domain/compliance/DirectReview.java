@@ -45,5 +45,5 @@ public class DirectReview implements Serializable {
 
     private String jiraKey;
 
-    private List<DirectReviewNonconformity> nonconformities = new ArrayList<DirectReviewNonconformity>();
+    private List<DirectReviewNonConformity> nonConformities = new ArrayList<DirectReviewNonConformity>();
 }

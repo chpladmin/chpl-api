@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DirectReviewNonconformity implements Serializable {
+public class DirectReviewNonConformity implements Serializable {
     private static final long serialVersionUID = 7018071377961783691L;
 
     @JsonProperty(value = "requirement")
