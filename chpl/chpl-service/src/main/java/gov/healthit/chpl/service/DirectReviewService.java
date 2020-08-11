@@ -42,7 +42,7 @@ public class DirectReviewService {
     public List<DirectReview> getDirectReviews(Long developerId) {
         LOGGER.info("Fetching direct review data for developer " + developerId);
 
-        String directReviewsJson = fetchJson(developerId);
+        String directReviewsJson = fetchDirectReviews(developerId);
         List<DirectReview> drs = convertDirectReviewsFromJira(directReviewsJson);
         for (DirectReview dr : drs) {
             String nonconformitiesJson = fetchNonconformities(dr.getJiraKey());
@@ -54,7 +54,7 @@ public class DirectReviewService {
         return drs;
     }
 
-    private String fetchJson(Long developerId) {
+    private String fetchDirectReviews(Long developerId) {
         String url = String.format(jiraBaseUrl + JIRA_DIRECT_REVIEW_URL, developerId + "");
         LOGGER.info("Making request to " + url);
         ResponseEntity<String> response = jiraAuthenticatedRestTemplate.getForEntity(url, String.class);
