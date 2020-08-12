@@ -28,6 +28,7 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2014.RequiredData201
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.SedG32014Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.TestFunctionality2014Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.TestTool2014Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.RealWorldTestingReviewer;
 
 /**
  * Validation interface for any listing that is already uploaded and confirmed on the CHPL.
@@ -113,6 +114,10 @@ public abstract class Edition2014ListingValidator extends Validator {
     @Qualifier("listingStatusAndUserRoleReviewer")
     private ListingStatusAndUserRoleReviewer listingStatusAndUserRoleReviewer;
 
+    @Autowired
+    @Qualifier("realWorldTestingReviewer")
+    private RealWorldTestingReviewer realWorldTestingReviewer;
+
     private List<Reviewer> reviewers;
     private List<ComparisonReviewer> comparisonReviewers;
 
@@ -147,6 +152,7 @@ public abstract class Edition2014ListingValidator extends Validator {
             comparisonReviewers.add(chplNumberComparisonReviewer);
             comparisonReviewers.add(devBanComparisonReviewer);
             comparisonReviewers.add(listingStatusAndUserRoleReviewer);
+            comparisonReviewers.add(realWorldTestingReviewer);
         }
         return comparisonReviewers;
     }
