@@ -405,7 +405,7 @@ public class CertifiedProductManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).CREATE_FROM_PENDING, #pendingCp)")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.COLLECTIONS_LISTINGS, CacheNames.PRODUCT_NAMES, CacheNames.DEVELOPER_NAMES
     }, allEntries = true)
     @SuppressWarnings({"checkstyle:methodlength"})
     public CertifiedProductDTO createFromPending(PendingCertifiedProductDTO pendingCp)
@@ -1112,7 +1112,7 @@ public class CertifiedProductManager extends SecuredManager {
             AccessDeniedException.class, InvalidArgumentsException.class
     })
     @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.COLLECTIONS_LISTINGS
     }, allEntries = true)
     public CertifiedProductDTO update(ListingUpdateRequest updateRequest)
             throws AccessDeniedException, EntityRetrievalException, JsonProcessingException, EntityCreationException,
