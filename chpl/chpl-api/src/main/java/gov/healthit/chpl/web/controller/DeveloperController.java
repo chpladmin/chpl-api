@@ -55,9 +55,6 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.service.DirectReviewService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.web.controller.annotation.CacheControl;
-import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
-import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -131,7 +128,6 @@ public class DeveloperController {
     @RequestMapping(value = "/{developerId:^-?\\d+$}/direct-reviews",
     method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody ResponseEntity<List<DirectReview>> getDirectReviews(
             @PathVariable("developerId") Long developerId) {
         if (!ff4j.check(FeatureList.DIRECT_REVIEW)) {
