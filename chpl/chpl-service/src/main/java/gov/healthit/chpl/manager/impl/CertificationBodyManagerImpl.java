@@ -97,9 +97,8 @@ public class CertificationBodyManagerImpl extends SecuredManager implements Cert
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
             + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).UPDATE, #acb)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.GET_DECERTIFIED_DEVELOPERS
+            CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.COLLECTIONS_LISTINGS
     }, allEntries = true)
-    // listings collection is not evicted here because it's pre-fetched and handled in a listener
     // no other caches have ACB data so we do not need to clear all
     public CertificationBodyDTO update(final CertificationBodyDTO acb)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
@@ -122,6 +121,9 @@ public class CertificationBodyManagerImpl extends SecuredManager implements Cert
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
             + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).RETIRE)")
+    @CacheEvict(value = {
+            CacheNames.COLLECTIONS_LISTINGS
+    }, allEntries = true)
     public CertificationBodyDTO retire(final CertificationBodyDTO acb)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, IllegalArgumentException,
             SchedulerException, ValidationException {
@@ -143,6 +145,9 @@ public class CertificationBodyManagerImpl extends SecuredManager implements Cert
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
             + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).UNRETIRE)")
+    @CacheEvict(value = {
+            CacheNames.COLLECTIONS_LISTINGS
+    }, allEntries = true)
     public CertificationBodyDTO unretire(final Long acbId) throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateCertifiedBodyException {
         CertificationBodyDTO beforeAcb = certificationBodyDao.getById(acbId);

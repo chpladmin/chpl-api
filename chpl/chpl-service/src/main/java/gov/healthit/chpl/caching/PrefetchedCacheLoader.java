@@ -16,7 +16,7 @@ import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.SimpleCertificationId;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.manager.CertificationIdManager;
-import gov.healthit.chpl.manager.PrecacheableDimensionalDataManager;
+import gov.healthit.chpl.manager.CacheableDimensionalDataManager;
 
 @Component
 public class PrefetchedCacheLoader {
@@ -26,7 +26,7 @@ public class PrefetchedCacheLoader {
     @Autowired
     private CertificationIdManager certIdManager;
     @Autowired
-    private PrecacheableDimensionalDataManager precacheableDataManager;
+    private CacheableDimensionalDataManager cacheableDimensionalDataManager;
 
     @Transactional
     @CacheEvict(value = CacheNames.PREFETCHED_COLLECTIONS_LISTINGS, beforeInvocation = true, allEntries = true)
@@ -63,7 +63,7 @@ public class PrefetchedCacheLoader {
     @Cacheable(CacheNames.PREFETCHED_PRODUCT_NAMES)
     public Set<KeyValueModelStatuses> loadPrefetchedProductNames() {
         LOGGER.info("Loading prefetched product names");
-        Set<KeyValueModelStatuses> results = precacheableDataManager.getProducts();
+        Set<KeyValueModelStatuses> results = cacheableDimensionalDataManager.getProducts();
         LOGGER.info("Completed loading product names.");
         return results;
     }
@@ -73,7 +73,7 @@ public class PrefetchedCacheLoader {
     @Cacheable(CacheNames.PREFETCHED_DEVELOPER_NAMES)
     public Set<KeyValueModelStatuses> loadPrefetchedDeveloperNames() {
         LOGGER.info("Loading prefetched developer names");
-        Set<KeyValueModelStatuses> results = precacheableDataManager.getDevelopers();
+        Set<KeyValueModelStatuses> results = cacheableDimensionalDataManager.getDevelopers();
         LOGGER.info("Completed loading developer names.");
         return results;
     }

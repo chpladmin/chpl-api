@@ -7,9 +7,12 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 
+import gov.healthit.chpl.caching.CacheNames;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.annotations.Cache;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -95,6 +98,9 @@ public class RunnableJob implements Runnable {
      * job execution.
      */
     @Transactional
+    @CacheEvict(value = {
+            CacheNames.COLLECTIONS_LISTINGS
+    }, allEntries = true)
     public void complete() {
         complete(null);
     }

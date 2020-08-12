@@ -1,5 +1,8 @@
 package gov.healthit.chpl;
 
+import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
@@ -14,11 +17,12 @@ import net.sf.ehcache.config.CacheConfiguration.TransactionalMode;
 import net.sf.ehcache.config.PersistenceConfiguration;
 import net.sf.ehcache.config.PersistenceConfiguration.Strategy;
 import net.sf.ehcache.store.MemoryStoreEvictionPolicy;
+import org.springframework.core.io.ClassPathResource;
 
 @Configuration
 @EnableCaching
+@Log4j2
 public class ChplCacheConfig {
-
     private static final int MAX_ENTRIES_LOCAL_HEAP = 10000;
     private static final int MAX_ENTRIES_LOCAL_HEAP_LISTING_COLLECTION = 300000;
     private static final int MAX_ENTRIES_LOCAL_DISK = 10000000;
@@ -27,6 +31,11 @@ public class ChplCacheConfig {
     @Bean
     public EhCacheManagerFactoryBean ehCacheCacheManager() {
         EhCacheManagerFactoryBean cmfb = new EhCacheManagerFactoryBean();
+        ClassPathResource ehCacheConfigResource = new ClassPathResource("ehcache.xml");
+        if(ehCacheConfigResource.exists()){
+            LOGGER.info("Configuring ehcahce using the ehcache.xml configuration file found on classpath.");
+            cmfb.setConfigLocation(ehCacheConfigResource);
+        }
         cmfb.setShared(true);
         return cmfb;
     }
