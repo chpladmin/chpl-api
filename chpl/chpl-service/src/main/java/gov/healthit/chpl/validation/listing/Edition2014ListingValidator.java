@@ -17,6 +17,7 @@ import gov.healthit.chpl.validation.listing.reviewer.DeveloperStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DuplicateDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.FieldLengthReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ListingStatusAndUserRoleReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.RealWorldTestingReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestToolReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestingLabReviewer;
@@ -28,7 +29,6 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2014.RequiredData201
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.SedG32014Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.TestFunctionality2014Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.TestTool2014Reviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.RealWorldTestingReviewer;
 
 /**
  * Validation interface for any listing that is already uploaded and confirmed on the CHPL.

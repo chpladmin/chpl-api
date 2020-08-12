@@ -1,4 +1,4 @@
-package gov.healthit.chpl.validation.listing.reviewer.edition2015;
+package gov.healthit.chpl.validation.listing.reviewer;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
-import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -40,6 +39,9 @@ public class RealWorldTestingReviewer implements ComparisonReviewer {
 
     @Override
     public void review(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing) {
+        //Always use the rwt elig year fvrom the existing listing
+        updatedListing.setRwtEligibilityYear(existingListing.getRwtEligibilityYear());
+
         if (isListingCurrentlyRwtEligible(existingListing)) {
             if (isRwtPlanDataSubmitted(updatedListing)) {
                 if (isCurrentDateAfterPlanEligibileDate(existingListing)) {
