@@ -3,9 +3,11 @@ package gov.healthit.chpl.manager;
 import java.util.ArrayList;
 import java.util.List;
 
+import gov.healthit.chpl.caching.CacheNames;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -103,6 +105,9 @@ public class ProductVersionManager extends SecuredManager {
     @Transactional(readOnly = false)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
             + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).CREATE)")
+    @CacheEvict(value = {
+            CacheNames.COLLECTIONS_LISTINGS
+    }, allEntries = true)
     public ProductVersionDTO create(ProductVersionDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         // check that the developer of this version is Active
@@ -135,6 +140,9 @@ public class ProductVersionManager extends SecuredManager {
     @Transactional(readOnly = false)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
             + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).UPDATE, #dto)")
+    @CacheEvict(value = {
+            CacheNames.COLLECTIONS_LISTINGS
+    }, allEntries = true)
     public ProductVersionDTO update(ProductVersionDTO dto)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 
@@ -166,6 +174,9 @@ public class ProductVersionManager extends SecuredManager {
     })
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
             + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).MERGE, #versionIdsToMerge)")
+    @CacheEvict(value = {
+            CacheNames.COLLECTIONS_LISTINGS
+    }, allEntries = true)
     public ProductVersionDTO merge(List<Long> versionIdsToMerge, ProductVersionDTO toCreate)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 
@@ -205,6 +216,9 @@ public class ProductVersionManager extends SecuredManager {
     })
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
             + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).SPLIT, #oldVersion)")
+    @CacheEvict(value = {
+            CacheNames.COLLECTIONS_LISTINGS
+    }, allEntries = true)
     public ProductVersionDTO split(ProductVersionDTO oldVersion, ProductVersionDTO newVersion,
             String newVersionCode, List<Long> newVersionListingIds)
             throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
