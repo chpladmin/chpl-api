@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 import lombok.extern.log4j.Log4j2;
@@ -23,113 +24,131 @@ public class RealWorldTestingReviewer implements ComparisonReviewer {
     @Value("${rwtPlanStartDayOfYear}")
     private String rwtPlanStartDayOfYear;
 
-    @Value("${rwtPlanRequiredDateOfYear}")
-    private String rwtPlanRequiredDateOfYear;
-
     @Value("${rwtResultsStartDayOfYear}")
     private String rwtResultsStartDayOfYear;
 
-    @Value("${rwtResultsRequiredDateOfYear}")
-    private String rwtResultsRequiredDateOfYear;
-
     private ValidationUtils validationUtils;
+    private ErrorMessageUtil errorMessageUtil;
 
     private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
     @Autowired
-    public RealWorldTestingReviewer(ValidationUtils validationUtils) {
+    public RealWorldTestingReviewer(ValidationUtils validationUtils, ErrorMessageUtil errorMessageUtil) {
         this.validationUtils = validationUtils;
+        this.errorMessageUtil = errorMessageUtil;
     }
 
     @Override
     public void review(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing) {
-        if (isListingCurrentlyRwtPlanEligible(existingListing)) {
-            LOGGER.info("The listing is currently RWT Plan Eligible.");
+        if (isListingCurrentlyRwtEligible(existingListing)) {
             if (isRwtPlanDataSubmitted(updatedListing)) {
-                if (!isUrlValid(updatedListing.getRwtPlanUrl())) {
-                    updatedListing.getErrorMessages().add("Plan URL is required.");
-                } else if (!isDateValid(toLocalDate(updatedListing.getRwtPlanSubmissionDate()))) {
-                    updatedListing.getErrorMessages().add("Plan Submission Confirmed Date is required.");
+                if (isCurrentDateAfterPlanEligibileDate(existingListing)) {
+                    validateRwtPlanUrl(updatedListing);
+                    validateRwtPlanSubmissionDate(updatedListing);
+                } else {
+                    updatedListing.getErrorMessages().add(
+                            errorMessageUtil.getMessage("listing.realWorldTesting.plan.notEligibleUntil",
+                                    getPlanEligibleDate(existingListing).format(dateFormatter)));
                 }
-            } else if (isListingCurrentlyRwtPlanPastDue(existingListing)) {
-                updatedListing.getWarningMessages().add("Real World Testing Plan required for this listing");
             }
-
-        } else if (isRwtPlanDataSubmitted(updatedListing)) {
-            updatedListing.getErrorMessages().add("Listing is not eligible for Real World Testing");
-        }
-
-        if (isListingCurrentlyRwtResultsEligible(existingListing)) {
-            LOGGER.info("The listing is currently RWT Plan Eligible.");
             if (isRwtResultsDataSubmitted(updatedListing)) {
-                if (!isUrlValid(updatedListing.getRwtPlanUrl())) {
-                    updatedListing.getErrorMessages().add("Results URL is required.");
-                } else if (!isDateValid(toLocalDate(updatedListing.getRwtPlanSubmissionDate()))) {
-                    updatedListing.getErrorMessages().add("Results Submission Confirmed Date is required.");
+                if (isCurrentDateAfterResultsEligibileDate(existingListing)) {
+                    validateRwtResultsUrl(updatedListing);
+                    validateRwtResultsSubmissionDate(updatedListing);
+                } else {
+                    updatedListing.getErrorMessages().add(
+                            errorMessageUtil.getMessage("listing.realWorldTesting.results.notEligibleUntil",
+                                    getResultsEligibleDate(existingListing).format(dateFormatter)));
                 }
-            } else if (isListingCurrentlyRwtResultsPastDue(existingListing)) {
-                updatedListing.getWarningMessages().add("Real World Testing Results required for this listing");
             }
-        } else if (isRwtResultsDataSubmitted(updatedListing)) {
-            updatedListing.getErrorMessages().add("Listing is not eligible for Real World Testing");
+        } else if (isRwtPlanDataSubmitted(updatedListing) || isRwtResultsDataSubmitted(updatedListing)) {
+            updatedListing.getErrorMessages().add(
+                    errorMessageUtil.getMessage("listing.realWorldTesting.notEligible"));
         }
     }
 
-    private boolean isUrlValid(String url) {
-        return !StringUtils.isBlank(url) && validationUtils.isWellFormedUrl(url);
+    private boolean isCurrentDateAfterPlanEligibileDate(CertifiedProductSearchDetails listing) {
+        return LocalDate.now(ZoneId.systemDefault()).isAfter(getPlanEligibleDate(listing));
     }
 
-    //TODO: Need to determine if we are doing any validation here (other than it being a valid date)
-    private boolean isDateValid(LocalDate date) {
-        return Objects.nonNull(date);
+    private boolean isCurrentDateAfterResultsEligibileDate(CertifiedProductSearchDetails listing) {
+        return LocalDate.now(ZoneId.systemDefault()).isAfter(getResultsEligibleDate(listing));
     }
+
+    private boolean isListingCurrentlyRwtEligible(CertifiedProductSearchDetails listing) {
+        return Objects.nonNull(listing.getRwtEligibilityYear());
+    }
+
+    private void validateRwtPlanUrl(CertifiedProductSearchDetails listing) {
+        if (StringUtils.isBlank(listing.getRwtPlanUrl())) {
+            listing.getErrorMessages().add(
+                    errorMessageUtil.getMessage("listing.realWorldTesting.plan.url.required"));
+        } else if (!validationUtils.isWellFormedUrl(listing.getRwtPlanUrl())) {
+            listing.getErrorMessages().add(
+                    errorMessageUtil.getMessage("listing.realWorldTesting.plan.url.invalid"));
+        }
+    }
+
+    private void validateRwtPlanSubmissionDate(CertifiedProductSearchDetails listing) {
+        if (Objects.isNull(listing.getRwtPlanSubmissionDate())) {
+            listing.getErrorMessages().add(
+                    errorMessageUtil.getMessage("listing.realWorldTesting.plan.submissionDate.required"));
+        } else if (isRwtPlanDateBeforePlanEligibleDate(listing)) {
+            listing.getErrorMessages().add(
+                    errorMessageUtil.getMessage("listing.realWorldTesting.plan.submissionDate.invalid",
+                            getPlanEligibleDate(listing).format(dateFormatter)));
+        }
+    }
+
+    private boolean isRwtPlanDateBeforePlanEligibleDate(CertifiedProductSearchDetails listing) {
+        return toLocalDate(listing.getRwtPlanSubmissionDate()).isBefore(getPlanEligibleDate(listing));
+    }
+
+    private LocalDate getPlanEligibleDate(CertifiedProductSearchDetails listing) {
+        return getLocalDate(rwtPlanStartDayOfYear, listing.getRwtEligibilityYear() - 1);
+    }
+
+
+    private void validateRwtResultsUrl(CertifiedProductSearchDetails listing) {
+        if (StringUtils.isBlank(listing.getRwtResultsUrl())) {
+            listing.getErrorMessages().add(
+                    errorMessageUtil.getMessage("listing.realWorldTesting.results.url.required"));
+        } else if (!validationUtils.isWellFormedUrl(listing.getRwtResultsUrl())) {
+            listing.getErrorMessages().add(
+                    errorMessageUtil.getMessage("listing.realWorldTesting.results.url.invalid"));
+        }
+    }
+
+    private void validateRwtResultsSubmissionDate(CertifiedProductSearchDetails listing) {
+        if (Objects.isNull(listing.getRwtResultsSubmissionDate())) {
+            listing.getErrorMessages().add(
+                    errorMessageUtil.getMessage("listing.realWorldTesting.results.submissionDate.required"));
+        } else if (isRwtResultsDateBeforeResultsEligibleDate(listing)) {
+            listing.getErrorMessages().add(
+                    errorMessageUtil.getMessage("listing.realWorldTesting.results.submissionDate.invalid",
+                            getResultsEligibleDate(listing).format(dateFormatter)));
+        }
+    }
+
+    private boolean isRwtResultsDateBeforeResultsEligibleDate(CertifiedProductSearchDetails listing) {
+        return toLocalDate(listing.getRwtResultsSubmissionDate()).isBefore(getResultsEligibleDate(listing));
+    }
+
+    private LocalDate getResultsEligibleDate(CertifiedProductSearchDetails listing) {
+        return getLocalDate(rwtResultsStartDayOfYear, listing.getRwtEligibilityYear() + 1);
+    }
+
 
     private boolean isRwtPlanDataSubmitted(CertifiedProductSearchDetails updatedListing) {
-        return !StringUtils.isAllBlank(updatedListing.getRwtPlanUrl())
+        return !StringUtils.isBlank(updatedListing.getRwtPlanUrl())
                 || Objects.nonNull(updatedListing.getRwtPlanSubmissionDate());
     }
 
     private boolean isRwtResultsDataSubmitted(CertifiedProductSearchDetails updatedListing) {
-        return !StringUtils.isAllBlank(updatedListing.getRwtResultsUrl())
+        return !StringUtils.isBlank(updatedListing.getRwtResultsUrl())
                 || Objects.nonNull(updatedListing.getRwtResultsSubmissionDate());
     }
 
-    private boolean isListingCurrentlyRwtPlanEligible(CertifiedProductSearchDetails existingListing) {
-        if (Objects.nonNull(existingListing.getRwtEligibilityYear())) {
-            Integer calculatedYearBasedOnEligYear = existingListing.getRwtEligibilityYear() - 1;
-            LocalDate rwtPlanEligibilityStartDate = getLocalDate(rwtPlanStartDayOfYear, calculatedYearBasedOnEligYear);
-            return LocalDate.now().isAfter(rwtPlanEligibilityStartDate);
-        }
-        return false;
-    }
-
-    private boolean isListingCurrentlyRwtResultsEligible(CertifiedProductSearchDetails existingListing) {
-        if (Objects.nonNull(existingListing.getRwtEligibilityYear())) {
-            Integer calculatedYearBasedOnEligYear = existingListing.getRwtEligibilityYear() + 1;
-            LocalDate rwtResultsEligibilityStartDate = getLocalDate(rwtResultsStartDayOfYear, calculatedYearBasedOnEligYear);
-            return LocalDate.now().isAfter(rwtResultsEligibilityStartDate);
-        }
-        return false;
-    }
-
-    private boolean isListingCurrentlyRwtPlanPastDue(CertifiedProductSearchDetails existingListing) {
-        if (Objects.nonNull(existingListing.getRwtEligibilityYear())) {
-            Integer calculatedYearBasedOnEligYear = existingListing.getRwtEligibilityYear() - 1;
-            LocalDate rwtPlanEligibilityPastDueDate = getLocalDate(rwtPlanRequiredDateOfYear, calculatedYearBasedOnEligYear);
-            return LocalDate.now().isAfter(rwtPlanEligibilityPastDueDate);
-        }
-        return false;
-    }
-
-
-    private boolean isListingCurrentlyRwtResultsPastDue(CertifiedProductSearchDetails existingListing) {
-        if (Objects.nonNull(existingListing.getRwtEligibilityYear())) {
-            Integer calculatedYearBasedOnEligYear = existingListing.getRwtEligibilityYear() + 1;
-            LocalDate rwtResultsEligibilityPastDueDate = getLocalDate(rwtResultsRequiredDateOfYear, calculatedYearBasedOnEligYear);
-            return LocalDate.now().isAfter(rwtResultsEligibilityPastDueDate);
-        }
-        return false;
-    }
 
     private LocalDate toLocalDate(Date dateToConvert) {
         if (Objects.nonNull(dateToConvert)) {
@@ -139,8 +158,8 @@ public class RealWorldTestingReviewer implements ComparisonReviewer {
         }
     }
 
-    private LocalDate getLocalDate(String dayOfYear, Integer year) {
+    private LocalDate getLocalDate(String dayAndMonth, Integer year) {
         // dayOfYear s/b in MM/dd format
-        return LocalDate.parse(dayOfYear + "/" + year.toString(), dateFormatter);
+        return LocalDate.parse(dayAndMonth + "/" + year.toString(), dateFormatter);
     }
 }
