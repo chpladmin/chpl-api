@@ -7,13 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
-import gov.healthit.chpl.util.ChplProductNumberUtil;
 
 public class DirectReviewNonConformityDeserializationTest {
 
@@ -39,30 +37,6 @@ public class DirectReviewNonConformityDeserializationTest {
         assertNotNull(nc);
         assertNotNull(nc.getRequirement());
         assertEquals(requirementValue, nc.getRequirement());
-    }
-
-    @Test
-    public void deserializeJson_parsesDeveloperAssociatedListings() {
-        String dalValue = "8847";
-        String json = "{"
-                + "\"total\": 1,"
-                + "\"issues\": ["
-                + "{ "
-                + "\"key\": \"DR-12345\", "
-                + "\"fields\": {"
-                + "\"customfield_11206\": [\"" + dalValue + "\"] "
-                + "}"
-                + "}"
-                + "]"
-                + "}";
-
-        ChplProductNumberUtil util = Mockito.mock(ChplProductNumberUtil.class);
-
-        DirectReviewNonConformity nc = parseJsonToNonConformity(json);
-        assertNotNull(nc);
-        assertNotNull(nc.getDeveloperAssociatedListings());
-        assertEquals(1, nc.getDeveloperAssociatedListings().size());
-        assertEquals(dalValue, nc.getDeveloperAssociatedListings().get(0));
     }
 
     @Test
