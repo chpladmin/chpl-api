@@ -2,12 +2,10 @@ package gov.healthit.chpl.permissions.domains.surveillance;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
@@ -22,13 +20,11 @@ public class UpdateActionPermissions extends ActionPermissions {
 
     private CertifiedProductDAO cpDao;
     private ErrorMessageUtil msgUtil;
-    private FF4j ff4j;
 
     @Autowired
-    public UpdateActionPermissions(CertifiedProductDAO cpDao, ErrorMessageUtil msgUtil, FF4j ff4j) {
+    public UpdateActionPermissions(CertifiedProductDAO cpDao, ErrorMessageUtil msgUtil) {
         this.cpDao = cpDao;
         this.msgUtil = msgUtil;
-        this.ff4j = ff4j;
     }
 
     @Override
@@ -68,10 +64,6 @@ public class UpdateActionPermissions extends ActionPermissions {
     }
 
     private boolean isListing2014Edition(CertifiedProductDTO listing) {
-        if (!ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)) {
-            return false;
-        }
-
         return listing != null
                 && listing.getCertificationEditionId().equals(
                 CertificationEditionConcept.CERTIFICATION_EDITION_2014.getId());

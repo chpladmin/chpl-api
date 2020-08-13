@@ -3,7 +3,11 @@ package gov.healthit.chpl.manager;
 import java.util.ArrayList;
 import java.util.List;
 
+import gov.healthit.chpl.caching.CacheNames;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -49,6 +53,7 @@ public class ProductManager extends SecuredManager {
     private ValidationUtils validationUtils;
 
     @Autowired
+    @SuppressWarnings({"checkstyle:parameternumber"})
     public ProductManager(ErrorMessageUtil msgUtil, ProductDAO productDao,
             ProductVersionDAO versionDao, DeveloperDAO devDao, CertifiedProductDAO cpDao,
             CertifiedProductDetailsManager cpdManager,
@@ -106,10 +111,13 @@ public class ProductManager extends SecuredManager {
     @Transactional(readOnly = false)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).CREATE)")
+    @CacheEvict(value = {
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.PRODUCT_NAMES
+    }, allEntries = true)
     public ProductDTO create(ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         // check that the developer of this product is Active
-        if (dto.getDeveloperId() == null) {
+        if (dto.getOwner() == null || dto.getOwner().getId() == null) {
             throw new EntityCreationException("Cannot create a product without a developer ID.");
         }
 
@@ -120,6 +128,9 @@ public class ProductManager extends SecuredManager {
     @Transactional(readOnly = false)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE_OWNERSHIP, #dto)")
+    @CacheEvict(value = {
+            CacheNames.COLLECTIONS_LISTINGS
+    }, allEntries = true)
     public ProductDTO updateProductOwnership(ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         // This method was created to provide different security than the update() method
@@ -131,6 +142,9 @@ public class ProductManager extends SecuredManager {
     @Transactional(readOnly = false)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE, #dto)")
+    @CacheEvict(value = {
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.PRODUCT_NAMES
+    }, allEntries = true)
     public ProductDTO update(ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         return updateProduct(dto);
@@ -140,6 +154,9 @@ public class ProductManager extends SecuredManager {
     @Transactional(readOnly = false)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).MERGE, #productIdsToMerge)")
+    @CacheEvict(value = {
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.PRODUCT_NAMES
+    }, allEntries = true)
     public ProductDTO merge(List<Long> productIdsToMerge, ProductDTO toCreate)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
@@ -178,6 +195,9 @@ public class ProductManager extends SecuredManager {
     })
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).SPLIT, #oldProduct)")
+    @CacheEvict(value = {
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.PRODUCT_NAMES
+    }, allEntries = true)
     public ProductDTO split(ProductDTO oldProduct, ProductDTO productToCreate, String newProductCode,
             List<ProductVersionDTO> newProductVersions)
             throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
@@ -276,13 +296,13 @@ public class ProductManager extends SecuredManager {
         ProductDTO beforeDTO = productDao.getById(dto.getId());
 
         // check that the developer of this product is Active
-        if (beforeDTO.getDeveloperId() == null) {
+        if (beforeDTO.getOwner() == null || beforeDTO.getOwner().getId() == null) {
             throw new EntityCreationException("Cannot update a product without a developer ID.");
         }
 
-        DeveloperDTO dev = devDao.getById(beforeDTO.getDeveloperId());
+        DeveloperDTO dev = devDao.getById(beforeDTO.getOwner().getId());
         if (dev == null) {
-            throw new EntityRetrievalException("Cannot find developer with id " + beforeDTO.getDeveloperId());
+            throw new EntityRetrievalException("Cannot find developer with id " + beforeDTO.getOwner().getId());
         }
         DeveloperStatusEventDTO currDevStatus = dev.getStatus();
         if (currDevStatus == null || currDevStatus.getStatus() == null) {
@@ -301,8 +321,8 @@ public class ProductManager extends SecuredManager {
         ProductDTO result = productDao.update(dto);
         // the developer name is not updated at this point until after
         // transaction commit so we have to set it
-        DeveloperDTO devDto = devDao.getById(result.getDeveloperId());
-        result.setDeveloperName(devDto.getName());
+        DeveloperDTO devDto = devDao.getById(result.getOwner().getId());
+        result.getOwner().setName(devDto.getName());
 
         String activityMsg = "Product " + dto.getName() + " was updated.";
         activityManager.addActivity(ActivityConcept.PRODUCT, result.getId(), activityMsg, beforeDTO, result);
@@ -311,9 +331,9 @@ public class ProductManager extends SecuredManager {
 
     private ProductDTO createProduct(ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-        DeveloperDTO dev = devDao.getById(dto.getDeveloperId());
+        DeveloperDTO dev = devDao.getById(dto.getOwner().getId());
         if (dev == null) {
-            throw new EntityRetrievalException("Cannot find developer with id " + dto.getDeveloperId());
+            throw new EntityRetrievalException("Cannot find developer with id " + dto.getOwner().getId());
         }
         DeveloperStatusEventDTO currDevStatus = dev.getStatus();
         if (currDevStatus == null || currDevStatus.getStatus() == null) {

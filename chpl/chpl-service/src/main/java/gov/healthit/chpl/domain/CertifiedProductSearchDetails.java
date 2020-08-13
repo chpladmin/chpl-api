@@ -262,6 +262,7 @@ public class CertifiedProductSearchDetails implements Serializable {
     @XmlElementWrapper(name = "accessibilityStandards", nillable = true, required = false)
     @XmlElement(name = "accessibilityStandard")
     @Singular
+    @SuppressWarnings({"checkstyle:linelength"})
     private List<CertifiedProductAccessibilityStandard> accessibilityStandards = new ArrayList<CertifiedProductAccessibilityStandard>();
 
     /**
@@ -341,6 +342,12 @@ public class CertifiedProductSearchDetails implements Serializable {
      */
     @XmlElement(name = "sed", nillable = true, required = false)
     private CertifiedProductSed sed = new CertifiedProductSed();
+
+    /**
+     * Real World Testing eligibility year.
+     */
+    @XmlElement(nillable = true, required = false)
+    private Integer rwtEligibilityYear;
 
     @Builder.Default
     @XmlTransient
@@ -803,5 +810,13 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     public void setCertificationStatus(LegacyCertificationStatus certificationStatus) {
         this.certificationStatus = certificationStatus;
+    }
+
+    public Integer getRwtEligibilityYear() {
+        return rwtEligibilityYear;
+    }
+
+    public void setRwtEligibilityYear(Integer rwtEligibilityYear) {
+        this.rwtEligibilityYear = rwtEligibilityYear;
     }
 }

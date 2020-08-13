@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityProductDTO;
@@ -43,21 +44,26 @@ public class ProductQuestionableActivityProvider {
      * @return DTO of questionable activity
      */
     public QuestionableActivityProductDTO checkCurrentOwnerChanged(
-            final ProductDTO origProduct, final ProductDTO newProduct) {
+            ProductDTO origProduct, ProductDTO newProduct) {
 
         QuestionableActivityProductDTO activity = null;
-        if (origProduct.getDeveloperId() != null && newProduct.getDeveloperId() == null) {
+        DeveloperDTO origOwner = origProduct.getOwner();
+        DeveloperDTO newOwner = newProduct.getOwner();
+        if (origOwner != null && origOwner.getId() != null
+                && (newOwner == null || newOwner.getId() == null)) {
             activity = new QuestionableActivityProductDTO();
-            activity.setBefore(origProduct.getDeveloperName());
+            activity.setBefore(origOwner.getName());
             activity.setAfter(null);
-        } else if (origProduct.getDeveloperId() == null && newProduct.getDeveloperId() != null) {
+        } else if ((origOwner == null || origOwner.getId() == null)
+                && newOwner != null && newOwner.getId() != null) {
             activity = new QuestionableActivityProductDTO();
             activity.setBefore(null);
-            activity.setAfter(newProduct.getDeveloperName());
-        } else if (origProduct.getDeveloperId().longValue() != newProduct.getDeveloperId().longValue()) {
+            activity.setAfter(newOwner.getName());
+        } else if (origOwner != null && newOwner != null
+                && origOwner.getId().longValue() != newOwner.getId().longValue()) {
             activity = new QuestionableActivityProductDTO();
-            activity.setBefore(origProduct.getDeveloperName());
-            activity.setAfter(newProduct.getDeveloperName());
+            activity.setBefore(origOwner.getName());
+            activity.setAfter(newOwner.getName());
         }
         return activity;
     }

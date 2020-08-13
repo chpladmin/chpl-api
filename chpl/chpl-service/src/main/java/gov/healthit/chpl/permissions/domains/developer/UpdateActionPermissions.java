@@ -31,12 +31,8 @@ public class UpdateActionPermissions extends ActionPermissions {
             DeveloperDTO originalDeveloper = (DeveloperDTO) obj;
             try {
                 DeveloperDTO currentDeveloper = developerDAO.getById(originalDeveloper.getId());
-                if (currentDeveloper != null && currentDeveloper.getStatus() != null && currentDeveloper.getStatus()
-                        .getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return currentDeveloper != null && currentDeveloper.getStatus() != null
+                        && currentDeveloper.getStatus().getStatus().getStatusName().equals(DeveloperStatusType.Active.toString());
             } catch (EntityRetrievalException e) {
                 return false;
             }

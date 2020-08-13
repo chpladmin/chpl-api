@@ -85,11 +85,12 @@ public class Product implements Serializable {
         if (dto.getContact() != null) {
             this.contact = new Contact(dto.getContact());
         }
-        if (dto.getDeveloperId() != null) {
+        if (dto.getOwner() != null) {
             this.owner = new Developer();
-            this.owner.setDeveloperId(dto.getDeveloperId());
-            this.owner.setName(dto.getDeveloperName());
-            this.owner.setDeveloperCode(dto.getDeveloperCode());
+            this.owner.setDeveloperId(dto.getOwner().getId());
+            this.owner.setName(dto.getOwner().getName());
+            this.owner.setDeveloperCode(dto.getOwner().getDeveloperCode());
+            this.owner.setSelfDeveloper(dto.getOwner().getSelfDeveloper());
         }
         if (dto.getOwnerHistory() != null && dto.getOwnerHistory().size() > 0) {
             for (ProductOwnerDTO prevOwnerDto : dto.getOwnerHistory()) {

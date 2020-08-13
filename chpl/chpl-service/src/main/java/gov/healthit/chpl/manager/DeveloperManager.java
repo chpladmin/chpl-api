@@ -9,7 +9,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.ff4j.FF4j;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -72,6 +70,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class DeveloperManager extends SecuredManager {
     public static final String NEW_DEVELOPER_CODE = "XXXX";
+    private static final Integer DELAY_BEFORE_JOB_START = 5000;
 
     private DeveloperDAO developerDao;
     private ProductManager productManager;
@@ -87,16 +86,15 @@ public class DeveloperManager extends SecuredManager {
     private ValidationUtils validationUtils;
     private TransparencyAttestationManager transparencyAttestationManager;
     private SchedulerManager schedulerManager;
-    private FF4j ff4j;
 
     @Autowired
+    @SuppressWarnings({"checkstyle:parameternumber"})
     public DeveloperManager(DeveloperDAO developerDao, ProductManager productManager, UserManager userManager,
             CertificationBodyManager acbManager, CertificationBodyDAO certificationBodyDao,
             CertifiedProductDAO certifiedProductDAO, ChplProductNumberUtil chplProductNumberUtil,
             ActivityManager activityManager, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
             DeveloperValidationFactory developerValidationFactory, ValidationUtils validationUtils,
-            TransparencyAttestationManager transparencyAttestationManager, SchedulerManager schedulerManager,
-            FF4j ff4j) {
+            TransparencyAttestationManager transparencyAttestationManager, SchedulerManager schedulerManager) {
         this.developerDao = developerDao;
         this.productManager = productManager;
         this.userManager = userManager;
@@ -111,7 +109,6 @@ public class DeveloperManager extends SecuredManager {
         this.validationUtils = validationUtils;
         this.transparencyAttestationManager = transparencyAttestationManager;
         this.schedulerManager = schedulerManager;
-        this.ff4j = ff4j;
     }
 
     @Transactional(readOnly = true)
@@ -178,7 +175,7 @@ public class DeveloperManager extends SecuredManager {
     @Transactional(readOnly = false)
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
-            CacheNames.GET_DECERTIFIED_DEVELOPERS
+            CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.DEVELOPER_NAMES, CacheNames.COLLECTIONS_LISTINGS
     }, allEntries = true)
     public DeveloperDTO update(DeveloperDTO updatedDev, boolean doUpdateValidations)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
@@ -210,11 +207,7 @@ public class DeveloperManager extends SecuredManager {
         developerDao.update(updatedDev);
         updateStatusHistory(beforeDev, updatedDev);
 
-        if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)) {
-            if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
-                createOrUpdateTransparencyMappings(updatedDev);
-            }
-        } else {
+        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
             createOrUpdateTransparencyMappings(updatedDev);
         }
 
@@ -292,11 +285,7 @@ public class DeveloperManager extends SecuredManager {
         DeveloperDTO created = developerDao.create(dto);
         dto.setId(created.getId());
 
-        if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)) {
-            if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
-                createOrUpdateTransparencyMappings(dto);
-            }
-        } else {
+        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
             createOrUpdateTransparencyMappings(dto);
         }
 
@@ -310,7 +299,7 @@ public class DeveloperManager extends SecuredManager {
     @Transactional(readOnly = false)
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
-            CacheNames.GET_DECERTIFIED_DEVELOPERS
+            CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.DEVELOPER_NAMES, CacheNames.COLLECTIONS_LISTINGS
     }, allEntries = true)
     public DeveloperDTO merge(List<Long> developerIdsToMerge, DeveloperDTO developerToCreate)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
@@ -371,12 +360,12 @@ public class DeveloperManager extends SecuredManager {
             ProductOwnerDTO historyToAdd = new ProductOwnerDTO();
             historyToAdd.setProductId(product.getId());
             DeveloperDTO prevOwner = new DeveloperDTO();
-            prevOwner.setId(product.getDeveloperId());
+            prevOwner.setId(product.getOwner().getId());
             historyToAdd.setDeveloper(prevOwner);
             historyToAdd.setTransferDate(System.currentTimeMillis());
             product.getOwnerHistory().add(historyToAdd);
             // reassign those products to the new developer
-            product.setDeveloperId(createdDeveloper.getId());
+            product.getOwner().setId(createdDeveloper.getId());
             productManager.update(product);
 
         }
@@ -401,6 +390,9 @@ public class DeveloperManager extends SecuredManager {
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).SPLIT, #oldDeveloper)")
+    @CacheEvict(value = {
+            CacheNames.DEVELOPER_NAMES, CacheNames.COLLECTIONS_LISTINGS
+    }, allEntries = true)
     public ChplOneTimeTrigger split(DeveloperDTO oldDeveloper, DeveloperDTO developerToCreate,
             List<Long> productIdsToMove) throws ValidationException, SchedulerException {
         // check developer fields for all valid values
@@ -427,7 +419,7 @@ public class DeveloperManager extends SecuredManager {
         jobDataMap.put(SplitDeveloperJob.USER_KEY, jobUser);
         splitDeveloperJob.setJobDataMap(jobDataMap);
         splitDeveloperTrigger.setJob(splitDeveloperJob);
-        splitDeveloperTrigger.setRunDateMillis(System.currentTimeMillis() + 5000); //5 secs from now
+        splitDeveloperTrigger.setRunDateMillis(System.currentTimeMillis() + DELAY_BEFORE_JOB_START);
         splitDeveloperTrigger = schedulerManager.createBackgroundJobTrigger(splitDeveloperTrigger);
         return splitDeveloperTrigger;
     }
@@ -619,7 +611,6 @@ public class DeveloperManager extends SecuredManager {
 
     private Set<String> runChangeValidations(DeveloperDTO dto, DeveloperDTO beforeDev) {
         List<ValidationRule<DeveloperValidationContext>> rules = new ArrayList<ValidationRule<DeveloperValidationContext>>();
-        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.EDIT_TRANSPARENCY_ATTESTATION));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.HAS_STATUS));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.STATUS_MISSING_BAN_REASON));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.PRIOR_STATUS_ACTIVE));
@@ -644,7 +635,6 @@ public class DeveloperManager extends SecuredManager {
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.WEBSITE_REQUIRED));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.CONTACT));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.ADDRESS));
-        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.TRANSPARENCY_ATTESTATION));
         return runValidations(rules, dto, pendingAcbName);
     }
 

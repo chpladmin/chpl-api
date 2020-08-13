@@ -85,7 +85,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Service("dimensionalDataManager")
 public class DimensionalDataManager {
-    private PrecacheableDimensionalDataManager precache;
+    private CacheableDimensionalDataManager cacheableDimensionalDataManager;
     private CertificationBodyDAO certificationBodyDao;
     private CertificationCriterionDAO certificationCriterionDao;
     private EducationTypeDAO educationTypeDao;
@@ -111,16 +111,16 @@ public class DimensionalDataManager {
     private CertificationEditionDAO certEditionDao;
 
     @Autowired
-    public DimensionalDataManager(PrecacheableDimensionalDataManager precache,
-            CertificationBodyDAO certificationBodyDao, CertificationCriterionDAO certificationCriterionDao,
-            EducationTypeDAO educationTypeDao, AgeRangeDAO ageRangeDao, TestFunctionalityDAO testFuncDao,
-            TestStandardDAO testStandardDao, TestToolDAO testToolDao, TestProcedureDAO testProcedureDao,
-            TestDataDAO testDataDao, AccessibilityStandardDAO asDao, UcdProcessDAO ucdDao,
-            QmsStandardDAO qmsDao, TargetedUserDAO tuDao, DeveloperStatusDAO devStatusDao,
-            SurveillanceDAO survDao, UploadTemplateVersionDAO uploadTemplateDao, QuarterDAO quarterDao,
-            ProductDAO productDao, DeveloperDAO devDao, JobDAO jobDao, MacraMeasureDAO macraDao,
-            CQMCriterionDAO cqmCriterionDao, CertificationEditionDAO certEditionDao) {
-        this.precache = precache;
+    public DimensionalDataManager(CacheableDimensionalDataManager cacheableDimensionalDataManager,
+                                  CertificationBodyDAO certificationBodyDao, CertificationCriterionDAO certificationCriterionDao,
+                                  EducationTypeDAO educationTypeDao, AgeRangeDAO ageRangeDao, TestFunctionalityDAO testFuncDao,
+                                  TestStandardDAO testStandardDao, TestToolDAO testToolDao, TestProcedureDAO testProcedureDao,
+                                  TestDataDAO testDataDao, AccessibilityStandardDAO asDao, UcdProcessDAO ucdDao,
+                                  QmsStandardDAO qmsDao, TargetedUserDAO tuDao, DeveloperStatusDAO devStatusDao,
+                                  SurveillanceDAO survDao, UploadTemplateVersionDAO uploadTemplateDao, QuarterDAO quarterDao,
+                                  ProductDAO productDao, DeveloperDAO devDao, JobDAO jobDao, MacraMeasureDAO macraDao,
+                                  CQMCriterionDAO cqmCriterionDao, CertificationEditionDAO certEditionDao) {
+        this.cacheableDimensionalDataManager = cacheableDimensionalDataManager;
         this.certificationBodyDao = certificationBodyDao;
         this.certificationCriterionDao = certificationCriterionDao;
         this.educationTypeDao = educationTypeDao;
@@ -617,38 +617,38 @@ public class DimensionalDataManager {
     // The following methods are called from inside this class as searchable dimensional data.
     // Since they are called from within the same class, any annotations on the below methods
     // are ignored due to Spring's proxying mechanism. Therefore the caching of these methods
-    // has been moved to the PrecacheableDimensionalDataModel class which is called through.
+    // has been moved to the CacheableDimensionalDataModel class which is called through.
     public Set<KeyValueModel> getClassificationNames() {
-        return precache.getClassificationNames();
+        return cacheableDimensionalDataManager.getClassificationNames();
     }
 
     public Set<KeyValueModel> getEditionNames(final Boolean simple) {
-       return precache.getEditionNames(simple);
+       return cacheableDimensionalDataManager.getEditionNames(simple);
     }
 
     public Set<KeyValueModel> getCertificationStatuses() {
-        return precache.getCertificationStatuses();
+        return cacheableDimensionalDataManager.getCertificationStatuses();
     }
 
     public Set<KeyValueModel> getPracticeTypeNames() {
-        return precache.getPracticeTypeNames();
+        return cacheableDimensionalDataManager.getPracticeTypeNames();
     }
 
     public Set<KeyValueModelStatuses> getProducts() {
-        return precache.getProductsCached();
+        return cacheableDimensionalDataManager.getProductsCached();
     }
 
     @Transactional
     public Set<KeyValueModelStatuses> getDevelopers() {
-        return precache.getDevelopersCached();
+        return cacheableDimensionalDataManager.getDevelopers();
     }
 
     public Set<CriteriaSpecificDescriptiveModel> getCertificationCriterionNumbers() throws EntityRetrievalException {
-        return precache.getCertificationCriterionNumbers();
+        return cacheableDimensionalDataManager.getCertificationCriterionNumbers();
     }
 
     public Set<DescriptiveModel> getCQMCriterionNumbers(final Boolean simple) {
-        return precache.getCQMCriterionNumbers(simple);
+        return cacheableDimensionalDataManager.getCQMCriterionNumbers(simple);
     }
 
     @Deprecated
