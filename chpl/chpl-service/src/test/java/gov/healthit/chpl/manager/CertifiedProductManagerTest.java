@@ -173,7 +173,6 @@ public class CertifiedProductManagerTest {
         activityManager = Mockito.mock(ActivityManager.class);
         validatorFactory = Mockito.mock(ListingValidatorFactory.class);
         curesUpdateService = Mockito.mock(CuresUpdateService.class);
-        ff4j = Mockito.mock(FF4j.class);
 
         certifiedProductManager = new  CertifiedProductManager(msgUtil, cpDao,  searchDao, certDao,
                 certCriterionDao, qmsDao,  targetedUserDao, asDao,  cpQmsDao, cpTestingLabDao,
@@ -182,7 +181,7 @@ public class CertifiedProductManagerTest {
                 statusEventDao, curesUpdateDao, muuDao,  certResultManager, testToolDao,  testStandardDao,
                 testProcDao,  testDataDao, testFuncDao,  ucdDao, testParticipantDao,  testTaskDao, certStatusDao,
                 listingGraphDao, fuzzyChoicesDao,  resourcePermissions, certifiedProductSearchResultDAO,
-                certifiedProductDetailsManager, activityManager,  validatorFactory, curesUpdateService,  ff4j);
+                certifiedProductDetailsManager, activityManager,  validatorFactory, curesUpdateService);
     }
 
     @Test(expected = ValidationException.class)
