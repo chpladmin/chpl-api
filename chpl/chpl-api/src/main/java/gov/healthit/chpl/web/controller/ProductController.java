@@ -152,7 +152,7 @@ public class ProductController {
             throw new InvalidArgumentsException("At least one product id must be provided in the request.");
         }
         if (productInfo.getProductIds().size() > 1) {
-            // if a product was sent in, we need to do a "merge" of the new product and old products create a new 
+            // if a product was sent in, we need to do a "merge" of the new product and old products create a new
             // product with the rest of the passed in information
             result = mergeProducts(productInfo);
             responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
@@ -184,9 +184,9 @@ public class ProductController {
             }
             // update the developer if an id is supplied
             if (productInfo.getNewDeveloperId() != null) {
-                toUpdate.setDeveloperId(productInfo.getNewDeveloperId());
+                toUpdate.getOwner().setId(productInfo.getNewDeveloperId());
             } else {
-                toUpdate.setDeveloperId(productInfo.getProduct().getOwner().getDeveloperId());
+                toUpdate.getOwner().setId(productInfo.getProduct().getOwner().getDeveloperId());
             }
             // product could have updated ownership history
             if (productInfo.getProduct().getOwnerHistory() != null) {
@@ -379,7 +379,7 @@ public class ProductController {
         ProductDTO oldProduct = productManager.getById(splitRequest.getOldProduct().getProductId());
         ProductDTO newProduct = new ProductDTO();
         newProduct.setName(splitRequest.getNewProductName());
-        newProduct.setDeveloperId(oldProduct.getDeveloperId());
+        newProduct.getOwner().setId(oldProduct.getOwner().getId());
         List<ProductVersionDTO> newProductVersions = new ArrayList<ProductVersionDTO>();
         for (ProductVersion requestVersion : splitRequest.getNewVersions()) {
             ProductVersionDTO newVersion = new ProductVersionDTO();
@@ -419,7 +419,7 @@ public class ProductController {
         newProduct.setName(productInfo.getProduct().getName());
         newProduct.setReportFileLocation(productInfo.getProduct().getReportFileLocation());
         if (productInfo.getNewDeveloperId() != null) {
-            newProduct.setDeveloperId(productInfo.getNewDeveloperId());
+            newProduct.getOwner().setId(productInfo.getNewDeveloperId());
         }
         // new product could be created with ownership history
         if (productInfo.getProduct().getOwnerHistory() != null) {

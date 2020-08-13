@@ -3,9 +3,6 @@ package gov.healthit.chpl.manager;
 import java.util.ArrayList;
 import java.util.List;
 
-import gov.healthit.chpl.caching.CacheNames;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.access.AccessDeniedException;
@@ -15,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
@@ -36,10 +34,11 @@ import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil.ChplProductNumberParts;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
+import lombok.extern.log4j.Log4j2;
 
 @Service
+@Log4j2
 public class ProductVersionManager extends SecuredManager {
-    private static Logger LOGGER = LogManager.getLogger(ProductVersionManager.class);
     private ProductVersionDAO versionDao;
     private DeveloperDAO devDao;
     private ProductDAO prodDao;
@@ -52,6 +51,7 @@ public class ProductVersionManager extends SecuredManager {
     private ValidationUtils validationUtils;
 
     @Autowired
+    @SuppressWarnings({"checkstyle:parameternumber"})
     public ProductVersionManager(ProductVersionDAO versionDao, DeveloperDAO devDao,
             ProductDAO prodDao, CertifiedProductDAO cpDao, ActivityManager activityManager,
             CertifiedProductDetailsManager cpdManager, ResourcePermissions resourcePermissions,
@@ -118,9 +118,9 @@ public class ProductVersionManager extends SecuredManager {
         if (prod == null) {
             throw new EntityRetrievalException("Cannot find product with id " + dto.getProductId());
         }
-        DeveloperDTO dev = devDao.getById(prod.getDeveloperId());
+        DeveloperDTO dev = devDao.getById(prod.getOwner().getId());
         if (dev == null) {
-            throw new EntityRetrievalException("Cannot find developer with id " + prod.getDeveloperId());
+            throw new EntityRetrievalException("Cannot find developer with id " + prod.getOwner().getId());
         }
         DeveloperStatusEventDTO currDevStatus = dev.getStatus();
         if (currDevStatus == null || currDevStatus.getStatus() == null) {

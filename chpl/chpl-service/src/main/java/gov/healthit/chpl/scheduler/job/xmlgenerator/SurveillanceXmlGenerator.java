@@ -44,11 +44,11 @@ public class SurveillanceXmlGenerator extends XmlGenerator {
             createSimpleElement(surveillance.getEndDate(), "endDate", sw);
             createSimpleElement(surveillance.getFriendlyId(), "friendlyId", sw);
             createSimpleElement(surveillance.getId(), "id", sw);
+            createSimpleElement(surveillance.getLastModifiedDate(), "lastModifiedDate", sw);
             createSimpleElement(surveillance.getRandomizedSitesUsed(), "randomizedSitesUsed", sw);
             SurveillanceRequirementXmlGenerator.add(surveillance.getRequirements(), "surveilledRequirements", sw);
             createSimpleElement(surveillance.getStartDate(), "startDate", sw);
             SurveillanceTypeXmlGenerator.addSurveillanceType(surveillance.getType(), "type", sw);
-            createSimpleElement(surveillance.getLastModifiedDate(), "lastModifiedDate", sw);
             sw.writeEndElement();
         }
     }
