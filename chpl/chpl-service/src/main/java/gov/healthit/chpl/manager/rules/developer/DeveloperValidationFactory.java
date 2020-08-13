@@ -13,10 +13,8 @@ public class DeveloperValidationFactory {
     public static final String WEBSITE_WELL_FORMED = "WEBSITE_WELL_FORMED";
     public static final String CONTACT = "CONTACT";
     public static final String ADDRESS = "ADDRESS";
-    public static final String TRANSPARENCY_ATTESTATION = "TRANSPARENCY_ATTESTATION";
     public static final String STATUS_EVENTS = "STATUS_EVENTS";
 
-    public static final String EDIT_TRANSPARENCY_ATTESTATION = "EDIT_TRANSPARENCY_ATTESTATION";
     public static final String HAS_STATUS = "HAS_STATUS";
     public static final String ACTIVE_STATUS = "ACTIVE_STATUS";
     public static final String STATUS_MISSING_BAN_REASON = "STATUS_MISSING_BAN_REASON";
@@ -43,12 +41,8 @@ public class DeveloperValidationFactory {
             return new DeveloperContactValidation();
         case ADDRESS:
             return new DeveloperAddressValidation();
-        case TRANSPARENCY_ATTESTATION:
-            return new DeveloperTransparencyAttestationValidation();
         case STATUS_EVENTS:
             return new DeveloperStatusEventsValidation();
-        case EDIT_TRANSPARENCY_ATTESTATION:
-            return new DeveloperEditTransparencyAttestationValidation(resourcePermissions);
         case HAS_STATUS:
             return new DeveloperHasStatusValidation();
         case ACTIVE_STATUS:
