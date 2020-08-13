@@ -1,13 +1,18 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlType;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.dto.MeaningfulUseUserDTO;
 
-/**
- * Domain-level container for meaningful use user counts.
- * @author kekey
- *
- */
+@XmlType(namespace = "http://chpl.healthit.gov/listings")
+@XmlAccessorType(XmlAccessType.FIELD)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MeaningfulUseUser implements Serializable {
     private static final long serialVersionUID = -4803363243075068608L;
 
@@ -15,17 +20,10 @@ public class MeaningfulUseUser implements Serializable {
     private Long muuCount;
     private Long muuDate;
 
-    /**
-     * Default constructor.
-     */
     public MeaningfulUseUser() {
-    };
+    }
 
-    /**
-     * Constructor to create from DTO object.
-     * @param dto
-     */
-    public MeaningfulUseUser(final MeaningfulUseUserDTO dto) {
+    public MeaningfulUseUser(MeaningfulUseUserDTO dto) {
         this.id = dto.getId();
         this.muuCount = dto.getMuuCount();
         this.muuDate = dto.getMuuDate().getTime();

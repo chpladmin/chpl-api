@@ -63,8 +63,8 @@ public class SplitActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         ProductDTO dto = new ProductDTO();
-        dto.setId(1l);
-        dto.setDeveloperId(2l);
+        dto.setId(1L);
+        dto.getOwner().setId(2L);
 
         // Non Active Developer
         Mockito.when(resourcePermissions.isDeveloperActive(ArgumentMatchers.anyLong())).thenReturn(false);

@@ -40,25 +40,23 @@ public class SurveillanceNonConformityXmlGenerator extends XmlGenerator {
             throws XMLStreamException {
         if (snc != null) {
             sw.writeStartElement(rootNodeName);
-            createSimpleElement(snc.getId(), "id", sw);
-            createSimpleElement(snc.getNonconformityType(), "nonconformityType", sw);
-            if (snc.getCriterion() != null) {
-                CertificationCriterionXmlGenerator.add(snc.getCriterion(), "criterion", sw);
-            }
-            SurveillanceNonConformityStatusXmlGenerator.add(snc.getStatus(), "status", sw);
-            createSimpleElement(snc.getDateOfDetermination(), "dateOfTermination", sw);
             createSimpleElement(snc.getCapApprovalDate(), "capApprovalDate", sw);
-            createSimpleElement(snc.getCapStartDate(), "capStartDate", sw);
             createSimpleElement(snc.getCapEndDate(), "capEndDate", sw);
             createSimpleElement(snc.getCapMustCompleteDate(), "capMustCompleteDate", sw);
-            createSimpleElement(snc.getSummary(), "summary", sw);
-            createSimpleElement(snc.getFindings(), "findings", sw);
-            createSimpleElement(snc.getSitesPassed(), "sitesPassed", sw);
-            createSimpleElement(snc.getTotalSites(), "totalSites", sw);
+            createSimpleElement(snc.getCapStartDate(), "capStartDate", sw);
+            CertificationCriterionXmlGenerator.add(snc.getCriterion(), "criterion", sw);
+            createSimpleElement(snc.getDateOfDetermination(), "dateOfDetermination", sw);
             createSimpleElement(snc.getDeveloperExplanation(), "developerExplanation", sw);
-            createSimpleElement(snc.getResolution(), "resolution", sw);
             SurveillanceNonConformityDocumentXmlGenerator.add(snc.getDocuments(), "documents", sw);
+            createSimpleElement(snc.getFindings(), "findings", sw);
+            createSimpleElement(snc.getId(), "id", sw);
             createSimpleElement(snc.getLastModifiedDate(), "lastModifiedDate", sw);
+            createSimpleElement(snc.getNonconformityType(), "nonconformityType", sw);
+            createSimpleElement(snc.getResolution(), "resolution", sw);
+            createSimpleElement(snc.getSitesPassed(), "sitesPassed", sw);
+            SurveillanceNonConformityStatusXmlGenerator.add(snc.getStatus(), "status", sw);
+            createSimpleElement(snc.getSummary(), "summary", sw);
+            createSimpleElement(snc.getTotalSites(), "totalSites", sw);
             sw.writeEndElement();
         }
     }
