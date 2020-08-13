@@ -300,15 +300,6 @@
             <artifactId>async-http-client</artifactId>
             <version>2.10.1</version>
         </dependency>
-        <!-- for unit/integration testing of the dao calls -->
-        <dependency>
-            <groupId>gov.healthit.chpl</groupId>
-            <artifactId>chpl-resources</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <classifier>tests</classifier>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>
