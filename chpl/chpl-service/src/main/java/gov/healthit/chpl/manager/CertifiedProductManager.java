@@ -221,6 +221,7 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     @Autowired
+    @SuppressWarnings({"checkstyle:parameternumber"})
     public CertifiedProductManager(ErrorMessageUtil msgUtil,
             CertifiedProductDAO cpDao, CertifiedProductSearchDAO searchDao,
             CertificationResultDAO certDao, CertificationCriterionDAO certCriterionDao,
@@ -406,6 +407,7 @@ public class CertifiedProductManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.COLLECTIONS_LISTINGS, CacheNames.PRODUCT_NAMES, CacheNames.DEVELOPER_NAMES
     }, allEntries = true)
+    @SuppressWarnings({"checkstyle:methodlength"})
     public CertifiedProductDTO createFromPending(PendingCertifiedProductDTO pendingCp)
             throws EntityRetrievalException, EntityCreationException, IOException {
 
@@ -469,7 +471,7 @@ public class CertifiedProductManager extends SecuredManager {
                 throw new EntityCreationException("Either product name or ID must be provided.");
             }
             newProduct.setName(pendingCp.getProductName());
-            newProduct.setDeveloperId(pendingCp.getDeveloperId());
+            newProduct.getOwner().setId(pendingCp.getDeveloperId());
             newProduct.setReportFileLocation(pendingCp.getReportFileLocation());
             newProduct = productManager.create(newProduct);
             pendingCp.setProductId(newProduct.getId());
@@ -741,7 +743,8 @@ public class CertifiedProductManager extends SecuredManager {
                                 TestFunctionalityDTO match = testFuncDao.getByNumberAndEdition(func.getNumber(),
                                         pendingCp.getCertificationEditionId());
                                 if (match != null) {
-                                    CertificationResultTestFunctionalityDTO funcDto = new CertificationResultTestFunctionalityDTO();
+                                    CertificationResultTestFunctionalityDTO funcDto
+                                        = new CertificationResultTestFunctionalityDTO();
 
                                     funcDto.setTestFunctionalityId(match.getId());
                                     funcDto.setCertificationResultId(createdCert.getId());
@@ -1148,8 +1151,9 @@ public class CertifiedProductManager extends SecuredManager {
                 changedProduct, reason);
     }
 
-    private void updateListingsChildData(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing)
-            throws EntityCreationException, EntityRetrievalException, IOException {
+    private void updateListingsChildData(CertifiedProductSearchDetails existingListing,
+            CertifiedProductSearchDetails updatedListing)
+                    throws EntityCreationException, EntityRetrievalException, IOException {
         updateTestingLabs(updatedListing.getId(), existingListing.getTestingLabs(), updatedListing.getTestingLabs());
         updateIcsChildren(updatedListing.getId(), existingListing.getIcs(), updatedListing.getIcs());
         updateIcsParents(updatedListing.getId(), existingListing.getIcs(), updatedListing.getIcs());

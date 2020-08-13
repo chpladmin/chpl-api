@@ -62,11 +62,11 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         ProductDTO product = new ProductDTO();
-        product.setId(1l);
-        product.setDeveloperId(2l);
+        product.setId(1L);
+        product.getOwner().setId(2L);
 
         DeveloperDTO dto = new DeveloperDTO();
-        dto.setId(1l);
+        dto.setId(1L);
 
         // If the current status is Active
         Mockito.when(resourcePermissions.isDeveloperActive(ArgumentMatchers.anyLong())).thenReturn(true);

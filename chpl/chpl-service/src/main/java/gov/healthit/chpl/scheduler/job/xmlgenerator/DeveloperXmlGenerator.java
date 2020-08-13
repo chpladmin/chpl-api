@@ -13,11 +13,11 @@ public class DeveloperXmlGenerator extends XmlGenerator {
         createSimpleElement(dev.getDeveloperCode(), "developerCode", sw);
         createSimpleElement(dev.getDeveloperId(), "developerId", sw);
         createSimpleElement(dev.getName(), "name", sw);
+        createSimpleElement(dev.getSelfDeveloper(), "selfDeveloper", sw);
         DeveloperStatusXmlGenerator.add(dev.getStatus(), "status", sw);
         DeveloperStatusEventXmlGenerator.add(dev.getStatusEvents(), "statusEvents", sw);
         TransparencyAttestationMapXmlGenerator.add(dev.getTransparencyAttestations(), "transparencyAttestations", sw);
         createSimpleElement(dev.getWebsite(), "website", sw);
-        createSimpleElement(dev.getSelfDeveloper(), "selfDeveloper", sw);
         sw.writeEndElement();
     }
 }

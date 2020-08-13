@@ -769,7 +769,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                             }
                         }
 
-                        if (!StringUtils.isEmpty(crTestProc.getEnteredName()) && StringUtils.isEmpty(crTestProc.getVersion())) {
+                        if ((!StringUtils.isEmpty(crTestProc.getEnteredName()) || crTestProc.getTestProcedure() != null) && StringUtils.isEmpty(crTestProc.getVersion())) {
                             addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestProcedureVersion",
                                     Util.formatCriteriaNumber(cert.getCriterion()));
                         }
@@ -802,7 +802,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                             }
                         }
 
-                        if (!StringUtils.isEmpty(crTestData.getEnteredName()) && StringUtils.isEmpty(crTestData.getVersion())) {
+                        if ((!StringUtils.isEmpty(crTestData.getEnteredName()) || crTestData.getTestData() != null) && StringUtils.isEmpty(crTestData.getVersion())) {
                             addErrorOrWarningByPermission(listing, cert,
                                     "listing.criteria.missingTestDataVersion",
                                     Util.formatCriteriaNumber(cert.getCriterion()));
