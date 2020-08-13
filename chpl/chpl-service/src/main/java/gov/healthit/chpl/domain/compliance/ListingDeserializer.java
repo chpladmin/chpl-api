@@ -26,7 +26,6 @@ public class ListingDeserializer extends JsonDeserializer<List<DeveloperAssociat
     @Override
     public List<DeveloperAssociatedListing> deserialize(JsonParser jsonParser, DeserializationContext context)
       throws IOException, JsonProcessingException {
-        //TODO: UNIT TESTS
         List<DeveloperAssociatedListing> listings = new ArrayList<DeveloperAssociatedListing>();
         JsonNode listingDatabaseIdsNode = jsonParser.getCodec().readTree(jsonParser);
         if (listingDatabaseIdsNode != null && listingDatabaseIdsNode.isArray() && listingDatabaseIdsNode.size() > 0) {
