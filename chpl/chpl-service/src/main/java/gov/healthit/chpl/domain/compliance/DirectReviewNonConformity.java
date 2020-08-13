@@ -3,7 +3,7 @@ package gov.healthit.chpl.domain.compliance;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Date;
-import java.util.Map;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -27,7 +27,7 @@ public class DirectReviewNonConformity implements Serializable {
     @JsonProperty(value = "developerAssociatedListings")
     @JsonAlias("customfield_11206")
     @JsonDeserialize(using = ListingDeserializer.class)
-    private Map<Long, String> developerAssociatedListings;
+    private List<DeveloperAssociatedListing> developerAssociatedListings;
 
     @JsonProperty(value = "nonConformityType")
     @JsonAlias("customfield_10934")
@@ -88,4 +88,5 @@ public class DirectReviewNonConformity implements Serializable {
     @JsonProperty(value = "created")
     @JsonDeserialize(using = TimestampDeserializer.class)
     private Date created;
+
 }
