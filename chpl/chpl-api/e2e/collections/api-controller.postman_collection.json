@@ -1,0 +1,74 @@
+{
+	"info": {
+		"_postman_id": "daa83386-aeb9-4596-a942-624fad9a7588",
+		"name": "api-controller",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET /api-docs",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "655ac14f-d31c-4384-b1c4-4d82281be6b1",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Check if the response has all controllers\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"chpl-file-controller\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"surveillance-report-controller\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"product-controller\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"scheduler-controller\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"collections-controller\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"api-key-controller\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"status-controller\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"authentication-controller\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"complaint-controller\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"search-view-controller\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"activity-controller\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"certification-body-controller\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"developer-controller\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"testing-lab-controller\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"certification-id-controller\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"user-management-controller\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"product-version-controller\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"meaningful-use-controller\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"change-request-controller\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"announcement-controller\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"job-controller\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"certified-product-controller\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"surveillance-controller\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/api-docs",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"api-docs"
+					]
+				},
+				"description": "URLs that need not require API-Key are still working without API key"
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

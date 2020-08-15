@@ -1,0 +1,57 @@
+{
+	"info": {
+		"_postman_id": "250a28ef-1770-4f52-9538-c1e40a1a78e5",
+		"name": "products-controller",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET /products",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "34cbcbd7-cfc8-483f-ad1a-b8cbe0bd02d9",
+						"exec": [
+							"pm.test(\"Invalid api key parameter should return 401 and response should be empty\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
+							"    var res = (_.isEmpty(responseBody));\r",
+							"    pm.expect(res).to.be.true\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/products\n?api_key=atest123cg",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"products\n"
+					],
+					"query": [
+						{
+							"key": "api_key",
+							"value": "atest123cg"
+						}
+					]
+				},
+				"description": "Request with Invalid api_key parameter returns 401 status and empty response"
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
