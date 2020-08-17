@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "250a28ef-1770-4f52-9538-c1e40a1a78e5",
+		"_postman_id": "6e1c03a3-35b0-496f-99c3-30c89f93aaa3",
 		"name": "products-controller",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -11,12 +11,10 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "34cbcbd7-cfc8-483f-ad1a-b8cbe0bd02d9",
+						"id": "e517dbed-0a00-403e-8fe6-429adda650cc",
 						"exec": [
-							"pm.test(\"Invalid api key parameter should return 401 and response should be empty\", function () {\r",
+							"pm.test(\"Invalid api key parameter should return 401 status\", function () {\r",
 							"    pm.response.to.have.status(401);\r",
-							"    var res = (_.isEmpty(responseBody));\r",
-							"    pm.expect(res).to.be.true\r",
 							"});"
 						],
 						"type": "text/javascript"
@@ -28,8 +26,8 @@
 				"header": [
 					{
 						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
+						"type": "text",
+						"value": "application/json"
 					}
 				],
 				"url": {

@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "8b30c90d-5302-4abf-ad9c-d051397d9959",
+		"_postman_id": "21c26d32-3ea4-4d99-ac3d-c4c557baa398",
 		"name": "developer-controller",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -11,12 +11,10 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "7f193bf3-bfe9-453d-856b-3564ccd871f0",
+						"id": "89af904b-9c4d-4c17-9fd1-83ff5d945beb",
 						"exec": [
-							"pm.test(\"Invalid api key header should return 401 and response should be empty\", function () {\r",
+							"pm.test(\"Invalid api key header should return 401 status\", function () {\r",
 							"    pm.response.to.have.status(401);\r",
-							"    var res = (_.isEmpty(responseBody));\r",
-							"    pm.expect(res).to.be.true\r",
 							"});"
 						],
 						"type": "text/javascript"
