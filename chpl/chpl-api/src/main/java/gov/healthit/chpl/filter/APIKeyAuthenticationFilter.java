@@ -55,6 +55,14 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
         } else {
             throw new ServletException("Request was not correct type");
         }
+
+        for (int i = 0; i < ALLOWED_REQUEST_PATHS.length; i++) {
+            if (request.getServletPath().matches(ALLOWED_REQUEST_PATHS[i])) {
+                chain.doFilter(req, res); // continue
+                return;
+            }
+        }
+
         String requestPath;
         if (request.getQueryString() == null) {
             requestPath = request.getRequestURI();
@@ -69,7 +77,6 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
         if (keyFromHeader != null && keyFromHeader.equals(keyFromParam)) {
             key = keyFromHeader;
         } else {
-
             if (keyFromHeader == null) {
                 key = keyFromParam;
             } else if (keyFromParam == null) {
@@ -86,13 +93,6 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
         }
 
         if (key == null) {
-            for (int i = 0; i < ALLOWED_REQUEST_PATHS.length; i++) {
-                if (request.getServletPath().matches(ALLOWED_REQUEST_PATHS[i])) {
-                    chain.doFilter(req, res); // continue
-                    return;
-                }
-            }
-
             // No Key. Don't continue.
             ErrorResponse errorObj = new ErrorResponse("API key must be presented in order to use this API");
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
