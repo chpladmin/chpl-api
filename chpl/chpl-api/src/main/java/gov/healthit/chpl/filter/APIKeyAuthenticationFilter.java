@@ -97,7 +97,7 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
             ErrorResponse errorObj = new ErrorResponse("API key must be presented in order to use this API");
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
             String json = ow.writeValueAsString(errorObj);
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, json);
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, json);
             return;
         } else {
             try {
