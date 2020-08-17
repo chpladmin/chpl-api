@@ -44,37 +44,18 @@ public class RealWorldTestingReviewer implements ComparisonReviewer {
 
         if (isListingCurrentlyRwtEligible(existingListing)) {
             if (isRwtPlanDataSubmitted(updatedListing)) {
-                if (isCurrentDateAfterPlanEligibileDate(existingListing)) {
-                    validateRwtPlanUrl(updatedListing);
-                    validateRwtPlanSubmissionDate(updatedListing);
-                } else {
-                    updatedListing.getErrorMessages().add(
-                            errorMessageUtil.getMessage("listing.realWorldTesting.plan.notEligibleUntil",
-                                    getPlanEligibleDate(existingListing).format(dateFormatter)));
-                }
+                validateRwtPlanUrl(updatedListing);
+                validateRwtPlanSubmissionDate(updatedListing);
+
             }
             if (isRwtResultsDataSubmitted(updatedListing)) {
-                if (isCurrentDateAfterResultsEligibileDate(existingListing)) {
-                    validateRwtResultsUrl(updatedListing);
-                    validateRwtResultsSubmissionDate(updatedListing);
-                } else {
-                    updatedListing.getErrorMessages().add(
-                            errorMessageUtil.getMessage("listing.realWorldTesting.results.notEligibleUntil",
-                                    getResultsEligibleDate(existingListing).format(dateFormatter)));
-                }
+                validateRwtResultsUrl(updatedListing);
+                validateRwtResultsSubmissionDate(updatedListing);
             }
         } else if (isRwtPlanDataSubmitted(updatedListing) || isRwtResultsDataSubmitted(updatedListing)) {
             updatedListing.getErrorMessages().add(
                     errorMessageUtil.getMessage("listing.realWorldTesting.notEligible"));
         }
-    }
-
-    private boolean isCurrentDateAfterPlanEligibileDate(CertifiedProductSearchDetails listing) {
-        return LocalDate.now(ZoneId.systemDefault()).isAfter(getPlanEligibleDate(listing));
-    }
-
-    private boolean isCurrentDateAfterResultsEligibileDate(CertifiedProductSearchDetails listing) {
-        return LocalDate.now(ZoneId.systemDefault()).isAfter(getResultsEligibleDate(listing));
     }
 
     private boolean isListingCurrentlyRwtEligible(CertifiedProductSearchDetails listing) {

@@ -56,24 +56,6 @@ public class RealWorldTestingReviewerTest {
     }
 
     @Test
-    public void review_currentDateBeforePlanEligible_errorMessage() throws ParseException {
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.<String>any()))
-                .thenReturn("Listing is not eligible for Real World Testing Plan data until %s.");
-
-        CertifiedProductSearchDetails existing = new CertifiedProductSearchDetails();
-        existing.setRwtEligibilityYear(ELIG_YEAR_EXTREME_FUTURE);
-
-        CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
-        updated.setRwtPlanUrl("http://www.test.com");
-        updated.setRwtPlanSubmissionDate(sdf.parse("08/08/2020"));
-
-        reviewer.review(existing, updated);
-
-        assertEquals(1, updated.getErrorMessages().size());
-        assertTrue(updated.getErrorMessages().contains("Listing is not eligible for Real World Testing Plan data until %s."));
-    }
-
-    @Test
     public void review_noPlanUrl_errorMessage() throws ParseException {
         Mockito.when(errorMessageUtil.getMessage("listing.realWorldTesting.plan.url.required"))
                 .thenReturn("Real World Testing Plan URL is required.");
@@ -156,24 +138,6 @@ public class RealWorldTestingReviewerTest {
 
         assertEquals(1, updated.getErrorMessages().size());
         assertTrue(updated.getErrorMessages().contains("Real World Testing Plan Submission Date must be after %s."));
-    }
-
-    @Test
-    public void review_currentDateBeforeResultsEligible_errorMessage() throws ParseException {
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.<String>any()))
-                .thenReturn("Listing is not eligible for Real World Testing Results data until %s.");
-
-        CertifiedProductSearchDetails existing = new CertifiedProductSearchDetails();
-        existing.setRwtEligibilityYear(ELIG_YEAR_EXTREME_FUTURE);
-
-        CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
-        updated.setRwtResultsUrl("http://www.test.com");
-        updated.setRwtResultsSubmissionDate(sdf.parse("01/08/2021"));
-
-        reviewer.review(existing, updated);
-
-        assertEquals(1, updated.getErrorMessages().size());
-        assertTrue(updated.getErrorMessages().contains("Listing is not eligible for Real World Testing Results data until %s."));
     }
 
     @Test
