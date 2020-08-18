@@ -79,6 +79,12 @@ To set up:
 1. `yarn install` needs to be run once on any given system
 1. copy the `e2e/env/sample.postman_environment.json` file to various formats of `e2e/env/environment.postman_environment.json` and change the url and apiKey values to be valid
 
-To run tests, use `yarn e2e:environment`
+To run all collections, use `yarn e2e:environment`
+
+To run single collection which is data driven, use below command:
+yarn newman run chpl/chpl-api/e2e/collections/[COLLECTION_NAME].json -e chpl/chpl-api/e2e/env/[ENVIRONMENT].postman_environment.json -d chpl/chpl-api/e2e/data/[DATAFILE_NAME].json
+
+To run single collection which isnot data driven, use below command:
+yarn newman run chpl/chpl-api/e2e/collections/[COLLECTION_NAME].json -e chpl/chpl-api/e2e/env/[ENVIRONMENT].postman_environment.json
 
 NOTE: environment is case sensitive to the script in package.json file. so make sure to have environments file saved as in lowercase as well as yarn commands will be run with lowercase environments
