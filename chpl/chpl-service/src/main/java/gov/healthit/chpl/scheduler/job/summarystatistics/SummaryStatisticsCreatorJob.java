@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,24 +28,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
 import gov.healthit.chpl.domain.DateRange;
-import gov.healthit.chpl.domain.statistics.Statistics;
 import gov.healthit.chpl.entity.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
+import gov.healthit.chpl.scheduler.job.summarystatistics.data.CsvStatistics;
+import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatistics;
+import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatisticsCreator;
+import gov.healthit.chpl.scheduler.job.summarystatistics.data.HistoricalStatisticsCreator;
 
-/**
- * Initiates and runs the the Quartz job that generates the data that is used to to create the Summary Statistics Email.
- * 
- * @author TYoung
- *
- */
 @DisallowConcurrentExecution
 public class SummaryStatisticsCreatorJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("summaryStatisticsCreatorJobLogger");
 
     @Autowired
-    private AsynchronousSummaryStatisticsInitializor asynchronousStatisticsInitializor;
+    private HistoricalStatisticsCreator historicalStatisticsCreator;
+
+    @Autowired
+    private EmailStatisticsCreator emailStatisticsCreator;
 
     @Autowired
     private SummaryStatisticsDAO summaryStatisticsDAO;
@@ -57,12 +56,6 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
     @Autowired
     private Environment env;
 
-    /**
-     * Constructor to initialize SummaryStatisticsJobCreator object.
-     * 
-     * @throws Exception
-     *             is thrown
-     */
     public SummaryStatisticsCreatorJob() throws Exception {
         super();
     }
@@ -72,7 +65,6 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         LOGGER.info("********* Starting the Summary Statistics Creation job. *********");
         try {
             SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-            asynchronousStatisticsInitializor.setLogger(LOGGER);
 
             Boolean generateCsv = Boolean.valueOf(jobContext.getMergedJobDataMap().getString("generateCsvFile"));
             Date startDate = getStartDate();
@@ -82,8 +74,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
             Date endDate = new Date();
             Integer numDaysInPeriod = Integer.valueOf(env.getProperty("summaryEmailPeriodInDays").toString());
 
-            Future<Statistics> futureEmailBodyStats = asynchronousStatisticsInitializor.getStatistics(null);
-            Statistics emailBodyStats = futureEmailBodyStats.get();
+            EmailStatistics emailBodyStats = emailStatisticsCreator.getStatistics();
 
             if (generateCsv) {
                 createSummaryStatisticsFile(startDate, endDate, numDaysInPeriod);
@@ -98,7 +89,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
 
     private void createSummaryStatisticsFile(final Date startDate, final Date endDate, final Integer numDaysInPeriod)
             throws InterruptedException, ExecutionException {
-        List<Statistics> csvStats = new ArrayList<Statistics>();
+        List<CsvStatistics> csvStats = new ArrayList<CsvStatistics>();
         Calendar startDateCal = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
         startDateCal.setTime(startDate);
         Calendar endDateCal = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
@@ -109,10 +100,9 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
             LOGGER.info("Getting csvRecord for start date " + startDateCal.getTime().toString() + " end date "
                     + endDateCal.getTime().toString());
             DateRange csvRange = new DateRange(startDateCal.getTime(), new Date(endDateCal.getTimeInMillis()));
-            Statistics historyStat = new Statistics();
+            CsvStatistics historyStat = new CsvStatistics();
             historyStat.setDateRange(csvRange);
-            Future<Statistics> futureEmailCsvStats = asynchronousStatisticsInitializor.getStatistics(csvRange);
-            historyStat = futureEmailCsvStats.get();
+            historyStat = historicalStatisticsCreator.getStatistics(csvRange);
             csvStats.add(historyStat);
             LOGGER.info("Finished getting csvRecord for start date " + startDateCal.getTime().toString() + " end date "
                     + endDateCal.getTime().toString());
@@ -132,12 +122,12 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         LOGGER.info("Completed statistics CSV");
     }
 
-    private String getJson(final Statistics statistics) throws JsonProcessingException {
+    private String getJson(final EmailStatistics statistics) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(statistics);
     }
 
-    public void saveSummaryStatistics(final Statistics statistics, final Date endDate)
+    public void saveSummaryStatistics(final EmailStatistics statistics, final Date endDate)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
 
         // We need to manually create a transaction in this case because of how AOP works. When a method is
@@ -152,12 +142,12 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try {
-                    getSummaryStatisticsDAO().deleteAll();
+                    summaryStatisticsDAO.deleteAll();
 
                     SummaryStatisticsEntity entity = new SummaryStatisticsEntity();
                     entity.setEndDate(endDate);
                     entity.setSummaryStatistics(getJson(statistics));
-                    getSummaryStatisticsDAO().create(entity);
+                    summaryStatisticsDAO.create(entity);
                 } catch (Exception e) {
                     status.setRollbackOnly();
                 }
@@ -165,6 +155,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         });
     }
 
+    @SuppressWarnings({"checkstyle:magicnumber"})
     private Date getStartDate() {
         Calendar startDateCalendar = Calendar.getInstance();
         // This is a constant date, which marks the beginning of time for
@@ -186,20 +177,4 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         return null;
     }
 
-    public AsynchronousSummaryStatisticsInitializor getAsynchronousStatisticsInitializor() {
-        return asynchronousStatisticsInitializor;
-    }
-
-    public void setAsynchronousStatisticsInitializor(
-            final AsynchronousSummaryStatisticsInitializor asynchronousStatisticsInitializor) {
-        this.asynchronousStatisticsInitializor = asynchronousStatisticsInitializor;
-    }
-
-    public SummaryStatisticsDAO getSummaryStatisticsDAO() {
-        return summaryStatisticsDAO;
-    }
-
-    public void setSummaryStatisticsDAO(final SummaryStatisticsDAO summaryStatisticsDAO) {
-        this.summaryStatisticsDAO = summaryStatisticsDAO;
-    }
 }

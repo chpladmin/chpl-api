@@ -7,6 +7,7 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,10 +24,13 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.urlStatus.UrlType;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
+@NoArgsConstructor
 @Repository(value = "certifiedProductDAO")
+@Primary
 public class CertifiedProductDAO extends BaseDAOImpl {
     private static final int CHPL_ID_LENGTH = 9;
     private ErrorMessageUtil msgUtil;
@@ -161,6 +165,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
     }
 
     @Transactional(readOnly = false)
+    @SuppressWarnings({"checkstyle:todocomment"})
     public void delete(final Long productId) {
         // TODO: How to delete this without leaving orphans
         Query query = entityManager.createQuery(
@@ -236,10 +241,11 @@ public class CertifiedProductDAO extends BaseDAOImpl {
 
     @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> findWithSurveillance() {
+
         List<CertifiedProductDetailsEntity> entities = entityManager.createQuery(
                 "SELECT DISTINCT cp " + "FROM CertifiedProductDetailsEntity cp, SurveillanceEntity surv "
                         + "WHERE surv.certifiedProductId = cp.id " + "AND (NOT surv.deleted = true)",
-                CertifiedProductDetailsEntity.class).getResultList();
+                        CertifiedProductDetailsEntity.class).getResultList();
 
         List<CertifiedProductDetailsDTO> products = new ArrayList<>();
 
@@ -256,7 +262,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         List<CertifiedProductDetailsEntity> entities = entityManager.createQuery(
                 "SELECT DISTINCT cp " + "FROM CertifiedProductDetailsEntity cp "
                         + "WHERE (icsCode != '0' OR ics = true)",
-                CertifiedProductDetailsEntity.class).getResultList();
+                        CertifiedProductDetailsEntity.class).getResultList();
 
         List<CertifiedProductDetailsDTO> products = new ArrayList<>();
         for (CertifiedProductDetailsEntity entity : entities) {
@@ -304,6 +310,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         return dto;
     }
 
+    @SuppressWarnings({"checkstyle:magicnumber"})
     @Transactional(readOnly = true)
     public CertifiedProductDetailsDTO getByChplUniqueId(final String chplUniqueId) throws EntityRetrievalException {
         CertifiedProductDetailsDTO dto = null;
@@ -358,7 +365,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
                 "FROM CertifiedProductEntity cpe, ProductVersionEntity pve," + "ProductEntity pe, DeveloperEntity ve "
                         + "WHERE (NOT cpe.deleted = true) " + "AND cpe.productVersion = pve.id "
                         + "AND pve.productId = pe.id " + "AND ve.id = pe.developerId " + "AND ve.id = :developerId",
-                CertifiedProductEntity.class);
+                        CertifiedProductEntity.class);
         getCertifiedProductsQuery.setParameter("developerId", developerId);
         List<CertifiedProductEntity> results = getCertifiedProductsQuery.getResultList();
 
@@ -423,7 +430,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
                         + "LEFT OUTER JOIN FETCH deets.product "
                         + "WHERE deets.chplProductNumber in (:chplProductNumbers) "
                         + "AND deets.deleted = false ",
-                CertifiedProductDetailsEntity.class);
+                        CertifiedProductDetailsEntity.class);
         prodQuery.setParameter("chplProductNumbers", chplProductNumbers);
         List<CertifiedProductDetailsEntity> results = prodQuery.getResultList();
 
@@ -484,9 +491,9 @@ public class CertifiedProductDAO extends BaseDAOImpl {
     public List<CertifiedProductDetailsDTO> getDetailsByAcbIds(final List<Long> acbIds) {
         Query query = entityManager.createQuery(
                 "from CertifiedProductDetailsEntity "
-                + "WHERE (NOT deleted = true) "
-                + "AND certification_body_id IN :idList",
-                CertifiedProductDetailsEntity.class);
+                        + "WHERE (NOT deleted = true) "
+                        + "AND certification_body_id IN :idList",
+                        CertifiedProductDetailsEntity.class);
         query.setParameter("idList", acbIds);
         List<CertifiedProductDetailsEntity> results = query.getResultList();
 
@@ -503,7 +510,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery(
                 "from CertifiedProductDetailsEntity WHERE (NOT deleted = true) and "
                         + "certification_body_id IN :idList and product_version_id = :versionId",
-                CertifiedProductDetailsEntity.class);
+                        CertifiedProductDetailsEntity.class);
         query.setParameter("idList", acbIds);
         query.setParameter("versionId", versionId);
         List<CertifiedProductDetailsEntity> results = query.getResultList();
@@ -539,7 +546,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             queryStr += " AND cp.reportFileLocation = :url ";
             break;
         default:
-                break;
+            break;
         }
 
         Query query = entityManager.createQuery(queryStr, CertifiedProductSummaryEntity.class);
@@ -578,8 +585,11 @@ public class CertifiedProductDAO extends BaseDAOImpl {
 
     }
 
+    /**
+     * This method has protected access because it is needed in the RealWorldTestingEligibilityJob.RwtEligibilityYearDAO class
+     */
     @Transactional(readOnly = true)
-    private CertifiedProductEntity getEntityById(final Long entityId) throws EntityRetrievalException {
+    protected CertifiedProductEntity getEntityById(final Long entityId) throws EntityRetrievalException {
 
         CertifiedProductEntity entity = null;
 
@@ -619,6 +629,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         return entity;
     }
 
+    @SuppressWarnings({"checkstyle:parameternumber"})
     @Transactional(readOnly = true)
     private CertifiedProductDetailsEntity getEntityByUniqueIdParts(final String yearCode, final String atlCode,
             final String acbCode, final String developerCode, final String productCode, final String versionCode,

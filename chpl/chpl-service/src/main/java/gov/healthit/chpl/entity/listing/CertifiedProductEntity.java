@@ -18,16 +18,15 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import gov.healthit.chpl.util.Util;
-
-/**
- * Object mapping for hibernate-handled table: certified_product. A product that
- * has been Certified
- *
- * @author auto-generated / cwatson
- */
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "certified_product")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class CertifiedProductEntity implements Serializable {
     private static final long serialVersionUID = -2437147151682759808L;
 
@@ -134,6 +133,9 @@ public class CertifiedProductEntity implements Serializable {
     @JoinColumn(name = "certified_product_id", nullable = false, insertable = false, updatable = false)
     private CertifiedProductEntity certifiedProduct;
 
+    @Column(name = "rwt_eligibility_year")
+    private Integer rwtEligibilityYear;
+
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
     private Date creationDate;
@@ -150,191 +152,13 @@ public class CertifiedProductEntity implements Serializable {
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
-   /**
-     * Default constructor, mainly for hibernate use.
-     */
-    public CertifiedProductEntity() {
-        // Default constructor
-    }
-
-    /**
-     * Constructor taking a given ID.
-     *
-     * @param id
-     *            to set
-     */
-    public CertifiedProductEntity(final Long id) {
+    public CertifiedProductEntity(Long id) {
         this.id = id;
     }
 
-    /**
-     * Return the type of this class. Useful for when dealing with proxies.
-     *
-     * @return Defining class.
-     */
     @Transient
     public Class<?> getClassType() {
         return CertifiedProductEntity.class;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getAcbCertificationId() {
-        return acbCertificationId;
-    }
-
-    public void setAcbCertificationId(final String acbCertificationId) {
-        this.acbCertificationId = acbCertificationId;
-    }
-
-    public Long getCertificationBodyId() {
-        return certificationBodyId;
-    }
-
-    public void setCertificationBodyId(final Long certificationBodyId) {
-        this.certificationBodyId = certificationBodyId;
-    }
-
-    public Long getCertificationEditionId() {
-        return certificationEditionId;
-    }
-
-    public void setCertificationEditionId(final Long certificationEditionId) {
-        this.certificationEditionId = certificationEditionId;
-    }
-
-    public String getChplProductNumber() {
-        return chplProductNumber;
-    }
-
-    public void setChplProductNumber(final String chplProductNumber) {
-        this.chplProductNumber = chplProductNumber;
-    }
-
-    public Long getPracticeTypeId() {
-        return practiceTypeId;
-    }
-
-    public void setPracticeTypeId(final Long practiceTypeId) {
-        this.practiceTypeId = practiceTypeId;
-    }
-
-    public Long getProductClassificationTypeId() {
-        return productClassificationTypeId;
-    }
-
-    public void setProductClassificationTypeId(final Long productClassificationTypeId) {
-        this.productClassificationTypeId = productClassificationTypeId;
-    }
-
-    public Long getProductVersionId() {
-        return productVersionId;
-    }
-
-    public void setProductVersionId(final Long productVersionId) {
-        this.productVersionId = productVersionId;
-    }
-
-    public String getReportFileLocation() {
-        return reportFileLocation;
-    }
-
-    public void setReportFileLocation(final String reportFileLocation) {
-        this.reportFileLocation = reportFileLocation;
-    }
-
-    public String getOtherAcb() {
-        return otherAcb;
-    }
-
-    public void setOtherAcb(final String otherAcb) {
-        this.otherAcb = otherAcb;
-    }
-
-    public String getProductCode() {
-        return productCode;
-    }
-
-    public void setProductCode(final String productCode) {
-        this.productCode = productCode;
-    }
-
-    public String getVersionCode() {
-        return versionCode;
-    }
-
-    public void setVersionCode(final String versionCode) {
-        this.versionCode = versionCode;
-    }
-
-    public String getAdditionalSoftwareCode() {
-        return additionalSoftwareCode;
-    }
-
-    public void setAdditionalSoftwareCode(final String additionalSoftwareCode) {
-        this.additionalSoftwareCode = additionalSoftwareCode;
-    }
-
-    public String getCertifiedDateCode() {
-        return certifiedDateCode;
-    }
-
-    public void setCertifiedDateCode(final String certifiedDateCode) {
-        this.certifiedDateCode = certifiedDateCode;
-    }
-
-    public String getIcsCode() {
-        return icsCode;
-    }
-
-    public void setIcsCode(final String icsCode) {
-        this.icsCode = icsCode;
-    }
-
-    public Boolean getIcs() {
-        return ics;
-    }
-
-    public void setIcs(final Boolean ics) {
-        this.ics = ics;
-    }
-
-    public Boolean getSedTesting() {
-        return sedTesting;
-    }
-
-    public void setSedTesting(final Boolean sedTesting) {
-        this.sedTesting = sedTesting;
-    }
-
-    public Boolean getQmsTesting() {
-        return qmsTesting;
-    }
-
-    public void setQmsTesting(final Boolean qmsTesting) {
-        this.qmsTesting = qmsTesting;
-    }
-
-    public String getSedReportFileLocation() {
-        return sedReportFileLocation;
-    }
-
-    public void setSedReportFileLocation(final String sedReportFileLocation) {
-        this.sedReportFileLocation = sedReportFileLocation;
-    }
-
-    public String getProductAdditionalSoftware() {
-        return productAdditionalSoftware;
-    }
-
-    public void setProductAdditionalSoftware(final String productAdditionalSoftware) {
-        this.productAdditionalSoftware = productAdditionalSoftware;
     }
 
     public Date getCreationDate() {
@@ -345,14 +169,6 @@ public class CertifiedProductEntity implements Serializable {
         this.creationDate = Util.getNewDate(creationDate);
     }
 
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
     public Date getLastModifiedDate() {
         return Util.getNewDate(lastModifiedDate);
     }
@@ -361,55 +177,11 @@ public class CertifiedProductEntity implements Serializable {
         this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public String getTransparencyAttestationUrl() {
-        return transparencyAttestationUrl;
-    }
-
-    public void setTransparencyAttestationUrl(final String transparencyAttestationUrl) {
-        this.transparencyAttestationUrl = transparencyAttestationUrl;
-    }
-
-    public Boolean getAccessibilityCertified() {
-        return accessibilityCertified;
-    }
-
-    public void setAccessibilityCertified(final Boolean accessibilityCertified) {
-        this.accessibilityCertified = accessibilityCertified;
-    }
-
-    public String getSedIntendedUserDescription() {
-        return sedIntendedUserDescription;
-    }
-
-    public void setSedIntendedUserDescription(final String sedIntendedUserDescription) {
-        this.sedIntendedUserDescription = sedIntendedUserDescription;
-    }
-
-    public Date getSedTestingEnd() {
-        return Util.getNewDate(sedTestingEnd);
-    }
-
     public void setSedTestingEnd(final Date sedTestingEnd) {
         this.sedTestingEnd = Util.getNewDate(sedTestingEnd);
     }
 
     public CertifiedProductEntity getCertifiedProduct() {
         return this;
-    }
-
-    public Long getPendingCertifiedProductId() {
-        return pendingCertifiedProductId;
-    }
-
-    public void setPendingCertifiedProductId(final Long pendingCertifiedProductId) {
-        this.pendingCertifiedProductId = pendingCertifiedProductId;
     }
 }

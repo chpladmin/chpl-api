@@ -3,11 +3,9 @@ package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestTask;
@@ -26,22 +24,16 @@ import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 public class RemovedCriteriaTestTaskComparisonReviewer implements ComparisonReviewer {
     private ResourcePermissions resourcePermissions;
     private ErrorMessageUtil msgUtil;
-    private FF4j ff4j;
 
     @Autowired
-    public RemovedCriteriaTestTaskComparisonReviewer(final ResourcePermissions resourcePermissions,
-            final ErrorMessageUtil msgUtil, final FF4j ff4j) {
+    public RemovedCriteriaTestTaskComparisonReviewer(ResourcePermissions resourcePermissions,
+            ErrorMessageUtil msgUtil) {
         this.resourcePermissions = resourcePermissions;
         this.msgUtil = msgUtil;
-        this.ff4j = ff4j;
     }
 
     @Override
     public void review(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing) {
-        if (!ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_ONE_WEEK)) {
-            return;
-        }
-
         //this is only disallowed if the user is not ADMIN/ONC, so first check the permissions
         if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
             return;
