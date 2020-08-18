@@ -6,7 +6,7 @@
 	},
 	"item": [
 		{
-			"name": "GET /products",
+			"name": "GET /products - invalid API Key parameter",
 			"event": [
 				{
 					"listen": "test",
@@ -47,6 +47,46 @@
 					]
 				},
 				"description": "Request with Invalid api_key parameter returns 401 status and empty response"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /products - valid API Key parameter",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "73b68fdc-ede9-4922-89e8-5b56606bd091",
+						"exec": [
+							"pm.test(\"Valid API Key parameter should return 200 and response body should not be empty\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.response).not.eq(null);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/rest/products?api_key={{apiKey}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"products"
+					],
+					"query": [
+						{
+							"key": "api_key",
+							"value": "{{apiKey}}"
+						}
+					]
+				}
 			},
 			"response": []
 		}

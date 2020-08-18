@@ -21,16 +21,6 @@ const acbControllerTests={
 	}
 }
 
-const apiControllerTests={
-	...commonOptions,
-	collection: collection_path + '/api-controller.postman_collection.json',
-	reporter : {
-		junit :{
-			export: reports_path + '/api-controller-tests.xml'
-		}
-	}
-}
-
 const developerControllerTests={
 	...commonOptions,
 	collection: collection_path + '/developer-controller.postman_collection.json',
@@ -73,7 +63,6 @@ const testinglabControllerTests={
 
 const jobs = [
 	cb => newman.run(acbControllerTests,cb),
-	cb => newman.run(apiControllerTests,cb),
 	cb => newman.run(developerControllerTests,cb),
 	cb => newman.run(productsControllerTests,cb),
 	cb => newman.run(statusControllerTests,cb),

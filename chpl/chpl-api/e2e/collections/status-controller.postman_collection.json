@@ -1,19 +1,19 @@
 {
 	"info": {
-		"_postman_id": "dfff1b1e-ac55-4d61-b686-ec3d8a2794c1",
+		"_postman_id": "d20692da-17cc-4561-aea2-3c8f04da76d6",
 		"name": "status-controller",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "GET /system-status",
+			"name": "GET /system-status - valid API Key",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "a8681d61-e31d-4da6-8f50-1d7793df6120",
+						"id": "b8611504-2234-45ee-ae3a-4b6a923993c4",
 						"exec": [
-							"pm.test(\"API calls that run without API Key still work with valid API Keys should return 200 and response body should not be empty\", function () {\r",
+							"pm.test(\"Endpoints that did not require an API Key still work with valid one ,return status 200 and response should not be empty\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
 							"    var jsonData = pm.response.json();\r",
 							"    pm.expect(jsonData.response).not.eq(null);\r",
@@ -28,13 +28,13 @@
 				"header": [
 					{
 						"key": "API-Key",
-						"value": "{{apiKey}}",
-						"type": "text"
+						"type": "text",
+						"value": "{{apiKey}}"
 					},
 					{
 						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
+						"type": "text",
+						"value": "application/json"
 					}
 				],
 				"url": {
@@ -52,14 +52,14 @@
 			"response": []
 		},
 		{
-			"name": "GET /system-status",
+			"name": "GET /system-status - Invalid API Key",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "dfabaebd-b682-4f47-956a-18b3aa4242fe",
+						"id": "9ba86e84-6173-4fb2-b6c1-6e93b0a78980",
 						"exec": [
-							"pm.test(\"For API calls that need not require valid API Key,invalid API key header should return 200 and response body should not be empty\", function () {\r",
+							"pm.test(\"Endpoints that did not require an API Key still work with invalid one ,return status 200 and response should not be empty\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
 							"    var jsonData = pm.response.json();\r",
 							"    pm.expect(jsonData.response).not.eq(null);\r",
@@ -94,6 +94,40 @@
 					]
 				},
 				"description": "API end points that require no API Key should give valid response for calls with invalid API Key"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /system-status - without API-Key",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "de5c0d38-b67f-48fb-ba9e-bfa98e2b4f6a",
+						"exec": [
+							"pm.test(\"Endpoints that did not require an API Key still work without one ,return status 200 and response should not be empty\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.response).not.eq(null);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/rest/system-status",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"system-status"
+					]
+				}
 			},
 			"response": []
 		}

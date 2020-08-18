@@ -1,19 +1,19 @@
 {
 	"info": {
-		"_postman_id": "ebe6cc2f-67f6-40c1-9595-525fce72fc5c",
+		"_postman_id": "369a0b43-fa49-44cf-a709-ec0cc0a052fa",
 		"name": "testing-lab-controller",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "{{url}}/rest/atls",
+			"name": "{{url}}/rest/atls - without API Key",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "e73cd4a6-ff42-430e-8118-88ec9f3bfb84",
+						"id": "8bee3ebd-e566-4f90-8bbc-63bdc093f32e",
 						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
+							"pm.test(\"Missing API Key returns Status code 400\", function () {\r",
 							"    pm.response.to.have.status(400);\r",
 							"});"
 						],
