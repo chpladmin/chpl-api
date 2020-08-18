@@ -16,10 +16,13 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.multipart.MultipartFile;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.ListingUpload;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
@@ -43,7 +46,8 @@ public class ListingUploadManager {
         this.msgUtil = msgUtil;
     }
 
-    //TODO: Security - admin, onc, or ANY acb can do this
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).LISTING_UPLOAD)")
     public List<ListingUpload> parseUploadFile(MultipartFile file) throws ValidationException {
         List<CSVRecord> allCsvRecords = getFileAsCsvRecords(file);
         List<ListingUpload> uploadedListings = new ArrayList<ListingUpload>();
@@ -74,22 +78,51 @@ public class ListingUploadManager {
         while (currIndex < allCsvRecords.size()) {
             List<CSVRecord> nextListingCsvRecords = getNextListingRecords(allCsvRecords, currIndex);
             currIndex += nextListingCsvRecords.size();
-            ListingUpload listingUploadMetadata = uploadHandler.parseAsListing(heading, nextListingCsvRecords);
-            //TODO: parse the csv record list to fill in metadata we need for the upload object
-            //acb
-            //error count
-            //warning count
-            //for above we need the entire listing to be parsed and run through the validator
+            //CHPL ID and ACB are all that is needed for initial display and for security.
+            //After this is inserted into the database, a quartz job will be kicked off
+            //to populate the error and warning counts -
+            //CSV data needs to be parsed into a details obj and run through the validator
+            ListingUpload listingUploadMetadata = new ListingUpload();
+            listingUploadMetadata.setChplProductNumber(parseChplId(heading, nextListingCsvRecords));
+            CertificationBodyDTO acb = acbDao.getByName(parseAcb(heading, nextListingCsvRecords));
+            if (acb != null) {
+                listingUploadMetadata.setAcb(new CertificationBody(acb));
+            }
             uploadedListings.add(listingUploadMetadata);
         }
         return uploadedListings;
     }
 
-    //TODO security - admin, onc, or OWNING acb can do this
     @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).LISTING_UPLOAD, #uploadMetadata)")
     public void createListingUpload(ListingUpload uploadMetadata, String fileContents) throws ValidationException {
         listingUploadDao.create(uploadMetadata, fileContents);
     }
+
+    private String parseChplId(CSVRecord headingRecord, List<CSVRecord> listingRecords)
+        throws ValidationException {
+        String chplId = null;
+        try {
+            chplId = uploadUtil.parseRequiredSingleValueField(
+                Headings.UNIQUE_ID, headingRecord, listingRecords);
+        } catch (Exception ex) {
+            throw new ValidationException("Could not parse CHPL Unique ID: " + ex.getMessage());
+        }
+        return chplId;
+    }
+
+    private String parseAcb(CSVRecord headingRecord, List<CSVRecord> listingRecords)
+            throws ValidationException {
+            String acbName = null;
+            try {
+                acbName = uploadUtil.parseRequiredSingleValueField(
+                    Headings.CERTIFICATION_BODY_NAME, headingRecord, listingRecords);
+            } catch (Exception ex) {
+                throw new ValidationException("Could not parse Certification Body name: " + ex.getMessage());
+            }
+            return acbName;
+        }
 
     private List<CSVRecord> getNextListingRecords(List<CSVRecord> allCsvRecords, long startIndex) {
         if (startIndex < 0 || startIndex >= allCsvRecords.size()) {

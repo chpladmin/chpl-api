@@ -118,7 +118,7 @@ public class ListingUploadHandlerTest {
         assertNotNull(headingRecords);
         assertEquals(1, headingRecords.size());
         List<CSVRecord> listingRecords = getRecordsFromString(LISTING_ROW);
-        handler.parseSingleValueField(Headings.UNIQUE_ID, headingRecords.get(0), listingRecords);
+        handler.parseRequiredSingleValueField(Headings.UNIQUE_ID, headingRecords.get(0), listingRecords);
     }
 
     @Test
@@ -127,7 +127,7 @@ public class ListingUploadHandlerTest {
         List<CSVRecord> headingRecords = getRecordsFromString(HEADER_COMMON_NAMES);
         assertNotNull(headingRecords);
         assertEquals(1, headingRecords.size());
-        String chplProductNumber = handler.parseSingleValueField(
+        String chplProductNumber = handler.parseRequiredSingleValueField(
                 Headings.UNIQUE_ID, headingRecords.get(0), new ArrayList<CSVRecord>());
         assertNull(chplProductNumber);
     }
@@ -139,7 +139,7 @@ public class ListingUploadHandlerTest {
         assertNotNull(headingRecords);
         assertEquals(1, headingRecords.size());
         List<CSVRecord> listingRecords = getRecordsFromString(",,");
-        String chplProductNumber = handler.parseSingleValueField(
+        String chplProductNumber = handler.parseRequiredSingleValueField(
                 Headings.UNIQUE_ID, headingRecords.get(0), listingRecords);
         assertNull(chplProductNumber);
     }
@@ -151,7 +151,7 @@ public class ListingUploadHandlerTest {
         assertNotNull(headingRecords);
         assertEquals(1, headingRecords.size());
         List<CSVRecord> listingRecords = getRecordsFromString(LISTING_ROW);
-        String chplProductNumber = handler.parseSingleValueField(
+        String chplProductNumber = handler.parseRequiredSingleValueField(
                 Headings.UNIQUE_ID, headingRecords.get(0), listingRecords);
         assertNotNull(chplProductNumber);
         assertEquals("15.02.02.3007.A056.01.00.0.180214", chplProductNumber);
@@ -164,7 +164,7 @@ public class ListingUploadHandlerTest {
         assertNotNull(headingRecords);
         assertEquals(1, headingRecords.size());
         List<CSVRecord> listingRecords = getRecordsFromString(" extra spaces ,new,dev");
-        String chplProductNumber = handler.parseSingleValueField(
+        String chplProductNumber = handler.parseRequiredSingleValueField(
                 Headings.UNIQUE_ID, headingRecords.get(0), listingRecords);
         assertNotNull(chplProductNumber);
         assertEquals("extra spaces", chplProductNumber);
@@ -177,7 +177,7 @@ public class ListingUploadHandlerTest {
         assertNotNull(headingRecords);
         assertEquals(1, headingRecords.size());
         List<CSVRecord> listingRecords = getRecordsFromString(" extra spaces ,new");
-        String chplProductNumber = handler.parseSingleValueField(
+        String chplProductNumber = handler.parseRequiredSingleValueField(
                 Headings.UNIQUE_ID, headingRecords.get(0), listingRecords);
         assertNotNull(chplProductNumber);
         assertEquals("extra spaces", chplProductNumber);
@@ -190,7 +190,7 @@ public class ListingUploadHandlerTest {
         assertNotNull(headingRecords);
         assertEquals(1, headingRecords.size());
         List<CSVRecord> listingRecords = getRecordsFromString("first,second,status");
-        String chplProductNumber = handler.parseSingleValueField(
+        String chplProductNumber = handler.parseRequiredSingleValueField(
                 Headings.UNIQUE_ID, headingRecords.get(0), listingRecords);
         assertNotNull(chplProductNumber);
         assertEquals("first", chplProductNumber);
