@@ -253,17 +253,6 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
-        <RollingFile name="update2014ListingStatusJob"
-            fileName="${logDir}/scheduler/updateListingStatusJob.log"
-            filePattern="${logDir}/scheduler/history/updateListingStatusJob-%d{yyyy-MM-dd}.log">
-            <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
-            </PatternLayout>
-            <Policies>
-                <TimeBasedTriggeringPolicy
-                    interval="1" modulate="true" />
-            </Policies>
-        </RollingFile>
         <RollingFile name="remove2014UploadTemplateJob"
             fileName="${logDir}/scheduler/remove2014UploadTemplateJob.log"
             filePattern="${logDir}/scheduler/history/remove2014UploadTemplateJob-%d{yyyy-MM-dd}.log">
@@ -275,9 +264,9 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
-        <RollingFile name="removeV17UploadTemplateJob"
-            fileName="${logDir}/scheduler/removeV17UploadTemplateJob.log"
-            filePattern="${logDir}/scheduler/history/removeV17UploadTemplateJob-%d{yyyy-MM-dd}.log">
+        <RollingFile name="realWorldTestingEligibilityJob"
+            fileName="${logDir}/scheduler/realWorldTestingEligibilityJob.log"
+            filePattern="${logDir}/scheduler/history/realWorldTestingEligibilityJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
                 <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
             </PatternLayout>
@@ -286,9 +275,20 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
-        <RollingFile name="addV18UploadTemplateJob"
-            fileName="${logDir}/scheduler/addV18UploadTemplateJob.log"
-            filePattern="${logDir}/scheduler/history/addV18UploadTemplateJob-%d{yyyy-MM-dd}.log">
+        <RollingFile name="cacheListenerActivity"
+                     fileName="${logDir}/cache/cacheListenerActivity.log"
+                     filePattern="${logDir}/cache/history/cacheListenerActivity-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                        interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
+        <RollingFile name="developerAccessEmailJob"
+            fileName="${logDir}/scheduler/developerAccessEmailJob.log"
+            filePattern="${logDir}/scheduler/history/developerAccessEmailJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
                 <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
             </PatternLayout>
@@ -297,81 +297,15 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
-        <RollingFile name="addV19UploadTemplateJob"
-            fileName="${logDir}/scheduler/addV19UploadTemplateJob.log"
-            filePattern="${logDir}/scheduler/history/addV19UploadTemplateJob-%d{yyyy-MM-dd}.log">
+        <RollingFile name="cacheListenerActivity"
+                     fileName="${logDir}/cache/cacheListenerActivity.log"
+                     filePattern="${logDir}/cache/history/cacheListenerActivity-%d{yyyy-MM-dd}.log">
             <PatternLayout>
                 <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
-                    interval="1" modulate="true" />
-            </Policies>
-        </RollingFile>
-        <RollingFile name="createTestToolJob"
-            fileName="${logDir}/scheduler/createTestToolJob.log"
-            filePattern="${logDir}/scheduler/history/createTestToolJob-%d{yyyy-MM-dd}.log">
-            <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
-            </PatternLayout>
-            <Policies>
-                <TimeBasedTriggeringPolicy
-                    interval="1" modulate="true" />
-            </Policies>
-        </RollingFile>
-        <RollingFile name="removeCriteriaJob"
-            fileName="${logDir}/scheduler/removeCriteriaJob.log"
-            filePattern="${logDir}/scheduler/history/removeCriteriaJob-%d{yyyy-MM-dd}.log">
-            <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
-            </PatternLayout>
-            <Policies>
-                <TimeBasedTriggeringPolicy
-                    interval="1" modulate="true" />
-            </Policies>
-        </RollingFile>
-        <RollingFile name="modifyTestFunctionalityJob"
-            fileName="${logDir}/scheduler/modifyTestFunctionalityJob.log"
-            filePattern="${logDir}/scheduler/history/modifyTestFunctionalityJob-%d{yyyy-MM-dd}.log">
-            <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
-            </PatternLayout>
-            <Policies>
-                <TimeBasedTriggeringPolicy
-                    interval="1" modulate="true" />
-            </Policies>
-        </RollingFile>
-        <RollingFile name="addCriteriaToListingsJob"
-            fileName="${logDir}/scheduler/addCriteriaToListingsJob.log"
-            filePattern="${logDir}/scheduler/history/addCriteriaToListingsJob-%d{yyyy-MM-dd}.log">
-            <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
-            </PatternLayout>
-            <Policies>
-                <TimeBasedTriggeringPolicy
-                    interval="1" modulate="true" />
-            </Policies>
-        </RollingFile>
-        <RollingFile name="updateMacraMeasuresJob"
-            fileName="${logDir}/scheduler/updateMacraMeasuresJob.log"
-            filePattern="${logDir}/scheduler/history/updateMacraMeasuresJob-%d{yyyy-MM-dd}.log">
-            <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
-            </PatternLayout>
-            <Policies>
-                <TimeBasedTriggeringPolicy
-                    interval="1" modulate="true" />
-            </Policies>
-        </RollingFile>
-        <RollingFile name="addCuresUpdateToListingsJob"
-            fileName="${logDir}/scheduler/addCuresUpdateToListingsJob.log"
-            filePattern="${logDir}/scheduler/history/addCuresUpdateToListingsJob-%d{yyyy-MM-dd}.log">
-            <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
-            </PatternLayout>
-            <Policies>
-                <TimeBasedTriggeringPolicy
-                    interval="1" modulate="true" />
+                        interval="1" modulate="true" />
             </Policies>
         </RollingFile>
     </Appenders>
@@ -382,10 +316,16 @@
         <Logger name="org.hibernate" level="ERROR" additivity="false">
             <AppenderRef ref="STDOUT" />
         </Logger>
-        <Logger name="org.springframework" level="ERROR"
+        <Logger name="org.springframework" level="INFO"
             additivity="false">
             <AppenderRef ref="STDOUT" />
         </Logger>
+        <Logger name="net.sf.ehcache" level="ALL" additivity="false">
+            <AppenderRef ref="cacheListenerActivity" />
+        </Logger>
+        <logger name="org.springframework.cache" level="ALL">
+            <appender-ref ref="cacheListenerActivity" />
+        </logger>
         <Logger name="gov.healthit.chpl" level="INFO" additivity="false">
             <AppenderRef ref="STDOUT" />
         </Logger>
@@ -478,49 +418,17 @@
             additivity="false">
             <AppenderRef ref="updateListingStatusJob" />
         </Logger>
-        <Logger name="update2014ListingStatusJobLogger" level="INFO"
-            additivity="false">
-            <AppenderRef ref="update2014ListingStatusJob" />
-        </Logger>
         <Logger name="remove2014UploadTemplateJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="remove2014UploadTemplateJob" />
         </Logger>
-        <Logger name="removeV17UploadTemplateJobLogger" level="INFO"
+        <Logger name="realWorldTestingEligibilityJobLogger" level="INFO"
             additivity="false">
-            <AppenderRef ref="removeV17UploadTemplateJob" />
+            <AppenderRef ref="realWorldTestingEligibilityJob" />
         </Logger>
-        <Logger name="addV18UploadTemplateJobLogger" level="INFO"
+        <Logger name="developerAccessEmailJobLogger" level="INFO"
             additivity="false">
-            <AppenderRef ref="addV18UploadTemplateJob" />
-        </Logger>
-        <Logger name="addV19UploadTemplateJobLogger" level="INFO"
-            additivity="false">
-            <AppenderRef ref="addV19UploadTemplateJob" />
-        </Logger>
-        <Logger name="createTestToolJobLogger" level="INFO"
-            additivity="false">
-            <AppenderRef ref="createTestToolJob" />
-        </Logger>
-        <Logger name="removeCriteriaJobLogger" level="INFO"
-            additivity="false">
-            <AppenderRef ref="removeCriteriaJob" />
-        </Logger>
-        <Logger name="modifyTestFunctionalityJobLogger" level="INFO"
-            additivity="false">
-            <AppenderRef ref="modifyTestFunctionalityJob" />
-        </Logger>
-        <Logger name="addCriteriaToListingsJobLogger" level="INFO"
-            additivity="false">
-            <AppenderRef ref="addCriteriaToListingsJob" />
-        </Logger>
-        <Logger name="updateMacraMeasuresJobLogger" level="INFO"
-            additivity="false">
-            <AppenderRef ref="updateMacraMeasuresJob" />
-        </Logger>
-        <Logger name="addCuresUpdateToListingsJobLogger" level="INFO"
-            additivity="false">
-            <AppenderRef ref="addCuresUpdateToListingsJob" />
+            <AppenderRef ref="developerAccessEmailJob" />
         </Logger>
     </Loggers>
 </Configuration>

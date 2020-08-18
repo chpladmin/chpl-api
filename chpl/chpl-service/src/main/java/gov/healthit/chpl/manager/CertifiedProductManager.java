@@ -16,7 +16,6 @@ import java.util.Map.Entry;
 import javax.persistence.EntityNotFoundException;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.ff4j.FF4j;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -34,7 +33,6 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
@@ -212,7 +210,6 @@ public class CertifiedProductManager extends SecuredManager {
     private ActivityManager activityManager;
     private ListingValidatorFactory validatorFactory;
     private CuresUpdateService curesUpdateService;
-    private FF4j ff4j;
 
     private static final int PROD_CODE_LOC = 4;
     private static final int VER_CODE_LOC = 5;
@@ -224,6 +221,7 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     @Autowired
+    @SuppressWarnings({"checkstyle:parameternumber"})
     public CertifiedProductManager(ErrorMessageUtil msgUtil,
             CertifiedProductDAO cpDao, CertifiedProductSearchDAO searchDao,
             CertificationResultDAO certDao, CertificationCriterionDAO certCriterionDao,
@@ -247,7 +245,7 @@ public class CertifiedProductManager extends SecuredManager {
             CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
             ActivityManager activityManager, ListingValidatorFactory validatorFactory,
-            CuresUpdateService curesUpdateService, FF4j ff4j) {
+            CuresUpdateService curesUpdateService) {
 
         this.msgUtil = msgUtil;
         this.cpDao = cpDao;
@@ -290,7 +288,6 @@ public class CertifiedProductManager extends SecuredManager {
         this.activityManager = activityManager;
         this.validatorFactory = validatorFactory;
         this.curesUpdateService = curesUpdateService;
-        this.ff4j = ff4j;
     }
 
     @Transactional(readOnly = true)
@@ -408,8 +405,9 @@ public class CertifiedProductManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).CREATE_FROM_PENDING, #pendingCp)")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.COLLECTIONS_LISTINGS, CacheNames.PRODUCT_NAMES, CacheNames.DEVELOPER_NAMES
     }, allEntries = true)
+    @SuppressWarnings({"checkstyle:methodlength"})
     public CertifiedProductDTO createFromPending(PendingCertifiedProductDTO pendingCp)
             throws EntityRetrievalException, EntityCreationException, IOException {
 
@@ -473,7 +471,7 @@ public class CertifiedProductManager extends SecuredManager {
                 throw new EntityCreationException("Either product name or ID must be provided.");
             }
             newProduct.setName(pendingCp.getProductName());
-            newProduct.setDeveloperId(pendingCp.getDeveloperId());
+            newProduct.getOwner().setId(pendingCp.getDeveloperId());
             newProduct.setReportFileLocation(pendingCp.getReportFileLocation());
             newProduct = productManager.create(newProduct);
             pendingCp.setProductId(newProduct.getId());
@@ -745,7 +743,8 @@ public class CertifiedProductManager extends SecuredManager {
                                 TestFunctionalityDTO match = testFuncDao.getByNumberAndEdition(func.getNumber(),
                                         pendingCp.getCertificationEditionId());
                                 if (match != null) {
-                                    CertificationResultTestFunctionalityDTO funcDto = new CertificationResultTestFunctionalityDTO();
+                                    CertificationResultTestFunctionalityDTO funcDto
+                                        = new CertificationResultTestFunctionalityDTO();
 
                                     funcDto.setTestFunctionalityId(match.getId());
                                     funcDto.setCertificationResultId(createdCert.getId());
@@ -1003,15 +1002,13 @@ public class CertifiedProductManager extends SecuredManager {
         certEvent.setCertifiedProductId(newCertifiedProduct.getId());
         statusEventDao.create(certEvent);
 
-        if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
-            CuresUpdateEventDTO curesEvent = new CuresUpdateEventDTO();
-            curesEvent.setCreationDate(new Date());
-            curesEvent.setDeleted(false);
-            curesEvent.setEventDate(certificationDate);
-            curesEvent.setCuresUpdate(curesUpdateService.isCuresUpdate(pendingCp));
-            curesEvent.setCertifiedProductId(newCertifiedProduct.getId());
-            curesUpdateDao.create(curesEvent);
-        }
+        CuresUpdateEventDTO curesEvent = new CuresUpdateEventDTO();
+        curesEvent.setCreationDate(new Date());
+        curesEvent.setDeleted(false);
+        curesEvent.setEventDate(certificationDate);
+        curesEvent.setCuresUpdate(curesUpdateService.isCuresUpdate(pendingCp));
+        curesEvent.setCertifiedProductId(newCertifiedProduct.getId());
+        curesUpdateDao.create(curesEvent);
 
         return newCertifiedProduct;
     }
@@ -1115,7 +1112,7 @@ public class CertifiedProductManager extends SecuredManager {
             AccessDeniedException.class, InvalidArgumentsException.class
     })
     @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.COLLECTIONS_LISTINGS
     }, allEntries = true)
     public CertifiedProductDTO update(ListingUpdateRequest updateRequest)
             throws AccessDeniedException, EntityRetrievalException, JsonProcessingException, EntityCreationException,
@@ -1154,8 +1151,9 @@ public class CertifiedProductManager extends SecuredManager {
                 changedProduct, reason);
     }
 
-    private void updateListingsChildData(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing)
-            throws EntityCreationException, EntityRetrievalException, IOException {
+    private void updateListingsChildData(CertifiedProductSearchDetails existingListing,
+            CertifiedProductSearchDetails updatedListing)
+                    throws EntityCreationException, EntityRetrievalException, IOException {
         updateTestingLabs(updatedListing.getId(), existingListing.getTestingLabs(), updatedListing.getTestingLabs());
         updateIcsChildren(updatedListing.getId(), existingListing.getIcs(), updatedListing.getIcs());
         updateIcsParents(updatedListing.getId(), existingListing.getIcs(), updatedListing.getIcs());
@@ -1884,9 +1882,6 @@ public class CertifiedProductManager extends SecuredManager {
     private int updateCuresUpdateEvents(Long listingId, Boolean existingCuresUpdate,
             CertifiedProductSearchDetails updatedListing) throws EntityCreationException, EntityRetrievalException {
         int numChanges = 0;
-        if (!ff4j.check(FeatureList.EFFECTIVE_RULE_DATE)) {
-            return numChanges;
-        }
         String currentStatus = updatedListing.getCurrentStatus().getStatus().getName();
         if (currentStatus.equalsIgnoreCase(CertificationStatusType.Active.getName())
                 || currentStatus.equalsIgnoreCase(CertificationStatusType.SuspendedByAcb.getName())

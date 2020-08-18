@@ -2,59 +2,145 @@ package gov.healthit.chpl.dao.statistics;
 
 import java.util.List;
 
-import gov.healthit.chpl.domain.DateRange;
-import gov.healthit.chpl.domain.statistics.CertifiedBodyAltTestStatistics;
-import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
+import javax.persistence.Query;
 
-/**
- * Interface for getting statistics about Listings.
- * @author alarned
- *
- */
-public interface ListingStatisticsDAO {
-    /**
-     * Retrieve a filtered count of listings.
-     * @param dateRange date range to search in
-     * @param edition edition to filter on
-     * @param statuses statuses to filter on
-     * @return a number
-     */
-    Long getTotalListingsByEditionAndStatus(DateRange dateRange, String edition, List<String> statuses);
-    /**
-     * Return counts of active listings broken up by ACB.
-     * @param dateRange range to search in
-     * @return counts of listings
-     */
-    List<CertifiedBodyStatistics> getTotalActiveListingsByCertifiedBody(DateRange dateRange);
-    /**
-     * Return total unique products filtered.
-     * @param dateRange range to search in
-     * @param edition edition to filter on
-     * @param statuses status to filter on
-     * @return the count
-     */
-    Long getTotalUniqueProductsByEditionAndStatus(DateRange dateRange, String edition, List<String> statuses);
-    /**
-     * Retrieve the total counts of Listings broken out by ACB & edition.
-     * @param dateRange range to search in
-     * @return statistics
-     */
-    List<CertifiedBodyStatistics> getTotalCPListingsEachYearByCertifiedBody(DateRange dateRange);
-    /**
-     * Retrieve the total counts of Listings broken out by ACB, edition, and status.
-     * @param dateRange range to search in
-     * @return statistics
-     */
-    List<CertifiedBodyStatistics> getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(
-            DateRange dateRange);
-    /**
-     * Retrieve the count of Listings that have Alternate Test Methods.
-     * @return the count
-     */
-    Long getTotalListingsWithAlternateTestMethods();
-    /**
-     * Retrieve the count of Listings with Alternate Test Methods broken out by ACB.
-     * @return statistics
-     */
-    List<CertifiedBodyAltTestStatistics> getTotalListingsWithCertifiedBodyAndAlternativeTestMethods();
+import org.springframework.stereotype.Repository;
+
+import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.DateRange;
+
+@Repository("listingStatisticsDAO")
+public class ListingStatisticsDAO extends BaseDAOImpl {
+
+    public Long getTotalUniqueProductsByEditionAndStatus(final DateRange dateRange,
+            final String edition, final List<String> statuses) {
+        String hql = "SELECT DISTINCT UPPER(productName) || UPPER(developerName) "
+                + "FROM CertifiedProductSummaryEntity ";
+
+        boolean hasWhere = false;
+        if (edition != null) {
+            hql += " WHERE year = :edition ";
+            hasWhere = true;
+        }
+        if (statuses != null && statuses.size() > 0) {
+            if (!hasWhere) {
+                hql += " WHERE ";
+                hasWhere = true;
+            } else {
+                hql += " AND ";
+            }
+            hql += " UPPER(certificationStatus) IN (:statuses) ";
+        }
+        if (dateRange == null) {
+            if (!hasWhere) {
+                hql += " WHERE ";
+                hasWhere = true;
+            } else {
+                hql += " AND ";
+            }
+            hql += " deleted = false ";
+        } else {
+            if (!hasWhere) {
+                hql += " WHERE ";
+                hasWhere = true;
+            } else {
+                hql += " AND ";
+            }
+            hql += "((deleted = false AND creationDate <= :endDate) "
+                    + " OR "
+                    + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate)) ";
+        }
+
+        Query query = entityManager.createQuery(hql);
+        if (edition != null) {
+            query.setParameter("edition", edition);
+        }
+        if (statuses != null && statuses.size() > 0) {
+            query.setParameter("statuses", statuses);
+        }
+        if (dateRange != null) {
+            query.setParameter("endDate", dateRange.getEndDate());
+        }
+        return (long) query.getResultList().size();
+    }
+
+    public Long getTotalUniqueProducts(List<String> statuses) {
+        String hql = "SELECT DISTINCT productId,  developerId "
+                + "FROM CertifiedProductDetailsEntity "
+                + "WHERE UPPER(certificationStatusName) IN (:statuses) "
+                + "AND  deleted = false ";
+
+        Query query = entityManager.createQuery(hql);
+        query.setParameter("statuses", statuses);
+        return (long) query.getResultList().size();
+    }
+
+    public Long getTotalListingsByEditionAndStatus(final DateRange dateRange,
+            final String edition, final List<String> statuses) {
+        String hql = "SELECT COUNT(*) "
+                + "FROM CertifiedProductSummaryEntity ";
+        boolean hasWhere = false;
+        if (edition != null) {
+            hql += " WHERE year = :edition ";
+            hasWhere = true;
+        }
+        if (statuses != null && statuses.size() > 0) {
+            if (!hasWhere) {
+                hql += " WHERE ";
+                hasWhere = true;
+            } else {
+                hql += " AND ";
+            }
+            hql += " UPPER(certificationStatus) IN (:statuses) ";
+        }
+        if (dateRange == null) {
+            if (!hasWhere) {
+                hql += " WHERE ";
+                hasWhere = true;
+            } else {
+                hql += " AND ";
+            }
+            hql += " deleted = false ";
+        } else {
+            if (!hasWhere) {
+                hql += " WHERE ";
+                hasWhere = true;
+            } else {
+                hql += " AND ";
+            }
+            hql += "((deleted = false AND creationDate <= :endDate) "
+                    + " OR "
+                    + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate)) ";
+        }
+
+        Query query = entityManager.createQuery(hql);
+        if (edition != null) {
+            query.setParameter("edition", edition);
+        }
+        if (statuses != null && statuses.size() > 0) {
+            query.setParameter("statuses", statuses);
+        }
+        if (dateRange != null) {
+            query.setParameter("endDate", dateRange.getEndDate());
+        }
+
+        return (Long) query.getSingleResult();
+    }
+
+    public Long getTotal2015ListingsByStatus(List<String> statuses) {
+        String hql = "SELECT COUNT(*) "
+                + "FROM CertifiedProductSummaryEntity "
+                + "WHERE year = '2015' "
+                + "AND curesUpdate = false ";
+        if (statuses != null && statuses.size() > 0) {
+            hql += " AND UPPER(certificationStatus) IN (:statuses) ";
+        }
+
+        Query query = entityManager.createQuery(hql);
+        if (statuses != null && statuses.size() > 0) {
+            query.setParameter("statuses", statuses);
+        }
+
+        return (Long) query.getSingleResult();
+    }
 }

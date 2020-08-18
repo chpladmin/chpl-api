@@ -49,7 +49,7 @@ public class ProductDAO extends BaseDAOImpl {
             entity = new ProductEntity();
             entity.setName(dto.getName());
             entity.setReportFileLocation(dto.getReportFileLocation());
-            entity.setDeveloperId(dto.getDeveloperId());
+            entity.setDeveloperId(dto.getOwner().getId());
             entity.setDeleted(false);
             entity.setLastModifiedUser(AuthUtil.getAuditId());
 
@@ -89,7 +89,7 @@ public class ProductDAO extends BaseDAOImpl {
         // update product data
         entity.setReportFileLocation(dto.getReportFileLocation());
         entity.setName(dto.getName());
-        entity.setDeveloperId(dto.getDeveloperId());
+        entity.setDeveloperId(dto.getOwner().getId());
         entity.setDeleted(dto.getDeleted() == null ?  Boolean.FALSE : dto.getDeleted());
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         if (dto.getContact() != null) {

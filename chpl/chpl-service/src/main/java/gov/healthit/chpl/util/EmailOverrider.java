@@ -24,9 +24,9 @@ public class EmailOverrider {
     }
 
     /**
-     * Returns the list of recipients.  If there is a non-whitelisted address in the list the
-     * list, the list is replaced with the "faroward-to" address.
-     * @param toAddresses - List of strings represtning email addresses
+     * Returns the list of recipients.  If there is an address that is not allowed in the list,
+     * the list is replaced with the "forward-to" address.
+     * @param toAddresses - List of strings representing email addresses
      * @return - List of Address objects
      * @throws MessagingException - General exception, check message for specific error
      */
@@ -46,9 +46,9 @@ public class EmailOverrider {
     }
 
     /**
-     * Returns the message body.  If there is a non-whitelisted address in the address list, the original
-     * list of recipients is prepended the message body to indicate who the intended recipients of the
-     * email was.
+     * Returns the message body. If there is an email address with a domain not in the allowed
+     * list, the original list of recipients is prepended the message body to indicate
+     * who the intended recipients of the email was.
      * @param htmlBody - the original HTML formatted message
      * @param toAddresses - List of Strings representing email addresses
      * @return - String representing the updated (if necessary) HTML message
@@ -84,12 +84,12 @@ public class EmailOverrider {
 
     private Boolean shouldEmailBeRedirected(final List<String> toAddresses) throws MessagingException {
         //ASSUMPTION:
-        //If any of the recipients are not in the whitelisted domain, we are going to redirect the email.
+        //If any of the recipients are not in the allowed domains, we are going to redirect the email.
 
         if (!isProductionEmailEnvironment()) {
-            List<String> whitelistedDomains = getWhitelistedDomains();
+            List<String> allowedDomains = getAllowedDomains();
             for (String address : toAddresses) {
-                if (!whitelistedDomains.contains(getEmailDomain(address))) {
+                if (!allowedDomains.contains(getEmailDomain(address))) {
                     return true;
                 }
             }
@@ -97,9 +97,9 @@ public class EmailOverrider {
         return false;
     }
 
-    private List<String> getWhitelistedDomains() {
+    private List<String> getAllowedDomains() {
         List<String> domains = new ArrayList<String>();
-        String domainList =  env.getProperty("emailBuilder.config.whitelistedDomains");
+        String domainList =  env.getProperty("emailBuilder.config.allowedDomains");
         if (domainList != null) {
             domains.addAll(Arrays.asList(domainList.split(",")));
         }

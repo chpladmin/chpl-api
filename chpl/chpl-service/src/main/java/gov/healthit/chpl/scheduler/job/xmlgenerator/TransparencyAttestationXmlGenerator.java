@@ -10,8 +10,8 @@ public class TransparencyAttestationXmlGenerator extends XmlGenerator {
     public static void add(TransparencyAttestation ta, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (ta != null) {
             sw.writeStartElement(rootNodeName);
-            createSimpleElement(ta.getTransparencyAttestation(), "transparencyAttestation", sw);
             createSimpleElement(ta.getRemoved(), "removed", sw);
+            createSimpleElement(ta.getTransparencyAttestation(), "transparencyAttestation", sw);
             sw.writeEndElement();
         }
     }
