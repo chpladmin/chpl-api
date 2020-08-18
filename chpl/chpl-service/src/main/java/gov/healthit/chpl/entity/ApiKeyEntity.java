@@ -11,8 +11,10 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.util.Util;
+import lombok.Data;
 
 @Entity
+@Data
 @Table(name = "api_key")
 public class ApiKeyEntity {
 
@@ -35,8 +37,8 @@ public class ApiKeyEntity {
     private String nameOrganization;
 
     @Basic(optional = false)
-    @Column(name = "whitelisted", nullable = false, insertable = false)
-    private Boolean whitelisted;
+    @Column(name = "unrestricted", nullable = false, insertable = false)
+    private Boolean unrestricted;
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
@@ -60,44 +62,12 @@ public class ApiKeyEntity {
     @Column(name = "delete_warning_sent_date", nullable = true)
     private Date deleteWarningSentDate;
 
-    public Long getId() {
-        return id;
+    public Date getLastUsedDate() {
+        return Util.getNewDate(lastUsedDate);
     }
 
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getApiKey() {
-        return apiKey;
-    }
-
-    public void setApiKey(final String apiKey) {
-        this.apiKey = apiKey;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(final String email) {
-        this.email = email;
-    }
-
-    public String getNameOrganization() {
-        return nameOrganization;
-    }
-
-    public void setNameOrganization(final String nameOrganization) {
-        this.nameOrganization = nameOrganization;
-    }
-
-    public Boolean getWhitelisted() {
-        return whitelisted;
-    }
-
-    public void setWhitelisted(final Boolean whitelisted) {
-        this.whitelisted = whitelisted;
+    public void setLastUsedDate(final Date lastUsedDate) {
+        this.lastUsedDate = Util.getNewDate(lastUsedDate);
     }
 
     public Date getCreationDate() {
@@ -116,30 +86,6 @@ public class ApiKeyEntity {
         this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Date getLastUsedDate() {
-        return Util.getNewDate(lastUsedDate);
-    }
-
-    public void setLastUsedDate(final Date lastUsedDate) {
-        this.lastUsedDate = Util.getNewDate(lastUsedDate);
-    }
-
     public Date getDeleteWarningSentDate() {
         return Util.getNewDate(deleteWarningSentDate);
     }
@@ -147,5 +93,4 @@ public class ApiKeyEntity {
     public void setDeleteWarningSentDate(final Date deleteWarningSentDate) {
         this.deleteWarningSentDate = Util.getNewDate(deleteWarningSentDate);
     }
-
 }

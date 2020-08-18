@@ -7,6 +7,7 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,10 +24,13 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.urlStatus.UrlType;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
+@NoArgsConstructor
 @Repository(value = "certifiedProductDAO")
+@Primary
 public class CertifiedProductDAO extends BaseDAOImpl {
     private static final int CHPL_ID_LENGTH = 9;
     private ErrorMessageUtil msgUtil;
@@ -161,6 +165,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
     }
 
     @Transactional(readOnly = false)
+    @SuppressWarnings({"checkstyle:todocomment"})
     public void delete(final Long productId) {
         // TODO: How to delete this without leaving orphans
         Query query = entityManager.createQuery(
@@ -580,8 +585,11 @@ public class CertifiedProductDAO extends BaseDAOImpl {
 
     }
 
+    /**
+     * This method has protected access because it is needed in the RealWorldTestingEligibilityJob.RwtEligibilityYearDAO class
+     */
     @Transactional(readOnly = true)
-    private CertifiedProductEntity getEntityById(final Long entityId) throws EntityRetrievalException {
+    protected CertifiedProductEntity getEntityById(final Long entityId) throws EntityRetrievalException {
 
         CertifiedProductEntity entity = null;
 

@@ -1,5 +1,36 @@
 # Release Notes
 
+## Version 25.11.0
+_18 August 2020_
+
+### Features
+* Create report showing developer user access
+* Remove cures-specific jobs
+
+### Bug Fixes
+* Require Test Procedure & Data Versions on confirmation
+* Remove no longer required Transparency Attestation validation logic
+* Generate valid XSD for download files
+* Include curesUpdate true/false value in XML download
+
+---
+
+## Version 25.10.0
+_10 August 2020_
+
+### Features
+* Add Quartz job to set Real World Testing Eligibility Year for eligible listings
+* Add /metadata/beta/users endpoint for paged user activity
+* Remove ERD and ERD+1 week flags
+* Updated Quartz jobs to handle updated ONC-ACB selection requirements
+
+### Bug Fixes
+* Correctly handle error with k2 surveillance requirement
+* Upgrade jackson-core library to be compatible with databind lib
+* Show "Cures Update" on Broken Surveillance Report
+
+---
+
 ## Version 25.9.0
 _27 July 2020_
 
@@ -8,6 +39,7 @@ _27 July 2020_
 * Update summary statistics creator job to be non-blocking
 * Check for duplicate data on listing confirm and edit
 * Move data loaded on startup to caching framework
+* Updated text on user invitation email messages
 
 ### Flagged Features
 * Add endpoint to get direct reviews for any developer

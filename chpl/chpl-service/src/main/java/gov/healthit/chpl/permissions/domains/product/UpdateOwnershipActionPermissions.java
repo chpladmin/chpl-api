@@ -30,7 +30,7 @@ public class UpdateOwnershipActionPermissions extends ActionPermissions {
                 ProductDTO dto = (ProductDTO) obj;
                 // Get the original ProductDTO, since the one passed in has the "new" developer id
                 ProductDTO originalProductDto = getProductDTO(dto.getId());
-                if (getResourcePermissions().isDeveloperActive(originalProductDto.getDeveloperId())) {
+                if (getResourcePermissions().isDeveloperActive(originalProductDto.getOwner().getId())) {
                     return doesCurrentUserHaveAccessToAllOfProductListings(originalProductDto.getId());
                 } else {
                     return false;

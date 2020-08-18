@@ -6,13 +6,9 @@ import java.util.Map.Entry;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 
 public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
-    private static final Logger LOGGER = LogManager.getLogger(CertifiedProductSearchDetailsXmlGenerator.class);
 
     public static void add(List<CertifiedProductSearchDetails> cps, String rootNodeName, XMLStreamWriter sw)
             throws XMLStreamException {
@@ -49,7 +45,6 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
                 sw.writeEndElement();
             }
             CertificationStatusEventXmlGenerator.add(cp.getCertificationEvents(), "certificationEvents", sw);
-            MeaningfulUseUserXmlGenerator.add(cp.getMeaningfulUseUserHistory(), "meaningfulUseUserHistory", sw);
             CertificationResultXmlGenerator.add(cp.getCertificationResults(), "certificationResults", sw);
             if (cp.getCertifyingBody() != null && cp.getCertifyingBody().size() > 0) {
                 sw.writeStartElement("certifyingBody");
@@ -88,11 +83,13 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
             createSimpleElement(cp.getCountOpenSurveillance(), "countOpenSurveillance", sw);
             createSimpleElement(cp.getCountSurveillance(), "countSurveillance", sw);
             CqmResultDetailsXmlGenerator.add(cp.getCqmResults(), "cqmResults", sw);
+            createSimpleElement(cp.getCuresUpdate() == null ? false : cp.getCuresUpdate(), "curesUpdate", sw);
             createSimpleElement(cp.getDecertificationDate(), "decertificationDate", sw);
             DeveloperXmlGenerator.addDeveloper(cp.getDeveloper(), "developer", sw);
             InheritedCertificationStatusXmlGenerator.add(cp.getIcs(), "ics", sw);
             createSimpleElement(cp.getId(), "id", sw);
             createSimpleElement(cp.getLastModifiedDate(), "lastModifiedDate", sw);
+            MeaningfulUseUserXmlGenerator.add(cp.getMeaningfulUseUserHistory(), "meaningfulUseUserHistory", sw);
             createSimpleElement(cp.getOtherAcb(), "otherAcb", sw);
             if (cp.getPracticeType() != null && cp.getPracticeType().size() > 0) {
                 sw.writeStartElement("practiceType");
@@ -112,6 +109,7 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
             createSimpleElement(cp.getProductAdditionalSoftware(), "productAdditionalSoftware", sw);
             CertifiedProductQmsStandardXmlGenerator.add(cp.getQmsStandards(), "qmsStandards", sw);
             createSimpleElement(cp.getReportFileLocation(), "reportFileLocation", sw);
+            createSimpleElement(cp.getRwtEligibilityYear(), "rwtEligibilityYear", sw);
             CertifiedProductSedXmlGenerator.add(cp.getSed(), "sed", sw);
             createSimpleElement(cp.getSedIntendedUserDescription(), "sedIntendedUserDescription", sw);
             createSimpleElement(cp.getSedReportFileLocation(), "sedReportFileLocation", sw);

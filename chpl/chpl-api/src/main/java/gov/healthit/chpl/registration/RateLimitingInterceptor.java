@@ -48,7 +48,7 @@ public class RateLimitingInterceptor extends HandlerInterceptorAdapter implement
 
     private Map<String, SimpleRateLimiter> limiters = new ConcurrentHashMap<>();
 
-    private List<String> whitelist = new ArrayList<String>();
+    private List<String> unrestrictedApiKeys = new ArrayList<String>();
 
     /** Default constructor. */
     public RateLimitingInterceptor() {
@@ -77,14 +77,14 @@ public class RateLimitingInterceptor extends HandlerInterceptorAdapter implement
             return false;
         }
 
-        List<ApiKeyDTO> keyDtos = apiKeyDao.findAllWhitelisted();
+        List<ApiKeyDTO> keyDtos = apiKeyDao.findAllUnrestricted();
 
         for (ApiKeyDTO dto : keyDtos) {
-            whitelist.add(dto.getApiKey());
+            unrestrictedApiKeys.add(dto.getApiKey());
         }
 
         // let non-API requests pass
-        if (whitelist.contains(key)) {
+        if (unrestrictedApiKeys.contains(key)) {
             return true;
         }
         SimpleRateLimiter rateLimiter = getRateLimiter(key);

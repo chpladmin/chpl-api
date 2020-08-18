@@ -142,7 +142,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.10.4</version>
+            <version>2.9.10.5</version>
         </dependency>
 
         <dependency>
@@ -225,7 +225,7 @@
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
-            <version>1.4.8</version>
+            <version>1.4.10</version>
         </dependency>
         <dependency>
             <groupId>io.springfox</groupId>
@@ -299,15 +299,6 @@
             <groupId>org.asynchttpclient</groupId>
             <artifactId>async-http-client</artifactId>
             <version>2.10.1</version>
-        </dependency>
-        <!-- for unit/integration testing of the dao calls -->
-        <dependency>
-            <groupId>gov.healthit.chpl</groupId>
-            <artifactId>chpl-resources</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <classifier>tests</classifier>
-            <type>test-jar</type>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
@@ -457,11 +448,14 @@
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationResult.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationResultAdditionalSoftware.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestData.java</source>
+                        <source>src/main/java/gov/healthit/chpl/domain/TestData.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestFunctionality.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/TestParticipant.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestProcedure.java</source>
+                        <source>src/main/java/gov/healthit/chpl/domain/TestProcedure.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestStandard.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationStatusEvent.java</source>
+                        <source>src/main/java/gov/healthit/chpl/domain/MeaningfulUseUser.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/TestTask.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestTool.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/UcdProcess.java</source>
