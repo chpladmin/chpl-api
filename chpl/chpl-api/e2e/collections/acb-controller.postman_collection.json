@@ -1,192 +1,197 @@
 {
-	"info": {
-		"_postman_id": "b57c4b2f-69c9-4238-8255-b21e32a770c1",
-		"name": "acb-controller",
-		"description": "This is CHPL test collection",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"item": [
-		{
-			"name": "GET: ACBs by id",
-			"item": [
-				{
-					"name": "GET /acbs/{id}",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "1e2caa6c-8256-4a96-8708-b80c65f32210",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"pm.test(\"Response body has details of ACBs\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.name).to.be.a(\"string\");",
-									"    pm.expect(jsonData.acbCode).to.exist;",
-									"});",
-									"pm.test(\"ACB Names are correct as per the id passed in\", function () {",
-									"    var actualBody= pm.response.json();",
-									"    var expected= pm.iterationData.get(\"expectedDeveloperName\");",
-									"    pm.expect(actualBody.name).to.equal(expected);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"id": "7c4dd63f-dcdb-44b2-bfe8-06aca314ae4b",
-								"exec": [
-									"const id= pm.iterationData.get(\"id\");\r",
-									"pm.environment.set(\"id\",\"id\");\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{url}}/rest/acbs/{{id}}?api_key={{apiKey}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"rest",
-								"acbs",
-								"{{id}}"
-							],
-							"query": [
-								{
-									"key": "api_key",
-									"value": "{{apiKey}}"
-								}
-							]
-						}
-					},
-					"response": []
-				}
-			],
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"id": "06e3e02b-cbad-4ce4-9d45-2d1b67ec71a9",
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"id": "e040f610-f90d-4eb6-9659-655f1109c08e",
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
-				}
-			],
-			"protocolProfileBehavior": {}
-		},
-		{
-			"name": "GET: All ACBs",
-			"item": [
-				{
-					"name": "GET /acbs",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "afab7506-7cf6-4305-b11d-9f57a07bf668",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"All 6 Acbs are extracted\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.acbs.length).to.equal(6);",
-									"});",
-									"",
-									"pm.test(\"Check if all of acbs exist\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"UL LLC\");",
-									"    pm.expect(pm.response.text()).to.include(\"ICSA Labs\");",
-									"    pm.expect(pm.response.text()).to.include(\"SLI Compliance\");",
-									"    pm.expect(pm.response.text()).to.include(\"Drummond Group\");",
-									"    pm.expect(pm.response.text()).to.include(\"Surescripts LLC\");",
-									"    pm.expect(pm.response.text()).to.include(\"CCHIT\");",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{url}}/rest/acbs?api_key={{apiKey}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"rest",
-								"acbs"
-							],
-							"query": [
-								{
-									"key": "api_key",
-									"value": "{{apiKey}}"
-								}
-							]
-						}
-					},
-					"response": []
-				}
-			],
-			"protocolProfileBehavior": {}
-		}
-	],
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"id": "48d1376e-9736-4e38-a20f-08a3a90f801a",
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		},
-		{
-			"listen": "test",
-			"script": {
-				"id": "f2206ea7-c56c-4f5b-8454-0aebc38e8a7b",
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		}
-	],
-	"protocolProfileBehavior": {}
+    "info": {
+        "_postman_id": "b57c4b2f-69c9-4238-8255-b21e32a770c1",
+        "name": "acb-controller",
+        "description": "This is CHPL test collection",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "GET: ACBs by id",
+            "item": [
+                {
+                    "name": "GET /acbs/{id}",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "1e2caa6c-8256-4a96-8708-b80c65f32210",
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "pm.test(\"Response body has details of ACBs\", function () {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.expect(jsonData.name).to.be.a(\"string\");",
+                                    "    pm.expect(jsonData.acbCode).to.exist;",
+                                    "});",
+                                    "pm.test(\"ACB Names are correct as per the id passed in\", function () {",
+                                    "    var actualBody= pm.response.json();",
+                                    "    var expected= pm.iterationData.get(\"expectedDeveloperName\");",
+                                    "    pm.expect(actualBody.name).to.equal(expected);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        },
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "id": "7c4dd63f-dcdb-44b2-bfe8-06aca314ae4b",
+                                "exec": [
+                                    "const id= pm.iterationData.get(\"id\");\r",
+                                    "pm.environment.set(\"id\",\"id\");\r",
+                                    ""
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/rest/acbs/{{id}}?api_key={{apiKey}}",
+                            "host": [
+                                "{{url}}"
+                            ],
+                            "path": [
+                                "rest",
+                                "acbs",
+                                "{{id}}"
+                            ],
+                            "query": [
+                                {
+                                    "key": "api_key",
+                                    "value": "{{apiKey}}"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [
+                    ]
+                }
+            ],
+            "event": [
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "id": "06e3e02b-cbad-4ce4-9d45-2d1b67ec71a9",
+                        "type": "text/javascript",
+                        "exec": [
+                            ""
+                        ]
+                    }
+                },
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "e040f610-f90d-4eb6-9659-655f1109c08e",
+                        "type": "text/javascript",
+                        "exec": [
+                            ""
+                        ]
+                    }
+                }
+            ],
+            "protocolProfileBehavior": {
+            }
+        },
+        {
+            "name": "GET: All ACBs",
+            "item": [
+                {
+                    "name": "GET /acbs",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "afab7506-7cf6-4305-b11d-9f57a07bf668",
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test(\"All 6 Acbs are extracted\", function () {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.expect(jsonData.acbs.length).to.equal(6);",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Check if all of acbs exist\", function () {",
+                                    "    pm.expect(pm.response.text()).to.include(\"UL LLC\");",
+                                    "    pm.expect(pm.response.text()).to.include(\"ICSA Labs\");",
+                                    "    pm.expect(pm.response.text()).to.include(\"SLI Compliance\");",
+                                    "    pm.expect(pm.response.text()).to.include(\"Drummond Group\");",
+                                    "    pm.expect(pm.response.text()).to.include(\"Surescripts LLC\");",
+                                    "    pm.expect(pm.response.text()).to.include(\"CCHIT\");",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/rest/acbs?api_key={{apiKey}}",
+                            "host": [
+                                "{{url}}"
+                            ],
+                            "path": [
+                                "rest",
+                                "acbs"
+                            ],
+                            "query": [
+                                {
+                                    "key": "api_key",
+                                    "value": "{{apiKey}}"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [
+                    ]
+                }
+            ],
+            "protocolProfileBehavior": {
+            }
+        }
+    ],
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "id": "48d1376e-9736-4e38-a20f-08a3a90f801a",
+                "type": "text/javascript",
+                "exec": [
+                    ""
+                ]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "id": "f2206ea7-c56c-4f5b-8454-0aebc38e8a7b",
+                "type": "text/javascript",
+                "exec": [
+                    ""
+                ]
+            }
+        }
+    ],
+    "protocolProfileBehavior": {
+    }
 }
