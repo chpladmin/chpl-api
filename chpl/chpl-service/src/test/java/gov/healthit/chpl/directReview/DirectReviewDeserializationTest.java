@@ -41,7 +41,7 @@ public class DirectReviewDeserializationTest {
                 + "{ "
                 + "\"key\": \"DR-12345\", "
                 + "\"fields\": {"
-                + "\"customfield_10946\": \"" + startDate + "\" }"
+                + "\"customfield_11016\": \"" + startDate + "\" }"
                 + "}"
                 + "]"
                 + "}";
@@ -60,7 +60,7 @@ public class DirectReviewDeserializationTest {
                 + "{ "
                 + "\"key\": \"DR-12345\", "
                 + "\"fields\": {"
-                + "\"customfield_10947\": \"" + endDate + "\" }"
+                + "\"customfield_11017\": \"" + endDate + "\" }"
                 + "}"
                 + "]"
                 + "}";
@@ -79,7 +79,7 @@ public class DirectReviewDeserializationTest {
                 + "{ "
                 + "\"key\": \"DR-12345\", "
                 + "\"fields\": {"
-                + "\"customfield_10932\": [{"
+                + "\"customfield_11015\": [{"
                 + "  \"self\": \"https://oncprojectracking.ahrqdev.org/support-jsd/rest/api/2/customFieldOption/10718\","
                 + "  \"value\": \"" + circumstanceName + "\","
                 + "  \"id\": \"10718\""
