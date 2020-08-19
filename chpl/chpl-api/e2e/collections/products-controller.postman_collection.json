@@ -46,7 +46,7 @@
 						}
 					]
 				},
-				"description": "Request with Invalid api_key parameter returns 401 status and empty response"
+				"description": "Request with Invalid api_key parameter returns 401 status"
 			},
 			"response": []
 		},

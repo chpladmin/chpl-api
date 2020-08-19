@@ -45,7 +45,7 @@
 						"developers"
 					]
 				},
-				"description": "Request with Invalid API-Key header returns 401 status and empty response"
+				"description": "Request with Invalid API-Key header returns 401 status"
 			},
 			"response": []
 		},
