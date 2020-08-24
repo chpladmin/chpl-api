@@ -20,15 +20,18 @@ import lombok.extern.log4j.Log4j2;
 @Component("directReviewService")
 @Log4j2
 public class DirectReviewService {
-    @SuppressWarnings("checkstyle:linelength")
-    private static final String JIRA_DIRECT_REVIEW_URL = "/search?jql=project=\"Review for Signals/Direct Review\" and type=\"Direct Review\" and \"CHPL Developer ID\"~\"%s\" and \"Make Visible to CHPL\"=\"Yes\"";
-    private static final String JIRA_NONCONFORMITY_URL = "/search/?jql=project=\"Review for Signals/Direct Review\" and type=\"Requirement/Non-Conformity\" and \"Make Visible to CHPL\"=\"Yes\" and parent=\"%s\"";
     private static final String JIRA_KEY_FIELD = "key";
     private static final String JIRA_ISSUES_FIELD = "issues";
     private static final String JIRA_FIELDS_FIELD = "fields";
 
     @Value("${jira.baseUrl}")
     private String jiraBaseUrl;
+
+    @Value("${jira.directReviewUrl}")
+    private String jiraDirectReviewUrl;
+
+    @Value("${jira.nonconformityUrl}")
+    private String jiraNonconformityUrl;
 
     private RestTemplate jiraAuthenticatedRestTemplate;
     private ObjectMapper mapper;
@@ -55,7 +58,7 @@ public class DirectReviewService {
     }
 
     private String fetchDirectReviews(Long developerId) {
-        String url = String.format(jiraBaseUrl + JIRA_DIRECT_REVIEW_URL, developerId + "");
+        String url = String.format(jiraBaseUrl + jiraDirectReviewUrl, developerId + "");
         LOGGER.info("Making request to " + url);
         ResponseEntity<String> response = jiraAuthenticatedRestTemplate.getForEntity(url, String.class);
         LOGGER.debug("Response: " + response.getBody());
@@ -63,7 +66,7 @@ public class DirectReviewService {
     }
 
     private String fetchNonConformities(String directReviewKey) {
-        String url = String.format(jiraBaseUrl + JIRA_NONCONFORMITY_URL, directReviewKey + "");
+        String url = String.format(jiraBaseUrl + jiraNonconformityUrl, directReviewKey + "");
         LOGGER.info("Making request to " + url);
         ResponseEntity<String> response = jiraAuthenticatedRestTemplate.getForEntity(url, String.class);
         LOGGER.debug("Response: " + response.getBody());
