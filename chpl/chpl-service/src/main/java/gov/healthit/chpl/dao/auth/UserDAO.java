@@ -266,6 +266,25 @@ public class UserDAO extends BaseDAOImpl {
         return userMapper.from(userEntity);
     }
 
+    public List<UserDTO> getByNameOrEmail(String username) {
+        Query query = entityManager
+                .createQuery("SELECT u "
+                        + "FROM UserEntity u "
+                        + "JOIN FETCH u.contact c "
+                        + "JOIN FETCH u.permission "
+                        + "WHERE u.deleted <> true "
+                        + "AND ((u.subjectName = (:username)) OR c.email = (:username)) ",
+                        UserEntity.class);
+        query.setParameter("username", username);
+        List<UserEntity> userEntities = query.getResultList();
+        if (userEntities == null || userEntities.size() == 0) {
+            return new ArrayList<UserDTO>();
+        }
+        List<UserDTO> users = new ArrayList<UserDTO>();
+        userEntities.stream().forEach(userEntity -> users.add(userMapper.from(userEntity)));
+        return users;
+    }
+
     public List<UserDTO> getUsersWithPermission(String permissionName) {
         String hql = "SELECT u "
                 + "FROM UserEntity u "
