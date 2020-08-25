@@ -269,6 +269,19 @@ public class UserManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME)")
     @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME, returnObject)")
+    public UserDTO getByNameOrEmail(String username) throws UserRetrievalException {
+        return getByNameOrEmailUnsecured(username);
+    }
+
+    public UserDTO getByNameOrEmailUnsecured(String username) throws UserRetrievalException {
+        return userDAO.getByNameOrEmail(username);
+    }
+
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME)")
+    @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME, returnObject)")
     public User getUserInfo(String userName) throws UserRetrievalException {
         UserDTO user = getByNameUnsecured(userName);
         return new User(user);

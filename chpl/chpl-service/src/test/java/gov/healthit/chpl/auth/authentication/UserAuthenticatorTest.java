@@ -21,6 +21,7 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.auth.AuthenticationManager;
 import gov.healthit.chpl.manager.auth.UserManager;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class UserAuthenticatorTest {
     private JWTAuthor jwtAuthor;
@@ -28,6 +29,7 @@ public class UserAuthenticatorTest {
     private UserDAO userDAO;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private UserDetailsChecker userDetailsChecker;
+    private ErrorMessageUtil msgUtil;
 
     @Before
     public void setup() throws UserRetrievalException {
@@ -36,6 +38,7 @@ public class UserAuthenticatorTest {
         userDAO = Mockito.mock(UserDAO.class);
         bCryptPasswordEncoder = Mockito.mock(BCryptPasswordEncoder.class);
         userDetailsChecker = Mockito.mock(UserDetailsChecker.class);
+        msgUtil = Mockito.mock(ErrorMessageUtil.class);
 
         Mockito.when(userDAO.getByName(ArgumentMatchers.anyString()))
                 .thenReturn(UserDTO.builder()
@@ -52,6 +55,22 @@ public class UserAuthenticatorTest {
                         .subjectName("userName")
                         .signatureDate(new Date())
                         .build());
+
+        Mockito.when(userDAO.getByNameOrEmail(ArgumentMatchers.anyString()))
+        .thenReturn(UserDTO.builder()
+                .id(1L)
+                .fullName("User Name")
+                .accountEnabled(true)
+                .accountExpired(false)
+                .accountLocked(false)
+                .credentialsExpired(false)
+                .email("abc@def.com")
+                .failedLoginCount(0)
+                .passwordResetRequired(false)
+                .phoneNumber("555-555-5555")
+                .subjectName("userName")
+                .signatureDate(new Date())
+                .build());
 
         Mockito.when(bCryptPasswordEncoder.matches(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenReturn(true);
@@ -72,7 +91,7 @@ public class UserAuthenticatorTest {
     public void getUser_ValidLoginCredentials_ReturnValidUserDTO() throws UserRetrievalException {
         LoginCredentials creds = new LoginCredentials("username", "password");
         AuthenticationManager authenticator = new AuthenticationManager(jwtAuthor, userManager, userDAO, bCryptPasswordEncoder,
-                userDetailsChecker);
+                userDetailsChecker, msgUtil);
         UserDTO user = authenticator.getUser(creds);
 
         assertNotNull(user);
@@ -82,11 +101,11 @@ public class UserAuthenticatorTest {
     public void getUser_UnknownUserName_ThrowsBadCredentialsException()
             throws BadCredentialsException, AccountStatusException, UserRetrievalException {
 
-        Mockito.when(userDAO.getByName(ArgumentMatchers.anyString()))
+        Mockito.when(userDAO.getByNameOrEmail(ArgumentMatchers.anyString()))
                 .thenThrow(UserRetrievalException.class);
 
         LoginCredentials creds = new LoginCredentials("username", "password");
-        AuthenticationManager authenticator = new AuthenticationManager(null, null, userDAO, null, null);
+        AuthenticationManager authenticator = new AuthenticationManager(null, null, userDAO, null, null, msgUtil);
         authenticator.getUser(creds);
 
         fail();
@@ -97,7 +116,7 @@ public class UserAuthenticatorTest {
     public void getUser_NoUserSignature_ThrowsBadCredentialsException()
             throws BadCredentialsException, AccountStatusException, UserRetrievalException {
 
-        Mockito.when(userDAO.getByName(ArgumentMatchers.anyString()))
+        Mockito.when(userDAO.getByNameOrEmail(ArgumentMatchers.anyString()))
                 .thenReturn(UserDTO.builder()
                         .id(1L)
                         .fullName("User Name")
@@ -115,7 +134,7 @@ public class UserAuthenticatorTest {
 
         LoginCredentials creds = new LoginCredentials("username", "password");
         AuthenticationManager authenticator = new AuthenticationManager(jwtAuthor, userManager, userDAO, bCryptPasswordEncoder,
-                userDetailsChecker);
+                userDetailsChecker, msgUtil);
         authenticator.getUser(creds);
 
         fail();
@@ -130,7 +149,7 @@ public class UserAuthenticatorTest {
 
         LoginCredentials creds = new LoginCredentials("username", "password");
         AuthenticationManager authenticator = new AuthenticationManager(jwtAuthor, userManager, userDAO, bCryptPasswordEncoder,
-                userDetailsChecker);
+                userDetailsChecker, msgUtil);
         authenticator.getUser(creds);
 
         fail();

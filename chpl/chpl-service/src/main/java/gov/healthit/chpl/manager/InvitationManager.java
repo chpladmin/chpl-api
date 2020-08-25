@@ -34,6 +34,7 @@ import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
@@ -47,11 +48,13 @@ public class InvitationManager extends SecuredManager {
     private UserPermissionsManager userPermissionsManager;
     private ActivityManager activityManager;
     private ResourcePermissions resourcePermissions;
+    private ErrorMessageUtil msgUtil;
 
     @Autowired
+    @SuppressWarnings({"checkstyle:parameternumber"})
     public InvitationManager(UserPermissionDAO userPermissionDao, InvitationDAO invitationDao,
             UserDAO userDao, UserManager userManager, UserPermissionsManager userPermissionsManager,
-            ActivityManager activityManager, ResourcePermissions resourcePermissions) {
+            ActivityManager activityManager, ResourcePermissions resourcePermissions, ErrorMessageUtil msgUtil) {
         this.userPermissionDao = userPermissionDao;
         this.invitationDao = invitationDao;
         this.userDao = userDao;
@@ -59,6 +62,7 @@ public class InvitationManager extends SecuredManager {
         this.userPermissionsManager = userPermissionsManager;
         this.activityManager = activityManager;
         this.resourcePermissions = resourcePermissions;
+        this.msgUtil = msgUtil;
     }
 
     @Transactional
@@ -182,23 +186,31 @@ public class InvitationManager extends SecuredManager {
         Authentication authenticator = AuthUtil.getInvitedUserAuthenticator(invitation.getLastModifiedUserId());
         SecurityContextHolder.getContext().setAuthentication(authenticator);
 
-        // create the user
-        UserDTO newUser = null;
-
+        UserDTO existingUser = null;
         try {
-            newUser = userManager.getByName(user.getSubjectName());
-            if (newUser == null) {
-                UserDTO toCreate = constructUser(invitation, user);
-                newUser = userManager.create(toCreate, user.getPassword());
-            } else {
-                throw new InvalidArgumentsException(
-                        "A user with the name " + user.getSubjectName() + " already exists.");
-            }
+            existingUser = userManager.getByNameOrEmail(user.getSubjectName());
         } catch (UserRetrievalException ex) {
-            UserDTO toCreate = constructUser(invitation, user);
-            newUser = userManager.create(toCreate, user.getPassword());
+            //hitting this block means there are multiple users registered with this account.
+            //don't let them make a new one!
+            throw new InvalidArgumentsException(msgUtil.getMessage("user.accountAlreadyExists", user.getSubjectName()));
+        }
+        if (existingUser != null) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("user.accountAlreadyExists", user.getSubjectName()));
+        } else {
+            try {
+                existingUser = userManager.getByNameOrEmail(user.getEmail());
+            } catch (UserRetrievalException ex) {
+                //hitting this block means there are multiple users registered with this account.
+                //don't let them make a new one!
+                throw new InvalidArgumentsException(msgUtil.getMessage("user.accountAlreadyExists", user.getEmail()));
+            }
+        }
+        if (existingUser != null) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("user.accountAlreadyExists", user.getEmail()));
         }
 
+        UserDTO toCreate = constructUser(invitation, user);
+        UserDTO newUser = userManager.create(toCreate, user.getPassword());
         try {
             handleInvitation(invitation, newUser);
 

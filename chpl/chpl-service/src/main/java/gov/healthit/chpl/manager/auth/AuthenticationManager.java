@@ -24,6 +24,7 @@ import gov.healthit.chpl.exception.JWTCreationException;
 import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Service
@@ -34,15 +35,18 @@ public class AuthenticationManager {
     private UserDAO userDAO;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private UserDetailsChecker userDetailsChecker;
+    private ErrorMessageUtil msgUtil;
 
     @Autowired
     public AuthenticationManager(JWTAuthor jwtAuthor, UserManager userManager, UserDAO userDAO,
-            BCryptPasswordEncoder bCryptPasswordEncoder, UserDetailsChecker userDetailsChecker) {
+            BCryptPasswordEncoder bCryptPasswordEncoder, UserDetailsChecker userDetailsChecker,
+            ErrorMessageUtil msgUtil) {
         this.jwtAuthor = jwtAuthor;
         this.userManager = userManager;
         this.userDAO = userDAO;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userDetailsChecker = userDetailsChecker;
+        this.msgUtil = msgUtil;
     }
 
     public String authenticate(LoginCredentials credentials)
@@ -58,16 +62,12 @@ public class AuthenticationManager {
 
     public UserDTO getUser(LoginCredentials credentials)
             throws BadCredentialsException, AccountStatusException, UserRetrievalException {
-        UserDTO user = getUserByName(credentials.getUserName());
-
+        UserDTO user = getUserByNameOrEmail(credentials.getUserName());
         if (user != null) {
             if (user.getSignatureDate() == null) {
-                throw new BadCredentialsException(
-                        "Account for user " + user.getSubjectName() + " has not been confirmed.");
+                throw new BadCredentialsException(msgUtil.getMessage("user.unconfirmedAccount", user.getSubjectName()));
             }
-
             if (checkPassword(credentials.getPassword(), userManager.getEncodedPassword(user))) {
-
                 userDetailsChecker.check(user);
                 userManager.updateLastLoggedInDate(user);
 
@@ -81,7 +81,6 @@ public class AuthenticationManager {
                     }
                 }
                 return user;
-
             } else {
                 try {
                     user.setFailedLoginCount(user.getFailedLoginCount() + 1);
@@ -89,10 +88,10 @@ public class AuthenticationManager {
                 } catch (UserManagementException ex) {
                     LOGGER.error("Error adding failed login", ex);
                 }
-                throw new BadCredentialsException("Bad username and password combination.");
+                throw new BadCredentialsException(msgUtil.getMessage("user.badUsernamePassword"));
             }
         } else {
-            throw new BadCredentialsException("Bad username and password combination.");
+            throw new BadCredentialsException(msgUtil.getMessage("user.badUsernamePassword"));
         }
     }
 
@@ -161,6 +160,14 @@ public class AuthenticationManager {
         return user;
     }
 
+    private UserDTO getUserByNameOrEmail(String usernameOrEmail) throws UserRetrievalException {
+        UserDTO user = userDAO.getByNameOrEmail(usernameOrEmail);
+        if (user == null) {
+            throw new UserRetrievalException(msgUtil.getMessage("user.notFound"));
+        }
+        return user;
+    }
+
     private void updateFailedLogins(UserDTO userToUpdate) throws UserRetrievalException, UserManagementException {
         try {
             userManager.updateFailedLoginCount(userToUpdate);
@@ -176,7 +183,7 @@ public class AuthenticationManager {
             throws UserRetrievalException, JWTCreationException, UserManagementException {
         JWTAuthenticatedUser user = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
         if (user.getImpersonatingUser() != null) {
-            throw new UserManagementException("Unable to impersonate user while already impersonating");
+            throw new UserManagementException(msgUtil.getMessage("user.impersonate.alreadyImpersonating"));
         }
         UserDTO impersonatingUser = getUserByName(user.getSubjectName());
         UserDTO impersonatedUser = getUserByName(username);

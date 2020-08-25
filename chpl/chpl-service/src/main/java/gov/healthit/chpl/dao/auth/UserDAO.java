@@ -7,7 +7,6 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,13 +24,14 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Repository(value = "userDAO")
 public class UserDAO extends BaseDAOImpl {
-
-    @Autowired
     private UserContactDAO userContactDAO;
+    private UserMapper userMapper;
 
     @Autowired
-    @Lazy
-    private UserMapper userMapper;
+    public UserDAO(UserContactDAO userContactDAO, UserMapper userMapper) {
+       this.userContactDAO = userContactDAO;
+       this.userMapper = userMapper;
+    }
 
     @Transactional
     public UserDTO create(UserDTO user, String encodedPassword) throws UserCreationException {
@@ -266,9 +266,9 @@ public class UserDAO extends BaseDAOImpl {
         return userMapper.from(userEntity);
     }
 
-    public List<UserDTO> getByNameOrEmail(String username) {
+    public UserDTO getByNameOrEmail(String username) throws UserRetrievalException{
         Query query = entityManager
-                .createQuery("SELECT u "
+                .createQuery("SELECT DISTINCT u "
                         + "FROM UserEntity u "
                         + "JOIN FETCH u.contact c "
                         + "JOIN FETCH u.permission "
@@ -277,12 +277,15 @@ public class UserDAO extends BaseDAOImpl {
                         UserEntity.class);
         query.setParameter("username", username);
         List<UserEntity> userEntities = query.getResultList();
-        if (userEntities == null || userEntities.size() == 0) {
-            return new ArrayList<UserDTO>();
+        UserDTO user = null;
+        if (userEntities != null) {
+            if (userEntities.size() > 1) {
+                throw new UserRetrievalException(msgUtil.getMessage("user.multipleAccountsFound", username));
+            } else if (userEntities.size() == 1) {
+                user = userMapper.from(userEntities.get(0));
+            }
         }
-        List<UserDTO> users = new ArrayList<UserDTO>();
-        userEntities.stream().forEach(userEntity -> users.add(userMapper.from(userEntity)));
-        return users;
+        return user;
     }
 
     public List<UserDTO> getUsersWithPermission(String permissionName) {
