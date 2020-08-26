@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,11 +48,21 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
     public void doFilter(final ServletRequest req, final ServletResponse res, final FilterChain chain)
             throws IOException, ServletException {
         HttpServletRequest request = null;
+        HttpServletResponse response = (HttpServletResponse) res;
+
         if (req instanceof javax.servlet.http.HttpServletRequest) {
             request = (HttpServletRequest) req;
         } else {
             throw new ServletException("Request was not correct type");
         }
+
+        for (int i = 0; i < ALLOWED_REQUEST_PATHS.length; i++) {
+            if (request.getServletPath().matches(ALLOWED_REQUEST_PATHS[i])) {
+                chain.doFilter(req, res); // continue
+                return;
+            }
+        }
+
         String requestPath;
         if (request.getQueryString() == null) {
             requestPath = request.getRequestURI();
@@ -66,7 +77,6 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
         if (keyFromHeader != null && keyFromHeader.equals(keyFromParam)) {
             key = keyFromHeader;
         } else {
-
             if (keyFromHeader == null) {
                 key = keyFromParam;
             } else if (keyFromParam == null) {
@@ -77,23 +87,18 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
                         "API key presented in Header does not match API key presented as URL Parameter.");
                 ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
                 String json = ow.writeValueAsString(errorObj);
-                res.getOutputStream().write(json.getBytes("UTF-8"));
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, json);
+                return;
             }
         }
 
         if (key == null) {
-            for (int i = 0; i < ALLOWED_REQUEST_PATHS.length; i++) {
-                if (request.getServletPath().matches(ALLOWED_REQUEST_PATHS[i])) {
-                    chain.doFilter(req, res); // continue
-                    return;
-                }
-            }
-
             // No Key. Don't continue.
             ErrorResponse errorObj = new ErrorResponse("API key must be presented in order to use this API");
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
             String json = ow.writeValueAsString(errorObj);
-            res.getOutputStream().write(json.getBytes("UTF-8"));
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, json);
+            return;
         } else {
             try {
                 ApiKeyDTO retrievedKey = apiKeyManager.findKey(key);
@@ -103,7 +108,8 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
                     ErrorResponse errorObj = new ErrorResponse("Invalid API Key");
                     ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
                     String json = ow.writeValueAsString(errorObj);
-                    res.getOutputStream().write(json.getBytes("UTF-8"));
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, json);
+                    return;
                 } else {
                     try {
                         apiKeyManager.logApiKeyActivity(key, requestPath);
@@ -114,6 +120,8 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
                 }
             } catch (final EntityRetrievalException ex) {
                 LOGGER.error("Cannot find key for HTTP filter: " + key);
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid API Key");
+                return;
             }
         }
     }
