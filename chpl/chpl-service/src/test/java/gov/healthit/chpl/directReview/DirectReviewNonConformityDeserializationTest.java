@@ -11,9 +11,9 @@ import org.junit.Test;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.healthit.chpl.domain.compliance.DirectReviewNonconformity;
+import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 
-public class DirectReviewNonconformityDeserializationTest {
+public class DirectReviewNonConformityDeserializationTest {
 
     @Test
     public void deserializeJson_parsesRequirement() {
@@ -24,7 +24,7 @@ public class DirectReviewNonconformityDeserializationTest {
                 + "{ "
                 + "\"key\": \"DR-12345\", "
                 + "\"fields\": {"
-                + "\"customfield_10933\": { "
+                + "\"customfield_11018\": { "
                 +    "\"self\": \"https://oncprojectracking.ahrqdev.org/support-jsd/rest/api/2/customFieldOption/10735\", "
                 +    "\"value\": \"" + requirementValue + "\", "
                 +    "\"id\": \"10735\" }"
@@ -33,56 +33,52 @@ public class DirectReviewNonconformityDeserializationTest {
                 + "]"
                 + "}";
 
-        DirectReviewNonconformity nc = parseJsonToNonconformity(json);
+        DirectReviewNonConformity nc = parseJsonToNonConformity(json);
         assertNotNull(nc);
         assertNotNull(nc.getRequirement());
         assertEquals(requirementValue, nc.getRequirement());
     }
 
     @Test
-    public void deserializeJson_parsesDeveloperAssociatedListings() {
-        String dalValue = "15.02.02.3007.A056.01.00.0.180214";
+    public void deserializeJson_parsesNonConformityType() {
+        String nonConformityType = "170.406(b)(1)";
         String json = "{"
                 + "\"total\": 1,"
                 + "\"issues\": ["
                 + "{ "
                 + "\"key\": \"DR-12345\", "
                 + "\"fields\": {"
-                + "\"customfield_10943\": [\"" + dalValue + "\"] "
+                + "\"customfield_11036\": \"" + nonConformityType + "\""
                 + "}"
                 + "}"
                 + "]"
                 + "}";
 
-        DirectReviewNonconformity nc = parseJsonToNonconformity(json);
+        DirectReviewNonConformity nc = parseJsonToNonConformity(json);
         assertNotNull(nc);
-        assertNotNull(nc.getDeveloperAssociatedListings());
-        assertEquals(1, nc.getDeveloperAssociatedListings().size());
-        assertEquals(dalValue, nc.getDeveloperAssociatedListings().get(0));
+        assertNotNull(nc.getNonConformityType());
+        assertEquals(nonConformityType, nc.getNonConformityType());
     }
 
     @Test
-    public void deserializeJson_parsesNonconformityType() {
-        String nonconformityType = "170.406(b)(1)";
+    public void deserializeJson_parsesNonConformityStatus() {
+        String nonConformityStatus = "Closed";
         String json = "{"
                 + "\"total\": 1,"
                 + "\"issues\": ["
                 + "{ "
                 + "\"key\": \"DR-12345\", "
                 + "\"fields\": {"
-                + "\"customfield_10934\": { "
-                +    "\"self\": \"https://oncprojectracking.ahrqdev.org/support-jsd/rest/api/2/customFieldOption/10735\", "
-                +    "\"value\": \"" + nonconformityType + "\", "
-                +    "\"id\": \"10735\" }"
+                + "\"customfield_11035\": \"Closed\""
                 + "}"
                 + "}"
                 + "]"
                 + "}";
 
-        DirectReviewNonconformity nc = parseJsonToNonconformity(json);
+        DirectReviewNonConformity nc = parseJsonToNonConformity(json);
         assertNotNull(nc);
-        assertNotNull(nc.getNonconformityType());
-        assertEquals(nonconformityType, nc.getNonconformityType());
+        assertNotNull(nc.getNonConformityStatus());
+        assertEquals(nonConformityStatus, nc.getNonConformityStatus());
     }
 
     @Test
@@ -94,81 +90,57 @@ public class DirectReviewNonconformityDeserializationTest {
                 + "{ "
                 + "\"key\": \"DR-12345\", "
                 + "\"fields\": {"
-                + "\"customfield_10921\": \"" + dateOfDetermination + "\""
+                + "\"customfield_11021\": \"" + dateOfDetermination + "\""
                 + "}"
                 + "}"
                 + "]"
                 + "}";
 
-        DirectReviewNonconformity nc = parseJsonToNonconformity(json);
+        DirectReviewNonConformity nc = parseJsonToNonConformity(json);
         assertNotNull(nc);
         assertNotNull(nc.getDateOfDetermination());
     }
 
     @Test
-    public void deserializeJson_parsesNonconformityStatus() {
-        String nonconformityStatus = "Closed";
+    public void deserializeJson_parsesNonConformitySummary() {
+        String nonConformitySummary = "summary";
         String json = "{"
                 + "\"total\": 1,"
                 + "\"issues\": ["
                 + "{ "
                 + "\"key\": \"DR-12345\", "
                 + "\"fields\": {"
-                + "\"customfield_10935\": { "
-                +    "\"self\": \"https://oncprojectracking.ahrqdev.org/support-jsd/rest/api/2/customFieldOption/10735\", "
-                +    "\"value\": \"" + nonconformityStatus + "\", "
-                +    "\"id\": \"10735\" }"
+                + "\"customfield_11026\": \"" + nonConformitySummary + "\" "
                 + "}"
                 + "}"
                 + "]"
                 + "}";
 
-        DirectReviewNonconformity nc = parseJsonToNonconformity(json);
+        DirectReviewNonConformity nc = parseJsonToNonConformity(json);
         assertNotNull(nc);
-        assertNotNull(nc.getNonconformityStatus());
-        assertEquals(nonconformityStatus, nc.getNonconformityStatus());
+        assertNotNull(nc.getNonConformitySummary());
+        assertEquals(nonConformitySummary, nc.getNonConformitySummary());
     }
 
     @Test
-    public void deserializeJson_parsesNonconformitySummary() {
-        String nonconformitySummary = "summary";
+    public void deserializeJson_parsesNonConformityFindings() {
+        String nonConformityFindings = "findings";
         String json = "{"
                 + "\"total\": 1,"
                 + "\"issues\": ["
                 + "{ "
                 + "\"key\": \"DR-12345\", "
                 + "\"fields\": {"
-                + "\"customfield_10927\": \"" + nonconformitySummary + "\" "
+                + "\"customfield_11027\": \"" + nonConformityFindings + "\" "
                 + "}"
                 + "}"
                 + "]"
                 + "}";
 
-        DirectReviewNonconformity nc = parseJsonToNonconformity(json);
+        DirectReviewNonConformity nc = parseJsonToNonConformity(json);
         assertNotNull(nc);
-        assertNotNull(nc.getNonconformitySummary());
-        assertEquals(nonconformitySummary, nc.getNonconformitySummary());
-    }
-
-    @Test
-    public void deserializeJson_parsesNonconformityFindings() {
-        String nonconformityFindings = "findings";
-        String json = "{"
-                + "\"total\": 1,"
-                + "\"issues\": ["
-                + "{ "
-                + "\"key\": \"DR-12345\", "
-                + "\"fields\": {"
-                + "\"customfield_10928\": \"" + nonconformityFindings + "\" "
-                + "}"
-                + "}"
-                + "]"
-                + "}";
-
-        DirectReviewNonconformity nc = parseJsonToNonconformity(json);
-        assertNotNull(nc);
-        assertNotNull(nc.getNonconformityFindings());
-        assertEquals(nonconformityFindings, nc.getNonconformityFindings());
+        assertNotNull(nc.getNonConformityFindings());
+        assertEquals(nonConformityFindings, nc.getNonConformityFindings());
     }
 
     @Test
@@ -180,13 +152,13 @@ public class DirectReviewNonconformityDeserializationTest {
                 + "{ "
                 + "\"key\": \"DR-12345\", "
                 + "\"fields\": {"
-                + "\"customfield_10929\": \"" + devExplanation + "\" "
+                + "\"customfield_11028\": \"" + devExplanation + "\" "
                 + "}"
                 + "}"
                 + "]"
                 + "}";
 
-        DirectReviewNonconformity nc = parseJsonToNonconformity(json);
+        DirectReviewNonConformity nc = parseJsonToNonConformity(json);
         assertNotNull(nc);
         assertNotNull(nc.getDeveloperExplanation());
         assertEquals(devExplanation, nc.getDeveloperExplanation());
@@ -201,13 +173,13 @@ public class DirectReviewNonconformityDeserializationTest {
                 + "{ "
                 + "\"key\": \"DR-12345\", "
                 + "\"fields\": {"
-                + "\"customfield_10930\": \"" + resolution + "\" "
+                + "\"customfield_11029\": \"" + resolution + "\" "
                 + "}"
                 + "}"
                 + "]"
                 + "}";
 
-        DirectReviewNonconformity nc = parseJsonToNonconformity(json);
+        DirectReviewNonConformity nc = parseJsonToNonConformity(json);
         assertNotNull(nc);
         assertNotNull(nc.getResolution());
         assertEquals(resolution, nc.getResolution());
@@ -222,13 +194,13 @@ public class DirectReviewNonconformityDeserializationTest {
                 + "{ "
                 + "\"key\": \"DR-12345\", "
                 + "\"fields\": {"
-                + "\"customfield_10922\": \"" + date + "\" "
+                + "\"customfield_11022\": \"" + date + "\" "
                 + "}"
                 + "}"
                 + "]"
                 + "}";
 
-        DirectReviewNonconformity nc = parseJsonToNonconformity(json);
+        DirectReviewNonConformity nc = parseJsonToNonConformity(json);
         assertNotNull(nc);
         assertNotNull(nc.getCapApprovalDate());
     }
@@ -242,13 +214,13 @@ public class DirectReviewNonconformityDeserializationTest {
                 + "{ "
                 + "\"key\": \"DR-12345\", "
                 + "\"fields\": {"
-                + "\"customfield_10923\": \"" + date + "\" "
+                + "\"customfield_11023\": \"" + date + "\" "
                 + "}"
                 + "}"
                 + "]"
                 + "}";
 
-        DirectReviewNonconformity nc = parseJsonToNonconformity(json);
+        DirectReviewNonConformity nc = parseJsonToNonConformity(json);
         assertNotNull(nc);
         assertNotNull(nc.getCapStartDate());
     }
@@ -262,13 +234,13 @@ public class DirectReviewNonconformityDeserializationTest {
                 + "{ "
                 + "\"key\": \"DR-12345\", "
                 + "\"fields\": {"
-                + "\"customfield_10925\": \"" + date + "\" "
+                + "\"customfield_11024\": \"" + date + "\" "
                 + "}"
                 + "}"
                 + "]"
                 + "}";
 
-        DirectReviewNonconformity nc = parseJsonToNonconformity(json);
+        DirectReviewNonConformity nc = parseJsonToNonConformity(json);
         assertNotNull(nc);
         assertNotNull(nc.getCapMustCompleteDate());
     }
@@ -282,20 +254,20 @@ public class DirectReviewNonconformityDeserializationTest {
                 + "{ "
                 + "\"key\": \"DR-12345\", "
                 + "\"fields\": {"
-                + "\"customfield_10926\": \"" + date + "\" "
+                + "\"customfield_11025\": \"" + date + "\" "
                 + "}"
                 + "}"
                 + "]"
                 + "}";
 
-        DirectReviewNonconformity nc = parseJsonToNonconformity(json);
+        DirectReviewNonConformity nc = parseJsonToNonConformity(json);
         assertNotNull(nc);
         assertNotNull(nc.getCapEndDate());
     }
 
-    private DirectReviewNonconformity parseJsonToNonconformity(String json) {
+    private DirectReviewNonConformity parseJsonToNonConformity(String json) {
         ObjectMapper mapper = new ObjectMapper();
-        DirectReviewNonconformity nonconformity = null;
+        DirectReviewNonConformity nonConformity = null;
         JsonNode root = null;
         try {
             root = mapper.readTree(json);
@@ -309,15 +281,15 @@ public class DirectReviewNonconformityDeserializationTest {
             for (JsonNode issueNode : issuesNode) {
                 try {
                     String fields = issueNode.get("fields").toString();
-                    nonconformity = mapper.readValue(fields, DirectReviewNonconformity.class);
+                    nonConformity = mapper.readValue(fields, DirectReviewNonConformity.class);
                 } catch (IOException ex) {
                     ex.printStackTrace();
-                    fail("Cannot map issue JSON to DirectReviewNonconformity class");
+                    fail("Cannot map issue JSON to DirectReviewNonConformity class");
                 }
             }
         } else {
             fail("Issues node should be an array");
         }
-        return nonconformity;
+        return nonConformity;
     }
 }
