@@ -21,6 +21,7 @@ import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.JWTCreationException;
+import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
@@ -50,7 +51,7 @@ public class AuthenticationManager {
     }
 
     public String authenticate(LoginCredentials credentials)
-            throws JWTCreationException, UserRetrievalException {
+            throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
 
         String jwt = getJWT(credentials);
         UserDTO user = getUser(credentials);
@@ -61,7 +62,7 @@ public class AuthenticationManager {
     }
 
     public UserDTO getUser(LoginCredentials credentials)
-            throws BadCredentialsException, AccountStatusException, UserRetrievalException {
+            throws BadCredentialsException, AccountStatusException, UserRetrievalException, MultipleUserAccountsException {
         UserDTO user = getUserByNameOrEmail(credentials.getUserName());
         if (user != null) {
             if (user.getSignatureDate() == null) {
@@ -143,7 +144,7 @@ public class AuthenticationManager {
             user = getUser(credentials);
         } catch (AccountStatusException e1) {
             throw new JWTCreationException(e1.getMessage());
-        } catch (UserRetrievalException e2) {
+        } catch (UserRetrievalException | MultipleUserAccountsException e2) {
             throw new JWTCreationException(e2.getMessage());
         }
 
@@ -160,11 +161,9 @@ public class AuthenticationManager {
         return user;
     }
 
-    private UserDTO getUserByNameOrEmail(String usernameOrEmail) throws UserRetrievalException {
+    private UserDTO getUserByNameOrEmail(String usernameOrEmail)
+            throws MultipleUserAccountsException, UserRetrievalException {
         UserDTO user = userDAO.getByNameOrEmail(usernameOrEmail);
-        if (user == null) {
-            throw new UserRetrievalException(msgUtil.getMessage("user.notFound"));
-        }
         return user;
     }
 

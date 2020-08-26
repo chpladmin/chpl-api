@@ -18,6 +18,7 @@ import gov.healthit.chpl.auth.jwt.JWTAuthor;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.auth.AuthenticationManager;
 import gov.healthit.chpl.manager.auth.UserManager;
@@ -32,7 +33,7 @@ public class UserAuthenticatorTest {
     private ErrorMessageUtil msgUtil;
 
     @Before
-    public void setup() throws UserRetrievalException {
+    public void setup() throws UserRetrievalException, MultipleUserAccountsException {
         jwtAuthor = Mockito.mock(JWTAuthor.class);
         userManager = Mockito.mock(UserManager.class);
         userDAO = Mockito.mock(UserDAO.class);
@@ -88,7 +89,8 @@ public class UserAuthenticatorTest {
     }
 
     @Test()
-    public void getUser_ValidLoginCredentials_ReturnValidUserDTO() throws UserRetrievalException {
+    public void getUser_ValidLoginCredentials_ReturnValidUserDTO()
+            throws UserRetrievalException, MultipleUserAccountsException {
         LoginCredentials creds = new LoginCredentials("username", "password");
         AuthenticationManager authenticator = new AuthenticationManager(jwtAuthor, userManager, userDAO, bCryptPasswordEncoder,
                 userDetailsChecker, msgUtil);
@@ -97,12 +99,12 @@ public class UserAuthenticatorTest {
         assertNotNull(user);
     }
 
-    @Test(expected = UserRetrievalException.class)
+    @Test(expected = BadCredentialsException.class)
     public void getUser_UnknownUserName_ThrowsBadCredentialsException()
-            throws BadCredentialsException, AccountStatusException, UserRetrievalException {
+            throws BadCredentialsException, AccountStatusException, UserRetrievalException, MultipleUserAccountsException {
 
         Mockito.when(userDAO.getByNameOrEmail(ArgumentMatchers.anyString()))
-                .thenThrow(UserRetrievalException.class);
+                .thenReturn(null);
 
         LoginCredentials creds = new LoginCredentials("username", "password");
         AuthenticationManager authenticator = new AuthenticationManager(null, null, userDAO, null, null, msgUtil);
@@ -114,7 +116,7 @@ public class UserAuthenticatorTest {
 
     @Test(expected = BadCredentialsException.class)
     public void getUser_NoUserSignature_ThrowsBadCredentialsException()
-            throws BadCredentialsException, AccountStatusException, UserRetrievalException {
+            throws BadCredentialsException, AccountStatusException, UserRetrievalException, MultipleUserAccountsException {
 
         Mockito.when(userDAO.getByNameOrEmail(ArgumentMatchers.anyString()))
                 .thenReturn(UserDTO.builder()
@@ -142,7 +144,7 @@ public class UserAuthenticatorTest {
 
     @Test(expected = BadCredentialsException.class)
     public void getUser_PasswordNotValid_ThrowsBadCredentialsException()
-            throws BadCredentialsException, AccountStatusException, UserRetrievalException {
+            throws BadCredentialsException, AccountStatusException, UserRetrievalException, MultipleUserAccountsException {
 
         Mockito.when(bCryptPasswordEncoder.matches(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenReturn(false);

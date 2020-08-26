@@ -15,6 +15,7 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.auth.UserContactEntity;
 import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.entity.auth.UserPermissionEntity;
+import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
@@ -266,7 +267,7 @@ public class UserDAO extends BaseDAOImpl {
         return userMapper.from(userEntity);
     }
 
-    public UserDTO getByNameOrEmail(String username) throws UserRetrievalException{
+    public UserDTO getByNameOrEmail(String username) throws MultipleUserAccountsException {
         Query query = entityManager
                 .createQuery("SELECT DISTINCT u "
                         + "FROM UserEntity u "
@@ -280,7 +281,7 @@ public class UserDAO extends BaseDAOImpl {
         UserDTO user = null;
         if (userEntities != null) {
             if (userEntities.size() > 1) {
-                throw new UserRetrievalException(msgUtil.getMessage("user.multipleAccountsFound", username));
+                throw new MultipleUserAccountsException(msgUtil.getMessage("user.multipleAccountsFound", username));
             } else if (userEntities.size() == 1) {
                 user = userMapper.from(userEntities.get(0));
             }

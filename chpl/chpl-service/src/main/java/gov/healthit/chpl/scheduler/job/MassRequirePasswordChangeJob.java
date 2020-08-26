@@ -22,6 +22,8 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.JWTCreationException;
 import gov.healthit.chpl.exception.JWTValidationException;
+import gov.healthit.chpl.exception.MultipleUserAccountsException;
+import gov.healthit.chpl.exception.UserAccountExistsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.auth.AuthenticationManager;
@@ -49,7 +51,7 @@ public class MassRequirePasswordChangeJob extends QuartzJob implements Interrupt
     }
 
     @Override
-    public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+    public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
         try {
@@ -84,6 +86,7 @@ public class MassRequirePasswordChangeJob extends QuartzJob implements Interrupt
             }
             SecurityContextHolder.getContext().setAuthentication(null);
         } catch (BadCredentialsException | AccountStatusException | UserRetrievalException
+                | MultipleUserAccountsException | UserAccountExistsException
                 | JWTCreationException | JWTValidationException e) {
             LOGGER.debug("Unable to update users {}", e.getLocalizedMessage());
         }

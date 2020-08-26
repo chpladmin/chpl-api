@@ -27,6 +27,7 @@ import gov.healthit.chpl.dto.auth.UserInvitationDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
@@ -182,14 +183,15 @@ public class InvitationManager extends SecuredManager {
 
     @Transactional
     public UserDTO createUserFromInvitation(InvitationDTO invitation, CreateUserRequest user)
-            throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException, UserCreationException {
+            throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException,
+            UserCreationException, MultipleUserAccountsException {
         Authentication authenticator = AuthUtil.getInvitedUserAuthenticator(invitation.getLastModifiedUserId());
         SecurityContextHolder.getContext().setAuthentication(authenticator);
 
         UserDTO existingUser = null;
         try {
             existingUser = userManager.getByNameOrEmail(user.getSubjectName());
-        } catch (UserRetrievalException ex) {
+        } catch (MultipleUserAccountsException ex) {
             //hitting this block means there are multiple users registered with this account.
             //don't let them make a new one!
             throw new InvalidArgumentsException(msgUtil.getMessage("user.accountAlreadyExists", user.getSubjectName()));
@@ -199,7 +201,7 @@ public class InvitationManager extends SecuredManager {
         } else {
             try {
                 existingUser = userManager.getByNameOrEmail(user.getEmail());
-            } catch (UserRetrievalException ex) {
+            } catch (MultipleUserAccountsException ex) {
                 //hitting this block means there are multiple users registered with this account.
                 //don't let them make a new one!
                 throw new InvalidArgumentsException(msgUtil.getMessage("user.accountAlreadyExists", user.getEmail()));
