@@ -184,6 +184,7 @@ public class CertificationBodyDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery(
                 "FROM UserCertificationBodyMapEntity ucbm "
                         + "join fetch ucbm.certificationBody acb "
+                        + "left join fetch acb.address "
                         + "join fetch ucbm.user u "
                         + "join fetch u.permission perm "
                         + "join fetch u.contact contact "
