@@ -31,11 +31,6 @@ const acbNodataControllerTests={
 	folder: 'GET: All ACBs',
 }
 
-const apiControllerTests={
-	...commonOptions,
-	collection: collection_path + '/api-controller.postman_collection.json',
-}
-
 const developerControllerTests={
 	...commonOptions,
 	collection: collection_path + '/developer-controller.postman_collection.json',
