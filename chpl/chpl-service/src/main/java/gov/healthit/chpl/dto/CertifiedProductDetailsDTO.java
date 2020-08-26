@@ -250,45 +250,6 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.decertificationDate = Util.getNewDate(decertificationDate);
     }
 
-    public String getRwtPlanUrl() {
-        return rwtPlanUrl;
-    }
-
-    public void setRwtPlanUrl(String rwtPlanUrl) {
-        this.rwtPlanUrl = rwtPlanUrl;
-    }
-
-    public Date getRwtPlanSubmissionDate() {
-        return rwtPlanSubmissionDate;
-    }
-
-    public void setRwtPlanSubmissionDate(Date rwtPlanSubmissionDate) {
-        this.rwtPlanSubmissionDate = rwtPlanSubmissionDate;
-    }
-
-    public String getRwtResultsUrl() {
-        return rwtResultsUrl;
-    }
-
-    public void setRwtResultsUrl(String rwtResultsUrl) {
-        this.rwtResultsUrl = rwtResultsUrl;
-    }
-
-    public Date getRwtResultsSubmissionDate() {
-        return rwtResultsSubmissionDate;
-    }
-
-    public void setRwtResultsSubmissionDate(Date rwtResultsSubmissionDate) {
-        this.rwtResultsSubmissionDate = rwtResultsSubmissionDate;
-    }
-
-    public Integer getRwtEligibilityYear() {
-        return rwtEligibilityYear;
-    }
-
-    public void setRwtEligibilityYear(Integer rwtEligibilityYear) {
-        this.rwtEligibilityYear = rwtEligibilityYear;
-    }
 
     /**
      * Return two digit year of Listing.

@@ -125,9 +125,9 @@ public class CertifiedProductDTO implements Serializable {
         this.setProductAdditionalSoftware(from.getProductAdditionalSoftware());
         this.setTransparencyAttestationUrl(from.getTransparencyAttestationUrl());
         this.setRwtPlanUrl(from.getRwtPlanUrl());
-        this.setRwtPlanSubmissionDate(from.getRwtPlanSubmissionDate());
+        this.setRwtPlanSubmissionDate(new Date(from.getRwtPlanSubmissionDate()));
         this.setRwtResultsUrl(from.getRwtResultsUrl());
-        this.setRwtResultsSubmissionDate(from.getRwtResultsSubmissionDate());
+        this.setRwtResultsSubmissionDate(new Date(from.getRwtResultsSubmissionDate()));
 
         // set the pieces of the unique id
         if (!StringUtils.isEmpty(from.getChplProductNumber())) {

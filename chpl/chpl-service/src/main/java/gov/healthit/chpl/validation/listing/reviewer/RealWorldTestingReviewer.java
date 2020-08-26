@@ -84,7 +84,7 @@ public class RealWorldTestingReviewer implements ComparisonReviewer {
     }
 
     private boolean isRwtPlanDateBeforePlanEligibleDate(CertifiedProductSearchDetails listing) {
-        return toLocalDate(listing.getRwtPlanSubmissionDate()).isBefore(getPlanEligibleDate(listing));
+        return toLocalDate(new Date(listing.getRwtPlanSubmissionDate())).isBefore(getPlanEligibleDate(listing));
     }
 
     private LocalDate getPlanEligibleDate(CertifiedProductSearchDetails listing) {
@@ -114,7 +114,7 @@ public class RealWorldTestingReviewer implements ComparisonReviewer {
     }
 
     private boolean isRwtResultsDateBeforeResultsEligibleDate(CertifiedProductSearchDetails listing) {
-        return toLocalDate(listing.getRwtResultsSubmissionDate()).isBefore(getResultsEligibleDate(listing));
+        return toLocalDate(new Date(listing.getRwtResultsSubmissionDate())).isBefore(getResultsEligibleDate(listing));
     }
 
     private LocalDate getResultsEligibleDate(CertifiedProductSearchDetails listing) {

@@ -720,9 +720,9 @@ public class CertifiedProductDetailsManager {
         searchDetails.setTargetedUsers(getCertifiedProductTargetedUsers(dto.getId()));
         searchDetails.setAccessibilityStandards(getCertifiedProductAccessibilityStandards(dto.getId()));
         searchDetails.setRwtPlanUrl(dto.getRwtPlanUrl());
-        searchDetails.setRwtPlanSubmissionDate(dto.getRwtPlanSubmissionDate());
+        searchDetails.setRwtPlanSubmissionDate(dto.getRwtPlanSubmissionDate().getTime());
         searchDetails.setRwtResultsUrl(dto.getRwtResultsUrl());
-        searchDetails.setRwtResultsSubmissionDate(dto.getRwtResultsSubmissionDate());
+        searchDetails.setRwtResultsSubmissionDate(dto.getRwtResultsSubmissionDate().getTime());
         searchDetails.setRwtEligibilityYear(dto.getRwtEligibilityYear());
 
         InheritedCertificationStatus ics = new InheritedCertificationStatus();

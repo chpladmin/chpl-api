@@ -15,7 +15,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -177,10 +176,4 @@ public class CertifiedProductEntity implements Serializable {
     public CertifiedProductEntity(Long id) {
         this.id = id;
     }
-
-    @Transient
-    public Class<?> getClassType() {
-        return CertifiedProductEntity.class;
-    }
-
 }

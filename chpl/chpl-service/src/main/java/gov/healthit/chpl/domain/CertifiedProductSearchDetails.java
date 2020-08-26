@@ -349,7 +349,7 @@ public class CertifiedProductSearchDetails implements Serializable {
      * Date the listing's Real World Testing Plan was submitted
      */
     @XmlElement(name = "rwt_plan_submission_date", nillable = true, required = false)
-    private Date rwtPlanSubmissionDate;
+    private Long rwtPlanSubmissionDate;
 
     /**
      * URL where the listing's Real World Testing Results is located
@@ -361,8 +361,8 @@ public class CertifiedProductSearchDetails implements Serializable {
      * Date the listing's Real World Testing Results was submitted
      */
     @XmlElement(name = "rwt_plan_results_date", nillable = true, required = false)
-    private Date rwtResultsSubmissionDate;
-    
+    private Long rwtResultsSubmissionDate;
+
     /**
      * First year that the listing is eligible for Real World Testing data
      */
@@ -833,7 +833,7 @@ public class CertifiedProductSearchDetails implements Serializable {
     public void setCertificationStatus(LegacyCertificationStatus certificationStatus) {
         this.certificationStatus = certificationStatus;
     }
-    
+
     public String getRwtPlanUrl() {
         return rwtPlanUrl;
     }
@@ -842,11 +842,11 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.rwtPlanUrl = rwtPlanUrl;
     }
 
-    public Date getRwtPlanSubmissionDate() {
+    public Long getRwtPlanSubmissionDate() {
         return rwtPlanSubmissionDate;
     }
 
-    public void setRwtPlanSubmissionDate(Date rwtPlanSubmissionDate) {
+    public void setRwtPlanSubmissionDate(Long rwtPlanSubmissionDate) {
         this.rwtPlanSubmissionDate = rwtPlanSubmissionDate;
     }
 
@@ -858,14 +858,14 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.rwtResultsUrl = rwtResultsUrl;
     }
 
-    public Date getRwtResultsSubmissionDate() {
+    public Long getRwtResultsSubmissionDate() {
         return rwtResultsSubmissionDate;
     }
 
-    public void setRwtResultsSubmissionDate(Date rwtResultsSubmissionDate) {
+    public void setRwtResultsSubmissionDate(Long rwtResultsSubmissionDate) {
         this.rwtResultsSubmissionDate = rwtResultsSubmissionDate;
     }
-    
+
     public Integer getRwtEligibilityYear() {
         return rwtEligibilityYear;
     }

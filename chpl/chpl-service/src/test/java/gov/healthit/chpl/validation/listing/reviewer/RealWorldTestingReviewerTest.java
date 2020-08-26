@@ -47,7 +47,7 @@ public class RealWorldTestingReviewerTest {
 
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
         updated.setRwtPlanUrl("http://www.test.com");
-        updated.setRwtPlanSubmissionDate(sdf.parse("08/08/2020"));
+        updated.setRwtPlanSubmissionDate(sdf.parse("08/08/2020").getTime());
 
         reviewer.review(existing, updated);
 
@@ -68,7 +68,7 @@ public class RealWorldTestingReviewerTest {
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
         updated.setRwtEligibilityYear(ELIG_YEAR_FOR_PLAN_TESTING);
         updated.setRwtPlanUrl("");
-        updated.setRwtPlanSubmissionDate(sdf.parse("08/08/2020"));
+        updated.setRwtPlanSubmissionDate(sdf.parse("08/08/2020").getTime());
 
         reviewer.review(existing, updated);
 
@@ -89,7 +89,7 @@ public class RealWorldTestingReviewerTest {
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
         updated.setRwtEligibilityYear(ELIG_YEAR_FOR_PLAN_TESTING);
         updated.setRwtPlanUrl("not a valid URL");
-        updated.setRwtPlanSubmissionDate(sdf.parse("08/08/2020"));
+        updated.setRwtPlanSubmissionDate(sdf.parse("08/08/2020").getTime());
 
         reviewer.review(existing, updated);
 
@@ -132,7 +132,7 @@ public class RealWorldTestingReviewerTest {
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
         updated.setRwtEligibilityYear(ELIG_YEAR_FOR_PLAN_TESTING);
         updated.setRwtPlanUrl("http://www.abc.com");
-        updated.setRwtPlanSubmissionDate(sdf.parse("08/08/2019"));
+        updated.setRwtPlanSubmissionDate(sdf.parse("08/08/2019").getTime());
 
         reviewer.review(existing, updated);
 
@@ -153,7 +153,7 @@ public class RealWorldTestingReviewerTest {
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
         updated.setRwtEligibilityYear(ELIG_YEAR_FOR_RESULTS_TESTING);
         updated.setRwtResultsUrl("");
-        updated.setRwtResultsSubmissionDate(sdf.parse("01/08/2021"));
+        updated.setRwtResultsSubmissionDate(sdf.parse("01/08/2021").getTime());
 
         reviewer.review(existing, updated);
 
@@ -174,7 +174,7 @@ public class RealWorldTestingReviewerTest {
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
         updated.setRwtEligibilityYear(ELIG_YEAR_FOR_RESULTS_TESTING);
         updated.setRwtResultsUrl("not a valid URL");
-        updated.setRwtResultsSubmissionDate(sdf.parse("01/08/2021"));
+        updated.setRwtResultsSubmissionDate(sdf.parse("01/08/2021").getTime());
 
         reviewer.review(existing, updated);
 
@@ -216,7 +216,7 @@ public class RealWorldTestingReviewerTest {
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
         updated.setRwtEligibilityYear(ELIG_YEAR_FOR_RESULTS_TESTING);
         updated.setRwtResultsUrl("http://www.abc.com");
-        updated.setRwtResultsSubmissionDate(sdf.parse("08/08/2018"));
+        updated.setRwtResultsSubmissionDate(sdf.parse("08/08/2018").getTime());
 
         reviewer.review(existing, updated);
 
