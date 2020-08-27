@@ -36,10 +36,6 @@ public class CertifiedProductSummaryDTO implements Serializable {
     private String reportFileLocation;
     private String sedReportFileLocation;
     private String transparencyAttestationUrl;
-    private String rwtPlanUrl;
-    private Date rwtPlanSubmissionDate;
-    private String rwtResultsUrl;
-    private Date rwtResultsSubmissionDate;
     private Date creationDate;
     private Date lastModifiedDate;
     private String lastModifiedUser;
@@ -72,10 +68,6 @@ public class CertifiedProductSummaryDTO implements Serializable {
         this.reportFileLocation = entity.getReportFileLocation();
         this.sedReportFileLocation = entity.getSedReportFileLocation();
         this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
-        this.setRwtPlanUrl(entity.getRwtPlanUrl());
-        this.setRwtPlanSubmissionDate(entity.getRwtPlanSubmissionDate());
-        this.setRwtResultsUrl(entity.getRwtResultsUrl());
-        this.setRwtResultsSubmissionDate(entity.getRwtResultsSubmissionDate());
         this.creationDate = entity.getCreationDate();
         this.lastModifiedDate = entity.getLastModifiedDate();
         this.lastModifiedUser = entity.getLastModifiedUser();
@@ -105,10 +97,6 @@ public class CertifiedProductSummaryDTO implements Serializable {
         this.reportFileLocation = entity.getReportFileLocation();
         this.sedReportFileLocation = entity.getSedReportFileLocation();
         this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
-        this.setRwtPlanUrl(entity.getRwtPlanUrl());
-        this.setRwtPlanSubmissionDate(entity.getRwtPlanSubmissionDate());
-        this.setRwtResultsUrl(entity.getRwtResultsUrl());
-        this.setRwtResultsSubmissionDate(entity.getRwtResultsSubmissionDate());
         this.creationDate = entity.getCreationDate();
         this.lastModifiedDate = entity.getLastModifiedDate();
     }

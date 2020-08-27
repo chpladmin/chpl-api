@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -720,9 +721,13 @@ public class CertifiedProductDetailsManager {
         searchDetails.setTargetedUsers(getCertifiedProductTargetedUsers(dto.getId()));
         searchDetails.setAccessibilityStandards(getCertifiedProductAccessibilityStandards(dto.getId()));
         searchDetails.setRwtPlanUrl(dto.getRwtPlanUrl());
-        searchDetails.setRwtPlanSubmissionDate(dto.getRwtPlanSubmissionDate().getTime());
+        if (Objects.nonNull(dto.getRwtPlanSubmissionDate())) {
+            searchDetails.setRwtPlanSubmissionDate(dto.getRwtPlanSubmissionDate().getTime());
+        }
         searchDetails.setRwtResultsUrl(dto.getRwtResultsUrl());
-        searchDetails.setRwtResultsSubmissionDate(dto.getRwtResultsSubmissionDate().getTime());
+        if (Objects.nonNull(dto.getRwtResultsSubmissionDate())) {
+            searchDetails.setRwtResultsSubmissionDate(dto.getRwtResultsSubmissionDate().getTime());
+        }
         searchDetails.setRwtEligibilityYear(dto.getRwtEligibilityYear());
 
         InheritedCertificationStatus ics = new InheritedCertificationStatus();
