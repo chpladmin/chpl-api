@@ -54,7 +54,6 @@ const testinglabControllerTests={
 const jobs = [
 	cb => newman.run(acbControllerTests,cb),
 	cb => newman.run(acbNodataControllerTests,cb),
-	cb => newman.run(apiControllerTests,cb),
 	cb => newman.run(developerControllerTests,cb),
 	cb => newman.run(productsControllerTests,cb),
 	cb => newman.run(statusControllerTests,cb),
