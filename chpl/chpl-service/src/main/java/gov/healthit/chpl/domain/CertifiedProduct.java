@@ -69,13 +69,6 @@ public class CertifiedProduct implements Serializable {
     @XmlElement(required = false, nillable = true)
     private Boolean curesUpdate;
 
-    /**
-     * The first year that the listing is eligible Real World Testing
-     */
-    @XmlElement(required = false, nillable = true)
-    private Integer rwtEligibilityYear;
-
-
     public CertifiedProduct() {
     }
 
@@ -94,7 +87,6 @@ public class CertifiedProduct implements Serializable {
         this.certificationDate = (dto.getCertificationDate() != null ? dto.getCertificationDate().getTime() : -1);
         this.certificationStatus = dto.getCertificationStatusName();
         this.curesUpdate = dto.getCuresUpdate();
-        this.rwtEligibilityYear = dto.getRwtEligibilityYear();
     }
 
     /**
