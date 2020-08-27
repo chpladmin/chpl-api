@@ -21,20 +21,28 @@ import gov.healthit.chpl.entity.auth.UserEntity;
 @Component
 public class UserMapper {
 
-    private CertificationBodyDAO abcDao;
+    private CertificationBodyDAO acbDao;
     private TestingLabDAO atlDao;
     private DeveloperDAO developerDao;
 
     @Autowired
     public UserMapper(CertificationBodyDAO abcDao,
             TestingLabDAO atlDao, DeveloperDAO developerDao) {
-        this.abcDao = abcDao;
+        this.acbDao = abcDao;
         this.atlDao = atlDao;
         this.developerDao = developerDao;
     }
 
     @Transactional(readOnly = true)
-    public UserDTO from(final UserEntity entity) {
+    public UserDTO from(UserEntity entity) {
+        UserDTO dto = populateBasicUserInfo(entity);
+        if (dto != null) {
+            populateOrganizations(dto);
+        }
+        return dto;
+    }
+
+    private UserDTO populateBasicUserInfo(UserEntity entity) {
         UserDTO dto = new UserDTO();
         if (entity != null) {
             dto.setId(entity.getId());
@@ -57,12 +65,11 @@ public class UserMapper {
             if (entity.getPermission() != null) {
                 dto.setPermission(new UserPermissionDTO(entity.getPermission()));
             }
-            populateOrganizations(dto);
         }
         return dto;
     }
 
-    private void populateOrganizations(final UserDTO user) {
+    private void populateOrganizations(UserDTO user) {
         if (user.getPermission().getAuthority().equals(Authority.ROLE_ACB)) {
             List<CertificationBodyDTO> acbs = getAllAcbsForUser(user.getId());
             for (CertificationBodyDTO acb : acbs) {
@@ -83,15 +90,15 @@ public class UserMapper {
         }
     }
 
-    private List<CertificationBodyDTO> getAllAcbsForUser(final Long userID) {
-        return abcDao.getCertificationBodiesByUserId(userID);
+    private List<CertificationBodyDTO> getAllAcbsForUser(Long userID) {
+        return acbDao.getCertificationBodiesByUserId(userID);
     }
 
-    private List<TestingLabDTO> getAllAtlsForUser(final Long userId) {
+    private List<TestingLabDTO> getAllAtlsForUser(Long userId) {
         return atlDao.getTestingLabsByUserId(userId);
     }
 
-    private List<DeveloperDTO> getAllDevelopersForUser(final Long userId) {
+    private List<DeveloperDTO> getAllDevelopersForUser(Long userId) {
         return developerDao.getDevelopersByUserId(userId);
     }
 

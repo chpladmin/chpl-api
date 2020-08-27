@@ -678,7 +678,6 @@ public class DeveloperDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery(
                 "FROM UserDeveloperMapEntity udm "
                 + "join fetch udm.developer developer "
-                + "left join fetch developer.address "
                 + "join fetch udm.user u "
                 + "join fetch u.permission perm "
                 + "join fetch u.contact contact "
