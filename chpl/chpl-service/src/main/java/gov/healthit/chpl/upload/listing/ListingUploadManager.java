@@ -16,7 +16,9 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
@@ -27,25 +29,26 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
+@Component
 @Log4j2
 public class ListingUploadManager {
     public static final String NEW_DEVELOPER_CODE = "XXXX";
 
-    private ListingDetailsUploadHandler uploadHandler;
     private ListingUploadHandlerUtil uploadUtil;
     private ListingUploadDao listingUploadDao;
     private CertificationBodyDAO acbDao;
     private ErrorMessageUtil msgUtil;
 
-    public ListingUploadManager(ListingDetailsUploadHandler uploadHandler, ListingUploadHandlerUtil uploadUtil,
+    @Autowired
+    public ListingUploadManager(ListingUploadHandlerUtil uploadUtil,
             ListingUploadDao listingUploadDao, CertificationBodyDAO acbDao, ErrorMessageUtil msgUtil) {
-        this.uploadHandler = uploadHandler;
         this.uploadUtil = uploadUtil;
         this.listingUploadDao = listingUploadDao;
         this.acbDao = acbDao;
         this.msgUtil = msgUtil;
     }
 
+    @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).LISTING_UPLOAD)")
     public List<ListingUpload> parseUploadFile(MultipartFile file) throws ValidationException {
@@ -74,15 +77,16 @@ public class ListingUploadManager {
                     String.join(",", duplicateChplIds)));
         }
 
-        long currIndex = heading.getRecordNumber() + 1;
+        long currIndex = heading.getRecordNumber();
         while (currIndex < allCsvRecords.size()) {
             List<CSVRecord> nextListingCsvRecords = getNextListingRecords(allCsvRecords, currIndex);
             currIndex += nextListingCsvRecords.size();
             //CHPL ID and ACB are all that is needed for initial display and for security.
             //After this is inserted into the database, a quartz job will be kicked off
             //to populate the error and warning counts -
-            //CSV data needs to be parsed into a details obj and run through the validator
             ListingUpload listingUploadMetadata = new ListingUpload();
+            listingUploadMetadata.getRecords().add(heading);
+            listingUploadMetadata.getRecords().addAll(nextListingCsvRecords);
             listingUploadMetadata.setChplProductNumber(parseChplId(heading, nextListingCsvRecords));
             CertificationBodyDTO acb = acbDao.getByName(parseAcb(heading, nextListingCsvRecords));
             if (acb != null) {
@@ -96,8 +100,16 @@ public class ListingUploadManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).LISTING_UPLOAD, #uploadMetadata)")
-    public void createListingUpload(ListingUpload uploadMetadata, String fileContents) throws ValidationException {
-        listingUploadDao.create(uploadMetadata, fileContents);
+    public void createOrReplaceListingUpload(ListingUpload uploadMetadata) throws ValidationException {
+        //TODO: should we actually only allow unique CHPL IDs here?
+        //It would keep functionality the same, but a file with new developer codes can have multiple
+        //listings with the same pending CHPL ID and the latest one would overwrite the earlier one.
+        ListingUpload existingListing =
+                listingUploadDao.getByChplProductNumber(uploadMetadata.getChplProductNumber());
+        if (existingListing != null) {
+            listingUploadDao.delete(existingListing.getId());
+        }
+        listingUploadDao.create(uploadMetadata);
     }
 
     private String parseChplId(CSVRecord headingRecord, List<CSVRecord> listingRecords)
@@ -163,13 +175,12 @@ public class ListingUploadManager {
 
     private Set<String> getDuplicateChplIds(CSVRecord heading, List<CSVRecord> allCsvRecords) {
         List<String> uploadedChplIdsExcludingNewDevelopers = new ArrayList<String>();
-        int currIndex = 0;
+        long currIndex = heading.getRecordNumber();
         while (currIndex < allCsvRecords.size()) {
             List<CSVRecord> nextListingCsvRecords = getNextListingRecords(allCsvRecords, currIndex);
             currIndex += nextListingCsvRecords.size();
             String chplId = uploadUtil.parseSingleValueField(Headings.UNIQUE_ID, heading, nextListingCsvRecords);
-            if (chplId != null && !StringUtils.isEmpty(chplId)
-                    && !chplId.contains(NEW_DEVELOPER_CODE)) {
+            if (!StringUtils.isEmpty(chplId) && !chplId.contains(NEW_DEVELOPER_CODE)) {
                 uploadedChplIdsExcludingNewDevelopers.add(chplId);
             }
         }
@@ -198,8 +209,11 @@ public class ListingUploadManager {
         }
 
         List<CSVRecord> records = null;
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8.name()));
-                CSVParser parser = new CSVParser(reader, CSVFormat.EXCEL)) {
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8.name()));
+                CSVParser parser = new CSVParser(reader, CSVFormat.EXCEL
+                        .withIgnoreEmptyLines()
+                        .withIgnoreSurroundingSpaces())) {
             records = parser.getRecords();
             if (records.size() <= 1) {
                 throw new ValidationException(
@@ -210,6 +224,7 @@ public class ListingUploadManager {
             throw new ValidationException(
                     msgUtil.getMessage("listing.upload.couldNotParse", file.getName()));
         }
+
         return records;
     }
 }

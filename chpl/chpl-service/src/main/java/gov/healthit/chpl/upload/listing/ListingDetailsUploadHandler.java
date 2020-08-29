@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -24,12 +23,10 @@ public class ListingDetailsUploadHandler {
         this.msgUtil = msgUtil;
     }
 
-    public ListingUpload parseAsListing(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        ListingUpload result = new ListingUpload();
-
-        String chplId = parseChplId(result, headingRecord, listingRecords);
-        Boolean accessibilityCertified = parseAccessibilityCertified(result, headingRecord, listingRecords);
-        Date certificationDate = parseCertificationDate(result, headingRecord, listingRecords);
+    public CertifiedProductSearchDetails parseAsListing(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+        String chplId = parseChplId(headingRecord, listingRecords);
+        Boolean accessibilityCertified = parseAccessibilityCertified(headingRecord, listingRecords);
+        Date certificationDate = parseCertificationDate(headingRecord, listingRecords);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber(chplId)
                 .acbCertificationId(uploadUtil.parseSingleValueField(
@@ -38,42 +35,38 @@ public class ListingDetailsUploadHandler {
                 .certificationDate(certificationDate != null ? certificationDate.getTime() : null)
             .build();
 
-        result.setListing(listing);
-        return result;
+        return listing;
     }
 
-    private String parseChplId(ListingUpload uploadMetadata, CSVRecord headingRecord,
-            List<CSVRecord> listingRecords) {
+    private String parseChplId(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         String chplId = null;
         try {
             chplId = uploadUtil.parseRequiredSingleValueField(
                 Headings.UNIQUE_ID, headingRecord, listingRecords);
         } catch (Exception ex) {
-            uploadMetadata.getUploadErrors().add(ex.getMessage());
+            //TODO: add error
         }
         return chplId;
     }
 
-    private Boolean parseAccessibilityCertified(ListingUpload uploadMetadata, CSVRecord headingRecord,
-            List<CSVRecord> listingRecords) {
+    private Boolean parseAccessibilityCertified(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         Boolean accessibilityCertified = null;
         try {
             accessibilityCertified = uploadUtil.parseSingleValueFieldAsBoolean(
                 Headings.ACCESSIBILITY_CERTIFIED, headingRecord, listingRecords);
         } catch (Exception ex) {
-            uploadMetadata.getUploadErrors().add(ex.getMessage());
+            //TODO: add error
         }
         return accessibilityCertified;
     }
 
-    private Date parseCertificationDate(ListingUpload uploadMetadata, CSVRecord headingRecord,
-            List<CSVRecord> listingRecords) {
+    private Date parseCertificationDate(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         Date certificationDate = null;
         try {
             certificationDate = uploadUtil.parseSingleValueFieldAsDate(
                 Headings.CERTIFICATION_DATE, headingRecord, listingRecords);
         } catch (Exception ex) {
-            uploadMetadata.getUploadErrors().add(ex.getMessage());
+            //TODO: add error
         }
         return certificationDate;
     }

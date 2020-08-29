@@ -1,9 +1,12 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
 
 import lombok.Data;
@@ -18,10 +21,11 @@ public class ListingUpload implements Serializable {
     private Integer warningCount;
     private Integer errorCount;
     private Set<String> uploadErrors;
-    private CertifiedProductSearchDetails listing;
+    private List<CSVRecord> records;
 
     public ListingUpload() {
         uploadErrors = new LinkedHashSet<String>();
+        records = new ArrayList<CSVRecord>();
     }
 
     @Override

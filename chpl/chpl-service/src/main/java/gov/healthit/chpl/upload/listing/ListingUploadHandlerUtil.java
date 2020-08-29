@@ -60,7 +60,7 @@ public class ListingUploadHandlerUtil {
                     field.getNamesAsString()));
         }
         for (CSVRecord listingRecord : listingRecords) {
-            if (StringUtils.isEmpty(fieldValue)) {
+            if (StringUtils.isEmpty(fieldValue) && fieldHeadingIndex < listingRecord.size()) {
                 String parsedFieldValue = listingRecord.get(fieldHeadingIndex);
                 if (parsedFieldValue != null && !StringUtils.isEmpty(parsedFieldValue.trim())) {
                     fieldValue = parsedFieldValue.trim();
@@ -84,7 +84,7 @@ public class ListingUploadHandlerUtil {
             return null;
         }
         for (CSVRecord listingRecord : listingRecords) {
-            if (StringUtils.isEmpty(fieldValue)) {
+            if (StringUtils.isEmpty(fieldValue) && fieldHeadingIndex < listingRecord.size()) {
                 String parsedFieldValue = listingRecord.get(fieldHeadingIndex);
                 if (parsedFieldValue != null && !StringUtils.isEmpty(parsedFieldValue.trim())) {
                     fieldValue = parsedFieldValue.trim();
@@ -122,9 +122,11 @@ public class ListingUploadHandlerUtil {
             }
             fieldValues = new ArrayList<String>();
             for (CSVRecord listingRecord : listingRecords) {
-                String parsedFieldValue = listingRecord.get(fieldHeadingIndex);
-                if (parsedFieldValue != null && !StringUtils.isEmpty(parsedFieldValue.trim())) {
-                    fieldValues.add(parsedFieldValue.trim());
+                if (fieldHeadingIndex < listingRecord.size()) {
+                    String parsedFieldValue = listingRecord.get(fieldHeadingIndex);
+                    if (parsedFieldValue != null && !StringUtils.isEmpty(parsedFieldValue.trim())) {
+                        fieldValues.add(parsedFieldValue.trim());
+                    }
                 }
             }
             return fieldValues;

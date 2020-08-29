@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -57,6 +56,14 @@ public class ListingUploadController {
         this.env = env;
     }
 
+    @ApiOperation(value = "Get all pending listings.",
+            notes = "Security Restrictions: User will be presented the pending listings that "
+                    + "they have access to according to ACB(s) and CHPL permissions.")
+    @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public void getPending() {
+        //TODO
+    }
+
     /**
      * Upload a file with certified products.
      * @param file the file
@@ -74,8 +81,7 @@ public class ListingUploadController {
         List<ListingUpload> listingsToAdd = uploadManager.parseUploadFile(file);
         for (ListingUpload listingToAdd : listingsToAdd) {
             try {
-                String fileContents = getFileAsString(file);
-                uploadManager.createListingUpload(listingToAdd, fileContents);
+                uploadManager.createOrReplaceListingUpload(listingToAdd);
             } catch (Exception ex) {
                 String error = "Error uploading listing(s) from file " + file.getOriginalFilename()
                 + ". Error was: " + ex.getMessage();
@@ -85,17 +91,6 @@ public class ListingUploadController {
                 throw new ValidationException(error);
             }
         }
-    }
-
-
-    private String getFileAsString(MultipartFile file) {
-        String content = null;
-        try {
-            content = new String(file.getBytes(), StandardCharsets.UTF_8);
-        } catch (IOException ex) {
-            LOGGER.error("Could not read file as String.", ex);
-        }
-        return content;
     }
 
     /**
