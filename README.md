@@ -82,3 +82,5 @@ To set up:
 To run tests, use `yarn e2e:environment`
 
 NOTE: environment is case sensitive to the script in package.json file. so make sure to have environments file saved as in lowercase as well as yarn commands will be run with lowercase environments
+
+E2E code can be analyzed for consisitency using ESLint, using the command `yarn e2e:lint`

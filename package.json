@@ -3,6 +3,7 @@
   "license": "SEE LICENSE IN LICENSE",
   "repository": "chpladmin/chpl-api",
   "scripts": {
+    "e2e:lint": "eslint chpl",
     "e2e:local": "node ./chpl/chpl-api/e2e/script/newman-run-local.js",
     "e2e:dev": "node ./chpl/chpl-api/e2e/script/newman-run-dev.js",
     "e2e:qa": "node ./chpl/chpl-api/e2e/script/newman-run-qa.js",
@@ -11,5 +12,8 @@
   "devDependencies": {
     "newman": "^5.1.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.7.0"
+  }
 }
