@@ -2,6 +2,10 @@ package gov.healthit.chpl.scheduler.job;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -35,6 +39,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
     private static final Logger LOGGER = LogManager.getLogger("certifiedProductDownloadableResourceCreatorJobLogger");
     private static final int MILLIS_PER_SECOND = 1000;
     private String edition;
+    private File tempCsvFile, tempXmlFile;
     private ExecutorService executorService;
 
     @Autowired
@@ -51,32 +56,43 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+        LOGGER.info("********* Starting the Certified Product Downloadable Resource Creator job for {}. *********", edition);
 
         edition = jobContext.getMergedJobDataMap().getString("edition");
-        LOGGER.info("********* Starting the Certified Product Downloadable Resource Creator job for {}. *********", edition);
 
         try (CertifiedProductXmlPresenter xmlPresenter = new CertifiedProductXmlPresenter();
                 CertifiedProductCsvPresenter csvPresenter = getCsvPresenter()) {
+            initializeTempFiles();
+            if (tempCsvFile != null && tempXmlFile != null) {
+                initializeWritingToFiles(xmlPresenter, csvPresenter);
+                initializeExecutorService();
 
-            initializeWritingToFiles(xmlPresenter, csvPresenter);
-            initializeExecutorService();
+                List<CertifiedProductPresenter> presenters = new ArrayList<CertifiedProductPresenter>(
+                        Arrays.asList(xmlPresenter, csvPresenter));
+                List<CompletableFuture<Void>> futures = getCertifiedProductSearchFutures(getRelevantListings(), presenters);
+                CompletableFuture<Void> combinedFutures = CompletableFuture
+                        .allOf(futures.toArray(new CompletableFuture[futures.size()]));
 
-            List<CertifiedProductPresenter> presenters = new ArrayList<CertifiedProductPresenter>(
-                    Arrays.asList(xmlPresenter, csvPresenter));
-            List<CompletableFuture<Void>> futures = getCertifiedProductSearchFutures(getRelevantListings(), presenters);
-            CompletableFuture<Void> combinedFutures = CompletableFuture
-                    .allOf(futures.toArray(new CompletableFuture[futures.size()]));
-
-            // This is not blocking - presumably because the job executes using it's own ExecutorService
-            // This is necessary so that the system can indicate that the job and it's threads are still running
-            combinedFutures.get();
-            LOGGER.info("All processes have completed");
-
-            LOGGER.info("********* Completed the Certified Product Downloadable Resource Creator job for {}. *********", edition);
+                // This is not blocking - presumably because the job executes using it's own ExecutorService
+                // This is necessary so that the system can indicate that the job and it's threads are still running
+                combinedFutures.get();
+            }
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         } finally {
+            LOGGER.info("All processes have completed");
+        }
+
+        try {
+            //has to happen in a separate try block because of the presenters
+            //using auto-close - can't move the files until they are closed by the presenters
+            swapFiles();
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            cleanupTempFiles();
+        } finally {
             executorService.shutdown();
+            LOGGER.info("********* Completed the Certified Product Downloadable Resource Creator job for {}. *********", edition);
         }
     }
 
@@ -106,7 +122,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
     private void initializeWritingToFiles(CertifiedProductXmlPresenter xmlPresenter, CertifiedProductCsvPresenter csvPresenter)
             throws IOException {
         xmlPresenter.setLogger(LOGGER);
-        xmlPresenter.open(getXmlFile());
+        xmlPresenter.open(tempXmlFile);
 
         csvPresenter.setLogger(LOGGER);
         List<CertificationCriterionDTO> criteria = getCriteriaDao().findByCertificationEditionYear(edition)
@@ -115,21 +131,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
                 .sorted((crA, crB) -> criterionService.sortCriteria(crA, crB))
                 .collect(Collectors.<CertificationCriterionDTO>toList());
         csvPresenter.setApplicableCriteria(criteria);
-        csvPresenter.open(getCsvFile());
-    }
-
-    private File getXmlFile() throws IOException {
-        File downloadFolder = getDownloadFolder();
-        String xmlFilename = getFileName(downloadFolder.getAbsolutePath(),
-                getFilenameTimestampFormat().format(new Date()), "xml");
-        return getFile(xmlFilename);
-    }
-
-    private File getCsvFile() throws IOException {
-        File downloadFolder = getDownloadFolder();
-        String xmlFilename = getFileName(downloadFolder.getAbsolutePath(),
-                getFilenameTimestampFormat().format(new Date()), "csv");
-        return getFile(xmlFilename);
+        csvPresenter.open(tempCsvFile);
     }
 
     private List<CertifiedProductDetailsDTO> getRelevantListings() throws EntityRetrievalException {
@@ -152,21 +154,60 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         return presenter;
     }
 
-    private String getFileName(String path, String timeStamp, String extension) {
-        return path + File.separator + "chpl-" + edition + "-" + timeStamp + "." + extension;
+    private void initializeTempFiles() throws IOException {
+        Path path = Files.createTempFile("chpl-" + edition, ".csv");
+        tempCsvFile = path.toFile();
+
+        path = Files.createTempFile("chpl-" + edition, ".xml");
+        tempXmlFile = path.toFile();
     }
 
-    private File getFile(String fileName) throws IOException {
-        File file = new File(fileName);
-        if (file.exists()) {
-            if (!file.delete()) {
-                throw new IOException("File exists; cannot delete");
+    private void swapFiles() throws IOException {
+        LOGGER.info("Swapping temporary files.");
+        File downloadFolder = getDownloadFolder();
+
+        if (tempCsvFile != null) {
+            String csvFilename = getFileName(downloadFolder.getAbsolutePath(),
+                    getFilenameTimestampFormat().format(new Date()), "csv");
+            LOGGER.info("Moving " + tempCsvFile.getAbsolutePath() + " to " + csvFilename);
+            Path targetFile = Files.move(tempCsvFile.toPath(), Paths.get(csvFilename), StandardCopyOption.ATOMIC_MOVE);
+            if (targetFile == null) {
+                LOGGER.warn("CSV file move may not have succeeded. Check file system.");
             }
+        } else {
+            LOGGER.warn("Temp CSV File was null and could not be moved.");
         }
-        if (!file.createNewFile()) {
-            throw new IOException("File can not be created");
+
+        if (tempXmlFile != null) {
+            String xmlFilename = getFileName(downloadFolder.getAbsolutePath(),
+                    getFilenameTimestampFormat().format(new Date()), "xml");
+            LOGGER.info("Moving " + tempXmlFile.getAbsolutePath() + " to " + tempXmlFile);
+            Path targetFile = Files.move(tempXmlFile.toPath(), Paths.get(xmlFilename), StandardCopyOption.ATOMIC_MOVE);
+            if (targetFile == null) {
+                LOGGER.warn("XML file move may not have succeeded. Check file system.");
+            }
+        } else {
+            LOGGER.warn("Temp XML File was null and could not be moved.");
         }
-        return file;
+    }
+
+    private void cleanupTempFiles() {
+        LOGGER.info("Deleting temporary files.");
+        if (tempCsvFile != null && tempCsvFile.exists()) {
+            tempCsvFile.delete();
+        } else {
+            LOGGER.warn("Temp CSV File was null and could not be deleted.");
+        }
+
+        if (tempXmlFile != null && tempXmlFile.exists()) {
+            tempXmlFile.delete();
+        } else {
+            LOGGER.warn("Temp XML File was null and could not be deleted.");
+        }
+    }
+
+    private String getFileName(String path, String timeStamp, String extension) {
+        return path + File.separator + "chpl-" + edition + "-" + timeStamp + "." + extension;
     }
 
     private Integer getThreadCountForJob() throws NumberFormatException {
