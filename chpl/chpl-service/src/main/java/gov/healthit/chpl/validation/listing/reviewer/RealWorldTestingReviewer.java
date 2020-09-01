@@ -39,7 +39,7 @@ public class RealWorldTestingReviewer implements ComparisonReviewer {
 
     @Override
     public void review(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing) {
-        //Always use the rwt elig year fvrom the existing listing
+        //Always use the rwt elig year from the existing listing
         updatedListing.setRwtEligibilityYear(existingListing.getRwtEligibilityYear());
 
         if (isListingCurrentlyRwtEligible(existingListing)) {
