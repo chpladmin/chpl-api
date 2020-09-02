@@ -4,7 +4,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,8 +25,6 @@ public class RealWorldTestingReviewerTest {
     private ErrorMessageUtil errorMessageUtil;
     private RealWorldTestingReviewer reviewer;
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-
     @Before
     public void setup() {
         validationUtils = Mockito.mock(ValidationUtils.class);
@@ -43,11 +41,13 @@ public class RealWorldTestingReviewerTest {
                 .thenReturn("Listing is not eligible for Real World Testing.");
 
         CertifiedProductSearchDetails existing = new CertifiedProductSearchDetails();
+        existing.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         existing.setRwtEligibilityYear(null);
 
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
+        updated.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         updated.setRwtPlanUrl("http://www.test.com");
-        updated.setRwtPlanSubmissionDate(sdf.parse("08/08/2020").getTime());
+        updated.setRwtPlanSubmissionDate(LocalDate.parse("2020-08-08"));
 
         reviewer.review(existing, updated);
 
@@ -63,12 +63,14 @@ public class RealWorldTestingReviewerTest {
                 .thenReturn(true);
 
         CertifiedProductSearchDetails existing = new CertifiedProductSearchDetails();
+        existing.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         existing.setRwtEligibilityYear(ELIG_YEAR_FOR_PLAN_TESTING);
 
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
+        updated.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         updated.setRwtEligibilityYear(ELIG_YEAR_FOR_PLAN_TESTING);
         updated.setRwtPlanUrl("");
-        updated.setRwtPlanSubmissionDate(sdf.parse("08/08/2020").getTime());
+        updated.setRwtPlanSubmissionDate(LocalDate.parse("2020-08-08"));
 
         reviewer.review(existing, updated);
 
@@ -84,12 +86,14 @@ public class RealWorldTestingReviewerTest {
                 .thenReturn(false);
 
         CertifiedProductSearchDetails existing = new CertifiedProductSearchDetails();
+        existing.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         existing.setRwtEligibilityYear(ELIG_YEAR_FOR_PLAN_TESTING);
 
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
+        updated.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         updated.setRwtEligibilityYear(ELIG_YEAR_FOR_PLAN_TESTING);
         updated.setRwtPlanUrl("not a valid URL");
-        updated.setRwtPlanSubmissionDate(sdf.parse("08/08/2020").getTime());
+        updated.setRwtPlanSubmissionDate(LocalDate.parse("2020-08-08"));
 
         reviewer.review(existing, updated);
 
@@ -105,9 +109,11 @@ public class RealWorldTestingReviewerTest {
                 .thenReturn(true);
 
         CertifiedProductSearchDetails existing = new CertifiedProductSearchDetails();
+        existing.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         existing.setRwtEligibilityYear(ELIG_YEAR_FOR_PLAN_TESTING);
 
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
+        updated.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         updated.setRwtEligibilityYear(ELIG_YEAR_FOR_PLAN_TESTING);
         updated.setRwtPlanUrl("http://www.abc.com");
         updated.setRwtPlanSubmissionDate(null);
@@ -119,28 +125,6 @@ public class RealWorldTestingReviewerTest {
     }
 
     @Test
-    public void review_planSubmissionDateBeforePlanEligibleDate_errorMessage() throws ParseException {
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.<String>any()))
-                .thenReturn("Real World Testing Plan Submission Date must be after %s.");
-
-        Mockito.when(validationUtils.isWellFormedUrl(ArgumentMatchers.anyString()))
-                .thenReturn(true);
-
-        CertifiedProductSearchDetails existing = new CertifiedProductSearchDetails();
-        existing.setRwtEligibilityYear(ELIG_YEAR_FOR_PLAN_TESTING);
-
-        CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
-        updated.setRwtEligibilityYear(ELIG_YEAR_FOR_PLAN_TESTING);
-        updated.setRwtPlanUrl("http://www.abc.com");
-        updated.setRwtPlanSubmissionDate(sdf.parse("08/08/2019").getTime());
-
-        reviewer.review(existing, updated);
-
-        assertEquals(1, updated.getErrorMessages().size());
-        assertTrue(updated.getErrorMessages().contains("Real World Testing Plan Submission Date must be after %s."));
-    }
-
-    @Test
     public void review_noResultsUrl_errorMessage() throws ParseException {
         Mockito.when(errorMessageUtil.getMessage("listing.realWorldTesting.results.url.required"))
                 .thenReturn("Real World Testing Results URL is required.");
@@ -148,12 +132,14 @@ public class RealWorldTestingReviewerTest {
                 .thenReturn(true);
 
         CertifiedProductSearchDetails existing = new CertifiedProductSearchDetails();
+        existing.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         existing.setRwtEligibilityYear(ELIG_YEAR_FOR_RESULTS_TESTING);
 
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
+        updated.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         updated.setRwtEligibilityYear(ELIG_YEAR_FOR_RESULTS_TESTING);
         updated.setRwtResultsUrl("");
-        updated.setRwtResultsSubmissionDate(sdf.parse("01/08/2021").getTime());
+        updated.setRwtResultsSubmissionDate(LocalDate.parse("2022-01-08"));
 
         reviewer.review(existing, updated);
 
@@ -169,12 +155,14 @@ public class RealWorldTestingReviewerTest {
                 .thenReturn(false);
 
         CertifiedProductSearchDetails existing = new CertifiedProductSearchDetails();
+        existing.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         existing.setRwtEligibilityYear(ELIG_YEAR_FOR_RESULTS_TESTING);
 
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
+        updated.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         updated.setRwtEligibilityYear(ELIG_YEAR_FOR_RESULTS_TESTING);
         updated.setRwtResultsUrl("not a valid URL");
-        updated.setRwtResultsSubmissionDate(sdf.parse("01/08/2021").getTime());
+        updated.setRwtResultsSubmissionDate(LocalDate.parse("2022-01-08"));
 
         reviewer.review(existing, updated);
 
@@ -190,9 +178,11 @@ public class RealWorldTestingReviewerTest {
                 .thenReturn(true);
 
         CertifiedProductSearchDetails existing = new CertifiedProductSearchDetails();
+        existing.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         existing.setRwtEligibilityYear(ELIG_YEAR_FOR_RESULTS_TESTING);
 
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
+        updated.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         updated.setRwtEligibilityYear(ELIG_YEAR_FOR_RESULTS_TESTING);
         updated.setRwtResultsUrl("http://www.abc.com");
         updated.setRwtResultsSubmissionDate(null);
@@ -211,12 +201,14 @@ public class RealWorldTestingReviewerTest {
                 .thenReturn(true);
 
         CertifiedProductSearchDetails existing = new CertifiedProductSearchDetails();
+        existing.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         existing.setRwtEligibilityYear(ELIG_YEAR_FOR_RESULTS_TESTING);
 
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
+        updated.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         updated.setRwtEligibilityYear(ELIG_YEAR_FOR_RESULTS_TESTING);
         updated.setRwtResultsUrl("http://www.abc.com");
-        updated.setRwtResultsSubmissionDate(sdf.parse("08/08/2018").getTime());
+        updated.setRwtResultsSubmissionDate(LocalDate.parse("2018-08-08"));
 
         reviewer.review(existing, updated);
 
