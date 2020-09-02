@@ -1,0 +1,99 @@
+{
+	"info": {
+		"_postman_id": "21c26d32-3ea4-4d99-ac3d-c4c557baa398",
+		"name": "developer-controller",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET /developers -invalid API Key header",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "89af904b-9c4d-4c17-9fd1-83ff5d945beb",
+						"exec": [
+							"pm.test(\"Invalid api key header should return 401 status\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "atest123cg",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/developers",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"developers"
+					]
+				},
+				"description": "Request with Invalid API-Key header returns 401 status"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /developers - valid API Key header",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ac72872c-356e-4790-8ea1-eada3f70d601",
+						"exec": [
+							"pm.test(\"Valid api key header should return 200 status and response body should not be empty\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.response).not.eq(null);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/developers",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"developers"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

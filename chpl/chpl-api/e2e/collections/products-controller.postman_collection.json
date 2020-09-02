@@ -1,0 +1,95 @@
+{
+	"info": {
+		"_postman_id": "6e1c03a3-35b0-496f-99c3-30c89f93aaa3",
+		"name": "products-controller",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET /products - invalid API Key parameter",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e517dbed-0a00-403e-8fe6-429adda650cc",
+						"exec": [
+							"pm.test(\"Invalid api key parameter should return 401 status\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/products\n?api_key=atest123cg",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"products\n"
+					],
+					"query": [
+						{
+							"key": "api_key",
+							"value": "atest123cg"
+						}
+					]
+				},
+				"description": "Request with Invalid api_key parameter returns 401 status"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /products - valid API Key parameter",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "73b68fdc-ede9-4922-89e8-5b56606bd091",
+						"exec": [
+							"pm.test(\"Valid API Key parameter should return 200 and response body should not be empty\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.response).not.eq(null);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/rest/products?api_key={{apiKey}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"products"
+					],
+					"query": [
+						{
+							"key": "api_key",
+							"value": "{{apiKey}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
