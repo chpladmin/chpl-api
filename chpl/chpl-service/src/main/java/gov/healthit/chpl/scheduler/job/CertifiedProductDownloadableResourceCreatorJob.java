@@ -56,10 +56,9 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        LOGGER.info("********* Starting the Certified Product Downloadable Resource Creator job for {}. *********", edition);
-
         edition = jobContext.getMergedJobDataMap().getString("edition");
 
+        LOGGER.info("********* Starting the Certified Product Downloadable Resource Creator job for {}. *********", edition);
         try (CertifiedProductXmlPresenter xmlPresenter = new CertifiedProductXmlPresenter();
                 CertifiedProductCsvPresenter csvPresenter = getCsvPresenter()) {
             initializeTempFiles();
