@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class ConfirmCertifiedProductRequest {
     private PendingCertifiedProductDetails pendingListing;
-    private boolean warningAcknowledgement;
+    private boolean acknowledgeWarnings;
 }

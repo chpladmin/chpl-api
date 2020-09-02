@@ -360,7 +360,7 @@ public class CertifiedProductController {
         return results;
     }
 
-    @SuppressWarnings({"checkstyle:paramternumber"})
+    @SuppressWarnings({"checkstyle:parameternumber"})
     @ApiOperation(value = "Get all of the CQM results for a specified certified product.",
             notes = "Returns all of the CQM results in the CHPL related to the specified certified product.  "
                     + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
@@ -766,7 +766,7 @@ public class CertifiedProductController {
 
         ConfirmCertifiedProductRequest request = new ConfirmCertifiedProductRequest();
         request.setPendingListing(pendingCp);
-        request.setWarningAcknowledgement(false);
+        request.setAcknowledgeWarnings(false);
         return addPendingCertifiedProduct(request);
     }
 
@@ -807,13 +807,13 @@ public class CertifiedProductController {
             }
             if (pcpDto.getErrorMessages() != null && pcpDto.getErrorMessages().size() > 0
                     || (pcpDto.getWarningMessages() != null && pcpDto.getWarningMessages().size() > 0
-                    && !request.isWarningAcknowledgement())) {
+                    && !request.isAcknowledgeWarnings())) {
                 throw new ValidationException(pcpDto.getErrorMessages(), pcpDto.getWarningMessages());
             }
 
             developerManager.validateDeveloperInSystemIfExists(request.getPendingListing());
 
-            CertifiedProductDTO createdProduct = cpManager.createFromPending(pcpDto, request.isWarningAcknowledgement());
+            CertifiedProductDTO createdProduct = cpManager.createFromPending(pcpDto, request.isAcknowledgeWarnings());
             pcpManager.confirm(acbId, request.getPendingListing().getId());
             CertifiedProductSearchDetails result = cpdManager.getCertifiedProductDetails(createdProduct.getId());
             activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, result.getId(),
