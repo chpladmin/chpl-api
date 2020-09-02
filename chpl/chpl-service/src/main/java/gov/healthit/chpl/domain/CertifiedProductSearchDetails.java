@@ -13,6 +13,7 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
@@ -23,6 +24,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import gov.healthit.chpl.domain.surveillance.Surveillance;
+import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.Util;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -349,6 +351,7 @@ public class CertifiedProductSearchDetails implements Serializable {
     /**
      * Date the listing's Real World Testing Plan was submitted
      */
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     @XmlElement(name = "rwt_plan_submission_date", nillable = true, required = false)
     private LocalDate rwtPlanSubmissionDate;
 
@@ -361,6 +364,7 @@ public class CertifiedProductSearchDetails implements Serializable {
     /**
      * Date the listing's Real World Testing Results was submitted
      */
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     @XmlElement(name = "rwt_plan_results_date", nillable = true, required = false)
     private LocalDate rwtResultsSubmissionDate;
 
