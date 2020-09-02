@@ -20,6 +20,8 @@ import lombok.extern.log4j.Log4j2;
 @Component("realWorldTestingReviewer")
 public class RealWorldTestingReviewer implements ComparisonReviewer {
 
+    private static final String EDITION_2015 = "2015";
+
     @Value("${rwtPlanStartDayOfYear}")
     private String rwtPlanStartDayOfYear;
 
@@ -59,7 +61,14 @@ public class RealWorldTestingReviewer implements ComparisonReviewer {
     }
 
     private boolean isListingCurrentlyRwtEligible(CertifiedProductSearchDetails listing) {
-        return Objects.nonNull(listing.getRwtEligibilityYear());
+        return Objects.nonNull(listing.getRwtEligibilityYear()) && isListing2015Edition(listing);
+    }
+
+    private boolean isListing2015Edition(CertifiedProductSearchDetails listing) {
+        if (listing.getCertificationEdition().containsKey(CertifiedProductSearchDetails.EDITION_NAME_KEY)) {
+            return listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString().equals(EDITION_2015);
+        }
+        return false;
     }
 
     private void validateRwtPlanUrl(CertifiedProductSearchDetails listing) {
@@ -84,7 +93,7 @@ public class RealWorldTestingReviewer implements ComparisonReviewer {
     }
 
     private boolean isRwtPlanDateBeforePlanEligibleDate(CertifiedProductSearchDetails listing) {
-        return toLocalDate(new Date(listing.getRwtPlanSubmissionDate())).isBefore(getPlanEligibleDate(listing));
+        return listing.getRwtPlanSubmissionDate().isBefore(getPlanEligibleDate(listing));
     }
 
     private LocalDate getPlanEligibleDate(CertifiedProductSearchDetails listing) {
@@ -114,7 +123,7 @@ public class RealWorldTestingReviewer implements ComparisonReviewer {
     }
 
     private boolean isRwtResultsDateBeforeResultsEligibleDate(CertifiedProductSearchDetails listing) {
-        return toLocalDate(new Date(listing.getRwtResultsSubmissionDate())).isBefore(getResultsEligibleDate(listing));
+        return listing.getRwtResultsSubmissionDate().isBefore(getResultsEligibleDate(listing));
     }
 
     private LocalDate getResultsEligibleDate(CertifiedProductSearchDetails listing) {
