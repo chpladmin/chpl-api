@@ -11,6 +11,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -96,7 +97,11 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         result.add("Product Name");
         result.add("Product Database ID");
         result.add("Version");
-        result.add("Version Database ID");
+        result.add("Real World Testing Eligibility Year");
+        result.add("Real World Testing Plan URL");
+        result.add("Real World Testing Plan Submission Date");
+        result.add("Real World Testing Results URL");
+        result.add("Real World Testing Results Submission Date");
         result.add("Total Surveillance Activities");
         result.add("Total Nonconformities");
         result.add("Open Nonconformities");
@@ -109,6 +114,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         return result;
     }
 
+    @SuppressWarnings("checkstyle:linelength")
     protected List<String> generateRowValue(CertifiedProductSearchDetails listing) {
         List<String> result = new ArrayList<String>();
         result.add(formatEdition(listing));
@@ -133,6 +139,11 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         result.add(listing.getProduct().getProductId().toString());
         result.add(listing.getVersion().getVersion());
         result.add(listing.getVersion().getVersionId().toString());
+        result.add(Objects.nonNull(listing.getRwtEligibilityYear()) ? listing.getRwtEligibilityYear().toString() : "");
+        result.add(listing.getRwtPlanUrl());
+        result.add(Objects.nonNull(listing.getRwtPlanSubmissionDate()) ? listing.getRwtPlanSubmissionDate().toString() : "");
+        result.add(listing.getRwtResultsUrl());
+        result.add(Objects.nonNull(listing.getRwtResultsSubmissionDate()) ? listing.getRwtResultsSubmissionDate().toString() : "");
         result.add(listing.getCountSurveillance().toString());
         result.add((listing.getCountOpenNonconformities() + listing.getCountClosedNonconformities()) + "");
         result.add(listing.getCountOpenNonconformities().toString());

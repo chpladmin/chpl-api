@@ -1,5 +1,6 @@
 package gov.healthit.chpl.entity.listing;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -260,13 +261,13 @@ public class CertifiedProductDetailsEntity {
     private String rwtPlanUrl;
 
     @Column(name = "rwt_plan_submission_date")
-    private Date rwtPlanSubmissionDate;
+    private LocalDate rwtPlanSubmissionDate;
 
     @Column(name = "rwt_results_url")
     private String rwtResultsUrl;
 
     @Column(name = "rwt_results_submission_date")
-    private Date rwtResultsSubmissionDate;
+    private LocalDate rwtResultsSubmissionDate;
 
     @Column(name = "rwt_eligibility_year")
     private Integer rwtEligibilityYear;

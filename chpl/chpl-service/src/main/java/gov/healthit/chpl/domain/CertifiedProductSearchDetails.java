@@ -1,6 +1,7 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -349,7 +350,7 @@ public class CertifiedProductSearchDetails implements Serializable {
      * Date the listing's Real World Testing Plan was submitted
      */
     @XmlElement(name = "rwt_plan_submission_date", nillable = true, required = false)
-    private Long rwtPlanSubmissionDate;
+    private LocalDate rwtPlanSubmissionDate;
 
     /**
      * URL where the listing's Real World Testing Results is located
@@ -361,7 +362,7 @@ public class CertifiedProductSearchDetails implements Serializable {
      * Date the listing's Real World Testing Results was submitted
      */
     @XmlElement(name = "rwt_plan_results_date", nillable = true, required = false)
-    private Long rwtResultsSubmissionDate;
+    private LocalDate rwtResultsSubmissionDate;
 
     /**
      * First year that the listing is eligible for Real World Testing data
@@ -842,11 +843,11 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.rwtPlanUrl = rwtPlanUrl;
     }
 
-    public Long getRwtPlanSubmissionDate() {
+    public LocalDate getRwtPlanSubmissionDate() {
         return rwtPlanSubmissionDate;
     }
 
-    public void setRwtPlanSubmissionDate(Long rwtPlanSubmissionDate) {
+    public void setRwtPlanSubmissionDate(LocalDate rwtPlanSubmissionDate) {
         this.rwtPlanSubmissionDate = rwtPlanSubmissionDate;
     }
 
@@ -858,11 +859,11 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.rwtResultsUrl = rwtResultsUrl;
     }
 
-    public Long getRwtResultsSubmissionDate() {
+    public LocalDate getRwtResultsSubmissionDate() {
         return rwtResultsSubmissionDate;
     }
 
-    public void setRwtResultsSubmissionDate(Long rwtResultsSubmissionDate) {
+    public void setRwtResultsSubmissionDate(LocalDate rwtResultsSubmissionDate) {
         this.rwtResultsSubmissionDate = rwtResultsSubmissionDate;
     }
 

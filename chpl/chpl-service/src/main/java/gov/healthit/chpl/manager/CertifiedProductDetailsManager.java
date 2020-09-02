@@ -722,11 +722,11 @@ public class CertifiedProductDetailsManager {
         searchDetails.setAccessibilityStandards(getCertifiedProductAccessibilityStandards(dto.getId()));
         searchDetails.setRwtPlanUrl(dto.getRwtPlanUrl());
         if (Objects.nonNull(dto.getRwtPlanSubmissionDate())) {
-            searchDetails.setRwtPlanSubmissionDate(dto.getRwtPlanSubmissionDate().getTime());
+            searchDetails.setRwtPlanSubmissionDate(dto.getRwtPlanSubmissionDate());
         }
         searchDetails.setRwtResultsUrl(dto.getRwtResultsUrl());
         if (Objects.nonNull(dto.getRwtResultsSubmissionDate())) {
-            searchDetails.setRwtResultsSubmissionDate(dto.getRwtResultsSubmissionDate().getTime());
+            searchDetails.setRwtResultsSubmissionDate(dto.getRwtResultsSubmissionDate());
         }
         searchDetails.setRwtEligibilityYear(dto.getRwtEligibilityYear());
 

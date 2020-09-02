@@ -1,6 +1,7 @@
 package gov.healthit.chpl.entity.listing;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -156,7 +157,7 @@ public class CertifiedProductEntity implements Serializable {
 
     @Basic(optional = true)
     @Column(name = "rwt_plan_submission_date", nullable = true)
-    private Date rwtPlanSubmissionDate;
+    private LocalDate rwtPlanSubmissionDate;
 
     @Basic(optional = true)
     @Column(name = "rwt_results_url", nullable = true)
@@ -164,7 +165,7 @@ public class CertifiedProductEntity implements Serializable {
 
     @Basic(optional = true)
     @Column(name = "rwt_results_submission_date", nullable = true)
-    private Date rwtResultsSubmissionDate;
+    private LocalDate rwtResultsSubmissionDate;
 
 
     /**

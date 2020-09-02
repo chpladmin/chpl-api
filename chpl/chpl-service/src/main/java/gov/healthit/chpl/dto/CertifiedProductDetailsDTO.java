@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
 import org.springframework.util.StringUtils;
@@ -86,9 +87,9 @@ public class CertifiedProductDetailsDTO implements Serializable {
     private String transparencyAttestationUrl;
     private Long numMeaningfulUse;
     private String rwtPlanUrl;
-    private Date rwtPlanSubmissionDate;
+    private LocalDate rwtPlanSubmissionDate;
     private String rwtResultsUrl;
-    private Date rwtResultsSubmissionDate;
+    private LocalDate rwtResultsSubmissionDate;
     private Integer rwtEligibilityYear;
 
     private static final int FOUR_DIGIT_YEAR = 4;

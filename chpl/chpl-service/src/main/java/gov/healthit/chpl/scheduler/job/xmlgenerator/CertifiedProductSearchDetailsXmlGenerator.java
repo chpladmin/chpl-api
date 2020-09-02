@@ -2,6 +2,7 @@ package gov.healthit.chpl.scheduler.job.xmlgenerator;
 
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -22,6 +23,7 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
         }
     }
 
+    @SuppressWarnings("checkstyle:linelength")
     public static void add(CertifiedProductSearchDetails cp, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (cp != null) {
             sw.writeStartElement(rootNodeName);
@@ -110,9 +112,9 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
             CertifiedProductQmsStandardXmlGenerator.add(cp.getQmsStandards(), "qmsStandards", sw);
             createSimpleElement(cp.getReportFileLocation(), "reportFileLocation", sw);
             createSimpleElement(cp.getRwtEligibilityYear(), "rwtEligibilityYear", sw);
-            createSimpleElement(cp.getRwtPlanSubmissionDate(), "rwtPlanSubmissionDate", sw);
+            createSimpleElement(Objects.nonNull(cp.getRwtPlanSubmissionDate()) ? cp.getRwtPlanSubmissionDate().toString() : null, "rwtPlanSubmissionDate", sw);
             createSimpleElement(cp.getRwtPlanUrl(), "rwtPlanUrl", sw);
-            createSimpleElement(cp.getRwtResultsSubmissionDate(), "rwtResultsSubmissionDate", sw);
+            createSimpleElement(Objects.nonNull(cp.getRwtResultsSubmissionDate()) ? cp.getRwtResultsSubmissionDate().toString() : null, "rwtResultsSubmissionDate", sw);
             createSimpleElement(cp.getRwtResultsUrl(), "rwtResultsUrl", sw);
             CertifiedProductSedXmlGenerator.add(cp.getSed(), "sed", sw);
             createSimpleElement(cp.getSedIntendedUserDescription(), "sedIntendedUserDescription", sw);
