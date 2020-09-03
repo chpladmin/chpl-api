@@ -191,7 +191,12 @@ public class UserManager extends SecuredManager {
 
         if (userToUpdate.getFailedLoginCount() >= maxLogins) {
             userToUpdate.setAccountLocked(true);
-            userDAO.updateAccountLockedStatus(userToUpdate.getSubjectName(), userToUpdate.isAccountLocked());
+            try {
+                userDAO.updateAccountLockedStatus(userToUpdate.getSubjectName(), userToUpdate.isAccountLocked());
+                //TODO: send email to the user to let them know their account is locked
+            } catch (Exception ex) {
+                LOGGER.error("Unable to set account " + userToUpdate.getSubjectName() + " as locked.", ex);
+            }
         }
     }
 
