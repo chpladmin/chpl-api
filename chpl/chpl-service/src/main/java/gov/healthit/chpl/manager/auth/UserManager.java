@@ -205,22 +205,6 @@ public class UserManager extends SecuredManager {
         }
     }
 
-    private void sendAccountLockedEmail(UserDTO user) throws AddressException, MessagingException {
-        String subject = "CHPL Account Locked";
-        String htmlMessage = "<p>The account associated with " + user.getSubjectName()
-                + " has exceeded the maximum number of failed login attempts and is locked.</p>";
-        String[] toEmails = {
-                user.getEmail()
-        };
-
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
-        .subject(subject)
-        .htmlMessage(htmlMessage)
-        .htmlFooter()
-        .sendEmail();
-    }
-
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE_PASSWORD, #user)")
@@ -319,6 +303,22 @@ public class UserManager extends SecuredManager {
     public void updateLastLoggedInDate(UserDTO user) throws UserRetrievalException {
         user.setLastLoggedInDate(new Date());
         userDAO.update(user);
+    }
+
+    private void sendAccountLockedEmail(UserDTO user) throws AddressException, MessagingException {
+        String subject = "CHPL Account Locked";
+        String htmlMessage = "<p>The account associated with " + user.getSubjectName()
+                + " has exceeded the maximum number of failed login attempts and is locked.</p>";
+        String[] toEmails = {
+                user.getEmail()
+        };
+
+        EmailBuilder emailBuilder = new EmailBuilder(env);
+        emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
+        .subject(subject)
+        .htmlMessage(htmlMessage)
+        .htmlFooter()
+        .sendEmail();
     }
 
     private void addAclPermission(UserDTO user, Sid recipient, Permission permission) {
