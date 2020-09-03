@@ -97,6 +97,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         result.add("Product Name");
         result.add("Product Database ID");
         result.add("Version");
+        result.add("Version Database ID");
         result.add("Real World Testing Eligibility Year");
         result.add("Real World Testing Plan URL");
         result.add("Real World Testing Plan Submission Date");
