@@ -19,7 +19,7 @@ public class ChplAccountStatusChecker implements UserDetailsChecker {
     public void check(UserDetails user) {
         if (!user.isAccountNonLocked() || !user.isEnabled() || !user.isAccountNonExpired()
                 || !user.isCredentialsNonExpired()) {
-            throw new ChplAccountStatusException(msgUtil.getMessage("user.loginNotAllowed"));
+            throw new ChplAccountStatusException(msgUtil.getMessage("auth.loginNotAllowed"));
         }
     }
 }
