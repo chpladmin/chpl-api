@@ -8,9 +8,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 import gov.healthit.chpl.dto.TransparencyAttestationDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
+@Builder
+@AllArgsConstructor
 public class TransparencyAttestation implements Serializable {
     private static final long serialVersionUID = 4734258569082877872L;
 

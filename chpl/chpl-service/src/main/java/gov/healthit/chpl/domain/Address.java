@@ -15,9 +15,13 @@ import org.apache.logging.log4j.Logger;
 
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.entity.AddressEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
+@Builder
+@AllArgsConstructor
 public class Address implements Serializable {
     private static final long serialVersionUID = 7978604053959537664L;
     private static final Logger LOGGER = LogManager.getLogger(Address.class);
