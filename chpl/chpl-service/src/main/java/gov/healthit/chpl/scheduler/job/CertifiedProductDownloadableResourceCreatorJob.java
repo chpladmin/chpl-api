@@ -40,7 +40,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
     private static final int MILLIS_PER_SECOND = 1000;
     private static final String TEMP_DIR_NAME = "temp";
     private String edition;
-    private File tempCsvFile, tempXmlFile;
+    private File tempDirectory, tempCsvFile, tempXmlFile;
     private ExecutorService executorService;
 
     @Autowired
@@ -91,6 +91,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             LOGGER.error(ex.getMessage(), ex);
             cleanupTempFiles();
         } finally {
+            cleanupTempFiles();
             executorService.shutdown();
             LOGGER.info("********* Completed the Certified Product Downloadable Resource Creator job for {}. *********", edition);
         }
@@ -158,6 +159,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         File downloadFolder = getDownloadFolder();
         Path tempDirBasePath = Paths.get(downloadFolder.getAbsolutePath());
         Path tempDir = Files.createTempDirectory(tempDirBasePath, TEMP_DIR_NAME);
+        this.tempDirectory = tempDir.toFile();
 
         Path csvPath = Files.createTempFile(tempDir, "chpl-" + edition, ".csv");
         tempCsvFile = csvPath.toFile();
@@ -207,6 +209,12 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             tempXmlFile.delete();
         } else {
             LOGGER.warn("Temp XML File was null and could not be deleted.");
+        }
+
+        if (tempDirectory != null && tempDirectory.exists()) {
+            tempDirectory.delete();
+        } else {
+            LOGGER.warn("Temp directory for download files was null and could not be deleted.");
         }
     }
 
