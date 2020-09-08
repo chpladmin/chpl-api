@@ -1,4 +1,4 @@
-package gov.healthit.chpl.upload.listing;
+package gov.healthit.chpl.upload.listing.handler;
 
 import java.util.Date;
 import java.util.List;
@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.upload.listing.Headings;
+import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -23,7 +26,8 @@ public class ListingDetailsUploadHandler {
         this.msgUtil = msgUtil;
     }
 
-    public CertifiedProductSearchDetails parseAsListing(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+    public CertifiedProductSearchDetails parseAsListing(CSVRecord headingRecord, List<CSVRecord> listingRecords)
+        throws ValidationException {
         String chplId = parseChplId(headingRecord, listingRecords);
         Boolean accessibilityCertified = parseAccessibilityCertified(headingRecord, listingRecords);
         Date certificationDate = parseCertificationDate(headingRecord, listingRecords);
@@ -38,25 +42,16 @@ public class ListingDetailsUploadHandler {
         return listing;
     }
 
-    private String parseChplId(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        String chplId = null;
-        try {
-            chplId = uploadUtil.parseRequiredSingleValueField(
+    private String parseChplId(CSVRecord headingRecord, List<CSVRecord> listingRecords) throws ValidationException {
+        String chplId = uploadUtil.parseRequiredSingleValueField(
                 Headings.UNIQUE_ID, headingRecord, listingRecords);
-        } catch (Exception ex) {
-            //TODO: add error
-        }
         return chplId;
     }
 
-    private Boolean parseAccessibilityCertified(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        Boolean accessibilityCertified = null;
-        try {
-            accessibilityCertified = uploadUtil.parseSingleValueFieldAsBoolean(
+    private Boolean parseAccessibilityCertified(CSVRecord headingRecord, List<CSVRecord> listingRecords)
+        throws ValidationException {
+        Boolean accessibilityCertified = uploadUtil.parseSingleValueFieldAsBoolean(
                 Headings.ACCESSIBILITY_CERTIFIED, headingRecord, listingRecords);
-        } catch (Exception ex) {
-            //TODO: add error
-        }
         return accessibilityCertified;
     }
 

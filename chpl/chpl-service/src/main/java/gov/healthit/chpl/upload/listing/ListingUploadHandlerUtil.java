@@ -178,7 +178,7 @@ public class ListingUploadHandlerUtil {
             }
         } catch (NumberFormatException ex) {
             LOGGER.error("Could not parse " + value + " as an integer. " + ex.getMessage());
-            throw new ValidationException(msgUtil.getMessage("listingUpload.invalidBoolean", value));
+            throw new ValidationException(msgUtil.getMessage("listing.upload.invalidBoolean", value));
         }
         return false;
     }

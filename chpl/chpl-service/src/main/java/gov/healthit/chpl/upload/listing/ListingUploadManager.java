@@ -58,7 +58,7 @@ public class ListingUploadManager {
         CSVRecord heading = uploadUtil.getHeadingRecord(allCsvRecords);
         if (heading == null) {
             LOGGER.warn("Cannot continue parsing upload file " + file.getName() + " without heading.");
-            throw new ValidationException(msgUtil.getMessage("listingUpload.noHeadingFound"));
+            throw new ValidationException(msgUtil.getMessage("listing.upload.noHeadingFound"));
         }
 
         //are there any heading values we don't recognize? Give error for that
@@ -66,7 +66,7 @@ public class ListingUploadManager {
         List<String> unrecognizedHeadings = getUnrecognizedHeadings(heading);
         if ((unrecognizedHeadings != null && unrecognizedHeadings.size() > 0)) {
             LOGGER.warn("User uploaded file with unrecognized headings: " + String.join(",", unrecognizedHeadings));
-            throw new ValidationException(msgUtil.getMessage("listingUpload.unrecognizedHeadings",
+            throw new ValidationException(msgUtil.getMessage("listing.upload.unrecognizedHeadings",
                     String.join(",", unrecognizedHeadings)));
         }
 
