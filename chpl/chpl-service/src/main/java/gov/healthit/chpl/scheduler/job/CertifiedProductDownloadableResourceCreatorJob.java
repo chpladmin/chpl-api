@@ -38,6 +38,7 @@ import gov.healthit.chpl.service.CertificationCriterionService;
 public class CertifiedProductDownloadableResourceCreatorJob extends DownloadableResourceCreatorJob {
     private static final Logger LOGGER = LogManager.getLogger("certifiedProductDownloadableResourceCreatorJobLogger");
     private static final int MILLIS_PER_SECOND = 1000;
+    private static final String TEMP_DIR_NAME = "temp";
     private String edition;
     private File tempCsvFile, tempXmlFile;
     private ExecutorService executorService;
@@ -154,11 +155,15 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
     }
 
     private void initializeTempFiles() throws IOException {
-        Path path = Files.createTempFile("chpl-" + edition, ".csv");
-        tempCsvFile = path.toFile();
+        File downloadFolder = getDownloadFolder();
+        Path tempDirBasePath = Paths.get(downloadFolder.getAbsolutePath());
+        Path tempDir = Files.createTempDirectory(tempDirBasePath, TEMP_DIR_NAME);
 
-        path = Files.createTempFile("chpl-" + edition, ".xml");
-        tempXmlFile = path.toFile();
+        Path csvPath = Files.createTempFile(tempDir, "chpl-" + edition, ".csv");
+        tempCsvFile = csvPath.toFile();
+
+        Path xmlPath = Files.createTempFile(tempDir, "chpl-" + edition, ".xml");
+        tempXmlFile = xmlPath.toFile();
     }
 
     private void swapFiles() throws IOException {
