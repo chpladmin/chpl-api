@@ -16,6 +16,8 @@ import org.apache.logging.log4j.Logger;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.ContactDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 /**
  * Domain object representing a Contact. Can be used as either contact information for a product / developer, or as
@@ -26,6 +28,8 @@ import gov.healthit.chpl.dto.ContactDTO;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
+@AllArgsConstructor
 public class Contact implements Serializable {
     private static final long serialVersionUID = 5378524206189674741L;
     private static final Logger LOGGER = LogManager.getLogger(Contact.class);
