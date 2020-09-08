@@ -76,8 +76,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Pending Change Request job. *********");
-        LOGGER.info(
-                "Creating pending change request email for: " + jobContext.getMergedJobDataMap().getString("email"));
+        LOGGER.info("Creating pending change request email for: " + jobContext.getMergedJobDataMap().getString("email"));
 
         try {
             List<CertificationBodyDTO> acbs = getAppropriateAcbs(jobContext);
