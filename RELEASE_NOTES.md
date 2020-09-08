@@ -1,5 +1,19 @@
 # Release Notes
 
+## Version 25.12.0
+_8 September 2020_
+
+### Features
+* Add "Ignore warnings" checkbox when editing or confirming certified product
+
+### Flagged Features
+* Get direct reviews from Jira
+
+### Bug Fixes
+* Send HTTP Error 401 when the api key is not valid
+
+---
+
 ## Version 25.11.0
 _18 August 2020_
 
