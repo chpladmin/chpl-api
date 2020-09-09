@@ -194,11 +194,13 @@ public class UserManager extends SecuredManager {
         String maxLoginsStr = env.getProperty("authMaximumLoginAttempts");
         int maxLogins = Integer.parseInt(maxLoginsStr);
 
-        if (userToUpdate.getFailedLoginCount() == maxLogins) {
+        if (userToUpdate.getFailedLoginCount() >= maxLogins) {
             userToUpdate.setAccountLocked(true);
             try {
                 userDAO.updateAccountLockedStatus(userToUpdate.getSubjectName(), userToUpdate.isAccountLocked());
-                sendAccountLockedEmail(userToUpdate);
+                if (userToUpdate.getFailedLoginCount() == maxLogins) {
+                    sendAccountLockedEmail(userToUpdate);
+                }
             } catch (Exception ex) {
                 LOGGER.error("Unable to set account " + userToUpdate.getSubjectName() + " as locked.", ex);
             }
