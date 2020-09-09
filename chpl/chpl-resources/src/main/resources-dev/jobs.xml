@@ -7,6 +7,38 @@
     <pre-processing-commands>
         <delete-triggers-in-group>triggerJob</delete-triggers-in-group>
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
+        <delete-job>
+            <name>ONC All Broken Surveillance Rules Report</name>
+            <group>chplJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>ONC-ACB All Broken Surveillance Rules Report</name>
+            <group>chplJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>ONC Overnight Broken Surveillance Rules Report</name>
+            <group>chplJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>ONC-ACB Overnight Broken Surveillance Rules Report</name>
+            <group>chplJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>ONC Inherited Certification Status Errors Report</name>
+            <group>chplJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>ONC-ACB Inherited Certification Status Errors Report</name>
+            <group>chplJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>ONC Pending Change Request Report</name>
+            <group>chplJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>ONC-ACB Pending Change Request Report</name>
+            <group>chplJobs</group>
+        </delete-job>
     </pre-processing-commands>
     <schedule>
         <!-- Download file generation: 2015, 2014, 2011 -->
@@ -231,84 +263,6 @@
             </cron>
         </trigger>
 
-        <!-- Inheritance Report data emailer -->
-        <job>
-            <name>ONC Inherited Certification Status Errors Report</name>
-            <group>chplJobs</group>
-            <description>Sends an error report for all Listings breaking ICS rules</description>
-            <job-class>gov.healthit.chpl.scheduler.job.InheritanceErrorsReportEmailJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC</value>
-                </entry>
-                <entry>
-                    <key>frequency</key>
-                    <value>DAILY</value>
-                </entry>
-            </job-data-map>
-        </job>
-        <job>
-            <name>ONC-ACB Inherited Certification Status Errors Report</name>
-            <group>chplJobs</group>
-            <description>Sends an error report for all Listings breaking ICS rules, by specific ACB</description>
-            <job-class>gov.healthit.chpl.scheduler.job.InheritanceErrorsReportEmailJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
-                </entry>
-                <entry>
-                    <key>frequency</key>
-                    <value>DAILY</value>
-                </entry>
-                <entry>
-                    <key>acbSpecific</key>
-                    <value>true</value>
-                </entry>
-            </job-data-map>
-        </job>
-        <trigger>
-            <cron>
-                <name>qaInheritanceErrorsEmailJob</name>
-                <group>qaTrigger</group>
-                <job-name>ONC Inherited Certification Status Errors Report</job-name>
-                <job-group>chplJobs</job-group>
-                <job-data-map>
-                    <entry>
-                        <key>email</key>
-                        <value>amore@ainq.com</value>
-                    </entry>
-                </job-data-map>
-                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 0 11 * * ?</cron-expression>
-            </cron>
-        </trigger>
-        <trigger>
-            <cron>
-                <name>qaInheritanceErrorsACBEmailJob</name>
-                <group>qaTrigger</group>
-                <job-name>ONC-ACB Inherited Certification Status Errors Report</job-name>
-                <job-group>chplJobs</job-group>
-                <job-data-map>
-                    <entry>
-                        <key>email</key>
-                        <value>amore@ainq.com</value>
-                    </entry>
-                    <entry>
-                        <key>acb</key>
-                        <value>3,1,6,4</value>
-                    </entry>
-                </job-data-map>
-                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 0 11 * * ?</cron-expression>
-            </cron>
-        </trigger>
-
         <!-- Broken Surveillance Rules data creator -->
         <job>
             <name>brokenSurveillanceRulesCreator</name>
@@ -329,103 +283,6 @@
             </cron>
         </trigger>
 
-        <!-- Broken Surveillance Rules data emailer -->
-        <job>
-            <name>ONC All Broken Surveillance Rules Report</name>
-            <group>chplJobs</group>
-            <description>Sends an error report for all Listings breaking Surveillance rules</description>
-            <job-class>gov.healthit.chpl.scheduler.job.BrokenSurveillanceRulesEmailJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC</value>
-                </entry>
-                <entry>
-                    <key>frequency</key>
-                    <value>DAILY</value>
-                </entry>
-                <entry>
-                    <key>type</key>
-                    <value>All</value>
-                </entry>
-            </job-data-map>
-        </job>
-        <job>
-            <name>ONC-ACB All Broken Surveillance Rules Report</name>
-            <group>chplJobs</group>
-            <description>Sends an error report for all Listings breaking Surveillance rules, by specific ACB</description>
-            <job-class>gov.healthit.chpl.scheduler.job.BrokenSurveillanceRulesEmailJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
-                </entry>
-                <entry>
-                    <key>frequency</key>
-                    <value>DAILY</value>
-                </entry>
-                <entry>
-                    <key>acbSpecific</key>
-                    <value>true</value>
-                </entry>
-                <entry>
-                    <key>type</key>
-                    <value>All</value>
-                </entry>
-            </job-data-map>
-        </job>
-        <job>
-            <name>ONC Overnight Broken Surveillance Rules Report</name>
-            <group>chplJobs</group>
-            <description>Sends an error report for all Listings breaking Surveillance rules within the last day</description>
-            <job-class>gov.healthit.chpl.scheduler.job.BrokenSurveillanceRulesEmailJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC</value>
-                </entry>
-                <entry>
-                    <key>frequency</key>
-                    <value>DAILY</value>
-                </entry>
-                <entry>
-                    <key>type</key>
-                    <value>Overnight</value>
-                </entry>
-            </job-data-map>
-        </job>
-        <job>
-            <name>ONC-ACB Overnight Broken Surveillance Rules Report</name>
-            <group>chplJobs</group>
-            <description>Sends an error report for all Listings breaking Surveillance rules within the last day, by specific ACB</description>
-            <job-class>gov.healthit.chpl.scheduler.job.BrokenSurveillanceRulesEmailJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
-                </entry>
-                <entry>
-                    <key>frequency</key>
-                    <value>DAILY</value>
-                </entry>
-                <entry>
-                    <key>acbSpecific</key>
-                    <value>true</value>
-                </entry>
-                <entry>
-                    <key>type</key>
-                    <value>Overnight</value>
-                </entry>
-            </job-data-map>
-        </job>
         <!-- Questionable Activity data emailer -->
         <job>
             <name>Questionable Activity Report</name>
@@ -453,78 +310,7 @@
                 </entry>
             </job-data-map>
         </job>
-        <trigger>
-            <cron>
-                <name>qaAllBrokenSurveillanceEmailJob</name>
-                <group>qaTrigger</group>
-                <job-name>ONC All Broken Surveillance Rules Report</job-name>
-                <job-group>chplJobs</job-group>
-                <job-data-map>
-                    <entry>
-                        <key>email</key>
-                        <value>amore@ainq.com</value>
-                    </entry>
-                </job-data-map>
-                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 0 11 * * ?</cron-expression>
-            </cron>
-        </trigger>
-        <trigger>
-            <cron>
-                <name>qaAllBrokenSurveillanceACBEmailJob</name>
-                <group>qaTrigger</group>
-                <job-name>ONC-ACB All Broken Surveillance Rules Report</job-name>
-                <job-group>chplJobs</job-group>
-                <job-data-map>
-                    <entry>
-                        <key>email</key>
-                        <value>amore@ainq.com</value>
-                    </entry>
-                    <entry>
-                        <key>acb</key>
-                        <value>3,1,6,4</value>
-                    </entry>
-                </job-data-map>
-                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 0 11 * * ?</cron-expression>
-            </cron>
-        </trigger>
-        <trigger>
-            <cron>
-                <name>qaOvernightBrokenSurveillanceEmailJob</name>
-                <group>qaTrigger</group>
-                <job-name>ONC Overnight Broken Surveillance Rules Report</job-name>
-                <job-group>chplJobs</job-group>
-                <job-data-map>
-                    <entry>
-                        <key>email</key>
-                        <value>amore@ainq.com</value>
-                    </entry>
-                </job-data-map>
-                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 0 11 * * ?</cron-expression>
-            </cron>
-        </trigger>
-        <trigger>
-            <cron>
-                <name>qaOvernightBrokenSurveillanceACBEmailJob</name>
-                <group>qaTrigger</group>
-                <job-name>ONC-ACB Overnight Broken Surveillance Rules Report</job-name>
-                <job-group>chplJobs</job-group>
-                <job-data-map>
-                    <entry>
-                        <key>email</key>
-                        <value>amore@ainq.com</value>
-                    </entry>
-                    <entry>
-                        <key>acb</key>
-                        <value>3,1,6,4</value>
-                    </entry>
-                </job-data-map>
-                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 0 11 * * ?</cron-expression>
-            </cron>
-        </trigger>
+        
         <trigger>
             <cron>
                 <name>qaQuestionableActivityEmailJob</name>
@@ -667,27 +453,6 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
-
-        <!-- Pending Change Request data emailer -->
-        <job>
-            <name>Pending Change Request Report</name>
-            <group>chplJobs</group>
-            <description>Sends a report of all pending change requests</description>
-            <job-class>gov.healthit.chpl.scheduler.job.PendingChangeRequestEmailJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC</value>
-                </entry>
-                <entry>
-                    <key>frequency</key>
-                    <value>WEEKLY</value>
-                </entry>
-            </job-data-map>
-        </job>
-
         <!-- Job used to change status of a set listings -->
         <job>
             <name>updateListingStatusJob</name>
@@ -739,29 +504,7 @@
                 </entry>
             </job-data-map>
         </job>
-        <!-- Pending Change Request data emailer by ONC-ACB-->
-        <job>
-            <name>ONC-ACB Pending Change Request Report</name>
-            <group>chplJobs</group>
-            <description>Sends a report of all pending change requests, by specific ACB</description>
-            <job-class>gov.healthit.chpl.scheduler.job.PendingChangeRequestEmailJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
-                </entry>
-                <entry>
-                    <key>frequency</key>
-                    <value>DAILY</value>
-                </entry>
-                <entry>
-                    <key>acbSpecific</key>
-                    <value>true</value>
-                </entry>
-            </job-data-map>
-        </job>
+        
         <!-- Job fired when developer is split -->
         <job>
             <name>splitDeveloperJob</name>
@@ -801,6 +544,147 @@
             <group>chplJobs</group>
             <description>Sends a report summarizing developer access data per ONC-ACB</description>
             <job-class>gov.healthit.chpl.scheduler.job.DeveloperAccessReport</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+                <entry>
+                    <key>acbSpecific</key>
+                    <value>true</value>
+                </entry>
+            </job-data-map>
+        </job>
+        <job>
+            <name>Overnight Broken Surveillance Rules Report</name>
+            <group>chplJobs</group>
+            <description>Sends an error report for all Listings breaking Surveillance rules within the last day, filtered by ONC-ACB</description>
+            <job-class>gov.healthit.chpl.scheduler.job.BrokenSurveillanceRulesEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+                <entry>
+                    <key>type</key>
+                    <value>Overnight</value>
+                </entry>
+                <entry>
+                    <key>acbSpecific</key>
+                    <value>true</value>
+                </entry>
+            </job-data-map>
+        </job>
+        <trigger>
+            <cron>
+                <name>qaAllBrokenSurveillanceEmailJob</name>
+                <group>qaTrigger</group>
+                <job-name>All Broken Surveillance Rules Report</job-name>
+                <job-group>chplJobs</job-group>
+                <job-data-map>
+                    <entry>
+                        <key>email</key>
+                        <value>amore@ainq.com</value>
+                    </entry>
+                </job-data-map>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 0 11 * * ?</cron-expression>
+            </cron>
+        </trigger>
+        <job>
+            <name>All Broken Surveillance Rules Report</name>
+            <group>chplJobs</group>
+            <description>Sends an error report for all Listings breaking Surveillance rules, filtered by ONC-ACB</description>
+            <job-class>gov.healthit.chpl.scheduler.job.BrokenSurveillanceRulesEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+                <entry>
+                    <key>acbSpecific</key>
+                    <value>true</value>
+                </entry>
+                <entry>
+                    <key>type</key>
+                    <value>All</value>
+                </entry>
+            </job-data-map>
+        </job>
+        <trigger>
+            <cron>
+                <name>qaAllBrokenSurveillanceACBEmailJob</name>
+                <group>qaTrigger</group>
+                <job-name>All Broken Surveillance Rules Report</job-name>
+                <job-group>chplJobs</job-group>
+                <job-data-map>
+                    <entry>
+                        <key>email</key>
+                        <value>amore@ainq.com</value>
+                    </entry>
+                </job-data-map>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 0 11 * * ?</cron-expression>
+            </cron>
+        </trigger>
+        
+        <job>
+            <name>Inherited Certification Status Errors Report</name>
+            <group>chplJobs</group>
+            <description>Sends an error report for all Listings breaking ICS rules, filtered by ONC-ACB</description>
+            <job-class>gov.healthit.chpl.scheduler.job.InheritanceErrorsReportEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+            </job-data-map>
+        </job>
+        <trigger>
+            <cron>
+                <name>qaInheritanceErrorsEmailJob</name>
+                <group>qaTrigger</group>
+                <job-name>Inherited Certification Status Errors Report</job-name>
+                <job-group>chplJobs</job-group>
+                <job-data-map>
+                    <entry>
+                        <key>email</key>
+                        <value>amore@ainq.com</value>
+                    </entry>
+                </job-data-map>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 0 11 * * ?</cron-expression>
+            </cron>
+        </trigger>
+        <job>
+            <name>Pending Change Request Report</name>
+            <group>chplJobs</group>
+            <description>Sends a report of all pending change requests, filtered by ONC-ACB</description>
+            <job-class>gov.healthit.chpl.scheduler.job.PendingChangeRequestEmailJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>
