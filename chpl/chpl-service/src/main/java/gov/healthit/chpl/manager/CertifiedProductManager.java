@@ -220,8 +220,8 @@ public class CertifiedProductManager extends SecuredManager {
     public CertifiedProductManager() {
     }
 
-    @Autowired
     @SuppressWarnings({"checkstyle:parameternumber"})
+    @Autowired
     public CertifiedProductManager(ErrorMessageUtil msgUtil,
             CertifiedProductDAO cpDao, CertifiedProductSearchDAO searchDao,
             CertificationResultDAO certDao, CertificationCriterionDAO certCriterionDao,
@@ -401,14 +401,14 @@ public class CertifiedProductManager extends SecuredManager {
         return familyTree;
     }
 
+    @SuppressWarnings({"checkstyle:linelength", "checkstyle:methodlength"})
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).CREATE_FROM_PENDING, #pendingCp)")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.COLLECTIONS_LISTINGS, CacheNames.PRODUCT_NAMES, CacheNames.DEVELOPER_NAMES
     }, allEntries = true)
-    @SuppressWarnings({"checkstyle:methodlength"})
-    public CertifiedProductDTO createFromPending(PendingCertifiedProductDTO pendingCp)
+    public CertifiedProductDTO createFromPending(PendingCertifiedProductDTO pendingCp, boolean acknowledgeWarnings)
             throws EntityRetrievalException, EntityCreationException, IOException {
 
         CertifiedProductDTO toCreate = new CertifiedProductDTO();
@@ -653,8 +653,7 @@ public class CertifiedProductManager extends SecuredManager {
                     certResultToCreate.setSed(isCertified ? certResult.getSed() : null);
                 }
                 certResultToCreate.setApiDocumentation(isCertified ? certResult.getApiDocumentation() : null);
-                certResultToCreate
-                        .setPrivacySecurityFramework(isCertified ? certResult.getPrivacySecurityFramework() : null);
+                certResultToCreate.setPrivacySecurityFramework(isCertified ? certResult.getPrivacySecurityFramework() : null);
                 certResultToCreate.setAttestationAnswer(isCertified ? certResult.getAttestationAnswer() : null);
                 certResultToCreate.setDocumentationUrl(isCertified ? certResult.getDocumentationUrl() : null);
                 certResultToCreate.setExportDocumentation(isCertified ? certResult.getExportDocumentation() : null);
@@ -1126,7 +1125,7 @@ public class CertifiedProductManager extends SecuredManager {
         sanitizeUpdatedListingData(updatedListing);
 
         // validate - throws ValidationException if the listing cannot be updated
-        validateListingForUpdate(existingListing, updatedListing);
+        validateListingForUpdate(existingListing, updatedListing, updateRequest.isAcknowledgeWarnings());
 
         // if listing status has changed that may trigger other changes to developer status
         performSecondaryActionsBasedOnStatusChanges(existingListing, updatedListing, updateRequest.getReason());
@@ -1151,9 +1150,10 @@ public class CertifiedProductManager extends SecuredManager {
                 changedProduct, reason);
     }
 
-    private void updateListingsChildData(CertifiedProductSearchDetails existingListing,
-            CertifiedProductSearchDetails updatedListing)
-                    throws EntityCreationException, EntityRetrievalException, IOException {
+    @SuppressWarnings({"checkstyle:linelength"})
+    private void updateListingsChildData(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing)
+            throws EntityCreationException, EntityRetrievalException, IOException {
+
         updateTestingLabs(updatedListing.getId(), existingListing.getTestingLabs(), updatedListing.getTestingLabs());
         updateIcsChildren(updatedListing.getId(), existingListing.getIcs(), updatedListing.getIcs());
         updateIcsParents(updatedListing.getId(), existingListing.getIcs(), updatedListing.getIcs());
@@ -1243,15 +1243,20 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     private void validateListingForUpdate(CertifiedProductSearchDetails existingListing,
-            CertifiedProductSearchDetails updatedListing) throws ValidationException {
+            CertifiedProductSearchDetails updatedListing, boolean acknowledgeWarnings) throws ValidationException {
         Validator validator = validatorFactory.getValidator(updatedListing);
         if (validator != null) {
             validator.validate(existingListing, updatedListing);
         }
 
-        if (updatedListing.getErrorMessages() != null && updatedListing.getErrorMessages().size() > 0) {
+        if ((updatedListing.getErrorMessages() != null && updatedListing.getErrorMessages().size() > 0)
+                || (!acknowledgeWarnings && updatedListing.getWarningMessages() != null
+                && updatedListing.getWarningMessages().size() > 0)) {
             for (String err : updatedListing.getErrorMessages()) {
                 LOGGER.error("Error updating listing " + updatedListing.getChplProductNumber() + ": " + err);
+            }
+            for (String warning : updatedListing.getWarningMessages()) {
+                LOGGER.error("Warning updating listing " + updatedListing.getChplProductNumber() + ": " + warning);
             }
             throw new ValidationException(updatedListing.getErrorMessages(), updatedListing.getWarningMessages());
         }
@@ -1658,7 +1663,7 @@ public class CertifiedProductManager extends SecuredManager {
     private int updateAccessibilityStandards(Long listingId,
             List<CertifiedProductAccessibilityStandard> existingAccessibilityStandards,
             List<CertifiedProductAccessibilityStandard> updatedAccessibilityStandards)
-            throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
+             throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
 
         int numChanges = 0;
         List<CertifiedProductAccessibilityStandard> accStdsToAdd = new ArrayList<CertifiedProductAccessibilityStandard>();
@@ -2298,9 +2303,8 @@ public class CertifiedProductManager extends SecuredManager {
                     .usingJobData("dbId", updatedListing.getId())
                     .usingJobData("chplId", updatedListing.getChplProductNumber())
                     .usingJobData("developer", updatedListing.getDeveloper().getName())
-                    .usingJobData("acb",
-                            updatedListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)
-                                    .toString())
+                    .usingJobData("acb", updatedListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)
+                            .toString())
                     .usingJobData("changeDate", new Date().getTime())
                     .usingJobData("fullName", AuthUtil.getCurrentUser().getFullName())
                     .usingJobData("effectiveDate", updatedListing.getCurrentStatus().getEventDate())

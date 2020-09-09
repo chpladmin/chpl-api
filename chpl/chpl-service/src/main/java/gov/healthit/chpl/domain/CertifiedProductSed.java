@@ -12,6 +12,10 @@ import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Singular;
+
 /**
  * Safety Enhanced Design data that is relied upon by this Health IT Module to
  * demonstrate its compliance with a certification criterion or criteria. The
@@ -20,6 +24,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
+@AllArgsConstructor
 public class CertifiedProductSed implements Serializable {
     private static final long serialVersionUID = -4131156681875211447L;
 
@@ -31,6 +37,7 @@ public class CertifiedProductSed implements Serializable {
      */
     @XmlElementWrapper(name = "ucdProcesses", nillable = true, required = false)
     @XmlElement(name = "ucdProcess")
+    @Singular
     private List<UcdProcess> ucdProcesses;
 
     /**
@@ -38,6 +45,7 @@ public class CertifiedProductSed implements Serializable {
      */
     @XmlElementWrapper(name = "testTasks", nillable = true, required = false)
     @XmlElement(name = "testTask")
+    @Singular
     private List<TestTask> testTasks;
 
     public CertifiedProductSed() {
