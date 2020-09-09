@@ -18,6 +18,7 @@ import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Singular;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -90,6 +91,7 @@ public class Developer implements Serializable {
      */
     @XmlElementWrapper(name = "statusEvents", nillable = true, required = false)
     @XmlElement(name = "statusEvent", required = false, nillable = true)
+    @Singular
     private List<DeveloperStatusEvent> statusEvents;
 
     /**
