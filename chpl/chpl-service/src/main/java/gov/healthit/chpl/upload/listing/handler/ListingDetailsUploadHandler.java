@@ -56,13 +56,8 @@ public class ListingDetailsUploadHandler {
     }
 
     private Date parseCertificationDate(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        Date certificationDate = null;
-        try {
-            certificationDate = uploadUtil.parseSingleValueFieldAsDate(
+        Date certificationDate = uploadUtil.parseSingleValueFieldAsDate(
                 Headings.CERTIFICATION_DATE, headingRecord, listingRecords);
-        } catch (Exception ex) {
-            throw new ValidationException("Could not parse value as certification date: " + ex.getMessage());
-        }
         return certificationDate;
     }
 }

@@ -193,7 +193,8 @@ public class ListingUploadHandlerUtil {
         try {
             certificationDate = dateFormat.parse(value);
         } catch (ParseException ex) {
-            LOGGER.error("Could not parse date " + value, ex);
+            LOGGER.error("Could not parse " + value + " as a date. " + ex.getMessage());
+            throw new ValidationException(msgUtil.getMessage("listing.upload.invalidDate", value));
         }
         return certificationDate;
     }
