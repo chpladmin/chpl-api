@@ -6,11 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.List;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
+import javax.validation.ValidationException;
+
 import org.apache.commons.csv.CSVRecord;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,17 +23,12 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
+import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class ListingDetailsUploadHandlerTest {
-    private static final String HEADER_COMMON_NAMES = "UNIQUE_CHPL_ID__C,RECORD_STATUS__C,VENDOR__C";
-    private static final String HEADER_ALT_NAMES = "UNIQUE_CHPL_ID__C,RECORD_STATUS__C";
-    private static final String HEADER_WITH_SPACES = " UNIQUE_CHPL_ID__C , RECORD_STATUS__C ";
-    private static final String HEADER_SINGLE_COLUMN = "RECORD_STATUS__C";
-    private static final String HEADER_DUPLICATE = "UNIQUE_CHPL_ID__C,UNIQUE_CHPL_ID__C,RECORD_STATUS__C";
-    private static final String MULTIPLE_ROWS = "UNIQUE_CHPL_ID__C,RECORD_STATUS__C\n"
-                                                + "15.02.02.3007.A056.01.00.0.180214,New";
-    private static final String LISTING_ROW = "15.02.02.3007.A056.01.00.0.180214,New";
+    private static final String HEADER_COMMON_NAMES = "UNIQUE_CHPL_ID__C,RECORD_STATUS__C,VENDOR__C,Accessibility Certified";
+    private static final String LISTING_ROW = "15.02.02.3007.A056.01.00.0.180214,New,My Developer,0";
 
     private ErrorMessageUtil msgUtil;
     private ListingUploadHandlerUtil handlerUtil;
@@ -61,10 +55,10 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void getHeadingRecord_MultiRowData_ReturnsCorrectValue() {
-        CSVRecord headingRecord = getRecordsFromString(HEADER_COMMON_NAMES).get(0);
+    public void buildListing_GoodData_ReturnsCorrectChplProductNumber() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_COMMON_NAMES).get(0);
         assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = getRecordsFromString(LISTING_ROW);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW);
         assertNotNull(listingRecords);
 
         try {
@@ -77,15 +71,125 @@ public class ListingDetailsUploadHandlerTest {
         }
     }
 
-    private List<CSVRecord> getRecordsFromString(String str) {
-        List<CSVRecord> records = null;
+    @Test
+    public void buildListing_ChplProductNumberEmpty_ReturnsEmptyString() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_COMMON_NAMES).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("\"\",New,A Developer");
+        assertNotNull(listingRecords);
+
         try {
-            StringReader in = new StringReader(str);
-            CSVParser csvParser = CSVFormat.EXCEL.parse(in);
-            records = csvParser.getRecords();
-        } catch (IOException ex) {
-            fail(ex.getMessage());
+            CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
+            assertNotNull(listing);
+            assertNotNull(listing.getChplProductNumber());
+            assertEquals("", listing.getChplProductNumber());
+        } catch (Exception e) {
+            fail(e.getMessage());
         }
-        return records;
+    }
+
+    @Test
+    public void buildListing_ChplProductNumberWhitespace_TrimsResult() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_COMMON_NAMES).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("\" \",New,A Developer");
+        assertNotNull(listingRecords);
+
+        try {
+            CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
+            assertNotNull(listing);
+            assertNotNull(listing.getChplProductNumber());
+            assertEquals("", listing.getChplProductNumber());
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test(expected = ValidationException.class)
+    public void buildListing_ChplProductNumberColumnMissing_ThrowsException() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString("RECORD_STATUS__C,VENDOR__C").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("New,A Developer");
+        assertNotNull(listingRecords);
+
+        handler.parseAsListing(headingRecord, listingRecords);
+    }
+
+    @Test
+    public void buildListing_BooleanValue0_ReturnsFalseAccessibilityCertified() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_COMMON_NAMES).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW);
+        assertNotNull(listingRecords);
+
+        try {
+            CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
+            assertNotNull(listing);
+            assertNotNull(listing.getAccessibilityCertified());
+            assertEquals(Boolean.FALSE, listing.getAccessibilityCertified());
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void buildListing_BooleanValue1_ReturnsTrueAccessibilityCertified() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_COMMON_NAMES).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("15.14.10,New,Dev Name,1");
+        assertNotNull(listingRecords);
+
+        try {
+            CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
+            assertNotNull(listing);
+            assertNotNull(listing.getAccessibilityCertified());
+            assertEquals(Boolean.TRUE, listing.getAccessibilityCertified());
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void buildListing_BooleanValueNo_ReturnsTrueAccessibilityCertified() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_COMMON_NAMES).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("15.14.10,New,Dev Name,No");
+        assertNotNull(listingRecords);
+
+        try {
+            CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
+            assertNotNull(listing);
+            assertNotNull(listing.getAccessibilityCertified());
+            assertEquals(Boolean.FALSE, listing.getAccessibilityCertified());
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void buildListing_BooleanValueYes_ReturnsTrueAccessibilityCertified() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_COMMON_NAMES).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("15.14.10,New,Dev Name,Yes");
+        assertNotNull(listingRecords);
+
+        try {
+            CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
+            assertNotNull(listing);
+            assertNotNull(listing.getAccessibilityCertified());
+            assertEquals(Boolean.TRUE, listing.getAccessibilityCertified());
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test(expected = ValidationException.class)
+    public void buildListing_BooleanValueBad_ThrowsException() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_COMMON_NAMES).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("15.14.10,New,Dev Name,JUNK");
+        assertNotNull(listingRecords);
+
+        handler.parseAsListing(headingRecord, listingRecords);
     }
 }

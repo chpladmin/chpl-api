@@ -3,12 +3,13 @@ package gov.healthit.chpl.upload.listing.handler;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.ValidationException;
+
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -42,14 +43,13 @@ public class ListingDetailsUploadHandler {
         return listing;
     }
 
-    private String parseChplId(CSVRecord headingRecord, List<CSVRecord> listingRecords) throws ValidationException {
+    private String parseChplId(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         String chplId = uploadUtil.parseRequiredSingleValueField(
                 Headings.UNIQUE_ID, headingRecord, listingRecords);
         return chplId;
     }
 
-    private Boolean parseAccessibilityCertified(CSVRecord headingRecord, List<CSVRecord> listingRecords)
-        throws ValidationException {
+    private Boolean parseAccessibilityCertified(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         Boolean accessibilityCertified = uploadUtil.parseSingleValueFieldAsBoolean(
                 Headings.ACCESSIBILITY_CERTIFIED, headingRecord, listingRecords);
         return accessibilityCertified;
@@ -61,7 +61,7 @@ public class ListingDetailsUploadHandler {
             certificationDate = uploadUtil.parseSingleValueFieldAsDate(
                 Headings.CERTIFICATION_DATE, headingRecord, listingRecords);
         } catch (Exception ex) {
-            //TODO: add error
+            throw new ValidationException("Could not parse value as certification date: " + ex.getMessage());
         }
         return certificationDate;
     }
