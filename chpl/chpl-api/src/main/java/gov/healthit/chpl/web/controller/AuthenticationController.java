@@ -253,17 +253,15 @@ public class AuthenticationController {
 
         UserResetTokenDTO userResetTokenDTO = userManager.createResetUserPasswordToken(userInfo.getUserName(),
                 userInfo.getEmail());
-        String htmlMessage = "<p>Please follow this link to reset your password </p>"
-                + "<pre>" + env.getProperty("chplUrlBegin")
-                    + "/#/admin/authorizePasswordReset?token=" + userResetTokenDTO.getUserResetToken()
-                + "</pre>";
+        String htmlMessage = String.format(env.getProperty("user.resetPassword.body"),
+                env.getProperty("chplUrlBegin"), userResetTokenDTO.getUserResetToken());
         String[] toEmails = {
                 userInfo.getEmail()
         };
 
         EmailBuilder emailBuilder = new EmailBuilder(env);
         emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
-            .subject("Open Data CHPL Password Reset")
+            .subject(env.getProperty("user.resetPassword.subject"))
             .htmlMessage(htmlMessage)
             .htmlFooter()
             .sendEmail();
