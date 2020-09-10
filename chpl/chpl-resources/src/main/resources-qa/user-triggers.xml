@@ -50,6 +50,10 @@
                         <key>email</key>
                         <value>amore@ainq.com</value>
                     </entry>
+                    <entry>
+                        <key>acb</key>
+                        <value>1,2,3,4,5,6</value>
+                    </entry>
                 </job-data-map>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
                 <cron-expression>0 0 11 * * ?</cron-expression>
@@ -67,6 +71,10 @@
                         <key>email</key>
                         <value>amore@ainq.com</value>
                     </entry>
+                    <entry>
+                        <key>acb</key>
+                        <value>1,2,3,4,5,6</value>
+                    </entry>
                 </job-data-map>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
                 <cron-expression>0 0 11 * * ?</cron-expression>
@@ -83,6 +91,10 @@
                     <entry>
                         <key>email</key>
                         <value>amore@ainq.com</value>
+                    </entry>
+                    <entry>
+                        <key>acb</key>
+                        <value>1,2,3,4,5,6</value>
                     </entry>
                 </job-data-map>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
