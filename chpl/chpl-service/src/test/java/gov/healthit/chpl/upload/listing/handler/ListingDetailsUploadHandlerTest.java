@@ -5,8 +5,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.List;
 
 import javax.validation.ValidationException;
@@ -17,18 +15,13 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.exception.EntityCreationException;
-import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class ListingDetailsUploadHandlerTest {
-    private static final String HEADER_COMMON_NAMES = "UNIQUE_CHPL_ID__C,RECORD_STATUS__C,VENDOR__C,Accessibility Certified,CERTIFICATION_DATE__C";
+    private static final String HEADER_ROW = "UNIQUE_CHPL_ID__C,RECORD_STATUS__C,VENDOR__C,Accessibility Certified,CERTIFICATION_DATE__C";
     private static final String LISTING_ROW = "15.02.02.3007.A056.01.00.0.180214,New,My Developer,0,20200909";
 
     private ErrorMessageUtil msgUtil;
@@ -36,9 +29,7 @@ public class ListingDetailsUploadHandlerTest {
     private ListingDetailsUploadHandler handler;
 
     @Before
-    public void setup() throws InvalidArgumentsException, JsonProcessingException,
-        EntityRetrievalException, EntityCreationException, IOException, FileNotFoundException {
-
+    public void setup() {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
 
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("upload.emptyFile"))).thenReturn("Empty file message");
@@ -51,13 +42,15 @@ public class ListingDetailsUploadHandlerTest {
                 ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format("The value %s could not be converted to a yes/no field..", i.getArgument(1), ""));
 
+
         handlerUtil = new ListingUploadHandlerUtil(msgUtil);
-        handler = new ListingDetailsUploadHandler(handlerUtil, msgUtil);
+        handler = new ListingDetailsUploadHandler(Mockito.mock(AccessibilityStandardsUploadHandler.class),
+                handlerUtil, msgUtil);
     }
 
     @Test
     public void buildListing_GoodData_ReturnsCorrectChplProductNumber() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_COMMON_NAMES).get(0);
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW);
         assertNotNull(listingRecords);
@@ -74,7 +67,7 @@ public class ListingDetailsUploadHandlerTest {
 
     @Test
     public void buildListing_ChplProductNumberEmpty_ReturnsEmptyString() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_COMMON_NAMES).get(0);
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(",New,A Developer");
         assertNotNull(listingRecords);
@@ -91,7 +84,7 @@ public class ListingDetailsUploadHandlerTest {
 
     @Test
     public void buildListing_ChplProductNumberWhitespace_TrimsResult() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_COMMON_NAMES).get(0);
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("  ,New,A Developer,1,20200909");
         assertNotNull(listingRecords);
@@ -118,7 +111,7 @@ public class ListingDetailsUploadHandlerTest {
 
     @Test
     public void buildListing_BooleanValue0_ReturnsFalseAccessibilityCertified() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_COMMON_NAMES).get(0);
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW);
         assertNotNull(listingRecords);
@@ -135,7 +128,7 @@ public class ListingDetailsUploadHandlerTest {
 
     @Test
     public void buildListing_BooleanValue1_ReturnsTrueAccessibilityCertified() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_COMMON_NAMES).get(0);
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("15.14.10,New,Dev Name,1,20200909");
         assertNotNull(listingRecords);
@@ -152,7 +145,7 @@ public class ListingDetailsUploadHandlerTest {
 
     @Test
     public void buildListing_BooleanValueNo_ReturnsTrueAccessibilityCertified() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_COMMON_NAMES).get(0);
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("15.14.10,New,Dev Name,No,20200909");
         assertNotNull(listingRecords);
@@ -169,7 +162,7 @@ public class ListingDetailsUploadHandlerTest {
 
     @Test
     public void buildListing_BooleanValueYes_ReturnsTrueAccessibilityCertified() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_COMMON_NAMES).get(0);
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("15.14.10,New,Dev Name,Yes,20200909");
         assertNotNull(listingRecords);
@@ -186,7 +179,7 @@ public class ListingDetailsUploadHandlerTest {
 
     @Test(expected = ValidationException.class)
     public void buildListing_BooleanValueBad_ThrowsException() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_COMMON_NAMES).get(0);
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("15.14.10,New,Dev Name,JUNK,20200909");
         assertNotNull(listingRecords);
@@ -196,7 +189,7 @@ public class ListingDetailsUploadHandlerTest {
 
     @Test
     public void buildListing_CertificationDateGood_ParsesDateValue() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_COMMON_NAMES).get(0);
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW);
         assertNotNull(listingRecords);
@@ -212,7 +205,7 @@ public class ListingDetailsUploadHandlerTest {
 
     @Test
     public void buildListing_CertificationDateEmpty_ParsesNullValue() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_COMMON_NAMES).get(0);
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("15.14.10,New,Dev Name,1,");
         assertNotNull(listingRecords);
@@ -228,7 +221,7 @@ public class ListingDetailsUploadHandlerTest {
 
     @Test(expected = ValidationException.class)
     public void buildListing_CertificationDateValueBad_ThrowsException() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_COMMON_NAMES).get(0);
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("15.14.10,New,Dev Name,1,BADDATE");
         assertNotNull(listingRecords);

@@ -39,10 +39,15 @@ public class AccessibilityStandardsUploadHandler {
                     //TODO: should this be fuzzy matched?
                     AccessibilityStandardDTO accStd = dao.getByName(name);
                     if (accStd != null) {
-                        accStds.add(new CertifiedProductAccessibilityStandard(null, accStd.getId(), accStd.getName()));
+                        accStds.add(CertifiedProductAccessibilityStandard.builder()
+                                .accessibilityStandardId(accStd.getId())
+                                .accessibilityStandardName(accStd.getName())
+                                .build());
                     } else {
-                        //TODO: add a warning to the listing?
                         LOGGER.warn("Accessibility standard with name '" + name + "' was not found.");
+                        accStds.add(CertifiedProductAccessibilityStandard.builder()
+                                .accessibilityStandardName(name)
+                                .build());
                     }
                 } catch (Exception e) {
                     LOGGER.error("Exception looking up accessibility standard '" + name + "'." + e.getMessage());

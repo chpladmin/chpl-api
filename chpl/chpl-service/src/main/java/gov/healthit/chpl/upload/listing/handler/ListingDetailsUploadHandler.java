@@ -18,11 +18,14 @@ import lombok.extern.log4j.Log4j2;
 @Component("listingDetailsUploadHandler")
 @Log4j2
 public class ListingDetailsUploadHandler {
+    private AccessibilityStandardsUploadHandler accessibilityStandardsHandler;
     private ListingUploadHandlerUtil uploadUtil;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public ListingDetailsUploadHandler(ListingUploadHandlerUtil uploadUtil, ErrorMessageUtil msgUtil) {
+    public ListingDetailsUploadHandler(AccessibilityStandardsUploadHandler accessibilityStandardsHandler,
+            ListingUploadHandlerUtil uploadUtil, ErrorMessageUtil msgUtil) {
+        this.accessibilityStandardsHandler = accessibilityStandardsHandler;
         this.uploadUtil = uploadUtil;
         this.msgUtil = msgUtil;
     }
@@ -38,6 +41,7 @@ public class ListingDetailsUploadHandler {
                         Headings.ACB_CERTIFICATION_ID, headingRecord, listingRecords))
                 .accessibilityCertified(accessibilityCertified)
                 .certificationDate(certificationDate != null ? certificationDate.getTime() : null)
+                .accessibilityStandards(accessibilityStandardsHandler.handle(headingRecord, listingRecords))
             .build();
 
         return listing;
