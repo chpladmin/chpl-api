@@ -3,6 +3,7 @@ package gov.healthit.chpl.upload.listing.handler;
 import java.util.List;
 
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -37,9 +38,11 @@ public class DeveloperDetailsUploadHandler {
                 .website(uploadUtil.parseSingleValueField(Headings.DEVELOPER_WEBSITE, headingRecord, listingRecords))
                 .selfDeveloper(uploadUtil.parseSingleValueFieldAsBoolean(Headings.SELF_DEVELOPER, headingRecord, listingRecords))
                 .build();
-        DeveloperDTO existingDeveloper = developerDao.getByName(developer.getName());
-        if (existingDeveloper != null) {
-            developer.setDeveloperId(existingDeveloper.getId());
+        if (!StringUtils.isEmpty(developer.getName())) {
+            DeveloperDTO existingDeveloper = developerDao.getByName(developer.getName());
+            if (existingDeveloper != null) {
+                developer.setDeveloperId(existingDeveloper.getId());
+            }
         }
         Address address = Address.builder()
                 .line1(uploadUtil.parseSingleValueField(Headings.DEVELOPER_ADDRESS, headingRecord, listingRecords))
