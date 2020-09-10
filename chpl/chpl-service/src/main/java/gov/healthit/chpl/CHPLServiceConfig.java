@@ -13,6 +13,7 @@ import java.util.Locale;
 import javax.net.ssl.SSLContext;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -51,6 +52,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -61,6 +63,7 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
+import gov.healthit.chpl.exception.JiraRequestFailedException;
 import gov.healthit.chpl.job.ExportQuarterlySurveillanceReportJob;
 import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 
@@ -94,6 +97,7 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
     private static final int MAX_POOL_SIZE = 100;
     private static final int JOB_CORE_POOL_SIZE = 3;
     private static final int JOB_MAX_POOL_SIZE = 6;
+    private static final int DEFAULT_REQUEST_TIMEOUT = 10000;
 
     @Autowired
     private Environment env;
@@ -263,6 +267,19 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
         CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(csf).build();
         HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
         requestFactory.setHttpClient(httpClient);
+        int requestTimeout = DEFAULT_REQUEST_TIMEOUT;
+        String requestTimeoutProperty = env.getProperty("jira.requestTimeoutMillis");
+        if (!StringUtils.isEmpty(requestTimeoutProperty)) {
+            try {
+                requestTimeout = Integer.parseInt(requestTimeoutProperty);
+            } catch (NumberFormatException ex) {
+                LOGGER.warn("Cannot parse " + requestTimeoutProperty + " as an integer. "
+                        + "Using the default value " + DEFAULT_REQUEST_TIMEOUT);
+                requestTimeout = DEFAULT_REQUEST_TIMEOUT;
+            }
+        }
+        requestFactory.setConnectTimeout(requestTimeout);
+        requestFactory.setReadTimeout(requestTimeout);
 
         RestTemplate restTemplate = new RestTemplate(requestFactory);
         restTemplate.getInterceptors().add(
@@ -280,6 +297,13 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
                         return execution.execute(request, body);
                     }
                 });
+        restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
+            @Override
+            public void handleError(ClientHttpResponse response) throws IOException {
+                LOGGER.error("Got error response: " + response.getStatusText());
+                throw new JiraRequestFailedException(response.getStatusText());
+            }
+        });
         return restTemplate;
     }
 }
