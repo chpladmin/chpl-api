@@ -59,6 +59,7 @@ public class ApiExceptionControllerAdvice {
 
     @ExceptionHandler(JiraRequestFailedException.class)
     public ResponseEntity<ErrorResponse> exception(JiraRequestFailedException e) {
+        LOGGER.error(e.getMessage());
         return new ResponseEntity<ErrorResponse>(
                 new ErrorResponse("Direct Review information is not currently available, please check back later."),
                 HttpStatus.NO_CONTENT);

@@ -52,7 +52,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -63,7 +62,6 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
-import gov.healthit.chpl.exception.JiraRequestFailedException;
 import gov.healthit.chpl.job.ExportQuarterlySurveillanceReportJob;
 import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 
@@ -297,13 +295,6 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
                         return execution.execute(request, body);
                     }
                 });
-        restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
-            @Override
-            public void handleError(ClientHttpResponse response) throws IOException {
-                LOGGER.error("Got error response: " + response.getStatusText());
-                throw new JiraRequestFailedException(response.getStatusText());
-            }
-        });
         return restTemplate;
     }
 }
