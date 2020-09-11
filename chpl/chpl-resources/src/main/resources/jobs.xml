@@ -358,6 +358,7 @@
             </job-data-map>
         </job>
 
+        <!-- Developer Access Report Job -->
         <job>
             <name>Developer Access Report</name>
             <group>chplJobs</group>
@@ -381,6 +382,7 @@
             </job-data-map>
         </job>
 
+        <!-- Overnight Broken Surveillance Job - by ONC-ACB -->
         <job>
             <name>Overnight Broken Surveillance Rules Report</name>
             <group>chplJobs</group>
@@ -408,6 +410,7 @@
             </job-data-map>
         </job>
 
+        <!-- All Broken Surveillance Job - by ONC-ACB -->
         <job>
             <name>All Broken Surveillance Rules Report</name>
             <group>chplJobs</group>
@@ -435,6 +438,7 @@
             </job-data-map>
         </job>
 
+        <!-- ICS Errors Job - by ONC-ACB -->
         <job>
             <name>Inherited Certification Status Errors Report</name>
             <group>chplJobs</group>
@@ -458,6 +462,7 @@
             </job-data-map>
         </job>
 
+        <!-- Pending Change Request Job - by ONC-ACB -->
         <job>
             <name>Pending Change Request Report</name>
             <group>chplJobs</group>
