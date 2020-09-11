@@ -12,6 +12,8 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 /**
  * The standard or mapping used to meet the quality management system
@@ -21,6 +23,8 @@ import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
+@AllArgsConstructor
 public class CertifiedProductQmsStandard implements Serializable {
     private static final long serialVersionUID = -2085183878828053974L;
 
