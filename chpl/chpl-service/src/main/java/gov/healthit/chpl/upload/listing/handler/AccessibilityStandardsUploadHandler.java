@@ -36,7 +36,6 @@ public class AccessibilityStandardsUploadHandler {
         if (accStdNames != null && accStdNames.size() > 0) {
             accStdNames.stream().forEach(name -> {
                 try {
-                    //TODO: should this be fuzzy matched?
                     AccessibilityStandardDTO accStd = dao.getByName(name);
                     if (accStd != null) {
                         accStds.add(CertifiedProductAccessibilityStandard.builder()

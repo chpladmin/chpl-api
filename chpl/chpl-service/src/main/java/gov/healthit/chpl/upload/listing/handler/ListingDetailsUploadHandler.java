@@ -27,6 +27,7 @@ public class ListingDetailsUploadHandler {
     private DeveloperDetailsUploadHandler devDetailsUploadHandler;
     private TargetedUsersUploadHandler targetedUserUploadHandler;
     private AccessibilityStandardsUploadHandler accessibilityStandardsHandler;
+    private QmsUploadHandler qmsHandler;
     private ListingUploadHandlerUtil uploadUtil;
     private ErrorMessageUtil msgUtil;
 
@@ -34,10 +35,12 @@ public class ListingDetailsUploadHandler {
     public ListingDetailsUploadHandler(DeveloperDetailsUploadHandler devDetailsUploadHandler,
             TargetedUsersUploadHandler targetedUserUploadHandler,
             AccessibilityStandardsUploadHandler accessibilityStandardsHandler,
+            QmsUploadHandler qmsHandler,
             ListingUploadHandlerUtil uploadUtil, ErrorMessageUtil msgUtil) {
-        this.targetedUserUploadHandler = targetedUserUploadHandler;
         this.devDetailsUploadHandler = devDetailsUploadHandler;
+        this.targetedUserUploadHandler = targetedUserUploadHandler;
         this.accessibilityStandardsHandler = accessibilityStandardsHandler;
+        this.qmsHandler = qmsHandler;
         this.uploadUtil = uploadUtil;
         this.msgUtil = msgUtil;
     }
@@ -61,6 +64,7 @@ public class ListingDetailsUploadHandler {
                 .certificationEdition(parseEdition(headingRecord, listingRecords))
                 .targetedUsers(targetedUserUploadHandler.handle(headingRecord, listingRecords))
                 .accessibilityStandards(accessibilityStandardsHandler.handle(headingRecord, listingRecords))
+                .qmsStandards(qmsHandler.handle(headingRecord, listingRecords))
             .build();
 
         //TODO: fill in product and version IDs?

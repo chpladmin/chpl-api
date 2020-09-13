@@ -47,6 +47,7 @@ public class ListingDetailsUploadHandlerTest {
         handler = new ListingDetailsUploadHandler(Mockito.mock(DeveloperDetailsUploadHandler.class),
                 Mockito.mock(TargetedUsersUploadHandler.class),
                 Mockito.mock(AccessibilityStandardsUploadHandler.class),
+                Mockito.mock(QmsUploadHandler.class),
                 handlerUtil, msgUtil);
     }
 

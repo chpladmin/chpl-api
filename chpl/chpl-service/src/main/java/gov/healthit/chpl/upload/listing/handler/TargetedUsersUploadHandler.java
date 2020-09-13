@@ -36,7 +36,6 @@ public class TargetedUsersUploadHandler {
         if (targetedUserNames != null && targetedUserNames.size() > 0) {
             targetedUserNames.stream().forEach(name -> {
                 try {
-                    //TODO: should this be fuzzy matched?
                     TargetedUserDTO targetedUser = dao.getByName(name);
                     if (targetedUser != null) {
                         targetedUsers.add(CertifiedProductTargetedUser.builder()
