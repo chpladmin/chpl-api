@@ -9,13 +9,25 @@ import java.util.Map;
 import javax.validation.ValidationException;
 
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.CertificationEditionDAO;
+import gov.healthit.chpl.dao.ProductDAO;
+import gov.healthit.chpl.dao.ProductVersionDAO;
+import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.CertificationEditionDTO;
+import gov.healthit.chpl.dto.ProductDTO;
+import gov.healthit.chpl.dto.ProductVersionDTO;
+import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -28,47 +40,63 @@ public class ListingDetailsUploadHandler {
     private TargetedUsersUploadHandler targetedUserUploadHandler;
     private AccessibilityStandardsUploadHandler accessibilityStandardsHandler;
     private QmsUploadHandler qmsHandler;
+
+    private CertificationEditionDAO editionDao;
+    private CertificationBodyDAO acbDao;
+    private TestingLabDAO atlDao;
+    private ProductDAO productDao;
+    private ProductVersionDAO versionDao;
     private ListingUploadHandlerUtil uploadUtil;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
+    @SuppressWarnings("checkstyle:parameternumber")
     public ListingDetailsUploadHandler(DeveloperDetailsUploadHandler devDetailsUploadHandler,
             TargetedUsersUploadHandler targetedUserUploadHandler,
             AccessibilityStandardsUploadHandler accessibilityStandardsHandler,
             QmsUploadHandler qmsHandler,
+            CertificationEditionDAO editionDao, CertificationBodyDAO acbDao,
+            TestingLabDAO atlDao, ProductDAO productDao, ProductVersionDAO versionDao,
             ListingUploadHandlerUtil uploadUtil, ErrorMessageUtil msgUtil) {
         this.devDetailsUploadHandler = devDetailsUploadHandler;
         this.targetedUserUploadHandler = targetedUserUploadHandler;
         this.accessibilityStandardsHandler = accessibilityStandardsHandler;
         this.qmsHandler = qmsHandler;
+        this.editionDao = editionDao;
+        this.acbDao = acbDao;
+        this.atlDao = atlDao;
+        this.productDao = productDao;
+        this.versionDao = versionDao;
         this.uploadUtil = uploadUtil;
         this.msgUtil = msgUtil;
     }
 
     public CertifiedProductSearchDetails parseAsListing(CSVRecord headingRecord, List<CSVRecord> listingRecords)
         throws ValidationException {
-        String chplId = parseChplId(headingRecord, listingRecords);
-        Boolean accessibilityCertified = parseAccessibilityCertified(headingRecord, listingRecords);
         Date certificationDate = parseCertificationDate(headingRecord, listingRecords);
+        Developer developer = devDetailsUploadHandler.handle(headingRecord, listingRecords);
+        Product product = parseProduct(developer, headingRecord, listingRecords);
+        ProductVersion version = parseVersion(product, headingRecord, listingRecords);
+
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .chplProductNumber(chplId)
+                .chplProductNumber(parseChplId(headingRecord, listingRecords))
                 .certifyingBody(parseAcb(headingRecord, listingRecords))
                 .testingLabs(parseAtls(headingRecord, listingRecords))
                 .acbCertificationId(uploadUtil.parseSingleValueField(
                         Headings.ACB_CERTIFICATION_ID, headingRecord, listingRecords))
-                .accessibilityCertified(accessibilityCertified)
+                .accessibilityCertified(parseAccessibilityCertified(headingRecord, listingRecords))
                 .certificationDate(certificationDate != null ? certificationDate.getTime() : null)
-                .developer(devDetailsUploadHandler.handle(headingRecord, listingRecords))
-                .product(parseProduct(headingRecord, listingRecords))
-                .version(parseVersion(headingRecord, listingRecords))
+                .developer(developer)
+                .product(product)
+                .version(version)
                 .certificationEdition(parseEdition(headingRecord, listingRecords))
+                .transparencyAttestationUrl(parseTransparencyAttestationUrl(headingRecord, listingRecords))
                 .targetedUsers(targetedUserUploadHandler.handle(headingRecord, listingRecords))
                 .accessibilityStandards(accessibilityStandardsHandler.handle(headingRecord, listingRecords))
                 .qmsStandards(qmsHandler.handle(headingRecord, listingRecords))
+                //TODO add ics, cqm, sed, participants, tasks
             .build();
 
-        //TODO: fill in product and version IDs?
-        //would have to be done here after building as they depend on the developer
         return listing;
     }
 
@@ -90,34 +118,59 @@ public class ListingDetailsUploadHandler {
         return certificationDate;
     }
 
-    private Product parseProduct(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+    private Product parseProduct(Developer developer, CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         Product product = Product.builder()
                 .name(uploadUtil.parseSingleValueField(Headings.PRODUCT, headingRecord, listingRecords))
                 .build();
+        if (developer != null && developer.getDeveloperId() != null) {
+            //TODO: convert this query to use ProductEntitySimple
+            ProductDTO foundProduct = productDao.getByDeveloperAndName(developer.getDeveloperId(), product.getName());
+            if (foundProduct != null) {
+                product.setProductId(foundProduct.getId());
+            }
+        }
         return product;
     }
 
-    private ProductVersion parseVersion(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+    private ProductVersion parseVersion(Product product, CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         ProductVersion version = ProductVersion.builder()
                 .version(uploadUtil.parseSingleValueField(Headings.VERSION, headingRecord, listingRecords))
                 .build();
+        if (product != null && product.getProductId() != null) {
+            ProductVersionDTO foundVersion = versionDao.getByProductAndVersion(product.getProductId(), version.getVersion());
+            if (foundVersion != null) {
+                version.setVersionId(foundVersion.getId());
+            }
+        }
         return version;
     }
 
     private Map<String, Object> parseEdition(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-       Map<String, Object> edition = new HashMap<String, Object>();
-       edition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY,
-               uploadUtil.parseSingleValueField(Headings.EDITION, headingRecord, listingRecords));
-       //TODO: lookup ID?
-       return edition;
+        String year = uploadUtil.parseSingleValueField(Headings.EDITION, headingRecord, listingRecords);
+        Map<String, Object> edition = new HashMap<String, Object>();
+        edition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, year);
+        edition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, null);
+        if (!StringUtils.isEmpty(year)) {
+            CertificationEditionDTO editionDto = editionDao.getByYear(year);
+            if (editionDto != null) {
+                edition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, editionDto.getId());
+            }
+        }
+        return edition;
     }
 
     private Map<String, Object> parseAcb(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        Map<String, Object> edition = new HashMap<String, Object>();
-        edition.put(CertifiedProductSearchDetails.ACB_NAME_KEY,
-                uploadUtil.parseSingleValueField(Headings.CERTIFICATION_BODY_NAME, headingRecord, listingRecords));
-        //TODO: lookup ID?
-        return edition;
+        String acbName = uploadUtil.parseSingleValueField(Headings.CERTIFICATION_BODY_NAME, headingRecord, listingRecords);
+        Map<String, Object> acb = new HashMap<String, Object>();
+        acb.put(CertifiedProductSearchDetails.ACB_NAME_KEY, acbName);
+        acb.put(CertifiedProductSearchDetails.ACB_ID_KEY, null);
+        if (!StringUtils.isEmpty(acbName)) {
+            CertificationBodyDTO acbDto = acbDao.getByName(acbName);
+            if (acbDto != null) {
+                acb.put(CertifiedProductSearchDetails.ACB_ID_KEY, acbDto.getId());
+            }
+        }
+        return acb;
     }
 
     private List<CertifiedProductTestingLab> parseAtls(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
@@ -127,9 +180,18 @@ public class ListingDetailsUploadHandler {
             CertifiedProductTestingLab atl = CertifiedProductTestingLab.builder()
                     .testingLabName(atlName)
                     .build();
-            //TODO: lookup ID?
+            if (!StringUtils.isEmpty(atlName)) {
+                TestingLabDTO atlDto = atlDao.getByName(atlName);
+                if (atlDto != null) {
+                    atl.setId(atlDto.getId());
+                }
+            }
             atls.add(atl);
         });
         return atls;
+    }
+
+    private String parseTransparencyAttestationUrl(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+        return uploadUtil.parseSingleValueField(Headings.K_1_URL, headingRecord, listingRecords);
     }
 }

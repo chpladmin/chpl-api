@@ -37,7 +37,7 @@ public class QmsUploadHandler {
         List<String> qmsStandardNames = parseQmsStandardNames(headingRecord, listingRecords);
         List<String> qmsApplicableCriteria = parseQmsApplicableCriteria(headingRecord, listingRecords);
         List<String> qmsModifications = parseQmsModifications(headingRecord, listingRecords);
-        //I think everything remains ordered using these data structures so it should be okay.
+        //I think everything remains ordered using these data structures so this should be okay.
         if (qmsStandardNames != null) {
             qmsStandards = IntStream.range(0, qmsStandardNames.size())
                 .mapToObj(index -> buildQmsStandard(index, qmsStandardNames.get(index), qmsApplicableCriteria, qmsModifications))

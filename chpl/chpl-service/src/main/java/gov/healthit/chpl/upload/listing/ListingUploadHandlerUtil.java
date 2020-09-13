@@ -112,7 +112,7 @@ public class ListingUploadHandlerUtil {
         return parseDate(fieldValue);
     }
 
-    public List<String> parseMultiValueField(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords)
+    public List<String> parseRequiredMultiValueField(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords)
             throws ValidationException {
             List<String> fieldValues = null;
             int fieldHeadingIndex = getColumnIndexOfHeading(field, headingRecord);
@@ -126,6 +126,23 @@ public class ListingUploadHandlerUtil {
                     String parsedFieldValue = listingRecord.get(fieldHeadingIndex);
                     if (parsedFieldValue != null) {
                         fieldValues.add(parsedFieldValue.trim());
+                    }
+                }
+            }
+            return fieldValues;
+    }
+
+    public List<String> parseMultiValueField(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords)
+            throws ValidationException {
+            List<String> fieldValues = new ArrayList<String>();
+            int fieldHeadingIndex = getColumnIndexOfHeading(field, headingRecord);
+            if (fieldHeadingIndex >= 0) {
+                for (CSVRecord listingRecord : listingRecords) {
+                    if (fieldHeadingIndex < listingRecord.size()) {
+                        String parsedFieldValue = listingRecord.get(fieldHeadingIndex);
+                        if (parsedFieldValue != null) {
+                            fieldValues.add(parsedFieldValue.trim());
+                        }
                     }
                 }
             }

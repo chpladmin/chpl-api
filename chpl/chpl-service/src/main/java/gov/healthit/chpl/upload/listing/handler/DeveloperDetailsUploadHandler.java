@@ -39,6 +39,7 @@ public class DeveloperDetailsUploadHandler {
                 .selfDeveloper(uploadUtil.parseSingleValueFieldAsBoolean(Headings.SELF_DEVELOPER, headingRecord, listingRecords))
                 .build();
         if (!StringUtils.isEmpty(developer.getName())) {
+            //TODO: convert query to get a DeveloperEntitySimple
             DeveloperDTO existingDeveloper = developerDao.getByName(developer.getName());
             if (existingDeveloper != null) {
                 developer.setDeveloperId(existingDeveloper.getId());
