@@ -51,7 +51,7 @@ public class GapAllowedReviewer implements Reviewer {
         if (isCertificationDateAfterCuresEffictiveRuleDate(listing)) {
             Optional<PendingCertificationResultDTO> f3Result = getF3Criterion(listing);
             if (f3Result.isPresent() && f3Result.get().getMeetsCriteria() && f3Result.get().getGap()) {
-                listing.getErrorMessages().add(errorMessageUtil.getMessage("listing.criteria.f_3CannotHaveGap"));
+                listing.getErrorMessages().add(errorMessageUtil.getMessage("listing.criteria.f3CannotHaveGap"));
             }
         }
     }

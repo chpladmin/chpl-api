@@ -21,17 +21,17 @@ import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 @Component("gapAllowedReviewer")
 public class GapAllowedReviewer implements Reviewer {
 
-    @Value("${cures.ruleEffectiveDate}")
     private String curesEffectiveRuleDate;
-
     private Long curesEffectiveRuleDateTimestamp;
     private CertificationCriterionService certificationCriterionService;
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public GapAllowedReviewer(CertificationCriterionService certificationCriterionService, ErrorMessageUtil errorMEssageUtil) {
+    public GapAllowedReviewer(CertificationCriterionService certificationCriterionService, ErrorMessageUtil errorMEssageUtil,
+            @Value("${cures.ruleEffectiveDate}") String curesEffectiveRuleDate) {
         this.certificationCriterionService = certificationCriterionService;
         this.errorMessageUtil = errorMEssageUtil;
+        this.curesEffectiveRuleDate = curesEffectiveRuleDate;
     }
 
     @PostConstruct
@@ -51,7 +51,7 @@ public class GapAllowedReviewer implements Reviewer {
         if (isCertificationDateAfterCuresEffictiveRuleDate(listing)) {
             Optional<CertificationResult> f3Result = getF3Criterion(listing);
             if (f3Result.isPresent() && f3Result.get().isSuccess() && f3Result.get().isGap()) {
-                listing.getErrorMessages().add(errorMessageUtil.getMessage("listing.criteria.f_3CannotHaveGap"));
+                listing.getErrorMessages().add(errorMessageUtil.getMessage("listing.criteria.f3CannotHaveGap"));
             }
         }
     }
