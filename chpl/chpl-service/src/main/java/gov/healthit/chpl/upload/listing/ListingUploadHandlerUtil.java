@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.validation.ValidationException;
 
@@ -124,18 +125,22 @@ public class ListingUploadHandlerUtil {
             for (CSVRecord listingRecord : listingRecords) {
                 if (fieldHeadingIndex < listingRecord.size()) {
                     String parsedFieldValue = listingRecord.get(fieldHeadingIndex);
-                    if (parsedFieldValue != null) {
+                    if (parsedFieldValue != null && !StringUtils.isEmpty(parsedFieldValue.trim())) {
                         fieldValues.add(parsedFieldValue.trim());
                     }
                 }
             }
-            return fieldValues;
+            return removeEmptyValues(fieldValues);
     }
 
     public List<String> parseMultiValueField(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords)
             throws ValidationException {
             List<String> fieldValues = new ArrayList<String>();
             int fieldHeadingIndex = getColumnIndexOfHeading(field, headingRecord);
+            if (fieldHeadingIndex < 0) {
+                return null;
+            }
+
             if (fieldHeadingIndex >= 0) {
                 for (CSVRecord listingRecord : listingRecords) {
                     if (fieldHeadingIndex < listingRecord.size()) {
@@ -146,7 +151,17 @@ public class ListingUploadHandlerUtil {
                     }
                 }
             }
-            return fieldValues;
+            return removeEmptyValues(fieldValues);
+    }
+
+    private List<String> removeEmptyValues(List<String> origList) {
+        return origList.stream()
+            .filter(str -> !StringUtils.isEmpty(str))
+            .collect(Collectors.toList());
+    }
+
+    public boolean hasHeading(Headings heading, CSVRecord headingRecord) {
+        return getColumnIndexOfHeading(heading, headingRecord) >= 0;
     }
 
     private boolean hasHeading(CSVRecord record) {
@@ -176,7 +191,9 @@ public class ListingUploadHandlerUtil {
     }
 
     private Boolean parseBoolean(String value) throws ValidationException {
-        if (value == null || StringUtils.isEmpty(value.trim())) {
+        if (value == null) {
+            return null;
+        } else if (StringUtils.isEmpty(value.trim())) {
             return false;
         }
 

@@ -2,7 +2,6 @@ package gov.healthit.chpl.upload.listing.handler;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
@@ -38,6 +37,31 @@ public class TargetedUsersUploadHandlerTest {
     }
 
     @Test
+    public void parseUsers_NoUsersColumn_ReturnsEmptyList() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,RECORD_STATUS__C").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("14.0.0,New");
+        assertNotNull(listingRecords);
+
+        List<CertifiedProductTargetedUser> foundTargetedUsers = handler.handle(headingRecord, listingRecords);
+        assertNotNull(foundTargetedUsers);
+        assertEquals(0, foundTargetedUsers.size());
+    }
+
+    @Test
+    public void parseUsers_UsersColumnNoData_ReturnsListWithEmptyItem() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("14.0.0,New,");
+        assertNotNull(listingRecords);
+
+        List<CertifiedProductTargetedUser> foundTargetedUsers = handler.handle(headingRecord, listingRecords);
+        assertNotNull(foundTargetedUsers);
+        assertEquals(0, foundTargetedUsers.size());
+    }
+
+
+    @Test
     public void parseUsers_MultipleValidUsers_ReturnsCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
         assertNotNull(headingRecord);
@@ -49,18 +73,14 @@ public class TargetedUsersUploadHandlerTest {
         Mockito.when(dao.getByName(ArgumentMatchers.eq("User 2")))
         .thenReturn(buildDto(2L, "User 2"));
 
-        try {
-            List<CertifiedProductTargetedUser> foundTargetedUsers = handler.handle(headingRecord, listingRecords);
-            assertNotNull(foundTargetedUsers);
-            assertEquals(2, foundTargetedUsers.size());
-            foundTargetedUsers.stream().forEach(tu -> {
-                assertNull(tu.getId());
-                assertNotNull(tu.getTargetedUserId());
-                assertNotNull(tu.getTargetedUserName());
-            });
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
+        List<CertifiedProductTargetedUser> foundTargetedUsers = handler.handle(headingRecord, listingRecords);
+        assertNotNull(foundTargetedUsers);
+        assertEquals(2, foundTargetedUsers.size());
+        foundTargetedUsers.stream().forEach(tu -> {
+            assertNull(tu.getId());
+            assertNotNull(tu.getTargetedUserId());
+            assertNotNull(tu.getTargetedUserName());
+        });
     }
 
     @Test
@@ -75,22 +95,18 @@ public class TargetedUsersUploadHandlerTest {
         Mockito.when(dao.getByName(ArgumentMatchers.eq("User 2")))
         .thenReturn(null);
 
-        try {
-            List<CertifiedProductTargetedUser> foundTargetedUsers = handler.handle(headingRecord, listingRecords);
-            assertNotNull(foundTargetedUsers);
-            assertEquals(2, foundTargetedUsers.size());
-            foundTargetedUsers.stream().forEach(tu -> {
-                assertNull(tu.getId());
-                assertNotNull(tu.getTargetedUserName());
-                if (tu.getTargetedUserId() != null) {
-                    assertEquals(1, tu.getTargetedUserId().longValue());
-                } else {
-                    assertEquals("User 2", tu.getTargetedUserName());
-                }
-            });
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
+        List<CertifiedProductTargetedUser> foundTargetedUsers = handler.handle(headingRecord, listingRecords);
+        assertNotNull(foundTargetedUsers);
+        assertEquals(2, foundTargetedUsers.size());
+        foundTargetedUsers.stream().forEach(tu -> {
+            assertNull(tu.getId());
+            assertNotNull(tu.getTargetedUserName());
+            if (tu.getTargetedUserId() != null) {
+                assertEquals(1, tu.getTargetedUserId().longValue());
+            } else {
+                assertEquals("User 2", tu.getTargetedUserName());
+            }
+        });
     }
 
     @Test
@@ -103,20 +119,16 @@ public class TargetedUsersUploadHandlerTest {
         Mockito.when(dao.getByName(ArgumentMatchers.eq("Pediatrics")))
             .thenReturn(buildDto(1L, "Pediatrics"));
 
-        try {
-            List<CertifiedProductTargetedUser> foundTargetedUsers = handler.handle(headingRecord, listingRecords);
-            assertNotNull(foundTargetedUsers);
-            assertEquals(1, foundTargetedUsers.size());
-            foundTargetedUsers.stream().forEach(tu -> {
-                assertNull(tu.getId());
-                assertNotNull(tu.getTargetedUserId());
-                assertEquals(1, tu.getTargetedUserId().longValue());
-                assertNotNull(tu.getTargetedUserName());
-                assertEquals("Pediatrics", tu.getTargetedUserName());
-            });
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
+        List<CertifiedProductTargetedUser> foundTargetedUsers = handler.handle(headingRecord, listingRecords);
+        assertNotNull(foundTargetedUsers);
+        assertEquals(1, foundTargetedUsers.size());
+        foundTargetedUsers.stream().forEach(tu -> {
+            assertNull(tu.getId());
+            assertNotNull(tu.getTargetedUserId());
+            assertEquals(1, tu.getTargetedUserId().longValue());
+            assertNotNull(tu.getTargetedUserName());
+            assertEquals("Pediatrics", tu.getTargetedUserName());
+        });
     }
 
     @Test
@@ -126,21 +138,17 @@ public class TargetedUsersUploadHandlerTest {
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW);
         assertNotNull(listingRecords);
 
-        Mockito.when(dao.getByName(ArgumentMatchers.eq("Pediatrics"))).thenReturn(null);
+    Mockito.when(dao.getByName(ArgumentMatchers.eq("Pediatrics"))).thenReturn(null);
 
-        try {
-            List<CertifiedProductTargetedUser> foundTargetedUsers = handler.handle(headingRecord, listingRecords);
-            assertNotNull(foundTargetedUsers);
-            assertEquals(1, foundTargetedUsers.size());
-            foundTargetedUsers.stream().forEach(tu -> {
-                assertNull(tu.getId());
-                assertNull(tu.getTargetedUserId());
-                assertNotNull(tu.getTargetedUserName());
-                assertEquals("Pediatrics", tu.getTargetedUserName());
-            });
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
+        List<CertifiedProductTargetedUser> foundTargetedUsers = handler.handle(headingRecord, listingRecords);
+        assertNotNull(foundTargetedUsers);
+        assertEquals(1, foundTargetedUsers.size());
+        foundTargetedUsers.stream().forEach(tu -> {
+            assertNull(tu.getId());
+            assertNull(tu.getTargetedUserId());
+            assertNotNull(tu.getTargetedUserName());
+            assertEquals("Pediatrics", tu.getTargetedUserName());
+        });
     }
 
     @Test
@@ -154,20 +162,16 @@ public class TargetedUsersUploadHandlerTest {
         Mockito.when(dao.getByName(ArgumentMatchers.eq("Test")))
             .thenReturn(buildDto(1L, "Test"));
 
-        try {
-            List<CertifiedProductTargetedUser> foundTargetedUsers = handler.handle(headingRecord, listingRecords);
-            assertNotNull(foundTargetedUsers);
-            assertEquals(1, foundTargetedUsers.size());
-            foundTargetedUsers.stream().forEach(tu -> {
-                assertNull(tu.getId());
-                assertNotNull(tu.getTargetedUserId());
-                assertEquals(1, tu.getTargetedUserId().longValue());
-                assertNotNull(tu.getTargetedUserName());
-                assertEquals("Test", tu.getTargetedUserName());
-            });
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
+        List<CertifiedProductTargetedUser> foundTargetedUsers = handler.handle(headingRecord, listingRecords);
+        assertNotNull(foundTargetedUsers);
+        assertEquals(1, foundTargetedUsers.size());
+        foundTargetedUsers.stream().forEach(tu -> {
+            assertNull(tu.getId());
+            assertNotNull(tu.getTargetedUserId());
+            assertEquals(1, tu.getTargetedUserId().longValue());
+            assertNotNull(tu.getTargetedUserName());
+            assertEquals("Test", tu.getTargetedUserName());
+        });
     }
 
     private TargetedUserDTO buildDto(Long id, String name) {

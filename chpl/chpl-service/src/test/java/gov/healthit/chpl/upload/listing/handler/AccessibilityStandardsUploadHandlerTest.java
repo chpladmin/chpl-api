@@ -37,6 +37,32 @@ public class AccessibilityStandardsUploadHandlerTest {
     }
 
     @Test
+    public void parseStandards_StandardsColumnNoData_ReturnsEmptyList() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
+                "15.02.02.3007.A056.01.00.0.180214,New,");
+        assertNotNull(listingRecords);
+
+        List<CertifiedProductAccessibilityStandard> foundStandards = handler.handle(headingRecord, listingRecords);
+        assertNotNull(foundStandards);
+        assertEquals(0, foundStandards.size());
+    }
+
+    @Test
+    public void parseStandards_NoColumnNoData_ReturnsEmptyList() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,RECORD_STATUS__C").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
+                "15.02.02.3007.A056.01.00.0.180214,New");
+        assertNotNull(listingRecords);
+
+        List<CertifiedProductAccessibilityStandard> foundStandards = handler.handle(headingRecord, listingRecords);
+        assertNotNull(foundStandards);
+        assertEquals(0, foundStandards.size());
+    }
+
+    @Test
     public void parseStandards_MultipleValidStandards_ReturnsCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
         assertNotNull(headingRecord);

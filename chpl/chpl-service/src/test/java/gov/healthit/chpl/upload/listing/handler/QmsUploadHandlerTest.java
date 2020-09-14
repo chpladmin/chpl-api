@@ -37,6 +37,35 @@ public class QmsUploadHandlerTest {
     }
 
     @Test
+    public void parseQms_NoQmsColumn_ReturnsEmptyList() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,RECORD_STATUS__C").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("14.0.0,New");
+        assertNotNull(listingRecords);
+
+        List<CertifiedProductQmsStandard> foundQms = handler.handle(headingRecord, listingRecords);
+        assertNotNull(foundQms);
+        assertEquals(0, foundQms.size());
+    }
+
+    @Test
+    public void parseQms_QmsColumnNoData_ReturnsListWithEmptyItems() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",,,");
+        assertNotNull(listingRecords);
+
+        List<CertifiedProductQmsStandard> foundQms = handler.handle(headingRecord, listingRecords);
+        assertNotNull(foundQms);
+        assertEquals(1, foundQms.size());
+        CertifiedProductQmsStandard qms = foundQms.get(0);
+        assertEquals("", qms.getQmsStandardName());
+        assertEquals("", qms.getQmsModification());
+        assertEquals("", qms.getApplicableCriteria());
+        assertNull(qms.getQmsStandardId());
+    }
+
+    @Test
     public void parseQms_MultipleValidQmsAllFieldsPopulated_ReturnsCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
         assertNotNull(headingRecord);
@@ -70,7 +99,6 @@ public class QmsUploadHandlerTest {
             }
         });
     }
-
 
     @Test
     public void parseQms_MultipleValidQmsSomeFieldsPopulated_ReturnsCorrectly() {

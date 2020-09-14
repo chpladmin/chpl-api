@@ -39,6 +39,17 @@ public class DeveloperDetailsUploadHandlerTest {
     }
 
     @Test
+    public void parseDeveloperName_NoDeveloperFields_NullDeveloper() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW);
+        assertNotNull(listingRecords);
+
+        Developer developer = handler.handle(headingRecord, listingRecords);
+        assertNull(developer);
+    }
+
+    @Test
     public void parseDeveloperName_ExistingDeveloper_ReturnsCorrectly() {
         String developerName = "My Developer";
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
@@ -55,7 +66,6 @@ public class DeveloperDetailsUploadHandlerTest {
         assertNotNull(developer);
         assertEquals(1L, developer.getDeveloperId());
         assertEquals(developerName, developer.getName());
-
     }
 
     @Test
