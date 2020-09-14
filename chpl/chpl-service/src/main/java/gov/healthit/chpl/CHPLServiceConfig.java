@@ -273,7 +273,6 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
             } catch (NumberFormatException ex) {
                 LOGGER.warn("Cannot parse " + requestTimeoutProperty + " as an integer. "
                         + "Using the default value " + DEFAULT_REQUEST_TIMEOUT);
-                requestTimeout = DEFAULT_REQUEST_TIMEOUT;
             }
         }
         requestFactory.setConnectTimeout(requestTimeout);
