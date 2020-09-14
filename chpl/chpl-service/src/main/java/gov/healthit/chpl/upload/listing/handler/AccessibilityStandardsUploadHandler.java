@@ -57,7 +57,7 @@ public class AccessibilityStandardsUploadHandler {
     }
 
     private List<String> parseAccessibilityStandardNames(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        List<String> values = uploadUtil.parseMultiValueField(
+        List<String> values = uploadUtil.parseMultiRowFieldWithoutEmptyValues(
                 Headings.ACCESSIBILITY_STANDARD, headingRecord, listingRecords);
         return values;
     }

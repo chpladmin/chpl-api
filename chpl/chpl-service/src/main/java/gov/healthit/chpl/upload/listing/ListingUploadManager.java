@@ -116,7 +116,7 @@ public class ListingUploadManager {
         throws ValidationException {
         String chplId = null;
         try {
-            chplId = uploadUtil.parseRequiredSingleValueField(
+            chplId = uploadUtil.parseRequiredSingleRowField(
                 Headings.UNIQUE_ID, headingRecord, listingRecords);
         } catch (Exception ex) {
             throw new ValidationException("Could not parse CHPL Unique ID: " + ex.getMessage());
@@ -128,7 +128,7 @@ public class ListingUploadManager {
             throws ValidationException {
             String acbName = null;
             try {
-                acbName = uploadUtil.parseRequiredSingleValueField(
+                acbName = uploadUtil.parseRequiredSingleRowField(
                     Headings.CERTIFICATION_BODY_NAME, headingRecord, listingRecords);
             } catch (Exception ex) {
                 throw new ValidationException("Could not parse Certification Body name: " + ex.getMessage());
@@ -147,9 +147,9 @@ public class ListingUploadManager {
         Iterator<CSVRecord> remainingRecords = allCsvRecords.stream().skip(startIndex).iterator();
         while (remainingRecords.hasNext()) {
             CSVRecord record = remainingRecords.next();
-            String recordUniqueId = uploadUtil.parseRequiredSingleValueField(
+            String recordUniqueId = uploadUtil.parseRequiredSingleRowField(
                     Headings.UNIQUE_ID, heading, record);
-            String recordStatus = uploadUtil.parseRequiredSingleValueField(
+            String recordStatus = uploadUtil.parseRequiredSingleRowField(
                     Headings.RECORD_STATUS, heading, record);
             if (!StringUtils.isEmpty(recordUniqueId)) {
                 if (recordStatus.equalsIgnoreCase("NEW") && listingCsvRecords.size() > 0) {
@@ -179,7 +179,7 @@ public class ListingUploadManager {
         while (currIndex < allCsvRecords.size()) {
             List<CSVRecord> nextListingCsvRecords = getNextListingRecords(allCsvRecords, currIndex);
             currIndex += nextListingCsvRecords.size();
-            String chplId = uploadUtil.parseSingleValueField(Headings.UNIQUE_ID, heading, nextListingCsvRecords);
+            String chplId = uploadUtil.parseSingleRowField(Headings.UNIQUE_ID, heading, nextListingCsvRecords);
             if (!StringUtils.isEmpty(chplId) && !chplId.contains(NEW_DEVELOPER_CODE)) {
                 uploadedChplIdsExcludingNewDevelopers.add(chplId);
             }

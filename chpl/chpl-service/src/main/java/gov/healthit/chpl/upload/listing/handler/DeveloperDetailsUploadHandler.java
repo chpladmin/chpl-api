@@ -38,9 +38,9 @@ public class DeveloperDetailsUploadHandler {
         }
 
         Developer developer = Developer.builder()
-                .name(uploadUtil.parseSingleValueField(Headings.DEVELOPER, headingRecord, listingRecords))
-                .website(uploadUtil.parseSingleValueField(Headings.DEVELOPER_WEBSITE, headingRecord, listingRecords))
-                .selfDeveloper(uploadUtil.parseSingleValueFieldAsBoolean(Headings.SELF_DEVELOPER, headingRecord, listingRecords))
+                .name(uploadUtil.parseSingleRowField(Headings.DEVELOPER, headingRecord, listingRecords))
+                .website(uploadUtil.parseSingleRowField(Headings.DEVELOPER_WEBSITE, headingRecord, listingRecords))
+                .selfDeveloper(uploadUtil.parseSingleRowFieldAsBoolean(Headings.SELF_DEVELOPER, headingRecord, listingRecords))
                 .build();
         if (!StringUtils.isEmpty(developer.getName())) {
             //TODO: convert query to get a DeveloperEntitySimple
@@ -50,16 +50,16 @@ public class DeveloperDetailsUploadHandler {
             }
         }
         Address address = Address.builder()
-                .line1(uploadUtil.parseSingleValueField(Headings.DEVELOPER_ADDRESS, headingRecord, listingRecords))
-                .city(uploadUtil.parseSingleValueField(Headings.DEVELOPER_CITY, headingRecord, listingRecords))
-                .state(uploadUtil.parseSingleValueField(Headings.DEVELOPER_STATE, headingRecord, listingRecords))
-                .zipcode(uploadUtil.parseSingleValueField(Headings.DEVELOPER_ZIP, headingRecord, listingRecords))
+                .line1(uploadUtil.parseSingleRowField(Headings.DEVELOPER_ADDRESS, headingRecord, listingRecords))
+                .city(uploadUtil.parseSingleRowField(Headings.DEVELOPER_CITY, headingRecord, listingRecords))
+                .state(uploadUtil.parseSingleRowField(Headings.DEVELOPER_STATE, headingRecord, listingRecords))
+                .zipcode(uploadUtil.parseSingleRowField(Headings.DEVELOPER_ZIP, headingRecord, listingRecords))
                 .build();
         developer.setAddress(address);
         Contact contact = Contact.builder()
-                .fullName(uploadUtil.parseSingleValueField(Headings.DEVELOPER_CONTACT_NAME, headingRecord, listingRecords))
-                .email(uploadUtil.parseSingleValueField(Headings.DEVELOPER_EMAIL, headingRecord, listingRecords))
-                .phoneNumber(uploadUtil.parseSingleValueField(Headings.DEVELOPER_PHONE, headingRecord, listingRecords))
+                .fullName(uploadUtil.parseSingleRowField(Headings.DEVELOPER_CONTACT_NAME, headingRecord, listingRecords))
+                .email(uploadUtil.parseSingleRowField(Headings.DEVELOPER_EMAIL, headingRecord, listingRecords))
+                .phoneNumber(uploadUtil.parseSingleRowField(Headings.DEVELOPER_PHONE, headingRecord, listingRecords))
                 .build();
         developer.setContact(contact);
         return developer;

@@ -89,19 +89,19 @@ public class QmsUploadHandler {
     }
 
     private List<String> parseQmsStandardNames(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        List<String> values = uploadUtil.parseMultiValueField(
+        List<String> values = uploadUtil.parseMultiRowField(
                 Headings.QMS_STANDARD_NAME, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseQmsApplicableCriteria(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        List<String> values = uploadUtil.parseMultiValueField(
+        List<String> values = uploadUtil.parseMultiRowField(
                 Headings.QMS_STANDARD_APPLICABLE_CRITERIA, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseQmsModifications(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        List<String> values = uploadUtil.parseMultiValueField(
+        List<String> values = uploadUtil.parseMultiRowField(
                 Headings.QMS_MODIFICATION, headingRecord, listingRecords);
         return values;
     }

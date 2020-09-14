@@ -52,7 +52,7 @@ public class ListingUploadHandlerUtil {
         return allCsvRecords.get(getHeadingRecordIndex(allCsvRecords));
     }
 
-    public String parseRequiredSingleValueField(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords)
+    public String parseRequiredSingleRowField(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords)
             throws ValidationException {
         String fieldValue = null;
         int fieldHeadingIndex = getColumnIndexOfHeading(field, headingRecord);
@@ -71,14 +71,14 @@ public class ListingUploadHandlerUtil {
         return fieldValue;
     }
 
-    public String parseRequiredSingleValueField(Headings field, CSVRecord headingRecord, CSVRecord listingRecord)
+    public String parseRequiredSingleRowField(Headings field, CSVRecord headingRecord, CSVRecord listingRecord)
             throws ValidationException {
         List<CSVRecord> data = new ArrayList<CSVRecord>();
         data.add(listingRecord);
-        return parseRequiredSingleValueField(field, headingRecord, data);
+        return parseRequiredSingleRowField(field, headingRecord, data);
     }
 
-    public String parseSingleValueField(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+    public String parseSingleRowField(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         String fieldValue = null;
         int fieldHeadingIndex = getColumnIndexOfHeading(field, headingRecord);
         if (fieldHeadingIndex < 0) {
@@ -95,45 +95,25 @@ public class ListingUploadHandlerUtil {
         return fieldValue;
     }
 
-    public String parseSingleValueField(Headings field, CSVRecord headingRecord, CSVRecord listingRecord) {
+    public String parseSingleRowField(Headings field, CSVRecord headingRecord, CSVRecord listingRecord) {
         List<CSVRecord> data = new ArrayList<CSVRecord>();
         data.add(listingRecord);
-        return parseSingleValueField(field, headingRecord, data);
+        return parseSingleRowField(field, headingRecord, data);
     }
 
-    public Boolean parseSingleValueFieldAsBoolean(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords)
+    public Boolean parseSingleRowFieldAsBoolean(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords)
             throws ValidationException {
-        String fieldValue = parseSingleValueField(field, headingRecord, listingRecords);
+        String fieldValue = parseSingleRowField(field, headingRecord, listingRecords);
         return parseBoolean(fieldValue);
     }
 
-    public Date parseSingleValueFieldAsDate(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords)
+    public Date parseSingleRowFieldAsDate(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords)
             throws ValidationException {
-        String fieldValue = parseSingleValueField(field, headingRecord, listingRecords);
+        String fieldValue = parseSingleRowField(field, headingRecord, listingRecords);
         return parseDate(fieldValue);
     }
 
-    public List<String> parseRequiredMultiValueField(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords)
-            throws ValidationException {
-            List<String> fieldValues = null;
-            int fieldHeadingIndex = getColumnIndexOfHeading(field, headingRecord);
-            if (fieldHeadingIndex < 0) {
-                throw new ValidationException(msgUtil.getMessage("listing.upload.headingNotFound",
-                        field.getNamesAsString()));
-            }
-            fieldValues = new ArrayList<String>();
-            for (CSVRecord listingRecord : listingRecords) {
-                if (fieldHeadingIndex < listingRecord.size()) {
-                    String parsedFieldValue = listingRecord.get(fieldHeadingIndex);
-                    if (parsedFieldValue != null && !StringUtils.isEmpty(parsedFieldValue.trim())) {
-                        fieldValues.add(parsedFieldValue.trim());
-                    }
-                }
-            }
-            return removeEmptyValues(fieldValues);
-    }
-
-    public List<String> parseMultiValueField(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords)
+    public List<String> parseMultiRowField(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords)
             throws ValidationException {
             List<String> fieldValues = new ArrayList<String>();
             int fieldHeadingIndex = getColumnIndexOfHeading(field, headingRecord);
@@ -151,7 +131,14 @@ public class ListingUploadHandlerUtil {
                     }
                 }
             }
-            return removeEmptyValues(fieldValues);
+            return fieldValues;
+    }
+
+    public List<String> parseMultiRowFieldWithoutEmptyValues(
+            Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords)
+            throws ValidationException {
+            List<String> fieldValues = parseMultiRowField(field, headingRecord, listingRecords);
+            return fieldValues == null ? null : removeEmptyValues(fieldValues);
     }
 
     private List<String> removeEmptyValues(List<String> origList) {

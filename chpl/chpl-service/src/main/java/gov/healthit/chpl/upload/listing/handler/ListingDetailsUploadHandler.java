@@ -72,6 +72,11 @@ public class ListingDetailsUploadHandler {
         this.msgUtil = msgUtil;
     }
 
+    //TODO: question - should we be looking up ANY IDs in the parsers?
+    //I went back and forth on it, and I think we should probably not do it in here
+    //and just have a data normalizer that runs before the validators to pick out
+    //any pieces of data that could be looked up for IDs. That way the lookups will only run once.
+
     public CertifiedProductSearchDetails parseAsListing(CSVRecord headingRecord, List<CSVRecord> listingRecords)
         throws ValidationException {
         Date certificationDate = parseCertificationDate(headingRecord, listingRecords);
@@ -83,7 +88,7 @@ public class ListingDetailsUploadHandler {
                 .chplProductNumber(parseChplId(headingRecord, listingRecords))
                 .certifyingBody(parseAcb(headingRecord, listingRecords))
                 .testingLabs(parseAtls(headingRecord, listingRecords))
-                .acbCertificationId(uploadUtil.parseSingleValueField(
+                .acbCertificationId(uploadUtil.parseSingleRowField(
                         Headings.ACB_CERTIFICATION_ID, headingRecord, listingRecords))
                 .accessibilityCertified(parseAccessibilityCertified(headingRecord, listingRecords))
                 .certificationDate(certificationDate != null ? certificationDate.getTime() : null)
@@ -104,31 +109,32 @@ public class ListingDetailsUploadHandler {
     private String parseChplId(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         String chplId = null;
         try {
-            chplId = uploadUtil.parseRequiredSingleValueField(
+            chplId = uploadUtil.parseRequiredSingleRowField(
                 Headings.UNIQUE_ID, headingRecord, listingRecords);
         } catch (ValidationException ex) { }
         return chplId;
     }
 
     private Boolean parseAccessibilityCertified(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        Boolean accessibilityCertified = uploadUtil.parseSingleValueFieldAsBoolean(
+        Boolean accessibilityCertified = uploadUtil.parseSingleRowFieldAsBoolean(
                 Headings.ACCESSIBILITY_CERTIFIED, headingRecord, listingRecords);
         return accessibilityCertified;
     }
 
     private Date parseCertificationDate(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        Date certificationDate = uploadUtil.parseSingleValueFieldAsDate(
+        Date certificationDate = uploadUtil.parseSingleRowFieldAsDate(
                 Headings.CERTIFICATION_DATE, headingRecord, listingRecords);
         return certificationDate;
     }
 
     private Product parseProduct(Developer developer, CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        if (!uploadUtil.hasHeading(Headings.PRODUCT, headingRecord)) {
+        String productName = uploadUtil.parseSingleRowField(Headings.PRODUCT, headingRecord, listingRecords);
+        if (productName == null) {
             return null;
         }
 
         Product product = Product.builder()
-                .name(uploadUtil.parseSingleValueField(Headings.PRODUCT, headingRecord, listingRecords))
+                .name(productName)
                 .build();
         if (ObjectUtils.allNotNull(developer, product)
                 && ObjectUtils.allNotNull(developer.getDeveloperId(), product.getName())) {
@@ -142,12 +148,13 @@ public class ListingDetailsUploadHandler {
     }
 
     private ProductVersion parseVersion(Product product, CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        if (!uploadUtil.hasHeading(Headings.VERSION, headingRecord)) {
+        String versionName = uploadUtil.parseSingleRowField(Headings.VERSION, headingRecord, listingRecords);
+        if (versionName == null) {
             return null;
         }
 
         ProductVersion version = ProductVersion.builder()
-                .version(uploadUtil.parseSingleValueField(Headings.VERSION, headingRecord, listingRecords))
+                .version(versionName)
                 .build();
         if (ObjectUtils.allNotNull(product, version)
                 && ObjectUtils.allNotNull(product.getProductId(), version.getVersion())) {
@@ -160,11 +167,10 @@ public class ListingDetailsUploadHandler {
     }
 
     private Map<String, Object> parseEdition(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        if (!uploadUtil.hasHeading(Headings.EDITION, headingRecord)) {
+        String year = uploadUtil.parseSingleRowField(Headings.EDITION, headingRecord, listingRecords);
+        if (year == null) {
             return null;
         }
-
-        String year = uploadUtil.parseSingleValueField(Headings.EDITION, headingRecord, listingRecords);
         Map<String, Object> edition = new HashMap<String, Object>();
         edition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, year);
         edition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, null);
@@ -178,11 +184,11 @@ public class ListingDetailsUploadHandler {
     }
 
     private Map<String, Object> parseAcb(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        if (!uploadUtil.hasHeading(Headings.CERTIFICATION_BODY_NAME, headingRecord)) {
+        String acbName = uploadUtil.parseSingleRowField(Headings.CERTIFICATION_BODY_NAME, headingRecord, listingRecords);
+        if (acbName == null) {
             return null;
         }
 
-        String acbName = uploadUtil.parseSingleValueField(Headings.CERTIFICATION_BODY_NAME, headingRecord, listingRecords);
         Map<String, Object> acb = new HashMap<String, Object>();
         acb.put(CertifiedProductSearchDetails.ACB_NAME_KEY, acbName);
         acb.put(CertifiedProductSearchDetails.ACB_ID_KEY, null);
@@ -197,7 +203,7 @@ public class ListingDetailsUploadHandler {
 
     private List<CertifiedProductTestingLab> parseAtls(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<CertifiedProductTestingLab> atls = new ArrayList<CertifiedProductTestingLab>();
-        List<String> atlNames = uploadUtil.parseMultiValueField(Headings.TESTING_LAB_NAME, headingRecord, listingRecords);
+        List<String> atlNames = uploadUtil.parseMultiRowFieldWithoutEmptyValues(Headings.TESTING_LAB_NAME, headingRecord, listingRecords);
         if (atlNames != null && atlNames.size() > 0) {
             atlNames.stream().forEach(atlName -> {
                 CertifiedProductTestingLab atl = CertifiedProductTestingLab.builder()
@@ -216,6 +222,6 @@ public class ListingDetailsUploadHandler {
     }
 
     private String parseTransparencyAttestationUrl(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        return uploadUtil.parseSingleValueField(Headings.K_1_URL, headingRecord, listingRecords);
+        return uploadUtil.parseSingleRowField(Headings.K_1_URL, headingRecord, listingRecords);
     }
 }

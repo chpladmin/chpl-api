@@ -57,7 +57,7 @@ public class TargetedUsersUploadHandler {
     }
 
     private List<String> parseTargetedUserNames(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        List<String> values = uploadUtil.parseMultiValueField(
+        List<String> values = uploadUtil.parseMultiRowFieldWithoutEmptyValues(
                 Headings.TARGETED_USERS, headingRecord, listingRecords);
         return values;
     }
