@@ -33,6 +33,7 @@ public class DeveloperDetailsUploadHandler {
     }
 
     public Developer handle(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+        //TODO: if no developer columns are in the file, should this method return null? or a dev object with all empty/null fields?
         Developer developer = Developer.builder()
                 .name(uploadUtil.parseSingleValueField(Headings.DEVELOPER, headingRecord, listingRecords))
                 .website(uploadUtil.parseSingleValueField(Headings.DEVELOPER_WEBSITE, headingRecord, listingRecords))

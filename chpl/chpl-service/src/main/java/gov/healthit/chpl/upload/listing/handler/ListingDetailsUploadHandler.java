@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.validation.ValidationException;
 
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -122,7 +123,7 @@ public class ListingDetailsUploadHandler {
         Product product = Product.builder()
                 .name(uploadUtil.parseSingleValueField(Headings.PRODUCT, headingRecord, listingRecords))
                 .build();
-        if (developer != null && developer.getDeveloperId() != null) {
+        if (ObjectUtils.allNotNull(developer, developer.getDeveloperId(), product, product.getName())) {
             //TODO: convert this query to use ProductEntitySimple
             ProductDTO foundProduct = productDao.getByDeveloperAndName(developer.getDeveloperId(), product.getName());
             if (foundProduct != null) {
@@ -136,7 +137,7 @@ public class ListingDetailsUploadHandler {
         ProductVersion version = ProductVersion.builder()
                 .version(uploadUtil.parseSingleValueField(Headings.VERSION, headingRecord, listingRecords))
                 .build();
-        if (product != null && product.getProductId() != null) {
+        if (ObjectUtils.allNotNull(product, product.getProductId(), version, version.getVersion())) {
             ProductVersionDTO foundVersion = versionDao.getByProductAndVersion(product.getProductId(), version.getVersion());
             if (foundVersion != null) {
                 version.setVersionId(foundVersion.getId());
@@ -183,7 +184,7 @@ public class ListingDetailsUploadHandler {
             if (!StringUtils.isEmpty(atlName)) {
                 TestingLabDTO atlDto = atlDao.getByName(atlName);
                 if (atlDto != null) {
-                    atl.setId(atlDto.getId());
+                    atl.setTestingLabId(atlDto.getId());
                 }
             }
             atls.add(atl);

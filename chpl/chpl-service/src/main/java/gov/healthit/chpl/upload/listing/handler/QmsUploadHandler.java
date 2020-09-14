@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -37,22 +38,42 @@ public class QmsUploadHandler {
         List<String> qmsStandardNames = parseQmsStandardNames(headingRecord, listingRecords);
         List<String> qmsApplicableCriteria = parseQmsApplicableCriteria(headingRecord, listingRecords);
         List<String> qmsModifications = parseQmsModifications(headingRecord, listingRecords);
-        //I think everything remains ordered using these data structures so this should be okay.
-        if (qmsStandardNames != null) {
-            qmsStandards = IntStream.range(0, qmsStandardNames.size())
-                .mapToObj(index -> buildQmsStandard(index, qmsStandardNames.get(index), qmsApplicableCriteria, qmsModifications))
-                .collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(qmsStandardNames)
+                && CollectionUtils.isEmpty(qmsApplicableCriteria)
+                && CollectionUtils.isEmpty(qmsModifications)) {
+            return qmsStandards;
         }
+
+        int max = 0;
+        if (CollectionUtils.isNotEmpty(qmsStandardNames)) {
+            max = Math.max(max, qmsStandardNames.size());
+        }
+        if (CollectionUtils.isNotEmpty(qmsApplicableCriteria)) {
+            max = Math.max(max, qmsApplicableCriteria.size());
+        }
+        if (CollectionUtils.isNotEmpty(qmsModifications)) {
+            max = Math.max(max, qmsModifications.size());
+        }
+        //I think everything remains ordered using these data structures so this should be okay.
+        qmsStandards = IntStream.range(0, max)
+            .mapToObj(index -> buildQmsStandard(index, qmsStandardNames, qmsApplicableCriteria, qmsModifications))
+            .collect(Collectors.toList());
         return qmsStandards;
     }
 
-    private CertifiedProductQmsStandard buildQmsStandard(int index, String qmsName, List<String> qmsApplicableCriteria,
+    private CertifiedProductQmsStandard buildQmsStandard(int index, List<String> qmsNames, List<String> qmsApplicableCriterias,
             List<String> qmsModifications) {
+        String qmsName = (qmsNames != null && qmsNames.size() > index) ? qmsNames.get(index) : null;
+        String qmsApplicableCriteria = (qmsApplicableCriterias != null && qmsApplicableCriterias.size() > index)
+                ? qmsApplicableCriterias.get(index) : null;
+        String qmsModification = (qmsModifications != null && qmsModifications.size() > index)
+                ? qmsModifications.get(index) : null;
+
         CertifiedProductQmsStandard qms = CertifiedProductQmsStandard.builder()
                 .qmsStandardName(qmsName)
                 .qmsStandardId(lookupQmsId(qmsName))
-                .applicableCriteria(qmsApplicableCriteria.get(index))
-                .qmsModification(qmsModifications.get(index))
+                .applicableCriteria(qmsApplicableCriteria)
+                .qmsModification(qmsModification)
                 .build();
         return qms;
     }

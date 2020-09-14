@@ -2,7 +2,6 @@ package gov.healthit.chpl.upload.listing.handler;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
@@ -49,18 +48,14 @@ public class AccessibilityStandardsUploadHandlerTest {
         Mockito.when(dao.getByName(ArgumentMatchers.eq("IEE 802.11")))
         .thenReturn(buildDto(2L, "IEE 802.11"));
 
-        try {
-            List<CertifiedProductAccessibilityStandard> foundStandards = handler.handle(headingRecord, listingRecords);
-            assertNotNull(foundStandards);
-            assertEquals(2, foundStandards.size());
-            foundStandards.stream().forEach(std -> {
-                assertNull(std.getId());
-                assertNotNull(std.getAccessibilityStandardId());
-                assertNotNull(std.getAccessibilityStandardName());
-            });
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
+        List<CertifiedProductAccessibilityStandard> foundStandards = handler.handle(headingRecord, listingRecords);
+        assertNotNull(foundStandards);
+        assertEquals(2, foundStandards.size());
+        foundStandards.stream().forEach(std -> {
+            assertNull(std.getId());
+            assertNotNull(std.getAccessibilityStandardId());
+            assertNotNull(std.getAccessibilityStandardName());
+        });
     }
 
     @Test
@@ -73,20 +68,16 @@ public class AccessibilityStandardsUploadHandlerTest {
         Mockito.when(dao.getByName(ArgumentMatchers.eq("170.204(a)(1)")))
             .thenReturn(buildDto(1L, "170.204(a)(1)"));
 
-        try {
-            List<CertifiedProductAccessibilityStandard> foundStandards = handler.handle(headingRecord, listingRecords);
-            assertNotNull(foundStandards);
-            assertEquals(1, foundStandards.size());
-            foundStandards.stream().forEach(std -> {
-                assertNull(std.getId());
-                assertNotNull(std.getAccessibilityStandardId());
-                assertEquals(1, std.getAccessibilityStandardId().longValue());
-                assertNotNull(std.getAccessibilityStandardName());
-                assertEquals("170.204(a)(1)", std.getAccessibilityStandardName());
-            });
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
+        List<CertifiedProductAccessibilityStandard> foundStandards = handler.handle(headingRecord, listingRecords);
+        assertNotNull(foundStandards);
+        assertEquals(1, foundStandards.size());
+        foundStandards.stream().forEach(std -> {
+            assertNull(std.getId());
+            assertNotNull(std.getAccessibilityStandardId());
+            assertEquals(1, std.getAccessibilityStandardId().longValue());
+            assertNotNull(std.getAccessibilityStandardName());
+            assertEquals("170.204(a)(1)", std.getAccessibilityStandardName());
+        });
     }
 
     @Test
@@ -98,19 +89,16 @@ public class AccessibilityStandardsUploadHandlerTest {
 
         Mockito.when(dao.getByName(ArgumentMatchers.eq("170.204(a)(1)"))).thenReturn(null);
 
-        try {
-            List<CertifiedProductAccessibilityStandard> foundStandards = handler.handle(headingRecord, listingRecords);
-            assertNotNull(foundStandards);
-            assertEquals(1, foundStandards.size());
-            foundStandards.stream().forEach(std -> {
-                assertNull(std.getId());
-                assertNull(std.getAccessibilityStandardId());
-                assertNotNull(std.getAccessibilityStandardName());
-                assertEquals("170.204(a)(1)", std.getAccessibilityStandardName());
-            });
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
+        List<CertifiedProductAccessibilityStandard> foundStandards = handler.handle(headingRecord, listingRecords);
+        assertNotNull(foundStandards);
+        assertEquals(1, foundStandards.size());
+        foundStandards.stream().forEach(std -> {
+            assertNull(std.getId());
+            assertNull(std.getAccessibilityStandardId());
+            assertNotNull(std.getAccessibilityStandardName());
+            assertEquals("170.204(a)(1)", std.getAccessibilityStandardName());
+        });
+
     }
 
     @Test
@@ -124,20 +112,16 @@ public class AccessibilityStandardsUploadHandlerTest {
         Mockito.when(dao.getByName(ArgumentMatchers.eq("170.204(a)(1)")))
             .thenReturn(buildDto(1L, "170.204(a)(1)"));
 
-        try {
-            List<CertifiedProductAccessibilityStandard> foundStandards = handler.handle(headingRecord, listingRecords);
-            assertNotNull(foundStandards);
-            assertEquals(1, foundStandards.size());
-            foundStandards.stream().forEach(std -> {
-                assertNull(std.getId());
-                assertNotNull(std.getAccessibilityStandardId());
-                assertEquals(1, std.getAccessibilityStandardId().longValue());
-                assertNotNull(std.getAccessibilityStandardName());
-                assertEquals("170.204(a)(1)", std.getAccessibilityStandardName());
-            });
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
+        List<CertifiedProductAccessibilityStandard> foundStandards = handler.handle(headingRecord, listingRecords);
+        assertNotNull(foundStandards);
+        assertEquals(1, foundStandards.size());
+        foundStandards.stream().forEach(std -> {
+            assertNull(std.getId());
+            assertNotNull(std.getAccessibilityStandardId());
+            assertEquals(1, std.getAccessibilityStandardId().longValue());
+            assertNotNull(std.getAccessibilityStandardName());
+            assertEquals("170.204(a)(1)", std.getAccessibilityStandardName());
+        });
     }
 
     private AccessibilityStandardDTO buildDto(Long id, String name) {

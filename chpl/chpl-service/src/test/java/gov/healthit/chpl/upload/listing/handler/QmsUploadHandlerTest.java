@@ -50,29 +50,25 @@ public class QmsUploadHandlerTest {
         Mockito.when(dao.getByName(ArgumentMatchers.eq("ISO 9002")))
         .thenReturn(buildDto(2L, "ISO 9002"));
 
-        try {
-            List<CertifiedProductQmsStandard> foundQms = handler.handle(headingRecord, listingRecords);
-            assertNotNull(foundQms);
-            assertEquals(2, foundQms.size());
-            foundQms.stream().forEach(qms -> {
-                assertNull(qms.getId());
-                assertNotNull(qms.getQmsStandardName());
-                assertNotNull(qms.getQmsStandardId());
-                assertNotNull(qms.getApplicableCriteria());
-                assertNotNull(qms.getQmsModification());
-                if (qms.getQmsStandardName().equals("ISO 9001")) {
-                    assertEquals("All Criteria", qms.getApplicableCriteria());
-                    assertEquals("None", qms.getQmsModification());
-                } else if (qms.getQmsStandardName().contentEquals("ISO 9002")) {
-                    assertEquals("a1 a2 and a3", qms.getApplicableCriteria());
-                    assertEquals("Custom", qms.getQmsModification());
-                } else {
-                    fail("No QMS Standard with name " + qms.getQmsStandardName() + " should have been found.");
-                }
-            });
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
+        List<CertifiedProductQmsStandard> foundQms = handler.handle(headingRecord, listingRecords);
+        assertNotNull(foundQms);
+        assertEquals(2, foundQms.size());
+        foundQms.stream().forEach(qms -> {
+            assertNull(qms.getId());
+            assertNotNull(qms.getQmsStandardName());
+            assertNotNull(qms.getQmsStandardId());
+            assertNotNull(qms.getApplicableCriteria());
+            assertNotNull(qms.getQmsModification());
+            if (qms.getQmsStandardName().equals("ISO 9001")) {
+                assertEquals("All Criteria", qms.getApplicableCriteria());
+                assertEquals("None", qms.getQmsModification());
+            } else if (qms.getQmsStandardName().contentEquals("ISO 9002")) {
+                assertEquals("a1 a2 and a3", qms.getApplicableCriteria());
+                assertEquals("Custom", qms.getQmsModification());
+            } else {
+                fail("No QMS Standard with name " + qms.getQmsStandardName() + " should have been found.");
+            }
+        });
     }
 
 
@@ -90,29 +86,25 @@ public class QmsUploadHandlerTest {
         Mockito.when(dao.getByName(ArgumentMatchers.eq("ISO 9002")))
         .thenReturn(buildDto(2L, "ISO 9002"));
 
-        try {
-            List<CertifiedProductQmsStandard> foundQms = handler.handle(headingRecord, listingRecords);
-            assertNotNull(foundQms);
-            assertEquals(2, foundQms.size());
-            foundQms.stream().forEach(qms -> {
-                assertNull(qms.getId());
-                assertNotNull(qms.getQmsStandardName());
-                assertNotNull(qms.getQmsStandardId());
-                assertNotNull(qms.getApplicableCriteria());
-                assertNotNull(qms.getQmsModification());
-                if (qms.getQmsStandardName().equals("ISO 9001")) {
-                    assertEquals("", qms.getApplicableCriteria());
-                    assertEquals("None", qms.getQmsModification());
-                } else if (qms.getQmsStandardName().contentEquals("ISO 9002")) {
-                    assertEquals("a1 a2 and a3", qms.getApplicableCriteria());
-                    assertEquals("", qms.getQmsModification());
-                } else {
-                    fail("No QMS Standard with name " + qms.getQmsStandardName() + " should have been found.");
-                }
-            });
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
+        List<CertifiedProductQmsStandard> foundQms = handler.handle(headingRecord, listingRecords);
+        assertNotNull(foundQms);
+        assertEquals(2, foundQms.size());
+        foundQms.stream().forEach(qms -> {
+            assertNull(qms.getId());
+            assertNotNull(qms.getQmsStandardName());
+            assertNotNull(qms.getQmsStandardId());
+            assertNotNull(qms.getApplicableCriteria());
+            assertNotNull(qms.getQmsModification());
+            if (qms.getQmsStandardName().equals("ISO 9001")) {
+                assertEquals("", qms.getApplicableCriteria());
+                assertEquals("None", qms.getQmsModification());
+            } else if (qms.getQmsStandardName().contentEquals("ISO 9002")) {
+                assertEquals("a1 a2 and a3", qms.getApplicableCriteria());
+                assertEquals("", qms.getQmsModification());
+            } else {
+                fail("No QMS Standard with name " + qms.getQmsStandardName() + " should have been found.");
+            }
+        });
     }
 
     @Test
@@ -126,23 +118,19 @@ public class QmsUploadHandlerTest {
         Mockito.when(dao.getByName(ArgumentMatchers.eq("ISO 9001")))
             .thenReturn(buildDto(1L, "ISO 9001"));
 
-        try {
-            List<CertifiedProductQmsStandard> foundQms = handler.handle(headingRecord, listingRecords);
-            assertNotNull(foundQms);
-            assertEquals(1, foundQms.size());
-            foundQms.stream().forEach(qms -> {
-                assertNull(qms.getId());
-                assertNotNull(qms.getQmsStandardName());
-                assertNotNull(qms.getQmsStandardId());
-                assertNotNull(qms.getApplicableCriteria());
-                assertNotNull(qms.getQmsModification());
-                assertEquals("ISO 9001", qms.getQmsStandardName());
-                assertEquals("", qms.getApplicableCriteria());
-                assertEquals("None", qms.getQmsModification());
-            });
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
+        List<CertifiedProductQmsStandard> foundQms = handler.handle(headingRecord, listingRecords);
+        assertNotNull(foundQms);
+        assertEquals(1, foundQms.size());
+        foundQms.stream().forEach(qms -> {
+            assertNull(qms.getId());
+            assertNotNull(qms.getQmsStandardName());
+            assertNotNull(qms.getQmsStandardId());
+            assertNotNull(qms.getApplicableCriteria());
+            assertNotNull(qms.getQmsModification());
+            assertEquals("ISO 9001", qms.getQmsStandardName());
+            assertEquals("", qms.getApplicableCriteria());
+            assertEquals("None", qms.getQmsModification());
+        });
     }
 
     @Test
@@ -156,23 +144,19 @@ public class QmsUploadHandlerTest {
         Mockito.when(dao.getByName(ArgumentMatchers.eq("ISO 9001")))
             .thenReturn(null);
 
-        try {
-            List<CertifiedProductQmsStandard> foundQms = handler.handle(headingRecord, listingRecords);
-            assertNotNull(foundQms);
-            assertEquals(1, foundQms.size());
-            foundQms.stream().forEach(qms -> {
-                assertNull(qms.getId());
-                assertNotNull(qms.getQmsStandardName());
-                assertNull(qms.getQmsStandardId());
-                assertNotNull(qms.getApplicableCriteria());
-                assertNotNull(qms.getQmsModification());
-                assertEquals("ISO 9001", qms.getQmsStandardName());
-                assertEquals("", qms.getApplicableCriteria());
-                assertEquals("None", qms.getQmsModification());
-            });
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
+        List<CertifiedProductQmsStandard> foundQms = handler.handle(headingRecord, listingRecords);
+        assertNotNull(foundQms);
+        assertEquals(1, foundQms.size());
+        foundQms.stream().forEach(qms -> {
+            assertNull(qms.getId());
+            assertNotNull(qms.getQmsStandardName());
+            assertNull(qms.getQmsStandardId());
+            assertNotNull(qms.getApplicableCriteria());
+            assertNotNull(qms.getQmsModification());
+            assertEquals("ISO 9001", qms.getQmsStandardName());
+            assertEquals("", qms.getApplicableCriteria());
+            assertEquals("None", qms.getQmsModification());
+        });
     }
 
     @Test
@@ -187,24 +171,70 @@ public class QmsUploadHandlerTest {
         Mockito.when(dao.getByName(ArgumentMatchers.eq("ISO 9001")))
             .thenReturn(buildDto(1L, "ISO 9001"));
 
-        try {
-            List<CertifiedProductQmsStandard> foundQms = handler.handle(headingRecord, listingRecords);
-            assertNotNull(foundQms);
-            assertEquals(1, foundQms.size());
-            foundQms.stream().forEach(qms -> {
-                assertNull(qms.getId());
-                assertNotNull(qms.getQmsStandardName());
-                assertNotNull(qms.getQmsStandardId());
-                assertNotNull(qms.getApplicableCriteria());
-                assertNotNull(qms.getQmsModification());
-                assertEquals(1, qms.getQmsStandardId().longValue());
-                assertEquals("ISO 9001", qms.getQmsStandardName());
-                assertEquals("All Criteria", qms.getApplicableCriteria());
-                assertEquals("None", qms.getQmsModification());
-            });
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
+        List<CertifiedProductQmsStandard> foundQms = handler.handle(headingRecord, listingRecords);
+        assertNotNull(foundQms);
+        assertEquals(1, foundQms.size());
+        foundQms.stream().forEach(qms -> {
+            assertNull(qms.getId());
+            assertNotNull(qms.getQmsStandardName());
+            assertNotNull(qms.getQmsStandardId());
+            assertNotNull(qms.getApplicableCriteria());
+            assertNotNull(qms.getQmsModification());
+            assertEquals(1, qms.getQmsStandardId().longValue());
+            assertEquals("ISO 9001", qms.getQmsStandardName());
+            assertEquals("All Criteria", qms.getApplicableCriteria());
+            assertEquals("None", qms.getQmsModification());
+        });
+    }
+
+    @Test
+    public void parseQms_SingleValidQmsCriteriaAndName_ReturnsCorrectly() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
+                "UNIQUE_CHPL_ID__C,RECORD_STATUS__C,QMS Standard Applicable Criteria,Qms Standard").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
+                LISTING_ROW_BEGIN + ",All Criteria,ISO 9001");
+        assertNotNull(listingRecords);
+
+        Mockito.when(dao.getByName(ArgumentMatchers.eq("ISO 9001")))
+            .thenReturn(buildDto(1L, "ISO 9001"));
+
+        List<CertifiedProductQmsStandard> foundQms = handler.handle(headingRecord, listingRecords);
+        assertNotNull(foundQms);
+        assertEquals(1, foundQms.size());
+        foundQms.stream().forEach(qms -> {
+            assertNull(qms.getId());
+            assertNotNull(qms.getQmsStandardName());
+            assertNotNull(qms.getQmsStandardId());
+            assertNotNull(qms.getApplicableCriteria());
+            assertNull(qms.getQmsModification());
+            assertEquals(1, qms.getQmsStandardId().longValue());
+            assertEquals("ISO 9001", qms.getQmsStandardName());
+            assertEquals("All Criteria", qms.getApplicableCriteria());
+        });
+    }
+
+    @Test
+    public void parseQms_QmsNameMissing_ReturnsCorrectly() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
+                "UNIQUE_CHPL_ID__C,RECORD_STATUS__C,Qms Modification Description,QMS Standard Applicable Criteria").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
+                LISTING_ROW_BEGIN + ",Some mods,All Criteria");
+        assertNotNull(listingRecords);
+
+        List<CertifiedProductQmsStandard> foundQms = handler.handle(headingRecord, listingRecords);
+        assertNotNull(foundQms);
+        assertEquals(1, foundQms.size());
+        foundQms.stream().forEach(qms -> {
+            assertNull(qms.getId());
+            assertNull(qms.getQmsStandardName());
+            assertNull(qms.getQmsStandardId());
+            assertNotNull(qms.getApplicableCriteria());
+            assertNotNull(qms.getQmsModification());
+            assertEquals("Some mods", qms.getQmsModification());
+            assertEquals("All Criteria", qms.getApplicableCriteria());
+        });
     }
 
     private QmsStandardDTO buildDto(Long id, String name) {

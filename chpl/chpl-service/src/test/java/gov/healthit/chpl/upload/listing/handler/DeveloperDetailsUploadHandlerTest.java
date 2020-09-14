@@ -2,7 +2,6 @@ package gov.healthit.chpl.upload.listing.handler;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
@@ -52,14 +51,11 @@ public class DeveloperDetailsUploadHandlerTest {
         Mockito.when(dao.getByName(ArgumentMatchers.eq(developerName)))
             .thenReturn(buildDto(1L, developerName));
 
-        try {
-            Developer developer = handler.handle(headingRecord, listingRecords);
-            assertNotNull(developer);
-            assertEquals(1L, developer.getDeveloperId());
-            assertEquals(developerName, developer.getName());
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
+        Developer developer = handler.handle(headingRecord, listingRecords);
+        assertNotNull(developer);
+        assertEquals(1L, developer.getDeveloperId());
+        assertEquals(developerName, developer.getName());
+
     }
 
     @Test
@@ -74,14 +70,10 @@ public class DeveloperDetailsUploadHandlerTest {
 
         Mockito.when(dao.getByName(ArgumentMatchers.eq(developerName))).thenReturn(null);
 
-        try {
-            Developer developer = handler.handle(headingRecord, listingRecords);
-            assertNotNull(developer);
-            assertNull(developer.getDeveloperId());
-            assertEquals(developerName, developer.getName());
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
+        Developer developer = handler.handle(headingRecord, listingRecords);
+        assertNotNull(developer);
+        assertNull(developer.getDeveloperId());
+        assertEquals(developerName, developer.getName());
     }
 
     @Test
@@ -93,14 +85,10 @@ public class DeveloperDetailsUploadHandlerTest {
                 LISTING_ROW + ",http://www.test.com");
         assertNotNull(listingRecords);
 
-        try {
-            Developer developer = handler.handle(headingRecord, listingRecords);
-            assertNotNull(developer);
-            assertNotNull(developer.getWebsite());
-            assertEquals("http://www.test.com", developer.getWebsite());
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
+        Developer developer = handler.handle(headingRecord, listingRecords);
+        assertNotNull(developer);
+        assertNotNull(developer.getWebsite());
+        assertEquals("http://www.test.com", developer.getWebsite());
     }
 
     @Test
@@ -112,14 +100,10 @@ public class DeveloperDetailsUploadHandlerTest {
                 LISTING_ROW + ",");
         assertNotNull(listingRecords);
 
-        try {
-            Developer developer = handler.handle(headingRecord, listingRecords);
-            assertNotNull(developer);
-            assertNotNull(developer.getWebsite());
-            assertEquals("", developer.getWebsite());
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
+        Developer developer = handler.handle(headingRecord, listingRecords);
+        assertNotNull(developer);
+        assertNotNull(developer.getWebsite());
+        assertEquals("", developer.getWebsite());
     }
 
     @Test
@@ -131,14 +115,10 @@ public class DeveloperDetailsUploadHandlerTest {
                 LISTING_ROW + ",1");
         assertNotNull(listingRecords);
 
-        try {
-            Developer developer = handler.handle(headingRecord, listingRecords);
-            assertNotNull(developer);
-            assertNotNull(developer.getSelfDeveloper());
-            assertEquals(Boolean.TRUE, developer.getSelfDeveloper());
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
+        Developer developer = handler.handle(headingRecord, listingRecords);
+        assertNotNull(developer);
+        assertNotNull(developer.getSelfDeveloper());
+        assertEquals(Boolean.TRUE, developer.getSelfDeveloper());
     }
 
     @Test
@@ -150,14 +130,10 @@ public class DeveloperDetailsUploadHandlerTest {
                 LISTING_ROW + ",0");
         assertNotNull(listingRecords);
 
-        try {
-            Developer developer = handler.handle(headingRecord, listingRecords);
-            assertNotNull(developer);
-            assertNotNull(developer.getSelfDeveloper());
-            assertEquals(Boolean.FALSE, developer.getSelfDeveloper());
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
+        Developer developer = handler.handle(headingRecord, listingRecords);
+        assertNotNull(developer);
+        assertNotNull(developer.getSelfDeveloper());
+        assertEquals(Boolean.FALSE, developer.getSelfDeveloper());
     }
 
     @Test(expected = ValidationException.class)
@@ -180,19 +156,15 @@ public class DeveloperDetailsUploadHandlerTest {
                 LISTING_ROW + "," + "111 Rocky Rd.,Baltimore,MD,21205");
         assertNotNull(listingRecords);
 
-        try {
-            Developer developer = handler.handle(headingRecord, listingRecords);
-            assertNotNull(developer);
-            Address address = developer.getAddress();
-            assertNotNull(address);
-            assertEquals("111 Rocky Rd.", address.getLine1());
-            assertEquals("Baltimore", address.getCity());
-            assertEquals("MD", address.getState());
-            assertEquals("21205", address.getZipcode());
-            assertNull(address.getCountry());
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
+        Developer developer = handler.handle(headingRecord, listingRecords);
+        assertNotNull(developer);
+        Address address = developer.getAddress();
+        assertNotNull(address);
+        assertEquals("111 Rocky Rd.", address.getLine1());
+        assertEquals("Baltimore", address.getCity());
+        assertEquals("MD", address.getState());
+        assertEquals("21205", address.getZipcode());
+        assertNull(address.getCountry());
     }
 
     @Test
@@ -204,17 +176,13 @@ public class DeveloperDetailsUploadHandlerTest {
                 LISTING_ROW + "," + "test@ainq.com,333-444-5555,First Last");
         assertNotNull(listingRecords);
 
-        try {
-            Developer developer = handler.handle(headingRecord, listingRecords);
-            assertNotNull(developer);
-            Contact contact = developer.getContact();
-            assertNotNull(contact);
-            assertEquals("test@ainq.com", contact.getEmail());
-            assertEquals("333-444-5555", contact.getPhoneNumber());
-            assertEquals("First Last", contact.getFullName());
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
+        Developer developer = handler.handle(headingRecord, listingRecords);
+        assertNotNull(developer);
+        Contact contact = developer.getContact();
+        assertNotNull(contact);
+        assertEquals("test@ainq.com", contact.getEmail());
+        assertEquals("333-444-5555", contact.getPhoneNumber());
+        assertEquals("First Last", contact.getFullName());
     }
 
     private DeveloperDTO buildDto(Long id, String name) {
