@@ -29,9 +29,11 @@ public class GapAllowedReviewer implements Reviewer {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public GapAllowedReviewer(CertificationCriterionService certificationCriterionService, ErrorMessageUtil errorMEssageUtil) {
+    public GapAllowedReviewer(CertificationCriterionService certificationCriterionService, ErrorMessageUtil errorMEssageUtil,
+            @Value("${cures.ruleEffectiveDate}") String curesEffectiveRuleDate) {
         this.certificationCriterionService = certificationCriterionService;
         this.errorMessageUtil = errorMEssageUtil;
+        this.curesEffectiveRuleDate = curesEffectiveRuleDate;
     }
 
     @PostConstruct
