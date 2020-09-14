@@ -3,15 +3,12 @@ package gov.healthit.chpl.upload.listing.handler;
 import java.util.List;
 
 import org.apache.commons.csv.CSVRecord;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -21,14 +18,11 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class DeveloperDetailsUploadHandler {
     private ListingUploadHandlerUtil uploadUtil;
-    private DeveloperDAO developerDao;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public DeveloperDetailsUploadHandler(ListingUploadHandlerUtil uploadUtil,
-            DeveloperDAO developerDao, ErrorMessageUtil msgUtil) {
+    public DeveloperDetailsUploadHandler(ListingUploadHandlerUtil uploadUtil, ErrorMessageUtil msgUtil) {
         this.uploadUtil = uploadUtil;
-        this.developerDao = developerDao;
         this.msgUtil = msgUtil;
     }
 
@@ -42,13 +36,6 @@ public class DeveloperDetailsUploadHandler {
                 .website(uploadUtil.parseSingleRowField(Headings.DEVELOPER_WEBSITE, headingRecord, listingRecords))
                 .selfDeveloper(uploadUtil.parseSingleRowFieldAsBoolean(Headings.SELF_DEVELOPER, headingRecord, listingRecords))
                 .build();
-        if (!StringUtils.isEmpty(developer.getName())) {
-            //TODO: convert query to get a DeveloperEntitySimple
-            DeveloperDTO existingDeveloper = developerDao.getByName(developer.getName());
-            if (existingDeveloper != null) {
-                developer.setDeveloperId(existingDeveloper.getId());
-            }
-        }
         Address address = Address.builder()
                 .line1(uploadUtil.parseSingleRowField(Headings.DEVELOPER_ADDRESS, headingRecord, listingRecords))
                 .city(uploadUtil.parseSingleRowField(Headings.DEVELOPER_CITY, headingRecord, listingRecords))

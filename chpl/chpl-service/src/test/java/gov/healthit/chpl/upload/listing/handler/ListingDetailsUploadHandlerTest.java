@@ -14,20 +14,8 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dao.CertificationEditionDAO;
-import gov.healthit.chpl.dao.DeveloperDAO;
-import gov.healthit.chpl.dao.ProductDAO;
-import gov.healthit.chpl.dao.ProductVersionDAO;
-import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.CertificationEditionDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.ProductDTO;
-import gov.healthit.chpl.dto.ProductVersionDTO;
-import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -40,12 +28,6 @@ public class ListingDetailsUploadHandlerTest {
     private ErrorMessageUtil msgUtil;
     private ListingUploadHandlerUtil handlerUtil;
     private ListingDetailsUploadHandler handler;
-    private CertificationEditionDAO editionDao;
-    private CertificationBodyDAO acbDao;
-    private DeveloperDAO devDao;
-    private ProductDAO productDao;
-    private ProductVersionDAO versionDao;
-    private TestingLabDAO atlDao;
 
     @Before
     public void setup() {
@@ -61,20 +43,12 @@ public class ListingDetailsUploadHandlerTest {
                 ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format("The value %s could not be converted to a yes/no field..", i.getArgument(1), ""));
 
-        editionDao = Mockito.mock(CertificationEditionDAO.class);
-        acbDao = Mockito.mock(CertificationBodyDAO.class);
-        productDao = Mockito.mock(ProductDAO.class);
-        devDao = Mockito.mock(DeveloperDAO.class);
-        versionDao = Mockito.mock(ProductVersionDAO.class);
-        atlDao = Mockito.mock(TestingLabDAO.class);
-
         handlerUtil = new ListingUploadHandlerUtil(msgUtil);
-        DeveloperDetailsUploadHandler devHandler = new DeveloperDetailsUploadHandler(handlerUtil, devDao, msgUtil);
+        DeveloperDetailsUploadHandler devHandler = new DeveloperDetailsUploadHandler(handlerUtil, msgUtil);
         handler = new ListingDetailsUploadHandler(devHandler,
                 Mockito.mock(TargetedUsersUploadHandler.class),
                 Mockito.mock(AccessibilityStandardsUploadHandler.class),
                 Mockito.mock(QmsUploadHandler.class),
-                editionDao, acbDao, atlDao, productDao, versionDao,
                 handlerUtil, msgUtil);
     }
 
@@ -286,33 +260,10 @@ public class ListingDetailsUploadHandlerTest {
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",2015");
         assertNotNull(listingRecords);
 
-        CertificationEditionDTO editionDto = new CertificationEditionDTO();
-        editionDto.setId(1L);
-        editionDto.setYear("2015");
-        Mockito.when(editionDao.getByYear("2015")).thenReturn(editionDto);
-
         CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
         assertNotNull(listing);
         assertNotNull(listing.getCertificationEdition());
-        assertEquals(editionDto.getYear(),
-                listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString());
-        assertEquals(editionDto.getId().toString(),
-                listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString());
-    }
-
-    @Test
-    public void buildListing_EditionBad_ReturnsCorrectValue() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",CERT_YEAR__C").get(0);
-        assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",2017");
-        assertNotNull(listingRecords);
-
-        Mockito.when(editionDao.getByYear("2017")).thenReturn(null);
-
-        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
-        assertNotNull(listing);
-        assertNotNull(listing.getCertificationEdition());
-        assertEquals("2017",
+        assertEquals("2015",
                 listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString());
         assertNull(listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY));
     }
@@ -336,33 +287,10 @@ public class ListingDetailsUploadHandlerTest {
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",Drummond Group");
         assertNotNull(listingRecords);
 
-        CertificationBodyDTO acbDto = new CertificationBodyDTO();
-        acbDto.setId(1L);
-        acbDto.setName("Drummond Group");
-        Mockito.when(acbDao.getByName("Drummond Group")).thenReturn(acbDto);
-
         CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
         assertNotNull(listing);
         assertNotNull(listing.getCertifyingBody());
-        assertEquals(acbDto.getName(),
-                listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
-        assertEquals(acbDto.getId().toString(),
-                listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
-    }
-
-    @Test
-    public void buildListing_AcbBad_ReturnsCorrectValue() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",CERTIFYING_ACB__C").get(0);
-        assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",Bogus ACB");
-        assertNotNull(listingRecords);
-
-        Mockito.when(acbDao.getByName("Bogus ACB")).thenReturn(null);
-
-        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
-        assertNotNull(listing);
-        assertNotNull(listing.getCertifyingBody());
-        assertEquals("Bogus ACB",
+        assertEquals("Drummond Group",
                 listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
         assertNull(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY));
     }
@@ -445,18 +373,12 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void parseProduct_DeveloperFoundNewProduct_ReturnsCorrectValue() {
+    public void parseProduct_DeveloperAndProduct_ReturnsCorrectValue() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",VENDOR__C,PRODUCT__C").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
                 LISTING_ROW_BEGIN + ",My Developer,Test Product");
         assertNotNull(listingRecords);
-
-        DeveloperDTO devDto = new DeveloperDTO();
-        devDto.setId(1L);
-        devDto.setName("My Developer");
-        Mockito.when(devDao.getByName("My Developer")).thenReturn(devDto);
-        Mockito.when(productDao.getByDeveloperAndName(devDto.getId(), "Test Product")).thenReturn(null);
 
         CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
         assertNotNull(listing);
@@ -464,32 +386,6 @@ public class ListingDetailsUploadHandlerTest {
         assertNotNull(listing.getProduct());
         assertEquals("Test Product", listing.getProduct().getName());
         assertNull(listing.getProduct().getProductId());
-    }
-
-    @Test
-    public void parseProduct_DeveloperFoundProductFound_ReturnsCorrectValue() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",VENDOR__C,PRODUCT__C").get(0);
-        assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
-                LISTING_ROW_BEGIN + ",My Developer,Test Product");
-        assertNotNull(listingRecords);
-
-        DeveloperDTO devDto = new DeveloperDTO();
-        devDto.setId(1L);
-        devDto.setName("My Developer");
-        Mockito.when(devDao.getByName("My Developer")).thenReturn(devDto);
-        ProductDTO prodDto = new ProductDTO();
-        prodDto.setId(2L);
-        prodDto.setName("Test Product");
-        Mockito.when(productDao.getByDeveloperAndName(devDto.getId(), "Test Product")).thenReturn(prodDto);
-
-        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
-        assertNotNull(listing);
-        assertNotNull(listing.getDeveloper());
-        assertNotNull(listing.getProduct());
-        assertEquals(prodDto.getName(), listing.getProduct().getName());
-        assertNotNull(listing.getProduct().getProductId());
-        assertEquals(prodDto.getId().longValue(), listing.getProduct().getProductId().longValue());
     }
 
     @Test
@@ -519,7 +415,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void parseVersion_FoundProductNewVersion_ReturnsCorrectValue() {
+    public void parseVersion_DeveloperAndProductAndVersion_ReturnsCorrectValue() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
                 + ",VENDOR__C,PRODUCT_C,VERSION__C").get(0);
         assertNotNull(headingRecord);
@@ -527,53 +423,13 @@ public class ListingDetailsUploadHandlerTest {
                 + ",My Developer,Test Product,v1");
         assertNotNull(listingRecords);
 
-        DeveloperDTO devDto = new DeveloperDTO();
-        devDto.setId(1L);
-        devDto.setName("My Developer");
-        Mockito.when(devDao.getByName("My Developer")).thenReturn(devDto);
-        ProductDTO prodDto = new ProductDTO();
-        prodDto.setId(2L);
-        prodDto.setName("Test Product");
-        Mockito.when(productDao.getByDeveloperAndName(devDto.getId(), "Test Product")).thenReturn(prodDto);
-        Mockito.when(versionDao.getByProductAndVersion(prodDto.getId(), "v1")).thenReturn(null);
-
         CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
         assertNotNull(listing);
+        assertNotNull(listing.getDeveloper());
         assertNotNull(listing.getProduct());
         assertNotNull(listing.getVersion());
         assertEquals("v1", listing.getVersion().getVersion());
         assertNull(listing.getVersion().getVersionId());
-    }
-
-    @Test
-    public void parseVersion_FoundProductFoundVersion_ReturnsCorrectValue() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
-                + ",VENDOR__C,PRODUCT_C,VERSION__C").get(0);
-        assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN
-                + ",My Developer,Test Product,v1");
-        assertNotNull(listingRecords);
-
-        DeveloperDTO devDto = new DeveloperDTO();
-        devDto.setId(1L);
-        devDto.setName("My Developer");
-        Mockito.when(devDao.getByName("My Developer")).thenReturn(devDto);
-        ProductDTO prodDto = new ProductDTO();
-        prodDto.setId(2L);
-        prodDto.setName("Test Product");
-        Mockito.when(productDao.getByDeveloperAndName(devDto.getId(), "Test Product")).thenReturn(prodDto);
-        ProductVersionDTO versionDto = new ProductVersionDTO();
-        versionDto.setId(3L);
-        versionDto.setVersion("v1");
-        Mockito.when(versionDao.getByProductAndVersion(prodDto.getId(), "v1")).thenReturn(versionDto);
-
-        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
-        assertNotNull(listing);
-        assertNotNull(listing.getProduct());
-        assertNotNull(listing.getVersion());
-        assertEquals(versionDto.getVersion(), listing.getVersion().getVersion());
-        assertNotNull(listing.getVersion().getVersionId());
-        assertEquals(versionDto.getId().longValue(), listing.getVersion().getVersionId().longValue());
     }
 
     @Test
@@ -590,63 +446,28 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_AtlSingleGood_ReturnsCorrectValue() {
+    public void buildListing_SingleAtl_ReturnsCorrectValue() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",TESTING_ATL__C").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",Drummond Group");
         assertNotNull(listingRecords);
-
-        TestingLabDTO atlDto = new TestingLabDTO();
-        atlDto.setId(1L);
-        atlDto.setName("Drummond Group");
-        Mockito.when(atlDao.getByName("Drummond Group")).thenReturn(atlDto);
 
         CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
         assertNotNull(listing);
         assertNotNull(listing.getTestingLabs());
         assertEquals(1, listing.getTestingLabs().size());
         CertifiedProductTestingLab parsedAtl = listing.getTestingLabs().get(0);
-        assertEquals(atlDto.getId().longValue(), parsedAtl.getTestingLabId());
-        assertEquals(atlDto.getName(), parsedAtl.getTestingLabName());
+        assertNull(parsedAtl.getTestingLabId());
+        assertEquals("Drummond Group", parsedAtl.getTestingLabName());
     }
 
     @Test
-    public void buildListing_AtlMultipleGood_ReturnsCorrectValue() {
+    public void buildListing_MultipleAtls_ReturnsCorrectValue() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",TESTING_ATL__C").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",Drummond Group\n"
                 + LISTING_SUBELEMENT_BEGIN + ",ICSA Labs");
         assertNotNull(listingRecords);
-
-        TestingLabDTO drummondDto = new TestingLabDTO();
-        drummondDto.setId(1L);
-        drummondDto.setName("Drummond Group");
-        Mockito.when(atlDao.getByName("Drummond Group")).thenReturn(drummondDto);
-
-        TestingLabDTO icsaDto = new TestingLabDTO();
-        icsaDto.setId(2L);
-        icsaDto.setName("ICSA labs");
-        Mockito.when(atlDao.getByName("ICSA Labs")).thenReturn(icsaDto);
-
-        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
-        assertNotNull(listing);
-        assertNotNull(listing.getTestingLabs());
-        assertEquals(2, listing.getTestingLabs().size());
-        listing.getTestingLabs().stream().forEach(parsedAtl -> {
-            assertNotNull(parsedAtl.getTestingLabId());
-            assertNotNull(parsedAtl.getTestingLabName());
-        });
-    }
-
-    @Test
-    public void buildListing_AtlMultipleBad_ReturnsCorrectValue() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",TESTING_ATL__C").get(0);
-        assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",Drummond Group\n"
-                + LISTING_SUBELEMENT_BEGIN + ",ICSA Labs");
-        assertNotNull(listingRecords);
-
-        Mockito.when(atlDao.getByName(ArgumentMatchers.anyString())).thenReturn(null);
 
         CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
         assertNotNull(listing);

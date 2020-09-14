@@ -9,26 +9,13 @@ import java.util.Map;
 import javax.validation.ValidationException;
 
 import org.apache.commons.csv.CSVRecord;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dao.CertificationEditionDAO;
-import gov.healthit.chpl.dao.ProductDAO;
-import gov.healthit.chpl.dao.ProductVersionDAO;
-import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
-import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.CertificationEditionDTO;
-import gov.healthit.chpl.dto.ProductDTO;
-import gov.healthit.chpl.dto.ProductVersionDTO;
-import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -41,12 +28,6 @@ public class ListingDetailsUploadHandler {
     private TargetedUsersUploadHandler targetedUserUploadHandler;
     private AccessibilityStandardsUploadHandler accessibilityStandardsHandler;
     private QmsUploadHandler qmsHandler;
-
-    private CertificationEditionDAO editionDao;
-    private CertificationBodyDAO acbDao;
-    private TestingLabDAO atlDao;
-    private ProductDAO productDao;
-    private ProductVersionDAO versionDao;
     private ListingUploadHandlerUtil uploadUtil;
     private ErrorMessageUtil msgUtil;
 
@@ -56,23 +37,16 @@ public class ListingDetailsUploadHandler {
             TargetedUsersUploadHandler targetedUserUploadHandler,
             AccessibilityStandardsUploadHandler accessibilityStandardsHandler,
             QmsUploadHandler qmsHandler,
-            CertificationEditionDAO editionDao, CertificationBodyDAO acbDao,
-            TestingLabDAO atlDao, ProductDAO productDao, ProductVersionDAO versionDao,
             ListingUploadHandlerUtil uploadUtil, ErrorMessageUtil msgUtil) {
         this.devDetailsUploadHandler = devDetailsUploadHandler;
         this.targetedUserUploadHandler = targetedUserUploadHandler;
         this.accessibilityStandardsHandler = accessibilityStandardsHandler;
         this.qmsHandler = qmsHandler;
-        this.editionDao = editionDao;
-        this.acbDao = acbDao;
-        this.atlDao = atlDao;
-        this.productDao = productDao;
-        this.versionDao = versionDao;
         this.uploadUtil = uploadUtil;
         this.msgUtil = msgUtil;
     }
 
-    //TODO: question - should we be looking up ANY IDs in the parsers?
+    //I originally had code to look up various IDs in the parsers...
     //I went back and forth on it, and I think we should probably not do it in here
     //and just have a data normalizer that runs before the validators to pick out
     //any pieces of data that could be looked up for IDs. That way the lookups will only run once.
@@ -80,9 +54,6 @@ public class ListingDetailsUploadHandler {
     public CertifiedProductSearchDetails parseAsListing(CSVRecord headingRecord, List<CSVRecord> listingRecords)
         throws ValidationException {
         Date certificationDate = parseCertificationDate(headingRecord, listingRecords);
-        Developer developer = devDetailsUploadHandler.handle(headingRecord, listingRecords);
-        Product product = parseProduct(developer, headingRecord, listingRecords);
-        ProductVersion version = parseVersion(product, headingRecord, listingRecords);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber(parseChplId(headingRecord, listingRecords))
@@ -92,9 +63,9 @@ public class ListingDetailsUploadHandler {
                         Headings.ACB_CERTIFICATION_ID, headingRecord, listingRecords))
                 .accessibilityCertified(parseAccessibilityCertified(headingRecord, listingRecords))
                 .certificationDate(certificationDate != null ? certificationDate.getTime() : null)
-                .developer(developer)
-                .product(product)
-                .version(version)
+                .developer(devDetailsUploadHandler.handle(headingRecord, listingRecords))
+                .product(parseProduct(headingRecord, listingRecords))
+                .version(parseVersion(headingRecord, listingRecords))
                 .certificationEdition(parseEdition(headingRecord, listingRecords))
                 .transparencyAttestationUrl(parseTransparencyAttestationUrl(headingRecord, listingRecords))
                 .targetedUsers(targetedUserUploadHandler.handle(headingRecord, listingRecords))
@@ -127,27 +98,18 @@ public class ListingDetailsUploadHandler {
         return certificationDate;
     }
 
-    private Product parseProduct(Developer developer, CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+    private Product parseProduct(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         String productName = uploadUtil.parseSingleRowField(Headings.PRODUCT, headingRecord, listingRecords);
         if (productName == null) {
             return null;
         }
-
         Product product = Product.builder()
                 .name(productName)
                 .build();
-        if (ObjectUtils.allNotNull(developer, product)
-                && ObjectUtils.allNotNull(developer.getDeveloperId(), product.getName())) {
-            //TODO: convert this query to use ProductEntitySimple
-            ProductDTO foundProduct = productDao.getByDeveloperAndName(developer.getDeveloperId(), product.getName());
-            if (foundProduct != null) {
-                product.setProductId(foundProduct.getId());
-            }
-        }
         return product;
     }
 
-    private ProductVersion parseVersion(Product product, CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+    private ProductVersion parseVersion(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         String versionName = uploadUtil.parseSingleRowField(Headings.VERSION, headingRecord, listingRecords);
         if (versionName == null) {
             return null;
@@ -156,13 +118,6 @@ public class ListingDetailsUploadHandler {
         ProductVersion version = ProductVersion.builder()
                 .version(versionName)
                 .build();
-        if (ObjectUtils.allNotNull(product, version)
-                && ObjectUtils.allNotNull(product.getProductId(), version.getVersion())) {
-            ProductVersionDTO foundVersion = versionDao.getByProductAndVersion(product.getProductId(), version.getVersion());
-            if (foundVersion != null) {
-                version.setVersionId(foundVersion.getId());
-            }
-        }
         return version;
     }
 
@@ -174,12 +129,6 @@ public class ListingDetailsUploadHandler {
         Map<String, Object> edition = new HashMap<String, Object>();
         edition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, year);
         edition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, null);
-        if (!StringUtils.isEmpty(year)) {
-            CertificationEditionDTO editionDto = editionDao.getByYear(year);
-            if (editionDto != null) {
-                edition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, editionDto.getId());
-            }
-        }
         return edition;
     }
 
@@ -192,29 +141,18 @@ public class ListingDetailsUploadHandler {
         Map<String, Object> acb = new HashMap<String, Object>();
         acb.put(CertifiedProductSearchDetails.ACB_NAME_KEY, acbName);
         acb.put(CertifiedProductSearchDetails.ACB_ID_KEY, null);
-        if (!StringUtils.isEmpty(acbName)) {
-            CertificationBodyDTO acbDto = acbDao.getByName(acbName);
-            if (acbDto != null) {
-                acb.put(CertifiedProductSearchDetails.ACB_ID_KEY, acbDto.getId());
-            }
-        }
         return acb;
     }
 
     private List<CertifiedProductTestingLab> parseAtls(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<CertifiedProductTestingLab> atls = new ArrayList<CertifiedProductTestingLab>();
-        List<String> atlNames = uploadUtil.parseMultiRowFieldWithoutEmptyValues(Headings.TESTING_LAB_NAME, headingRecord, listingRecords);
+        List<String> atlNames = uploadUtil.parseMultiRowFieldWithoutEmptyValues(
+                Headings.TESTING_LAB_NAME, headingRecord, listingRecords);
         if (atlNames != null && atlNames.size() > 0) {
             atlNames.stream().forEach(atlName -> {
                 CertifiedProductTestingLab atl = CertifiedProductTestingLab.builder()
                         .testingLabName(atlName)
                         .build();
-                if (!StringUtils.isEmpty(atlName)) {
-                    TestingLabDTO atlDto = atlDao.getByName(atlName);
-                    if (atlDto != null) {
-                        atl.setTestingLabId(atlDto.getId());
-                    }
-                }
                 atls.add(atl);
             });
         }

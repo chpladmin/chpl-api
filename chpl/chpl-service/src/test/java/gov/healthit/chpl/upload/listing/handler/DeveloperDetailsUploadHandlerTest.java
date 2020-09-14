@@ -11,14 +11,11 @@ import javax.validation.ValidationException;
 import org.apache.commons.csv.CSVRecord;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -27,15 +24,13 @@ public class DeveloperDetailsUploadHandlerTest {
     private static final String HEADER_ROW = "UNIQUE_CHPL_ID__C,RECORD_STATUS__C";
     private static final String LISTING_ROW = "15.02.02.3007.A056.01.00.0.180214,New";
 
-    private DeveloperDAO dao;
     private DeveloperDetailsUploadHandler handler;
 
     @Before
     public void setup() {
         ErrorMessageUtil msgUtil = Mockito.mock(ErrorMessageUtil.class);
         ListingUploadHandlerUtil handlerUtil = new ListingUploadHandlerUtil(msgUtil);
-        dao = Mockito.mock(DeveloperDAO.class);
-        handler = new DeveloperDetailsUploadHandler(handlerUtil, dao, msgUtil);
+        handler = new DeveloperDetailsUploadHandler(handlerUtil, msgUtil);
     }
 
     @Test
@@ -50,7 +45,7 @@ public class DeveloperDetailsUploadHandlerTest {
     }
 
     @Test
-    public void parseDeveloperName_ExistingDeveloper_ReturnsCorrectly() {
+    public void parseDeveloper_NameOnly_ReturnsCorrectly() {
         String developerName = "My Developer";
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 HEADER_ROW + ",VENDOR__C").get(0);
@@ -58,27 +53,6 @@ public class DeveloperDetailsUploadHandlerTest {
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
                 LISTING_ROW + "," + developerName);
         assertNotNull(listingRecords);
-
-        Mockito.when(dao.getByName(ArgumentMatchers.eq(developerName)))
-            .thenReturn(buildDto(1L, developerName));
-
-        Developer developer = handler.handle(headingRecord, listingRecords);
-        assertNotNull(developer);
-        assertEquals(1L, developer.getDeveloperId());
-        assertEquals(developerName, developer.getName());
-    }
-
-    @Test
-    public void parseDeveloperName_NewDeveloper_ReturnsCorrectly() {
-        String developerName = "My Developer";
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
-                HEADER_ROW + ",VENDOR__C").get(0);
-        assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
-                LISTING_ROW + "," + developerName);
-        assertNotNull(listingRecords);
-
-        Mockito.when(dao.getByName(ArgumentMatchers.eq(developerName))).thenReturn(null);
 
         Developer developer = handler.handle(headingRecord, listingRecords);
         assertNotNull(developer);
@@ -87,7 +61,7 @@ public class DeveloperDetailsUploadHandlerTest {
     }
 
     @Test
-    public void parseDeveloperWebsite_HasData_ParsesCorrectly() {
+    public void parseDeveloper_WebsiteOnly_ParsesCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 HEADER_ROW + ",VENDOR_WEBSITE__C").get(0);
         assertNotNull(headingRecord);
@@ -97,12 +71,13 @@ public class DeveloperDetailsUploadHandlerTest {
 
         Developer developer = handler.handle(headingRecord, listingRecords);
         assertNotNull(developer);
+        assertNull(developer.getName());
         assertNotNull(developer.getWebsite());
         assertEquals("http://www.test.com", developer.getWebsite());
     }
 
     @Test
-    public void parseDeveloperWebsite_MissingData_ParsesEmptyString() {
+    public void parseDeveloper_WebsiteEmpty_ParsesEmptyString() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 HEADER_ROW + ",VENDOR_WEBSITE__C").get(0);
         assertNotNull(headingRecord);
@@ -117,7 +92,7 @@ public class DeveloperDetailsUploadHandlerTest {
     }
 
     @Test
-    public void parseSelfDeveloper_TrueData_ParsesCorrectly() {
+    public void parseDeveloper_SelfDeveloper1_ParsesTrue() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 HEADER_ROW + ",Self-developer").get(0);
         assertNotNull(headingRecord);
@@ -132,7 +107,7 @@ public class DeveloperDetailsUploadHandlerTest {
     }
 
     @Test
-    public void parseSelfDeveloper_FalseData_ParsesCorrectly() {
+    public void parseDeveloper_SelfDeveloper0_ParsesFalse() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 HEADER_ROW + ",Self-developer").get(0);
         assertNotNull(headingRecord);
@@ -147,7 +122,7 @@ public class DeveloperDetailsUploadHandlerTest {
     }
 
     @Test(expected = ValidationException.class)
-    public void parseSelfDeveloper_BadData_ParsesCorrectly() {
+    public void parseDeveloper_SelfDeveloperBad_ThrowsException() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 HEADER_ROW + ",Self-developer").get(0);
         assertNotNull(headingRecord);
@@ -158,7 +133,7 @@ public class DeveloperDetailsUploadHandlerTest {
     }
 
     @Test
-    public void parseDeveloperAddress_AllAddressFields_ParsesCorrectly() {
+    public void parseAddress_AllAddressFields_ParsesCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 HEADER_ROW + ",VENDOR_STREET_ADDRESS__C,VENDOR_CITY__C,VENDOR_STATE__C,VENDOR_ZIP__C").get(0);
         assertNotNull(headingRecord);
@@ -178,7 +153,7 @@ public class DeveloperDetailsUploadHandlerTest {
     }
 
     @Test
-    public void parseDeveloperContact_AllContactFields_ParsesCorrectly() {
+    public void parseContact_AllContactFields_ParsesCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 HEADER_ROW + ",VENDOR_EMAIL__C,VENDOR_PHONE__C,VENDOR_CONTACT_NAME__C").get(0);
         assertNotNull(headingRecord);
@@ -193,12 +168,5 @@ public class DeveloperDetailsUploadHandlerTest {
         assertEquals("test@ainq.com", contact.getEmail());
         assertEquals("333-444-5555", contact.getPhoneNumber());
         assertEquals("First Last", contact.getFullName());
-    }
-
-    private DeveloperDTO buildDto(Long id, String name) {
-        DeveloperDTO dto = new DeveloperDTO();
-        dto.setId(id);
-        dto.setName(name);
-        return dto;
     }
 }

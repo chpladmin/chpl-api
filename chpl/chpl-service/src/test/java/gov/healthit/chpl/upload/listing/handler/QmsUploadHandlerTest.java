@@ -10,12 +10,9 @@ import java.util.List;
 import org.apache.commons.csv.CSVRecord;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
-import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -25,15 +22,13 @@ public class QmsUploadHandlerTest {
     private static final String LISTING_ROW_BEGIN = "15.02.02.3007.A056.01.00.0.180214,New";
     private static final String LISTING_ROW_SUBELEMENT_BEGIN = "15.02.02.3007.A056.01.00.0.180214,Subelement";
 
-    private QmsStandardDAO dao;
     private QmsUploadHandler handler;
 
     @Before
     public void setup() {
         ErrorMessageUtil msgUtil = Mockito.mock(ErrorMessageUtil.class);
         ListingUploadHandlerUtil handlerUtil = new ListingUploadHandlerUtil(msgUtil);
-        dao = Mockito.mock(QmsStandardDAO.class);
-        handler = new QmsUploadHandler(handlerUtil, dao, msgUtil);
+        handler = new QmsUploadHandler(handlerUtil, msgUtil);
     }
 
     @Test
@@ -66,7 +61,7 @@ public class QmsUploadHandlerTest {
     }
 
     @Test
-    public void parseQms_MultipleValidQmsAllFieldsPopulated_ReturnsCorrectly() {
+    public void parseQms_MultipleQmsAllFieldsPopulated_ReturnsCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
@@ -74,18 +69,13 @@ public class QmsUploadHandlerTest {
                 + LISTING_ROW_SUBELEMENT_BEGIN + ",ISO 9002,a1 a2 and a3,Custom");
         assertNotNull(listingRecords);
 
-        Mockito.when(dao.getByName(ArgumentMatchers.eq("ISO 9001")))
-            .thenReturn(buildDto(1L, "ISO 9001"));
-        Mockito.when(dao.getByName(ArgumentMatchers.eq("ISO 9002")))
-        .thenReturn(buildDto(2L, "ISO 9002"));
-
         List<CertifiedProductQmsStandard> foundQms = handler.handle(headingRecord, listingRecords);
         assertNotNull(foundQms);
         assertEquals(2, foundQms.size());
         foundQms.stream().forEach(qms -> {
             assertNull(qms.getId());
+            assertNull(qms.getQmsStandardId());
             assertNotNull(qms.getQmsStandardName());
-            assertNotNull(qms.getQmsStandardId());
             assertNotNull(qms.getApplicableCriteria());
             assertNotNull(qms.getQmsModification());
             if (qms.getQmsStandardName().equals("ISO 9001")) {
@@ -101,7 +91,7 @@ public class QmsUploadHandlerTest {
     }
 
     @Test
-    public void parseQms_MultipleValidQmsSomeFieldsPopulated_ReturnsCorrectly() {
+    public void parseQms_MultipleQmsSomeFieldsPopulated_ReturnsCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
@@ -109,18 +99,13 @@ public class QmsUploadHandlerTest {
                 + LISTING_ROW_SUBELEMENT_BEGIN + ",ISO 9002,a1 a2 and a3,");
         assertNotNull(listingRecords);
 
-        Mockito.when(dao.getByName(ArgumentMatchers.eq("ISO 9001")))
-            .thenReturn(buildDto(1L, "ISO 9001"));
-        Mockito.when(dao.getByName(ArgumentMatchers.eq("ISO 9002")))
-        .thenReturn(buildDto(2L, "ISO 9002"));
-
         List<CertifiedProductQmsStandard> foundQms = handler.handle(headingRecord, listingRecords);
         assertNotNull(foundQms);
         assertEquals(2, foundQms.size());
         foundQms.stream().forEach(qms -> {
             assertNull(qms.getId());
+            assertNull(qms.getQmsStandardId());
             assertNotNull(qms.getQmsStandardName());
-            assertNotNull(qms.getQmsStandardId());
             assertNotNull(qms.getApplicableCriteria());
             assertNotNull(qms.getQmsModification());
             if (qms.getQmsStandardName().equals("ISO 9001")) {
@@ -136,49 +121,20 @@ public class QmsUploadHandlerTest {
     }
 
     @Test
-    public void parseQms_SingleValidQmsSomeFieldsPopulated_ReturnsCorrectly() {
+    public void parseQms_SingleQmsSomeFieldsPopulated_ReturnsCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
                 LISTING_ROW_BEGIN + ",ISO 9001,,None");
         assertNotNull(listingRecords);
 
-        Mockito.when(dao.getByName(ArgumentMatchers.eq("ISO 9001")))
-            .thenReturn(buildDto(1L, "ISO 9001"));
-
         List<CertifiedProductQmsStandard> foundQms = handler.handle(headingRecord, listingRecords);
         assertNotNull(foundQms);
         assertEquals(1, foundQms.size());
         foundQms.stream().forEach(qms -> {
             assertNull(qms.getId());
-            assertNotNull(qms.getQmsStandardName());
-            assertNotNull(qms.getQmsStandardId());
-            assertNotNull(qms.getApplicableCriteria());
-            assertNotNull(qms.getQmsModification());
-            assertEquals("ISO 9001", qms.getQmsStandardName());
-            assertEquals("", qms.getApplicableCriteria());
-            assertEquals("None", qms.getQmsModification());
-        });
-    }
-
-    @Test
-    public void parseQms_SingleInvalidQmsSomeFieldsPopulated_ReturnsCorrectly() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
-        assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
-                LISTING_ROW_BEGIN + ",ISO 9001,,None");
-        assertNotNull(listingRecords);
-
-        Mockito.when(dao.getByName(ArgumentMatchers.eq("ISO 9001")))
-            .thenReturn(null);
-
-        List<CertifiedProductQmsStandard> foundQms = handler.handle(headingRecord, listingRecords);
-        assertNotNull(foundQms);
-        assertEquals(1, foundQms.size());
-        foundQms.stream().forEach(qms -> {
-            assertNull(qms.getId());
-            assertNotNull(qms.getQmsStandardName());
             assertNull(qms.getQmsStandardId());
+            assertNotNull(qms.getQmsStandardName());
             assertNotNull(qms.getApplicableCriteria());
             assertNotNull(qms.getQmsModification());
             assertEquals("ISO 9001", qms.getQmsStandardName());
@@ -188,7 +144,7 @@ public class QmsUploadHandlerTest {
     }
 
     @Test
-    public void parseQms_SingleInvalidQmsUnexpectedHeaderOrder_ReturnsCorrectly() {
+    public void parseQms_SingleQmsUnexpectedHeaderOrder_ReturnsCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 "UNIQUE_CHPL_ID__C,RECORD_STATUS__C,QMS Modification Description,QMS Standard Applicable Criteria,Qms Standard").get(0);
         assertNotNull(headingRecord);
@@ -196,19 +152,15 @@ public class QmsUploadHandlerTest {
                 LISTING_ROW_BEGIN + ",None,All Criteria,ISO 9001");
         assertNotNull(listingRecords);
 
-        Mockito.when(dao.getByName(ArgumentMatchers.eq("ISO 9001")))
-            .thenReturn(buildDto(1L, "ISO 9001"));
-
         List<CertifiedProductQmsStandard> foundQms = handler.handle(headingRecord, listingRecords);
         assertNotNull(foundQms);
         assertEquals(1, foundQms.size());
         foundQms.stream().forEach(qms -> {
             assertNull(qms.getId());
+            assertNull(qms.getQmsStandardId());
             assertNotNull(qms.getQmsStandardName());
-            assertNotNull(qms.getQmsStandardId());
             assertNotNull(qms.getApplicableCriteria());
             assertNotNull(qms.getQmsModification());
-            assertEquals(1, qms.getQmsStandardId().longValue());
             assertEquals("ISO 9001", qms.getQmsStandardName());
             assertEquals("All Criteria", qms.getApplicableCriteria());
             assertEquals("None", qms.getQmsModification());
@@ -216,7 +168,7 @@ public class QmsUploadHandlerTest {
     }
 
     @Test
-    public void parseQms_SingleValidQmsCriteriaAndName_ReturnsCorrectly() {
+    public void parseQms_SingleNoModificationColumn_ReturnsCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 "UNIQUE_CHPL_ID__C,RECORD_STATUS__C,QMS Standard Applicable Criteria,Qms Standard").get(0);
         assertNotNull(headingRecord);
@@ -224,26 +176,22 @@ public class QmsUploadHandlerTest {
                 LISTING_ROW_BEGIN + ",All Criteria,ISO 9001");
         assertNotNull(listingRecords);
 
-        Mockito.when(dao.getByName(ArgumentMatchers.eq("ISO 9001")))
-            .thenReturn(buildDto(1L, "ISO 9001"));
-
         List<CertifiedProductQmsStandard> foundQms = handler.handle(headingRecord, listingRecords);
         assertNotNull(foundQms);
         assertEquals(1, foundQms.size());
         foundQms.stream().forEach(qms -> {
             assertNull(qms.getId());
+            assertNull(qms.getQmsStandardId());
             assertNotNull(qms.getQmsStandardName());
-            assertNotNull(qms.getQmsStandardId());
             assertNotNull(qms.getApplicableCriteria());
             assertNull(qms.getQmsModification());
-            assertEquals(1, qms.getQmsStandardId().longValue());
             assertEquals("ISO 9001", qms.getQmsStandardName());
             assertEquals("All Criteria", qms.getApplicableCriteria());
         });
     }
 
     @Test
-    public void parseQms_QmsNameMissing_ReturnsCorrectly() {
+    public void parseQms_QmsNoNameColumn_ReturnsCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 "UNIQUE_CHPL_ID__C,RECORD_STATUS__C,Qms Modification Description,QMS Standard Applicable Criteria").get(0);
         assertNotNull(headingRecord);
@@ -256,19 +204,12 @@ public class QmsUploadHandlerTest {
         assertEquals(1, foundQms.size());
         foundQms.stream().forEach(qms -> {
             assertNull(qms.getId());
-            assertNull(qms.getQmsStandardName());
             assertNull(qms.getQmsStandardId());
+            assertNull(qms.getQmsStandardName());
             assertNotNull(qms.getApplicableCriteria());
             assertNotNull(qms.getQmsModification());
             assertEquals("Some mods", qms.getQmsModification());
             assertEquals("All Criteria", qms.getApplicableCriteria());
         });
-    }
-
-    private QmsStandardDTO buildDto(Long id, String name) {
-        QmsStandardDTO dto = new QmsStandardDTO();
-        dto.setId(id);
-        dto.setName(name);
-        return dto;
     }
 }
