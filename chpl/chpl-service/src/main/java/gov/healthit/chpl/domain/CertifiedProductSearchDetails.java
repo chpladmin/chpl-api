@@ -152,6 +152,7 @@ public class CertifiedProductSearchDetails implements Serializable {
      */
     @XmlElementWrapper(name = "testingLabs", nillable = true, required = false)
     @XmlElement(name = "testingLab")
+    @Singular
     private List<CertifiedProductTestingLab> testingLabs = new ArrayList<CertifiedProductTestingLab>();
 
     /**
@@ -263,6 +264,7 @@ public class CertifiedProductSearchDetails implements Serializable {
      */
     @XmlElementWrapper(name = "accessibilityStandards", nillable = true, required = false)
     @XmlElement(name = "accessibilityStandard")
+    @Singular
     @SuppressWarnings({"checkstyle:linelength"})
     private List<CertifiedProductAccessibilityStandard> accessibilityStandards = new ArrayList<CertifiedProductAccessibilityStandard>();
 
@@ -273,6 +275,7 @@ public class CertifiedProductSearchDetails implements Serializable {
      */
     @XmlElementWrapper(name = "targetedUsers", nillable = true, required = false)
     @XmlElement(name = "targetedUser")
+    @Singular
     private List<CertifiedProductTargetedUser> targetedUsers = new ArrayList<CertifiedProductTargetedUser>();
 
     /**
@@ -282,6 +285,7 @@ public class CertifiedProductSearchDetails implements Serializable {
      */
     @XmlElementWrapper(name = "qmsStandards", nillable = true, required = false)
     @XmlElement(name = "qmsStandard")
+    @Singular
     private List<CertifiedProductQmsStandard> qmsStandards = new ArrayList<CertifiedProductQmsStandard>();
 
     /**
@@ -800,10 +804,8 @@ public class CertifiedProductSearchDetails implements Serializable {
                 CertificationStatusEvent nextEvent = this.getCertificationEvents().get(i + 1);
                 // if the passed-in date is between currEvent and nextEvent then the currEvent
                 // gives the status on the passed-in date.
-                if (currEvent.getEventDate() != null && currEvent.getEventDate().longValue() <= date
-                        .getTime()
-                        && nextEvent.getEventDate() != null && nextEvent.getEventDate().longValue() > date
-                                .getTime()) {
+                if (currEvent.getEventDate() != null && currEvent.getEventDate().longValue() <= date.getTime()
+                        && nextEvent.getEventDate() != null && nextEvent.getEventDate().longValue() > date.getTime()) {
                     result = currEvent;
                 }
             } else {

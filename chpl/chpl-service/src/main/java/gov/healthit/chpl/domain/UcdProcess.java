@@ -13,6 +13,9 @@ import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Singular;
 
 /**
  * The user-centered design (UCD) process applied for the corresponding
@@ -22,6 +25,8 @@ import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
+@AllArgsConstructor
 public class UcdProcess implements Serializable {
     private static final long serialVersionUID = 7248865611086710891L;
 
@@ -52,6 +57,7 @@ public class UcdProcess implements Serializable {
      */
     @XmlElementWrapper(name = "criteriaList", nillable = true, required = false)
     @XmlElement(required = false, nillable = true)
+    @Singular("criterion")
     private Set<CertificationCriterion> criteria;
 
     public UcdProcess() {

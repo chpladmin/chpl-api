@@ -1,21 +1,20 @@
 package gov.healthit.chpl.service;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.domain.compliance.DirectReview;
-import gov.healthit.chpl.domain.compliance.DirectReviewNonconformity;
+import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import lombok.extern.log4j.Log4j2;
 
 @Component("directReviewService")
@@ -24,95 +23,54 @@ public class DirectReviewService {
     private static final String JIRA_KEY_FIELD = "key";
     private static final String JIRA_ISSUES_FIELD = "issues";
     private static final String JIRA_FIELDS_FIELD = "fields";
+
+    @Value("${jira.baseUrl}")
+    private String jiraBaseUrl;
+
+    @Value("${jira.directReviewUrl}")
+    private String jiraDirectReviewUrl;
+
+    @Value("${jira.nonconformityUrl}")
+    private String jiraNonconformityUrl;
+
+    private RestTemplate jiraAuthenticatedRestTemplate;
     private ObjectMapper mapper;
 
-    public DirectReviewService() {
+    @Autowired
+    public DirectReviewService(RestTemplate jiraAuthenticatedRestTemplate) {
+        this.jiraAuthenticatedRestTemplate = jiraAuthenticatedRestTemplate;
         this.mapper = new ObjectMapper();
     }
 
     public List<DirectReview> getDirectReviews(Long developerId) {
         LOGGER.info("Fetching direct review data for developer " + developerId);
 
-        String directReviewsJson = fetchJson(developerId);
+        String directReviewsJson = fetchDirectReviews(developerId);
         List<DirectReview> drs = convertDirectReviewsFromJira(directReviewsJson);
         for (DirectReview dr : drs) {
-            String nonconformitiesJson = fetchNonconformities(dr.getJiraKey());
-            List<DirectReviewNonconformity> ncs = convertNonconformitiesFromJira(nonconformitiesJson);
+            String nonConformitiesJson = fetchNonConformities(dr.getJiraKey());
+            List<DirectReviewNonConformity> ncs = convertNonConformitiesFromJira(nonConformitiesJson);
             if (ncs != null && ncs.size() > 0) {
-                dr.getNonconformities().addAll(ncs);
+                dr.getNonConformities().addAll(ncs);
             }
         }
         return drs;
     }
 
-    private String fetchJson(Long developerId) {
-        //Code to query jira goes here.
-        //The actual code will replace what is below, which is just selecting a sample JSON file
-        //to serialize and return.
-
-        String jsonResult = "";
-        String sampleFileName = developerId + ".json";
-        Resource resource = new ClassPathResource("directReviews/" + sampleFileName);
-        InputStream sampleJsonInputStream = null;
-        try {
-            sampleJsonInputStream = resource.getInputStream();
-            if (sampleJsonInputStream != null) {
-                jsonResult = IOUtils.toString(sampleJsonInputStream);
-            }
-        } catch (IOException ex) {
-            LOGGER.warn("Can't find resource " + sampleFileName);
-        }
-
-        if (StringUtils.isEmpty(jsonResult)) {
-            LOGGER.info("Sample file cannot be found. Sending back empty direct review results.");
-            String defaultSampleFile = "directReviews/no-results.json";
-            resource = new ClassPathResource(defaultSampleFile);
-            InputStream noResultsInputStream = null;
-            try {
-                noResultsInputStream = resource.getInputStream();
-                if (noResultsInputStream != null) {
-                    jsonResult = IOUtils.toString(noResultsInputStream);
-                }
-            } catch (IOException ex) {
-                LOGGER.fatal("Can't find resource " + defaultSampleFile, ex);
-            }
-        }
-        return jsonResult;
+    private String fetchDirectReviews(Long developerId) {
+        String url = String.format(jiraBaseUrl + jiraDirectReviewUrl, developerId + "");
+        LOGGER.info("Making request to " + url);
+        ResponseEntity<String> response = jiraAuthenticatedRestTemplate.getForEntity(url, String.class);
+        LOGGER.debug("Response: " + response.getBody());
+        return response.getBody();
     }
 
-    private String fetchNonconformities(String directReviewKey) {
-        //Code to query jira goes here.
-        //The actual code will replace what is below, which is just selecting a sample JSON file
-        //to serialize and return.
-
-        String jsonResult = "";
-        String sampleFileName = directReviewKey + "-nonconformities.json";
-        Resource resource = new ClassPathResource("directReviews/" + sampleFileName);
-        InputStream sampleJsonInputStream = null;
-        try {
-            sampleJsonInputStream = resource.getInputStream();
-            if (sampleJsonInputStream != null) {
-                jsonResult = IOUtils.toString(sampleJsonInputStream);
-            }
-        } catch (IOException ex) {
-            LOGGER.warn("Can't find resource " + sampleFileName);
-        }
-
-        if (StringUtils.isEmpty(jsonResult)) {
-            LOGGER.info("Sample file cannot be found. Sending back empty direct review results.");
-            String defaultSampleFile = "directReviews/no-results.json";
-            resource = new ClassPathResource(defaultSampleFile);
-            InputStream noResultsInputStream = null;
-            try {
-                noResultsInputStream = resource.getInputStream();
-                if (noResultsInputStream != null) {
-                    jsonResult = IOUtils.toString(noResultsInputStream);
-                }
-            } catch (IOException ex) {
-                LOGGER.fatal("Can't find resource " + defaultSampleFile, ex);
-            }
-        }
-        return jsonResult;
+    private String fetchNonConformities(String directReviewKey) {
+        String url = String.format(jiraBaseUrl + jiraNonconformityUrl, directReviewKey + "");
+        LOGGER.info("Making request to " + url);
+        ResponseEntity<String> response = jiraAuthenticatedRestTemplate.getForEntity(url, String.class);
+        LOGGER.debug("Response: " + response.getBody());
+        return response.getBody();
     }
 
     private List<DirectReview> convertDirectReviewsFromJira(String json) {
@@ -125,7 +83,7 @@ public class DirectReviewService {
         }
         if (root != null) {
             JsonNode issuesNode = root.get(JIRA_ISSUES_FIELD);
-            if (issuesNode.isArray() && issuesNode.size() > 0) {
+            if (issuesNode != null && issuesNode.isArray() && issuesNode.size() > 0) {
                 for (JsonNode issueNode : issuesNode) {
                     try {
                         String jiraKey = issueNode.get(JIRA_KEY_FIELD).textValue();
@@ -142,8 +100,8 @@ public class DirectReviewService {
         return drs;
     }
 
-    private List<DirectReviewNonconformity> convertNonconformitiesFromJira(String json) {
-        List<DirectReviewNonconformity> ncs = new ArrayList<DirectReviewNonconformity>();
+    private List<DirectReviewNonConformity> convertNonConformitiesFromJira(String json) {
+        List<DirectReviewNonConformity> ncs = new ArrayList<DirectReviewNonConformity>();
         JsonNode root = null;
         try {
             root = mapper.readTree(json);
@@ -152,11 +110,11 @@ public class DirectReviewService {
         }
         if (root != null) {
             JsonNode issuesNode = root.get(JIRA_ISSUES_FIELD);
-            if (issuesNode.isArray() && issuesNode.size() > 0) {
+            if (issuesNode != null && issuesNode.isArray() && issuesNode.size() > 0) {
                 for (JsonNode issueNode : issuesNode) {
                     try {
                         String fieldsJson = issueNode.get(JIRA_FIELDS_FIELD).toString();
-                        DirectReviewNonconformity nc = mapper.readValue(fieldsJson, DirectReviewNonconformity.class);
+                        DirectReviewNonConformity nc = mapper.readValue(fieldsJson, DirectReviewNonConformity.class);
                         ncs.add(nc);
                     } catch (IOException ex) {
                         LOGGER.error("Cannot map issue JSON to DirectReviewNonconformity class", ex);

@@ -1,5 +1,34 @@
 # Release Notes
 
+## Version 25.12.0
+_8 September 2020_
+
+### Features
+* Add "Ignore warnings" checkbox when editing or confirming certified product
+
+### Flagged Features
+* Get direct reviews from Jira
+
+### Bug Fixes
+* Send HTTP Error 401 when the api key is not valid
+
+---
+
+## Version 25.11.0
+_18 August 2020_
+
+### Features
+* Create report showing developer user access
+* Remove cures-specific jobs
+
+### Bug Fixes
+* Require Test Procedure & Data Versions on confirmation
+* Remove no longer required Transparency Attestation validation logic
+* Generate valid XSD for download files
+* Include curesUpdate true/false value in XML download
+
+---
+
 ## Version 25.10.0
 _10 August 2020_
 

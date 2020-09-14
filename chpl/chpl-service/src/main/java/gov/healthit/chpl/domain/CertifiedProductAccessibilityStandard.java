@@ -12,6 +12,8 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 /**
  * The standard(s) or lack thereof used to meet the accessibility-centered
@@ -25,6 +27,8 @@ import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
+@AllArgsConstructor
 public class CertifiedProductAccessibilityStandard implements Serializable {
     private static final long serialVersionUID = -676179466407109456L;
 
