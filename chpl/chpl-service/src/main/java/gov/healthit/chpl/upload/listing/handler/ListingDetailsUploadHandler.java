@@ -71,7 +71,9 @@ public class ListingDetailsUploadHandler {
                 .targetedUsers(targetedUserUploadHandler.handle(headingRecord, listingRecords))
                 .accessibilityStandards(accessibilityStandardsHandler.handle(headingRecord, listingRecords))
                 .qmsStandards(qmsHandler.handle(headingRecord, listingRecords))
-                //TODO add ics, cqm, sed, participants, tasks
+                //TODO: tests for ics, cqm
+                //TODO parsing for sed, participants, tasks, criteria stuff
+                //TODO: data normalizer
             .build();
 
         return listing;

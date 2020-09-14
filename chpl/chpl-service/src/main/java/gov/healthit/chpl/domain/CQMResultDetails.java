@@ -18,6 +18,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 /**
  * The clinical quality measure to which a given listing has been certified.
@@ -25,6 +27,8 @@ import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
+@AllArgsConstructor
 public class CQMResultDetails implements Serializable {
     private static final long serialVersionUID = -7077008682408284325L;
 
