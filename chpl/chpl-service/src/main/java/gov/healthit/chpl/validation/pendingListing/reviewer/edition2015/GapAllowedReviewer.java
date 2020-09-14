@@ -1,4 +1,4 @@
-package gov.healthit.chpl.validation.listing.reviewer.edition2015;
+package gov.healthit.chpl.validation.pendingListing.reviewer.edition2015;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -11,14 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
 
-@Component("gapAllowedReviewer")
+@Component("pendingGapAllowedReviewer")
 public class GapAllowedReviewer implements Reviewer {
 
     @Value("${cures.ruleEffectiveDate}")
@@ -47,22 +47,23 @@ public class GapAllowedReviewer implements Reviewer {
     }
 
     @Override
-    public void review(CertifiedProductSearchDetails listing) {
+    public void review(PendingCertifiedProductDTO listing) {
         if (isCertificationDateAfterCuresEffictiveRuleDate(listing)) {
-            Optional<CertificationResult> f3Result = getF3Criterion(listing);
-            if (f3Result.isPresent() && f3Result.get().isSuccess() && f3Result.get().isGap()) {
+            Optional<PendingCertificationResultDTO> f3Result = getF3Criterion(listing);
+            if (f3Result.isPresent() && f3Result.get().getMeetsCriteria() && f3Result.get().getGap()) {
                 listing.getErrorMessages().add(errorMessageUtil.getMessage("listing.criteria.f_3CannotHaveGap"));
             }
         }
     }
 
-    private boolean isCertificationDateAfterCuresEffictiveRuleDate(CertifiedProductSearchDetails listing) {
-        return listing.getCertificationDate() > curesEffectiveRuleDateTimestamp;
+    private boolean isCertificationDateAfterCuresEffictiveRuleDate(PendingCertifiedProductDTO listing) {
+        return listing.getCertificationDate().getTime() > curesEffectiveRuleDateTimestamp;
     }
 
-    private Optional<CertificationResult> getF3Criterion(CertifiedProductSearchDetails listing) {
-        return listing.getCertificationResults().stream()
+    private Optional<PendingCertificationResultDTO> getF3Criterion(PendingCertifiedProductDTO listing) {
+        return listing.getCertificationCriterion().stream()
         .filter(crit -> crit.getCriterion().getNumber().equals(certificationCriterionService.get(Criteria2015.F_3).getNumber()))
         .findAny();
     }
+
 }
