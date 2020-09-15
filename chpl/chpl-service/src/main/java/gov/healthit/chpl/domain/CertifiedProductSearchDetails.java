@@ -22,9 +22,13 @@ import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.util.LocalDateAdapter;
+import gov.healthit.chpl.util.LocalDateDeserializer;
+import gov.healthit.chpl.util.LocalDateSerializer;
 import gov.healthit.chpl.util.Util;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -355,6 +359,8 @@ public class CertifiedProductSearchDetails implements Serializable {
     /**
      * Date the listing's Real World Testing Plan was submitted
      */
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     @XmlElement(name = "rwt_plan_submission_date", nillable = true, required = false)
     private LocalDate rwtPlanSubmissionDate;
@@ -368,6 +374,8 @@ public class CertifiedProductSearchDetails implements Serializable {
     /**
      * Date the listing's Real World Testing Results was submitted
      */
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     @XmlElement(name = "rwt_plan_results_date", nillable = true, required = false)
     private LocalDate rwtResultsSubmissionDate;
