@@ -37,5 +37,9 @@
             <name>ONC-ACB Pending Change Request Report</name>
             <group>chplJobs</group>
         </delete-job>
+        <delete-job>
+            <name>Pending Change Request Report</name>
+            <group>chplJobs</group>
+        </delete-job>
     </pre-processing-commands>
 </job-scheduling-data>
