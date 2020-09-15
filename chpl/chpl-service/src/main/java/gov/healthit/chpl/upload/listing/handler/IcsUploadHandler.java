@@ -41,12 +41,14 @@ public class IcsUploadHandler {
         List<String> values = uploadUtil.parseMultiRowFieldWithoutEmptyValues(
                 Headings.ICS_SOURCE, headingRecord, listingRecords);
         List<CertifiedProduct> cps = new ArrayList<CertifiedProduct>();
-        values.stream().forEach(value -> {
-            CertifiedProduct cp = CertifiedProduct.builder()
-                    .chplProductNumber(value)
-                    .build();
-            cps.add(cp);
-        });
+        if (values != null) {
+            values.stream().forEach(value -> {
+                CertifiedProduct cp = CertifiedProduct.builder()
+                        .chplProductNumber(value)
+                        .build();
+                cps.add(cp);
+            });
+        }
         return cps;
     }
 

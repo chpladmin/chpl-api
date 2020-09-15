@@ -28,6 +28,7 @@ public class ListingDetailsUploadHandler {
     private TargetedUsersUploadHandler targetedUserUploadHandler;
     private AccessibilityStandardsUploadHandler accessibilityStandardsHandler;
     private QmsUploadHandler qmsHandler;
+    private IcsUploadHandler icsHandler;
     private ListingUploadHandlerUtil uploadUtil;
     private ErrorMessageUtil msgUtil;
 
@@ -36,12 +37,13 @@ public class ListingDetailsUploadHandler {
     public ListingDetailsUploadHandler(DeveloperDetailsUploadHandler devDetailsUploadHandler,
             TargetedUsersUploadHandler targetedUserUploadHandler,
             AccessibilityStandardsUploadHandler accessibilityStandardsHandler,
-            QmsUploadHandler qmsHandler,
+            QmsUploadHandler qmsHandler, IcsUploadHandler icsHandler,
             ListingUploadHandlerUtil uploadUtil, ErrorMessageUtil msgUtil) {
         this.devDetailsUploadHandler = devDetailsUploadHandler;
         this.targetedUserUploadHandler = targetedUserUploadHandler;
         this.accessibilityStandardsHandler = accessibilityStandardsHandler;
         this.qmsHandler = qmsHandler;
+        this.icsHandler = icsHandler;
         this.uploadUtil = uploadUtil;
         this.msgUtil = msgUtil;
     }
@@ -71,7 +73,8 @@ public class ListingDetailsUploadHandler {
                 .targetedUsers(targetedUserUploadHandler.handle(headingRecord, listingRecords))
                 .accessibilityStandards(accessibilityStandardsHandler.handle(headingRecord, listingRecords))
                 .qmsStandards(qmsHandler.handle(headingRecord, listingRecords))
-                //TODO: tests for ics, cqm
+                .ics(icsHandler.handle(headingRecord, listingRecords))
+                //TODO: tests for cqm
                 //TODO parsing for sed, participants, tasks, criteria stuff
                 //TODO: data normalizer
             .build();
