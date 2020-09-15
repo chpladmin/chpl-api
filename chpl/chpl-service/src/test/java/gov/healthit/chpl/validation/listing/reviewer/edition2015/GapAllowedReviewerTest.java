@@ -44,6 +44,7 @@ public class GapAllowedReviewerTest {
                         .success(true)
                         .criterion(CertificationCriterion.builder()
                                 .number(F3_CRITERIA_NUMBER)
+                                .id(1L)
                                 .build())
                         .gap(false)
                         .build())
@@ -62,6 +63,7 @@ public class GapAllowedReviewerTest {
                         .success(true)
                         .criterion(CertificationCriterion.builder()
                                 .number(F3_CRITERIA_NUMBER)
+                                .id(1L)
                                 .build())
                         .gap(true)
                         .build())
@@ -80,6 +82,7 @@ public class GapAllowedReviewerTest {
                         .success(true)
                         .criterion(CertificationCriterion.builder()
                                 .number(F3_CRITERIA_NUMBER)
+                                .id(1L)
                                 .build())
                         .gap(false)
                         .build())
@@ -98,6 +101,7 @@ public class GapAllowedReviewerTest {
                         .success(true)
                         .criterion(CertificationCriterion.builder()
                                 .number(F3_CRITERIA_NUMBER)
+                                .id(1L)
                                 .build())
                         .gap(true)
                         .build())
@@ -113,6 +117,7 @@ public class GapAllowedReviewerTest {
     private CertificationCriterion getF3Criteria() {
         return CertificationCriterion.builder()
                 .number(F3_CRITERIA_NUMBER)
+                .id(1L)
                 .build();
     }
 }

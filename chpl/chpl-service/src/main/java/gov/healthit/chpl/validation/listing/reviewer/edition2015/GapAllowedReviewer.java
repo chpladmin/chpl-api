@@ -62,7 +62,7 @@ public class GapAllowedReviewer implements Reviewer {
 
     private Optional<CertificationResult> getF3Criterion(CertifiedProductSearchDetails listing) {
         return listing.getCertificationResults().stream()
-        .filter(crit -> crit.getCriterion().getNumber().equals(certificationCriterionService.get(Criteria2015.F_3).getNumber()))
+        .filter(crit -> crit.getCriterion().getId().equals(certificationCriterionService.get(Criteria2015.F_3).getId()))
         .findAny();
     }
 }

@@ -21,7 +21,6 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
 @Component("pendingGapAllowedReviewer")
 public class GapAllowedReviewer implements Reviewer {
 
-    @Value("${cures.ruleEffectiveDate}")
     private String curesEffectiveRuleDate;
 
     private Long curesEffectiveRuleDateTimestamp;
@@ -64,7 +63,7 @@ public class GapAllowedReviewer implements Reviewer {
 
     private Optional<PendingCertificationResultDTO> getF3Criterion(PendingCertifiedProductDTO listing) {
         return listing.getCertificationCriterion().stream()
-        .filter(crit -> crit.getCriterion().getNumber().equals(certificationCriterionService.get(Criteria2015.F_3).getNumber()))
+        .filter(crit -> crit.getCriterion().getId().equals(certificationCriterionService.get(Criteria2015.F_3).getId()))
         .findAny();
     }
 
