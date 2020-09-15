@@ -310,7 +310,9 @@ public class UserManager extends SecuredManager {
     private void sendAccountLockedEmail(UserDTO user) throws AddressException, MessagingException {
         String subject = "CHPL Account Locked";
         String htmlMessage = "<p>The account associated with " + user.getSubjectName()
-                + " has exceeded the maximum number of failed login attempts and is locked.</p>";
+                + " has exceeded the maximum number of failed login attempts and is locked. "
+                + "You will need to reset your account by selecting the \"Forgot Password\" option "
+                + "during Log In, or by contacting your local administrator.</p>";
         String[] toEmails = {
                 user.getEmail()
         };
@@ -319,7 +321,7 @@ public class UserManager extends SecuredManager {
         emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
         .subject(subject)
         .htmlMessage(htmlMessage)
-        .htmlFooter()
+        .publicHtmlFooter()
         .sendEmail();
     }
 

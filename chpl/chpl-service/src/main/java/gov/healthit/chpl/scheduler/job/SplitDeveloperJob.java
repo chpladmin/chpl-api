@@ -249,7 +249,7 @@ public class SplitDeveloperJob implements Job {
         emailBuilder.recipient(recipientEmail)
                 .subject(subject)
                 .htmlMessage(htmlMessage)
-                .htmlFooter()
+                .acbAtlHtmlFooter()
                 .sendEmail();
     }
 

@@ -263,7 +263,7 @@ public class AuthenticationController {
         emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
             .subject(env.getProperty("user.resetPassword.subject"))
             .htmlMessage(htmlMessage)
-            .htmlFooter()
+            .publicHtmlFooter()
             .sendEmail();
 
         return "{\"passwordResetEmailSent\" : true }";
