@@ -220,10 +220,10 @@ public class AuthenticationController {
     @RequestMapping(value = "/reset_password_request", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public UpdatePasswordResponse resetPassword(@RequestBody final ResetPasswordRequest request)
-            throws UserRetrievalException {
+            throws UserRetrievalException, MultipleUserAccountsException {
         UpdatePasswordResponse response = new UpdatePasswordResponse();
         // get the current user
-        UserDTO currUser = userManager.getByNameUnsecured(request.getUserName());
+        UserDTO currUser = userManager.getByNameOrEmailUnsecured(request.getUserName());
         if (currUser == null) {
             throw new UserRetrievalException("The user with username " + request.getUserName() + " cannot be found.");
         }
