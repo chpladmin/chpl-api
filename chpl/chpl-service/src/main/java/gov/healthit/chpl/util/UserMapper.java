@@ -35,36 +35,38 @@ public class UserMapper {
 
     @Transactional(readOnly = true)
     public UserDTO from(UserEntity entity) {
-        UserDTO dto = populateBasicUserInfo(entity);
-        if (dto != null) {
-            populateOrganizations(dto);
+        UserDTO dto = new UserDTO();
+        if (entity != null) {
+            dto = populateBasicUserInfo(entity);
+            if (dto != null && dto.getPermission() != null
+                    && dto.getPermission().getAuthority() != null) {
+                populateOrganizations(dto);
+            }
         }
         return dto;
     }
 
     private UserDTO populateBasicUserInfo(UserEntity entity) {
         UserDTO dto = new UserDTO();
-        if (entity != null) {
-            dto.setId(entity.getId());
-            dto.setSubjectName(entity.getSubjectName());
-            dto.setFailedLoginCount(entity.getFailedLoginCount());
-            dto.setAccountExpired(entity.isAccountExpired());
-            dto.setAccountLocked(entity.isAccountLocked());
-            dto.setAccountEnabled(entity.isAccountEnabled());
-            dto.setCredentialsExpired(entity.isCredentialsExpired());
-            dto.setPasswordResetRequired(entity.isPasswordResetRequired());
-            dto.setLastLoggedInDate(entity.getLastLoggedInDate());
-            if (entity.getContact() != null) {
-                dto.setFullName(entity.getContact().getFullName());
-                dto.setFriendlyName(entity.getContact().getFriendlyName());
-                dto.setEmail(entity.getContact().getEmail());
-                dto.setPhoneNumber(entity.getContact().getPhoneNumber());
-                dto.setTitle(entity.getContact().getTitle());
-                dto.setSignatureDate(entity.getContact().getSignatureDate());
-            }
-            if (entity.getPermission() != null) {
-                dto.setPermission(new UserPermissionDTO(entity.getPermission()));
-            }
+        dto.setId(entity.getId());
+        dto.setSubjectName(entity.getSubjectName());
+        dto.setFailedLoginCount(entity.getFailedLoginCount());
+        dto.setAccountExpired(entity.isAccountExpired());
+        dto.setAccountLocked(entity.isAccountLocked());
+        dto.setAccountEnabled(entity.isAccountEnabled());
+        dto.setCredentialsExpired(entity.isCredentialsExpired());
+        dto.setPasswordResetRequired(entity.isPasswordResetRequired());
+        dto.setLastLoggedInDate(entity.getLastLoggedInDate());
+        if (entity.getContact() != null) {
+            dto.setFullName(entity.getContact().getFullName());
+            dto.setFriendlyName(entity.getContact().getFriendlyName());
+            dto.setEmail(entity.getContact().getEmail());
+            dto.setPhoneNumber(entity.getContact().getPhoneNumber());
+            dto.setTitle(entity.getContact().getTitle());
+            dto.setSignatureDate(entity.getContact().getSignatureDate());
+        }
+        if (entity.getPermission() != null) {
+            dto.setPermission(new UserPermissionDTO(entity.getPermission()));
         }
         return dto;
     }
