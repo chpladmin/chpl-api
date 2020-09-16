@@ -6,14 +6,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AccountStatusException;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.auth.ChplAccountStatusException;
 import gov.healthit.chpl.auth.jwt.JWTAuthor;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
@@ -40,7 +41,8 @@ public class AuthenticationManager {
 
     @Autowired
     public AuthenticationManager(JWTAuthor jwtAuthor, UserManager userManager, UserDAO userDAO,
-            BCryptPasswordEncoder bCryptPasswordEncoder, UserDetailsChecker userDetailsChecker,
+            BCryptPasswordEncoder bCryptPasswordEncoder,
+            @Qualifier("chplAccountStatusChecker") UserDetailsChecker userDetailsChecker,
             ErrorMessageUtil msgUtil) {
         this.jwtAuthor = jwtAuthor;
         this.userManager = userManager;
@@ -56,17 +58,17 @@ public class AuthenticationManager {
         String jwt = getJWT(credentials);
         UserDTO user = getUser(credentials);
         if (user != null && user.isPasswordResetRequired()) {
-            throw new UserRetrievalException("The user is required to change their password on next log in.");
+            throw new UserRetrievalException(msgUtil.getMessage("auth.changePasswordRequired"));
         }
         return jwt;
     }
 
     public UserDTO getUser(LoginCredentials credentials)
-            throws BadCredentialsException, AccountStatusException, UserRetrievalException, MultipleUserAccountsException {
+            throws AccountStatusException, UserRetrievalException, MultipleUserAccountsException {
         UserDTO user = getUserByNameOrEmail(credentials.getUserName());
         if (user != null) {
             if (user.getSignatureDate() == null) {
-                throw new BadCredentialsException(msgUtil.getMessage("user.unconfirmedAccount", user.getSubjectName()));
+                throw new ChplAccountStatusException(msgUtil.getMessage("auth.accountNotConfirmed", user.getSubjectName()));
             }
             if (checkPassword(credentials.getPassword(), userManager.getEncodedPassword(user))) {
                 userDetailsChecker.check(user);
@@ -89,10 +91,10 @@ public class AuthenticationManager {
                 } catch (UserManagementException ex) {
                     LOGGER.error("Error adding failed login", ex);
                 }
-                throw new BadCredentialsException(msgUtil.getMessage("user.badUsernamePassword"));
+                throw new ChplAccountStatusException(msgUtil.getMessage("auth.loginNotAllowed"));
             }
         } else {
-            throw new BadCredentialsException(msgUtil.getMessage("user.badUsernamePassword"));
+            throw new ChplAccountStatusException(msgUtil.getMessage("auth.loginNotAllowed"));
         }
     }
 

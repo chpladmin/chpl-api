@@ -11,9 +11,10 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import gov.healthit.chpl.auth.ChplAccountStatusChecker;
+import gov.healthit.chpl.auth.ChplAccountStatusException;
 import gov.healthit.chpl.auth.jwt.JWTAuthor;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
@@ -29,7 +30,7 @@ public class UserAuthenticatorTest {
     private UserManager userManager;
     private UserDAO userDAO;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-    private UserDetailsChecker userDetailsChecker;
+    private ChplAccountStatusChecker userDetailsChecker;
     private ErrorMessageUtil msgUtil;
 
     @Before
@@ -38,7 +39,7 @@ public class UserAuthenticatorTest {
         userManager = Mockito.mock(UserManager.class);
         userDAO = Mockito.mock(UserDAO.class);
         bCryptPasswordEncoder = Mockito.mock(BCryptPasswordEncoder.class);
-        userDetailsChecker = Mockito.mock(UserDetailsChecker.class);
+        userDetailsChecker = Mockito.mock(ChplAccountStatusChecker.class);
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
 
         Mockito.when(userDAO.getByName(ArgumentMatchers.anyString()))
@@ -99,8 +100,8 @@ public class UserAuthenticatorTest {
         assertNotNull(user);
     }
 
-    @Test(expected = BadCredentialsException.class)
-    public void getUser_UnknownUserName_ThrowsBadCredentialsException()
+    @Test(expected = ChplAccountStatusException.class)
+    public void getUser_UnknownUserName_ThrowsChplAccountStatusException()
             throws BadCredentialsException, AccountStatusException, UserRetrievalException, MultipleUserAccountsException {
 
         Mockito.when(userDAO.getByNameOrEmail(ArgumentMatchers.anyString()))
@@ -114,8 +115,8 @@ public class UserAuthenticatorTest {
 
     }
 
-    @Test(expected = BadCredentialsException.class)
-    public void getUser_NoUserSignature_ThrowsBadCredentialsException()
+    @Test(expected = ChplAccountStatusException.class)
+    public void getUser_NoUserSignature_ThrowsChplAccountStatusException()
             throws BadCredentialsException, AccountStatusException, UserRetrievalException, MultipleUserAccountsException {
 
         Mockito.when(userDAO.getByNameOrEmail(ArgumentMatchers.anyString()))
@@ -142,8 +143,8 @@ public class UserAuthenticatorTest {
         fail();
     }
 
-    @Test(expected = BadCredentialsException.class)
-    public void getUser_PasswordNotValid_ThrowsBadCredentialsException()
+    @Test(expected = ChplAccountStatusException.class)
+    public void getUser_PasswordNotValid_ThrowsChplAccountStatusException()
             throws BadCredentialsException, AccountStatusException, UserRetrievalException, MultipleUserAccountsException {
 
         Mockito.when(bCryptPasswordEncoder.matches(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
