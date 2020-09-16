@@ -109,7 +109,7 @@ public class EmailBuilder {
         return this;
     }
 
-    public EmailBuilder htmlFooter() {
+    public EmailBuilder acbAtlHtmlFooter() {
         htmlFooter = String.format("<p>"
                 + "If there are any questions about this process, please visit the "
                 + "<a href=\"%s\">"
@@ -117,7 +117,19 @@ public class EmailBuilder {
                 + "</p>"
                 + "<p>Thank you!</p>"
                 + "ONC CHPL Team",
-                env.getProperty("footer.url"));
+                env.getProperty("footer.acbatlUrl"));
+        return this;
+    }
+
+    public EmailBuilder publicHtmlFooter() {
+        htmlFooter = String.format("<p>"
+                + "If there are any questions about this process, please visit the "
+                + "<a href=\"%s\">"
+                + "Health IT Feedback and Inquiry Portal</a> to submit a ticket."
+                + "</p>"
+                + "<p>Thank you!</p>"
+                + "ONC CHPL Team",
+                env.getProperty("footer.publicUrl"));
         return this;
     }
 

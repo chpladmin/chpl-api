@@ -11,9 +11,10 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import gov.healthit.chpl.auth.ChplAccountStatusChecker;
+import gov.healthit.chpl.auth.ChplAccountStatusException;
 import gov.healthit.chpl.auth.jwt.JWTAuthor;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
@@ -21,13 +22,15 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.auth.AuthenticationManager;
 import gov.healthit.chpl.manager.auth.UserManager;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class UserAuthenticatorTest {
     private JWTAuthor jwtAuthor;
     private UserManager userManager;
     private UserDAO userDAO;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-    private UserDetailsChecker userDetailsChecker;
+    private ChplAccountStatusChecker userDetailsChecker;
+    private ErrorMessageUtil msgUtil;
 
     @Before
     public void setup() throws UserRetrievalException {
@@ -35,7 +38,8 @@ public class UserAuthenticatorTest {
         userManager = Mockito.mock(UserManager.class);
         userDAO = Mockito.mock(UserDAO.class);
         bCryptPasswordEncoder = Mockito.mock(BCryptPasswordEncoder.class);
-        userDetailsChecker = Mockito.mock(UserDetailsChecker.class);
+        userDetailsChecker = Mockito.mock(ChplAccountStatusChecker.class);
+        msgUtil = Mockito.mock(ErrorMessageUtil.class);
 
         Mockito.when(userDAO.getByName(ArgumentMatchers.anyString()))
                 .thenReturn(UserDTO.builder()
@@ -72,7 +76,7 @@ public class UserAuthenticatorTest {
     public void getUser_ValidLoginCredentials_ReturnValidUserDTO() throws UserRetrievalException {
         LoginCredentials creds = new LoginCredentials("username", "password");
         AuthenticationManager authenticator = new AuthenticationManager(jwtAuthor, userManager, userDAO, bCryptPasswordEncoder,
-                userDetailsChecker);
+                userDetailsChecker, msgUtil);
         UserDTO user = authenticator.getUser(creds);
 
         assertNotNull(user);
@@ -86,14 +90,14 @@ public class UserAuthenticatorTest {
                 .thenThrow(UserRetrievalException.class);
 
         LoginCredentials creds = new LoginCredentials("username", "password");
-        AuthenticationManager authenticator = new AuthenticationManager(null, null, userDAO, null, null);
+        AuthenticationManager authenticator = new AuthenticationManager(null, null, userDAO, null, null, msgUtil);
         authenticator.getUser(creds);
 
         fail();
 
     }
 
-    @Test(expected = BadCredentialsException.class)
+    @Test(expected = ChplAccountStatusException.class)
     public void getUser_NoUserSignature_ThrowsBadCredentialsException()
             throws BadCredentialsException, AccountStatusException, UserRetrievalException {
 
@@ -115,13 +119,13 @@ public class UserAuthenticatorTest {
 
         LoginCredentials creds = new LoginCredentials("username", "password");
         AuthenticationManager authenticator = new AuthenticationManager(jwtAuthor, userManager, userDAO, bCryptPasswordEncoder,
-                userDetailsChecker);
+                userDetailsChecker, msgUtil);
         authenticator.getUser(creds);
 
         fail();
     }
 
-    @Test(expected = BadCredentialsException.class)
+    @Test(expected = ChplAccountStatusException.class)
     public void getUser_PasswordNotValid_ThrowsBadCredentialsException()
             throws BadCredentialsException, AccountStatusException, UserRetrievalException {
 
@@ -130,7 +134,7 @@ public class UserAuthenticatorTest {
 
         LoginCredentials creds = new LoginCredentials("username", "password");
         AuthenticationManager authenticator = new AuthenticationManager(jwtAuthor, userManager, userDAO, bCryptPasswordEncoder,
-                userDetailsChecker);
+                userDetailsChecker, msgUtil);
         authenticator.getUser(creds);
 
         fail();
