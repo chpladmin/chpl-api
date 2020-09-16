@@ -6,14 +6,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AccountStatusException;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.auth.ChplAccountStatusException;
 import gov.healthit.chpl.auth.jwt.JWTAuthor;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
@@ -24,6 +25,7 @@ import gov.healthit.chpl.exception.JWTCreationException;
 import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Service
@@ -34,15 +36,19 @@ public class AuthenticationManager {
     private UserDAO userDAO;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private UserDetailsChecker userDetailsChecker;
+    private ErrorMessageUtil msgUtil;
 
     @Autowired
     public AuthenticationManager(JWTAuthor jwtAuthor, UserManager userManager, UserDAO userDAO,
-            BCryptPasswordEncoder bCryptPasswordEncoder, UserDetailsChecker userDetailsChecker) {
+            BCryptPasswordEncoder bCryptPasswordEncoder,
+            @Qualifier("chplAccountStatusChecker") UserDetailsChecker userDetailsChecker,
+            ErrorMessageUtil msgUtil) {
         this.jwtAuthor = jwtAuthor;
         this.userManager = userManager;
         this.userDAO = userDAO;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userDetailsChecker = userDetailsChecker;
+        this.msgUtil = msgUtil;
     }
 
     public String authenticate(LoginCredentials credentials)
@@ -51,23 +57,21 @@ public class AuthenticationManager {
         String jwt = getJWT(credentials);
         UserDTO user = getUser(credentials);
         if (user != null && user.isPasswordResetRequired()) {
-            throw new UserRetrievalException("The user is required to change their password on next log in.");
+            throw new UserRetrievalException(msgUtil.getMessage("auth.changePasswordRequired"));
         }
         return jwt;
     }
 
     public UserDTO getUser(LoginCredentials credentials)
-            throws BadCredentialsException, AccountStatusException, UserRetrievalException {
+            throws AccountStatusException, UserRetrievalException {
         UserDTO user = getUserByName(credentials.getUserName());
 
         if (user != null) {
             if (user.getSignatureDate() == null) {
-                throw new BadCredentialsException(
-                        "Account for user " + user.getSubjectName() + " has not been confirmed.");
+                throw new ChplAccountStatusException(msgUtil.getMessage("auth.accountNotConfirmed", user.getSubjectName()));
             }
 
             if (checkPassword(credentials.getPassword(), userManager.getEncodedPassword(user))) {
-
                 userDetailsChecker.check(user);
                 userManager.updateLastLoggedInDate(user);
 
@@ -81,7 +85,6 @@ public class AuthenticationManager {
                     }
                 }
                 return user;
-
             } else {
                 try {
                     user.setFailedLoginCount(user.getFailedLoginCount() + 1);
@@ -89,10 +92,10 @@ public class AuthenticationManager {
                 } catch (UserManagementException ex) {
                     LOGGER.error("Error adding failed login", ex);
                 }
-                throw new BadCredentialsException("Bad username and password combination.");
+                throw new ChplAccountStatusException(msgUtil.getMessage("auth.loginNotAllowed"));
             }
         } else {
-            throw new BadCredentialsException("Bad username and password combination.");
+            throw new ChplAccountStatusException(msgUtil.getMessage("auth.loginNotAllowed"));
         }
     }
 
