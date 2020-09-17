@@ -151,10 +151,10 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         entity.setCertificationBodyId(dto.getCertificationBodyId());
         entity.setCertificationEditionId(dto.getCertificationEditionId());
         entity.setProductVersionId(dto.getProductVersionId());
-        entity.setRwtPlanUrl(dto.getRwtPlanUrl());
-        entity.setRwtPlanSubmissionDate(dto.getRwtPlanSubmissionDate());
+        entity.setRwtPlansUrl(dto.getRwtPlansUrl());
+        entity.setRwtPlansCheckDate(dto.getRwtPlansCheckDate());
         entity.setRwtResultsUrl(dto.getRwtResultsUrl());
-        entity.setRwtResultsSubmissionDate(dto.getRwtResultsSubmissionDate());
+        entity.setRwtResultsCheckDate(dto.getRwtResultsCheckDate());
 
         entity.setLastModifiedDate(new Date());
         entity.setLastModifiedUser(AuthUtil.getAuditId());

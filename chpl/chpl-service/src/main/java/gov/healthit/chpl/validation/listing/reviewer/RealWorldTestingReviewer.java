@@ -1,9 +1,7 @@
 package gov.healthit.chpl.validation.listing.reviewer;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
@@ -45,16 +43,16 @@ public class RealWorldTestingReviewer implements ComparisonReviewer {
         updatedListing.setRwtEligibilityYear(existingListing.getRwtEligibilityYear());
 
         if (isListingCurrentlyRwtEligible(existingListing)) {
-            if (isRwtPlanDataSubmitted(updatedListing)) {
-                validateRwtPlanUrl(updatedListing);
-                validateRwtPlanSubmissionDate(updatedListing);
+            if (isRwtPlansDataSubmitted(updatedListing)) {
+                validateRwtPlansUrl(updatedListing);
+                validateRwtPlansCheckDate(updatedListing);
 
             }
             if (isRwtResultsDataSubmitted(updatedListing)) {
                 validateRwtResultsUrl(updatedListing);
-                validateRwtResultsSubmissionDate(updatedListing);
+                validateRwtResultsCheckDate(updatedListing);
             }
-        } else if (isRwtPlanDataSubmitted(updatedListing) || isRwtResultsDataSubmitted(updatedListing)) {
+        } else if (isRwtPlansDataSubmitted(updatedListing) || isRwtResultsDataSubmitted(updatedListing)) {
             updatedListing.getErrorMessages().add(
                     errorMessageUtil.getMessage("listing.realWorldTesting.notEligible"));
         }
@@ -64,6 +62,7 @@ public class RealWorldTestingReviewer implements ComparisonReviewer {
         return Objects.nonNull(listing.getRwtEligibilityYear()) && isListing2015Edition(listing);
     }
 
+    @SuppressWarnings("checkstyle:linelength")
     private boolean isListing2015Edition(CertifiedProductSearchDetails listing) {
         if (listing.getCertificationEdition().containsKey(CertifiedProductSearchDetails.EDITION_NAME_KEY)) {
             return listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString().equals(EDITION_2015);
@@ -71,29 +70,29 @@ public class RealWorldTestingReviewer implements ComparisonReviewer {
         return false;
     }
 
-    private void validateRwtPlanUrl(CertifiedProductSearchDetails listing) {
-        if (StringUtils.isBlank(listing.getRwtPlanUrl())) {
+    private void validateRwtPlansUrl(CertifiedProductSearchDetails listing) {
+        if (StringUtils.isBlank(listing.getRwtPlansUrl())) {
             listing.getErrorMessages().add(
-                    errorMessageUtil.getMessage("listing.realWorldTesting.plan.url.required"));
-        } else if (!validationUtils.isWellFormedUrl(listing.getRwtPlanUrl())) {
+                    errorMessageUtil.getMessage("listing.realWorldTesting.plans.url.required"));
+        } else if (!validationUtils.isWellFormedUrl(listing.getRwtPlansUrl())) {
             listing.getErrorMessages().add(
-                    errorMessageUtil.getMessage("listing.realWorldTesting.plan.url.invalid"));
+                    errorMessageUtil.getMessage("listing.realWorldTesting.plans.url.invalid"));
         }
     }
 
-    private void validateRwtPlanSubmissionDate(CertifiedProductSearchDetails listing) {
-        if (Objects.isNull(listing.getRwtPlanSubmissionDate())) {
+    private void validateRwtPlansCheckDate(CertifiedProductSearchDetails listing) {
+        if (Objects.isNull(listing.getRwtPlansCheckDate())) {
             listing.getErrorMessages().add(
-                    errorMessageUtil.getMessage("listing.realWorldTesting.plan.submissionDate.required"));
+                    errorMessageUtil.getMessage("listing.realWorldTesting.plans.checkDate.required"));
         } else if (isRwtPlanDateBeforePlanEligibleDate(listing)) {
             listing.getErrorMessages().add(
-                    errorMessageUtil.getMessage("listing.realWorldTesting.plan.submissionDate.invalid",
+                    errorMessageUtil.getMessage("listing.realWorldTesting.plans.checkDate.invalid",
                             getPlanEligibleDate(listing).format(dateFormatter)));
         }
     }
 
     private boolean isRwtPlanDateBeforePlanEligibleDate(CertifiedProductSearchDetails listing) {
-        return listing.getRwtPlanSubmissionDate().isBefore(getPlanEligibleDate(listing));
+        return listing.getRwtPlansCheckDate().isBefore(getPlanEligibleDate(listing));
     }
 
     private LocalDate getPlanEligibleDate(CertifiedProductSearchDetails listing) {
@@ -111,19 +110,19 @@ public class RealWorldTestingReviewer implements ComparisonReviewer {
         }
     }
 
-    private void validateRwtResultsSubmissionDate(CertifiedProductSearchDetails listing) {
-        if (Objects.isNull(listing.getRwtResultsSubmissionDate())) {
+    private void validateRwtResultsCheckDate(CertifiedProductSearchDetails listing) {
+        if (Objects.isNull(listing.getRwtResultsCheckDate())) {
             listing.getErrorMessages().add(
-                    errorMessageUtil.getMessage("listing.realWorldTesting.results.submissionDate.required"));
-        } else if (isRwtResultsDateBeforeResultsEligibleDate(listing)) {
+                    errorMessageUtil.getMessage("listing.realWorldTesting.results.checkDate.required"));
+        } else if (isRwtResultsCheckDateBeforeResultsEligibleDate(listing)) {
             listing.getErrorMessages().add(
-                    errorMessageUtil.getMessage("listing.realWorldTesting.results.submissionDate.invalid",
+                    errorMessageUtil.getMessage("listing.realWorldTesting.results.checkDate.invalid",
                             getResultsEligibleDate(listing).format(dateFormatter)));
         }
     }
 
-    private boolean isRwtResultsDateBeforeResultsEligibleDate(CertifiedProductSearchDetails listing) {
-        return listing.getRwtResultsSubmissionDate().isBefore(getResultsEligibleDate(listing));
+    private boolean isRwtResultsCheckDateBeforeResultsEligibleDate(CertifiedProductSearchDetails listing) {
+        return listing.getRwtResultsCheckDate().isBefore(getResultsEligibleDate(listing));
     }
 
     private LocalDate getResultsEligibleDate(CertifiedProductSearchDetails listing) {
@@ -131,23 +130,14 @@ public class RealWorldTestingReviewer implements ComparisonReviewer {
     }
 
 
-    private boolean isRwtPlanDataSubmitted(CertifiedProductSearchDetails updatedListing) {
-        return !StringUtils.isBlank(updatedListing.getRwtPlanUrl())
-                || Objects.nonNull(updatedListing.getRwtPlanSubmissionDate());
+    private boolean isRwtPlansDataSubmitted(CertifiedProductSearchDetails updatedListing) {
+        return !StringUtils.isBlank(updatedListing.getRwtPlansUrl())
+                || Objects.nonNull(updatedListing.getRwtPlansCheckDate());
     }
 
     private boolean isRwtResultsDataSubmitted(CertifiedProductSearchDetails updatedListing) {
         return !StringUtils.isBlank(updatedListing.getRwtResultsUrl())
-                || Objects.nonNull(updatedListing.getRwtResultsSubmissionDate());
-    }
-
-
-    private LocalDate toLocalDate(Date dateToConvert) {
-        if (Objects.nonNull(dateToConvert)) {
-            return dateToConvert.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        } else {
-            return null;
-        }
+                || Objects.nonNull(updatedListing.getRwtResultsCheckDate());
     }
 
     private LocalDate getLocalDate(String dayAndMonth, Integer year) {

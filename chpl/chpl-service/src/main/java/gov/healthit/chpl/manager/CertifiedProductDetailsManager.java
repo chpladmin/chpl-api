@@ -720,13 +720,13 @@ public class CertifiedProductDetailsManager {
         searchDetails.setQmsStandards(getCertifiedProductQmsStandards(dto.getId()));
         searchDetails.setTargetedUsers(getCertifiedProductTargetedUsers(dto.getId()));
         searchDetails.setAccessibilityStandards(getCertifiedProductAccessibilityStandards(dto.getId()));
-        searchDetails.setRwtPlanUrl(dto.getRwtPlanUrl());
-        if (Objects.nonNull(dto.getRwtPlanSubmissionDate())) {
-            searchDetails.setRwtPlanSubmissionDate(dto.getRwtPlanSubmissionDate());
+        searchDetails.setRwtPlansUrl(dto.getRwtPlansUrl());
+        if (Objects.nonNull(dto.getRwtPlansCheckDate())) {
+            searchDetails.setRwtPlansCheckDate(dto.getRwtPlansCheckDate());
         }
         searchDetails.setRwtResultsUrl(dto.getRwtResultsUrl());
-        if (Objects.nonNull(dto.getRwtResultsSubmissionDate())) {
-            searchDetails.setRwtResultsSubmissionDate(dto.getRwtResultsSubmissionDate());
+        if (Objects.nonNull(dto.getRwtResultsCheckDate())) {
+            searchDetails.setRwtResultsCheckDate(dto.getRwtResultsCheckDate());
         }
         searchDetails.setRwtEligibilityYear(dto.getRwtEligibilityYear());
 

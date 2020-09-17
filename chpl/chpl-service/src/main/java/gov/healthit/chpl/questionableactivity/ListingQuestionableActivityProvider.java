@@ -448,9 +448,9 @@ public class ListingQuestionableActivityProvider {
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
         QuestionableActivityListingDTO activity = null;
-        if (!StringUtils.isEmpty(origListing.getRwtPlanUrl()) && StringUtils.isEmpty(newListing.getRwtPlanUrl())) {
+        if (!StringUtils.isEmpty(origListing.getRwtPlansUrl()) && StringUtils.isEmpty(newListing.getRwtPlansUrl())) {
             activity = new QuestionableActivityListingDTO();
-            activity.setBefore("Removed Plan URL: " + origListing.getRwtPlanUrl());
+            activity.setBefore("Removed Plans URL: " + origListing.getRwtPlansUrl());
         }
         return activity;
     }

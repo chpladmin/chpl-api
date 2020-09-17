@@ -112,9 +112,9 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
             CertifiedProductQmsStandardXmlGenerator.add(cp.getQmsStandards(), "qmsStandards", sw);
             createSimpleElement(cp.getReportFileLocation(), "reportFileLocation", sw);
             createSimpleElement(cp.getRwtEligibilityYear(), "rwtEligibilityYear", sw);
-            createSimpleElement(Objects.nonNull(cp.getRwtPlanSubmissionDate()) ? cp.getRwtPlanSubmissionDate().toString() : null, "rwtPlanSubmissionDate", sw);
-            createSimpleElement(cp.getRwtPlanUrl(), "rwtPlanUrl", sw);
-            createSimpleElement(Objects.nonNull(cp.getRwtResultsSubmissionDate()) ? cp.getRwtResultsSubmissionDate().toString() : null, "rwtResultsSubmissionDate", sw);
+            createSimpleElement(Objects.nonNull(cp.getRwtPlansCheckDate()) ? cp.getRwtPlansCheckDate().toString() : null, "rwtPlansCheckDate", sw);
+            createSimpleElement(cp.getRwtPlansUrl(), "rwtPlansUrl", sw);
+            createSimpleElement(Objects.nonNull(cp.getRwtResultsCheckDate()) ? cp.getRwtResultsCheckDate().toString() : null, "rwtResultsCheckDate", sw);
             createSimpleElement(cp.getRwtResultsUrl(), "rwtResultsUrl", sw);
             CertifiedProductSedXmlGenerator.add(cp.getSed(), "sed", sw);
             createSimpleElement(cp.getSedIntendedUserDescription(), "sedIntendedUserDescription", sw);

@@ -152,20 +152,20 @@ public class CertifiedProductEntity implements Serializable {
     private Long lastModifiedUser;
 
     @Basic(optional = true)
-    @Column(name = "rwt_plan_url", nullable = true)
-    private String rwtPlanUrl;
+    @Column(name = "rwt_plans_url", nullable = true)
+    private String rwtPlansUrl;
 
     @Basic(optional = true)
-    @Column(name = "rwt_plan_submission_date", nullable = true)
-    private LocalDate rwtPlanSubmissionDate;
+    @Column(name = "rwt_plans_check_date", nullable = true)
+    private LocalDate rwtPlansCheckDate;
 
     @Basic(optional = true)
     @Column(name = "rwt_results_url", nullable = true)
     private String rwtResultsUrl;
 
     @Basic(optional = true)
-    @Column(name = "rwt_results_submission_date", nullable = true)
-    private LocalDate rwtResultsSubmissionDate;
+    @Column(name = "rwt_results_check_date", nullable = true)
+    private LocalDate rwtResultsCheckDate;
 
 
     /**

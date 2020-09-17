@@ -17,7 +17,6 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
 public class RealWorldTestingReviewerTest {
-    private static final Integer ELIG_YEAR_EXTREME_FUTURE = 3000;
     private static final Integer ELIG_YEAR_FOR_PLAN_TESTING = 2020;
     private static final Integer ELIG_YEAR_FOR_RESULTS_TESTING = 2018;
 
@@ -46,8 +45,8 @@ public class RealWorldTestingReviewerTest {
 
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
         updated.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
-        updated.setRwtPlanUrl("http://www.test.com");
-        updated.setRwtPlanSubmissionDate(LocalDate.parse("2020-08-08"));
+        updated.setRwtPlansUrl("http://www.test.com");
+        updated.setRwtPlansCheckDate(LocalDate.parse("2020-08-08"));
 
         reviewer.review(existing, updated);
 
@@ -57,8 +56,8 @@ public class RealWorldTestingReviewerTest {
 
     @Test
     public void review_noPlanUrl_errorMessage() throws ParseException {
-        Mockito.when(errorMessageUtil.getMessage("listing.realWorldTesting.plan.url.required"))
-                .thenReturn("Real World Testing Plan URL is required.");
+        Mockito.when(errorMessageUtil.getMessage("listing.realWorldTesting.plans.url.required"))
+                .thenReturn("Real World Testing Plans URL is required.");
         Mockito.when(validationUtils.isWellFormedUrl(ArgumentMatchers.anyString()))
                 .thenReturn(true);
 
@@ -69,19 +68,19 @@ public class RealWorldTestingReviewerTest {
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
         updated.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         updated.setRwtEligibilityYear(ELIG_YEAR_FOR_PLAN_TESTING);
-        updated.setRwtPlanUrl("");
-        updated.setRwtPlanSubmissionDate(LocalDate.parse("2020-08-08"));
+        updated.setRwtPlansUrl("");
+        updated.setRwtPlansCheckDate(LocalDate.parse("2020-08-08"));
 
         reviewer.review(existing, updated);
 
         assertEquals(1, updated.getErrorMessages().size());
-        assertTrue(updated.getErrorMessages().contains("Real World Testing Plan URL is required."));
+        assertTrue(updated.getErrorMessages().contains("Real World Testing Plans URL is required."));
     }
 
     @Test
     public void review_planUrlNotValidUrl_errorMessage() throws ParseException {
-        Mockito.when(errorMessageUtil.getMessage("listing.realWorldTesting.plan.url.invalid"))
-                .thenReturn("Real World Testing Plan URL is not a well formed URL.");
+        Mockito.when(errorMessageUtil.getMessage("listing.realWorldTesting.plans.url.invalid"))
+                .thenReturn("Real World Testing Plans URL is not a well formed URL.");
         Mockito.when(validationUtils.isWellFormedUrl(ArgumentMatchers.anyString()))
                 .thenReturn(false);
 
@@ -92,19 +91,19 @@ public class RealWorldTestingReviewerTest {
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
         updated.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         updated.setRwtEligibilityYear(ELIG_YEAR_FOR_PLAN_TESTING);
-        updated.setRwtPlanUrl("not a valid URL");
-        updated.setRwtPlanSubmissionDate(LocalDate.parse("2020-08-08"));
+        updated.setRwtPlansUrl("not a valid URL");
+        updated.setRwtPlansCheckDate(LocalDate.parse("2020-08-08"));
 
         reviewer.review(existing, updated);
 
         assertEquals(1, updated.getErrorMessages().size());
-        assertTrue(updated.getErrorMessages().contains("Real World Testing Plan URL is not a well formed URL."));
+        assertTrue(updated.getErrorMessages().contains("Real World Testing Plans URL is not a well formed URL."));
     }
 
     @Test
     public void review_noPlanSubmissionDate_errorMessage() throws ParseException {
-        Mockito.when(errorMessageUtil.getMessage("listing.realWorldTesting.plan.submissionDate.required"))
-            .thenReturn("Real World Testing Plan Submission Date is required.");
+        Mockito.when(errorMessageUtil.getMessage("listing.realWorldTesting.plans.checkDate.required"))
+            .thenReturn("Real World Testing Plans Check Date is required.");
         Mockito.when(validationUtils.isWellFormedUrl(ArgumentMatchers.anyString()))
                 .thenReturn(true);
 
@@ -115,13 +114,13 @@ public class RealWorldTestingReviewerTest {
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
         updated.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         updated.setRwtEligibilityYear(ELIG_YEAR_FOR_PLAN_TESTING);
-        updated.setRwtPlanUrl("http://www.abc.com");
-        updated.setRwtPlanSubmissionDate(null);
+        updated.setRwtPlansUrl("http://www.abc.com");
+        updated.setRwtPlansCheckDate(null);
 
         reviewer.review(existing, updated);
 
         assertEquals(1, updated.getErrorMessages().size());
-        assertTrue(updated.getErrorMessages().contains("Real World Testing Plan Submission Date is required."));
+        assertTrue(updated.getErrorMessages().contains("Real World Testing Plans Check Date is required."));
     }
 
     @Test
@@ -139,7 +138,7 @@ public class RealWorldTestingReviewerTest {
         updated.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         updated.setRwtEligibilityYear(ELIG_YEAR_FOR_RESULTS_TESTING);
         updated.setRwtResultsUrl("");
-        updated.setRwtResultsSubmissionDate(LocalDate.parse("2022-01-08"));
+        updated.setRwtResultsCheckDate(LocalDate.parse("2022-01-08"));
 
         reviewer.review(existing, updated);
 
@@ -162,7 +161,7 @@ public class RealWorldTestingReviewerTest {
         updated.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         updated.setRwtEligibilityYear(ELIG_YEAR_FOR_RESULTS_TESTING);
         updated.setRwtResultsUrl("not a valid URL");
-        updated.setRwtResultsSubmissionDate(LocalDate.parse("2022-01-08"));
+        updated.setRwtResultsCheckDate(LocalDate.parse("2022-01-08"));
 
         reviewer.review(existing, updated);
 
@@ -172,8 +171,8 @@ public class RealWorldTestingReviewerTest {
 
     @Test
     public void review_noResultsSubmissionDate_errorMessage() throws ParseException {
-        Mockito.when(errorMessageUtil.getMessage("listing.realWorldTesting.results.submissionDate.required"))
-            .thenReturn("Real World Testing Results Submission Date is required.");
+        Mockito.when(errorMessageUtil.getMessage("listing.realWorldTesting.results.checkDate.required"))
+            .thenReturn("Real World Testing Results Check Date is required.");
         Mockito.when(validationUtils.isWellFormedUrl(ArgumentMatchers.anyString()))
                 .thenReturn(true);
 
@@ -185,18 +184,18 @@ public class RealWorldTestingReviewerTest {
         updated.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         updated.setRwtEligibilityYear(ELIG_YEAR_FOR_RESULTS_TESTING);
         updated.setRwtResultsUrl("http://www.abc.com");
-        updated.setRwtResultsSubmissionDate(null);
+        updated.setRwtResultsCheckDate(null);
 
         reviewer.review(existing, updated);
 
         assertEquals(1, updated.getErrorMessages().size());
-        assertTrue(updated.getErrorMessages().contains("Real World Testing Results Submission Date is required."));
+        assertTrue(updated.getErrorMessages().contains("Real World Testing Results Check Date is required."));
     }
 
     @Test
     public void review_resultsSubmissionDateBeforeResultsEligibleDate_errorMessage() throws ParseException {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.<String>any()))
-                .thenReturn("Real World Testing Results Submission Date must be after %s.");
+                .thenReturn("Real World Testing Results Check Date must be after %s.");
         Mockito.when(validationUtils.isWellFormedUrl(ArgumentMatchers.anyString()))
                 .thenReturn(true);
 
@@ -208,11 +207,11 @@ public class RealWorldTestingReviewerTest {
         updated.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         updated.setRwtEligibilityYear(ELIG_YEAR_FOR_RESULTS_TESTING);
         updated.setRwtResultsUrl("http://www.abc.com");
-        updated.setRwtResultsSubmissionDate(LocalDate.parse("2018-08-08"));
+        updated.setRwtResultsCheckDate(LocalDate.parse("2018-08-08"));
 
         reviewer.review(existing, updated);
 
         assertEquals(1, updated.getErrorMessages().size());
-        assertTrue(updated.getErrorMessages().contains("Real World Testing Results Submission Date must be after %s."));
+        assertTrue(updated.getErrorMessages().contains("Real World Testing Results Check Date must be after %s."));
     }
 }

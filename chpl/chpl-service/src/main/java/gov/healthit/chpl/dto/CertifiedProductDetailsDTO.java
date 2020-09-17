@@ -86,10 +86,10 @@ public class CertifiedProductDetailsDTO implements Serializable {
     private TransparencyAttestationDTO transparencyAttestation;
     private String transparencyAttestationUrl;
     private Long numMeaningfulUse;
-    private String rwtPlanUrl;
-    private LocalDate rwtPlanSubmissionDate;
+    private String rwtPlansUrl;
+    private LocalDate rwtPlansCheckDate;
     private String rwtResultsUrl;
-    private LocalDate rwtResultsSubmissionDate;
+    private LocalDate rwtResultsCheckDate;
     private Integer rwtEligibilityYear;
 
     private static final int FOUR_DIGIT_YEAR = 4;
@@ -194,10 +194,10 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.countClosedSurveillance = entity.getCountClosedSurveillance();
         this.countOpenNonconformities = entity.getCountOpenNonconformities();
         this.countClosedNonconformities = entity.getCountClosedNonconformities();
-        this.rwtPlanUrl = entity.getRwtPlanUrl();
-        this.rwtPlanSubmissionDate = entity.getRwtPlanSubmissionDate();
+        this.rwtPlansUrl = entity.getRwtPlansUrl();
+        this.rwtPlansCheckDate = entity.getRwtPlansCheckDate();
         this.rwtResultsUrl = entity.getRwtResultsUrl();
-        this.rwtResultsSubmissionDate = entity.getRwtResultsSubmissionDate();
+        this.rwtResultsCheckDate = entity.getRwtResultsCheckDate();
         this.rwtEligibilityYear = entity.getRwtEligibilityYear();
         this.lastModifiedDate = entity.getLastModifiedDate();
 

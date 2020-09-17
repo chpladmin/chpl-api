@@ -99,10 +99,10 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         result.add("Version");
         result.add("Version Database ID");
         result.add("Real World Testing Eligibility Year");
-        result.add("Real World Testing Plan URL");
-        result.add("Real World Testing Plan Submission Date");
+        result.add("Real World Testing Plans URL");
+        result.add("Real World Testing Plans Check Date");
         result.add("Real World Testing Results URL");
-        result.add("Real World Testing Results Submission Date");
+        result.add("Real World Testing Results Check Date");
         result.add("Total Surveillance Activities");
         result.add("Total Nonconformities");
         result.add("Open Nonconformities");
@@ -141,10 +141,10 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         result.add(listing.getVersion().getVersion());
         result.add(listing.getVersion().getVersionId().toString());
         result.add(Objects.nonNull(listing.getRwtEligibilityYear()) ? listing.getRwtEligibilityYear().toString() : "");
-        result.add(listing.getRwtPlanUrl());
-        result.add(Objects.nonNull(listing.getRwtPlanSubmissionDate()) ? listing.getRwtPlanSubmissionDate().toString() : "");
+        result.add(listing.getRwtPlansUrl());
+        result.add(Objects.nonNull(listing.getRwtPlansCheckDate()) ? listing.getRwtPlansCheckDate().toString() : "");
         result.add(listing.getRwtResultsUrl());
-        result.add(Objects.nonNull(listing.getRwtResultsSubmissionDate()) ? listing.getRwtResultsSubmissionDate().toString() : "");
+        result.add(Objects.nonNull(listing.getRwtResultsCheckDate()) ? listing.getRwtResultsCheckDate().toString() : "");
         result.add(listing.getCountSurveillance().toString());
         result.add((listing.getCountOpenNonconformities() + listing.getCountClosedNonconformities()) + "");
         result.add(listing.getCountOpenNonconformities().toString());

@@ -257,17 +257,17 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "transparency_attestation_url")
     private String transparencyAttestationUrl;
 
-    @Column(name = "rwt_plan_url")
-    private String rwtPlanUrl;
+    @Column(name = "rwt_plans_url")
+    private String rwtPlansUrl;
 
-    @Column(name = "rwt_plan_submission_date")
-    private LocalDate rwtPlanSubmissionDate;
+    @Column(name = "rwt_plans_check_date")
+    private LocalDate rwtPlansCheckDate;
 
     @Column(name = "rwt_results_url")
     private String rwtResultsUrl;
 
-    @Column(name = "rwt_results_submission_date")
-    private LocalDate rwtResultsSubmissionDate;
+    @Column(name = "rwt_results_check_date")
+    private LocalDate rwtResultsCheckDate;
 
     @Column(name = "rwt_eligibility_year")
     private Integer rwtEligibilityYear;

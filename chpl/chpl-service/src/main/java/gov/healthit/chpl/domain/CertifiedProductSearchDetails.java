@@ -353,8 +353,8 @@ public class CertifiedProductSearchDetails implements Serializable {
     /**
      * URL where the listing's Real World Testing Plan is located
      */
-    @XmlElement(name = "rwt_plan_url", nillable = true, required = false)
-    private String rwtPlanUrl;
+    @XmlElement(name = "rwt_plans_url", nillable = true, required = false)
+    private String rwtPlansUrl;
 
     /**
      * Date the listing's Real World Testing Plan was submitted
@@ -362,8 +362,8 @@ public class CertifiedProductSearchDetails implements Serializable {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
-    @XmlElement(name = "rwt_plan_submission_date", nillable = true, required = false)
-    private LocalDate rwtPlanSubmissionDate;
+    @XmlElement(name = "rwt_plans_check_date", nillable = true, required = false)
+    private LocalDate rwtPlansCheckDate;
 
     /**
      * URL where the listing's Real World Testing Results is located
@@ -377,8 +377,8 @@ public class CertifiedProductSearchDetails implements Serializable {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
-    @XmlElement(name = "rwt_plan_results_date", nillable = true, required = false)
-    private LocalDate rwtResultsSubmissionDate;
+    @XmlElement(name = "rwt_results_check_date", nillable = true, required = false)
+    private LocalDate rwtResultsCheckDate;
 
     /**
      * First year that the listing is eligible for Real World Testing data
@@ -849,20 +849,20 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.certificationStatus = certificationStatus;
     }
 
-    public String getRwtPlanUrl() {
-        return rwtPlanUrl;
+    public String getRwtPlansUrl() {
+        return rwtPlansUrl;
     }
 
-    public void setRwtPlanUrl(String rwtPlanUrl) {
-        this.rwtPlanUrl = rwtPlanUrl;
+    public void setRwtPlansUrl(String rwtPlansUrl) {
+        this.rwtPlansUrl = rwtPlansUrl;
     }
 
-    public LocalDate getRwtPlanSubmissionDate() {
-        return rwtPlanSubmissionDate;
+    public LocalDate getRwtPlansCheckDate() {
+        return rwtPlansCheckDate;
     }
 
-    public void setRwtPlanSubmissionDate(LocalDate rwtPlanSubmissionDate) {
-        this.rwtPlanSubmissionDate = rwtPlanSubmissionDate;
+    public void setRwtPlansCheckDate(LocalDate rwtPlansCheckDate) {
+        this.rwtPlansCheckDate = rwtPlansCheckDate;
     }
 
     public String getRwtResultsUrl() {
@@ -873,12 +873,12 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.rwtResultsUrl = rwtResultsUrl;
     }
 
-    public LocalDate getRwtResultsSubmissionDate() {
-        return rwtResultsSubmissionDate;
+    public LocalDate getRwtResultsCheckDate() {
+        return rwtResultsCheckDate;
     }
 
-    public void setRwtResultsSubmissionDate(LocalDate rwtResultsSubmissionDate) {
-        this.rwtResultsSubmissionDate = rwtResultsSubmissionDate;
+    public void setRwtResultsCheckDate(LocalDate rwtResultsCheckDate) {
+        this.rwtResultsCheckDate = rwtResultsCheckDate;
     }
 
     public Integer getRwtEligibilityYear() {

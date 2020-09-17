@@ -50,10 +50,10 @@ public class CertifiedProductDTO implements Serializable {
     private String productAdditionalSoftware;
     private Long pendingCertifiedProductId;
     private Boolean transparencyAttestation = null;
-    private String rwtPlanUrl;
-    private LocalDate rwtPlanSubmissionDate;
+    private String rwtPlansUrl;
+    private LocalDate rwtPlansCheckDate;
     private String rwtResultsUrl;
-    private LocalDate rwtResultsSubmissionDate;
+    private LocalDate rwtResultsCheckDate;
     private Integer rwtEligibilityYear;
 
     public CertifiedProductDTO() {
@@ -88,10 +88,10 @@ public class CertifiedProductDTO implements Serializable {
         this.setQmsTesting(entity.getQmsTesting());
         this.setAccessibilityCertified(entity.getAccessibilityCertified());
         this.setProductAdditionalSoftware(entity.getProductAdditionalSoftware());
-        this.setRwtPlanUrl(entity.getRwtPlanUrl());
-        this.setRwtPlanSubmissionDate(entity.getRwtPlanSubmissionDate());
+        this.setRwtPlansUrl(entity.getRwtPlansUrl());
+        this.setRwtPlansCheckDate(entity.getRwtPlansCheckDate());
         this.setRwtResultsUrl(entity.getRwtResultsUrl());
-        this.setRwtResultsSubmissionDate(entity.getRwtResultsSubmissionDate());
+        this.setRwtResultsCheckDate(entity.getRwtResultsCheckDate());
         this.setRwtEligibilityYear(entity.getRwtEligibilityYear());
     }
 
@@ -125,10 +125,10 @@ public class CertifiedProductDTO implements Serializable {
         this.setAccessibilityCertified(from.getAccessibilityCertified());
         this.setProductAdditionalSoftware(from.getProductAdditionalSoftware());
         this.setTransparencyAttestationUrl(from.getTransparencyAttestationUrl());
-        this.setRwtPlanUrl(from.getRwtPlanUrl());
-        this.setRwtPlanSubmissionDate(from.getRwtPlanSubmissionDate());
+        this.setRwtPlansUrl(from.getRwtPlansUrl());
+        this.setRwtPlansCheckDate(from.getRwtPlansCheckDate());
         this.setRwtResultsUrl(from.getRwtResultsUrl());
-        this.setRwtResultsSubmissionDate(from.getRwtResultsSubmissionDate());
+        this.setRwtResultsCheckDate(from.getRwtResultsCheckDate());
 
         // set the pieces of the unique id
         if (!StringUtils.isEmpty(from.getChplProductNumber())) {
