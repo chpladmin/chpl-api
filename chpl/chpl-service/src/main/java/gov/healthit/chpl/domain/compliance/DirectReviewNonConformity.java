@@ -9,8 +9,9 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import gov.healthit.chpl.util.LocalDateDeserializer;
+import gov.healthit.chpl.util.LocalDateSerializer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -36,7 +37,8 @@ public class DirectReviewNonConformity implements Serializable {
 
     @JsonProperty(value = "dateOfDetermination")
     @JsonAlias("customfield_11021")
-    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonDeserialize(using = DateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate dateOfDetermination;
 
     @JsonProperty(value = "nonConformitySummary")
@@ -61,22 +63,26 @@ public class DirectReviewNonConformity implements Serializable {
 
     @JsonProperty(value = "capApprovalDate")
     @JsonAlias("customfield_11022")
-    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonDeserialize(using = DateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate capApprovalDate;
 
     @JsonProperty(value = "capStartDate")
     @JsonAlias("customfield_11023")
-    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonDeserialize(using = DateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate capStartDate;
 
     @JsonProperty(value = "capMustCompleteDate")
     @JsonAlias("customfield_11024")
-    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonDeserialize(using = DateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate capMustCompleteDate;
 
     @JsonProperty(value = "capEndDate")
     @JsonAlias("customfield_11025")
-    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonDeserialize(using = DateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate capEndDate;
 
     @JsonProperty(value = "lastUpdated")
