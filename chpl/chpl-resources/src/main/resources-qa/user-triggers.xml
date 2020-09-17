@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<job-scheduling-data
+    xmlns="http://www.quartz-scheduler.org/xml/JobSchedulingData"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData http://www.quartz-scheduler.org/xml/job_scheduling_data_2_0.xsd"
+    version="2.0">
+    <schedule>
+        <trigger>
+            <cron>
+                <name>qaSummaryStatisticsEmailJob</name>
+                <group>qaTrigger</group>
+                <job-name>Summary Statistics Email</job-name>
+                <job-group>chplJobs</job-group>
+                <job-data-map>
+                    <entry>
+                        <key>email</key>
+                        <value>amore@ainq.com</value>
+                    </entry>
+                </job-data-map>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 0 11 * * ?</cron-expression>
+            </cron>
+        </trigger>
+
+        <trigger>
+            <cron>
+                <name>qaQuestionableActivityEmailJob</name>
+                <group>qaTrigger</group>
+                <job-name>Questionable Activity Report</job-name>
+                <job-group>chplJobs</job-group>
+                <job-data-map>
+                    <entry>
+                        <key>email</key>
+                        <value>amore@ainq.com</value>
+                    </entry>
+                </job-data-map>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 0 11 ? * WED</cron-expression>
+            </cron>
+        </trigger>
+
+        <trigger>
+            <cron>
+                <name>qaAllBrokenSurveillanceEmailJob</name>
+                <group>qaTrigger</group>
+                <job-name>All Broken Surveillance Rules Report</job-name>
+                <job-group>chplJobs</job-group>
+                <job-data-map>
+                    <entry>
+                        <key>email</key>
+                        <value>amore@ainq.com</value>
+                    </entry>
+                    <entry>
+                        <key>acb</key>
+                        <value>1,2,3,4,5,6</value>
+                    </entry>
+                </job-data-map>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 0 11 * * ?</cron-expression>
+            </cron>
+        </trigger>
+
+        <trigger>
+            <cron>
+                <name>qaAllBrokenSurveillanceACBEmailJob</name>
+                <group>qaTrigger</group>
+                <job-name>All Broken Surveillance Rules Report</job-name>
+                <job-group>chplJobs</job-group>
+                <job-data-map>
+                    <entry>
+                        <key>email</key>
+                        <value>amore@ainq.com</value>
+                    </entry>
+                    <entry>
+                        <key>acb</key>
+                        <value>1,2,3,4,5,6</value>
+                    </entry>
+                </job-data-map>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 0 11 * * ?</cron-expression>
+            </cron>
+        </trigger>
+        
+        <trigger>
+            <cron>
+                <name>qaInheritanceErrorsEmailJob</name>
+                <group>qaTrigger</group>
+                <job-name>Inherited Certification Status Errors Report</job-name>
+                <job-group>chplJobs</job-group>
+                <job-data-map>
+                    <entry>
+                        <key>email</key>
+                        <value>amore@ainq.com</value>
+                    </entry>
+                    <entry>
+                        <key>acb</key>
+                        <value>1,2,3,4,5,6</value>
+                    </entry>
+                </job-data-map>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 0 11 * * ?</cron-expression>
+            </cron>
+        </trigger>
+    </schedule>
+</job-scheduling-data>
