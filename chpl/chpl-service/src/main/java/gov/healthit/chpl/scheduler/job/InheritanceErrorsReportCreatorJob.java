@@ -16,7 +16,12 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -67,6 +72,9 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
+    private JpaTransactionManager txManager;
+
+    @Autowired
     private Environment env;
 
     @Autowired
@@ -90,7 +98,6 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
             return;
         }
 
-        inheritanceErrorsReportDAO.deleteAll();
         List<CertifiedProductFlatSearchResult> listings = certifiedProductSearchDAO.getAllCertifiedProducts();
         List<CertifiedProductFlatSearchResult> certifiedProducts = filterData(listings);
 
@@ -98,13 +105,13 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
         try {
             Integer threadPoolSize = getThreadCountForJob();
             executorService = Executors.newFixedThreadPool(threadPoolSize);
+            List<InheritanceErrorsReportDTO> allInheritanceErrors = new ArrayList<InheritanceErrorsReportDTO>();
 
             List<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
-
             for (CertifiedProductFlatSearchResult result : certifiedProducts) {
                 futures.add(CompletableFuture.supplyAsync(() -> getCertifiedProductSearchDetails(result.getId()), executorService)
                         .thenApply(cp -> check(cp))
-                        .thenAccept(error -> saveInheritanceErrorsReportSingle(error)));
+                        .thenAccept(error -> allInheritanceErrors.add(error)));
             }
 
             CompletableFuture<Void> combinedFutures = CompletableFuture
@@ -114,7 +121,7 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
             // This is necessary so that the system can indicate that the job and it's threads are still running
             combinedFutures.get();
             LOGGER.info("All processes have completed");
-
+            saveAllInheritanceErrors(allInheritanceErrors);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         } finally {
@@ -168,17 +175,29 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
         return item;
     }
 
-    private void saveInheritanceErrorsReportSingle(InheritanceErrorsReportDTO item) {
-        if (item == null) {
-            return;
-        }
-        try {
-            inheritanceErrorsReportDAO.create(item);
-            LOGGER.info("Completed saving of error [" + item.getChplProductNumber() + "]");
-        } catch (Exception e) {
-            LOGGER.error("Unable to save Inheritance Errors Report {} with error message {}",
-                    item.toString(), e.getLocalizedMessage());
-        }
+    private void saveAllInheritanceErrors(List<InheritanceErrorsReportDTO> allInheritanceErrors) {
+
+        // We need to manually create a transaction in this case because of how AOP works. When a method is
+        // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
+        // The object's proxy is not called when the method is called from thin this class. The object's proxy
+        // is called when the method is public and is called from a different object.
+        // https://stackoverflow.com/questions/3037006/starting-new-transaction-in-spring-bean
+        TransactionTemplate txTemplate = new TransactionTemplate(txManager);
+        txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        txTemplate.execute(new TransactionCallbackWithoutResult() {
+
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                try {
+                    LOGGER.info("Deleting {} OBE inheritance errors", inheritanceErrorsReportDAO.findAll().size());
+                    inheritanceErrorsReportDAO.deleteAll();
+                    LOGGER.info("Creating {} current inheritance errors", allInheritanceErrors.size());
+                    inheritanceErrorsReportDAO.create(allInheritanceErrors);
+                } catch (Exception e) {
+                    status.setRollbackOnly();
+                }
+            }
+        });
     }
 
     private List<CertifiedProductFlatSearchResult> filterData(List<CertifiedProductFlatSearchResult> certifiedProducts) {
