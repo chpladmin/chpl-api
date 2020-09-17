@@ -83,7 +83,7 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ANNOUNCEMENT, "
             + "T(gov.healthit.chpl.permissions.domains.AnnouncementDomainPermissions).GET_ALL, filterObject)")
     public List<AnnouncementDTO> getAll() {
-        return announcementDAO.findAll();
+        return announcementDAO.findCurrent();
     }
 
     @Override
