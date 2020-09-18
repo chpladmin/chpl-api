@@ -23,14 +23,14 @@ import lombok.extern.log4j.Log4j2;
 @Component("listingUploadHandlerUtil")
 @Log4j2
 public class ListingUploadHandlerUtil {
-    private static final String CERTIFICATION_DATE_FORMAT = "yyyyMMdd";
+    private static final String UPLOAD_DATE_FORMAT = "yyyyMMdd";
     private DateFormat dateFormat;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
     public ListingUploadHandlerUtil(ErrorMessageUtil msgUtil) {
         this.msgUtil = msgUtil;
-        this.dateFormat = new SimpleDateFormat(CERTIFICATION_DATE_FORMAT);
+        this.dateFormat = new SimpleDateFormat(UPLOAD_DATE_FORMAT);
     }
 
     public int getHeadingRecordIndex(List<CSVRecord> allCsvRecords) {

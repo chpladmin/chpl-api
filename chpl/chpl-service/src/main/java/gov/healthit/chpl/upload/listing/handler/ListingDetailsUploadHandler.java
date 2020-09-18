@@ -73,8 +73,11 @@ public class ListingDetailsUploadHandler {
                 .qmsStandards(qmsHandler.handle(headingRecord, listingRecords))
                 .ics(icsHandler.handle(headingRecord, listingRecords))
                 .cqmResults(cqmHandler.handle(headingRecord, listingRecords))
-                //TODO: tests for cqm
-                //TODO parsing for sed, participants, tasks, criteria stuff
+                .sedReportFileLocation(parseSedReportLocationUrl(headingRecord, listingRecords))
+                .sedIntendedUserDescription(parseSedIntendedUserDescription(headingRecord, listingRecords))
+                .sedTestingEndDate(parseSedTestingDate(headingRecord, listingRecords))
+                //TODO: 3 sed fields add tests
+                //TODO parsing participants, tasks, criteria stuff
                 //TODO: data normalizer
             .build();
 
@@ -165,5 +168,19 @@ public class ListingDetailsUploadHandler {
 
     private String parseTransparencyAttestationUrl(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         return uploadUtil.parseSingleRowField(Headings.K_1_URL, headingRecord, listingRecords);
+    }
+
+    private String parseSedReportLocationUrl(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+        return uploadUtil.parseSingleRowField(Headings.SED_REPORT_URL, headingRecord, listingRecords);
+    }
+
+    private String parseSedIntendedUserDescription(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+        return uploadUtil.parseSingleRowField(Headings.SED_INTENDED_USERS, headingRecord, listingRecords);
+    }
+
+    private Date parseSedTestingDate(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+        Date sedTestingDate = uploadUtil.parseSingleRowFieldAsDate(
+                Headings.SED_TESTING_DATE, headingRecord, listingRecords);
+        return sedTestingDate;
     }
 }

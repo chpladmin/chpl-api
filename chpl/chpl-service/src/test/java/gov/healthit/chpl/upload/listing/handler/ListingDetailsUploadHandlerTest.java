@@ -479,4 +479,167 @@ public class ListingDetailsUploadHandlerTest {
             assertNotNull(parsedAtl.getTestingLabName());
         });
     }
+
+    @Test
+    public void buildListing_SedUrlExists_ReturnsCorrectly() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
+                HEADER_ROW_BEGIN + ",SED Report Hyperlink").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
+                LISTING_ROW_BEGIN + ",http://examplesed.com");
+        assertNotNull(listingRecords);
+
+        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
+        assertNotNull(listing);
+        assertNotNull(listing.getSedReportFileLocation());
+        assertEquals("http://examplesed.com", listing.getSedReportFileLocation());
+    }
+
+    @Test
+    public void buildListing_SedUrlHasWhitespace_ReturnsTrimmed() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
+                HEADER_ROW_BEGIN + ",SED Report Hyperlink").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
+                LISTING_ROW_BEGIN + ", http://examplesed.com  ");
+        assertNotNull(listingRecords);
+
+        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
+        assertNotNull(listing);
+        assertNotNull(listing.getSedReportFileLocation());
+        assertEquals("http://examplesed.com", listing.getSedReportFileLocation());
+    }
+
+    @Test
+    public void buildListing_SedUrlMissing_ReturnsEmptyString() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
+                HEADER_ROW_BEGIN + ",SED Report Hyperlink").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
+                LISTING_ROW_BEGIN + ",");
+        assertNotNull(listingRecords);
+
+        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
+        assertNotNull(listing);
+        assertNotNull(listing.getSedReportFileLocation());
+        assertEquals("", listing.getSedReportFileLocation());
+    }
+
+    @Test
+    public void buildListing_SedUrlNoColumn_ReturnsNull() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN);
+        assertNotNull(listingRecords);
+
+        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
+        assertNotNull(listing);
+        assertNull(listing.getSedReportFileLocation());
+    }
+
+    @Test
+    public void buildListing_SedTestingDateNoColumn_ReturnsNull() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN);
+        assertNotNull(listingRecords);
+
+        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
+        assertNotNull(listing);
+        assertNull(listing.getSedTestingEndDate());
+    }
+
+    @Test
+    public void buildListing_SedTestingDateGood_ParsesDateValue() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
+                HEADER_ROW_BEGIN + ",Date SED Testing was Concluded").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",20200909");
+        assertNotNull(listingRecords);
+
+        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
+        assertNotNull(listing);
+        assertNotNull(listing.getSedTestingEndDate());
+    }
+
+    @Test
+    public void buildListing_SedTestingDateEmpty_ParsesNullValue() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
+                HEADER_ROW_BEGIN + ",Date SED Testing was Concluded").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",");
+        assertNotNull(listingRecords);
+
+        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
+        assertNotNull(listing);
+        assertNull(listing.getSedTestingEndDate());
+    }
+
+    @Test(expected = ValidationException.class)
+    public void buildListing_SedTestingDateValueBad_ThrowsException() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
+                HEADER_ROW_BEGIN + ",Date SED Testing was Concluded").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",BADDATE");
+        assertNotNull(listingRecords);
+
+        handler.parseAsListing(headingRecord, listingRecords);
+    }
+
+    @Test
+    public void buildListing_SedIntendedUsersExists_ReturnsCorrectly() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
+                HEADER_ROW_BEGIN + ",Description of the Intended Users").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
+                LISTING_ROW_BEGIN + ",Pediatric Nephrology");
+        assertNotNull(listingRecords);
+
+        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
+        assertNotNull(listing);
+        assertNotNull(listing.getSedIntendedUserDescription());
+        assertEquals("Pediatric Nephrology", listing.getSedIntendedUserDescription());
+    }
+
+    @Test
+    public void buildListing_SedIntendedUsersHasWhitespace_ReturnsTrimmed() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
+                HEADER_ROW_BEGIN + ",Description of the Intended Users").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
+                LISTING_ROW_BEGIN + ", Pediatric Nephrology ");
+        assertNotNull(listingRecords);
+
+        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
+        assertNotNull(listing);
+        assertNotNull(listing.getSedIntendedUserDescription());
+        assertEquals("Pediatric Nephrology", listing.getSedIntendedUserDescription());
+    }
+
+    @Test
+    public void buildListing_SedIntendedUsersMissing_ReturnsEmptyString() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
+                HEADER_ROW_BEGIN + ",Description of the Intended Users").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
+                LISTING_ROW_BEGIN + ",");
+        assertNotNull(listingRecords);
+
+        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
+        assertNotNull(listing);
+        assertNotNull(listing.getSedIntendedUserDescription());
+        assertEquals("", listing.getSedIntendedUserDescription());
+    }
+
+    @Test
+    public void buildListing_SedIntendedUsersNoColumn_ReturnsNull() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN);
+        assertNotNull(listingRecords);
+
+        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
+        assertNotNull(listing);
+        assertNull(listing.getSedIntendedUserDescription());
+    }
 }
