@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,21 +22,24 @@ import com.fasterxml.jackson.core.JsonParseException;
 import gov.healthit.chpl.activity.ActivityMetadataBuilder;
 import gov.healthit.chpl.activity.ActivityMetadataBuilderFactory;
 import gov.healthit.chpl.dao.ActivityDAO;
+import gov.healthit.chpl.dao.AnnouncementDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.ActivityMetadataPage;
 import gov.healthit.chpl.dto.ActivityDTO;
+import gov.healthit.chpl.dto.AnnouncementDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import lombok.extern.log4j.Log4j2;
 
 @Service("activityPagedMetadataManager")
+@Log4j2
 public class ActivityPagedMetadataManager extends SecuredManager {
-    private static final Logger LOGGER = LogManager.getLogger(ActivityPagedMetadataManager.class);
-
     private ActivityDAO activityDao;
+    private AnnouncementDAO announcementDao;
     private ActivityMetadataBuilderFactory metadataBuilderFactory;
     private ErrorMessageUtil msgUtil;
     private ResourcePermissions resourcePermissions;
@@ -50,9 +51,11 @@ public class ActivityPagedMetadataManager extends SecuredManager {
     private Integer defaultActivityPageSize;
 
     @Autowired
-    public ActivityPagedMetadataManager(ActivityDAO activityDao, ActivityMetadataBuilderFactory metadataBuilderFactory,
-            ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
+    public ActivityPagedMetadataManager(ActivityDAO activityDao, AnnouncementDAO announcementDao,
+            ActivityMetadataBuilderFactory metadataBuilderFactory, ErrorMessageUtil msgUtil,
+            ResourcePermissions resourcePermissions) {
         this.activityDao = activityDao;
+        this.announcementDao = announcementDao;
         this.metadataBuilderFactory = metadataBuilderFactory;
         this.msgUtil = msgUtil;
         this.resourcePermissions = resourcePermissions;
@@ -88,6 +91,21 @@ public class ActivityPagedMetadataManager extends SecuredManager {
                 startMillis, endMillis, pageNum, pageSize);
     }
 
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ATL_METADATA)")
+    @Transactional
+    public ActivityMetadataPage getTestingLabActivityMetadata(Long startMillis, Long endMillis,
+            Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
+        Set<String> errors = new HashSet<String>();
+        errors.addAll(validateActivityDates(startMillis, endMillis));
+        errors.addAll(validatePagingParameters(pageNum, pageSize));
+        if (errors.size() > 0) {
+            throw new ValidationException(errors);
+        }
+        return getActivityMetadataPageByConcept(ActivityConcept.TESTING_LAB,
+                startMillis, endMillis, pageNum, pageSize);
+    }
+
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_USER_MAINTENANCE_METADATA)")
@@ -109,6 +127,44 @@ public class ActivityPagedMetadataManager extends SecuredManager {
             return getActivityMetadataPageByConceptAndObject(
                     ActivityConcept.USER, allowedUserIds, startMillis, endMillis, pageNum, pageSize);
         }
+    }
+
+    @Transactional
+    public ActivityMetadataPage getAnnouncementActivityMetadata(Long startMillis, Long endMillis,
+            Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
+        Set<String> errors = new HashSet<String>();
+        errors.addAll(validateActivityDates(startMillis, endMillis));
+        errors.addAll(validatePagingParameters(pageNum, pageSize));
+        if (errors.size() > 0) {
+            throw new ValidationException(errors);
+        }
+        if (resourcePermissions.isUserAnonymous()) {
+            List<AnnouncementDTO> publicAnnouncements = announcementDao.findAll(true, false);
+            List<Long> publicAnnouncementIds = publicAnnouncements.stream()
+                .map(publicAnnouncement -> publicAnnouncement.getId())
+                .collect(Collectors.toList());
+            return getActivityMetadataPageByConceptAndObject(
+                    ActivityConcept.ANNOUNCEMENT, publicAnnouncementIds, startMillis, endMillis, pageNum, pageSize);
+        } else {
+            return getActivityMetadataPageByConcept(ActivityConcept.ANNOUNCEMENT, startMillis, endMillis, pageNum, pageSize);
+        }
+    }
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_PENDING_SURVEILLANCE_METADATA)")
+    @Transactional
+    public ActivityMetadataPage getPendingSurveillanceActivityMetadata(Long startMillis, Long endMillis,
+            Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
+        return getActivityMetadataByConcept(ActivityConcept.PENDING_SURVEILLANCE, startMillis, endMillis, pageNum, pageSize);
+    }
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_PENDING_LISTING_METADATA)")
+    @Transactional
+    public ActivityMetadataPage getPendingListingActivityMetadata(Long startMillis, Long endMillis,
+            Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
+        return getActivityMetadataByConcept(ActivityConcept.PENDING_CERTIFIED_PRODUCT,
+                startMillis, endMillis, pageNum, pageSize);
     }
 
     private ActivityMetadataPage getActivityMetadataPageByConcept(ActivityConcept concept,

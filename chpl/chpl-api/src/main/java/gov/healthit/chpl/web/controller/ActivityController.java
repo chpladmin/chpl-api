@@ -68,7 +68,6 @@ import io.swagger.annotations.ApiOperation;
 public class ActivityController {
     private static final Logger LOGGER = LogManager.getLogger(ActivityController.class);
     public static final int DEFAULT_MAX_ACTIVITY_RANGE_DAYS = 30;
-    private static final int DEFAULT_MAX_ACTIVITY_PAGE_SIZE = 100;
 
     private ActivityManager activityManager;
     private ActivityMetadataManager activityMetadataManager;
@@ -502,9 +501,22 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get metadata about auditable records in the system for testing labs.",
+            notes = "All parameters are optional and will default to the first page of ONC-ATL activity "
+                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
+                    + "with the most recent activity first.")
+    @RequestMapping(value = "/metadata/beta/atls", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public ActivityMetadataPage metadataForAtls(@RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+        return pagedMetadataManager.getTestingLabActivityMetadata(start, end, pageNum, pageSize);
+    }
+
+    @ApiOperation(value = "DEPRECATED. Get metadata about auditable records in the system for testing labs.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all testing labs.  "
                     + "ROLE_ATL can see activity for their own ATLs.")
+    @Deprecated
     @RequestMapping(value = "/metadata/atls", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForAtls(@RequestParam(required = false) final Long start,
             @RequestParam(required = false) final Long end)
@@ -563,6 +575,7 @@ public class ActivityController {
 
     @ApiOperation(value = "DEPRECATED. Get metadata about auditable records in the system for users.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+    @Deprecated
     @RequestMapping(value = "/metadata/users", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForUsers(@RequestParam final Long start,
@@ -574,9 +587,24 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get metadata about auditable records in the system for announcements.",
+            notes = "All parameters are optional and will default to the first page of announcement activity "
+                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
+                    + "with the most recent activity first. "
+                    + "Security Restrictions: Anonymous users are only allowed to see activity for public "
+                    + "announcements. All other roles can see private and public announcements.")
+    @RequestMapping(value = "/metadata/beta/announcements", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public ActivityMetadataPage metadataForAnnouncements(@RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+        return pagedMetadataManager.getAnnouncementActivityMetadata(start, end, pageNum, pageSize);
+    }
+
+    @ApiOperation(value = "DEPRECATED. Get metadata about auditable records in the system for announcements.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
                     + "Security Restrictions: Anonymous users are only allowed to see activity for public "
                     + "announcements.  All other roles can see private and public announcements. ")
+    @Deprecated
     @RequestMapping(value = "/metadata/announcements", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForAnnouncements(@RequestParam final Long start,
@@ -641,7 +669,20 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get metadata about auditable records in the system for pending listings.",
+            notes = "All parameters are optional and will default to the first page of pending listing activity "
+                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
+                    + "with the most recent activity first.")
+    @RequestMapping(value = "/metadata/beta/pending-listings", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public ActivityMetadataPage metadataForPendingListings(@RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+        return pagedMetadataManager.getPendingListingActivityMetadata(start, end, pageNum, pageSize);
+    }
+
+    @ApiOperation(value = "DEPRECATED. Get metadata about auditable records in the system for pending listings.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+    @Deprecated
     @RequestMapping(value = "/metadata/pending_listings", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForPendingListings(@RequestParam final Long start,
@@ -653,7 +694,21 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get metadata about auditable records in the system for corrective action plans.",
+            notes = "All parameters are optional and will default to the first page of corrective action plan activity "
+                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
+                    + "with the most recent activity first.")
+    @RequestMapping(value = "/metadata/beta/corrective-action-plans", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public ActivityMetadataPage metadataForCorrectiveActionPlans(@RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+        return pagedMetadataManager.getActivityMetadataByConcept(
+                ActivityConcept.CORRECTIVE_ACTION_PLAN, start, end, pageNum, pageSize);
+    }
+
+    @ApiOperation(value = "DEPRECATED. Get metadata about auditable records in the system for corrective action plans.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+    @Deprecated
     @RequestMapping(value = "/metadata/corrective_action_plans", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForCorrectiveActionPlans(@RequestParam final Long start,
@@ -666,7 +721,20 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get metadata about auditable records in the system for pending surveillances.",
+            notes = "All parameters are optional and will default to the first page of pending surveillance activity "
+                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
+                    + "with the most recent activity first.")
+    @RequestMapping(value = "/metadata/beta/pending-surveillances", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public ActivityMetadataPage metadataForPendingSurveillances(@RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+        return pagedMetadataManager.getPendingSurveillanceActivityMetadata(start, end, pageNum, pageSize);
+    }
+
+    @ApiOperation(value = "DEPRECATED. Get metadata about auditable records in the system for pending surveillances.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+    @Deprecated
     @RequestMapping(value = "/metadata/pending_surveillances", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForPendingSurveillances(@RequestParam final Long start,
@@ -676,6 +744,7 @@ public class ActivityController {
         validateActivityDatesAndDateRange(start, end);
         return activityMetadataManager.getPendingSurveillanceActivityMetadata(startDate, endDate);
     }
+
     @ApiOperation(value = "Get metadata about auditable records in the system for change requests.",
             notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all chan ge requests.  "
