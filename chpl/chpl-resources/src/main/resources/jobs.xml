@@ -468,7 +468,7 @@
 
         <!-- Pending Change Request Job - by ONC-ACB -->
         <job>
-            <name>Pending Change Request Report</name>
+            <name>Pending "Change Request" Report</name>
             <group>chplJobs</group>
             <description>Sends a report of all pending change requests, filtered by ONC-ACB</description>
             <job-class>gov.healthit.chpl.scheduler.job.PendingChangeRequestEmailJob</job-class>
