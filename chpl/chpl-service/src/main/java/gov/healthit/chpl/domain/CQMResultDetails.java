@@ -3,6 +3,7 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -99,8 +100,9 @@ public class CQMResultDetails implements Serializable {
      * versions, please reference the CMS eCQM library.
      */
     @XmlElementWrapper(name = "successVersions", nillable = true, required = false)
-    @XmlElement(name = "version",required = false, nillable = true)
-    private Set<String> successVersions;
+    @XmlElement(name = "version", required = false, nillable = true)
+    @Builder.Default
+    private Set<String> successVersions = new LinkedHashSet<String>();
 
     /**
      * All possible versions of the clinical quality measure. For a list of
@@ -108,8 +110,9 @@ public class CQMResultDetails implements Serializable {
      * CMS eCQM library.
      */
     @XmlElementWrapper(name = "allVersions", nillable = true, required = false)
-    @XmlElement(name = "version",required = false, nillable = true)
-    private Set<String> allVersions;
+    @XmlElement(name = "version", required = false, nillable = true)
+    @Builder.Default
+    private Set<String> allVersions = new LinkedHashSet<String>();
 
     /**
      * The certification criteria to which a given clinical quality measure
@@ -119,7 +122,8 @@ public class CQMResultDetails implements Serializable {
      */
     @XmlElementWrapper(name = "criteriaList", nillable = true, required = false)
     @XmlElement(name = "criteria")
-    private List<CQMResultCertification> criteria;
+    @Builder.Default
+    private List<CQMResultCertification> criteria = new ArrayList<CQMResultCertification>();
 
     public CQMResultDetails() {
         this.successVersions = new HashSet<String>();

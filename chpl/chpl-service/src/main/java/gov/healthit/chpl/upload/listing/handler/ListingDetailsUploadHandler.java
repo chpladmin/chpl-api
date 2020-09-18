@@ -29,6 +29,7 @@ public class ListingDetailsUploadHandler {
     private AccessibilityStandardsUploadHandler accessibilityStandardsHandler;
     private QmsUploadHandler qmsHandler;
     private IcsUploadHandler icsHandler;
+    private CqmUploadHandler cqmHandler;
     private ListingUploadHandlerUtil uploadUtil;
     private ErrorMessageUtil msgUtil;
 
@@ -38,20 +39,17 @@ public class ListingDetailsUploadHandler {
             TargetedUsersUploadHandler targetedUserUploadHandler,
             AccessibilityStandardsUploadHandler accessibilityStandardsHandler,
             QmsUploadHandler qmsHandler, IcsUploadHandler icsHandler,
+            CqmUploadHandler cqmHandler,
             ListingUploadHandlerUtil uploadUtil, ErrorMessageUtil msgUtil) {
         this.devDetailsUploadHandler = devDetailsUploadHandler;
         this.targetedUserUploadHandler = targetedUserUploadHandler;
         this.accessibilityStandardsHandler = accessibilityStandardsHandler;
         this.qmsHandler = qmsHandler;
         this.icsHandler = icsHandler;
+        this.cqmHandler = cqmHandler;
         this.uploadUtil = uploadUtil;
         this.msgUtil = msgUtil;
     }
-
-    //I originally had code to look up various IDs in the parsers...
-    //I went back and forth on it, and I think we should probably not do it in here
-    //and just have a data normalizer that runs before the validators to pick out
-    //any pieces of data that could be looked up for IDs. That way the lookups will only run once.
 
     public CertifiedProductSearchDetails parseAsListing(CSVRecord headingRecord, List<CSVRecord> listingRecords)
         throws ValidationException {
@@ -74,6 +72,7 @@ public class ListingDetailsUploadHandler {
                 .accessibilityStandards(accessibilityStandardsHandler.handle(headingRecord, listingRecords))
                 .qmsStandards(qmsHandler.handle(headingRecord, listingRecords))
                 .ics(icsHandler.handle(headingRecord, listingRecords))
+                .cqmResults(cqmHandler.handle(headingRecord, listingRecords))
                 //TODO: tests for cqm
                 //TODO parsing for sed, participants, tasks, criteria stuff
                 //TODO: data normalizer

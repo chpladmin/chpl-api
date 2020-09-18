@@ -121,13 +121,7 @@ public class CqmUploadHandler {
 
     private List<String> parseCqmCriteria(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Headings.CQM_NUMBER, headingRecord, listingRecords);
+                Headings.CQM_CRITERIA, headingRecord, listingRecords);
         return values;
-    }
-
-    private boolean hasNoCqmColumns(CSVRecord headingRecord) {
-        return !uploadUtil.hasHeading(Headings.CQM_NUMBER, headingRecord)
-                && !uploadUtil.hasHeading(Headings.CQM_VERSION, headingRecord)
-                && !uploadUtil.hasHeading(Headings.CQM_CRITERIA, headingRecord);
     }
 }

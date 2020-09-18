@@ -49,6 +49,7 @@ public class ListingDetailsUploadHandlerTest {
                 Mockito.mock(TargetedUsersUploadHandler.class),
                 Mockito.mock(AccessibilityStandardsUploadHandler.class),
                 Mockito.mock(QmsUploadHandler.class), Mockito.mock(IcsUploadHandler.class),
+                Mockito.mock(CqmUploadHandler.class),
                 handlerUtil, msgUtil);
     }
 
