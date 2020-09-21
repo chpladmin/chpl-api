@@ -76,7 +76,6 @@ public class ListingDetailsUploadHandler {
                 .sedReportFileLocation(parseSedReportLocationUrl(headingRecord, listingRecords))
                 .sedIntendedUserDescription(parseSedIntendedUserDescription(headingRecord, listingRecords))
                 .sedTestingEndDate(parseSedTestingDate(headingRecord, listingRecords))
-                //TODO: 3 sed fields add tests
                 //TODO parsing participants, tasks, criteria stuff
                 //TODO: data normalizer
             .build();
