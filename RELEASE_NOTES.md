@@ -1,5 +1,33 @@
 # Release Notes
 
+## Version 25.13.0
+_21 September 2020_
+
+### Features
+* Clean up duplicate ONC and ONC-ACB scheduled jobs report
+* Send email to user when account is first locked
+* Return ambiguous msg on login if acct locked, disabled, etc
+* Add new /metadata/beta activity endpoints for pending listings, pending surveillance, corrective action, atls, and announcements
+
+### Bug Fixes
+* Allow complete listing file to always be downloaded
+
+---
+
+## Version 25.12.0
+_8 September 2020_
+
+### Features
+* Add "Ignore warnings" checkbox when editing or confirming certified product
+
+### Flagged Features
+* Get direct reviews from Jira
+
+### Bug Fixes
+* Send HTTP Error 401 when the api key is not valid
+
+---
+
 ## Version 25.11.0
 _18 August 2020_
 

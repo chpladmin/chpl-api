@@ -3,12 +3,16 @@ package gov.healthit.chpl.manager.auth;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +52,7 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
+import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -191,7 +196,14 @@ public class UserManager extends SecuredManager {
 
         if (userToUpdate.getFailedLoginCount() >= maxLogins) {
             userToUpdate.setAccountLocked(true);
-            userDAO.updateAccountLockedStatus(userToUpdate.getSubjectName(), userToUpdate.isAccountLocked());
+            try {
+                userDAO.updateAccountLockedStatus(userToUpdate.getSubjectName(), userToUpdate.isAccountLocked());
+                if (userToUpdate.getFailedLoginCount() == maxLogins) {
+                    sendAccountLockedEmail(userToUpdate);
+                }
+            } catch (Exception ex) {
+                LOGGER.error("Unable to set account " + userToUpdate.getSubjectName() + " as locked.", ex);
+            }
         }
     }
 
@@ -293,6 +305,24 @@ public class UserManager extends SecuredManager {
     public void updateLastLoggedInDate(UserDTO user) throws UserRetrievalException {
         user.setLastLoggedInDate(new Date());
         userDAO.update(user);
+    }
+
+    private void sendAccountLockedEmail(UserDTO user) throws AddressException, MessagingException {
+        String subject = "CHPL Account Locked";
+        String htmlMessage = "<p>The account associated with " + user.getSubjectName()
+                + " has exceeded the maximum number of failed login attempts and is locked. "
+                + "You will need to reset your account by selecting the \"Forgot Password\" option "
+                + "during Log In, or by contacting your local administrator.</p>";
+        String[] toEmails = {
+                user.getEmail()
+        };
+
+        EmailBuilder emailBuilder = new EmailBuilder(env);
+        emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
+        .subject(subject)
+        .htmlMessage(htmlMessage)
+        .publicHtmlFooter()
+        .sendEmail();
     }
 
     private void addAclPermission(UserDTO user, Sid recipient, Permission permission) {

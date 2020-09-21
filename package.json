@@ -3,13 +3,17 @@
   "license": "SEE LICENSE IN LICENSE",
   "repository": "chpladmin/chpl-api",
   "scripts": {
-    "e2e:local": "newman run chpl/chpl-api/e2e/collections/acb-controller.postman_collection.json -e chpl/chpl-api/e2e/env/local.postman_environment.json -r junit,cli",
-    "e2e:dev": "newman run chpl/chpl-api/e2e/collections/acb-controller.postman_collection.json -e chpl/chpl-api/e2e/env/dev.postman_environment.json -r junit,cli",
-    "e2e:qa": "newman run chpl/chpl-api/e2e/collections/acb-controller.postman_collection.json -e chpl/chpl-api/e2e/env/qa.postman_environment.json -r junit,cli",
-    "e2e:stg": "newman run chpl/chpl-api/e2e/collections/acb-controller.postman_collection.json -e chpl/chpl-api/e2e/env/stg.postman_environment.json -r junit,cli"
+    "e2e:lint": "eslint chpl",
+    "e2e:local": "node ./chpl/chpl-api/e2e/script/newman-run-local.js",
+    "e2e:dev": "node ./chpl/chpl-api/e2e/script/newman-run-dev.js",
+    "e2e:qa": "node ./chpl/chpl-api/e2e/script/newman-run-qa.js",
+    "e2e:stg": "node ./chpl/chpl-api/e2e/script/newman-run-stg.js"
   },
   "devDependencies": {
     "newman": "^5.1.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.7.0"
+  }
 }

@@ -10,9 +10,13 @@ import javax.xml.bind.annotation.XmlType;
 
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.util.Util;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
+@Builder
+@AllArgsConstructor
 public class DeveloperStatusEvent implements Serializable {
     private static final long serialVersionUID = -7303257499336378800L;
 

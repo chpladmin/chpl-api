@@ -10,6 +10,8 @@ import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 /**
  * The Accredited Testing Labs used to test the the Listing.
@@ -18,6 +20,8 @@ import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
+@AllArgsConstructor
 public class CertifiedProductTestingLab implements Serializable {
     private static final long serialVersionUID = -2078691100124619582L;
 
