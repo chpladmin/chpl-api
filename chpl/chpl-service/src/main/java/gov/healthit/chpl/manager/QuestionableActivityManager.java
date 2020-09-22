@@ -2,7 +2,6 @@ package gov.healthit.chpl.manager;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.EnvironmentAware;
@@ -210,12 +209,12 @@ public class QuestionableActivityManager implements EnvironmentAware {
                         QuestionableActivityTriggerConcept.CRITERIA_B3_ADDED_TO_EXISTING_LISTING_WITH_ICS, activityReason);
             }
             activity = listingQuestionableActivityProvider.checkRealWorldTestingPlanRemoved(origListing, newListing);
-            if (Objects.nonNull(activity)) {
+            if (activity != null) {
                 createListingActivity(activity, origListing.getId(), activityDate, activityUser,
                         QuestionableActivityTriggerConcept.REAL_WORLD_TESTING_REMOVED, activityReason);
             }
             activity = listingQuestionableActivityProvider.checkRealWorldTestingResultsRemoved(origListing, newListing);
-            if (Objects.nonNull(activity)) {
+            if (activity != null    ) {
                 createListingActivity(activity, origListing.getId(), activityDate, activityUser,
                         QuestionableActivityTriggerConcept.REAL_WORLD_TESTING_REMOVED, activityReason);
             }
