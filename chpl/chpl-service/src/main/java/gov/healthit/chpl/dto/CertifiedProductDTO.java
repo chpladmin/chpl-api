@@ -177,7 +177,7 @@ public class CertifiedProductDTO implements Serializable {
         return Util.getNewDate(creationDate);
     }
 
-    public void setCreationDate(final Date creationDate) {
+    public void setCreationDate(Date creationDate) {
         this.creationDate = Util.getNewDate(creationDate);
     }
 
@@ -185,7 +185,7 @@ public class CertifiedProductDTO implements Serializable {
         return Util.getNewDate(lastModifiedDate);
     }
 
-    public void setLastModifiedDate(final Date lastModifiedDate) {
+    public void setLastModifiedDate(Date lastModifiedDate) {
         this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
@@ -193,7 +193,7 @@ public class CertifiedProductDTO implements Serializable {
         return Util.getNewDate(sedTestingEnd);
     }
 
-    public void setSedTestingEnd(final Date sedTestingEnd) {
+    public void setSedTestingEnd(Date sedTestingEnd) {
         this.sedTestingEnd = Util.getNewDate(sedTestingEnd);
     }
 }
