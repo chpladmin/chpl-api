@@ -13,7 +13,7 @@ import gov.healthit.chpl.svap.entity.SvapCriteriaMapEntity;
 import gov.healthit.chpl.svap.entity.SvapEntity;
 
 @Repository
-public class SvapDAO extends BaseDAOImpl{
+public class SvapDAO extends BaseDAOImpl {
 
     public Svap getById(Long id) throws EntityRetrievalException {
         SvapEntity entity = getSvapEntityById(id);

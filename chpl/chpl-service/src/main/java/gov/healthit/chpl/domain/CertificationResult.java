@@ -16,6 +16,7 @@ import org.apache.commons.lang.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
+import gov.healthit.chpl.svap.domain.Svap;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Singular;
@@ -136,6 +137,8 @@ public class CertificationResult implements Serializable {
     @XmlTransient
     private List<TestFunctionality> allowedTestFunctionalities;
 
+    @XmlTransient
+    private List<Svap> allowedSvaps;
     /**
      * Any optional, alternative, ambulatory (2015 only), or inpatient (2015 only) capabilities within a certification
      * criterion to which the Health IT module was tested and certified. For example, within the 2015 certification
@@ -166,6 +169,7 @@ public class CertificationResult implements Serializable {
      * This variable indicates if any additional software is relied upon by the Health IT Module to demonstrate its
      * compliance with a certification criterion or criteria. It is applicable for 2014 and 2015 Edition.
      */
+    @SuppressWarnings("checkstyle:linelength")
     @XmlElementWrapper(name = "additionalSoftwareList", nillable = true, required = false)
     @XmlElement(name = "additionalSoftware")
     private List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
@@ -458,5 +462,13 @@ public class CertificationResult implements Serializable {
             result.append(frameworks[i].trim());
         }
         return result.toString();
+    }
+
+    public List<Svap> getAllowedSvaps() {
+        return allowedSvaps;
+    }
+
+    public void setAllowedSvaps(List<Svap> allowedSvaps) {
+        this.allowedSvaps = allowedSvaps;
     }
 }
