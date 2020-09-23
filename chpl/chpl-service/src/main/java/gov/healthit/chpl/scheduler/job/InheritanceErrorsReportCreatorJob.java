@@ -111,7 +111,11 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
             for (CertifiedProductFlatSearchResult result : certifiedProducts) {
                 futures.add(CompletableFuture.supplyAsync(() -> getCertifiedProductSearchDetails(result.getId()), executorService)
                         .thenApply(cp -> check(cp))
-                        .thenAccept(error -> allInheritanceErrors.add(error)));
+                        .thenAccept(error -> {
+                            if (error != null) {
+                                allInheritanceErrors.add(error);
+                            }
+                        }));
             }
 
             CompletableFuture<Void> combinedFutures = CompletableFuture
@@ -194,6 +198,7 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
                     LOGGER.info("Creating {} current inheritance errors", allInheritanceErrors.size());
                     inheritanceErrorsReportDAO.create(allInheritanceErrors);
                 } catch (Exception e) {
+                    LOGGER.error("Error updating to latest inheritance errors. Rolling back transaction.", e);
                     status.setRollbackOnly();
                 }
             }
