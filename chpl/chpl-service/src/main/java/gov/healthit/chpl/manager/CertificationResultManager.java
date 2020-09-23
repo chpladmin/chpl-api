@@ -67,6 +67,8 @@ import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
+import gov.healthit.chpl.svap.dao.SvapDAO;
+import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 
 @Service
 public class CertificationResultManager extends SecuredManager {
@@ -74,33 +76,45 @@ public class CertificationResultManager extends SecuredManager {
     private static final String G1_MEASURE = "G1";
     private static final String G2_MEASURE = "G2";
 
-    @Autowired
     private CertifiedProductSearchDAO cpDao;
-    @Autowired
     private CertificationCriterionDAO criteriaDao;
-    @Autowired
     private CertificationResultDAO certResultDAO;
-    @Autowired
     private TestStandardDAO testStandardDAO;
-    @Autowired
     private TestToolDAO testToolDAO;
-    @Autowired
     private TestFunctionalityDAO testFunctionalityDAO;
-    @Autowired
     private TestParticipantDAO testParticipantDAO;
-    @Autowired
     private AgeRangeDAO ageDao;
-    @Autowired
     private EducationTypeDAO educDao;
-    @Autowired
     private TestTaskDAO testTaskDAO;
-    @Autowired
     private UcdProcessDAO ucdDao;
-    @Autowired
     private MacraMeasureDAO mmDao;
-    @Autowired
     private FuzzyChoicesDAO fuzzyChoicesDao;
+    private SvapDAO svapDao;
 
+    @SuppressWarnings("checkstyle:parameternumber")
+    @Autowired
+    public CertificationResultManager(CertifiedProductSearchDAO cpDao, CertificationCriterionDAO criteriaDao,
+            CertificationResultDAO certResultDAO, TestStandardDAO testStandardDAO, TestToolDAO testToolDAO,
+            TestFunctionalityDAO testFunctionalityDAO, TestParticipantDAO testParticipantDAO, AgeRangeDAO ageDao,
+            EducationTypeDAO educDao, TestTaskDAO testTaskDAO, UcdProcessDAO ucdDao, MacraMeasureDAO mmDao,
+            FuzzyChoicesDAO fuzzyChoicesDao, SvapDAO svapDao) {
+        this.cpDao = cpDao;
+        this.criteriaDao = criteriaDao;
+        this.certResultDAO = certResultDAO;
+        this.testStandardDAO = testStandardDAO;
+        this.testToolDAO = testToolDAO;
+        this.testFunctionalityDAO = testFunctionalityDAO;
+        this.testParticipantDAO = testParticipantDAO;
+        this.ageDao = ageDao;
+        this.educDao = educDao;
+        this.testTaskDAO = testTaskDAO;
+        this.ucdDao = ucdDao;
+        this.mmDao = mmDao;
+        this.fuzzyChoicesDao = fuzzyChoicesDao;
+        this.svapDao = svapDao;
+    }
+
+    @SuppressWarnings("checkstyle:methodlength")
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_RESULTS, "
             + "T(gov.healthit.chpl.permissions.domains.CertificationResultsDomainPermissions).UPDATE, #existingListing)")
     @Transactional(rollbackFor = {
@@ -345,6 +359,7 @@ public class CertificationResultManager extends SecuredManager {
         }
     }
 
+    @SuppressWarnings("checkstyle:linelength")
     private int updateAdditionalSoftware(CertificationResult certResult,
             List<CertificationResultAdditionalSoftware> existingAdditionalSoftware,
             List<CertificationResultAdditionalSoftware> updatedAdditionalSoftware)
@@ -1410,6 +1425,10 @@ public class CertificationResultManager extends SecuredManager {
 
     public List<CertificationResultTestTaskDTO> getTestTasksForCertificationResult(Long certificationResultId) {
         return certResultDAO.getTestTasksForCertificationResult(certificationResultId);
+    }
+
+    public List<CertificationResultSvap> getSvapsForCertificationResult(Long certificationResultId) {
+        return certResultDAO.getSvapForCertificationResult(certificationResultId);
     }
 
     private static class CertificationResultAdditionalSoftwarePair {

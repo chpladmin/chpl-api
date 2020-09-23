@@ -16,6 +16,7 @@ import org.apache.commons.lang.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
+import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.svap.domain.Svap;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -139,6 +140,7 @@ public class CertificationResult implements Serializable {
 
     @XmlTransient
     private List<Svap> allowedSvaps;
+
     /**
      * Any optional, alternative, ambulatory (2015 only), or inpatient (2015 only) capabilities within a certification
      * criterion to which the Health IT module was tested and certified. For example, within the 2015 certification
@@ -216,6 +218,13 @@ public class CertificationResult implements Serializable {
     @XmlElement(name = "macraMeasure")
     @Singular
     private List<MacraMeasure> g2MacraMeasures = new ArrayList<MacraMeasure>();
+
+    /**
+     * NEED TO GET THIS TEXT
+     */
+    @XmlElementWrapper(name = "svaps", nillable = true, required = false)
+    @XmlElement(name = "svap")
+    private List<CertificationResultSvap> svaps = new ArrayList<CertificationResultSvap>();
 
     /**
      * Detailed information about the relevant certification criterion.
@@ -470,5 +479,13 @@ public class CertificationResult implements Serializable {
 
     public void setAllowedSvaps(List<Svap> allowedSvaps) {
         this.allowedSvaps = allowedSvaps;
+    }
+
+    public List<CertificationResultSvap> getSvaps() {
+        return svaps;
+    }
+
+    public void setSvaps(List<CertificationResultSvap> svaps) {
+        this.svaps = svaps;
     }
 }

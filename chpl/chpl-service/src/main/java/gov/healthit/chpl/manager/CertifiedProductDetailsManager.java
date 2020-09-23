@@ -665,6 +665,7 @@ public class CertifiedProductDetailsManager {
             }
         }
 
+
         // set allowed macra measures (if any)
         for (MacraMeasure measure : dimensionalDataManager.getMacraMeasures()) {
             if (measure.getCriteria().getId().equals(result.getCriterion().getId())) {
@@ -675,6 +676,12 @@ public class CertifiedProductDetailsManager {
 
         // set allowed svap for criteria
         result.setAllowedSvaps(getAvailableSvapForCriteria(result));
+
+        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.SVAP)) {
+            result.setSvaps(certResultManager.getSvapsForCertificationResult(result.getId()));
+        } else {
+            result.setSvaps(null);
+        }
 
         return result;
     }

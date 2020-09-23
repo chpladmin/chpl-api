@@ -44,6 +44,7 @@ public class CertificationResultRules {
     public static final String UCD_FIELDS = "ucd";
     public static final String TEST_PARTICIPANT = "participant";
     public static final String TEST_TASK = "task";
+    public static final String SVAP = "svap";
 
     private static final Logger LOGGER = LogManager.getLogger(CertificationResultRules.class);
 

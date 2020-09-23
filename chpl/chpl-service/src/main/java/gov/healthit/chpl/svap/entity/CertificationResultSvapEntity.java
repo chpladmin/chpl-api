@@ -1,5 +1,7 @@
 package gov.healthit.chpl.svap.entity;
 
+import java.util.Date;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,7 +22,7 @@ public class CertificationResultSvapEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "certification_result_svap_id")
+    @Column(name = "id")
     private Long id;
 
     @Basic(optional = false)
@@ -34,4 +36,21 @@ public class CertificationResultSvapEntity {
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "svap_id", unique = true, nullable = true, insertable = false, updatable = false)
     private SvapEntity svap;
+
+    @Basic(optional = false)
+    @Column(name = "creation_date", nullable = false)
+    private Date creationDate;
+
+    @Basic(optional = false)
+    @Column(name = "deleted", nullable = false)
+    private Boolean deleted;
+
+    @Basic(optional = false)
+    @Column(name = "last_modified_date", nullable = false)
+    private Date lastModifiedDate;
+
+    @Basic(optional = false)
+    @Column(name = "last_modified_user", nullable = false)
+    private Long lastModifiedUser;
+
 }
