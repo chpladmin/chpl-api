@@ -53,7 +53,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
-import gov.healthit.chpl.service.DirectReviewService;
+import gov.healthit.chpl.service.DirectReviewUpdateEmailService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
 import io.swagger.annotations.Api;
@@ -67,7 +67,7 @@ public class DeveloperController {
     private DeveloperManager developerManager;
     private ErrorMessageUtil msgUtil;
     private UserPermissionsManager userPermissionsManager;
-    private DirectReviewService directReviewService;
+    private DirectReviewUpdateEmailService directReviewService;
     private FF4j ff4j;
 
     @Autowired
@@ -75,7 +75,7 @@ public class DeveloperController {
             CertifiedProductManager cpManager,
             UserPermissionsManager userPermissionsManager,
             ErrorMessageUtil msgUtil,
-            DirectReviewService directReviewService,
+            DirectReviewUpdateEmailService directReviewService,
             FF4j ff4j) {
         this.developerManager = developerManager;
         this.userPermissionsManager = userPermissionsManager;

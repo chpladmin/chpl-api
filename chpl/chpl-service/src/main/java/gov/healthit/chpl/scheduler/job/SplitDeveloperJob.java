@@ -11,7 +11,6 @@ import java.util.concurrent.Future;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,7 +29,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
@@ -44,7 +42,7 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.scheduler.SchedulerCertifiedProductSearchDetailsAsync;
-import gov.healthit.chpl.service.DirectReviewService;
+import gov.healthit.chpl.service.DirectReviewUpdateEmailService;
 import gov.healthit.chpl.util.EmailBuilder;
 import net.sf.ehcache.CacheManager;
 
@@ -78,7 +76,7 @@ public class SplitDeveloperJob implements Job {
     private ActivityManager activityManager;
 
     @Autowired
-    private DirectReviewService directReviewService;
+    private DirectReviewUpdateEmailService directReviewEmailService;
 
     private DeveloperDTO preSplitDeveloper;
     private DeveloperDTO postSplitDeveloper;
@@ -114,29 +112,8 @@ public class SplitDeveloperJob implements Job {
                 CacheManager.getInstance().clearAll();
             }
 
-            //send email about direct reviews
-            List<DirectReview> preSplitDeveloperDrs = null;
-            try {
-                preSplitDeveloperDrs = directReviewService.getDirectReviews(preSplitDeveloper.getId());
-            } catch (Exception ex) {
-                LOGGER.error("Error querying Jira for direct reviews related to developer ID " + preSplitDeveloper.getId());
-            }
-
-            if (preSplitDeveloperDrs == null) {
-                try {
-                    sendUnknownDirectReviewEmails();
-                } catch (Exception ex) {
-                    LOGGER.error("Could not send email to Jira team: " + ex.getMessage());
-                }
-            } else if (preSplitDeveloperDrs != null && preSplitDeveloperDrs.size() > 0) {
-                try {
-                    sendDirectReviewEmails(preSplitDeveloperDrs);
-                } catch (MessagingException ex) {
-                    LOGGER.error("Could not send email to Jira team: " + ex.getMessage());
-                }
-            } else {
-                LOGGER.info("No direct reviews were found for developer ID " + preSplitDeveloper.getId());
-            }
+            directReviewEmailService.sendEmail(
+                    preSplitDeveloper, postSplitDeveloper, preSplitListingDetails, postSplitListingDetails);
 
             //send email about success/failure of job
             if (!StringUtils.isEmpty(user.getEmail())) {
@@ -214,7 +191,7 @@ public class SplitDeveloperJob implements Job {
                 CertifiedProductSearchDetails details = future.get();
                 LOGGER.info("Complete retrieving details for id: " + details.getId());
                 postSplitListingDetails.put(details.getId(), details);
-            };
+            }
 
             for (Long id : postSplitListingDetails.keySet()) {
                 CertifiedProductSearchDetails preSplitListing = preSplitListingDetails.get(id);
@@ -244,7 +221,7 @@ public class SplitDeveloperJob implements Job {
         List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
         for (CertifiedProductDetailsDTO currListing : listings) {
             try {
-                LOGGER.info("Getting pre-split details for affected listing " + currListing.getChplProductNumber());
+                LOGGER.info("Getting details for affected listing " + currListing.getChplProductNumber());
                 futures.add(schedulerCertifiedProductSearchDetailsAsync.getCertifiedProductDetail(
                         currListing.getId(), cpdManager));
             } catch (EntityRetrievalException e) {
@@ -277,96 +254,6 @@ public class SplitDeveloperJob implements Job {
                 LOGGER.error("Could not send message to " + emailAddress, ex);
             }
         }
-    }
-
-    private void sendDirectReviewEmails(List<DirectReview> drs)
-        throws MessagingException {
-        LOGGER.info("Sending email about direct reviews potentially needing changes.");
-
-        String[] recipients = new String[] {};
-        String emailAddressProperty = env.getProperty("directReview.chplChanges.email");
-        if (!StringUtils.isEmpty(emailAddressProperty)) {
-            recipients = emailAddressProperty.split(",");
-        }
-
-        String htmlMessage = String.format("The developer %s (ID: %s) was split. "
-                + "The newly created developer is %s (ID: %s). "
-                + "The following direct reviews associated with the old developer may need updates: "
-                + "<ul>",
-                preSplitDeveloper.getName(),
-                preSplitDeveloper.getId(),
-                postSplitDeveloper.getName(),
-                postSplitDeveloper.getId());
-        for (DirectReview dr : drs) {
-            //TODO: make this a link to Jira?
-            htmlMessage += String.format("<li>%s</li>", dr.getJiraKey());
-        }
-        htmlMessage += "</ul>";
-
-        String chplProductNumberChangedHtml = formatChplProductNumbersHtmlList();
-        if (StringUtils.isNotEmpty(chplProductNumberChangedHtml)) {
-            htmlMessage += "Any direct reviews with the following developer-associated listings "
-            + "may require updates due to changes in the CHPL Product Number: "
-            + "<ul>" + chplProductNumberChangedHtml + "</ul>";
-        }
-
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipients(recipients)
-                .subject(env.getProperty("directReview.chplChanges.emailSubject"))
-                .htmlMessage(htmlMessage)
-                .acbAtlHtmlFooter()
-                .sendEmail();
-    }
-
-    private void sendUnknownDirectReviewEmails() throws MessagingException {
-        LOGGER.info("Sending email about unknown direct reviews.");
-
-        String[] recipients = new String[] {};
-        String emailAddressProperty = env.getProperty("directReview.unknownChanges.email");
-        if (!StringUtils.isEmpty(emailAddressProperty)) {
-            recipients = emailAddressProperty.split(",");
-        }
-
-        String htmlMessage = String.format("<p>The developer %s (ID: %s) was split. "
-                + "The newly created developer is %s (ID: %s). "
-                + "Any direct reviews related to '%s' may need updated.</p>",
-                preSplitDeveloper.getName(),
-                preSplitDeveloper.getId(),
-                postSplitDeveloper.getName(),
-                postSplitDeveloper.getId(),
-                preSplitDeveloper.getName());
-
-        String chplProductNumberChangedHtml = formatChplProductNumbersHtmlList();
-        if (StringUtils.isNotEmpty(chplProductNumberChangedHtml)) {
-            htmlMessage += "<p>Additionally, any direct reviews with the following "
-                    + "developer-associated listings may require updates due to changes "
-                    + "in the CHPL Product Number: "
-            + "<ul>" + chplProductNumberChangedHtml + "</ul>";
-        }
-
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipients(recipients)
-                .subject(env.getProperty("directReview.unknownChanges.emailSubject"))
-                .htmlMessage("")
-                .acbAtlHtmlFooter()
-                .sendEmail();
-    }
-
-    private String formatChplProductNumbersHtmlList() {
-        String chplProductNumberChangedHtml = "";
-        for (Long id : preSplitListingDetails.keySet()) {
-            CertifiedProductSearchDetails preSplitListing = preSplitListingDetails.get(id);
-            CertifiedProductSearchDetails postSplitListing = postSplitListingDetails.get(id);
-            if (ObjectUtils.allNotNull(preSplitListing, postSplitListing,
-                    preSplitListing.getChplProductNumber(), postSplitListing.getChplProductNumber())
-                    && StringUtils.isNotEmpty(preSplitListing.getChplProductNumber())
-                    && StringUtils.isNotEmpty(postSplitListing.getChplProductNumber())
-                    && !preSplitListing.getChplProductNumber().equals(postSplitListing.getChplProductNumber())) {
-                chplProductNumberChangedHtml += String.format("<li>%s to %s</li>",
-                        preSplitListing.getChplProductNumber(), postSplitListing.getChplProductNumber());
-            }
-        }
-        return chplProductNumberChangedHtml;
     }
 
     private void sendEmail(String recipientEmail, String subject, String htmlMessage)
