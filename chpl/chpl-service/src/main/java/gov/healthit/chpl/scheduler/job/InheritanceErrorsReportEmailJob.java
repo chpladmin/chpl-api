@@ -93,19 +93,15 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
     private List<InheritanceErrorsReportDTO> getAppropriateErrors(JobExecutionContext jobContext) {
         List<InheritanceErrorsReportDTO> allErrors = inheritanceErrorsReportDAO.findAll();
         List<InheritanceErrorsReportDTO> errors = new ArrayList<InheritanceErrorsReportDTO>();
-        if (jobContext.getMergedJobDataMap().getBooleanValue("acbSpecific")) {
-            List<Long> acbIds =
-                    Arrays.asList(
-                            jobContext.getMergedJobDataMap().getString("acb").split(SchedulerManager.DATA_DELIMITER)).stream()
-                    .map(acb -> Long.parseLong(acb))
-                    .collect(Collectors.toList());
+        List<Long> acbIds =
+                Arrays.asList(
+                        jobContext.getMergedJobDataMap().getString("acb").split(SchedulerManager.DATA_DELIMITER)).stream()
+                .map(acb -> Long.parseLong(acb))
+                .collect(Collectors.toList());
 
-            errors = allErrors.stream()
-                    .filter(error -> acbIds.contains(error.getCertificationBody().getId()))
-                    .collect(Collectors.toList());
-        } else {
-            errors.addAll(allErrors);
-        }
+        errors = allErrors.stream()
+                .filter(error -> acbIds.contains(error.getCertificationBody().getId()))
+                .collect(Collectors.toList());
         return errors;
     }
 
