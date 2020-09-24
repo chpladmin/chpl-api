@@ -8,12 +8,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Svap {
 
-    private Long svaplId;
+    private Long svapId;
     private String regulatoryTextCitation;
     private String approvedStandardVersion;
 
     public Svap(SvapEntity entity) {
-        this.svaplId = entity.getSvaplId();
+        this.svapId = entity.getSvapId();
         this.regulatoryTextCitation = entity.getRegulatoryTextCitation();
         this.approvedStandardVersion = entity.getApprovedStandardVersion();
     }

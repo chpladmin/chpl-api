@@ -21,7 +21,7 @@ public class SvapEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
-    private Long svaplId;
+    private Long svapId;
 
     @Column(name = "regulatory_text_citation", nullable = false)
     private String regulatoryTextCitation;
@@ -30,10 +30,10 @@ public class SvapEntity {
     private String approvedStandardVersion;
 
     @Column(name = "deleted", nullable = false)
-    protected Boolean deleted;
+    private Boolean deleted;
 
     @Column(name = "last_modified_user", nullable = false)
-    protected Long lastModifiedUser;
+    private Long lastModifiedUser;
 
     @Column(name = "creation_date", insertable = false, updatable = false)
     private Date creationDate;

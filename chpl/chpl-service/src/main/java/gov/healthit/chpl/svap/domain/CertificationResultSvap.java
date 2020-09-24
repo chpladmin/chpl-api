@@ -35,7 +35,7 @@ public class CertificationResultSvap implements Serializable {
      * SVAP internal ID
      */
     @XmlElement(required = true)
-    private Long svaplId;
+    private Long svapId;
 
     /**
      * NEED THIS TEXT
@@ -51,7 +51,7 @@ public class CertificationResultSvap implements Serializable {
 
     public CertificationResultSvap(CertificationResultSvapEntity entity) {
         this.id = entity.getId();
-        this.svaplId = entity.getSvapId();
+        this.svapId = entity.getSvapId();
         this.regulatoryTextCitation = entity.getSvap().getRegulatoryTextCitation();
         this.approvedStandardVersion = entity.getSvap().getApprovedStandardVersion();
     }
@@ -64,12 +64,12 @@ public class CertificationResultSvap implements Serializable {
         this.id = id;
     }
 
-    public Long getSvaplId() {
-        return svaplId;
+    public Long getSvapId() {
+        return svapId;
     }
 
-    public void setSvaplId(Long svaplId) {
-        this.svaplId = svaplId;
+    public void setSvapId(Long svapId) {
+        this.svapId = svapId;
     }
 
     public String getRegulatoryTextCitation() {
