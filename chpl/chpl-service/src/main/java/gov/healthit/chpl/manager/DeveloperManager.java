@@ -380,6 +380,8 @@ public class DeveloperManager extends SecuredManager {
             developerDao.delete(developerId);
         }
 
+        //TODO: add listing activity for changed CHPL IDs
+        //TODO: email about direct reviews
         activityManager.addActivity(
                 ActivityConcept.DEVELOPER, createdDeveloper.getId(), "Merged " + developerIdsToMerge.size()
                         + " developers into new developer '" + createdDeveloper.getName() + "'.",

@@ -80,8 +80,8 @@ public class SplitDeveloperJob implements Job {
 
     private DeveloperDTO preSplitDeveloper;
     private DeveloperDTO postSplitDeveloper;
-    private Map<Long, CertifiedProductSearchDetails> preSplitListingDetails;
-    private Map<Long, CertifiedProductSearchDetails> postSplitListingDetails;
+    private Map<Long, CertifiedProductSearchDetails> preSplitListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
+    private Map<Long, CertifiedProductSearchDetails> postSplitListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
 
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
@@ -159,8 +159,6 @@ public class SplitDeveloperJob implements Job {
 
             // need to get details for affected listings now before the product is re-assigned
             // so that any listings with a generated new-style CHPL ID have the old developer code
-            preSplitListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
-            postSplitListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
             List<Future<CertifiedProductSearchDetails>> beforeListingFutures
                 = getCertifiedProductSearchDetailsFutures(affectedListings);
             for (Future<CertifiedProductSearchDetails> future : beforeListingFutures) {
