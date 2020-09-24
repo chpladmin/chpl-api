@@ -1,0 +1,143 @@
+{
+	"info": {
+		"_postman_id": "cbf3ffef-47da-4944-b0cf-2e81ead99247",
+		"name": "search-view-controller",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET /data/svap- valid API Key",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "be6a49d6-0ead-407b-acb0-44f80dc2d61c",
+						"exec": [
+							"pm.test(\"Valid api key header should return 200 status for SVAP\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    });\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/data/svap",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"data",
+						"svap"
+					]
+				},
+				"description": "Valid api key header should return 200 status for SVAP"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /data/svap - Invalid API Key",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "db8f451f-8610-4a7a-8c51-9df2a68dce75",
+						"exec": [
+							"pm.test(\"Invalid api key header should return 401 status for SVAP\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
+							"    });\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "atest123cg",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/data/svap",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"data",
+						"svap"
+					]
+				},
+				"description": "Invalid api key header should return 401 status for SVAP"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /data/svap - without API Key",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "56830396-ae6c-467c-9726-f36324f03c1c",
+						"exec": [
+							"pm.test(\"Requests without API Key should return 400 status for SVAP\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"    });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/data/svap",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"data",
+						"svap"
+					]
+				},
+				"description": "Requests without API Key should return 400 status for SVAP"
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
