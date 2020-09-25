@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestClientException;
 
 import gov.healthit.chpl.domain.error.ErrorResponse;
 import gov.healthit.chpl.domain.error.ObjectMissingValidationErrorResponse;
@@ -28,6 +27,7 @@ import gov.healthit.chpl.exception.CertificationBodyAccessException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.JiraRequestFailedException;
 import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.ObjectsMissingValidationException;
@@ -55,6 +55,14 @@ public class ApiExceptionControllerAdvice {
     public ResponseEntity<ErrorResponse> exception(AccessDeniedException e) {
         return new ResponseEntity<ErrorResponse>(
                 new ErrorResponse(e.getMessage() == null ? "Access Denied" : e.getMessage()), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(JiraRequestFailedException.class)
+    public ResponseEntity<ErrorResponse> exception(JiraRequestFailedException e) {
+        LOGGER.error(e.getMessage());
+        return new ResponseEntity<ErrorResponse>(
+                new ErrorResponse("Direct Review information is not currently available, please check back later."),
+                HttpStatus.NO_CONTENT);
     }
 
     @ExceptionHandler(EntityRetrievalException.class)
@@ -202,15 +210,6 @@ public class ApiExceptionControllerAdvice {
                 new ErrorResponse(e.getMessage() != null ? e.getMessage()
                         : "The server encountered an error completing the request."),
                 e.getStatusCode());
-    }
-
-    @ExceptionHandler(RestClientException.class)
-    public ResponseEntity<ErrorResponse> exceptionHandler(RestClientException e, HttpServletRequest request) {
-        LOGGER.error("RestClientException: " + e.getMessage(), e);
-        return new ResponseEntity<ErrorResponse>(
-                new ErrorResponse(e.getMessage() != null ? e.getMessage()
-                        : "An unexpected error occurred: " + e.getMessage()),
-                HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(IOException.class)
