@@ -2,6 +2,7 @@ package gov.healthit.chpl.scheduler.job;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -113,7 +114,9 @@ public class SplitDeveloperJob implements Job {
             }
 
             directReviewEmailService.sendEmail(
-                    preSplitDeveloper, postSplitDeveloper, preSplitListingDetails, postSplitListingDetails);
+                    Arrays.asList(preSplitDeveloper),
+                    Arrays.asList(preSplitDeveloper, postSplitDeveloper),
+                    preSplitListingDetails, postSplitListingDetails);
 
             //send email about success/failure of job
             if (!StringUtils.isEmpty(user.getEmail())) {
@@ -190,14 +193,15 @@ public class SplitDeveloperJob implements Job {
                 LOGGER.info("Complete retrieving details for id: " + details.getId());
                 postSplitListingDetails.put(details.getId(), details);
             }
+        }
 
-            for (Long id : postSplitListingDetails.keySet()) {
-                CertifiedProductSearchDetails preSplitListing = preSplitListingDetails.get(id);
-                CertifiedProductSearchDetails postSplitListing = postSplitListingDetails.get(id);
-                activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, preSplitListing.getId(),
-                        "Updated certified product " + postSplitListing.getChplProductNumber() + ".", preSplitListing,
-                        postSplitListing);
-            }
+        LOGGER.info("Logging listing split activity.");
+        for (Long id : postSplitListingDetails.keySet()) {
+            CertifiedProductSearchDetails preSplitListing = preSplitListingDetails.get(id);
+            CertifiedProductSearchDetails postSplitListing = postSplitListingDetails.get(id);
+            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, preSplitListing.getId(),
+                    "Updated certified product " + postSplitListing.getChplProductNumber() + ".", preSplitListing,
+                    postSplitListing);
         }
 
         LOGGER.info("Logging developer split activity.");

@@ -2,6 +2,7 @@ package gov.healthit.chpl.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
 
@@ -43,38 +44,40 @@ public class DirectReviewUpdateEmailService {
         this.env = env;
     }
 
-    public void sendEmail(DeveloperDTO originalDeveloper, DeveloperDTO changedDeveloper,
+    public void sendEmail(List<DeveloperDTO> originalDevelopers, List<DeveloperDTO> changedDevelopers,
             Map<Long, CertifiedProductSearchDetails> originalListings,
             Map<Long, CertifiedProductSearchDetails> changedListings) {
 
         List<DirectReview> originalDeveloperDrs = null;
-        try {
-            originalDeveloperDrs = directReviewService.getDirectReviews(originalDeveloper.getId());
-        } catch (Exception ex) {
-            LOGGER.error("Error querying Jira for direct reviews related to developer ID " + originalDeveloper.getId());
+        for (DeveloperDTO originalDeveloper : originalDevelopers) {
+            try {
+                originalDeveloperDrs = directReviewService.getDirectReviews(originalDeveloper.getId());
+            } catch (Exception ex) {
+                LOGGER.error("Error querying Jira for direct reviews related to developer ID " + originalDeveloper.getId());
+            }
         }
 
         if (originalDeveloperDrs == null) {
             try {
-                sendUnknownDirectReviewEmails(originalDeveloper, changedDeveloper, originalListings,
+                sendUnknownDirectReviewEmails(originalDevelopers, changedDevelopers, originalListings,
                         changedListings);
             } catch (Exception ex) {
                 LOGGER.error("Could not send email to Jira team: " + ex.getMessage());
             }
         } else if (originalDeveloperDrs != null && originalDeveloperDrs.size() > 0) {
             try {
-                sendDirectReviewEmails(originalDeveloperDrs, originalDeveloper, changedDeveloper, originalListings,
+                sendDirectReviewEmails(originalDeveloperDrs, originalDevelopers, changedDevelopers, originalListings,
                         changedListings);
             } catch (MessagingException ex) {
                 LOGGER.error("Could not send email to Jira team: " + ex.getMessage());
             }
         } else {
-            LOGGER.info("No direct reviews were found for developer ID " + originalDeveloper.getId());
+            LOGGER.info("No direct reviews were found for the affected developer(s). Not notifying the Jira team.");
         }
     }
 
     private void sendDirectReviewEmails(List<DirectReview> drs,
-            DeveloperDTO originalDeveloper, DeveloperDTO changedDeveloper,
+            List<DeveloperDTO> originalDevelopers, List<DeveloperDTO> changedDevelopers,
             Map<Long, CertifiedProductSearchDetails> originalListings,
             Map<Long, CertifiedProductSearchDetails> changedListings)
         throws MessagingException {
@@ -85,21 +88,16 @@ public class DirectReviewUpdateEmailService {
             recipients = chplChangesEmailAddress.split(",");
         }
 
-        //TODO: how to make the message specific to the action?
-        String htmlMessage = String.format("The developer %s (ID: %s) was split. "
-                + "The newly created developer is %s (ID: %s). "
-                + "The following direct reviews associated with the original developer may need updates: "
-                + "<ul>",
-                originalDeveloper.getName(),
-                originalDeveloper.getId(),
-                changedDeveloper.getName(),
-                changedDeveloper.getId());
+        String htmlMessage = formatDeveloperActionHtml(originalDevelopers, changedDevelopers);
+        htmlMessage += "<p>The following direct reviews associated with the original developer "
+                + "may need updates: "
+                + "<ul>";
         for (DirectReview dr : drs) {
             htmlMessage += String.format("<li>%s</li>", dr.getJiraKey());
         }
-        htmlMessage += "</ul>";
+        htmlMessage += "</ul></p>";
 
-        String chplProductNumberChangedHtml = formatChplProductNumbersHtmlList(originalListings, changedListings);
+        String chplProductNumberChangedHtml = formatChplProductNumbersChangedHtml(originalListings, changedListings);
         if (StringUtils.isNotEmpty(chplProductNumberChangedHtml)) {
             htmlMessage += "Any direct reviews with the following developer-associated listings "
             + "may require updates due to changes in the CHPL Product Number: "
@@ -114,7 +112,8 @@ public class DirectReviewUpdateEmailService {
                 .sendEmail();
     }
 
-    private void sendUnknownDirectReviewEmails(DeveloperDTO originalDeveloper, DeveloperDTO changedDeveloper,
+    private void sendUnknownDirectReviewEmails(List<DeveloperDTO> originalDevelopers,
+            List<DeveloperDTO> changedDevelopers,
             Map<Long, CertifiedProductSearchDetails> originalListings,
             Map<Long, CertifiedProductSearchDetails> changedListings) throws MessagingException {
         LOGGER.info("Sending email about unknown direct reviews.");
@@ -125,16 +124,10 @@ public class DirectReviewUpdateEmailService {
             recipients = emailAddressProperty.split(",");
         }
 
-        String htmlMessage = String.format("<p>The developer %s (ID: %s) was split. "
-                + "The newly created developer is %s (ID: %s). "
-                + "Any direct reviews related to '%s' may need updated.</p>",
-                originalDeveloper.getName(),
-                originalDeveloper.getId(),
-                changedDeveloper.getName(),
-                changedDeveloper.getId(),
-                originalDeveloper.getName());
+        String htmlMessage = formatDeveloperActionHtml(originalDevelopers, changedDevelopers);
+        htmlMessage += "<p>Any direct reviews related to the original developers may need updated.</p>";
 
-        String chplProductNumberChangedHtml = formatChplProductNumbersHtmlList(originalListings, changedListings);
+        String chplProductNumberChangedHtml = formatChplProductNumbersChangedHtml(originalListings, changedListings);
         if (StringUtils.isNotEmpty(chplProductNumberChangedHtml)) {
             htmlMessage += "<p>Additionally, any direct reviews with the following "
                     + "developer-associated listings may require updates due to changes "
@@ -150,7 +143,44 @@ public class DirectReviewUpdateEmailService {
                 .sendEmail();
     }
 
-    private String formatChplProductNumbersHtmlList(Map<Long, CertifiedProductSearchDetails> originalListings,
+    private String formatDeveloperActionHtml(List<DeveloperDTO> originalDevelopers,
+            List<DeveloperDTO> changedDevelopers) {
+        String html = "";
+        if (!ObjectUtils.allNotNull(originalDevelopers, changedDevelopers)) {
+            return html;
+        } else if (originalDevelopers.size() == 1 && changedDevelopers.size() > 1) {
+            DeveloperDTO newDeveloper = null;
+            for (DeveloperDTO changedDeveloper : changedDevelopers) {
+                if (!(changedDeveloper.getId().equals(originalDevelopers.get(0).getId()))) {
+                    newDeveloper = changedDeveloper;
+                }
+            }
+            html = String.format("<p>The developer %s (ID: %s) was split. "
+                    + "The new developer is %s (ID: %s).</p>",
+                    originalDevelopers.get(0).getName(),
+                    originalDevelopers.get(0).getId(),
+                    newDeveloper.getName(),
+                    newDeveloper.getId());
+        }  else if (originalDevelopers.size() > 1 && changedDevelopers.size() == 1) {
+            List<String> originalDeveloperNames = originalDevelopers.stream()
+                    .map(dev -> dev.getName())
+                    .collect(Collectors.toList());
+            List<String> originalDeveloperIds = originalDevelopers.stream()
+                    .map(dev -> dev.getId().toString())
+                    .collect(Collectors.toList());
+            html = String.format("<p>The developers %s (IDs: %s) were merged into a single new developer. "
+                    + "The newly created developer is %s (ID: %s).</p>",
+                    String.join(",", originalDeveloperNames),
+                    String.join(",", originalDeveloperIds),
+                    changedDevelopers.get(0).getName(),
+                    changedDevelopers.get(0).getId());
+        } else {
+            html += "<p>A change to developers occurred.</p>";
+        }
+        return html;
+    }
+
+    private String formatChplProductNumbersChangedHtml(Map<Long, CertifiedProductSearchDetails> originalListings,
             Map<Long, CertifiedProductSearchDetails> changedListings) {
         String chplProductNumberChangedHtml = "";
         for (Long id : originalListings.keySet()) {
