@@ -7,7 +7,6 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +15,7 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.auth.UserContactEntity;
 import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.entity.auth.UserPermissionEntity;
+import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
@@ -25,13 +25,14 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Repository(value = "userDAO")
 public class UserDAO extends BaseDAOImpl {
-
-    @Autowired
     private UserContactDAO userContactDAO;
+    private UserMapper userMapper;
 
     @Autowired
-    @Lazy
-    private UserMapper userMapper;
+    public UserDAO(UserContactDAO userContactDAO, UserMapper userMapper) {
+       this.userContactDAO = userContactDAO;
+       this.userMapper = userMapper;
+    }
 
     @Transactional
     public UserDTO create(UserDTO user, String encodedPassword) throws UserCreationException {
@@ -264,6 +265,28 @@ public class UserDAO extends BaseDAOImpl {
             return null;
         }
         return userMapper.from(userEntity);
+    }
+
+    public UserDTO getByNameOrEmail(String username) throws MultipleUserAccountsException {
+        Query query = entityManager
+                .createQuery("SELECT DISTINCT u "
+                        + "FROM UserEntity u "
+                        + "JOIN FETCH u.contact c "
+                        + "JOIN FETCH u.permission "
+                        + "WHERE u.deleted <> true "
+                        + "AND ((u.subjectName = (:username)) OR c.email = (:username)) ",
+                        UserEntity.class);
+        query.setParameter("username", username);
+        List<UserEntity> userEntities = query.getResultList();
+        UserDTO user = null;
+        if (userEntities != null) {
+            if (userEntities.size() > 1) {
+                throw new MultipleUserAccountsException(msgUtil.getMessage("user.multipleAccountsFound", username));
+            } else if (userEntities.size() == 1) {
+                user = userMapper.from(userEntities.get(0));
+            }
+        }
+        return user;
     }
 
     public List<UserDTO> getUsersWithPermission(String permissionName) {
