@@ -29,8 +29,10 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.JiraRequestFailedException;
 import gov.healthit.chpl.exception.MissingReasonException;
+import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.ObjectsMissingValidationException;
+import gov.healthit.chpl.exception.UserAccountExistsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
@@ -75,6 +77,18 @@ public class ApiExceptionControllerAdvice {
     public ResponseEntity<ErrorResponse> exception(UserRetrievalException e) {
         LOGGER.error(e.getMessage());
         return new ResponseEntity<ErrorResponse>(new ErrorResponse(e.getMessage()), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(MultipleUserAccountsException.class)
+    public ResponseEntity<ErrorResponse> exception(MultipleUserAccountsException e) {
+        LOGGER.error(e.getMessage());
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserAccountExistsException.class)
+    public ResponseEntity<ErrorResponse> exception(UserAccountExistsException e) {
+        LOGGER.error(e.getMessage());
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(EntityCreationException.class)
