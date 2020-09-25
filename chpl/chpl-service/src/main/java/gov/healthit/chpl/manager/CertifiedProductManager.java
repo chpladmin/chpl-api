@@ -160,6 +160,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CuresUpdateService;
+import gov.healthit.chpl.service.DirectReviewUpdateEmailService;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
@@ -210,6 +211,7 @@ public class CertifiedProductManager extends SecuredManager {
     private ActivityManager activityManager;
     private ListingValidatorFactory validatorFactory;
     private CuresUpdateService curesUpdateService;
+    private DirectReviewUpdateEmailService drEmailService;
 
     private static final int PROD_CODE_LOC = 4;
     private static final int VER_CODE_LOC = 5;
@@ -245,7 +247,7 @@ public class CertifiedProductManager extends SecuredManager {
             CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
             ActivityManager activityManager, ListingValidatorFactory validatorFactory,
-            CuresUpdateService curesUpdateService) {
+            CuresUpdateService curesUpdateService, DirectReviewUpdateEmailService drEmailService) {
 
         this.msgUtil = msgUtil;
         this.cpDao = cpDao;
@@ -288,6 +290,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.activityManager = activityManager;
         this.validatorFactory = validatorFactory;
         this.curesUpdateService = curesUpdateService;
+        this.drEmailService = drEmailService;
     }
 
     @Transactional(readOnly = true)
@@ -1136,18 +1139,16 @@ public class CertifiedProductManager extends SecuredManager {
         updateListingsChildData(existingListing, updatedListing);
 
         // Log the activity
-        logCertifiedProductUpdateActivity(existingListing, updateRequest.getReason());
-
-        return result;
-    }
-
-    private void logCertifiedProductUpdateActivity(CertifiedProductSearchDetails existingListing,
-            String reason) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
-        CertifiedProductSearchDetails changedProduct = certifiedProductDetailsManager
+        CertifiedProductSearchDetails changedListing = certifiedProductDetailsManager
                 .getCertifiedProductDetails(existingListing.getId());
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
-                "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingListing,
-                changedProduct, reason);
+                "Updated certified product " + changedListing.getChplProductNumber() + ".", existingListing,
+                changedListing, updateRequest.getReason());
+
+        //Send email about direct reviews
+        drEmailService.sendEmail(existingListing, changedListing);
+
+        return result;
     }
 
     @SuppressWarnings({"checkstyle:linelength"})

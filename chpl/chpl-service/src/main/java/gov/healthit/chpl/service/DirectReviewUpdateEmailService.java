@@ -1,5 +1,6 @@
 package gov.healthit.chpl.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -44,16 +45,59 @@ public class DirectReviewUpdateEmailService {
         this.env = env;
     }
 
+    /**
+     * A listing has been updated. Email needs to be sent if the CHPL Product Number has changed
+     * @param originalListing
+     * @param changedListing
+     */
+    public void sendEmail(CertifiedProductSearchDetails originalListing, CertifiedProductSearchDetails changedListing) {
+        if (originalListing.getChplProductNumber().equals(changedListing.getChplProductNumber())) {
+            LOGGER.info("Listing " + originalListing.getChplProductNumber() + " has not changed CHPL Product Numbers."
+                    + "No email will be sent to the Jira team.");
+        } else {
+            LOGGER.info("Sending email about direct reviews potentially needing changes.");
+
+            String[] recipients = new String[] {};
+            if (!StringUtils.isEmpty(chplChangesEmailAddress)) {
+                recipients = chplChangesEmailAddress.split(",");
+            }
+
+            String htmlMessage = "<p>Any direct reviews with the following developer-associated listing "
+                    + "may require updates due to changes in the CHPL Product Number:</p>"
+                    + "<ul><li>" + originalListing.getChplProductNumber() + " to "
+                    + changedListing.getChplProductNumber() + "</li></ul>";
+
+            try {
+                EmailBuilder emailBuilder = new EmailBuilder(env);
+                emailBuilder.recipients(recipients)
+                        .subject(env.getProperty("directReview.chplChanges.emailSubject"))
+                        .htmlMessage(htmlMessage)
+                        .acbAtlHtmlFooter()
+                        .sendEmail();
+            } catch(MessagingException ex) {
+                LOGGER.error("Could not send email to Jira team: " + ex.getMessage());
+            }
+        }
+    }
+
+    /**
+     * A developer and possibly listings under that developer have changed in some way.
+     * @param originalDevelopers
+     * @param changedDevelopers
+     * @param originalListings
+     * @param changedListings
+     */
     public void sendEmail(List<DeveloperDTO> originalDevelopers, List<DeveloperDTO> changedDevelopers,
             Map<Long, CertifiedProductSearchDetails> originalListings,
             Map<Long, CertifiedProductSearchDetails> changedListings) {
 
-        List<DirectReview> originalDeveloperDrs = null;
+        List<DirectReview> originalDeveloperDrs = new ArrayList<DirectReview>();
         for (DeveloperDTO originalDeveloper : originalDevelopers) {
             try {
-                originalDeveloperDrs = directReviewService.getDirectReviews(originalDeveloper.getId());
+                originalDeveloperDrs.addAll(directReviewService.getDirectReviews(originalDeveloper.getId()));
             } catch (Exception ex) {
                 LOGGER.error("Error querying Jira for direct reviews related to developer ID " + originalDeveloper.getId());
+                originalDeveloperDrs = null;
             }
         }
 
@@ -89,7 +133,8 @@ public class DirectReviewUpdateEmailService {
         }
 
         String htmlMessage = formatDeveloperActionHtml(originalDevelopers, changedDevelopers);
-        htmlMessage += "<p>The following direct reviews associated with the original developer "
+        htmlMessage += "<p>The following direct reviews associated with the original developer"
+                + (originalDevelopers.size() == 1 ? " " : "s ")
                 + "may need updates: "
                 + "<ul>";
         for (DirectReview dr : drs) {
@@ -172,6 +217,13 @@ public class DirectReviewUpdateEmailService {
                     + "The newly created developer is %s (ID: %s).</p>",
                     String.join(",", originalDeveloperNames),
                     String.join(",", originalDeveloperIds),
+                    changedDevelopers.get(0).getName(),
+                    changedDevelopers.get(0).getId());
+        } else if (originalDevelopers.size() == 1 && changedDevelopers.size() == 1) {
+            html = String.format("<p>A product changed ownership from developer %s (IDs: %s) "
+                    + "to developer %s (ID: %s).</p>",
+                    originalDevelopers.get(0).getName(),
+                    originalDevelopers.get(0).getId(),
                     changedDevelopers.get(0).getName(),
                     changedDevelopers.get(0).getId());
         } else {
