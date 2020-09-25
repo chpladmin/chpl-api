@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
+import gov.healthit.chpl.exception.JiraRequestFailedException;
 import lombok.extern.log4j.Log4j2;
 
 @Component("directReviewService")
@@ -42,7 +43,7 @@ public class DirectReviewService {
         this.mapper = new ObjectMapper();
     }
 
-    public List<DirectReview> getDirectReviews(Long developerId) {
+    public List<DirectReview> getDirectReviews(Long developerId) throws JiraRequestFailedException {
         LOGGER.info("Fetching direct review data for developer " + developerId);
 
         String directReviewsJson = fetchDirectReviews(developerId);
@@ -57,19 +58,29 @@ public class DirectReviewService {
         return drs;
     }
 
-    private String fetchDirectReviews(Long developerId) {
+    private String fetchDirectReviews(Long developerId) throws JiraRequestFailedException {
         String url = String.format(jiraBaseUrl + jiraDirectReviewUrl, developerId + "");
         LOGGER.info("Making request to " + url);
-        ResponseEntity<String> response = jiraAuthenticatedRestTemplate.getForEntity(url, String.class);
-        LOGGER.debug("Response: " + response.getBody());
-        return response.getBody();
+        ResponseEntity<String> response = null;
+        try {
+            response = jiraAuthenticatedRestTemplate.getForEntity(url, String.class);
+            LOGGER.debug("Response: " + response.getBody());
+        } catch (Exception ex) {
+            throw new JiraRequestFailedException(ex.getMessage());
+        }
+        return response == null ? "" : response.getBody();
     }
 
-    private String fetchNonConformities(String directReviewKey) {
+    private String fetchNonConformities(String directReviewKey) throws JiraRequestFailedException {
         String url = String.format(jiraBaseUrl + jiraNonconformityUrl, directReviewKey + "");
         LOGGER.info("Making request to " + url);
-        ResponseEntity<String> response = jiraAuthenticatedRestTemplate.getForEntity(url, String.class);
-        LOGGER.debug("Response: " + response.getBody());
+        ResponseEntity<String> response = null;
+        try {
+            response = jiraAuthenticatedRestTemplate.getForEntity(url, String.class);
+            LOGGER.debug("Response: " + response.getBody());
+        } catch (Exception ex) {
+            throw new JiraRequestFailedException(ex.getMessage());
+        }
         return response.getBody();
     }
 
