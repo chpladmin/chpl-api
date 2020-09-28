@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -114,16 +116,16 @@ public class CertificationResultManager extends SecuredManager {
         this.svapDao = svapDao;
     }
 
-    @SuppressWarnings("checkstyle:methodlength")
+    @SuppressWarnings({"checkstyle:methodlength", "checkstyle:linelength"})
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_RESULTS, "
             + "T(gov.healthit.chpl.permissions.domains.CertificationResultsDomainPermissions).UPDATE, #existingListing)")
     @Transactional(rollbackFor = {
             EntityRetrievalException.class, EntityCreationException.class
     })
-    public int update(final CertifiedProductSearchDetails existingListing,
-            final CertifiedProductSearchDetails updatedListing, final CertificationResult orig,
-            final CertificationResult updated)
+    public int update(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing,
+            CertificationResult orig, CertificationResult updated)
             throws EntityCreationException, EntityRetrievalException, IOException {
+
         int numChanges = 0;
         // does the cert result need updated?
         boolean hasChanged = false;
@@ -231,19 +233,15 @@ public class CertificationResultManager extends SecuredManager {
             }
         } else {
             // create/update all related items
-            numChanges += updateAdditionalSoftware(updated, orig.getAdditionalSoftware(),
-                    updated.getAdditionalSoftware());
-            numChanges += updateMacraMeasures(updated, orig.getG1MacraMeasures(), updated.getG1MacraMeasures(),
-                    G1_MEASURE);
-            numChanges += updateMacraMeasures(updated, orig.getG2MacraMeasures(), updated.getG2MacraMeasures(),
-                    G2_MEASURE);
-            numChanges += updateTestStandards(updatedListing, updated, orig.getTestStandards(),
-                    updated.getTestStandards());
+            numChanges += updateAdditionalSoftware(updated, orig.getAdditionalSoftware(), updated.getAdditionalSoftware());
+            numChanges += updateMacraMeasures(updated, orig.getG1MacraMeasures(), updated.getG1MacraMeasures(), G1_MEASURE);
+            numChanges += updateMacraMeasures(updated, orig.getG2MacraMeasures(), updated.getG2MacraMeasures(), G2_MEASURE);
+            numChanges += updateTestStandards(updatedListing, updated, orig.getTestStandards(), updated.getTestStandards());
             numChanges += updateTestTools(updated, orig.getTestToolsUsed(), updated.getTestToolsUsed());
             numChanges += updateTestData(updated, orig.getTestDataUsed(), updated.getTestDataUsed());
             numChanges += updateTestProcedures(updated, orig.getTestProcedures(), updated.getTestProcedures());
-            numChanges += updateTestFunctionality(updatedListing, updated, orig.getTestFunctionality(),
-                    updated.getTestFunctionality());
+            numChanges += updateTestFunctionality(updatedListing, updated, orig.getTestFunctionality(), updated.getTestFunctionality());
+            numChanges += updateSvap(updated, orig.getSvaps(), updated.getSvaps());
 
             List<UcdProcess> origUcdsForCriteria = new ArrayList<UcdProcess>();
             List<UcdProcess> updatedUcdsForCriteria = new ArrayList<UcdProcess>();
@@ -350,12 +348,8 @@ public class CertificationResultManager extends SecuredManager {
     private Boolean haveMacraMeasuresChanged(List<MacraMeasure> orig, List<MacraMeasure> updated) {
         if (orig != null && updated != null) {
             return !orig.equals(updated);
-        } else if (orig != null && updated == null) {
-            return true;
-        } else if (orig == null && updated != null) {
-            return true;
-        } else { // Both are null
-            return false;
+        } else {
+            return orig != null && updated == null;
         }
     }
 
@@ -1304,6 +1298,41 @@ public class CertificationResultManager extends SecuredManager {
             certResultDAO.deleteTestParticipantMapping(testTask.getId(), idToRemove);
         }
         return numChanges;
+    }
+
+    private int updateSvap(CertificationResult certResult, List<CertificationResultSvap> existingSvaps,
+            List<CertificationResultSvap> updatedSvaps) {
+        int updates = 0;
+
+        //Get added SVAPs
+        List<CertificationResultSvap> addedSvaps = subtractLists(
+                updatedSvaps != null ? updatedSvaps : new ArrayList<CertificationResultSvap>(),
+                existingSvaps != null ? existingSvaps : new ArrayList<CertificationResultSvap>());
+
+        addedSvaps.stream()
+                .forEach(crs -> certResultDAO.addCertificationResultSvap(crs, certResult.getId()));
+        updates += addedSvaps.size();
+
+
+        //Get removed SVAPs
+        List<CertificationResultSvap> removedSvaps = subtractLists(
+                existingSvaps != null ? existingSvaps : new ArrayList<CertificationResultSvap>(),
+                updatedSvaps != null ? updatedSvaps : new ArrayList<CertificationResultSvap>());
+
+        removedSvaps.stream()
+                .forEach(crs -> certResultDAO.deleteCertificationResultSvap(crs));
+        updates += removedSvaps.size();
+
+        return updates;
+    }
+
+    @SuppressWarnings("checkstyle:linelength")
+    private List<CertificationResultSvap> subtractLists(List<CertificationResultSvap> listA, List<CertificationResultSvap> listB) {
+        Predicate<CertificationResultSvap> notInListB = svapFromA -> !listB.stream()
+                .anyMatch(svap -> svap.getSvapId().equals(svapFromA.getSvapId()));
+        return listA.stream()
+                .filter(notInListB)
+                .collect(Collectors.toList());
     }
 
     private CertificationResultAdditionalSoftwareDTO convert(Long certResultId,

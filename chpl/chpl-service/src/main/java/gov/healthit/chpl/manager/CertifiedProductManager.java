@@ -2002,10 +2002,8 @@ public class CertifiedProductManager extends SecuredManager {
 
         int numChanges = 0;
 
-        // replace the value of the result. we shouldn't have to add or delete
-        // any cert results
-        // because for certification criteria, all results are always there
-        // whether they were
+        // replace the value of the result. we shouldn't have to add or delete any cert results
+        // because for certification criteria, all results are always there whether they were
         // successful or not
 
         for (CertificationResult updatedItem : updatedCertifications) {
