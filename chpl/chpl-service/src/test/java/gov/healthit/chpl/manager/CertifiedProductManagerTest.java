@@ -76,6 +76,7 @@ import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CuresUpdateService;
+import gov.healthit.chpl.service.DirectReviewUpdateEmailService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.Validator;
@@ -181,7 +182,8 @@ public class CertifiedProductManagerTest {
                 statusEventDao, curesUpdateDao, muuDao,  certResultManager, testToolDao,  testStandardDao,
                 testProcDao,  testDataDao, testFuncDao,  ucdDao, testParticipantDao,  testTaskDao, certStatusDao,
                 listingGraphDao, fuzzyChoicesDao,  resourcePermissions, certifiedProductSearchResultDAO,
-                certifiedProductDetailsManager, activityManager,  validatorFactory, curesUpdateService);
+                certifiedProductDetailsManager, activityManager, validatorFactory, curesUpdateService,
+                Mockito.mock(DirectReviewUpdateEmailService.class));
     }
 
     @Test(expected = ValidationException.class)
