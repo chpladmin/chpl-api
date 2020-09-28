@@ -9,11 +9,13 @@ import javax.mail.MessagingException;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.dto.DeveloperDTO;
@@ -38,46 +40,14 @@ public class DirectReviewUpdateEmailService {
 
     private DirectReviewService directReviewService;
     private Environment env;
+    private FF4j ff4j;
 
     @Autowired
-    public DirectReviewUpdateEmailService(DirectReviewService directReviewService, Environment env) {
+    public DirectReviewUpdateEmailService(DirectReviewService directReviewService, Environment env,
+            FF4j ff4j) {
         this.directReviewService = directReviewService;
         this.env = env;
-    }
-
-    /**
-     * A listing has been updated. Email needs to be sent if the CHPL Product Number has changed
-     * @param originalListing
-     * @param changedListing
-     */
-    public void sendEmail(CertifiedProductSearchDetails originalListing, CertifiedProductSearchDetails changedListing) {
-        if (originalListing.getChplProductNumber().equals(changedListing.getChplProductNumber())) {
-            LOGGER.info("Listing " + originalListing.getChplProductNumber() + " has not changed CHPL Product Numbers."
-                    + "No email will be sent to the Jira team.");
-        } else {
-            LOGGER.info("Sending email about direct reviews potentially needing changes.");
-
-            String[] recipients = new String[] {};
-            if (!StringUtils.isEmpty(chplChangesEmailAddress)) {
-                recipients = chplChangesEmailAddress.split(",");
-            }
-
-            String htmlMessage = "<p>Any direct reviews with the following developer-associated listing "
-                    + "may require updates due to changes in the CHPL Product Number:</p>"
-                    + "<ul><li>" + originalListing.getChplProductNumber() + " to "
-                    + changedListing.getChplProductNumber() + "</li></ul>";
-
-            try {
-                EmailBuilder emailBuilder = new EmailBuilder(env);
-                emailBuilder.recipients(recipients)
-                        .subject(env.getProperty("directReview.chplChanges.emailSubject"))
-                        .htmlMessage(htmlMessage)
-                        .acbAtlHtmlFooter()
-                        .sendEmail();
-            } catch(MessagingException ex) {
-                LOGGER.error("Could not send email to Jira team: " + ex.getMessage());
-            }
-        }
+        this.ff4j = ff4j;
     }
 
     /**
@@ -90,6 +60,9 @@ public class DirectReviewUpdateEmailService {
     public void sendEmail(List<DeveloperDTO> originalDevelopers, List<DeveloperDTO> changedDevelopers,
             Map<Long, CertifiedProductSearchDetails> originalListings,
             Map<Long, CertifiedProductSearchDetails> changedListings) {
+        if (!ff4j.check(FeatureList.DIRECT_REVIEW)) {
+            return;
+        }
 
         List<DirectReview> originalDeveloperDrs = new ArrayList<DirectReview>();
         for (DeveloperDTO originalDeveloper : originalDevelopers) {

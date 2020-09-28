@@ -182,8 +182,7 @@ public class CertifiedProductManagerTest {
                 statusEventDao, curesUpdateDao, muuDao,  certResultManager, testToolDao,  testStandardDao,
                 testProcDao,  testDataDao, testFuncDao,  ucdDao, testParticipantDao,  testTaskDao, certStatusDao,
                 listingGraphDao, fuzzyChoicesDao,  resourcePermissions, certifiedProductSearchResultDAO,
-                certifiedProductDetailsManager, activityManager, validatorFactory, curesUpdateService,
-                Mockito.mock(DirectReviewUpdateEmailService.class));
+                certifiedProductDetailsManager, activityManager, validatorFactory, curesUpdateService);
     }
 
     @Test(expected = ValidationException.class)
