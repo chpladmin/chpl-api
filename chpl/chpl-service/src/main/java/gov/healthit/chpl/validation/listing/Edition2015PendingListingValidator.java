@@ -24,6 +24,7 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.ValidDataReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.AttestedCriteriaCqmReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.CqmAttestedCriteriaReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.GapAllowedReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.InvalidCriteriaCombinationReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.OldCriteriaWithoutIcsReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.PrivacyAndSecurityCriteriaReviewer;
@@ -137,6 +138,10 @@ public class Edition2015PendingListingValidator extends PendingValidator {
     @Qualifier("pendingTestFunctionalityAllowedByRoleReviewer")
     private TestFunctionalityAllowedByRoleReviewer testFunctionalityAllowedByRoleReviewer;
 
+    @Autowired
+    @Qualifier("pendingGapAllowedReviewer")
+    private GapAllowedReviewer gapAllowedReviewer;
+
     private List<Reviewer> reviewers;
 
     @Override
@@ -167,6 +172,7 @@ public class Edition2015PendingListingValidator extends PendingValidator {
             reviewers.add(duplicateDataReviewer);
             reviewers.add(testFunctionalityAllowedByRoleReviewer);
             reviewers.add(testStandardReviewer);
+            reviewers.add(gapAllowedReviewer);
         }
         return reviewers;
     }

@@ -40,8 +40,6 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class ResourcePermissions {
-    private static final String ROLE_ADMIN = "ROLE_ADMIN";
-
     private PermissionEvaluator permissionEvaluator;
     private UserCertificationBodyMapDAO userCertificationBodyMapDAO;
     private UserTestingLabMapDAO userTestingLabMapDAO;
@@ -347,7 +345,7 @@ public class ResourcePermissions {
         if (isUserRoleAdmin() || doesCurrentUserHaveExplicitAdminToSubject(user)) {
             return true;
         } else if (isUserRoleOnc()) {
-            return !getRoleByUserId(user.getId()).getAuthority().equalsIgnoreCase(ROLE_ADMIN);
+            return !getRoleByUserId(user.getId()).getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN);
         } else if (isUserRoleAcbAdmin()) {
             // is the user being checked on any of the same ACB(s) that the
             // current user is on?

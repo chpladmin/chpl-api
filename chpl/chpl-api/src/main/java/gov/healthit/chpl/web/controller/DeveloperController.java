@@ -48,6 +48,7 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.JiraRequestFailedException;
 import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
@@ -129,7 +130,7 @@ public class DeveloperController {
     method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody ResponseEntity<List<DirectReview>> getDirectReviews(
-            @PathVariable("developerId") Long developerId) {
+            @PathVariable("developerId") Long developerId) throws JiraRequestFailedException {
         if (!ff4j.check(FeatureList.DIRECT_REVIEW)) {
             throw new NotImplementedException();
         }

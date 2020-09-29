@@ -44,6 +44,8 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.JWTCreationException;
+import gov.healthit.chpl.exception.MultipleUserAccountsException;
+import gov.healthit.chpl.exception.UserAccountExistsException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
@@ -97,8 +99,9 @@ public class UserManagementController {
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public @ResponseBody User createUser(@RequestBody final CreateUserFromInvitationRequest userInfo)
-            throws ValidationException, EntityRetrievalException, InvalidArgumentsException, UserRetrievalException,
-            UserCreationException, MessagingException, JsonProcessingException, EntityCreationException {
+            throws ValidationException, EntityRetrievalException, InvalidArgumentsException,
+            UserRetrievalException, MultipleUserAccountsException, UserCreationException,
+            MessagingException, JsonProcessingException, EntityCreationException {
 
         if (userInfo.getUser() == null || userInfo.getUser().getSubjectName() == null) {
             throw new ValidationException(errorMessageUtil.getMessage("user.subjectName.required"));
@@ -208,7 +211,8 @@ public class UserManagementController {
     consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public String authorizeUser(@RequestBody final AuthorizeCredentials credentials)
-            throws InvalidArgumentsException, JWTCreationException, UserRetrievalException, EntityRetrievalException {
+            throws InvalidArgumentsException, JWTCreationException, UserRetrievalException,
+            EntityRetrievalException, MultipleUserAccountsException {
 
         if (StringUtils.isEmpty(credentials.getHash())) {
             throw new InvalidArgumentsException("User key is required.");
@@ -315,7 +319,8 @@ public class UserManagementController {
     produces = "application/json; charset=utf-8")
     public User updateUserDetails(@RequestBody final User userInfo)
             throws UserRetrievalException, UserPermissionRetrievalException, JsonProcessingException,
-            EntityCreationException, EntityRetrievalException, ValidationException {
+            EntityCreationException, EntityRetrievalException, ValidationException, UserAccountExistsException,
+            MultipleUserAccountsException {
 
         if (userInfo.getUserId() <= 0) {
             throw new UserRetrievalException("Cannot update user with ID less than 0");

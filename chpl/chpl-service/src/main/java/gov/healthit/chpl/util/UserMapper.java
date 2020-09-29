@@ -21,48 +21,57 @@ import gov.healthit.chpl.entity.auth.UserEntity;
 @Component
 public class UserMapper {
 
-    private CertificationBodyDAO abcDao;
+    private CertificationBodyDAO acbDao;
     private TestingLabDAO atlDao;
     private DeveloperDAO developerDao;
 
     @Autowired
     public UserMapper(CertificationBodyDAO abcDao,
             TestingLabDAO atlDao, DeveloperDAO developerDao) {
-        this.abcDao = abcDao;
+        this.acbDao = abcDao;
         this.atlDao = atlDao;
         this.developerDao = developerDao;
     }
 
     @Transactional(readOnly = true)
-    public UserDTO from(final UserEntity entity) {
+    public UserDTO from(UserEntity entity) {
         UserDTO dto = new UserDTO();
         if (entity != null) {
-            dto.setId(entity.getId());
-            dto.setSubjectName(entity.getSubjectName());
-            dto.setFailedLoginCount(entity.getFailedLoginCount());
-            dto.setAccountExpired(entity.isAccountExpired());
-            dto.setAccountLocked(entity.isAccountLocked());
-            dto.setAccountEnabled(entity.isAccountEnabled());
-            dto.setCredentialsExpired(entity.isCredentialsExpired());
-            dto.setPasswordResetRequired(entity.isPasswordResetRequired());
-            dto.setLastLoggedInDate(entity.getLastLoggedInDate());
-            if (entity.getContact() != null) {
-                dto.setFullName(entity.getContact().getFullName());
-                dto.setFriendlyName(entity.getContact().getFriendlyName());
-                dto.setEmail(entity.getContact().getEmail());
-                dto.setPhoneNumber(entity.getContact().getPhoneNumber());
-                dto.setTitle(entity.getContact().getTitle());
-                dto.setSignatureDate(entity.getContact().getSignatureDate());
+            dto = populateBasicUserInfo(entity);
+            if (dto != null && dto.getPermission() != null
+                    && dto.getPermission().getAuthority() != null) {
+                populateOrganizations(dto);
             }
-            if (entity.getPermission() != null) {
-                dto.setPermission(new UserPermissionDTO(entity.getPermission()));
-            }
-            populateOrganizations(dto);
         }
         return dto;
     }
 
-    private void populateOrganizations(final UserDTO user) {
+    private UserDTO populateBasicUserInfo(UserEntity entity) {
+        UserDTO dto = new UserDTO();
+        dto.setId(entity.getId());
+        dto.setSubjectName(entity.getSubjectName());
+        dto.setFailedLoginCount(entity.getFailedLoginCount());
+        dto.setAccountExpired(entity.isAccountExpired());
+        dto.setAccountLocked(entity.isAccountLocked());
+        dto.setAccountEnabled(entity.isAccountEnabled());
+        dto.setCredentialsExpired(entity.isCredentialsExpired());
+        dto.setPasswordResetRequired(entity.isPasswordResetRequired());
+        dto.setLastLoggedInDate(entity.getLastLoggedInDate());
+        if (entity.getContact() != null) {
+            dto.setFullName(entity.getContact().getFullName());
+            dto.setFriendlyName(entity.getContact().getFriendlyName());
+            dto.setEmail(entity.getContact().getEmail());
+            dto.setPhoneNumber(entity.getContact().getPhoneNumber());
+            dto.setTitle(entity.getContact().getTitle());
+            dto.setSignatureDate(entity.getContact().getSignatureDate());
+        }
+        if (entity.getPermission() != null) {
+            dto.setPermission(new UserPermissionDTO(entity.getPermission()));
+        }
+        return dto;
+    }
+
+    private void populateOrganizations(UserDTO user) {
         if (user.getPermission().getAuthority().equals(Authority.ROLE_ACB)) {
             List<CertificationBodyDTO> acbs = getAllAcbsForUser(user.getId());
             for (CertificationBodyDTO acb : acbs) {
@@ -83,15 +92,15 @@ public class UserMapper {
         }
     }
 
-    private List<CertificationBodyDTO> getAllAcbsForUser(final Long userID) {
-        return abcDao.getCertificationBodiesByUserId(userID);
+    private List<CertificationBodyDTO> getAllAcbsForUser(Long userID) {
+        return acbDao.getCertificationBodiesByUserId(userID);
     }
 
-    private List<TestingLabDTO> getAllAtlsForUser(final Long userId) {
+    private List<TestingLabDTO> getAllAtlsForUser(Long userId) {
         return atlDao.getTestingLabsByUserId(userId);
     }
 
-    private List<DeveloperDTO> getAllDevelopersForUser(final Long userId) {
+    private List<DeveloperDTO> getAllDevelopersForUser(Long userId) {
         return developerDao.getDevelopersByUserId(userId);
     }
 

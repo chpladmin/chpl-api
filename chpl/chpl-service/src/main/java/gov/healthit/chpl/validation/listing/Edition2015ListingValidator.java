@@ -28,6 +28,7 @@ import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ValidDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.AttestedCriteriaCqmReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.CqmAttestedCriteriaReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.GapAllowedReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.InvalidCriteriaCombinationReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.MacraMeasureComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.OldCriteriaWithoutIcsReviewer;
@@ -163,9 +164,13 @@ public class Edition2015ListingValidator extends Validator {
     @Qualifier("listingStatusAndUserRoleReviewer")
     private ListingStatusAndUserRoleReviewer listingStatusAndUserRoleReviewer;
 
-    @Autowired
+
     @Qualifier("svapReviewer")
     private SvapReviewer svapReviewer;
+
+    @Autowired
+    @Qualifier("gapAllowedReviewer")
+    private GapAllowedReviewer gapAllowedReviewer;
 
     private List<Reviewer> reviewers;
     private List<ComparisonReviewer> comparisonReviewers;
@@ -196,6 +201,7 @@ public class Edition2015ListingValidator extends Validator {
             reviewers.add(cqmAttestedCriteriaReviewer);
             reviewers.add(duplicateDataReviewer);
             reviewers.add(svapReviewer);
+            reviewers.add(gapAllowedReviewer);
         }
         return reviewers;
     }
