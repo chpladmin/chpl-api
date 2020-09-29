@@ -97,14 +97,12 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         String subject = null;
         String htmlMessage = null;
         if (jobContext.getMergedJobDataMap().getString("type").equalsIgnoreCase("All")) {
-            String subjectSuffix = env.getProperty("oversightEmailAcbWeeklySubjectSuffix");
-            subject = getAcbNamesAsCommaSeparatedList(jobContext) + " " + subjectSuffix;
-            htmlMessage = env.getProperty("oversightEmailAcbWeeklyHtmlMessage");
+            subject = env.getProperty("oversightEmailAcbWeeklySubjectSuffix");
+            htmlMessage = env.getProperty("oversightEmailAcbWeeklyHtmlMessage") + getAcbNamesAsCommaSeparatedList(jobContext);
             htmlMessage += createHtmlEmailBody(errors.size(), env.getProperty("oversightEmailWeeklyNoContent"));
         } else {
-            String subjectSuffix = env.getProperty("oversightEmailAcbDailySubjectSuffix");
-            subject = getAcbNamesAsCommaSeparatedList(jobContext) + " " + subjectSuffix;
-            htmlMessage = env.getProperty("oversightEmailAcbDailyHtmlMessage");
+            subject = env.getProperty("oversightEmailAcbDailySubjectSuffix");
+            htmlMessage = env.getProperty("oversightEmailAcbDailyHtmlMessage") + getAcbNamesAsCommaSeparatedList(jobContext);
             htmlMessage += createHtmlEmailBody(errors.size(), env.getProperty("oversightEmailDailyNoContent"));
         }
         LOGGER.info("Sending email to {} with contents {} and a total of {} broken rules",

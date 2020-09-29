@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -244,7 +245,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         EmailBuilder emailBuilder = new EmailBuilder(env);
         emailBuilder.recipients(getEmailRecipients(jobContext))
         .subject(getSubject(jobContext))
-        .htmlMessage(getHtmlMessage(csvRows.size()))
+        .htmlMessage(getHtmlMessage(csvRows.size()) + getAcbNamesAsCommaSeparatedList(jobContext))
         .fileAttachments(getAttachments(csvRows, acbs))
         .sendEmail();
     }
@@ -283,5 +284,23 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
 
     private List<String> getEmailRecipients(JobExecutionContext jobContext) {
         return Arrays.asList(jobContext.getMergedJobDataMap().getString("email"));
+    }
+    
+    private String getAcbNamesAsCommaSeparatedList(JobExecutionContext jobContext) {
+        if (Objects.nonNull(jobContext.getMergedJobDataMap().getString("acb"))) {
+            return Arrays.asList(
+                    jobContext.getMergedJobDataMap().getString("acb").split(SchedulerManager.DATA_DELIMITER)).stream()
+                    .map(acbId -> {
+                        try {
+                            return certificationBodyDAO.getById(Long.parseLong(acbId)).getName();
+                        } catch (NumberFormatException | EntityRetrievalException e) {
+                            LOGGER.error("Could not retreive ACB name based on value: " + acbId, e);
+                            return "";
+                        }
+                    })
+                    .collect(Collectors.joining(", "));
+        } else {
+            return "";
+        }
     }
 }
