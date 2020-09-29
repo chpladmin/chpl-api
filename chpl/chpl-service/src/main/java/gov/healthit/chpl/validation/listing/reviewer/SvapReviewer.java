@@ -10,17 +10,17 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.svap.dao.SvapDAO;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
-import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.svap.domain.SvapCriteriaMap;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("svapReviewer")
-public class SvapReviewer implements Reviewer{
+public class SvapReviewer implements Reviewer {
     private Map<Long, List<SvapCriteriaMap>> svapCriteriaMap = new HashMap<Long, List<SvapCriteriaMap>>();
     private SvapDAO svapDao;
     private ErrorMessageUtil errorMessageUtil;
@@ -48,19 +48,19 @@ public class SvapReviewer implements Reviewer{
                             errorMessageUtil.getMessage("listing.criteria.svap.invalidEdition",
                                     cr.getNumber(), getListingEdition(listing))));
         } else {
-            List<CertificationResultSvap> svaps = listing.getCertificationResults().stream()
+            List<CertificationResult> certificationResultsWithSvaps = listing.getCertificationResults().stream()
                 .filter(cr -> cr.isSuccess() && cr.getSvaps() != null && cr.getSvaps().size() > 0)
-                .map(cr -> cr.getSvaps())
-                .flatMap(s -> s.stream()
-                        .collect(Collectors.toList()));
+                .collect(Collectors.toList());
 
-
+            for (CertificationResult cr : certificationResultsWithSvaps) {
+                for (CertificationResultSvap crs : cr.getSvaps()) {
+                    if (!isSvapValidForCriteria(crs.getSvapId(), cr.getCriterion().getId())) {
+                        listing.getErrorMessages().add(errorMessageUtil.getMessage("listing.criteria.svap.invalidCriteria",
+                                crs.getRegulatoryTextCitation(), cr.getCriterion().getNumber()));
+                    }
+                }
             }
         }
-
-
-
-
     }
 
     private boolean isListing2015Edition(CertifiedProductSearchDetails listing) {
@@ -68,8 +68,9 @@ public class SvapReviewer implements Reviewer{
     }
 
     private String getListingEdition(CertifiedProductSearchDetails listing) {
-        return listing.getCertificationEdition().containsKey(CertifiedProductSearchDetails.EDITION_NAME_KEY) ?
-                listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString() : "";
+        return listing.getCertificationEdition().containsKey(CertifiedProductSearchDetails.EDITION_NAME_KEY)
+                        ? listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString()
+                        : "";
     }
 
     private boolean isSvapValidForCriteria(Long svapId, Long criteriaId) {
