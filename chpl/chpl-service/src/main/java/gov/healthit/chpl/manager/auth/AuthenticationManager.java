@@ -22,6 +22,7 @@ import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.JWTCreationException;
+import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
@@ -52,7 +53,7 @@ public class AuthenticationManager {
     }
 
     public String authenticate(LoginCredentials credentials)
-            throws JWTCreationException, UserRetrievalException {
+            throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
 
         String jwt = getJWT(credentials);
         UserDTO user = getUser(credentials);
@@ -63,14 +64,12 @@ public class AuthenticationManager {
     }
 
     public UserDTO getUser(LoginCredentials credentials)
-            throws AccountStatusException, UserRetrievalException {
-        UserDTO user = getUserByName(credentials.getUserName());
-
+            throws AccountStatusException, UserRetrievalException, MultipleUserAccountsException {
+        UserDTO user = getUserByNameOrEmail(credentials.getUserName());
         if (user != null) {
             if (user.getSignatureDate() == null) {
                 throw new ChplAccountStatusException(msgUtil.getMessage("auth.accountNotConfirmed", user.getSubjectName()));
             }
-
             if (checkPassword(credentials.getPassword(), userManager.getEncodedPassword(user))) {
                 userDetailsChecker.check(user);
                 userManager.updateLastLoggedInDate(user);
@@ -147,7 +146,7 @@ public class AuthenticationManager {
             user = getUser(credentials);
         } catch (AccountStatusException e1) {
             throw new JWTCreationException(e1.getMessage());
-        } catch (UserRetrievalException e2) {
+        } catch (UserRetrievalException | MultipleUserAccountsException e2) {
             throw new JWTCreationException(e2.getMessage());
         }
 
@@ -161,6 +160,12 @@ public class AuthenticationManager {
 
     private UserDTO getUserByName(String userName) throws UserRetrievalException {
         UserDTO user = userDAO.getByName(userName);
+        return user;
+    }
+
+    private UserDTO getUserByNameOrEmail(String usernameOrEmail)
+            throws MultipleUserAccountsException, UserRetrievalException {
+        UserDTO user = userDAO.getByNameOrEmail(usernameOrEmail);
         return user;
     }
 
@@ -179,7 +184,7 @@ public class AuthenticationManager {
             throws UserRetrievalException, JWTCreationException, UserManagementException {
         JWTAuthenticatedUser user = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
         if (user.getImpersonatingUser() != null) {
-            throw new UserManagementException("Unable to impersonate user while already impersonating");
+            throw new UserManagementException(msgUtil.getMessage("user.impersonate.alreadyImpersonating"));
         }
         UserDTO impersonatingUser = getUserByName(user.getSubjectName());
         UserDTO impersonatedUser = getUserByName(username);

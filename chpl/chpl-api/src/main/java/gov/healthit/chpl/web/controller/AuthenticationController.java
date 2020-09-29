@@ -33,6 +33,7 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserResetTokenDTO;
 import gov.healthit.chpl.exception.JWTCreationException;
 import gov.healthit.chpl.exception.JWTValidationException;
+import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.auth.AuthenticationManager;
@@ -82,7 +83,7 @@ public class AuthenticationController {
     consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public String authenticateJSON(@RequestBody final LoginCredentials credentials)
-            throws JWTCreationException, UserRetrievalException {
+            throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
 
         String jwt = authenticationManager.authenticate(credentials);
         String jwtJSON = "{\"token\": \"" + jwt + "\"}";
@@ -169,7 +170,8 @@ public class AuthenticationController {
     @RequestMapping(value = "/change_expired_password", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public UpdatePasswordResponse changeExpiredPassword(@RequestBody final UpdateExpiredPasswordRequest request)
-            throws UserRetrievalException, JWTCreationException, JWTValidationException {
+            throws UserRetrievalException, JWTCreationException, JWTValidationException,
+            MultipleUserAccountsException {
         UpdatePasswordResponse response = new UpdatePasswordResponse();
 
         // get the user trying to change their password
@@ -218,10 +220,10 @@ public class AuthenticationController {
     @RequestMapping(value = "/reset_password_request", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public UpdatePasswordResponse resetPassword(@RequestBody final ResetPasswordRequest request)
-            throws UserRetrievalException {
+            throws UserRetrievalException, MultipleUserAccountsException {
         UpdatePasswordResponse response = new UpdatePasswordResponse();
         // get the current user
-        UserDTO currUser = userManager.getByNameUnsecured(request.getUserName());
+        UserDTO currUser = userManager.getByNameOrEmailUnsecured(request.getUserName());
         if (currUser == null) {
             throw new UserRetrievalException("The user with username " + request.getUserName() + " cannot be found.");
         }
