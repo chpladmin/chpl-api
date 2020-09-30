@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import gov.healthit.chpl.dto.CQMMetDTO;
@@ -22,10 +21,6 @@ public abstract class Validator {
     protected ArrayList<String> missingAnd = new ArrayList<String>();
     // missing 1 criteria from each of the following sets
     protected List<ArrayList<String>> missingOr = new ArrayList<ArrayList<String>>();
-    // missing at least one of the following combinations of criteria
-    protected List<ArrayList<String>> missingCombo = new ArrayList<ArrayList<String>>();
-    // missing X criteria from the OR list of criteria
-    protected List<TreeMap<String, ArrayList<String>>> missingXOr = new ArrayList<TreeMap<String, ArrayList<String>>>();
 
     protected Map<String, Integer> percents = new HashMap<String, Integer>();
     protected Map<String, Integer> counts = new HashMap<String, Integer>();
@@ -53,14 +48,6 @@ public abstract class Validator {
 
     public List<ArrayList<String>> getMissingOr() {
         return missingOr;
-    }
-
-    public List<ArrayList<String>> getMissingCombo() {
-        return missingCombo;
-    }
-
-    public List<TreeMap<String, ArrayList<String>>> getMissingXOr() {
-        return missingXOr;
     }
 
     public Map<String, Integer> getDomainsMet() {

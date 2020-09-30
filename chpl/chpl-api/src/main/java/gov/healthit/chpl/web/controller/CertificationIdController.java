@@ -333,10 +333,8 @@ public class CertificationIdController {
         results.setIsValid(isValid);
         results.setMetPercentages(validator.getPercents());
         results.setMetCounts(validator.getCounts());
-        results.setMissingCombo(validator.getMissingCombo());
         results.setMissingOr(validator.getMissingOr());
         results.setMissingAnd(validator.getMissingAnd());
-        results.setMissingXOr(validator.getMissingXOr());
 
         // Lookup CERT ID
         if (validator.isValid()) {
