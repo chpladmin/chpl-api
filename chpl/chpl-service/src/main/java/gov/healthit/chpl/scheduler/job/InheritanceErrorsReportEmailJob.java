@@ -72,7 +72,7 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
 
         try {
             htmlMessage += createHtmlEmailBody(errors.size(),
-                    env.getProperty("inheritanceReportEmailWeeklyNoContent")) + " " + getAcbNamesAsCommaSeparatedList(jobContext);
+                    env.getProperty("inheritanceReportEmailWeeklyNoContent"));
 
             List<String> addresses = new ArrayList<String>();
             addresses.add(to);
