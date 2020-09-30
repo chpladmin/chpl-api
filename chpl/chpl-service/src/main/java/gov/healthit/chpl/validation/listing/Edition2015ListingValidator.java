@@ -164,7 +164,7 @@ public class Edition2015ListingValidator extends Validator {
     @Qualifier("listingStatusAndUserRoleReviewer")
     private ListingStatusAndUserRoleReviewer listingStatusAndUserRoleReviewer;
 
-
+    @Autowired
     @Qualifier("svapReviewer")
     private SvapReviewer svapReviewer;
 
