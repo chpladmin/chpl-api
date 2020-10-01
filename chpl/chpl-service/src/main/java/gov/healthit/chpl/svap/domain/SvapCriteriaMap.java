@@ -5,11 +5,15 @@ import java.util.Objects;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.svap.entity.SvapCriteriaMapEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class SvapCriteriaMap {
     private Long id;
     private CertificationCriterion criterion;

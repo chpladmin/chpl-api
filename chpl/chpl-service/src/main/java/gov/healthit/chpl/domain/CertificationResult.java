@@ -224,6 +224,7 @@ public class CertificationResult implements Serializable {
      */
     @XmlElementWrapper(name = "svaps", nillable = true, required = false)
     @XmlElement(name = "svap")
+    @Singular
     private List<CertificationResultSvap> svaps = new ArrayList<CertificationResultSvap>();
 
     /**

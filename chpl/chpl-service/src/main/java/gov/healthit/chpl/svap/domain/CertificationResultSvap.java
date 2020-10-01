@@ -10,6 +10,8 @@ import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.svap.entity.CertificationResultSvapEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -21,6 +23,8 @@ import lombok.ToString;
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @ToString
 public class CertificationResultSvap implements Serializable {
     private static final long serialVersionUID = -1935940788953178006L;

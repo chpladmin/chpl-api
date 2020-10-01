@@ -1,11 +1,15 @@
 package gov.healthit.chpl.svap.domain;
 
 import gov.healthit.chpl.svap.entity.SvapEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Svap {
 
     private Long svapId;
