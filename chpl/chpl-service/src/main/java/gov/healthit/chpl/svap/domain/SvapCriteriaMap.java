@@ -15,16 +15,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class SvapCriteriaMap {
+    private static final String INVALID_EDITION_ERROR_KEY = "listing.criteria.f3CannotHaveGap";
+    private static final String INVALID_SVAP_CRITERIA_ERROR_KEY = "listing.criteria.f3CannotHaveGap";
+
     private Long id;
     private CertificationCriterion criterion;
     private Svap svap;
 
     public SvapCriteriaMap(SvapCriteriaMapEntity entity) {
         this.id = entity.getId();
-        if (Objects.nonNull(entity.getSvap())) {
+        if (entity.getSvap() != null) {
             this.svap = new Svap(entity.getSvap());
         }
-        if (Objects.nonNull(entity.getCriteria())) {
+        if (entity.getCriteria() != null) {
             this.criterion = new CertificationCriterion(new CertificationCriterionDTO(entity.getCriteria()));
         }
     }
