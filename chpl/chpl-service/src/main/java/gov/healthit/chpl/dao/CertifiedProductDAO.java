@@ -549,6 +549,12 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         case TEST_RESULTS_SUMMARY:
             queryStr += " AND cp.reportFileLocation = :url ";
             break;
+        case REAL_WORLD_TESTING_PLANS:
+            queryStr += " AND cp.rwtPlansUrl = :url ";
+            break;
+        case REAL_WORLD_TESTING_RESULTS:
+            queryStr += " AND cp.rwtResultsUrl = :url ";
+            break;
         default:
             break;
         }
