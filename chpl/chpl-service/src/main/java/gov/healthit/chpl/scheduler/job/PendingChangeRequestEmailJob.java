@@ -240,12 +240,12 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
     private void sendEmail(JobExecutionContext jobContext, List<List<String>> csvRows, List<CertificationBodyDTO> acbs)
             throws MessagingException {
         LOGGER.info("Sending email to {} with contents {} and a total of {} pending change requests",
-                getEmailRecipients(jobContext).get(0), getHtmlMessage(csvRows.size()), csvRows.size());
+                getEmailRecipients(jobContext).get(0), getHtmlMessage(csvRows.size(), getAcbNamesAsCommaSeparatedList(jobContext)));
 
         EmailBuilder emailBuilder = new EmailBuilder(env);
         emailBuilder.recipients(getEmailRecipients(jobContext))
         .subject(getSubject(jobContext))
-        .htmlMessage(getHtmlMessage(csvRows.size()) + getAcbNamesAsCommaSeparatedList(jobContext))
+        .htmlMessage(getHtmlMessage(csvRows.size(), getAcbNamesAsCommaSeparatedList(jobContext)))
         .fileAttachments(getAttachments(csvRows, acbs))
         .sendEmail();
     }
@@ -274,11 +274,11 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         return csvFile;
     }
 
-    private String getHtmlMessage(Integer rowCount) {
+    private String getHtmlMessage(Integer rowCount, String acbList) {
         if (rowCount > 0) {
-            return String.format(env.getProperty("pendingChangeRequestHasDataEmailBody"), rowCount);
+            return String.format(env.getProperty("pendingChangeRequestHasDataEmailBody"), acbList, rowCount);
         } else {
-            return String.format(env.getProperty("pendingChangeRequestNoDataEmailBody"));
+            return String.format(env.getProperty("pendingChangeRequestNoDataEmailBody"), acbList);
         }
     }
 

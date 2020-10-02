@@ -64,9 +64,9 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
         String subject = env.getProperty("inheritanceReportEmailWeeklySubject");
         String htmlMessage;
         if (jobContext.getMergedJobDataMap().getBoolean("acbSpecific")) {
-            htmlMessage = env.getProperty("inheritanceReportEmailAcbWeeklyHtmlMessage") + " " + getAcbNamesAsCommaSeparatedList(jobContext);
+            htmlMessage = String.format(env.getProperty("inheritanceReportEmailAcbWeeklyHtmlMessage"), getAcbNamesAsCommaSeparatedList(jobContext));
         } else {
-            htmlMessage = env.getProperty("inheritanceReportEmailWeeklyHtmlMessage") + " " + getAcbNamesAsCommaSeparatedList(jobContext);
+            htmlMessage = String.format(env.getProperty("inheritanceReportEmailWeeklyHtmlMessage"), getAcbNamesAsCommaSeparatedList(jobContext));
         }
         LOGGER.info("Message to be sent: " + htmlMessage);
 
