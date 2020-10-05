@@ -15,6 +15,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Where;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -37,6 +39,7 @@ public class TestingLabEntity implements Serializable {
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id", unique = true, nullable = true)
+    @Where(clause = "deleted <> 'true'")
     private AddressEntity address;
 
     @Column(name = "name")

@@ -3,6 +3,7 @@ package gov.healthit.chpl.manager.auth;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -10,6 +11,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -41,6 +46,8 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserResetTokenDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.MultipleUserAccountsException;
+import gov.healthit.chpl.exception.UserAccountExistsException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
@@ -48,6 +55,7 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
+import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -103,7 +111,7 @@ public class UserManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE, #user)")
     public UserDTO update(User user)
             throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException,
-            ValidationException {
+            ValidationException, UserAccountExistsException, MultipleUserAccountsException {
         UserDTO before = getById(user.getUserId());
         UserDTO toUpdate = UserDTO.builder()
                 .id(before.getId())
@@ -135,15 +143,28 @@ public class UserManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE, #user)")
     public UserDTO update(UserDTO user)
             throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException,
-            ValidationException {
+            ValidationException, UserAccountExistsException, MultipleUserAccountsException {
         Optional<ValidationException> validationException = validateUser(user);
         if (validationException.isPresent()) {
             throw validationException.get();
         }
 
         UserDTO before = getById(user.getId());
-        UserDTO updated = userDAO.update(user);
+        if (ObjectUtils.notEqual(before.getSubjectName(), user.getSubjectName())) {
+            UserDTO existingUser = userDAO.getByNameOrEmail(user.getSubjectName());
+            if (existingUser != null) {
+                throw new UserAccountExistsException(
+                        errorMessageUtil.getMessage("user.accountAlreadyExists", user.getSubjectName()));
+            }
+        } else if (ObjectUtils.notEqual(before.getEmail(), user.getEmail())) {
+            UserDTO existingUser = userDAO.getByNameOrEmail(user.getEmail());
+            if (existingUser != null) {
+                throw new UserAccountExistsException(
+                        errorMessageUtil.getMessage("user.accountAlreadyExists", user.getEmail()));
+            }
+        }
 
+        UserDTO updated = userDAO.update(user);
         String activityDescription = "User " + user.getSubjectName() + " was updated.";
         activityManager.addActivity(ActivityConcept.USER, before.getId(), activityDescription, before,
                 updated);
@@ -191,7 +212,14 @@ public class UserManager extends SecuredManager {
 
         if (userToUpdate.getFailedLoginCount() >= maxLogins) {
             userToUpdate.setAccountLocked(true);
-            userDAO.updateAccountLockedStatus(userToUpdate.getSubjectName(), userToUpdate.isAccountLocked());
+            try {
+                userDAO.updateAccountLockedStatus(userToUpdate.getSubjectName(), userToUpdate.isAccountLocked());
+                if (userToUpdate.getFailedLoginCount() == maxLogins) {
+                    sendAccountLockedEmail(userToUpdate);
+                }
+            } catch (Exception ex) {
+                LOGGER.error("Unable to set account " + userToUpdate.getSubjectName() + " as locked.", ex);
+            }
         }
     }
 
@@ -269,6 +297,19 @@ public class UserManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME)")
     @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME, returnObject)")
+    public UserDTO getByNameOrEmail(String username) throws MultipleUserAccountsException {
+        return getByNameOrEmailUnsecured(username);
+    }
+
+    public UserDTO getByNameOrEmailUnsecured(String username) throws MultipleUserAccountsException {
+        return userDAO.getByNameOrEmail(username);
+    }
+
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME)")
+    @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME, returnObject)")
     public User getUserInfo(String userName) throws UserRetrievalException {
         UserDTO user = getByNameUnsecured(userName);
         return new User(user);
@@ -293,6 +334,24 @@ public class UserManager extends SecuredManager {
     public void updateLastLoggedInDate(UserDTO user) throws UserRetrievalException {
         user.setLastLoggedInDate(new Date());
         userDAO.update(user);
+    }
+
+    private void sendAccountLockedEmail(UserDTO user) throws AddressException, MessagingException {
+        String subject = "CHPL Account Locked";
+        String htmlMessage = "<p>The account associated with " + user.getSubjectName()
+                + " has exceeded the maximum number of failed login attempts and is locked. "
+                + "You will need to reset your account by selecting the \"Forgot Password\" option "
+                + "during Log In, or by contacting your local administrator.</p>";
+        String[] toEmails = {
+                user.getEmail()
+        };
+
+        EmailBuilder emailBuilder = new EmailBuilder(env);
+        emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
+        .subject(subject)
+        .htmlMessage(htmlMessage)
+        .publicHtmlFooter()
+        .sendEmail();
     }
 
     private void addAclPermission(UserDTO user, Sid recipient, Permission permission) {

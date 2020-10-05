@@ -97,24 +97,14 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         String subject = null;
         String htmlMessage = null;
         if (jobContext.getMergedJobDataMap().getString("type").equalsIgnoreCase("All")) {
-            if (jobContext.getMergedJobDataMap().getBoolean("acbSpecific")) {
-                String subjectSuffix = env.getProperty("oversightEmailAcbWeeklySubjectSuffix");
-                subject = getAcbNamesAsCommaSeparatedList(jobContext) + " " + subjectSuffix;
-                htmlMessage = env.getProperty("oversightEmailAcbWeeklyHtmlMessage");
-            } else {
-                subject = env.getProperty("oversightEmailWeeklySubject");
-                htmlMessage = env.getProperty("oversightEmailWeeklyHtmlMessage");
-            }
+            String subjectSuffix = env.getProperty("oversightEmailAcbWeeklySubjectSuffix");
+            subject = getAcbNamesAsCommaSeparatedList(jobContext) + " " + subjectSuffix;
+            htmlMessage = env.getProperty("oversightEmailAcbWeeklyHtmlMessage");
             htmlMessage += createHtmlEmailBody(errors.size(), env.getProperty("oversightEmailWeeklyNoContent"));
         } else {
-            if (jobContext.getMergedJobDataMap().getBoolean("acbSpecific")) {
-                String subjectSuffix = env.getProperty("oversightEmailAcbDailySubjectSuffix");
-                subject = getAcbNamesAsCommaSeparatedList(jobContext) + " " + subjectSuffix;
-                htmlMessage = env.getProperty("oversightEmailAcbDailyHtmlMessage");
-            } else {
-                subject = env.getProperty("oversightEmailDailySubject");
-                htmlMessage = env.getProperty("oversightEmailDailyHtmlMessage");
-            }
+            String subjectSuffix = env.getProperty("oversightEmailAcbDailySubjectSuffix");
+            subject = getAcbNamesAsCommaSeparatedList(jobContext) + " " + subjectSuffix;
+            htmlMessage = env.getProperty("oversightEmailAcbDailyHtmlMessage");
             htmlMessage += createHtmlEmailBody(errors.size(), env.getProperty("oversightEmailDailyNoContent"));
         }
         LOGGER.info("Sending email to {} with contents {} and a total of {} broken rules",
@@ -152,18 +142,15 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         } else {
             filteredErrors.addAll(allErrors);
         }
-        if (jobContext.getMergedJobDataMap().getBooleanValue("acbSpecific")) {
-            List<Long> acbIds = Arrays.asList(
-                    jobContext.getMergedJobDataMap().getString("acb").split(SchedulerManager.DATA_DELIMITER)).stream()
-                    .map(acb -> Long.parseLong(acb))
-                    .collect(Collectors.toList());
+        List<Long> acbIds = Arrays.asList(
+                jobContext.getMergedJobDataMap().getString("acb").split(SchedulerManager.DATA_DELIMITER)).stream()
+                .map(acb -> Long.parseLong(acb))
+                .collect(Collectors.toList());
 
-            errors = filteredErrors.stream()
-                    .filter(error -> acbIds.contains(error.getCertificationBody().getId()))
-                    .collect(Collectors.toList());
-        } else {
-            errors.addAll(filteredErrors);
-        }
+        errors = filteredErrors.stream()
+                .filter(error -> acbIds.contains(error.getCertificationBody().getId()))
+                .collect(Collectors.toList());
+
         return errors;
     }
 

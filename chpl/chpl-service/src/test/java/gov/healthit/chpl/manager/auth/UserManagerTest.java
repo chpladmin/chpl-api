@@ -34,6 +34,8 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserResetTokenDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.MultipleUserAccountsException;
+import gov.healthit.chpl.exception.UserAccountExistsException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
@@ -59,7 +61,7 @@ public class UserManagerTest {
     @Before
     public void setup()
             throws UserCreationException, UserRetrievalException, JsonProcessingException, EntityCreationException,
-            EntityRetrievalException {
+            EntityRetrievalException, MultipleUserAccountsException {
 
         userDAO = Mockito.mock(UserDAO.class);
         mutableAclService = Mockito.mock(MutableAclService.class);
@@ -75,6 +77,8 @@ public class UserManagerTest {
                 .thenAnswer(i -> i.getArgument(0));
         Mockito.when(userDAO.getById(ArgumentMatchers.anyLong()))
                 .thenAnswer(i -> getUserDTO(i.getArgument(0)));
+        Mockito.when(userDAO.getByNameOrEmail(ArgumentMatchers.anyString()))
+                .thenAnswer(i -> getUserDTO(1L));
         Mockito.doNothing()
                 .when(userDAO)
                 .delete(ArgumentMatchers.anyLong());
@@ -150,7 +154,7 @@ public class UserManagerTest {
     @Test
     public void update_GoodData_SuccessAndActivityWritten()
             throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException,
-            ValidationException {
+            ValidationException, MultipleUserAccountsException, UserAccountExistsException {
 
         UserManager userManager = new UserManager(null, userDAO, null, null, null, null, activityManager);
 
@@ -166,7 +170,7 @@ public class UserManagerTest {
     @Test(expected = ValidationException.class)
     public void update_MissingFullName_ValidationExceptionThrown()
             throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException,
-            ValidationException {
+            ValidationException, MultipleUserAccountsException, UserAccountExistsException {
 
         UserManager userManager = new UserManager(null, null, null, null, null, errorMessageUtil, null);
 
@@ -180,7 +184,7 @@ public class UserManagerTest {
     @Test(expected = ValidationException.class)
     public void update_MissingEmail_ValidationExceptionThrown()
             throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException,
-            ValidationException {
+            ValidationException, MultipleUserAccountsException, UserAccountExistsException {
 
         UserManager userManager = new UserManager(null, null, null, null, null, errorMessageUtil, null);
 
@@ -194,7 +198,7 @@ public class UserManagerTest {
     @Test(expected = ValidationException.class)
     public void update_MissingPhoneNumber_ValidationExceptionThrown()
             throws JsonProcessingException, UserRetrievalException, EntityCreationException, EntityRetrievalException,
-            ValidationException {
+            ValidationException, MultipleUserAccountsException, UserAccountExistsException {
 
         UserManager userManager = new UserManager(null, null, null, null, null, errorMessageUtil, null);
 
@@ -207,7 +211,8 @@ public class UserManagerTest {
 
     @Test()
     public void update_MissingEmailAndPhoneNumber_ValidationExceptionThrown()
-            throws JsonProcessingException, UserRetrievalException, EntityCreationException, EntityRetrievalException {
+            throws JsonProcessingException, UserRetrievalException, EntityCreationException,
+            EntityRetrievalException, MultipleUserAccountsException, UserAccountExistsException {
 
         UserManager userManager = new UserManager(null, null, null, null, null, errorMessageUtil, null);
 
@@ -220,6 +225,32 @@ public class UserManagerTest {
             assertEquals(2, e.getErrorMessages().size());
             return;
         }
+        fail();
+    }
+
+    @Test(expected = UserAccountExistsException.class)
+    public void update_DuplicateSubjectName_UserAccountExistsThrown()
+            throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException,
+            ValidationException, MultipleUserAccountsException, UserAccountExistsException {
+        UserManager userManager = new UserManager(null, userDAO, null, null, null, errorMessageUtil, null);
+
+        UserDTO user = getUserDTO(1L);
+        user.setSubjectName("A different username");
+        userManager.update(user);
+
+        fail();
+    }
+
+    @Test(expected = UserAccountExistsException.class)
+    public void update_DuplicateEmailAddress_UserAccountExistsThrown()
+            throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException,
+            ValidationException, MultipleUserAccountsException, UserAccountExistsException {
+        UserManager userManager = new UserManager(null, userDAO, null, null, null, errorMessageUtil, null);
+
+        UserDTO user = getUserDTO(1L);
+        user.setEmail("anotheremail@test.com");
+        userManager.update(user);
+
         fail();
     }
 
