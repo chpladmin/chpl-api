@@ -52,6 +52,72 @@
 			"response": []
 		},
 		{
+			"name": "GET/data/svap - test for correct schema",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "eff9001e-9439-40ff-bb73-a4ddc33e72ac",
+						"exec": [
+							"const schema = {\r",
+							"  \"results\": [\r",
+							"    {\r",
+							"      \"criterion\": {\r",
+							"        \"certificationEdition\": \"string\",\r",
+							"        \"certificationEditionId\": 0,\r",
+							"        \"description\": \"string\",\r",
+							"        \"id\": 0,\r",
+							"        \"number\": \"string\",\r",
+							"        \"removed\": false,\r",
+							"        \"title\": \"string\"\r",
+							"      },\r",
+							"      \"id\": 0,\r",
+							"      \"svap\": {\r",
+							"        \"approvedStandardVersion\": \"string\",\r",
+							"        \"regulatoryTextCitation\": \"string\",\r",
+							"        \"svapId\": 0\r",
+							"      }\r",
+							"    }\r",
+							"  ]\r",
+							"};\r",
+							"pm.test(\"Validate that svap end point has correct schema\", () => {\r",
+							"            pm.response.to.have.jsonSchema(schema);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/data/svap",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"data",
+						"svap"
+					]
+				},
+				"description": "Validate that svap response has correct schema"
+			},
+			"response": []
+		},
+		{
 			"name": "GET /data/svap - Invalid API Key",
 			"event": [
 				{
