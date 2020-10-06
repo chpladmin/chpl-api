@@ -348,8 +348,12 @@ public class CertificationResultManager extends SecuredManager {
     private Boolean haveMacraMeasuresChanged(List<MacraMeasure> orig, List<MacraMeasure> updated) {
         if (orig != null && updated != null) {
             return !orig.equals(updated);
-        } else {
-            return orig != null && updated == null;
+        } else if (orig != null && updated == null) {
+            return true;
+        } else if (orig == null && updated != null) {
+            return true;
+        } else { // Both are null
+            return false;
         }
     }
 
