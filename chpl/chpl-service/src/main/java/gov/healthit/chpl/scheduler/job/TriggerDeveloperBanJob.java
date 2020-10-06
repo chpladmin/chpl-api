@@ -91,7 +91,7 @@ public class TriggerDeveloperBanJob implements Job {
         }
         int openNcs = jdm.getInt("openNcs");
         int closedNcs = jdm.getInt("closedNcs");
-        String htmlMessage = String.format("<p>The CHPL Listing <a href=\"%s/#/product/%d\">%s</a>, owned by \"%s\" "
+        String htmlMessage = String.format("<p>The CHPL Listing <a href=\"%s/#/listing/%d\">%s</a>, owned by \"%s\" "
                 + "and certified by \"%s\" has been set on \"%s\" by \"%s\" to a Certification Status of \"%s\" with "
                 + "an effective date of \"%s\".</p>"
                 + "<p>%s</p>"
