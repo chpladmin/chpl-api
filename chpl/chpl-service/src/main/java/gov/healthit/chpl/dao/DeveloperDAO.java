@@ -843,14 +843,4 @@ public class DeveloperDAO extends BaseDAOImpl {
                 .setParameter("certificationBodyIds", certificationBodyIds)
                 .getResultList();
     }
-
-    private boolean exists(Long developerId) {
-        Query query = entityManager.createQuery("SELECT count(*) "
-                + "FROM DeveloperEntity dev "
-                + "WHERE dev.id = :developerId "
-                + "AND deleted = false");
-        query.setParameter("developerId", developerId);
-        Long devCount = (Long) query.getSingleResult();
-        return devCount != null && devCount > 0;
-    }
 }

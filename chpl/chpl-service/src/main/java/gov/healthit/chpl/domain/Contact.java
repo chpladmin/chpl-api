@@ -16,7 +16,6 @@ import org.apache.logging.log4j.Logger;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.ContactDTO;
-import gov.healthit.chpl.entity.ContactEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -94,15 +93,6 @@ public class Contact implements Serializable {
         this.email = dto.getEmail();
         this.phoneNumber = dto.getPhoneNumber();
         this.title = dto.getTitle();
-    }
-
-    public Contact(ContactEntity entity) {
-        this.contactId = entity.getId();
-        this.fullName = entity.getFullName();
-        this.friendlyName = entity.getFriendlyName();
-        this.email = entity.getEmail();
-        this.phoneNumber = entity.getPhoneNumber();
-        this.title = entity.getTitle();
     }
 
     public Contact(HashMap<String, Object> map) {
