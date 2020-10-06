@@ -84,6 +84,7 @@ public class CertifiedProductSummaryDTO implements Serializable {
         this.acb.setId(entity.getCertificationBodyId());
         this.acb.setName(entity.getCertificationBodyName());
         this.developer = new DeveloperDTO();
+        this.developer.setId(entity.getDeveloperId());
         this.developer.setName(entity.getDeveloperName());
         ContactDTO contact = new ContactDTO();
         contact.setEmail(entity.getEmail());
@@ -91,8 +92,10 @@ public class CertifiedProductSummaryDTO implements Serializable {
         contact.setFullName(entity.getFullName());
         this.developer.setContact(contact);
         this.product = new ProductDTO();
+        this.product.setId(entity.getProductId());
         this.product.setName(entity.getProductName());
         this.version = new ProductVersionDTO();
+        this.version.setId(entity.getProductVersionId());
         this.version.setVersion(entity.getProductVersion());
         this.reportFileLocation = entity.getReportFileLocation();
         this.sedReportFileLocation = entity.getSedReportFileLocation();

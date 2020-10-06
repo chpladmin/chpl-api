@@ -36,6 +36,7 @@ import gov.healthit.chpl.domain.UpdateDevelopersRequest;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.domain.compliance.DirectReview;
+import gov.healthit.chpl.domain.developer.hierarchy.DeveloperTree;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.ContactDTO;
@@ -123,6 +124,15 @@ public class DeveloperController {
             result = new Developer(developer);
         }
         return result;
+    }
+
+    @ApiOperation(value = "Get all hierarchical information about a specific developer. "
+            + "Includes associated products, versions, and basic listing data.", notes = "")
+    @RequestMapping(value = "/{developerId}/hierarchy", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public @ResponseBody DeveloperTree getDeveloperHierarchyById(@PathVariable("developerId") Long developerId)
+            throws EntityRetrievalException {
+        return developerManager.getHierarchyById(developerId);
     }
 
     @ApiOperation(value = "Get all direct reviews for a specified developer.")

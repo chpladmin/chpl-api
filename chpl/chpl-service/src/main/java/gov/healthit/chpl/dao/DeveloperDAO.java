@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.DeveloperTransparency;
+import gov.healthit.chpl.domain.developer.hierarchy.DeveloperTree;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
@@ -25,6 +26,8 @@ import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.ContactEntity;
+import gov.healthit.chpl.entity.ProductEntity;
+import gov.healthit.chpl.entity.ProductVersionEntity;
 import gov.healthit.chpl.entity.UserDeveloperMapEntity;
 import gov.healthit.chpl.entity.developer.DeveloperACBMapEntity;
 import gov.healthit.chpl.entity.developer.DeveloperACBTransparencyMapEntity;
@@ -467,6 +470,42 @@ public class DeveloperDAO extends BaseDAOImpl {
         return dto;
     }
 
+    public DeveloperTree getHierarchyByDeveloperId(Long developerId) throws EntityRetrievalException {
+        if (!exists(developerId)) {
+            throw new EntityRetrievalException(msgUtil.getMessage("developer.notFound"));
+        }
+        String hql = "SELECT DISTINCT dev, prod, ver, cpd "
+                + "FROM DeveloperEntity dev, ProductEntity prod, ProductVersionEntity ver,"
+                + "CertifiedProductDetailsEntity cpd "
+                + "LEFT JOIN FETCH dev.address "
+                + "LEFT JOIN FETCH dev.contact "
+                + "LEFT JOIN FETCH dev.statusEvents statusEvents "
+                + "LEFT JOIN FETCH statusEvents.developerStatus "
+                + "LEFT JOIN FETCH dev.developerCertificationStatuses "
+                + "LEFT JOIN FETCH prod.contact "
+                + "LEFT JOIN FETCH prod.ownerHistory "
+                + "LEFT JOIN FETCH prod.productVersions "
+                + "LEFT JOIN FETCH prod.productCertificationStatuses "
+                + "WHERE dev.id = :developerId "
+                + "AND prod.developerId = dev.id "
+                + "AND ver.productId = prod.id "
+                + "AND cpd.productVersionId = ver.id "
+                + "AND dev.deleted = false "
+                + "AND prod.deleted = false "
+                + "AND ver.deleted = false "
+                + "AND cpd.deleted = false";
+        Query query = entityManager.createQuery(hql);
+        DeveloperTree devTree = new DeveloperTree();
+        for (Object[] result : (List<Object[]>) query.getResultList()) {
+            DeveloperEntity developer = (DeveloperEntity) result[0];
+            ProductEntity product = (ProductEntity) result[1];
+            ProductVersionEntity version = (ProductVersionEntity) result[2];
+            CertifiedProductDetailsEntity listing = (CertifiedProductDetailsEntity) result[3];
+
+        }
+        return devTree;
+    }
+
     @Transactional(readOnly = true)
     public DeveloperDTO getSimpleDeveloperById(Long id, boolean includeDeleted) throws EntityRetrievalException {
         DeveloperDTO result = null;
@@ -695,16 +734,6 @@ public class DeveloperDAO extends BaseDAOImpl {
         return dtos;
     }
 
-    private void create(final DeveloperEntity entity) {
-        entityManager.persist(entity);
-        entityManager.flush();
-    }
-
-    private void update(final DeveloperEntity entity) {
-        entityManager.merge(entity);
-        entityManager.flush();
-    }
-
     private List<DeveloperEntity> getAllEntities() {
         List<DeveloperEntity> result = entityManager.createQuery(
                 "SELECT DISTINCT v from "
@@ -854,4 +883,13 @@ public class DeveloperDAO extends BaseDAOImpl {
                 .getResultList();
     }
 
+    private boolean exists(Long developerId) {
+        Query query = entityManager.createQuery("SELECT count(*) "
+                + "FROM DeveloperEntity dev "
+                + "WHERE dev.id = :developerId "
+                + "AND deleted = false");
+        query.setParameter("developerId", developerId);
+        Long devCount = (Long) query.getSingleResult();
+        return devCount != null && devCount > 0;
+    }
 }
