@@ -1376,7 +1376,7 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible SVAP and associated criteri in the CHPL")
+    @ApiOperation(value = "Get all possible SVAP and associated criteria in the CHPL")
     @RequestMapping(value = "/data/svap", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
