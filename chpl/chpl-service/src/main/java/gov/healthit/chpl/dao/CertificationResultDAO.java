@@ -1314,7 +1314,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery(
                 "SELECT s "
                         + "FROM CertificationResultSvapEntity s "
-                        + "LEFT OUTER JOIN FETCH s.svap "
+                        + "JOIN FETCH s.svap "
                         + "WHERE s.deleted <> true "
                         + "AND s.id = :certificationResultSvapId ",
                 CertificationResultSvapEntity.class);
