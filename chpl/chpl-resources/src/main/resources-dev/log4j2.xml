@@ -321,10 +321,10 @@
         <Logger name="org.hibernate" level="ERROR" additivity="false">
             <AppenderRef ref="FILE" />
         </Logger>
-        <Logger name="net.sf.ehcache" level="ALL" additivity="false">
+        <Logger name="net.sf.ehcache" level="INFO" additivity="false">
             <AppenderRef ref="cacheListenerActivity" />
         </Logger>
-        <logger name="org.springframework.cache" level="ALL">
+        <logger name="org.springframework.cache" level="INFO">
             <appender-ref ref="cacheListenerActivity" />
         </logger>
         <Logger name="org.springframework" level="ERROR"
