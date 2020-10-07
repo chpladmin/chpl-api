@@ -39,6 +39,14 @@ public class RealWorldTestingReviewer implements ComparisonReviewer {
 
     @Override
     public void review(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing) {
+
+        //The rwtEligibilityYear cannot be updated
+        if (!Objects.equals(existingListing.getRwtEligibilityYear(), updatedListing.getRwtEligibilityYear())) {
+            updatedListing.getErrorMessages().add(
+                    errorMessageUtil.getMessage("listing.realWorldTesting.eligibilityYearNotUpdatable"));
+            return;
+        }
+
         //Always use the rwt elig year from the existing listing
         updatedListing.setRwtEligibilityYear(existingListing.getRwtEligibilityYear());
 

@@ -214,4 +214,24 @@ public class RealWorldTestingReviewerTest {
         assertEquals(1, updated.getErrorMessages().size());
         assertTrue(updated.getErrorMessages().contains("Real World Testing Results Check Date must be after %s."));
     }
+
+    @Test
+    public void review_rwtEligibilityYearChanged_errorMessage() {
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.<String>any()))
+        .thenReturn("Real World Eligibility Year cannot be updated.");
+
+        CertifiedProductSearchDetails existing = new CertifiedProductSearchDetails();
+        existing.setRwtEligibilityYear(null);
+
+        CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
+        updated.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
+        updated.setRwtEligibilityYear(ELIG_YEAR_FOR_RESULTS_TESTING);
+
+        reviewer.review(existing, updated);
+
+        assertEquals(1, updated.getErrorMessages().size());
+        assertTrue(updated.getErrorMessages().contains("Real World Eligibility Year cannot be updated."));
+
+    }
+
 }
