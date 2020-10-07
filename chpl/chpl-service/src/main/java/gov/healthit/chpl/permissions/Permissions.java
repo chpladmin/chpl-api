@@ -58,7 +58,7 @@ public class Permissions {
     public static final String FUZZY_MATCH = "FUZZY_MATCH";
     public static final String ANNOUNCEMENT = "ANNOUNCEMENT";
     public static final String CHANGE_REQUEST = "CHANGE_REQUEST";
-    public static final String REAL_WOLRD_TESTING = "REAL_WOLRD_TESTING";
+    public static final String REAL_WORLD_TESTING = "REAL_WORLD_TESTING";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
@@ -112,7 +112,7 @@ public class Permissions {
         domainPermissions.put(FUZZY_MATCH, fuzzyMatchPermissions);
         domainPermissions.put(ANNOUNCEMENT, announcementDomainPermissions);
         domainPermissions.put(CHANGE_REQUEST, changeRequestDomainPermissions);
-        domainPermissions.put(REAL_WOLRD_TESTING, realWorldTestingDomainPermissions);
+        domainPermissions.put(REAL_WORLD_TESTING, realWorldTestingDomainPermissions);
     }
 
     public boolean hasAccess(final String domain, final String action) {
