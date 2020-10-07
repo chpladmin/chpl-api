@@ -14,6 +14,7 @@ import java.util.UUID;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -45,6 +46,8 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserResetTokenDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.MultipleUserAccountsException;
+import gov.healthit.chpl.exception.UserAccountExistsException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
@@ -108,7 +111,7 @@ public class UserManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE, #user)")
     public UserDTO update(User user)
             throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException,
-            ValidationException {
+            ValidationException, UserAccountExistsException, MultipleUserAccountsException {
         UserDTO before = getById(user.getUserId());
         UserDTO toUpdate = UserDTO.builder()
                 .id(before.getId())
@@ -140,15 +143,28 @@ public class UserManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE, #user)")
     public UserDTO update(UserDTO user)
             throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException,
-            ValidationException {
+            ValidationException, UserAccountExistsException, MultipleUserAccountsException {
         Optional<ValidationException> validationException = validateUser(user);
         if (validationException.isPresent()) {
             throw validationException.get();
         }
 
         UserDTO before = getById(user.getId());
-        UserDTO updated = userDAO.update(user);
+        if (ObjectUtils.notEqual(before.getSubjectName(), user.getSubjectName())) {
+            UserDTO existingUser = userDAO.getByNameOrEmail(user.getSubjectName());
+            if (existingUser != null) {
+                throw new UserAccountExistsException(
+                        errorMessageUtil.getMessage("user.accountAlreadyExists", user.getSubjectName()));
+            }
+        } else if (ObjectUtils.notEqual(before.getEmail(), user.getEmail())) {
+            UserDTO existingUser = userDAO.getByNameOrEmail(user.getEmail());
+            if (existingUser != null) {
+                throw new UserAccountExistsException(
+                        errorMessageUtil.getMessage("user.accountAlreadyExists", user.getEmail()));
+            }
+        }
 
+        UserDTO updated = userDAO.update(user);
         String activityDescription = "User " + user.getSubjectName() + " was updated.";
         activityManager.addActivity(ActivityConcept.USER, before.getId(), activityDescription, before,
                 updated);
@@ -274,6 +290,19 @@ public class UserManager extends SecuredManager {
 
     public UserDTO getByNameUnsecured(String userName) throws UserRetrievalException {
         return userDAO.getByName(userName);
+    }
+
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME)")
+    @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME, returnObject)")
+    public UserDTO getByNameOrEmail(String username) throws MultipleUserAccountsException {
+        return getByNameOrEmailUnsecured(username);
+    }
+
+    public UserDTO getByNameOrEmailUnsecured(String username) throws MultipleUserAccountsException {
+        return userDAO.getByNameOrEmail(username);
     }
 
     @Transactional

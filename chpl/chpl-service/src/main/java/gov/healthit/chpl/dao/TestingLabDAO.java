@@ -181,6 +181,7 @@ public class TestingLabDAO extends BaseDAOImpl {
         Query query = entityManager
                 .createQuery("FROM UserTestingLabMapEntity utlm "
                         + "join fetch utlm.testingLab tl "
+                        + "left join fetch tl.address "
                         + "join fetch utlm.user u "
                         + "join fetch u.permission perm "
                         + "join fetch u.contact contact "

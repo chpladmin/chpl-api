@@ -13,7 +13,7 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.UserDeveloperMapDTO;
 import gov.healthit.chpl.entity.UserDeveloperMapEntity;
 import gov.healthit.chpl.entity.auth.UserEntity;
-import gov.healthit.chpl.entity.developer.DeveloperEntity;
+import gov.healthit.chpl.entity.developer.DeveloperEntitySimple;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.UserMapper;
 
@@ -135,16 +135,15 @@ public class UserDeveloperMapDAO extends BaseDAOImpl {
         return entity;
     }
 
-    private DeveloperEntity getDeveloperEntityById(final Long entityId) throws EntityRetrievalException {
-        DeveloperEntity entity = null;
+    private DeveloperEntitySimple getDeveloperEntityById(final Long entityId) throws EntityRetrievalException {
+        DeveloperEntitySimple entity = null;
 
-        String queryStr = "SELECT developer from DeveloperEntity developer "
-                + "LEFT OUTER JOIN FETCH developer.address "
+        String queryStr = "SELECT developer from DeveloperEntitySimple developer "
                 + "WHERE (developer.id = :entityid)" + " AND (developer.deleted = false)";
 
-        Query query = entityManager.createQuery(queryStr, DeveloperEntity.class);
+        Query query = entityManager.createQuery(queryStr, DeveloperEntitySimple.class);
         query.setParameter("entityid", entityId);
-        List<DeveloperEntity> result = query.getResultList();
+        List<DeveloperEntitySimple> result = query.getResultList();
 
         if (result == null || result.size() == 0) {
             String msg = msgUtil.getMessage("developer.notFound");

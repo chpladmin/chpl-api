@@ -5,11 +5,9 @@
     xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData http://www.quartz-scheduler.org/xml/job_scheduling_data_2_0.xsd"
     version="2.0">
     <pre-processing-commands>
-        <delete-triggers-in-group>triggerJob</delete-triggers-in-group>
-        <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
-    </pre-processing-commands>
-    <schedule>
-        <!-- Delete from here to "DELETE END MARKER" after PROD push -->
-        <!-- DELETE END MARKER -->
-    </schedule>
+        <delete-job>
+            <name>Pending Change Request Report</name>
+            <group>chplJobs</group>
+        </delete-job>
+   </pre-processing-commands>
 </job-scheduling-data>

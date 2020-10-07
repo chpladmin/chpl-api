@@ -1,5 +1,40 @@
 # Release Notes
 
+## Version 25.14.0
+_5 October 2020_
+
+### Features
+* GAP=TRUE should not be allowed for 170.315 (f)(3) during upload, confirm or edit of listing
+* Reschedule 2014 Download file generation to be monthly
+* Allow users to log in via either username or email address
+
+### Flagged Features
+* Add error handling for any error returned by Jira with respect to Direct Review
+
+### Bug Fixes
+* Do not mark old ICS error data deleted until job completes
+* Lookup user by email or name for password reset
+* Do not mark old broken surveillance rule data deleted until job completes
+
+### Flagged Bug Fixes
+* Re-enable Pending "Change Request" report for ONC-ACBs
+
+---
+
+## Version 25.13.0
+_21 September 2020_
+
+### Features
+* Clean up duplicate ONC and ONC-ACB scheduled jobs report
+* Send email to user when account is first locked
+* Return ambiguous msg on login if acct locked, disabled, etc
+* Add new /metadata/beta activity endpoints for pending listings, pending surveillance, corrective action, atls, and announcements
+
+### Bug Fixes
+* Allow complete listing file to always be downloaded
+
+---
+
 ## Version 25.12.0
 _8 September 2020_
 
