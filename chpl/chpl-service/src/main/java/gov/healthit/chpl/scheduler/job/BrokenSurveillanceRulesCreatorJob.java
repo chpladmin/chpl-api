@@ -242,7 +242,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         if (!productDetailsUrl.endsWith("/")) {
             productDetailsUrl += "/";
         }
-        productDetailsUrl += "#/product/" + listing.getId();
+        productDetailsUrl += "#/listing/" + listing.getId();
         base.setUrl(productDetailsUrl);
 
         base.setCertificationStatus(listing.getCurrentStatus().getStatus().getName());

@@ -152,7 +152,7 @@ public class SurveillanceCsvPresenter {
             final Surveillance surv) {
         List<String> result = new ArrayList<String>();
         result.add(listing.getChplProductNumber());
-        result.add(env.getProperty("chplUrlBegin") + "#/product/" + listing.getId());
+        result.add(env.getProperty("chplUrlBegin") + "#/listing/" + listing.getId());
         result.add(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
         result.add(listing.getCurrentStatus().getStatus().getName());
         result.add(listing.getDeveloper().getName());

@@ -105,7 +105,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
         if (!productDetailsUrl.endsWith("/")) {
             productDetailsUrl += "/";
         }
-        productDetailsUrl += "#/product/" + data.getId();
+        productDetailsUrl += "#/listing/" + data.getId();
         survFields.add(productDetailsUrl);
         survFields.add(data.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
         survFields.add(data.getCurrentStatus().getStatus().getName());

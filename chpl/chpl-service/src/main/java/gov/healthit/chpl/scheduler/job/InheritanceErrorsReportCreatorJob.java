@@ -168,7 +168,7 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
                 if (!productDetailsUrl.endsWith("/")) {
                     productDetailsUrl += "/";
                 }
-                productDetailsUrl += "#/product/" + listing.getId();
+                productDetailsUrl += "#/listing/" + listing.getId();
                 item.setUrl(productDetailsUrl);
                 item.setReason(reason);
             }

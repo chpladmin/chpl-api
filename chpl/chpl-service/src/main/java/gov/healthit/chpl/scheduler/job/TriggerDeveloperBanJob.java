@@ -91,15 +91,9 @@ public class TriggerDeveloperBanJob implements Job {
         }
         int openNcs = jdm.getInt("openNcs");
         int closedNcs = jdm.getInt("closedNcs");
-        String htmlMessage = String.format("<p>The CHPL Listing <a href=\"%s/#/listing/%d\">%s</a>, owned by \"%s\" "
-                + "and certified by \"%s\" has been set on \"%s\" by \"%s\" to a Certification Status of \"%s\" with "
-                + "an effective date of \"%s\".</p>"
-                + "<p>%s</p>"
-                + "<p>%s</p>"
-                + "<p>There %s %d Open Nonconformit%s and %d Closed Nonconformit%s.</p>"
-                + "<p>ONC should review the activity and all details of the listing to determine if "
-                + "this action warrants a ban on the Developer.</p>",
+        String htmlMessage = String.format(env.getProperty("developerBanEmailBody"),
                 env.getProperty("chplUrlBegin"), // root of URL
+                env.getProperty("developerBanEmailUrl"),
                 jdm.getLong("dbId"), // for URL to product page
                 jdm.getString("chplId"), // visible link
                 jdm.getString("developer"), // developer name
