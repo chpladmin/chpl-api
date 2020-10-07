@@ -1,6 +1,7 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -12,6 +13,7 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
@@ -20,8 +22,13 @@ import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.domain.surveillance.Surveillance;
+import gov.healthit.chpl.util.LocalDateAdapter;
+import gov.healthit.chpl.util.LocalDateDeserializer;
+import gov.healthit.chpl.util.LocalDateSerializer;
 import gov.healthit.chpl.util.Util;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -344,9 +351,39 @@ public class CertifiedProductSearchDetails implements Serializable {
     private CertifiedProductSed sed = new CertifiedProductSed();
 
     /**
-     * Real World Testing eligibility year.
+     * URL where the listing's Real World Testing Plan is located
      */
-    @XmlElement(nillable = true, required = false)
+    @XmlElement(name = "rwt_plans_url", nillable = true, required = false)
+    private String rwtPlansUrl;
+
+    /**
+     * Date the listing's Real World Testing Plan was submitted
+     */
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+    @XmlElement(name = "rwt_plans_check_date", nillable = true, required = false)
+    private LocalDate rwtPlansCheckDate;
+
+    /**
+     * URL where the listing's Real World Testing Results is located
+     */
+    @XmlElement(name = "rwt_results_url", nillable = true, required = false)
+    private String rwtResultsUrl;
+
+    /**
+     * Date the listing's Real World Testing Results was submitted
+     */
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+    @XmlElement(name = "rwt_results_check_date", nillable = true, required = false)
+    private LocalDate rwtResultsCheckDate;
+
+    /**
+     * First year that the listing is eligible for Real World Testing data
+     */
+    @XmlElement(name = "rwt_eligibility_year", nillable = true, required = false)
     private Integer rwtEligibilityYear;
 
     @Builder.Default
@@ -810,6 +847,38 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     public void setCertificationStatus(LegacyCertificationStatus certificationStatus) {
         this.certificationStatus = certificationStatus;
+    }
+
+    public String getRwtPlansUrl() {
+        return rwtPlansUrl;
+    }
+
+    public void setRwtPlansUrl(String rwtPlansUrl) {
+        this.rwtPlansUrl = rwtPlansUrl;
+    }
+
+    public LocalDate getRwtPlansCheckDate() {
+        return rwtPlansCheckDate;
+    }
+
+    public void setRwtPlansCheckDate(LocalDate rwtPlansCheckDate) {
+        this.rwtPlansCheckDate = rwtPlansCheckDate;
+    }
+
+    public String getRwtResultsUrl() {
+        return rwtResultsUrl;
+    }
+
+    public void setRwtResultsUrl(String rwtResultsUrl) {
+        this.rwtResultsUrl = rwtResultsUrl;
+    }
+
+    public LocalDate getRwtResultsCheckDate() {
+        return rwtResultsCheckDate;
+    }
+
+    public void setRwtResultsCheckDate(LocalDate rwtResultsCheckDate) {
+        this.rwtResultsCheckDate = rwtResultsCheckDate;
     }
 
     public Integer getRwtEligibilityYear() {
