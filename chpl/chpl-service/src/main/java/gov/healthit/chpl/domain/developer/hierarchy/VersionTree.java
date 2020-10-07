@@ -5,7 +5,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.ObjectUtils;
 
-import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import lombok.Data;
@@ -14,7 +13,7 @@ import lombok.Data;
 public class VersionTree extends ProductVersion {
     private static final long serialVersionUID = 6827193932953676099L;
 
-    private Set<CertifiedProduct> listings = new LinkedHashSet<CertifiedProduct>();
+    private Set<SimpleListing> listings = new LinkedHashSet<SimpleListing>();
 
     public VersionTree() {
         super();

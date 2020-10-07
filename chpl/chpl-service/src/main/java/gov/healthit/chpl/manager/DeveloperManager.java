@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -27,7 +28,6 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
@@ -36,6 +36,7 @@ import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.developer.hierarchy.DeveloperTree;
 import gov.healthit.chpl.domain.developer.hierarchy.ProductTree;
+import gov.healthit.chpl.domain.developer.hierarchy.SimpleListing;
 import gov.healthit.chpl.domain.developer.hierarchy.VersionTree;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
@@ -171,6 +172,7 @@ public class DeveloperManager extends SecuredManager {
         List<ProductDTO> products = productManager.getByDeveloper(developer.getId());
         List<ProductVersionDTO> versions = versionManager.getByDeveloper(developer.getId());
         List<CertifiedProductSummaryDTO> listings = certifiedProductDao.findListingSummariesByDeveloperId(developer.getId());
+        List<CertificationBodyDTO> acbs = acbManager.getAll();
 
         DeveloperTree developerTree = new DeveloperTree(developer);
         products.stream().forEach(product -> {
@@ -193,15 +195,20 @@ public class DeveloperManager extends SecuredManager {
                         .filter(listing -> listing.getVersion().getId().equals(version.getVersionId()))
                         .collect(Collectors.toList());
                 versionListings.stream().forEach(listing -> {
-                    CertifiedProduct cp = new CertifiedProduct();
-                    cp.setCertificationDate(listing.getCertificationDate().getTime());
-                    cp.setCertificationStatus(listing.getCertificationStatus());
-                    cp.setChplProductNumber(listing.getChplProductNumber());
-                    cp.setCuresUpdate(listing.getCuresUpdate());
-                    cp.setEdition(listing.getYear());
-                    cp.setId(listing.getId());
-                    cp.setLastModifiedDate(listing.getLastModifiedDate().getTime());
-                    version.getListings().add(cp);
+                    SimpleListing listingLeaf = new SimpleListing();
+                    Optional<CertificationBodyDTO> listingAcb = acbs.stream()
+                            .filter(acb -> acb.getId().equals(listing.getAcb().getId())).findFirst();
+                    if (listingAcb != null && listingAcb.isPresent()) {
+                        listingLeaf.setAcb(new CertificationBody(listingAcb.get()));
+                    }
+                    listingLeaf.setCertificationDate(listing.getCertificationDate().getTime());
+                    listingLeaf.setCertificationStatus(listing.getCertificationStatus());
+                    listingLeaf.setChplProductNumber(listing.getChplProductNumber());
+                    listingLeaf.setCuresUpdate(listing.getCuresUpdate());
+                    listingLeaf.setEdition(listing.getYear());
+                    listingLeaf.setId(listing.getId());
+                    listingLeaf.setLastModifiedDate(listing.getLastModifiedDate().getTime());
+                    version.getListings().add(listingLeaf);
                 });
             });
         });
