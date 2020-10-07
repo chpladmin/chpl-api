@@ -126,7 +126,6 @@ public class DirectReviewUpdateEmailService {
         emailBuilder.recipients(recipients)
                 .subject(env.getProperty("directReview.chplChanges.emailSubject"))
                 .htmlMessage(htmlMessage)
-                .acbAtlHtmlFooter()
                 .sendEmail();
     }
 
@@ -157,7 +156,6 @@ public class DirectReviewUpdateEmailService {
         emailBuilder.recipients(recipients)
                 .subject(env.getProperty("directReview.unknownChanges.emailSubject"))
                 .htmlMessage(htmlMessage)
-                .acbAtlHtmlFooter()
                 .sendEmail();
     }
 
