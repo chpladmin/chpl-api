@@ -194,7 +194,7 @@ public class ApiKeyController {
 
         String subject = env.getProperty("registrationEmailSubject");
         String htmlMessage = String.format(env.getProperty("registrationEmailBody"),
-                apiKey, env.getProperty("chplUrlBegin"), env.getProperty("registrationEmailUrl"));
+                apiKey, env.getProperty("chplUrlBegin"));
 
         String[] toEmails = {
                 email

@@ -93,7 +93,7 @@ public class TriggerDeveloperBanJob implements Job {
         int closedNcs = jdm.getInt("closedNcs");
         String htmlMessage = String.format(env.getProperty("developerBanEmailBody"),
                 env.getProperty("chplUrlBegin"), // root of URL
-                env.getProperty("developerBanEmailUrl"),
+                env.getProperty("listingDetailsUrl"),
                 jdm.getLong("dbId"), // for URL to product page
                 jdm.getString("chplId"), // visible link
                 jdm.getString("developer"), // developer name
