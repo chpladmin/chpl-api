@@ -50,12 +50,14 @@ public class RealWorldTestingUploadJob implements Job {
         UserDTO user = (UserDTO) context.getMergedJobDataMap().get(USER_KEY);
         setSecurityContext(user);
 
-
         List<RealWorldTestingUpload> rwts = (List<RealWorldTestingUpload>) context.getMergedJobDataMap().get(RWT_UPLOAD_ITEMS);
         LOGGER.info(rwts.size());
 
         for (RealWorldTestingUpload rwt : rwts) {
-            rwt = processRwtUploadItem(rwt);
+            if (rwt.getErrors().size() == 0) {
+                rwt = processRwtUploadItem(rwt);
+            }
+
             LOGGER.info(rwt.toString());
             if (rwt.getErrors().size() == 0) {
                 LOGGER.info("Successfully Updated");
@@ -121,7 +123,7 @@ public class RealWorldTestingUploadJob implements Job {
     @SuppressWarnings("checkstyle:linelength")
     private Optional<CertifiedProductSearchDetails> getListing(String chplProductNumber) {
         try {
-            return Optional.ofNullable(certifiedProductDetailsManager.getCertifiedProductDetailsBasicByChplProductNumber(chplProductNumber));
+            return Optional.ofNullable(certifiedProductDetailsManager.getCertifiedProductDetailsByChplProductNumber(chplProductNumber));
         } catch (Exception e) {
             return Optional.empty();
         }

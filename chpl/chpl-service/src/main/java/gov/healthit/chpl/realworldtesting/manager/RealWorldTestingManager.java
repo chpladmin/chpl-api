@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingType;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUpload;
 import gov.healthit.chpl.scheduler.job.RealWorldTestingUploadJob;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class RealWorldTestingManager {
@@ -42,11 +44,15 @@ public class RealWorldTestingManager {
 
     private SchedulerManager schedulerManager;
     private UserManager userManager;
+    private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public RealWorldTestingManager(SchedulerManager schedulerManager, UserManager userManager) {
+    public RealWorldTestingManager(SchedulerManager schedulerManager, UserManager userManager,
+            ErrorMessageUtil errorMessageUtil) {
+
         this.schedulerManager = schedulerManager;
         this.userManager = userManager;
+        this.errorMessageUtil = errorMessageUtil;
     }
 
     @Transactional
@@ -103,10 +109,26 @@ public class RealWorldTestingManager {
 
     private RealWorldTestingUpload createRwtUploadFromCsvRecord(CSVRecord record) {
         RealWorldTestingUpload rwtUpload = new RealWorldTestingUpload();
-        rwtUpload.setChplProductNumber(record.get(CHPL_PRODUCT_NUMBER).toString());
-        rwtUpload.setType(getType(record.get(RWT_TYPE).toString()));
-        rwtUpload.setLastChecked(getLastCheckedDate(record.get(LAST_CHECKED).toString()));
-        rwtUpload.setUrl(record.get(URL).toString());
+        if (!StringUtils.isEmpty(record.get(CHPL_PRODUCT_NUMBER))) {
+            rwtUpload.setChplProductNumber(record.get(CHPL_PRODUCT_NUMBER));
+        } else {
+            rwtUpload.getErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.chplProductNumberInvalid"));
+        }
+        if (!StringUtils.isEmpty(record.get(RWT_TYPE))) {
+            rwtUpload.setType(getType(record.get(RWT_TYPE)));
+        } else {
+            rwtUpload.getErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.realWorldTestingTypeInvalid"));
+        }
+        if (!StringUtils.isEmpty(record.get(LAST_CHECKED))) {
+            rwtUpload.setLastChecked(getLastCheckedDate(record.get(LAST_CHECKED)));
+        } else {
+            rwtUpload.getErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.lastCheckedDateInvalid"));
+        }
+        if (!StringUtils.isEmpty(record.get(URL))) {
+            rwtUpload.setUrl(record.get(URL));
+        } else {
+            rwtUpload.getErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.url"));
+        }
         return rwtUpload;
     }
 
