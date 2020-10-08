@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.realworldtesting.manager.RealWorldTestingManager;
 import io.swagger.annotations.Api;
@@ -37,10 +38,10 @@ public class RealWorldTestingController {
                     + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
                     + "on the ACB(s) responsible for the product(s) in the file.")
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public @ResponseBody ResponseEntity<?> upload(@RequestParam("file") final MultipartFile file) throws ValidationException, SchedulerException {
+    public @ResponseBody ResponseEntity<?> upload(@RequestParam("file") final MultipartFile file)
+            throws ValidationException, SchedulerException, UserRetrievalException {
 
         realWorldTestingManager.uploadRealWorldTestingCsv(file);
-
         return new ResponseEntity<String>("", HttpStatus.OK);
     }
 }

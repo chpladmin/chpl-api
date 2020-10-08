@@ -2,6 +2,7 @@ package gov.healthit.chpl.realworldtesting.domain;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Data;
@@ -14,5 +15,5 @@ public class RealWorldTestingUpload implements Serializable {
     private LocalDate lastChecked;
     private RealWorldTestingType  type;
     private String url;
-    private List<String> errors;
+    private List<String> errors = new ArrayList<String>();
 }

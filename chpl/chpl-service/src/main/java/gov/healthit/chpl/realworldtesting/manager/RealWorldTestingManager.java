@@ -21,11 +21,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.SchedulerManager;
+import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingType;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUpload;
 import gov.healthit.chpl.scheduler.job.RealWorldTestingUploadJob;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Component
 public class RealWorldTestingManager {
@@ -38,23 +41,27 @@ public class RealWorldTestingManager {
     private static final int DELAY_BEFORE_JOB_START = 5000;
 
     private SchedulerManager schedulerManager;
+    private UserManager userManager;
 
     @Autowired
-    public RealWorldTestingManager(SchedulerManager schedulerManager) {
+    public RealWorldTestingManager(SchedulerManager schedulerManager, UserManager userManager) {
         this.schedulerManager = schedulerManager;
+        this.userManager = userManager;
     }
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).REAL_WORLD_TESTING, "
             + "T(gov.healthit.chpl.permissions.domains.RealWorldTestingDomainPermissions).UPLOAD)")
-    public void uploadRealWorldTestingCsv(MultipartFile file) throws ValidationException, SchedulerException {
+    public void uploadRealWorldTestingCsv(MultipartFile file)
+            throws ValidationException, SchedulerException, UserRetrievalException {
+
         checkBasicFileProperties(file);
         List<RealWorldTestingUpload> rwts = parseCsvFile(file);
         processRwtUploads(rwts);
     }
 
     private ChplOneTimeTrigger processRwtUploads(List<RealWorldTestingUpload> rwts)
-            throws SchedulerException, ValidationException {
+            throws SchedulerException, ValidationException, UserRetrievalException {
 
         ChplOneTimeTrigger rwtUploadTrigger = new ChplOneTimeTrigger();
         ChplJob rwtUploadJob = new ChplJob();
@@ -62,6 +69,7 @@ public class RealWorldTestingManager {
         rwtUploadJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put(RealWorldTestingUploadJob.RWT_UPLOAD_ITEMS, rwts);
+        jobDataMap.put(RealWorldTestingUploadJob.USER_KEY, userManager.getById(AuthUtil.getCurrentUser().getId()));
         rwtUploadJob.setJobDataMap(jobDataMap);
         rwtUploadTrigger.setJob(rwtUploadJob);
         rwtUploadTrigger.setRunDateMillis(System.currentTimeMillis() + DELAY_BEFORE_JOB_START);
