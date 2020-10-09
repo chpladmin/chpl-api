@@ -101,11 +101,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
         survFields.add(data.getProduct().getName());
         survFields.add(data.getVersion().getVersion());
         survFields.add(data.getChplProductNumber());
-        String productDetailsUrl = getEnv().getProperty("chplUrlBegin").trim();
-        if (!productDetailsUrl.endsWith("/")) {
-            productDetailsUrl += "/";
-        }
-        productDetailsUrl += "#/listing/" + data.getId();
+        String productDetailsUrl = getEnv().getProperty("chplUrlBegin").trim() + getEnv().getProperty("listingDetailsUrl") + data.getId();
         survFields.add(productDetailsUrl);
         survFields.add(data.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
         survFields.add(data.getCurrentStatus().getStatus().getName());

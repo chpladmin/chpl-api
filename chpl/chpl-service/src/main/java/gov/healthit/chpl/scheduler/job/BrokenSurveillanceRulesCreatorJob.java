@@ -238,11 +238,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
                 getCertificationBody(
                         Long.parseLong(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString())));
         base.setChplProductNumber(listing.getChplProductNumber());
-        String productDetailsUrl = env.getProperty("chplUrlBegin").trim();
-        if (!productDetailsUrl.endsWith("/")) {
-            productDetailsUrl += "/";
-        }
-        productDetailsUrl += env.getProperty("listingDetailsUrl").substring(1) + listing.getId();
+        String productDetailsUrl = env.getProperty("chplUrlBegin").trim() + env.getProperty("listingDetailsUrl") + listing.getId();
         base.setUrl(productDetailsUrl);
 
         base.setCertificationStatus(listing.getCurrentStatus().getStatus().getName());
