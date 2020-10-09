@@ -1,8 +1,11 @@
 package gov.healthit.chpl.scheduler.job;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
+import javax.mail.MessagingException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -11,6 +14,7 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -25,7 +29,9 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingType;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUpload;
+import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.HtmlEmailTemplate;
 
 public class RealWorldTestingUploadJob implements Job {
     private static final Logger LOGGER = LogManager.getLogger("realWorldTestingUploadJobLogger");
@@ -41,6 +47,9 @@ public class RealWorldTestingUploadJob implements Job {
 
     @Autowired
     private ErrorMessageUtil errorMessageUtil;
+
+    @Autowired
+    private Environment env;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -66,6 +75,11 @@ public class RealWorldTestingUploadJob implements Job {
                     LOGGER.info(e);
                 }
             }
+        }
+        try {
+            sendResults(rwts, user.getEmail());
+        } catch (MessagingException e) {
+            LOGGER.error(e);
         }
         LOGGER.info("********* Completed the Real World Testing Upload job. *********");
     }
@@ -160,4 +174,136 @@ public class RealWorldTestingUploadJob implements Job {
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 
+    private void sendResults(List<RealWorldTestingUpload> rwts, String address) throws MessagingException {
+        RwtEmail rwtEmail = new RwtEmail();
+        List<String> addresses = new ArrayList<String>(Arrays.asList(address));
+
+        EmailBuilder emailBuilder = new EmailBuilder(env);
+        emailBuilder.recipients(addresses)
+        .subject("Real World Testing Upload Results")
+        .htmlMessage(rwtEmail.getEmail(rwts))
+        //.fileAttachments(files)
+        .sendEmail();
+    }
+
+    class RwtEmail {
+        public String getEmail(List<RealWorldTestingUpload> rwts) {
+            HtmlEmailTemplate email = new HtmlEmailTemplate();
+            email.setStyles(getStyles());
+            email.setBody(getBody(rwts));
+            return email.build();
+        }
+
+        private String getBody(List<RealWorldTestingUpload> rwts) {
+            StringBuilder table = new StringBuilder();
+
+            table.append("<table class='blueTable'>\n");
+            table.append("    <thead>\n");
+            table.append("        <tr>\n");
+            table.append("            <th>\n");
+            table.append("                CHPL Product Number\n");
+            table.append("            </th>\n");
+            table.append("            <th>\n");
+            table.append("                Type\n");
+            table.append("            </th>\n");
+            table.append("            <th>\n");
+            table.append("                Last Checked Date\n");
+            table.append("            </th>\n");
+            table.append("            <th>\n");
+            table.append("                URL\n");
+            table.append("            </th>\n");
+            table.append("            <th>\n");
+            table.append("                Result or Errors\n");
+            table.append("            </th>\n");
+            table.append("        </tr>\n");
+            table.append("    </thead>\n");
+            table.append("    <tbody>\n");
+            int i = 1;
+            for (RealWorldTestingUpload rwt : rwts) {
+                String trClass = i % 2 == 0 ? "even" : "odd";
+
+                table.append("        <tr class=\"" + trClass + "\">\n");
+                table.append("            <td>");
+                table.append(rwt.getChplProductNumber());
+                table.append("            </td>\n");
+                table.append("            <td>");
+                table.append(rwt.getType());
+                table.append("            </td>\n");
+                table.append("            <td>");
+                table.append(rwt.getLastChecked());
+                table.append("            </td>\n");
+                table.append("            <td>");
+                table.append(rwt.getUrl());
+                table.append("            </td>\n");
+                table.append("            <td>");
+                table.append(StringUtils.join(rwt.getErrors(), "<br/>"));
+                table.append("            </td>\n");
+                table.append("        </tr>\n");
+                ++i;
+            }
+            table.append("    </tbody>\n");
+            table.append("</table>\n");
+
+            return table.toString();
+        }
+
+        private String getStyles() {
+            StringBuilder style = new StringBuilder();
+
+            style.append("table.blueTable {\n");
+            style.append("    background-color: #EEEEEE;\n");
+            style.append("    width: 100%;\n");
+            style.append("    text-align: left;\n");
+            style.append("    border-collapse: collapse;\n");
+            style.append("}\n");
+            style.append("}\n");
+            style.append("table.blueTable tbody td {\n");
+            style.append("    font-size: 13px;\n");
+            style.append("}\n");
+            style.append("table.blueTable tr.even {\n");
+            style.append("    background: #D0E4F5;\n");
+            style.append("}\n");
+            style.append("table.blueTable tr.odd {\n");
+            style.append("    background: #EEEEEE;\n");
+            style.append("}\n");
+            style.append("table.blueTable thead {\n");
+            style.append("    background: #1C6EA4;\n");
+            style.append("    border-bottom: 2px solid #444444;\n");
+            style.append("}\n");
+            style.append("table.blueTable thead th {\n");
+            style.append("    font-size: 15px;\n");
+            style.append("    font-weight: bold;\n");
+            style.append("    color: #FFFFFF;\n");
+            style.append("    border-left: 0px solid #D0E4F5;\n");
+            style.append("}\n");
+            style.append("table.blueTable thead th:first-child {\n");
+            style.append("    border-left: none;\n");
+            style.append("}\n");
+            style.append("table.blueTable tfoot {\n");
+            style.append("    font-size: 14px;\n");
+            style.append("    font-weight: bold;\n");
+            style.append("    color: #FFFFFF;\n");
+            style.append("    background: #D0E4F5;\n");
+            style.append("    background: -moz-linear-gradient(top, #dcebf7 0%, #d4e6f6 66%, #D0E4F5 100%);\n");
+            style.append("    background: -webkit-linear-gradient(top, #dcebf7 0%, #d4e6f6 66%, #D0E4F5 100%);\n");
+            style.append("    background: linear-gradient(to bottom, #dcebf7 0%, #d4e6f6 66%, #D0E4F5 100%);\n");
+            style.append("    border-top: 2px solid #444444;\n");
+            style.append("}\n");
+            style.append("table.blueTable tfoot td {\n");
+            style.append("    font-size: 14px;\n");
+            style.append("}\n");
+            style.append("table.blueTable tfoot .links {\n");
+            style.append("    text-align: right;\n");
+            style.append("}\n");
+            style.append("table.blueTable tfoot .links a{\n");
+            style.append("    display: inline-block;\n");
+            style.append("    background: #1C6EA4;\n");
+            style.append("    color: #FFFFFF;\n");
+            style.append("    padding: 2px 8px;\n");
+            style.append("    border-radius: 5px;\n");
+            style.append("}\n");
+
+            return style.toString();
+        }
+     }
 }
