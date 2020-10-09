@@ -58,7 +58,6 @@ import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
-import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
@@ -66,6 +65,7 @@ import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.TransparencyAttestation;
+import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.entity.FuzzyType;
@@ -293,8 +293,8 @@ public class CertifiedProductManagerTest {
                                 .state("CT")
                                 .zipcode("68800")
                                 .build())
-                        .contact(Contact.builder()
-                                .contactId(1L)
+                        .contact(PointOfContact.builder()
+                                .id(1L)
                                 .email("fake@email.com")
                                 .fullName("Chris Ulisse")
                                 .phoneNumber("555-555-5555")
