@@ -29,7 +29,7 @@ const developerControllerDataTests = {
 	    iterationData: data_path + '/developerIds-test-data.json',
 	    reporter: {
 	        junit: {
-	            export: reports_path + '/developer-controller-tests.xml',
+	            export: reports_path + '/developer-controller-data-tests.xml',
 	        },
 	    },
 	};
@@ -40,7 +40,7 @@ const developerControllerNoDataTests = {
 		    folder: 'GET : Developers: non-data driven tests',
 		    reporter: {
 		        junit: {
-		            export: reports_path + '/developer-controller-tests.xml',
+		            export: reports_path + '/developer-controller-nodata-tests.xml',
 		        },
 		    },
 		};
