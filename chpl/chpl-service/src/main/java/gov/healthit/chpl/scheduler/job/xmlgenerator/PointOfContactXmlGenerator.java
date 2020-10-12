@@ -7,9 +7,9 @@ import gov.healthit.chpl.domain.contact.PointOfContact;
 
 public class PointOfContactXmlGenerator extends XmlGenerator {
     public static void addContact(PointOfContact contact, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
-        if (contact != null && contact.getId() != null) {
+        if (contact != null && contact.getContactId() != null) {
             sw.writeStartElement(rootNodeName);
-            createSimpleElement(contact.getId(), "id", sw);
+            createSimpleElement(contact.getContactId(), "contactId", sw);
             createSimpleElement(contact.getEmail(), "email", sw);
             createSimpleElement(contact.getFullName(), "fullName", sw);
             createSimpleElement(contact.getPhoneNumber(), "phoneNumber", sw);

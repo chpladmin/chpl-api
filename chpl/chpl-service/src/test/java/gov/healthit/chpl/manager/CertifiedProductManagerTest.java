@@ -294,7 +294,7 @@ public class CertifiedProductManagerTest {
                                 .zipcode("68800")
                                 .build())
                         .contact(PointOfContact.builder()
-                                .id(1L)
+                                .contactId(1L)
                                 .email("fake@email.com")
                                 .fullName("Chris Ulisse")
                                 .phoneNumber("555-555-5555")

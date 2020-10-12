@@ -390,7 +390,7 @@ public class DeveloperController {
             if (developerInfo.getDeveloper().getContact() != null) {
                 PointOfContact developerContact = developerInfo.getDeveloper().getContact();
                 ContactDTO toUpdateContact = new ContactDTO();
-                toUpdateContact.setId(developerContact.getId());
+                toUpdateContact.setId(developerContact.getContactId());
                 toUpdateContact.setEmail(developerContact.getEmail());
                 toUpdateContact.setFullName(developerContact.getFullName());
                 toUpdateContact.setPhoneNumber(developerContact.getPhoneNumber());

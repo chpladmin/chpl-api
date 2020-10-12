@@ -174,7 +174,7 @@ public class ProductController {
             toUpdate.setReportFileLocation(productInfo.getProduct().getReportFileLocation());
             if (productInfo.getProduct().getContact() != null) {
                 ContactDTO contact = new ContactDTO();
-                contact.setId(productInfo.getProduct().getContact().getId());
+                contact.setId(productInfo.getProduct().getContact().getContactId());
                 contact.setFullName(productInfo.getProduct().getContact().getFullName());
                 contact.setTitle(productInfo.getProduct().getContact().getTitle());
                 contact.setEmail(productInfo.getProduct().getContact().getEmail());

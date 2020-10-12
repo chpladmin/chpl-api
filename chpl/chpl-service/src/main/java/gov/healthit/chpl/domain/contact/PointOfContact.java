@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -20,7 +21,12 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class PointOfContact extends Person {
     private static final long serialVersionUID = -1945872096428814999L;
-    private Long id;
+
+    /**
+     * Database ID of a point of contact.
+     */
+    @XmlElement(required = true)
+    private Long contactId;
 
     public PointOfContact() {
         super();
@@ -28,38 +34,32 @@ public class PointOfContact extends Person {
 
     public PointOfContact(ContactDTO dto) {
         super(dto);
-        this.id = dto.getId();
+        this.contactId = dto.getId();
     }
 
     @Builder
-    public PointOfContact(String fullName, String email, String phoneNumber, String title, Long id) {
+    public PointOfContact(String fullName, String email, String phoneNumber, String title, Long contactId) {
         super(fullName, email, phoneNumber, title);
-        this.id = id;
+        this.contactId = contactId;
     }
 
     public PointOfContact(HashMap<String, Object> map) {
         super(map);
         if (map.containsKey("contactId") && map.get("contactId") != null) {
             try {
-                this.id = Long.parseLong(map.get("contactId").toString());
+                this.contactId = Long.parseLong(map.get("contactId").toString());
             } catch (NumberFormatException ex) {
                 LOGGER.warn("contactId in map = '" + map.get("contactId") + "' is not parseable into a Long");
-            }
-        } else if (map.containsKey("id") && map.get("id") != null) {
-            try {
-                this.id = Long.parseLong(map.get("id").toString());
-            } catch (NumberFormatException ex) {
-                LOGGER.warn("id in map = '" + map.get("id") + "' is not parseable into a Long");
             }
         }
     }
 
-    public Long getId() {
-        return id;
+    public Long getContactId() {
+        return contactId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setContactId(Long contactId) {
+        this.contactId = contactId;
     }
 
     @Override
@@ -68,9 +68,9 @@ public class PointOfContact extends Person {
             return false;
         }
         PointOfContact anotherContact = (PointOfContact) obj;
-        if ((this.id != null && anotherContact.id != null
-                && this.id.longValue() == anotherContact.id.longValue())
-                || (this.id == null && anotherContact.id == null)) {
+        if ((this.contactId != null && anotherContact.contactId != null
+                && this.contactId.longValue() == anotherContact.contactId.longValue())
+                || (this.contactId == null && anotherContact.contactId == null)) {
             return super.equals(obj);
         }
         return false;
@@ -79,8 +79,8 @@ public class PointOfContact extends Person {
     @Override
     public int hashCode() {
         int hashCode = super.hashCode();
-        if (this.id != null) {
-            hashCode += this.id.hashCode();
+        if (this.contactId != null) {
+            hashCode += this.contactId.hashCode();
         }
         return hashCode;
     }

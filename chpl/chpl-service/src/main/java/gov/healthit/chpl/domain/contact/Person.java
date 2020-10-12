@@ -15,7 +15,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.ContactDTO;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 /**
  * Domain object representing a Person. It may partially represent a user with access to log into the system
@@ -26,7 +25,6 @@ import lombok.NoArgsConstructor;
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
-@NoArgsConstructor
 public class Person implements Serializable {
     private static final long serialVersionUID = 5376154206189674741L;
 
@@ -53,6 +51,8 @@ public class Person implements Serializable {
      */
     @XmlElement(required = false, nillable = true)
     private String title;
+
+    public Person() {}
 
     public Person(ContactDTO dto) {
         this.fullName = dto.getFullName();
