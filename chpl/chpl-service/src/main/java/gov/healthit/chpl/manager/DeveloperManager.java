@@ -367,7 +367,6 @@ public class DeveloperManager extends SecuredManager {
         List<ProductDTO> developerProducts = productManager.getByDevelopers(developerIdsToMerge);
         for (ProductDTO product : developerProducts) {
             List<CertifiedProductDetailsDTO> affectedListings = certifiedProductDAO.getDetailsByProductId(product.getId());
-            LOGGER.info("Found " + affectedListings.size() + " affected listings");
 
             for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
                 CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(affectedListing.getId());
