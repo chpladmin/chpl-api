@@ -3,11 +3,6 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.HashMap;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
-
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -26,8 +21,6 @@ import lombok.Builder;
  *
  */
 @Deprecated
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @AllArgsConstructor
@@ -38,7 +31,6 @@ public class Contact implements Serializable {
     /**
      * Contact internal ID
      */
-    @XmlElement(required = true)
     private Long contactId;
 
     /**
@@ -46,7 +38,6 @@ public class Contact implements Serializable {
      * Edition, and a string variable that does not take any restrictions on
      * formatting or values.
      */
-    @XmlElement(required = true)
     private String fullName;
 
     /**
@@ -55,13 +46,11 @@ public class Contact implements Serializable {
      * or values. Usually only used for Contacts representing Users.
      */
     @Deprecated
-    @XmlElement(required = false, nillable = true)
     private String friendlyName;
 
     /**
      * Email address of the contact. It is applicable to 2014 and 2015 Edition.
      */
-    @XmlElement(required = true)
     private String email;
 
     /**
@@ -69,13 +58,11 @@ public class Contact implements Serializable {
      * for 2014 and 2015 Edition, and a string variable that does not take any
      * restrictions on formatting or values. Do not include hyphens.
      */
-    @XmlElement(required = true)
     private String phoneNumber;
 
     /**
      * Contact title (Ms., Mr., Dr., etc)
      */
-    @XmlElement(required = false, nillable = true)
     private String title;
 
     /**
