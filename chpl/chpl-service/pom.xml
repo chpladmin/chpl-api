@@ -448,8 +448,8 @@
                     <verbose>true</verbose>
                     <createJavaDocAnnotations>true</createJavaDocAnnotations>
                     <sources>
-                        <source>src/main/java/gov/healthit/chpl/domain/contact/PointOfContact.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/Address.java</source>
+                        <source>src/main/java/gov/healthit/chpl/domain/contact/PointOfContact.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertifiedProductSed.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationResult.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationResultAdditionalSoftware.java</source>

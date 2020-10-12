@@ -355,7 +355,7 @@ public class DeveloperController {
                 devMap.setAcbId(attMap.getAcbId());
                 devMap.setAcbName(attMap.getAcbName());
                 if (attMap.getAttestation() != null) {
-                    devMap.setTransparencyAttestation(new TransparencyAttestationDTO( attMap.getAttestation()));
+                    devMap.setTransparencyAttestation(new TransparencyAttestationDTO(attMap.getAttestation()));
                 }
                 toUpdate.getTransparencyAttestationMappings().add(devMap);
             }

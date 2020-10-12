@@ -133,7 +133,7 @@ public class Validator2015Legacy extends Validator {
         }
 
         if (!met) {
-            missingOr.add(new ArrayList<String>(Arrays.asList("170.315 (h)(1)","170.315 (h)(2)")));
+            missingOr.add(new ArrayList<String>(Arrays.asList("170.315 (h)(1)", "170.315 (h)(2)")));
         }
 
         return (this.counts.get("criteriaDpRequiredMet") >= this.counts.get("criteriaDpRequired"));
