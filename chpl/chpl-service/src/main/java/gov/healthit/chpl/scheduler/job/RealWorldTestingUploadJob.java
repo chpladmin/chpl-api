@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
 
@@ -51,53 +56,69 @@ public class RealWorldTestingUploadJob implements Job {
     @Autowired
     private Environment env;
 
+    @SuppressWarnings("checkstyle:linelength")
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-
         LOGGER.info("********* Starting the Real World Testing Upload job. *********");
-        UserDTO user = (UserDTO) context.getMergedJobDataMap().get(USER_KEY);
-        setSecurityContext(user);
+        ExecutorService executorService = null;
 
-        List<RealWorldTestingUpload> rwts = (List<RealWorldTestingUpload>) context.getMergedJobDataMap().get(RWT_UPLOAD_ITEMS);
-        LOGGER.info(rwts.size());
-
-        for (RealWorldTestingUpload rwt : rwts) {
-            if (rwt.getErrors().size() == 0) {
-                rwt = processRwtUploadItem(rwt);
-            }
-
-            LOGGER.info(rwt.toString());
-            if (rwt.getErrors().size() == 0) {
-                LOGGER.info("Successfully Updated");
-            } else {
-                for (String e : rwt.getErrors()) {
-                    LOGGER.info(e);
-                }
-            }
-        }
         try {
+            UserDTO user = (UserDTO) context.getMergedJobDataMap().get(USER_KEY);
+            setSecurityContext(user);
+
+            Integer threadPoolSize = getThreadCountForJob();
+            executorService = Executors.newFixedThreadPool(threadPoolSize);
+
+            List<RealWorldTestingUpload> rwts = (List<RealWorldTestingUpload>) context.getMergedJobDataMap().get(RWT_UPLOAD_ITEMS);
+
+            List<CompletableFuture<RealWorldTestingUpload>> futures = new ArrayList<CompletableFuture<RealWorldTestingUpload>>();
+            for (RealWorldTestingUpload rwt : rwts) {
+                futures.add(CompletableFuture.supplyAsync(() -> processRwtUploadItem(rwt), executorService));
+            }
+
+            rwts = futures.stream()
+                    .map(f -> getRwtUploadFromFuture(f))
+                    .collect(Collectors.toList());
+
             sendResults(rwts, user.getEmail());
-        } catch (MessagingException e) {
+
+        } catch (Exception e) {
             LOGGER.error(e);
+        } finally {
+            executorService.shutdown();
         }
+
         LOGGER.info("********* Completed the Real World Testing Upload job. *********");
     }
 
+    private RealWorldTestingUpload getRwtUploadFromFuture(CompletableFuture<RealWorldTestingUpload> future) {
+        try {
+            return future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            LOGGER.error(e);
+            return null;
+        }
+    }
+
     private RealWorldTestingUpload processRwtUploadItem(RealWorldTestingUpload rwtUpload) {
-        rwtUpload.getErrors().addAll(validateRwtUpload(rwtUpload));
+        LOGGER.info("Processing record: " + rwtUpload.toString());
         if (rwtUpload.getErrors().size() == 0) {
-            Optional<CertifiedProductSearchDetails> listing = getListing(rwtUpload.getChplProductNumber());
-            if (listing.isPresent()) {
-                if (hasDataChanged(listing.get(), rwtUpload)) {
-                    rwtUpload = updateListing(listing.get(), rwtUpload);
+            rwtUpload.getErrors().addAll(validateRwtUpload(rwtUpload));
+            if (rwtUpload.getErrors().size() == 0) {
+                Optional<CertifiedProductSearchDetails> listing = getListing(rwtUpload.getChplProductNumber());
+                if (listing.isPresent()) {
+                    if (hasDataChanged(listing.get(), rwtUpload)) {
+                        rwtUpload = updateListing(listing.get(), rwtUpload);
+                    } else {
+                        rwtUpload.getErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.dataNotChanged"));
+                    }
                 } else {
-                    rwtUpload.getErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.dataNotChanged"));
+                    rwtUpload.getErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.listingNotFound"));
                 }
-            } else {
-                rwtUpload.getErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.listingNotFound"));
             }
         }
+        LOGGER.info("Completed processing record: " + rwtUpload.toString());
         return rwtUpload;
     }
 
@@ -186,6 +207,10 @@ public class RealWorldTestingUploadJob implements Job {
         .sendEmail();
     }
 
+    private Integer getThreadCountForJob() throws NumberFormatException {
+        return Integer.parseInt(env.getProperty("executorThreadCountForQuartzJobs"));
+    }
+
     class RwtEmail {
         public String getEmail(List<RealWorldTestingUpload> rwts) {
             HtmlEmailTemplate email = new HtmlEmailTemplate();
@@ -236,7 +261,7 @@ public class RealWorldTestingUploadJob implements Job {
                 table.append(rwt.getUrl());
                 table.append("            </td>\n");
                 table.append("            <td>");
-                table.append(StringUtils.join(rwt.getErrors(), "<br/>"));
+                table.append(getErrorsAsString(rwt.getErrors()));
                 table.append("            </td>\n");
                 table.append("        </tr>\n");
                 ++i;
@@ -245,6 +270,15 @@ public class RealWorldTestingUploadJob implements Job {
             table.append("</table>\n");
 
             return table.toString();
+        }
+
+
+        private String getErrorsAsString(List<String> errors) {
+            if (errors.size() > 0) {
+                return StringUtils.join(errors, "<br/>");
+            } else {
+                return "Successfully updated.";
+            }
         }
 
         private String getStyles() {

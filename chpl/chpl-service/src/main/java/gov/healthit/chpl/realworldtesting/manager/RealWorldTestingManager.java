@@ -63,10 +63,10 @@ public class RealWorldTestingManager {
 
         checkBasicFileProperties(file);
         List<RealWorldTestingUpload> rwts = parseCsvFile(file);
-        processRwtUploads(rwts);
+        startRwtUploadJob(rwts);
     }
 
-    private ChplOneTimeTrigger processRwtUploads(List<RealWorldTestingUpload> rwts)
+    private ChplOneTimeTrigger startRwtUploadJob(List<RealWorldTestingUpload> rwts)
             throws SchedulerException, ValidationException, UserRetrievalException {
 
         ChplOneTimeTrigger rwtUploadTrigger = new ChplOneTimeTrigger();
@@ -143,7 +143,6 @@ public class RealWorldTestingManager {
         } else if (rwtType.toUpperCase().equals(RESULTS)) {
             return RealWorldTestingType.RESULTS;
         } else {
-            //TODO: Determine what to do here
             return null;
         }
     }
