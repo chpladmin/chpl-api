@@ -1,11 +1,11 @@
 package gov.healthit.chpl.manager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import gov.healthit.chpl.caching.CacheNames;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.access.AccessDeniedException;
@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
@@ -23,6 +24,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.ProductDTO;
@@ -32,6 +34,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.service.DirectReviewUpdateEmailService;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil.ChplProductNumberParts;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -48,6 +51,7 @@ public class ProductManager extends SecuredManager {
     private CertifiedProductDAO cpDao;
     private CertifiedProductDetailsManager cpdManager;
     private ChplProductNumberUtil chplProductNumberUtil;
+    private DirectReviewUpdateEmailService drEmailService;
     private ActivityManager activityManager;
     private ResourcePermissions resourcePermissions;
     private ValidationUtils validationUtils;
@@ -56,8 +60,8 @@ public class ProductManager extends SecuredManager {
     @SuppressWarnings({"checkstyle:parameternumber"})
     public ProductManager(ErrorMessageUtil msgUtil, ProductDAO productDao,
             ProductVersionDAO versionDao, DeveloperDAO devDao, CertifiedProductDAO cpDao,
-            CertifiedProductDetailsManager cpdManager,
-            ChplProductNumberUtil chplProductNumberUtil, ActivityManager activityManager,
+            CertifiedProductDetailsManager cpdManager, ChplProductNumberUtil chplProductNumberUtil,
+            ActivityManager activityManager, DirectReviewUpdateEmailService drEmailService,
             ResourcePermissions resourcePermissions, ValidationUtils validationUtils) {
         this.msgUtil = msgUtil;
         this.productDao = productDao;
@@ -67,6 +71,7 @@ public class ProductManager extends SecuredManager {
         this.cpdManager = cpdManager;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.activityManager = activityManager;
+        this.drEmailService = drEmailService;
         this.resourcePermissions = resourcePermissions;
         this.validationUtils = validationUtils;
     }
@@ -127,15 +132,44 @@ public class ProductManager extends SecuredManager {
 
     @Transactional(readOnly = false)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE_OWNERSHIP, #dto)")
+            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE_OWNERSHIP, #updatedProductDto)")
     @CacheEvict(value = {
             CacheNames.COLLECTIONS_LISTINGS
     }, allEntries = true)
-    public ProductDTO updateProductOwnership(ProductDTO dto)
+    public ProductDTO updateProductOwnership(ProductDTO updatedProductDto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-        // This method was created to provide different security than the update() method
-        // even though it is the same functionality...
-        return updateProduct(dto);
+        Map<Long, CertifiedProductSearchDetails> preUpdateListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
+        Map<Long, CertifiedProductSearchDetails> postUpdateListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
+
+        ProductDTO currentProductDto = productDao.getById(updatedProductDto.getId());
+        DeveloperDTO currentProductOwner = devDao.getById(currentProductDto.getOwner().getId());
+        List<CertifiedProductDetailsDTO> affectedListings = cpDao.findByDeveloperId(currentProductDto.getOwner().getId());
+        LOGGER.info("Getting details for " + affectedListings.size() + " listings with affected CHPL Product Numbers");
+        for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
+            CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(affectedListing.getId());
+            LOGGER.info("Complete retrieving details for id: " + details.getId());
+            preUpdateListingDetails.put(details.getId(), details);
+        }
+
+        ProductDTO updatedProduct = updateProduct(updatedProductDto);
+
+        DeveloperDTO updatedProductOwner = devDao.getById(updatedProduct.getOwner().getId());
+        LOGGER.info("Getting details for " + affectedListings.size() + " listings with affected CHPL Product Numbers");
+        for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
+            CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(affectedListing.getId());
+            LOGGER.info("Complete retrieving details for id: " + details.getId());
+            postUpdateListingDetails.put(details.getId(), details);
+        }
+
+        for (Long id : preUpdateListingDetails.keySet()) {
+            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, id,
+                    "Updated certified product " + postUpdateListingDetails.get(id).getChplProductNumber()
+                    + ".", preUpdateListingDetails.get(id), postUpdateListingDetails.get(id));
+        }
+
+        drEmailService.sendEmail(Arrays.asList(currentProductOwner), Arrays.asList(updatedProductOwner),
+                preUpdateListingDetails, postUpdateListingDetails);
+        return updatedProduct;
     }
 
 
@@ -300,19 +334,19 @@ public class ProductManager extends SecuredManager {
             throw new EntityCreationException("Cannot update a product without a developer ID.");
         }
 
-        DeveloperDTO dev = devDao.getById(beforeDTO.getOwner().getId());
-        if (dev == null) {
+        DeveloperDTO currentProductOwner = devDao.getById(beforeDTO.getOwner().getId());
+        if (currentProductOwner == null) {
             throw new EntityRetrievalException("Cannot find developer with id " + beforeDTO.getOwner().getId());
         }
-        DeveloperStatusEventDTO currDevStatus = dev.getStatus();
+        DeveloperStatusEventDTO currDevStatus = currentProductOwner.getStatus();
         if (currDevStatus == null || currDevStatus.getStatus() == null) {
             String msg = "The product " + dto.getName() + " cannot be updated since the status of developer "
-                    + dev.getName() + " cannot be determined.";
+                    + currentProductOwner.getName() + " cannot be determined.";
             LOGGER.error(msg);
             throw new EntityCreationException(msg);
         } else if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
                 && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
-            String msg = "The product " + dto.getName() + " cannot be updated since the developer " + dev.getName()
+            String msg = "The product " + dto.getName() + " cannot be updated since the developer " + currentProductOwner.getName()
                     + " has a status of " + currDevStatus.getStatus().getStatusName();
             LOGGER.error(msg);
             throw new EntityCreationException(msg);
@@ -321,8 +355,8 @@ public class ProductManager extends SecuredManager {
         ProductDTO result = productDao.update(dto);
         // the developer name is not updated at this point until after
         // transaction commit so we have to set it
-        DeveloperDTO devDto = devDao.getById(result.getOwner().getId());
-        result.getOwner().setName(devDto.getName());
+        DeveloperDTO updatedProductOwner = devDao.getById(result.getOwner().getId());
+        result.getOwner().setName(updatedProductOwner.getName());
 
         String activityMsg = "Product " + dto.getName() + " was updated.";
         activityManager.addActivity(ActivityConcept.PRODUCT, result.getId(), activityMsg, beforeDTO, result);
