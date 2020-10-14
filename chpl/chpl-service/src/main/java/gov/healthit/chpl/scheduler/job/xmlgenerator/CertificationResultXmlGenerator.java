@@ -27,9 +27,7 @@ public class CertificationResultXmlGenerator extends XmlGenerator {
             CertificationCriterionXmlGenerator.add(result.getCriterion(), "criterion", sw);
             createSimpleElement(result.getDocumentationUrl(), "documentationUrl", sw);
             createSimpleElement(result.getExportDocumentation(), "exportDocumentation", sw);
-            MacraMeasureXmlGenerator.add(result.getG1MacraMeasures(), "g1MacraMeasures", sw);
             createSimpleElement(result.isG1Success(), "g1Success", sw);
-            MacraMeasureXmlGenerator.add(result.getG2MacraMeasures(), "g2MacraMeasures", sw);
             createSimpleElement(result.isG2Success(), "g2Success", sw);
             createSimpleElement(result.isGap(), "gap", sw);
             createSimpleElement(result.getNumber(), "number", sw);

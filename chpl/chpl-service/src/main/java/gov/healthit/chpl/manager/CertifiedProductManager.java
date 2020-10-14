@@ -91,7 +91,6 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
-import gov.healthit.chpl.dto.CertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
@@ -131,7 +130,6 @@ import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestProcedureDTO;
@@ -160,7 +158,6 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CuresUpdateService;
-import gov.healthit.chpl.service.DirectReviewUpdateEmailService;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
@@ -661,8 +658,6 @@ public class CertifiedProductManager extends SecuredManager {
                 certResultToCreate.setUseCases(isCertified ? certResult.getUseCases() : null);
                 CertificationResultDTO createdCert = certDao.create(certResultToCreate);
 
-                createdCert = addG1G2MacraMeasures(certResult, createdCert);
-
                 if (isCertified) {
                     if (certResult.getAdditionalSoftware() != null && certResult.getAdditionalSoftware().size() > 0) {
                         for (PendingCertificationResultAdditionalSoftwareDTO software : certResult
@@ -1011,41 +1006,6 @@ public class CertifiedProductManager extends SecuredManager {
         curesUpdateDao.create(curesEvent);
 
         return newCertifiedProduct;
-    }
-
-    private CertificationResultDTO addG1G2MacraMeasures(PendingCertificationResultDTO certResult,
-            CertificationResultDTO createdCert) throws EntityCreationException {
-        if (certResult.getG1MacraMeasures() != null && certResult.getG1MacraMeasures().size() > 0) {
-            for (PendingCertificationResultMacraMeasureDTO pendingMeasure : certResult.getG1MacraMeasures()) {
-                // the validator set the macraMeasure value so it's
-                // definitely filled in
-                if (pendingMeasure.getMacraMeasure() != null && pendingMeasure.getMacraMeasure().getId() != null) {
-                    CertificationResultMacraMeasureDTO crMeasure = new CertificationResultMacraMeasureDTO();
-                    crMeasure.setMeasure(pendingMeasure.getMacraMeasure());
-                    crMeasure.setCertificationResultId(createdCert.getId());
-                    certDao.addG1MacraMeasureMapping(crMeasure);
-                } else {
-                    LOGGER.error("Found G1 Macra Measure with null value for " + certResult.getCriterion().getNumber());
-                }
-            }
-        }
-
-        if (certResult.getG2MacraMeasures() != null && certResult.getG2MacraMeasures().size() > 0) {
-            for (PendingCertificationResultMacraMeasureDTO pendingMeasure : certResult.getG2MacraMeasures()) {
-                // the validator set the macraMeasure value so it's
-                // definitely filled in
-                if (pendingMeasure.getMacraMeasure() != null && pendingMeasure.getMacraMeasure().getId() != null) {
-                    CertificationResultMacraMeasureDTO crMeasure = new CertificationResultMacraMeasureDTO();
-                    crMeasure.setMeasure(pendingMeasure.getMacraMeasure());
-                    crMeasure.setCertificationResultId(createdCert.getId());
-                    certDao.addG2MacraMeasureMapping(crMeasure);
-                } else {
-                    LOGGER.error("Found G2 Macra Measure with null value for " + certResult.getCriterion().getNumber());
-                }
-            }
-        }
-
-        return createdCert;
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")

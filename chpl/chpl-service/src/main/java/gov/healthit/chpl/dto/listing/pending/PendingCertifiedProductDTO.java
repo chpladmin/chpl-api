@@ -27,7 +27,6 @@ import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
-import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
@@ -37,7 +36,6 @@ import gov.healthit.chpl.dto.AgeRangeDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
-import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.dto.TransparencyAttestationDTO;
@@ -382,36 +380,6 @@ public class PendingCertifiedProductDTO implements Serializable {
                     toolDto.setVersion(tool.getTestToolVersion());
                     toolDto.setTestToolId(tool.getTestToolId());
                     certDto.getTestTools().add(toolDto);
-                }
-            }
-
-            if (crResult.getG1MacraMeasures() != null && crResult.getG1MacraMeasures().size() > 0) {
-                for (MacraMeasure mm : crResult.getG1MacraMeasures()) {
-                    PendingCertificationResultMacraMeasureDTO mmDto = new PendingCertificationResultMacraMeasureDTO();
-                    mmDto.setId(mm.getId());
-                    mmDto.setMacraMeasureId(mm.getId());
-
-                    MacraMeasureDTO measure = new MacraMeasureDTO();
-                    measure.setId(mm.getId());
-                    measure.setValue(mm.getAbbreviation());
-                    measure.setRemoved(mm.getRemoved());
-                    mmDto.setMacraMeasure(measure);
-                    certDto.getG1MacraMeasures().add(mmDto);
-                }
-            }
-
-            if (crResult.getG2MacraMeasures() != null && crResult.getG2MacraMeasures().size() > 0) {
-                for (MacraMeasure mm : crResult.getG2MacraMeasures()) {
-                    PendingCertificationResultMacraMeasureDTO mmDto = new PendingCertificationResultMacraMeasureDTO();
-                    mmDto.setId(mm.getId());
-                    mmDto.setMacraMeasureId(mm.getId());
-
-                    MacraMeasureDTO measure = new MacraMeasureDTO();
-                    measure.setId(mm.getId());
-                    measure.setValue(mm.getAbbreviation());
-                    measure.setRemoved(mm.getRemoved());
-                    mmDto.setMacraMeasure(measure);
-                    certDto.getG2MacraMeasures().add(mmDto);
                 }
             }
 

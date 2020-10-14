@@ -13,7 +13,6 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestProcedureDTO;
@@ -40,7 +39,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
     public PendingCertifiedProductDetails() {
     }
 
-    public PendingCertifiedProductDetails(final PendingCertifiedProductDTO dto) {
+    public PendingCertifiedProductDetails(PendingCertifiedProductDTO dto) {
         this.setId(dto.getId());
         this.setErrorMessages(dto.getErrorMessages());
         this.setWarningMessages(dto.getWarningMessages());
@@ -333,38 +332,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
                 cert.setTestStandards(null);
             }
 
-            if (certCriterion.getG1MacraMeasures() != null) {
-                for (PendingCertificationResultMacraMeasureDTO mm : certCriterion.getG1MacraMeasures()) {
-                    if (mm.getMacraMeasure() != null) {
-                        MacraMeasure measure = new MacraMeasure(mm.getMacraMeasure());
-                        cert.getG1MacraMeasures().add(measure);
-                    } else {
-                        MacraMeasure measure = new MacraMeasure();
-                        measure.setId(mm.getMacraMeasureId());
-                        cert.getG1MacraMeasures().add(measure);
-                    }
-                }
-            } else {
-                cert.setG1MacraMeasures(null);
-            }
-
-            if (certCriterion.getG2MacraMeasures() != null) {
-                for (PendingCertificationResultMacraMeasureDTO mm : certCriterion.getG2MacraMeasures()) {
-                    if (mm.getMacraMeasure() != null) {
-                        MacraMeasure measure = new MacraMeasure(mm.getMacraMeasure());
-                        cert.getG2MacraMeasures().add(measure);
-                    } else {
-                        MacraMeasure measure = new MacraMeasure();
-                        measure.setId(mm.getMacraMeasureId());
-                        cert.getG2MacraMeasures().add(measure);
-                    }
-                }
-            } else {
-                cert.setG2MacraMeasures(null);
-            }
-
             // set all sed data: ucd processes and test tasks
-
             if (certCriterion.getUcdProcesses() != null && certCriterion.getUcdProcesses().size() > 0) {
                 for (PendingCertificationResultUcdProcessDTO ucdDto : certCriterion.getUcdProcesses()) {
                     boolean alreadyExists = false;

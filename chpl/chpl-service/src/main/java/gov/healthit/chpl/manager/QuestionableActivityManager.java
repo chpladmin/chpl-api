@@ -305,38 +305,6 @@ public class QuestionableActivityManager implements EnvironmentAware {
                         activityUser, QuestionableActivityTriggerConcept.GAP_EDITED, activityReason);
             }
         }
-        if (certResultRules.hasCertOption(origCertResult.getNumber(), CertificationResultRules.G1_MACRA)) {
-            certActivities = certResultQuestionableActivityProvider
-                    .checkG1MacraMeasuresAdded(origCertResult, newCertResult);
-            for (QuestionableActivityCertificationResultDTO currCertActivity : certActivities) {
-                createCertificationActivity(currCertActivity, origCertResult.getId(), activityDate,
-                        activityUser, QuestionableActivityTriggerConcept.G1_MEASURE_ADDED, activityReason);
-            }
-        }
-        if (certResultRules.hasCertOption(origCertResult.getNumber(), CertificationResultRules.G1_MACRA)) {
-            certActivities = certResultQuestionableActivityProvider
-                    .checkG1MacraMeasuresRemoved(origCertResult, newCertResult);
-            for (QuestionableActivityCertificationResultDTO currCertActivity : certActivities) {
-                createCertificationActivity(currCertActivity, origCertResult.getId(), activityDate,
-                        activityUser, QuestionableActivityTriggerConcept.G1_MEASURE_REMOVED, activityReason);
-            }
-        }
-        if (certResultRules.hasCertOption(origCertResult.getNumber(), CertificationResultRules.G2_MACRA)) {
-            certActivities = certResultQuestionableActivityProvider
-                    .checkG2MacraMeasuresAdded(origCertResult, newCertResult);
-            for (QuestionableActivityCertificationResultDTO currCertActivity : certActivities) {
-                createCertificationActivity(currCertActivity, origCertResult.getId(), activityDate,
-                        activityUser, QuestionableActivityTriggerConcept.G2_MEASURE_ADDED, activityReason);
-            }
-        }
-        if (certResultRules.hasCertOption(origCertResult.getNumber(), CertificationResultRules.G2_MACRA)) {
-            certActivities = certResultQuestionableActivityProvider
-                    .checkG2MacraMeasuresRemoved(origCertResult, newCertResult);
-            for (QuestionableActivityCertificationResultDTO currCertActivity : certActivities) {
-                createCertificationActivity(currCertActivity, origCertResult.getId(), activityDate,
-                        activityUser, QuestionableActivityTriggerConcept.G2_MEASURE_REMOVED, activityReason);
-            }
-        }
     }
 
     private void createListingActivity(QuestionableActivityListingDTO activity, Long listingId, Date activityDate,

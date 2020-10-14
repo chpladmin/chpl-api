@@ -46,7 +46,6 @@ import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
-import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
@@ -58,7 +57,6 @@ import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
-import gov.healthit.chpl.dto.CertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
@@ -578,35 +576,6 @@ public class CertifiedProductDetailsManager {
             result.setTestFunctionality(null);
         }
 
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G1_MACRA)
-                && !certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_MACRA)) {
-            result.setAllowedMacraMeasures(null);
-            result.setG1MacraMeasures(null);
-            result.setG2MacraMeasures(null);
-        } else {
-            if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G1_MACRA)) {
-                List<CertificationResultMacraMeasureDTO> measures = certResultManager
-                        .getG1MacraMeasuresForCertificationResult(certResult.getId());
-                for (CertificationResultMacraMeasureDTO currResult : measures) {
-                    MacraMeasure mmResult = new MacraMeasure(currResult.getMeasure());
-                    result.getG1MacraMeasures().add(mmResult);
-                }
-            } else {
-                result.setG1MacraMeasures(null);
-            }
-
-            if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_MACRA)) {
-                List<CertificationResultMacraMeasureDTO> measures = certResultManager
-                        .getG2MacraMeasuresForCertificationResult(certResult.getId());
-                for (CertificationResultMacraMeasureDTO currResult : measures) {
-                    MacraMeasure mmResult = new MacraMeasure(currResult.getMeasure());
-                    result.getG2MacraMeasures().add(mmResult);
-                }
-            } else {
-                result.setG2MacraMeasures(null);
-            }
-        }
-
         // get all SED data for the listing
         // ucd processes and test tasks with participants
         CertificationCriterion criteria = result.getCriterion();
@@ -650,12 +619,6 @@ public class CertifiedProductDetailsManager {
             }
         }
 
-        // set allowed macra measures (if any)
-        for (MacraMeasure measure : dimensionalDataManager.getMacraMeasures()) {
-            if (measure.getCriteria().getId().equals(result.getCriterion().getId())) {
-                result.getAllowedMacraMeasures().add(measure);
-            }
-        }
         result.setAllowedTestFunctionalities(getAvailableTestFunctionalities(result, searchDetails));
         return result;
     }

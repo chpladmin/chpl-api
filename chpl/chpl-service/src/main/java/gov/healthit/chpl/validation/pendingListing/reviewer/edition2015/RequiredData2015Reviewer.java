@@ -18,12 +18,10 @@ import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
-import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestProcedureDTO;
@@ -213,42 +211,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         g7g8g9ComplimentaryErrors =
                 validationUtils.checkComplimentaryCriteriaAnyRequired(g7g8g9Criterion, d2d10Criterion, attestedCriteria);
         listing.getErrorMessages().addAll(g7g8g9ComplimentaryErrors);
-
-        //g1 macra check
-        if (validationUtils.hasCert(G1_CRITERIA_NUMBER, attestedCriteria)) {
-            //must have at least one criteria with g1 macras listed
-            boolean hasG1Macra = false;
-            for (int i = 0; i < listing.getCertificationCriterion().size() && !hasG1Macra; i++) {
-                PendingCertificationResultDTO cert = listing.getCertificationCriterion().get(i);
-                if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.G1_MACRA)
-                        && cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
-                    hasG1Macra = true;
-                }
-            }
-
-            if (!hasG1Macra) {
-                listing.getErrorMessages().add(
-                        msgUtil.getMessage("listing.missingG1Macras"));
-            }
-        }
-
-        //g2 macra check
-        if (validationUtils.hasCert(G2_CRITERIA_NUMBER, attestedCriteria)) {
-            //must have at least one criteria with g2 macras listed
-            boolean hasG2Macra = false;
-            for (int i = 0; i < listing.getCertificationCriterion().size() && !hasG2Macra; i++) {
-                PendingCertificationResultDTO cert = listing.getCertificationCriterion().get(i);
-                if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.G2_MACRA)
-                        && cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
-                    hasG2Macra = true;
-                }
-            }
-
-            if (!hasG2Macra) {
-                listing.getErrorMessages().add(
-                        msgUtil.getMessage("listing.missingG2Macras"));
-            }
-        }
 
         // g3 checks
         for (int i = 0; i < UCD_RELATED_CERTS.length; i++) {
@@ -806,82 +768,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                             addErrorOrWarningByPermission(listing, cert,
                                     "listing.criteria.missingTestDataVersion",
                                     Util.formatCriteriaNumber(cert.getCriterion()));
-                        }
-                    }
-                }
-
-                if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.G1_MACRA)
-                        && cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
-                    for (PendingCertificationResultMacraMeasureDTO pendingMeasureMap : cert.getG1MacraMeasures()) {
-                        if (pendingMeasureMap.getMacraMeasureId() == null) {
-                            MacraMeasureDTO foundMeasure = macraDao.getByCriterionAndValue(cert.getCriterion().getId(),
-                                    pendingMeasureMap.getEnteredValue());
-                            if (foundMeasure == null || foundMeasure.getId() == null) {
-                                listing.getErrorMessages().add(
-                                        msgUtil.getMessage("listing.criteria.invalidG1MacraMeasure",
-                                                Util.formatCriteriaNumber(cert.getCriterion()),
-                                                pendingMeasureMap.getEnteredValue()));
-                            } else {
-                                pendingMeasureMap.setMacraMeasure(foundMeasure);
-                            }
-                        } else if (pendingMeasureMap.getMacraMeasure() == null) {
-                            MacraMeasureDTO foundMeasure = macraDao.getById(pendingMeasureMap.getMacraMeasureId());
-                            if (foundMeasure == null || foundMeasure.getId() == null) {
-                                listing.getErrorMessages().add(
-                                        msgUtil.getMessage("listing.criteria.invalidG1MacraMeasure",
-                                                Util.formatCriteriaNumber(cert.getCriterion()),
-                                                pendingMeasureMap.getEnteredValue()));
-                            } else {
-                                pendingMeasureMap.setMacraMeasure(foundMeasure);
-                            }
-                        }
-
-                        if (pendingMeasureMap.getMacraMeasure() != null
-                                && (listing.getIcs() == null || !listing.getIcs().booleanValue())
-                                && pendingMeasureMap.getMacraMeasure().getRemoved() != null
-                                && pendingMeasureMap.getMacraMeasure().getRemoved().booleanValue()) {
-                            listing.getErrorMessages().add(
-                                    msgUtil.getMessage("listing.criteria.removedG1MacraMeasureNoIcs",
-                                            Util.formatCriteriaNumber(cert.getCriterion()),
-                                            pendingMeasureMap.getMacraMeasure().getValue()));
-                        }
-                    }
-                }
-
-                if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.G2_MACRA)
-                        && cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
-                    for (PendingCertificationResultMacraMeasureDTO pendingMeasureMap : cert.getG2MacraMeasures()) {
-                        if (pendingMeasureMap.getMacraMeasureId() == null) {
-                            MacraMeasureDTO foundMeasure = macraDao.getByCriterionAndValue(cert.getCriterion().getId(),
-                                    pendingMeasureMap.getEnteredValue());
-                            if (foundMeasure == null || foundMeasure.getId() == null) {
-                                listing.getErrorMessages().add(
-                                        msgUtil.getMessage("listing.criteria.invalidG2MacraMeasure",
-                                                Util.formatCriteriaNumber(cert.getCriterion()),
-                                                pendingMeasureMap.getEnteredValue()));
-                            } else {
-                                pendingMeasureMap.setMacraMeasure(foundMeasure);
-                            }
-                        } else if (pendingMeasureMap.getMacraMeasure() == null) {
-                            MacraMeasureDTO foundMeasure = macraDao.getById(pendingMeasureMap.getMacraMeasureId());
-                            if (foundMeasure == null || foundMeasure.getId() == null) {
-                                listing.getErrorMessages().add(
-                                        msgUtil.getMessage("listing.criteria.invalidG2MacraMeasure",
-                                                Util.formatCriteriaNumber(cert.getCriterion()),
-                                                pendingMeasureMap.getEnteredValue()));
-                            } else {
-                                pendingMeasureMap.setMacraMeasure(foundMeasure);
-                            }
-                        }
-
-                        if (pendingMeasureMap.getMacraMeasure() != null
-                                && (listing.getIcs() == null || !listing.getIcs().booleanValue())
-                                && pendingMeasureMap.getMacraMeasure().getRemoved() != null
-                                && pendingMeasureMap.getMacraMeasure().getRemoved().booleanValue()) {
-                            listing.getErrorMessages().add(
-                                    msgUtil.getMessage("listing.criteria.removedG2MacraMeasureNoIcs",
-                                            Util.formatCriteriaNumber(cert.getCriterion()),
-                                            pendingMeasureMap.getMacraMeasure().getValue()));
                         }
                     }
                 }

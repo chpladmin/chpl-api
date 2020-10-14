@@ -22,13 +22,11 @@ import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.TestData;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
-import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
@@ -208,40 +206,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         g7g8g9ComplimentaryErrors = validationUtils.checkComplimentaryCriteriaAnyRequired(g7g8g9Criterion,
                 d2d10Criterion, attestedCriteria);
         listing.getErrorMessages().addAll(g7g8g9ComplimentaryErrors);
-
-        // g1 macra check
-        if (validationUtils.hasCert(G1_CRITERIA_NUMBER, attestedCriteria)) {
-            // must have at least one criteria with g1 macras listed
-            boolean hasG1Macra = false;
-            for (int i = 0; i < listing.getCertificationResults().size() && !hasG1Macra; i++) {
-                CertificationResult cert = listing.getCertificationResults().get(i);
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_MACRA)
-                        && cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
-                    hasG1Macra = true;
-                }
-            }
-
-            if (!hasG1Macra) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.missingG1Macras"));
-            }
-        }
-
-        // g2 macra check
-        if (validationUtils.hasCert(G2_CRITERIA_NUMBER, attestedCriteria)) {
-            // must have at least one criteria with g2 macras listed
-            boolean hasG2Macra = false;
-            for (int i = 0; i < listing.getCertificationResults().size() && !hasG2Macra; i++) {
-                CertificationResult cert = listing.getCertificationResults().get(i);
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_MACRA)
-                        && cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
-                    hasG2Macra = true;
-                }
-            }
-
-            if (!hasG2Macra) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.missingG2Macras"));
-            }
-        }
 
         for (int i = 0; i < UCD_RELATED_CERTS.length; i++) {
             if (validationUtils.hasCert(UCD_RELATED_CERTS[i], attestedCriteria)) {
@@ -565,62 +529,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                 && StringUtils.isEmpty(crTestData.getVersion())) {
                             addCriterionErrorOrWarningByPermission(listing, cert,
                                     "listing.criteria.missingTestDataVersion",  Util.formatCriteriaNumber(cert.getCriterion()));
-                        }
-                    }
-                }
-
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_MACRA)
-                        && cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
-                    for (int i = 0; i < cert.getG1MacraMeasures().size(); i++) {
-                        MacraMeasure measure = cert.getG1MacraMeasures().get(i);
-                        if (measure == null || measure.getId() == null) {
-                            listing.getErrorMessages()
-                            .add("Certification " + Util.formatCriteriaNumber(cert.getCriterion())
-                                + " contains invalid G1 Macra Measure.");
-                        } else {
-                            // confirm the measure id is valid
-                            MacraMeasureDTO foundMeasure = macraDao.getById(measure.getId());
-                            if (foundMeasure == null || foundMeasure.getId() == null) {
-                                listing.getErrorMessages()
-                                .add("Certification " +  Util.formatCriteriaNumber(cert.getCriterion())
-                                + " contains invalid G1 Macra Measure. No measure found with ID '"
-                                + measure.getId() + "'.");
-                            } else if (!foundMeasure.getCriteria().getId().equals(cert.getCriterion().getId())) {
-                                listing.getErrorMessages().add("Certification " +  Util.formatCriteriaNumber(cert.getCriterion())
-                                + " contains an invalid G1 Macra Measure. Measure with ID '" + measure.getId()
-                                + "' is the measure '" + foundMeasure.getName() + "' and is for criteria '"
-                                + Util.formatCriteriaNumber(foundMeasure.getCriteria()) + "'.");
-                            } else {
-                                cert.getG1MacraMeasures().set(i, new MacraMeasure(foundMeasure));
-                            }
-                        }
-                    }
-                }
-
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_MACRA)
-                        && cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
-                    for (int i = 0; i < cert.getG2MacraMeasures().size(); i++) {
-                        MacraMeasure measure = cert.getG2MacraMeasures().get(i);
-                        if (measure == null || measure.getId() == null) {
-                            listing.getErrorMessages()
-                            .add("Certification " +  Util.formatCriteriaNumber(cert.getCriterion())
-                                + " contains invalid G2 Macra Measure.");
-                        } else {
-                            // confirm the measure id is valid
-                            MacraMeasureDTO foundMeasure = macraDao.getById(measure.getId());
-                            if (foundMeasure == null || foundMeasure.getId() == null) {
-                                listing.getErrorMessages()
-                                .add("Certification " +  Util.formatCriteriaNumber(cert.getCriterion())
-                                + " contains invalid G2 Macra Measure. No measure found with ID '"
-                                + measure.getId() + "'.");
-                            } else if (!foundMeasure.getCriteria().getId().equals(cert.getCriterion().getId())) {
-                                listing.getErrorMessages().add("Certification " +  Util.formatCriteriaNumber(cert.getCriterion())
-                                + " contains an invalid G2 Macra Measure. Measure with ID '" + measure.getId()
-                                + "' is the measure '" + foundMeasure.getName() + "' and is for criteria '"
-                                + Util.formatCriteriaNumber(foundMeasure.getCriteria()) + "'.");
-                            } else {
-                                cert.getG2MacraMeasures().set(i, new MacraMeasure(foundMeasure));
-                            }
                         }
                     }
                 }
