@@ -1,13 +1,27 @@
 package gov.healthit.chpl.permissions.domains.scheduler;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
+import gov.healthit.chpl.scheduler.job.RealWorldTestingUploadJob;
 import gov.healthit.chpl.scheduler.job.SplitDeveloperJob;
 
 @Component(value = "schedulerCreateBackgroundJobTriggerActionPermissions")
 public class CreateBackgroundJobTriggerActionPermissions extends ActionPermissions {
+
+    private static final List<String> JOBS_ACB_CAN_CREATE = new ArrayList<String>();
+
+    @PostConstruct
+    public void init() {
+        JOBS_ACB_CAN_CREATE.add(SplitDeveloperJob.JOB_NAME);
+        JOBS_ACB_CAN_CREATE.add(RealWorldTestingUploadJob.JOB_NAME);
+    }
 
     @Override
     public boolean hasAccess() {
@@ -22,7 +36,7 @@ public class CreateBackgroundJobTriggerActionPermissions extends ActionPermissio
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             if (obj instanceof ChplOneTimeTrigger) {
                 ChplOneTimeTrigger trigger = (ChplOneTimeTrigger) obj;
-                if (trigger.getJob() != null && trigger.getJob().getName().equals(SplitDeveloperJob.JOB_NAME)) {
+                if (trigger.getJob() != null && canAcbCreateJob(trigger.getJob().getName())) {
                     return true;
                 }
             }
@@ -30,4 +44,10 @@ public class CreateBackgroundJobTriggerActionPermissions extends ActionPermissio
         return false;
     }
 
+    private boolean canAcbCreateJob(String jobName) {
+        return JOBS_ACB_CAN_CREATE.stream()
+                .filter(job -> job.equalsIgnoreCase(jobName))
+                .findAny()
+                .isPresent();
+    }
 }
