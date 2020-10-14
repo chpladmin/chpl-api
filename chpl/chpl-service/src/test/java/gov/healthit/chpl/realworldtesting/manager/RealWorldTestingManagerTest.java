@@ -23,6 +23,7 @@ import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUploadResponse;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class RealWorldTestingManagerTest {
+    private static final Long USER_ID = -2L;
 
     private RealWorldTestingManager realWorldTestingManager;
     private SchedulerManager schedulerManager;
@@ -113,7 +114,7 @@ public class RealWorldTestingManagerTest {
     private void setSecurityContext() {
         JWTAuthenticatedUser adminUser = new JWTAuthenticatedUser();
         adminUser.setFullName("Administrator");
-        adminUser.setId(-2L);
+        adminUser.setId(USER_ID);
         adminUser.setFriendlyName("Administrator");
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
