@@ -160,6 +160,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CuresUpdateService;
+import gov.healthit.chpl.service.DirectReviewUpdateEmailService;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
@@ -1143,8 +1144,8 @@ public class CertifiedProductManager extends SecuredManager {
 
     private void logCertifiedProductUpdateActivity(CertifiedProductSearchDetails existingListing,
             String reason) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
-        CertifiedProductSearchDetails changedProduct = certifiedProductDetailsManager
-                .getCertifiedProductDetails(existingListing.getId());
+        CertifiedProductSearchDetails changedProduct = certifiedProductDetailsManager.
+                getCertifiedProductDetails(existingListing.getId());
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
                 "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingListing,
                 changedProduct, reason);
