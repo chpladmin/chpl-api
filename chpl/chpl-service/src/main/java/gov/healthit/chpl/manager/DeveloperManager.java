@@ -424,7 +424,7 @@ public class DeveloperManager extends SecuredManager {
         // search for any products assigned to the list of developers passed in
         List<ProductDTO> developerProducts = productManager.getByDevelopers(developerIdsToMerge);
         for (ProductDTO product : developerProducts) {
-            List<CertifiedProductDetailsDTO> affectedListings = certifiedProductDAO.getDetailsByProductId(product.getId());
+            List<CertifiedProductDetailsDTO> affectedListings = certifiedProductDao.getDetailsByProductId(product.getId());
 
             for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
                 CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(affectedListing.getId());
