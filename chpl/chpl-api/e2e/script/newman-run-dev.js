@@ -4,7 +4,7 @@ const path = require('path');
 
 const collection_path = path.resolve('chpl/chpl-api/e2e/collections');
 const reports_path = path.resolve('newman');
-const data_path= path.resolve('chpl/chpl-api/e2e/data');
+const data_path = path.resolve('chpl/chpl-api/e2e/data');
 
 const commonOptions = {
     reporters: ['junit','cli'],
