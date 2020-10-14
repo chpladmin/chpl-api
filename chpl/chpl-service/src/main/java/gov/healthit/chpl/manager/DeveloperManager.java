@@ -101,8 +101,7 @@ public class DeveloperManager extends SecuredManager {
     private DirectReviewUpdateEmailService directReviewEmailService;
 
     @Autowired
-    @SuppressWarnings({
-})
+    @SuppressWarnings("checkstyle:parameternumber")
     public DeveloperManager(DeveloperDAO developerDao, ProductManager productManager, ProductVersionManager versionManager,
             UserManager userManager, CertificationBodyManager acbManager, CertificationBodyDAO certificationBodyDao,
             CertifiedProductDAO certifiedProductDAO, ChplProductNumberUtil chplProductNumberUtil,
