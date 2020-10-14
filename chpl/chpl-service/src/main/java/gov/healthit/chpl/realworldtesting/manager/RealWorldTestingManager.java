@@ -22,12 +22,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingType;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUpload;
+import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUploadResponse;
 import gov.healthit.chpl.scheduler.job.RealWorldTestingUploadJob;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -58,12 +60,17 @@ public class RealWorldTestingManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).REAL_WORLD_TESTING, "
             + "T(gov.healthit.chpl.permissions.domains.RealWorldTestingDomainPermissions).UPLOAD)")
-    public void uploadRealWorldTestingCsv(MultipartFile file)
+    public RealWorldTestingUploadResponse uploadRealWorldTestingCsv(MultipartFile file)
             throws ValidationException, SchedulerException, UserRetrievalException {
 
         checkBasicFileProperties(file);
         List<RealWorldTestingUpload> rwts = parseCsvFile(file);
         startRwtUploadJob(rwts);
+
+        UserDTO currentUser = userManager.getById(AuthUtil.getCurrentUser().getId());
+        RealWorldTestingUploadResponse response = new RealWorldTestingUploadResponse(currentUser.getEmail(), file.getName());
+
+        return response;
     }
 
     private ChplOneTimeTrigger startRwtUploadJob(List<RealWorldTestingUpload> rwts)
