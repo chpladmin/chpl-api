@@ -293,6 +293,26 @@ public class CertifiedProductSearchDetails implements Serializable {
     private List<CertifiedProductQmsStandard> qmsStandards = new ArrayList<CertifiedProductQmsStandard>();
 
     /**
+     * This variable indicates if the listing was successfully tested for automated
+     * numerator recording. It is applicable for the 2015 edition. The allowable values include
+     * measures such as "EP", "EH/CAH", "EP Individual", "EC Individual (TIN/NPI)", "EC Group", etc.
+     */
+    @XmlElementWrapper(name = "g1MacraMeasures", nillable = true, required = false)
+    @XmlElement(name = "macraMeasure")
+    @Singular
+    private List<MacraMeasure> g1MacraMeasures = new ArrayList<MacraMeasure>();
+
+    /**
+     * This variable indicates if the listing was successfully tested for automated measure
+     * calculation. It is applicable for the 2015 edition. The allowable values include
+     * measures such as "EP", "EH/CAH", "EP Individual", "EC Individual (TIN/NPI)", "EC Group", etc.
+     */
+    @XmlElementWrapper(name = "g2MacraMeasures", nillable = true, required = false)
+    @XmlElement(name = "macraMeasure")
+    @Singular
+    private List<MacraMeasure> g2MacraMeasures = new ArrayList<MacraMeasure>();
+
+    /**
      * The criteria to which this listing attests
      */
     @XmlElementWrapper(name = "certificationResults", nillable = true, required = false)
@@ -608,6 +628,22 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     public void setQmsStandards(final List<CertifiedProductQmsStandard> qmsStandards) {
         this.qmsStandards = qmsStandards;
+    }
+
+    public List<MacraMeasure> getG1MacraMeasures() {
+        return this.g1MacraMeasures;
+    }
+
+    public void setG1MacraMeasures(List<MacraMeasure> g1MacraMeasures) {
+        this.g1MacraMeasures = g1MacraMeasures;
+    }
+
+    public List<MacraMeasure> getG2MacraMeasures() {
+        return this.g2MacraMeasures;
+    }
+
+    public void setG2MacraMeasures(List<MacraMeasure> g2MacraMeasures) {
+        this.g2MacraMeasures = g2MacraMeasures;
     }
 
     public List<CertifiedProductTargetedUser> getTargetedUsers() {
