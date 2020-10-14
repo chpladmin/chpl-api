@@ -16,6 +16,7 @@ import gov.healthit.chpl.validation.listing.reviewer.DeveloperStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DuplicateDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.FieldLengthReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ListingStatusAndUserRoleReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.RealWorldTestingReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestToolReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnattestedCriteriaWithDataReviewer;
@@ -98,6 +99,10 @@ public class Edition2014LegacyListingValidator extends Validator {
     @Qualifier("duplicateDataReviewer")
     private DuplicateDataReviewer duplicateDataReviewer;
 
+    @Autowired
+    @Qualifier("realWorldTestingReviewer")
+    private RealWorldTestingReviewer realWorldTestingReviewer;
+
     private List<Reviewer> reviewers;
     private List<ComparisonReviewer> comparisonReviewers;
 
@@ -129,6 +134,7 @@ public class Edition2014LegacyListingValidator extends Validator {
             comparisonReviewers.add(chplNumberComparisonReviewer);
             comparisonReviewers.add(devBanComparisonReviewer);
             comparisonReviewers.add(listingStatusAndUserRoleReviewer);
+            comparisonReviewers.add(realWorldTestingReviewer);
         }
         return comparisonReviewers;
     }

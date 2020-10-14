@@ -55,6 +55,7 @@ public class DeveloperEntity implements Serializable {
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id", unique = true, nullable = true)
+    @Where(clause = "deleted <> 'true'")
     private AddressEntity address;
 
     @Basic(optional = true)

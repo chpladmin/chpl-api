@@ -27,7 +27,11 @@ public class GetByUserNameActionPermissions extends ActionPermissions {
     }
 
     @Override
-    public boolean hasAccess(final Object obj) {
+    public boolean hasAccess(Object obj) {
+        if (obj == null) {
+            return true;
+        }
+
         try {
             if (obj instanceof UserDTO) {
                 return doesCurrentUserHavePermissionToSubjectUser((UserDTO) obj);

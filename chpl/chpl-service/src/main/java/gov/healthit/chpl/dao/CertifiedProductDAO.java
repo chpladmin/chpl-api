@@ -151,6 +151,10 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         entity.setCertificationBodyId(dto.getCertificationBodyId());
         entity.setCertificationEditionId(dto.getCertificationEditionId());
         entity.setProductVersionId(dto.getProductVersionId());
+        entity.setRwtPlansUrl(dto.getRwtPlansUrl());
+        entity.setRwtPlansCheckDate(dto.getRwtPlansCheckDate());
+        entity.setRwtResultsUrl(dto.getRwtResultsUrl());
+        entity.setRwtResultsCheckDate(dto.getRwtResultsCheckDate());
 
         entity.setLastModifiedDate(new Date());
         entity.setLastModifiedUser(AuthUtil.getAuditId());
@@ -544,6 +548,12 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             break;
         case TEST_RESULTS_SUMMARY:
             queryStr += " AND cp.reportFileLocation = :url ";
+            break;
+        case REAL_WORLD_TESTING_PLANS:
+            queryStr += " AND cp.rwtPlansUrl = :url ";
+            break;
+        case REAL_WORLD_TESTING_RESULTS:
+            queryStr += " AND cp.rwtResultsUrl = :url ";
             break;
         default:
             break;
