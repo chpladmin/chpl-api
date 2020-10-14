@@ -1,6 +1,7 @@
 package gov.healthit.chpl.manager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -67,6 +68,7 @@ import gov.healthit.chpl.manager.rules.developer.DeveloperValidationContext;
 import gov.healthit.chpl.manager.rules.developer.DeveloperValidationFactory;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.job.SplitDeveloperJob;
+import gov.healthit.chpl.service.DirectReviewUpdateEmailService;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -93,8 +95,10 @@ public class DeveloperManager extends SecuredManager {
     private ResourcePermissions resourcePermissions;
     private DeveloperValidationFactory developerValidationFactory;
     private ValidationUtils validationUtils;
+    private CertifiedProductDetailsManager cpdManager;
     private TransparencyAttestationManager transparencyAttestationManager;
     private SchedulerManager schedulerManager;
+    private DirectReviewUpdateEmailService directReviewEmailService;
 
     @Autowired
     @SuppressWarnings({
@@ -104,6 +108,7 @@ public class DeveloperManager extends SecuredManager {
             CertifiedProductDAO certifiedProductDAO, ChplProductNumberUtil chplProductNumberUtil,
             ActivityManager activityManager, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
             DeveloperValidationFactory developerValidationFactory, ValidationUtils validationUtils,
+            CertifiedProductDetailsManager cpdManager, DirectReviewUpdateEmailService directReviewEmailService,
             TransparencyAttestationManager transparencyAttestationManager, SchedulerManager schedulerManager) {
         this.developerDao = developerDao;
         this.productManager = productManager;
@@ -118,6 +123,8 @@ public class DeveloperManager extends SecuredManager {
         this.resourcePermissions = resourcePermissions;
         this.developerValidationFactory = developerValidationFactory;
         this.validationUtils = validationUtils;
+        this.cpdManager = cpdManager;
+        this.directReviewEmailService = directReviewEmailService;
         this.transparencyAttestationManager = transparencyAttestationManager;
         this.schedulerManager = schedulerManager;
     }
@@ -412,9 +419,20 @@ public class DeveloperManager extends SecuredManager {
         }
 
         DeveloperDTO createdDeveloper = create(developerToCreate);
+
+        Map<Long, CertifiedProductSearchDetails> preMergeListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
+        Map<Long, CertifiedProductSearchDetails> postMergeListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
         // search for any products assigned to the list of developers passed in
         List<ProductDTO> developerProducts = productManager.getByDevelopers(developerIdsToMerge);
         for (ProductDTO product : developerProducts) {
+            List<CertifiedProductDetailsDTO> affectedListings = certifiedProductDAO.getDetailsByProductId(product.getId());
+
+            for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
+                CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(affectedListing.getId());
+                LOGGER.info("Complete retrieving details for id: " + details.getId());
+                preMergeListingDetails.put(details.getId(), details);
+            }
+
             // add an item to the ownership history of each product
             ProductOwnerDTO historyToAdd = new ProductOwnerDTO();
             historyToAdd.setProductId(product.getId());
@@ -427,7 +445,14 @@ public class DeveloperManager extends SecuredManager {
             product.getOwner().setId(createdDeveloper.getId());
             productManager.update(product);
 
+            // get the listing details again - this time they will have the new developer code
+            for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
+                CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(affectedListing.getId());
+                LOGGER.info("Complete retrieving details for id: " + details.getId());
+                postMergeListingDetails.put(details.getId(), details);
+            }
         }
+
         // - mark the passed in developers as deleted
         for (Long developerId : developerIdsToMerge) {
             List<CertificationBodyDTO> availableAcbs = resourcePermissions.getAllAcbsForCurrentUser();
@@ -438,6 +463,18 @@ public class DeveloperManager extends SecuredManager {
             }
             developerDao.delete(developerId);
         }
+
+        LOGGER.info("Logging listing activity for developer merge.");
+        for (Long id : postMergeListingDetails.keySet()) {
+            CertifiedProductSearchDetails preMergeListing = preMergeListingDetails.get(id);
+            CertifiedProductSearchDetails postMergeListing = postMergeListingDetails.get(id);
+            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, preMergeListing.getId(),
+                    "Updated certified product " + postMergeListing.getChplProductNumber() + ".", preMergeListing,
+                    postMergeListing);
+        }
+
+        directReviewEmailService.sendEmail(beforeDevelopers, Arrays.asList(createdDeveloper),
+                preMergeListingDetails, postMergeListingDetails);
 
         activityManager.addActivity(
                 ActivityConcept.DEVELOPER, createdDeveloper.getId(), "Merged " + developerIdsToMerge.size()

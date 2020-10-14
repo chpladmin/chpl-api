@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
@@ -39,6 +40,12 @@ public class CertifiedProductSummaryDTO implements Serializable {
     private Date creationDate;
     private Date lastModifiedDate;
     private String lastModifiedUser;
+    private String rwtPlansUrl;
+    private LocalDate rwtPlansCheckDate;
+    private String rwtResultsUrl;
+    private LocalDate rwtResultsCheckDate;
+    private Integer rwtEligibilityYear;
+
 
     /**
      * Construct from entity.
@@ -73,6 +80,11 @@ public class CertifiedProductSummaryDTO implements Serializable {
         this.creationDate = entity.getCreationDate();
         this.lastModifiedDate = entity.getLastModifiedDate();
         this.lastModifiedUser = entity.getLastModifiedUser();
+        this.rwtEligibilityYear = entity.getRwtEligibilityYear();
+        this.rwtPlansUrl = entity.getRwtPlansUrl();
+        this.rwtPlansCheckDate = entity.getRwtPlansCheckDate();
+        this.rwtResultsUrl = entity.getRwtResultsUrl();
+        this.rwtResultsCheckDate = entity.getRwtResultsCheckDate();
     }
 
     public CertifiedProductSummaryDTO(CertifiedProductDetailsEntity entity) {
@@ -106,5 +118,10 @@ public class CertifiedProductSummaryDTO implements Serializable {
         this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
         this.creationDate = entity.getCreationDate();
         this.lastModifiedDate = entity.getLastModifiedDate();
+        this.rwtEligibilityYear = entity.getRwtEligibilityYear();
+        this.rwtPlansUrl = entity.getRwtPlansUrl();
+        this.rwtPlansCheckDate = entity.getRwtPlansCheckDate();
+        this.rwtResultsUrl = entity.getRwtResultsUrl();
+        this.rwtResultsCheckDate = entity.getRwtResultsCheckDate();
     }
 }
