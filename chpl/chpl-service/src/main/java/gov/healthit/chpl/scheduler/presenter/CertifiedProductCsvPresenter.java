@@ -11,6 +11,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -97,6 +98,9 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         result.add("Product Database ID");
         result.add("Version");
         result.add("Version Database ID");
+        result.add("Real World Testing Eligibility Year");
+        result.add("Real World Testing Plans URL");
+        result.add("Real World Testing Results URL");
         result.add("Total Surveillance Activities");
         result.add("Total Nonconformities");
         result.add("Open Nonconformities");
@@ -109,6 +113,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         return result;
     }
 
+    @SuppressWarnings("checkstyle:linelength")
     protected List<String> generateRowValue(CertifiedProductSearchDetails listing) {
         List<String> result = new ArrayList<String>();
         result.add(formatEdition(listing));
@@ -133,6 +138,9 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         result.add(listing.getProduct().getProductId().toString());
         result.add(listing.getVersion().getVersion());
         result.add(listing.getVersion().getVersionId().toString());
+        result.add(Objects.nonNull(listing.getRwtEligibilityYear()) ? listing.getRwtEligibilityYear().toString() : "");
+        result.add(listing.getRwtPlansUrl());
+        result.add(listing.getRwtResultsUrl());
         result.add(listing.getCountSurveillance().toString());
         result.add((listing.getCountOpenNonconformities() + listing.getCountClosedNonconformities()) + "");
         result.add(listing.getCountOpenNonconformities().toString());
