@@ -15,7 +15,10 @@ import lombok.Builder;
 import lombok.ToString;
 
 /**
- * NEED THIS TEXT
+ * ONC has established the Standards Version Advancement Process (SVAP) to enable health IT developers’
+ * ability to incorporate newer versions of Secretary-adopted standards and implementation specifications,
+ * as part of the “Real World Testing” Condition and Maintenance of Certification requirement (§170.405)
+ * of the 21st Century Cures Act
  *
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
@@ -40,13 +43,13 @@ public class CertificationResultSvap implements Serializable {
     private Long svapId;
 
     /**
-     * NEED THIS TEXT
+     * Regulatory Text Citation for Standard / Implementation Specification Adopted
      */
     @XmlElement(required = true)
     private String regulatoryTextCitation;
 
     /**
-     * NEED THIS TEXT
+     *  National Coordinator Approved Advanced Version(s)
      */
     @XmlElement(required = true)
     private String approvedStandardVersion;
