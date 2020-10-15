@@ -103,6 +103,44 @@ public class RealWorldTestingManagerTest {
 
         assertEquals("user@abc.com", response.getEmail());
         assertEquals("rwt.csv", response.getFileName());
+        assertEquals(2,  response.getRecordsToBeProcessed());
+    }
+
+    @Test
+    public void uploadRealWorldTestingCsv_FileWithoutHeaderAndDataRows_Success()
+            throws ValidationException, SchedulerException, UserRetrievalException {
+
+        String fileContents = "15.04.04.3068.ACPl.01.00.0.200129,PLANS,20201001,https://www.abc.com\r\n"
+                + "15.04.04.3068.ACPl.01.00.0.200129,RESULTS,20220202,https://www.abc2.com\r\n";
+
+        MockMultipartFile file = new MockMultipartFile("rwt.csv",
+                "rwt.csv",
+                "text/csv",
+                fileContents.getBytes());
+
+        RealWorldTestingUploadResponse response = realWorldTestingManager.uploadRealWorldTestingCsv(file);
+
+        assertEquals("user@abc.com", response.getEmail());
+        assertEquals("rwt.csv", response.getFileName());
+        assertEquals(2,  response.getRecordsToBeProcessed());
+    }
+
+    @Test
+    public void uploadRealWorldTestingCsv_FileWithoutHeaderAndSingleDataRow_Success()
+            throws ValidationException, SchedulerException, UserRetrievalException {
+
+        String fileContents = "15.04.04.3068.ACPl.01.00.0.200129,PLANS,20201001,https://www.abc.com\r\n";
+
+        MockMultipartFile file = new MockMultipartFile("rwt.csv",
+                "rwt.csv",
+                "text/csv",
+                fileContents.getBytes());
+
+        RealWorldTestingUploadResponse response = realWorldTestingManager.uploadRealWorldTestingCsv(file);
+
+        assertEquals("user@abc.com", response.getEmail());
+        assertEquals("rwt.csv", response.getFileName());
+        assertEquals(1,  response.getRecordsToBeProcessed());
     }
 
     private UserDTO getUser() {

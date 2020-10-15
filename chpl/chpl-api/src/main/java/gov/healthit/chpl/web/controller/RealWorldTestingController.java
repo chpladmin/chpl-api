@@ -11,13 +11,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUploadResponse;
 import gov.healthit.chpl.realworldtesting.manager.RealWorldTestingManager;
-import gov.healthit.chpl.util.AuthUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.log4j.Log4j2;
@@ -47,10 +45,7 @@ public class RealWorldTestingController {
     public @ResponseBody ResponseEntity<RealWorldTestingUploadResponse> upload(@RequestParam("file") final MultipartFile file)
             throws ValidationException, SchedulerException, UserRetrievalException {
 
-        UserDTO currentUser = userManager.getById(AuthUtil.getCurrentUser().getId());
-        realWorldTestingManager.uploadRealWorldTestingCsv(file);
-
-        RealWorldTestingUploadResponse response = new RealWorldTestingUploadResponse(currentUser.getEmail(), file.getName());
+        RealWorldTestingUploadResponse response = realWorldTestingManager.uploadRealWorldTestingCsv(file);
         return new ResponseEntity<RealWorldTestingUploadResponse>(response, HttpStatus.OK);
     }
 }

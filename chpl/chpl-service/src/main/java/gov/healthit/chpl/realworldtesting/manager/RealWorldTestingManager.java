@@ -68,8 +68,10 @@ public class RealWorldTestingManager {
         startRwtUploadJob(rwts);
 
         UserDTO currentUser = userManager.getById(AuthUtil.getCurrentUser().getId());
-        RealWorldTestingUploadResponse response = new RealWorldTestingUploadResponse(currentUser.getEmail(), file.getName());
-
+        RealWorldTestingUploadResponse response = new RealWorldTestingUploadResponse();
+        response.setEmail(currentUser.getEmail());
+        response.setFileName(file.getName());
+        response.setRecordsToBeProcessed(rwts.size());
         return response;
     }
 
@@ -95,7 +97,7 @@ public class RealWorldTestingManager {
                 CSVParser parser = new CSVParser(reader, CSVFormat.EXCEL)) {
 
             List<CSVRecord> records = parser.getRecords();
-            if (records.size() <= 1) {
+            if (records.size() <= 1 && doesHeaderRowExist(records)) {
                 throw new ValidationException(
                         "The file appears to have a header line with no other information. "
                         + "Please make sure there are at least two rows in the CSV file.");
@@ -162,8 +164,8 @@ public class RealWorldTestingManager {
     }
 
     private boolean doesHeaderRowExist(List<CSVRecord> records) {
-        //TODO: Figure this out
-        return true;
+        //If the CHPL Product Number is UNIQUE_CHPL_ID__C assume there is a header
+        return records.get(0).get(CHPL_PRODUCT_NUMBER).equalsIgnoreCase("UNIQUE_CHPL_ID__C");
     }
 
     private void checkBasicFileProperties(MultipartFile file) throws ValidationException {

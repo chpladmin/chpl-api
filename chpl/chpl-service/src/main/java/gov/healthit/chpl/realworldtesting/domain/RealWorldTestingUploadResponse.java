@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class RealWorldTestingUploadResponse {
     private String email;
     private String fileName;
+    private int recordsToBeProcessed;
 }
