@@ -17,7 +17,7 @@ import lombok.ToString;
 /**
  * ONC has established the Standards Version Advancement Process (SVAP) to enable health IT developers’
  * ability to incorporate newer versions of Secretary-adopted standards and implementation specifications,
- * as part of the “Real World Testing” Condition and Maintenance of Certification requirement (§170.405)
+ * as part of the "Real World Testing" Condition and Maintenance of Certification requirement (§170.405)
  * of the 21st Century Cures Act
  *
  */
