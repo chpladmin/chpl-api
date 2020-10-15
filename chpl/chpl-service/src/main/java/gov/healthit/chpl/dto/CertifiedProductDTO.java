@@ -2,6 +2,7 @@ package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 
 import org.springframework.util.StringUtils;
@@ -12,6 +13,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.Util;
 import lombok.Data;
 
 @Data
@@ -48,7 +50,11 @@ public class CertifiedProductDTO implements Serializable {
     private String productAdditionalSoftware;
     private Long pendingCertifiedProductId;
     private Boolean transparencyAttestation = null;
-    private Integer rwtEligiblityYear;
+    private String rwtPlansUrl;
+    private LocalDate rwtPlansCheckDate;
+    private String rwtResultsUrl;
+    private LocalDate rwtResultsCheckDate;
+    private Integer rwtEligibilityYear;
 
     public CertifiedProductDTO() {
     }
@@ -82,7 +88,11 @@ public class CertifiedProductDTO implements Serializable {
         this.setQmsTesting(entity.getQmsTesting());
         this.setAccessibilityCertified(entity.getAccessibilityCertified());
         this.setProductAdditionalSoftware(entity.getProductAdditionalSoftware());
-        this.setRwtEligiblityYear(entity.getRwtEligibilityYear());
+        this.setRwtPlansUrl(entity.getRwtPlansUrl());
+        this.setRwtPlansCheckDate(entity.getRwtPlansCheckDate());
+        this.setRwtResultsUrl(entity.getRwtResultsUrl());
+        this.setRwtResultsCheckDate(entity.getRwtResultsCheckDate());
+        this.setRwtEligibilityYear(entity.getRwtEligibilityYear());
     }
 
     public CertifiedProductDTO(CertifiedProductSearchDetails from) throws InvalidArgumentsException {
@@ -115,6 +125,10 @@ public class CertifiedProductDTO implements Serializable {
         this.setAccessibilityCertified(from.getAccessibilityCertified());
         this.setProductAdditionalSoftware(from.getProductAdditionalSoftware());
         this.setTransparencyAttestationUrl(from.getTransparencyAttestationUrl());
+        this.setRwtPlansUrl(from.getRwtPlansUrl());
+        this.setRwtPlansCheckDate(from.getRwtPlansCheckDate());
+        this.setRwtResultsUrl(from.getRwtResultsUrl());
+        this.setRwtResultsCheckDate(from.getRwtResultsCheckDate());
 
         // set the pieces of the unique id
         if (!StringUtils.isEmpty(from.getChplProductNumber())) {
@@ -157,5 +171,29 @@ public class CertifiedProductDTO implements Serializable {
                 }
             }
         }
+    }
+
+    public Date getCreationDate() {
+        return Util.getNewDate(creationDate);
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = Util.getNewDate(creationDate);
+    }
+
+    public Date getLastModifiedDate() {
+        return Util.getNewDate(lastModifiedDate);
+    }
+
+    public void setLastModifiedDate(Date lastModifiedDate) {
+        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
+    }
+
+    public Date getSedTestingEnd() {
+        return Util.getNewDate(sedTestingEnd);
+    }
+
+    public void setSedTestingEnd(Date sedTestingEnd) {
+        this.sedTestingEnd = Util.getNewDate(sedTestingEnd);
     }
 }

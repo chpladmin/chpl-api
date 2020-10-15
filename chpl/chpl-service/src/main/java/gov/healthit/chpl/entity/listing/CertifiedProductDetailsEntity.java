@@ -1,5 +1,6 @@
 package gov.healthit.chpl.entity.listing;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -256,6 +257,18 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "transparency_attestation_url")
     private String transparencyAttestationUrl;
 
+    @Column(name = "rwt_plans_url")
+    private String rwtPlansUrl;
+
+    @Column(name = "rwt_plans_check_date")
+    private LocalDate rwtPlansCheckDate;
+
+    @Column(name = "rwt_results_url")
+    private String rwtResultsUrl;
+
+    @Column(name = "rwt_results_check_date")
+    private LocalDate rwtResultsCheckDate;
+
     @Column(name = "rwt_eligibility_year")
     private Integer rwtEligibilityYear;
 
@@ -314,4 +327,5 @@ public class CertifiedProductDetailsEntity {
     public void setMeaningfulUseUsersDate(Date meaningfulUseUsersDate) {
         this.meaningfulUseUsersDate = Util.getNewDate(meaningfulUseUsersDate);
     }
+
 }

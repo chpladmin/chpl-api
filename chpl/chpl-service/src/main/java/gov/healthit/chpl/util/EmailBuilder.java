@@ -2,6 +2,7 @@ package gov.healthit.chpl.util;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -66,6 +67,16 @@ public class EmailBuilder {
      */
     public EmailBuilder recipients(List<String> addresses) {
         this.recipients = addresses;
+        return this;
+    }
+
+    /**
+     * Sets the list of recipients for the email.
+     * @param addresses - array of Strings representing email addresses
+     * @return EmailBuilder (this)
+     */
+    public EmailBuilder recipients(String[] addresses) {
+        this.recipients = Arrays.asList(addresses);
         return this;
     }
 

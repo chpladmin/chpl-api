@@ -17,7 +17,11 @@ public enum UrlType {
     // documentation_url
     DOCUMENTATION_URL("Documentation URL"),
     // use_cases
-    USE_CASES("Use Cases");
+    USE_CASES("Use Cases"),
+    //Real World Testing Plans
+    REAL_WORLD_TESTING_PLANS("Real World Testing Plans"),
+    //Real World Testing Results
+    REAL_WORLD_TESTING_RESULTS("Real World Testing Results");
 
 
     private String name;
