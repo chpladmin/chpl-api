@@ -165,7 +165,7 @@ public class RealWorldTestingManager {
 
     private boolean doesHeaderRowExist(List<CSVRecord> records) {
         //If the CHPL Product Number is UNIQUE_CHPL_ID__C assume there is a header
-        return records.get(0).get(CHPL_PRODUCT_NUMBER).equalsIgnoreCase("UNIQUE_CHPL_ID__C");
+        return records.get(0).get(CHPL_PRODUCT_NUMBER).toUpperCase().contains("UNIQUE_CHPL_ID__C");
     }
 
     private void checkBasicFileProperties(MultipartFile file) throws ValidationException {
