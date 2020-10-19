@@ -13,7 +13,7 @@ public class RealWorldTestingUpload implements Serializable {
 
     private String chplProductNumber;
     private LocalDate lastChecked;
-    private RealWorldTestingType  type;
+    private RealWorldTestingType type;
     private String url;
     private List<String> errors = new ArrayList<String>();
 }
