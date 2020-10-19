@@ -38,10 +38,10 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class RealWorldTestingManager {
     private static final String PLANS = "PLANS";
     private static final String RESULTS = "RESULTS";
-    private static final int CHPL_PRODUCT_NUMBER = 0;
-    private static final int RWT_TYPE = 1;
-    private static final int LAST_CHECKED = 2;
-    private static final int URL = 3;
+    private static final int CHPL_PRODUCT_NUMBER_COLUMN_IDX = 0;
+    private static final int RWT_TYPE_COLUMN_IDX = 1;
+    private static final int LAST_CHECKED_COLUMN_IDX = 2;
+    private static final int URL_COLUMN_IDX = 3;
     private static final int DELAY_BEFORE_JOB_START = 5000;
 
     private SchedulerManager schedulerManager;
@@ -118,23 +118,23 @@ public class RealWorldTestingManager {
 
     private RealWorldTestingUpload createRwtUploadFromCsvRecord(CSVRecord record) {
         RealWorldTestingUpload rwtUpload = new RealWorldTestingUpload();
-        if (!StringUtils.isEmpty(record.get(CHPL_PRODUCT_NUMBER))) {
-            rwtUpload.setChplProductNumber(record.get(CHPL_PRODUCT_NUMBER));
+        if (!StringUtils.isEmpty(record.get(CHPL_PRODUCT_NUMBER_COLUMN_IDX))) {
+            rwtUpload.setChplProductNumber(record.get(CHPL_PRODUCT_NUMBER_COLUMN_IDX));
         } else {
             rwtUpload.getErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.chplProductNumberInvalid"));
         }
-        if (!StringUtils.isEmpty(record.get(RWT_TYPE))) {
-            rwtUpload.setType(getType(record.get(RWT_TYPE)));
+        if (!StringUtils.isEmpty(record.get(RWT_TYPE_COLUMN_IDX))) {
+            rwtUpload.setType(getType(record.get(RWT_TYPE_COLUMN_IDX)));
         } else {
             rwtUpload.getErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.realWorldTestingTypeInvalid"));
         }
-        if (!StringUtils.isEmpty(record.get(LAST_CHECKED))) {
-            rwtUpload.setLastChecked(getLastCheckedDate(record.get(LAST_CHECKED)));
+        if (!StringUtils.isEmpty(record.get(LAST_CHECKED_COLUMN_IDX))) {
+            rwtUpload.setLastChecked(getLastCheckedDate(record.get(LAST_CHECKED_COLUMN_IDX)));
         } else {
             rwtUpload.getErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.lastCheckedDateInvalid"));
         }
-        if (!StringUtils.isEmpty(record.get(URL))) {
-            rwtUpload.setUrl(record.get(URL));
+        if (!StringUtils.isEmpty(record.get(URL_COLUMN_IDX))) {
+            rwtUpload.setUrl(record.get(URL_COLUMN_IDX));
         } else {
             rwtUpload.getErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.url"));
         }
@@ -165,7 +165,7 @@ public class RealWorldTestingManager {
 
     private boolean doesHeaderRowExist(List<CSVRecord> records) {
         //If the CHPL Product Number is UNIQUE_CHPL_ID__C assume there is a header
-        return records.get(0).get(CHPL_PRODUCT_NUMBER).toUpperCase().contains("UNIQUE_CHPL_ID__C");
+        return records.get(0).get(CHPL_PRODUCT_NUMBER_COLUMN_IDX).toUpperCase().contains("UNIQUE_CHPL_ID__C");
     }
 
     private void checkBasicFileProperties(MultipartFile file) throws ValidationException {
