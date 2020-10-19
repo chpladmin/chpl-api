@@ -198,6 +198,42 @@ public class UrlCheckerDao extends BaseDAOImpl {
                         }
                     }
                     break;
+                case REAL_WORLD_TESTING_PLANS:
+                    @SuppressWarnings("unchecked") List<String> rwtPlansWebsites =
+                    entityManager.createQuery(
+                            "SELECT DISTINCT rwtPlansUrl "
+                            + "FROM CertifiedProductEntity "
+                            + "WHERE rwtPlansUrl IS NOT NULL "
+                            + "AND rwtPlansUrl != '' "
+                            + "AND deleted = false")
+                    .getResultList();
+                    for (String website : rwtPlansWebsites) {
+                        if (!StringUtils.isEmpty(website)) {
+                            UrlResult checkableUrl = new UrlResult();
+                            checkableUrl.setUrl(website);
+                            checkableUrl.setUrlType(urlType);
+                            results.add(checkableUrl);
+                        }
+                    }
+                    break;
+                case REAL_WORLD_TESTING_RESULTS:
+                    @SuppressWarnings("unchecked") List<String> rwtResultsWebsites =
+                    entityManager.createQuery(
+                            "SELECT DISTINCT rwtResultsUrl "
+                            + "FROM CertifiedProductEntity "
+                            + "WHERE rwtPlansUrl IS NOT NULL "
+                            + "AND rwtPlansUrl != '' "
+                            + "AND deleted = false")
+                    .getResultList();
+                    for (String website : rwtResultsWebsites) {
+                        if (!StringUtils.isEmpty(website)) {
+                            UrlResult checkableUrl = new UrlResult();
+                            checkableUrl.setUrl(website);
+                            checkableUrl.setUrlType(urlType);
+                            results.add(checkableUrl);
+                        }
+                    }
+                    break;
                 default:
                     break;
             }

@@ -108,8 +108,8 @@ public class CertifiedProductDetailsManager {
     private ResourcePermissions resourcePermissions;
     private DimensionalDataManager dimensionalDataManager;
 
-    @Autowired
     @SuppressWarnings({"checkstyle:parameternumber"})
+    @Autowired
     public CertifiedProductDetailsManager(
             CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
             CQMResultDetailsDAO cqmResultDetailsDAO,
@@ -719,6 +719,10 @@ public class CertifiedProductDetailsManager {
         searchDetails.setQmsStandards(getCertifiedProductQmsStandards(dto.getId()));
         searchDetails.setTargetedUsers(getCertifiedProductTargetedUsers(dto.getId()));
         searchDetails.setAccessibilityStandards(getCertifiedProductAccessibilityStandards(dto.getId()));
+        searchDetails.setRwtPlansUrl(dto.getRwtPlansUrl());
+        searchDetails.setRwtPlansCheckDate(dto.getRwtPlansCheckDate());
+        searchDetails.setRwtResultsUrl(dto.getRwtResultsUrl());
+        searchDetails.setRwtResultsCheckDate(dto.getRwtResultsCheckDate());
         searchDetails.setRwtEligibilityYear(dto.getRwtEligibilityYear());
 
         InheritedCertificationStatus ics = new InheritedCertificationStatus();
@@ -807,6 +811,7 @@ public class CertifiedProductDetailsManager {
         return targetedUserResults;
     }
 
+    @SuppressWarnings({"checkstyle:linelength"})
     private List<CertifiedProductAccessibilityStandard> getCertifiedProductAccessibilityStandards(Long id)
             throws EntityRetrievalException {
 

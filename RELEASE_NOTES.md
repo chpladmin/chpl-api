@@ -1,5 +1,15 @@
 # Release Notes
 
+## Version 25.15.0
+_19 October 2020_
+
+### Features
+* Add ability to validate and save Real World Testing data
+* Send email to Direct Review/Jira team upon developer split
+* Revise email subject and body for shared ONC-ACB reports
+
+---
+
 ## Version 25.14.0
 _5 October 2020_
 
