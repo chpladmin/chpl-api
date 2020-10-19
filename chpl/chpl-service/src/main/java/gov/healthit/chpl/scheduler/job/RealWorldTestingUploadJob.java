@@ -203,7 +203,6 @@ public class RealWorldTestingUploadJob implements Job {
         emailBuilder.recipients(addresses)
         .subject("Real World Testing Upload Results")
         .htmlMessage(rwtEmail.getEmail(rwts))
-        //.fileAttachments(files)
         .sendEmail();
     }
 
