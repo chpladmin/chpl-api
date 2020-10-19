@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
-import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
@@ -30,6 +29,7 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
+import gov.healthit.chpl.listing.mipsMeasure.MipsMeasureDAO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -104,7 +104,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
     private static final int MINIMUM_TEST_PARTICIPANT_COUNT = 10;
 
-    private MacraMeasureDAO macraDao;
+    private MipsMeasureDAO macraDao;
     private TestFunctionalityDAO testFuncDao;
     private TestProcedureDAO testProcDao;
     private TestDataDAO testDataDao;
@@ -112,7 +112,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     private ValidationUtils validationUtils;
 
     @Autowired
-    public RequiredData2015Reviewer(CertificationResultRules certRules, ErrorMessageUtil msgUtil, MacraMeasureDAO macraDao,
+    public RequiredData2015Reviewer(CertificationResultRules certRules, ErrorMessageUtil msgUtil, MipsMeasureDAO macraDao,
             TestFunctionalityDAO testFuncDao, TestProcedureDAO testProcDao, TestDataDAO testDataDao,
             CertificationCriterionDAO criteriaDao, ValidationUtils validationUtils, ResourcePermissions resourcePermissions) {
         super(certRules, msgUtil, resourcePermissions);

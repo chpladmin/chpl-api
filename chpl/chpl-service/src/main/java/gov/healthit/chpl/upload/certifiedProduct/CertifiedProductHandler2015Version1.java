@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.MipsMeasure;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AgeRangeDTO;
@@ -22,7 +23,6 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
-import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
@@ -35,8 +35,6 @@ import gov.healthit.chpl.entity.CQMCriterionEntity;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultAdditionalSoftwareEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity;
-import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultG1MacraMeasureEntity;
-import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultG2MacraMeasureEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestDataEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestFunctionalityEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestProcedureEntity;
@@ -55,6 +53,8 @@ import gov.healthit.chpl.entity.listing.pending.PendingTestParticipantEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingTestTaskEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.listing.mipsMeasure.PendingListingMipsMeasureCriterionMapEntity;
+import gov.healthit.chpl.listing.mipsMeasure.PendingListingMipsMeasureEntity;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap2015Version1;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -66,6 +66,8 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
     @Autowired
     private ErrorMessageUtil msgUtil;
     private TemplateColumnIndexMap templateColumnIndexMap;
+    private static final String G1_CRITERION_NUMBER = "170.315 (g)(1)";
+    private static final String G2_CRITERION_NUMBER = "170.315 (g)(2)";
 
     // we will ignore g1 and g2 macra measures for (g)(7) criteria for now
     // they shouldn't be there but it's hard for users to change the spreadsheet
@@ -463,10 +465,10 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                         parseTestFunctionality(pendingCertifiedProduct, cert, currIndex);
                         currIndex += getColumnIndexMap().getTestFunctionalityColumnCount();
                     } else if (colTitle.equalsIgnoreCase(getColumnIndexMap().getG1MeasureColumnLabel())) {
-                        parseG1Measures(cert, currIndex);
+                        parseG1Measures(pendingCertifiedProduct, cert, currIndex);
                         currIndex += getColumnIndexMap().getG1MeasureColumnCount();
                     } else if (colTitle.equalsIgnoreCase(getColumnIndexMap().getG2MeasureColumnLabel())) {
-                        parseG2Measures(cert, currIndex);
+                        parseG2Measures(pendingCertifiedProduct, cert, currIndex);
                         currIndex += getColumnIndexMap().getG2MeasureColumnCount();
                     } else if (colTitle.equalsIgnoreCase(getColumnIndexMap().getAdditionalSoftwareColumnLabel())) {
                         Boolean hasAdditionalSoftware = asBoolean(firstRow.get(currIndex).trim());
@@ -683,46 +685,57 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
         }
     }
 
-    protected void parseG1Measures(final PendingCertificationResultEntity cert, final int measureCol) {
+    protected void parseG1Measures(PendingCertifiedProductEntity listing, PendingCertificationResultEntity cert, int measureCol) {
         // ignore measures for G7
         if (cert.getMappedCriterion().getNumber().equals(G1_CRITERIA_TO_IGNORE)) {
             return;
         }
 
+        List<CertificationCriterionDTO> g1Criteria = certDao.getAllByNumber(G1_CRITERION_NUMBER);
         for (CSVRecord row : getRecord()) {
             String measureVal = row.get(measureCol).trim();
             if (!StringUtils.isEmpty(measureVal) && !measureVal.equalsIgnoreCase(Boolean.FALSE.toString())
                     && !measureVal.equals("0")) {
-                PendingCertificationResultG1MacraMeasureEntity mmEntity = new PendingCertificationResultG1MacraMeasureEntity();
-                mmEntity.setEnteredValue(measureVal);
-                MacraMeasureDTO mmDto = macraDao.getByCriterionAndValue(cert.getMappedCriterion().getId(),
-                        measureVal);
+
+                PendingListingMipsMeasureEntity mmEntity = new PendingListingMipsMeasureEntity();
+                mmEntity.setName(measureVal);
+                MipsMeasure mmDto = mipsMeasureDao.getByName(measureVal);
                 if (mmDto != null) {
-                    mmEntity.setMacraId(mmDto.getId());
+                    mmEntity.setMeasureId(mmDto.getId());
                 }
-                cert.getG1MacraMeasures().add(mmEntity);
+                g1Criteria.stream().forEach(g1Criterion -> {
+                    PendingListingMipsMeasureCriterionMapEntity criterionMap = new PendingListingMipsMeasureCriterionMapEntity();
+                    criterionMap.setCertificationCriterionId(g1Criterion.getId());
+                    mmEntity.getAssociatedCriteria().add(criterionMap);
+                });
+                listing.getMipsMeasures().add(mmEntity);
             }
         }
     }
 
-    protected void parseG2Measures(final PendingCertificationResultEntity cert, final int measureCol) {
+    protected void parseG2Measures(PendingCertifiedProductEntity listing, PendingCertificationResultEntity cert, int measureCol) {
         // ignore measures for G7
         if (cert.getMappedCriterion().getNumber().equals(G2_CRITERIA_TO_IGNORE)) {
             return;
         }
 
+        List<CertificationCriterionDTO> g2Criteria = certDao.getAllByNumber(G2_CRITERION_NUMBER);
         for (CSVRecord row : getRecord()) {
             String measureVal = row.get(measureCol).trim();
             if (!StringUtils.isEmpty(measureVal) && !measureVal.equalsIgnoreCase(Boolean.FALSE.toString())
                     && !measureVal.equals("0")) {
-                PendingCertificationResultG2MacraMeasureEntity mmEntity = new PendingCertificationResultG2MacraMeasureEntity();
-                mmEntity.setEnteredValue(measureVal.trim());
-                MacraMeasureDTO mmDto = macraDao.getByCriterionAndValue(cert.getMappedCriterion().getId(),
-                        measureVal);
+                PendingListingMipsMeasureEntity mmEntity = new PendingListingMipsMeasureEntity();
+                mmEntity.setName(measureVal.trim());
+                MipsMeasure mmDto = mipsMeasureDao.getByName(measureVal);
                 if (mmDto != null) {
-                    mmEntity.setMacraId(mmDto.getId());
+                    mmEntity.setMeasureId(mmDto.getId());
                 }
-                cert.getG2MacraMeasures().add(mmEntity);
+                g2Criteria.stream().forEach(g2Criterion -> {
+                    PendingListingMipsMeasureCriterionMapEntity criterionMap = new PendingListingMipsMeasureCriterionMapEntity();
+                    criterionMap.setCertificationCriterionId(g2Criterion.getId());
+                    mmEntity.getAssociatedCriteria().add(criterionMap);
+                });
+                listing.getMipsMeasures().add(mmEntity);
             }
         }
     }
@@ -771,7 +784,8 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                                             + product.getUniqueId() + " has no participant with unique id '"
                                             + participantUniqueIds[i] + "'  defined in the file.");
                         } else {
-                            PendingCertificationResultTestTaskParticipantEntity ttPartEntity = new PendingCertificationResultTestTaskParticipantEntity();
+                            PendingCertificationResultTestTaskParticipantEntity ttPartEntity
+                                = new PendingCertificationResultTestTaskParticipantEntity();
                             ttPartEntity.setCertTestTask(certTask);
                             ttPartEntity.setTestParticipant(participantEntity);
                             certTask.getTestParticipants().add(ttPartEntity);

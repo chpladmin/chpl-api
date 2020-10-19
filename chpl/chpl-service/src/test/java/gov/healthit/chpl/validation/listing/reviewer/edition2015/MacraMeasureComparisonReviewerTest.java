@@ -10,7 +10,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.MacraMeasure;
+import gov.healthit.chpl.domain.MipsMeasure;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -71,7 +71,7 @@ public class MacraMeasureComparisonReviewerTest {
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(true);
 
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
-                .g1MacraMeasure(MacraMeasure.builder()
+                .g1MacraMeasure(MipsMeasure.builder()
                         .id(GAP_EP_ID)
                         .abbreviation("GAP-EP")
                         .removed(true)
@@ -79,7 +79,7 @@ public class MacraMeasureComparisonReviewerTest {
                 .build();
 
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
-                .g1MacraMeasure(MacraMeasure.builder()
+                .g1MacraMeasure(MipsMeasure.builder()
                         .id(GAP_EP_ID)
                         .abbreviation("GAP-EP")
                         .removed(true)
@@ -98,7 +98,7 @@ public class MacraMeasureComparisonReviewerTest {
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
 
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
-                .g1MacraMeasure(MacraMeasure.builder()
+                .g1MacraMeasure(MipsMeasure.builder()
                         .id(GAP_EP_ID)
                         .abbreviation("GAP-EP")
                         .removed(true)
@@ -106,12 +106,12 @@ public class MacraMeasureComparisonReviewerTest {
                 .build();
 
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
-                .g1MacraMeasure(MacraMeasure.builder()
+                .g1MacraMeasure(MipsMeasure.builder()
                         .id(GAP_EP_ID)
                         .abbreviation("GAP-EP")
                         .removed(true)
                         .build())
-                .g1MacraMeasure(MacraMeasure.builder()
+                .g1MacraMeasure(MipsMeasure.builder()
                         .id(GAP_EH_CAH)
                         .abbreviation("GAP-EH/CAH")
                         .removed(true)
@@ -130,7 +130,7 @@ public class MacraMeasureComparisonReviewerTest {
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
 
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
-                .g2MacraMeasure(MacraMeasure.builder()
+                .g2MacraMeasure(MipsMeasure.builder()
                         .id(GAP_EP_ID)
                         .abbreviation("GAP-EP")
                         .removed(true)
@@ -138,12 +138,12 @@ public class MacraMeasureComparisonReviewerTest {
                 .build();
 
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
-                .g2MacraMeasure(MacraMeasure.builder()
+                .g2MacraMeasure(MipsMeasure.builder()
                         .id(GAP_EP_ID)
                         .abbreviation("GAP-EP")
                         .removed(true)
                         .build())
-                .g2MacraMeasure(MacraMeasure.builder()
+                .g2MacraMeasure(MipsMeasure.builder()
                         .id(GAP_EH_CAH)
                         .abbreviation("GAP-EH/CAH")
                         .removed(true)
@@ -165,12 +165,12 @@ public class MacraMeasureComparisonReviewerTest {
                 .build();
 
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
-                .g1MacraMeasure(MacraMeasure.builder()
+                .g1MacraMeasure(MipsMeasure.builder()
                         .id(GAP_EP_ID)
                         .abbreviation("GAP-EP")
                         .removed(true)
                         .build())
-                .g2MacraMeasure(MacraMeasure.builder()
+                .g2MacraMeasure(MipsMeasure.builder()
                         .id(GAP_EH_CAH)
                         .abbreviation("GAP-EH/CAH")
                         .removed(true)
@@ -192,12 +192,12 @@ public class MacraMeasureComparisonReviewerTest {
                 .build();
 
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
-                .g1MacraMeasure(MacraMeasure.builder()
+                .g1MacraMeasure(MipsMeasure.builder()
                         .id(GAP_EP_ID)
                         .abbreviation("GAP-EP")
                         .removed(false)
                         .build())
-                .g2MacraMeasure(MacraMeasure.builder()
+                .g2MacraMeasure(MipsMeasure.builder()
                         .id(GAP_EH_CAH)
                         .abbreviation("GAP-EH/CAH")
                         .removed(false)

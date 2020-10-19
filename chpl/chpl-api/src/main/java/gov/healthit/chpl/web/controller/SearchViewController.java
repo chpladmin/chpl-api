@@ -43,7 +43,7 @@ import gov.healthit.chpl.domain.DimensionalData;
 import gov.healthit.chpl.domain.FuzzyChoices;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
-import gov.healthit.chpl.domain.MacraMeasure;
+import gov.healthit.chpl.domain.MipsMeasure;
 import gov.healthit.chpl.domain.SearchOption;
 import gov.healthit.chpl.domain.SearchableDimensionalData;
 import gov.healthit.chpl.domain.TestFunctionality;
@@ -1133,7 +1133,7 @@ public class SearchViewController {
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getMacraMeasures() {
-        Set<MacraMeasure> data = dimensionalDataManager.getMacraMeasures();
+        Set<MipsMeasure> data = dimensionalDataManager.getMacraMeasures();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);

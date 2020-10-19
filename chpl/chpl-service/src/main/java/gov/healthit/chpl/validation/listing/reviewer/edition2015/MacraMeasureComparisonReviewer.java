@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.MacraMeasure;
+import gov.healthit.chpl.domain.MipsMeasure;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
@@ -34,8 +34,8 @@ public class MacraMeasureComparisonReviewer implements ComparisonReviewer {
             return;
         }
 
-        List<MacraMeasure> existingMacraMeasuresForListing = existingListing.getG1MacraMeasures();
-        List<MacraMeasure> updatedMacraMeasuresForCriterion = updatedListing.getG1MacraMeasures();
+        List<MipsMeasure> existingMacraMeasuresForListing = existingListing.getG1MacraMeasures();
+        List<MipsMeasure> updatedMacraMeasuresForCriterion = updatedListing.getG1MacraMeasures();
 
         // Was a G1 item added?
         getNewlyAddedRemovedItems(updatedMacraMeasuresForCriterion, existingMacraMeasuresForListing).stream()
@@ -50,10 +50,10 @@ public class MacraMeasureComparisonReviewer implements ComparisonReviewer {
                         .add(getErrorMessage("listing.criteria.removedG2MacraMeasure", mm)));
     }
 
-    private List<MacraMeasure> getNewlyAddedRemovedItems(List<MacraMeasure> listInUpdatedListing,
-            List<MacraMeasure> listInOriginalListing) {
+    private List<MipsMeasure> getNewlyAddedRemovedItems(List<MipsMeasure> listInUpdatedListing,
+            List<MipsMeasure> listInOriginalListing) {
 
-        Predicate<MacraMeasure> notInOriginalListing = updated -> !listInOriginalListing.stream()
+        Predicate<MipsMeasure> notInOriginalListing = updated -> !listInOriginalListing.stream()
                 .anyMatch(original -> updated.getId().equals(original.getId()));
 
         return listInUpdatedListing.stream()
@@ -62,7 +62,7 @@ public class MacraMeasureComparisonReviewer implements ComparisonReviewer {
                 .collect(Collectors.toList());
     }
 
-    private String getErrorMessage(String messageCode, MacraMeasure macraMeasure) {
+    private String getErrorMessage(String messageCode, MipsMeasure macraMeasure) {
         return msgUtil.getMessage(messageCode,
                 macraMeasure.getAbbreviation());
     }

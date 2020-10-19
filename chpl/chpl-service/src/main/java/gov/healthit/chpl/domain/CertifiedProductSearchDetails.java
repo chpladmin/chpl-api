@@ -293,24 +293,13 @@ public class CertifiedProductSearchDetails implements Serializable {
     private List<CertifiedProductQmsStandard> qmsStandards = new ArrayList<CertifiedProductQmsStandard>();
 
     /**
-     * This variable indicates if the listing was successfully tested for automated
-     * numerator recording. It is applicable for the 2015 edition. The allowable values include
-     * measures such as "EP", "EH/CAH", "EP Individual", "EC Individual (TIN/NPI)", "EC Group", etc.
+     * This variable indicates if the listing utilizes automated numerator or automated measure
+     * required tests.
      */
-    @XmlElementWrapper(name = "g1MacraMeasures", nillable = true, required = false)
-    @XmlElement(name = "macraMeasure")
+    @XmlElementWrapper(name = "mipsMeasures", nillable = true, required = false)
+    @XmlElement(name = "mipsMeasure")
     @Singular
-    private List<MacraMeasure> g1MacraMeasures = new ArrayList<MacraMeasure>();
-
-    /**
-     * This variable indicates if the listing was successfully tested for automated measure
-     * calculation. It is applicable for the 2015 edition. The allowable values include
-     * measures such as "EP", "EH/CAH", "EP Individual", "EC Individual (TIN/NPI)", "EC Group", etc.
-     */
-    @XmlElementWrapper(name = "g2MacraMeasures", nillable = true, required = false)
-    @XmlElement(name = "macraMeasure")
-    @Singular
-    private List<MacraMeasure> g2MacraMeasures = new ArrayList<MacraMeasure>();
+    private List<ListingMipsMeasure> mipsMeasures = new ArrayList<ListingMipsMeasure>();
 
     /**
      * The criteria to which this listing attests
@@ -630,20 +619,12 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.qmsStandards = qmsStandards;
     }
 
-    public List<MacraMeasure> getG1MacraMeasures() {
-        return this.g1MacraMeasures;
+    public List<ListingMipsMeasure> getMipsMeasures() {
+        return this.mipsMeasures;
     }
 
-    public void setG1MacraMeasures(List<MacraMeasure> g1MacraMeasures) {
-        this.g1MacraMeasures = g1MacraMeasures;
-    }
-
-    public List<MacraMeasure> getG2MacraMeasures() {
-        return this.g2MacraMeasures;
-    }
-
-    public void setG2MacraMeasures(List<MacraMeasure> g2MacraMeasures) {
-        this.g2MacraMeasures = g2MacraMeasures;
+    public void setMipsMeasures(List<ListingMipsMeasure> mipsMeasures) {
+        this.mipsMeasures = mipsMeasures;
     }
 
     public List<CertifiedProductTargetedUser> getTargetedUsers() {
