@@ -13,37 +13,32 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "mips_measure")
-public class MipsMeasureEntity {
+@Table(name = "allowed_mips_measure_criterion")
+public class MipsMeasureCriterionMapEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
+    @Basic(optional = false)
+    @Column(name = "listing_mips_measure_map_id", nullable = false)
+    private Long listingMipsMeasureMapId;
+
+    //For now this will be a link to either g1 or g2 criteria.
+    @Basic(optional = false)
+    @Column(name = "certification_criterion_id", nullable = false)
+    private Long certificationCriterionId;
+
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "mips_domain_id", unique = true, nullable = true)
-    private MipsMeasureDomain domain;
-
-    @Column(name = "required_test_abbr")
-    private String abbreviation;
-
-    @Column(name = "required_test")
-    private String requiredTest;
-
-    @Column(name = "measure_name")
-    private String name;
-
-    @Column(name = "criteria_selection_required")
-    private Boolean criteriaSelectionRequired;
-
-    @Column(name = "removed")
-    private Boolean removed;
+    @JoinColumn(name = "certification_criterion_id", unique = true, nullable = true, insertable = false, updatable = false)
+    private CertificationCriterionEntity criterion;
 
     @Column(name = "creation_date", nullable = false, updatable = false, insertable = false)
     private Date creationDate;
