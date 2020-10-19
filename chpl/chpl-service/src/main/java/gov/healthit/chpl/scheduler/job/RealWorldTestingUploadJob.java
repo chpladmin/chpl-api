@@ -196,7 +196,7 @@ public class RealWorldTestingUploadJob implements Job {
     }
 
     private void sendResults(List<RealWorldTestingUpload> rwts, String address) throws MessagingException {
-        RwtEmail rwtEmail = new RwtEmail();
+        RwtEmail rwtEmail = new RwtEmail(env);
         List<String> addresses = new ArrayList<String>(Arrays.asList(address));
 
         EmailBuilder emailBuilder = new EmailBuilder(env);
@@ -210,7 +210,13 @@ public class RealWorldTestingUploadJob implements Job {
         return Integer.parseInt(env.getProperty("executorThreadCountForQuartzJobs"));
     }
 
-    class RwtEmail {
+    private class RwtEmail {
+        private Environment env;
+
+        RwtEmail(Environment env) {
+            this.env = env;
+        }
+
         public String getEmail(List<RealWorldTestingUpload> rwts) {
             HtmlEmailTemplate email = new HtmlEmailTemplate();
             email.setStyles(getStyles());
@@ -281,62 +287,7 @@ public class RealWorldTestingUploadJob implements Job {
         }
 
         private String getStyles() {
-            StringBuilder style = new StringBuilder();
-
-            style.append("table.blueTable {\n");
-            style.append("    background-color: #EEEEEE;\n");
-            style.append("    width: 100%;\n");
-            style.append("    text-align: left;\n");
-            style.append("    border-collapse: collapse;\n");
-            style.append("}\n");
-            style.append("}\n");
-            style.append("table.blueTable tbody td {\n");
-            style.append("    font-size: 13px;\n");
-            style.append("}\n");
-            style.append("table.blueTable tr.even {\n");
-            style.append("    background: #D0E4F5;\n");
-            style.append("}\n");
-            style.append("table.blueTable tr.odd {\n");
-            style.append("    background: #EEEEEE;\n");
-            style.append("}\n");
-            style.append("table.blueTable thead {\n");
-            style.append("    background: #1C6EA4;\n");
-            style.append("    border-bottom: 2px solid #444444;\n");
-            style.append("}\n");
-            style.append("table.blueTable thead th {\n");
-            style.append("    font-size: 15px;\n");
-            style.append("    font-weight: bold;\n");
-            style.append("    color: #FFFFFF;\n");
-            style.append("    border-left: 0px solid #D0E4F5;\n");
-            style.append("}\n");
-            style.append("table.blueTable thead th:first-child {\n");
-            style.append("    border-left: none;\n");
-            style.append("}\n");
-            style.append("table.blueTable tfoot {\n");
-            style.append("    font-size: 14px;\n");
-            style.append("    font-weight: bold;\n");
-            style.append("    color: #FFFFFF;\n");
-            style.append("    background: #D0E4F5;\n");
-            style.append("    background: -moz-linear-gradient(top, #dcebf7 0%, #d4e6f6 66%, #D0E4F5 100%);\n");
-            style.append("    background: -webkit-linear-gradient(top, #dcebf7 0%, #d4e6f6 66%, #D0E4F5 100%);\n");
-            style.append("    background: linear-gradient(to bottom, #dcebf7 0%, #d4e6f6 66%, #D0E4F5 100%);\n");
-            style.append("    border-top: 2px solid #444444;\n");
-            style.append("}\n");
-            style.append("table.blueTable tfoot td {\n");
-            style.append("    font-size: 14px;\n");
-            style.append("}\n");
-            style.append("table.blueTable tfoot .links {\n");
-            style.append("    text-align: right;\n");
-            style.append("}\n");
-            style.append("table.blueTable tfoot .links a{\n");
-            style.append("    display: inline-block;\n");
-            style.append("    background: #1C6EA4;\n");
-            style.append("    color: #FFFFFF;\n");
-            style.append("    padding: 2px 8px;\n");
-            style.append("    border-radius: 5px;\n");
-            style.append("}\n");
-
-            return style.toString();
+            return env.getProperty("rwt_email_styles");
         }
      }
 }
