@@ -36,8 +36,8 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class RealWorldTestingManager {
-    private static final String PLANS = "PLANS";
-    private static final String RESULTS = "RESULTS";
+    //private static final String PLANS = "PLANS";
+    //private static final String RESULTS = "RESULTS";
     private static final int CHPL_PRODUCT_NUMBER_COLUMN_IDX = 0;
     private static final int RWT_TYPE_COLUMN_IDX = 1;
     private static final int LAST_CHECKED_COLUMN_IDX = 2;
@@ -147,9 +147,9 @@ public class RealWorldTestingManager {
     }
 
     private RealWorldTestingType getType(String rwtType) {
-        if (rwtType.toUpperCase().equals(PLANS)) {
+        if (rwtType.toUpperCase().equals(RealWorldTestingType.PLANS.getName())) {
             return RealWorldTestingType.PLANS;
-        } else if (rwtType.toUpperCase().equals(RESULTS)) {
+        } else if (rwtType.toUpperCase().equals(RealWorldTestingType.RESULTS.getName())) {
             return RealWorldTestingType.RESULTS;
         } else {
             return null;
