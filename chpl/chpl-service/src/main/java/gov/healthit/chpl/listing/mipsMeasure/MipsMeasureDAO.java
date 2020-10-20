@@ -1,7 +1,8 @@
 package gov.healthit.chpl.listing.mipsMeasure;
 
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Query;
 
@@ -51,13 +52,13 @@ public class MipsMeasureDAO extends BaseDAOImpl {
         return result;
     }
 
-    public List<MipsMeasure> findAll() {
+    public Set<MipsMeasure> findAll() {
         Query query = entityManager.createQuery(
                 MIPS_MEASURE_HQL_BEGIN
                 + "WHERE mme.deleted = false",
                 MipsMeasureEntity.class);
         List<MipsMeasureEntity> entities = query.getResultList();
-        List<MipsMeasure> results = new ArrayList<MipsMeasure>(entities.size());
+        Set<MipsMeasure> results = new LinkedHashSet<MipsMeasure>(entities.size());
         if (entities != null && entities.size() > 0) {
             entities.stream().forEach(entity -> {
                 results.add(entity.convert());

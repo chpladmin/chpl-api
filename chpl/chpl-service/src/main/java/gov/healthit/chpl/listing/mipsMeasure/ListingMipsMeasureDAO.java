@@ -1,6 +1,9 @@
 package gov.healthit.chpl.listing.mipsMeasure;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.persistence.Query;
@@ -59,9 +62,74 @@ public class ListingMipsMeasureDAO extends BaseDAOImpl {
         if (existingEntity == null) {
             throw new EntityRetrievalException("Could not find mapping with id " + toUpdate.getId());
         }
-        //TODO: update things
+        existingEntity.setMeasureId(toUpdate.getMeasure().getId());
+        existingEntity.setTypeId(toUpdate.getMeasurementType().getId());
         existingEntity.setLastModifiedUser(AuthUtil.getAuditId());
         update(existingEntity);
+
+        Optional<List<CertificationCriterion>> updatedAssociatedCriteria = Optional
+                .ofNullable(new ArrayList(toUpdate.getAssociatedCriteria()));
+        Optional<List<CertificationCriterion>> exsitingAssociatedCriteria = Optional
+                .ofNullable(existingEntity.getAssociatedCriteria().stream()
+                        .map(assocCriterion -> assocCriterion.convert())
+                        .collect(Collectors.toList()));
+
+        List<CertificationCriterion> removed = getRemovedAssociatedCriteria(updatedAssociatedCriteria,
+                exsitingAssociatedCriteria);
+
+        List<CertificationCriterion> added = getAddedAssociatedCriteria(updatedAssociatedCriteria,
+                exsitingAssociatedCriteria);
+
+        removed.stream().forEach(removedCriterion -> {
+            Optional<ListingMipsMeasureCriterionMapEntity> removedEntityOpt =
+                    existingEntity.getAssociatedCriteria().stream()
+                        .filter(existingCrit -> existingCrit.getCriterion().getId().equals(removedCriterion.getId()))
+                        .findAny();
+            if (removedEntityOpt.isPresent()) {
+                ListingMipsMeasureCriterionMapEntity removedEntity = removedEntityOpt.get();
+                removedEntity.setDeleted(true);
+                removedEntity.setLastModifiedUser(AuthUtil.getAuditId());
+                update(removedEntity);
+            }
+        });
+
+        added.stream().forEach(addedCriterion -> {
+            ListingMipsMeasureCriterionMapEntity addedEntity = new ListingMipsMeasureCriterionMapEntity();
+            addedEntity.setCertificationCriterionId(addedCriterion.getId());
+            addedEntity.setDeleted(false);
+            addedEntity.setLastModifiedUser(AuthUtil.getAuditId());
+            addedEntity.setListingMipsMeasureMapId(existingEntity.getId());
+            create(addedEntity);
+        });
+    }
+
+    private List<CertificationCriterion> getRemovedAssociatedCriteria(
+            Optional<List<CertificationCriterion>> listA,
+            Optional<List<CertificationCriterion>> listB) {
+        //gets items in list B that are not in list A
+        return subtractLists(
+                listB.isPresent() ? listB.get() : new ArrayList<CertificationCriterion>(),
+                listA.isPresent() ? listA.get() : new ArrayList<CertificationCriterion>());
+    }
+
+    private List<CertificationCriterion> getAddedAssociatedCriteria(
+            Optional<List<CertificationCriterion>> listA,
+            Optional<List<CertificationCriterion>> listB) {
+        //get items in list A that are not in list B
+        return subtractLists(
+                listA.isPresent() ? listA.get() : new ArrayList<CertificationCriterion>(),
+                listB.isPresent() ? listB.get() : new ArrayList<CertificationCriterion>());
+    }
+
+    private List<CertificationCriterion> subtractLists(List<CertificationCriterion> listA,
+            List<CertificationCriterion> listB) {
+
+        Predicate<CertificationCriterion> notInListB = certFromA -> !listB.stream()
+                .anyMatch(cert -> certFromA.equals(cert));
+
+        return listA.stream()
+                .filter(notInListB)
+                .collect(Collectors.toList());
     }
 
     public void deleteCertifiedProductMips(Long id) throws EntityRetrievalException {

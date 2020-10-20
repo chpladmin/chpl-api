@@ -473,7 +473,7 @@ public class DimensionalDataManager {
 
     @Transactional
     @Cacheable(value = CacheNames.MIPS_MEASURES)
-    public List<MipsMeasure> getMipsMeasures() {
+    public Set<MipsMeasure> getMipsMeasures() {
         return mipsMeasureDao.findAll();
     }
 

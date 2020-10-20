@@ -1112,28 +1112,13 @@ public class SearchViewController {
         return result;
     }
 
-    @Deprecated
-    @ApiOperation(value = "DEPRECATED. Use /data/macra-measures. "
-            + "Get all possible macra measure options in the CHPL",
+    @ApiOperation(value = "Get all possible Mips measure options in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
-    @RequestMapping(value = "/data/macra_measures", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody SearchOption getMacraMeasuresDeprecated() {
-        Set<CriteriaSpecificDescriptiveModel> data = dimensionalDataManager.getMacraMeasuresDeprecated();
-        SearchOption result = new SearchOption();
-        result.setExpandable(false);
-        result.setData(data);
-        return result;
-    }
-
-    @ApiOperation(value = "Get all possible macra measure options in the CHPL",
-            notes = "This is useful for knowing what values one might possibly search for.")
-    @RequestMapping(value = "/data/macra-measures", method = RequestMethod.GET,
+    @RequestMapping(value = "/data/mips-measures", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getMacraMeasures() {
-        Set<MipsMeasure> data = dimensionalDataManager.getMacraMeasures();
+        Set<MipsMeasure> data = dimensionalDataManager.getMipsMeasures();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);

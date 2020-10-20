@@ -11,8 +11,13 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
+@Builder
+@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MipsMeasurementType implements Serializable {
     private static final long serialVersionUID = -8391253265541448011L;

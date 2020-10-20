@@ -75,6 +75,7 @@ import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
 import gov.healthit.chpl.dto.MeaningfulUseUserDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.listing.mipsMeasure.ListingMipsMeasureDAO;
 import gov.healthit.chpl.manager.impl.CertifiedProductDetailsManagerAsync;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.AuthUtil;
@@ -90,6 +91,7 @@ public class CertifiedProductDetailsManager {
     private CQMResultDAO cqmResultDao;
     private CertificationResultDetailsDAO certificationResultDetailsDAO;
     private CertifiedProductQmsStandardDAO certifiedProductQmsStandardDao;
+    private ListingMipsMeasureDAO listingMipsDao;
     private CertifiedProductTargetedUserDAO certifiedProductTargetedUserDao;
     private CertifiedProductAccessibilityStandardDAO certifiedProductAsDao;
     private CertificationResultManager certResultManager;
@@ -115,6 +117,7 @@ public class CertifiedProductDetailsManager {
             CQMResultDAO cqmResultDao,
             CertificationResultDetailsDAO certificationResultDetailsDAO,
             CertifiedProductQmsStandardDAO certifiedProductQmsStandardDao,
+            ListingMipsMeasureDAO listingMipsDao,
             CertifiedProductTargetedUserDAO certifiedProductTargetedUserDao,
             CertifiedProductAccessibilityStandardDAO certifiedProductAsDao,
             CertificationResultManager certResultManager,
@@ -137,6 +140,7 @@ public class CertifiedProductDetailsManager {
         this.cqmResultDao = cqmResultDao;
         this.certificationResultDetailsDAO = certificationResultDetailsDAO;
         this.certifiedProductQmsStandardDao = certifiedProductQmsStandardDao;
+        this.listingMipsDao = listingMipsDao;
         this.certifiedProductTargetedUserDao = certifiedProductTargetedUserDao;
         this.certifiedProductAsDao = certifiedProductAsDao;
         this.certResultManager = certResultManager;
@@ -681,6 +685,7 @@ public class CertifiedProductDetailsManager {
         searchDetails.setCountClosedNonconformities(dto.getCountClosedNonconformities());
         searchDetails.setSurveillance(survManager.getByCertifiedProduct(dto.getId()));
         searchDetails.setQmsStandards(getCertifiedProductQmsStandards(dto.getId()));
+        searchDetails.setMipsMeasures(getCertifiedProductMipsMeasures(dto.getId()));
         searchDetails.setTargetedUsers(getCertifiedProductTargetedUsers(dto.getId()));
         searchDetails.setAccessibilityStandards(getCertifiedProductAccessibilityStandards(dto.getId()));
         searchDetails.setRwtPlansUrl(dto.getRwtPlansUrl());
@@ -764,16 +769,7 @@ public class CertifiedProductDetailsManager {
 
     private List<ListingMipsMeasure> getCertifiedProductMipsMeasures(Long listingId)
             throws EntityRetrievalException {
-
-        List<CertifiedProductQmsStandardDTO> qmsStandardDTOs = new ArrayList<CertifiedProductQmsStandardDTO>();
-        qmsStandardDTOs = certifiedProductQmsStandardDao.getQmsStandardsByCertifiedProductId(id);
-
-        List<CertifiedProductQmsStandard> qmsStandardResults = new ArrayList<CertifiedProductQmsStandard>();
-        for (CertifiedProductQmsStandardDTO qmsStandardResult : qmsStandardDTOs) {
-            CertifiedProductQmsStandard result = new CertifiedProductQmsStandard(qmsStandardResult);
-            qmsStandardResults.add(result);
-        }
-        return qmsStandardResults;
+        return listingMipsDao.getMipsMeasuresByListingId(listingId);
     }
 
     private List<CertifiedProductTargetedUser> getCertifiedProductTargetedUsers(Long id)
