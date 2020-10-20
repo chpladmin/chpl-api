@@ -25,7 +25,7 @@ public class ListingMipsMeasureDAO extends BaseDAOImpl {
     private static final String LISTING_MEASURE_MAP_HQL_BEGIN = "SELECT listingMipsMap "
             + "FROM ListingMipsMeasureEntity listingMipsMap "
             + "JOIN FETCH listingMipsMap.type "
-            + "LEFT JOIN FETCH listingMipsMap.assocaitedCriteria assocCCMap "
+            + "LEFT JOIN FETCH listingMipsMap.associatedCriteria assocCCMap "
             + "LEFT JOIN FETCH assocCCMap.criterion assocCC "
             + "LEFT JOIN FETCH assocCC.certificationEdition "
             + "JOIN FETCH listingMipsMap.measure mm "
@@ -158,8 +158,10 @@ public class ListingMipsMeasureDAO extends BaseDAOImpl {
 
     public List<ListingMipsMeasure> getMipsMeasuresByListingId(Long listingId)
             throws EntityRetrievalException {
-        Query query = entityManager.createQuery(LISTING_MEASURE_MAP_HQL_BEGIN,
+        Query query = entityManager.createQuery(LISTING_MEASURE_MAP_HQL_BEGIN
+                + " AND listingMipsMap.listingId = :listingId ",
                 ListingMipsMeasureEntity.class);
+        query.setParameter("listingId", listingId);
         List<ListingMipsMeasureEntity> entities = query.getResultList();
         return entities.stream().map(entity -> entity.convert())
                 .collect(Collectors.toList());
