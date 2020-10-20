@@ -65,7 +65,6 @@ import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
-import gov.healthit.chpl.dto.MipsMeasureDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
@@ -106,7 +105,7 @@ public class DimensionalDataManager {
     private ProductDAO productDao;
     private DeveloperDAO devDao;
     private JobDAO jobDao;
-    private MipsMeasureDAO macraDao;
+    private MipsMeasureDAO mipsMeasureDao;
     private CQMCriterionDAO cqmCriterionDao;
     private CertificationEditionDAO certEditionDao;
 
@@ -118,7 +117,7 @@ public class DimensionalDataManager {
                                   TestDataDAO testDataDao, AccessibilityStandardDAO asDao, UcdProcessDAO ucdDao,
                                   QmsStandardDAO qmsDao, TargetedUserDAO tuDao, DeveloperStatusDAO devStatusDao,
                                   SurveillanceDAO survDao, UploadTemplateVersionDAO uploadTemplateDao, QuarterDAO quarterDao,
-                                  ProductDAO productDao, DeveloperDAO devDao, JobDAO jobDao, MipsMeasureDAO macraDao,
+                                  ProductDAO productDao, DeveloperDAO devDao, JobDAO jobDao, MipsMeasureDAO mipsMeasureDao,
                                   CQMCriterionDAO cqmCriterionDao, CertificationEditionDAO certEditionDao) {
         this.cacheableDimensionalDataManager = cacheableDimensionalDataManager;
         this.certificationBodyDao = certificationBodyDao;
@@ -141,7 +140,7 @@ public class DimensionalDataManager {
         this.productDao = productDao;
         this.devDao = devDao;
         this.jobDao = jobDao;
-        this.macraDao = macraDao;
+        this.mipsMeasureDao = mipsMeasureDao;
         this.cqmCriterionDao = cqmCriterionDao;
         this.certEditionDao = certEditionDao;
     }
@@ -472,32 +471,10 @@ public class DimensionalDataManager {
         return templates;
     }
 
-    @Deprecated
     @Transactional
-    public Set<CriteriaSpecificDescriptiveModel> getMacraMeasuresDeprecated() {
-        LOGGER.debug("Getting all macra measuresfrom the database (not cached).");
-
-        List<MipsMeasureDTO> measureDtos = macraDao.findAll();
-        Set<CriteriaSpecificDescriptiveModel> measures = new HashSet<CriteriaSpecificDescriptiveModel>();
-
-        for (MipsMeasureDTO dto : measureDtos) {
-            measures.add(new CriteriaSpecificDescriptiveModel(dto.getId(), dto.getValue(), dto.getName(),
-                    dto.getDescription(), new CertificationCriterion(dto.getCriteria())));
-        }
-        return measures;
-    }
-
-    @Transactional
-    @Cacheable(value = CacheNames.MACRA_MEASURES)
-    public Set<MipsMeasure> getMacraMeasures() {
-        LOGGER.debug("Getting all macra measuresfrom the database (not cached).");
-
-        List<MipsMeasureDTO> measureDtos = macraDao.findAll();
-        Set<MipsMeasure> measures = new HashSet<MipsMeasure>();
-        for (MipsMeasureDTO dto : measureDtos) {
-            measures.add(new MipsMeasure(dto));
-        }
-        return measures;
+    @Cacheable(value = CacheNames.MIPS_MEASURES)
+    public List<MipsMeasure> getMipsMeasures() {
+        return mipsMeasureDao.findAll();
     }
 
     @Transactional

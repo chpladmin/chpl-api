@@ -11,7 +11,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import lombok.Data;
@@ -35,8 +37,16 @@ public class PendingListingMipsMeasureEntity {
     private Long measureId;
 
     @Basic(optional = false)
-    @Column(name = "measure_name")
-    private String name;
+    @Column(name = "entered_value")
+    private String value;
+
+    @Column(name = "mips_type_id")
+    private Long typeId;
+
+    @Basic(optional = true)
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "mips_type_id", unique = true, nullable = true)
+    private ListingMipsMeasureTypeEntity type;
 
     @Basic(optional = false)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingListingMipsMeasureMapId")

@@ -35,6 +35,7 @@ import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.listing.mipsMeasure.ListingMipsMeasureDAO;
 import gov.healthit.chpl.listing.mipsMeasure.MipsMeasureDAO;
 
 public abstract class CertifiedProductUploadHandler {
@@ -90,6 +91,8 @@ public abstract class CertifiedProductUploadHandler {
     protected AgeRangeDAO ageDao;
     @Autowired
     protected MipsMeasureDAO mipsMeasureDao;
+    @Autowired
+    protected ListingMipsMeasureDAO listingMipsDao;
 
     private static final String CERTIFICATION_DATE_FORMAT = "yyyyMMdd";
     protected SimpleDateFormat dateFormatter;

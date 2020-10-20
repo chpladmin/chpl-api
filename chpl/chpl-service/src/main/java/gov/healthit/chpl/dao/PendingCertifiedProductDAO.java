@@ -142,7 +142,7 @@ throws EntityCreationException {
             try {
                 entityManager.persist(mipsMeasure);
             } catch (Exception ex) {
-                String msg = msgUtil.getMessage("listing.badMipsMeasure", mipsMeasure.getName());
+                String msg = msgUtil.getMessage("listing.badMipsMeasure", mipsMeasure.getValue());
                 LOGGER.error(msg, ex);
                 throw new EntityCreationException(msg);
             }
@@ -154,7 +154,7 @@ throws EntityCreationException {
                     entityManager.persist(mipsMeasure);
                 } catch (Exception ex) {
                     String msg = msgUtil.getMessage("listing.badMipsMeasureCriterionMap",
-                            mipsMeasure.getName(), measureCriterionMap.getCertificationCriterionId());
+                            mipsMeasure.getValue(), measureCriterionMap.getCertificationCriterionId());
                     LOGGER.error(msg, ex);
                     throw new EntityCreationException(msg);
                 }

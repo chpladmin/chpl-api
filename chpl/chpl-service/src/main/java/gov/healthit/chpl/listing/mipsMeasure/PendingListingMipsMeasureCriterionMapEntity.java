@@ -30,7 +30,6 @@ public class PendingListingMipsMeasureCriterionMapEntity {
     @Column(name = "pending_listing_mips_measure_map_id", nullable = false)
     private Long pendingListingMipsMeasureMapId;
 
-    //For now this will be a link to either g1 or g2 criteria.
     @Basic(optional = false)
     @Column(name = "certification_criterion_id", nullable = false)
     private Long certificationCriterionId;

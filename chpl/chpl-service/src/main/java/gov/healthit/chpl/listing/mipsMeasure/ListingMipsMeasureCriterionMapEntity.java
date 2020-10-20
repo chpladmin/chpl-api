@@ -13,12 +13,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "certified_product_mips_measure_criterion_map")
+@Table(name = "certified_product_mips_measure_criterion")
 public class ListingMipsMeasureCriterionMapEntity {
 
     @Id
@@ -27,10 +28,9 @@ public class ListingMipsMeasureCriterionMapEntity {
     private Long id;
 
     @Basic(optional = false)
-    @Column(name = "listing_mips_measure_map_id", nullable = false)
+    @Column(name = "certified_product_mips_measure_map_id", nullable = false)
     private Long listingMipsMeasureMapId;
 
-    //For now this will be a link to either g1 or g2 criteria.
     @Basic(optional = false)
     @Column(name = "certification_criterion_id", nullable = false)
     private Long certificationCriterionId;
@@ -51,4 +51,21 @@ public class ListingMipsMeasureCriterionMapEntity {
 
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
+
+    public CertificationCriterion convert() {
+        if (getCriterion() == null) {
+            return null;
+        }
+        CertificationCriterionEntity ccEntity = getCriterion();
+        CertificationCriterion cert = new CertificationCriterion();
+        cert.setId(getCertificationCriterionId());
+        cert.setNumber(ccEntity.getNumber());
+        cert.setRemoved(ccEntity.getRemoved());
+        cert.setTitle(ccEntity.getTitle());
+        cert.setCertificationEditionId(ccEntity.getCertificationEditionId());
+        if (ccEntity.getCertificationEdition() != null) {
+            cert.setCertificationEdition(ccEntity.getCertificationEdition().getYear());
+        }
+        return cert;
+    }
 }

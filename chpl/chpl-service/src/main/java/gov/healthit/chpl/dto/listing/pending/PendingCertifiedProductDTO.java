@@ -534,7 +534,7 @@ public class PendingCertifiedProductDTO implements Serializable {
     public PendingCertifiedProductDTO(PendingCertifiedProductEntity entity) {
         this();
         this.id = entity.getId();
-        this.hasQms = entity.isHasQms();
+        this.hasQms = entity.getHasQms();
         this.practiceTypeId = entity.getPracticeTypeId();
         this.deleted = entity.getDeleted();
         this.lastModifiedUser = entity.getLastModifiedUser();

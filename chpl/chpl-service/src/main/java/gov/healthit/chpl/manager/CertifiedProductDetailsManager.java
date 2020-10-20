@@ -46,6 +46,7 @@ import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
+import gov.healthit.chpl.domain.ListingMipsMeasure;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
@@ -748,6 +749,20 @@ public class CertifiedProductDetailsManager {
     }
 
     private List<CertifiedProductQmsStandard> getCertifiedProductQmsStandards(Long id)
+            throws EntityRetrievalException {
+
+        List<CertifiedProductQmsStandardDTO> qmsStandardDTOs = new ArrayList<CertifiedProductQmsStandardDTO>();
+        qmsStandardDTOs = certifiedProductQmsStandardDao.getQmsStandardsByCertifiedProductId(id);
+
+        List<CertifiedProductQmsStandard> qmsStandardResults = new ArrayList<CertifiedProductQmsStandard>();
+        for (CertifiedProductQmsStandardDTO qmsStandardResult : qmsStandardDTOs) {
+            CertifiedProductQmsStandard result = new CertifiedProductQmsStandard(qmsStandardResult);
+            qmsStandardResults.add(result);
+        }
+        return qmsStandardResults;
+    }
+
+    private List<ListingMipsMeasure> getCertifiedProductMipsMeasures(Long listingId)
             throws EntityRetrievalException {
 
         List<CertifiedProductQmsStandardDTO> qmsStandardDTOs = new ArrayList<CertifiedProductQmsStandardDTO>();

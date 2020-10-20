@@ -15,7 +15,7 @@ public final class CacheNames {
     public static final String CLASSIFICATION_NAMES = "classificationNames";
     public static final String PRODUCT_NAMES = "productNames";
     public static final String DEVELOPER_NAMES = "developerNames";
-    public static final String MACRA_MEASURES = "macrameasures";
+    public static final String MIPS_MEASURES = "mipsMeasures";
     public static final String CQM_CRITERION = "cqmCriterion";
     public static final String CQM_CRITERION_NUMBERS = "cqmCriterionNumbers";
     public static final String CERTIFICATION_CRITERION_NUMBERS = "certificationCriterionNumbers";

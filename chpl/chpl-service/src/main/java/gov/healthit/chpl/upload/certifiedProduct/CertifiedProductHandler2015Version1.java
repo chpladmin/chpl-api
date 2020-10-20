@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
@@ -16,6 +17,7 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.MipsMeasure;
+import gov.healthit.chpl.domain.MipsMeasurementType;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AgeRangeDTO;
@@ -63,11 +65,10 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler {
 
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductHandler2015Version1.class);
-    @Autowired
     private ErrorMessageUtil msgUtil;
     private TemplateColumnIndexMap templateColumnIndexMap;
-    private static final String G1_CRITERION_NUMBER = "170.315 (g)(1)";
-    private static final String G2_CRITERION_NUMBER = "170.315 (g)(2)";
+    private static final String G1_MEASUREMENT_TYPE_NAME = "G1";
+    private static final String G2_MEASUREMENT_TYPE_NAME = "G2";
 
     // we will ignore g1 and g2 macra measures for (g)(7) criteria for now
     // they shouldn't be there but it's hard for users to change the spreadsheet
@@ -78,7 +79,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
     private List<PendingTestTaskEntity> tasks;
 
     @Autowired
-    public CertifiedProductHandler2015Version1(final ErrorMessageUtil msgUtil) {
+    public CertifiedProductHandler2015Version1(ErrorMessageUtil msgUtil) {
         super(msgUtil);
         templateColumnIndexMap = new TemplateColumnIndexMap2015Version1();
     }
@@ -691,24 +692,26 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
             return;
         }
 
-        List<CertificationCriterionDTO> g1Criteria = certDao.getAllByNumber(G1_CRITERION_NUMBER);
+        MipsMeasurementType type = listingMipsDao.getMeasurementType(G1_MEASUREMENT_TYPE_NAME);
         for (CSVRecord row : getRecord()) {
             String measureVal = row.get(measureCol).trim();
             if (!StringUtils.isEmpty(measureVal) && !measureVal.equalsIgnoreCase(Boolean.FALSE.toString())
                     && !measureVal.equals("0")) {
-
-                PendingListingMipsMeasureEntity mmEntity = new PendingListingMipsMeasureEntity();
-                mmEntity.setName(measureVal);
-                MipsMeasure mmDto = mipsMeasureDao.getByName(measureVal);
-                if (mmDto != null) {
-                    mmEntity.setMeasureId(mmDto.getId());
+                //TODO: the parsing of the user-entered measure value field is more complex than this.
+                MipsMeasure measureWithName = mipsMeasureDao.getByName(measureVal);
+                PendingListingMipsMeasureEntity mmEntity = getMipsMeasureEntityFromListing(listing, measureWithName, type);
+                if (mmEntity == null) {
+                    mmEntity = new PendingListingMipsMeasureEntity();
+                    mmEntity.setValue(measureVal);
+                    if (measureWithName != null) {
+                        mmEntity.setMeasureId(measureWithName.getId());
+                    }
+                    mmEntity.setTypeId(type.getId());
+                    listing.getMipsMeasures().add(mmEntity);
                 }
-                g1Criteria.stream().forEach(g1Criterion -> {
-                    PendingListingMipsMeasureCriterionMapEntity criterionMap = new PendingListingMipsMeasureCriterionMapEntity();
-                    criterionMap.setCertificationCriterionId(g1Criterion.getId());
-                    mmEntity.getAssociatedCriteria().add(criterionMap);
-                });
-                listing.getMipsMeasures().add(mmEntity);
+                PendingListingMipsMeasureCriterionMapEntity criterionMap = new PendingListingMipsMeasureCriterionMapEntity();
+                criterionMap.setCertificationCriterionId(cert.getMappedCriterion().getId());
+                mmEntity.getAssociatedCriteria().add(criterionMap);
             }
         }
     }
@@ -719,25 +722,39 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
             return;
         }
 
-        List<CertificationCriterionDTO> g2Criteria = certDao.getAllByNumber(G2_CRITERION_NUMBER);
+        MipsMeasurementType type = listingMipsDao.getMeasurementType(G2_MEASUREMENT_TYPE_NAME);
         for (CSVRecord row : getRecord()) {
             String measureVal = row.get(measureCol).trim();
             if (!StringUtils.isEmpty(measureVal) && !measureVal.equalsIgnoreCase(Boolean.FALSE.toString())
                     && !measureVal.equals("0")) {
-                PendingListingMipsMeasureEntity mmEntity = new PendingListingMipsMeasureEntity();
-                mmEntity.setName(measureVal.trim());
-                MipsMeasure mmDto = mipsMeasureDao.getByName(measureVal);
-                if (mmDto != null) {
-                    mmEntity.setMeasureId(mmDto.getId());
+                //TODO: the parsing of the user-entered measure value field is more complex than this.
+                MipsMeasure measureWithName = mipsMeasureDao.getByName(measureVal);
+                PendingListingMipsMeasureEntity mmEntity = getMipsMeasureEntityFromListing(listing, measureWithName, type);
+                if (mmEntity == null) {
+                    mmEntity = new PendingListingMipsMeasureEntity();
+                    mmEntity.setValue(measureVal);
+                    if (measureWithName != null) {
+                        mmEntity.setMeasureId(measureWithName.getId());
+                    }
+                    mmEntity.setTypeId(type.getId());
+                    listing.getMipsMeasures().add(mmEntity);
                 }
-                g2Criteria.stream().forEach(g2Criterion -> {
-                    PendingListingMipsMeasureCriterionMapEntity criterionMap = new PendingListingMipsMeasureCriterionMapEntity();
-                    criterionMap.setCertificationCriterionId(g2Criterion.getId());
-                    mmEntity.getAssociatedCriteria().add(criterionMap);
-                });
-                listing.getMipsMeasures().add(mmEntity);
+                PendingListingMipsMeasureCriterionMapEntity criterionMap = new PendingListingMipsMeasureCriterionMapEntity();
+                criterionMap.setCertificationCriterionId(cert.getMappedCriterion().getId());
+                mmEntity.getAssociatedCriteria().add(criterionMap);
             }
         }
+    }
+
+    private PendingListingMipsMeasureEntity getMipsMeasureEntityFromListing(PendingCertifiedProductEntity listing,
+            MipsMeasure measureToFind, MipsMeasurementType measurementType) {
+        Optional<PendingListingMipsMeasureEntity> foundMipsMeasure =
+                listing.getMipsMeasures().stream()
+                .filter(listingMipsMeasure -> listingMipsMeasure.getId().equals(measureToFind.getId()))
+                .filter(listingMipsMeasureSameId ->
+                    listingMipsMeasureSameId.getTypeId().equals(measurementType.getId()))
+                .findFirst();
+        return foundMipsMeasure.isPresent() ? foundMipsMeasure.get() : null;
     }
 
     protected void parseTasksAndParticipants(final PendingCertifiedProductEntity product,
