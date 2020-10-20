@@ -54,7 +54,7 @@ public class MipsMeasureEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "mipsMeasureId")
     @Basic(optional = false)
     @Column(name = "mips_measure_id", nullable = false)
-    @Where(clause = "deleted <> 'true'")
+    @Where(clause = " deleted = false ")
     private Set<MipsMeasureCriterionMapEntity> allowedCriteria = new LinkedHashSet<MipsMeasureCriterionMapEntity>();
 
 

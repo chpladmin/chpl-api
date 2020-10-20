@@ -17,7 +17,7 @@ public class MipsMeasureDAO extends BaseDAOImpl {
             + "FROM MipsMeasureEntity mme "
             + "JOIN FETCH mme.domain "
             + "JOIN FETCH mme.allowedCriteria ac "
-            + "JOIN FETCH ac.crierion cc "
+            + "JOIN FETCH ac.criterion cc "
             + "JOIN FETCH cc.certificationEdition ";
 
     public MipsMeasure getById(Long id) {

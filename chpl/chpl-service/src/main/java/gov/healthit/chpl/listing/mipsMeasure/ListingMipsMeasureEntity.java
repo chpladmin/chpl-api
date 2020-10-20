@@ -37,12 +37,12 @@ public class ListingMipsMeasureEntity {
     @Column(name = "certified_product_id")
     private Long listingId;
 
-    @Column(name = "measure_id")
+    @Column(name = "mips_measure_id")
     private Long measureId;
 
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "measure_id", unique = true, nullable = true)
+    @JoinColumn(name = "mips_measure_id", unique = true, nullable = true, insertable = false, updatable = false)
     private MipsMeasureEntity measure;
 
     @Column(name = "mips_type_id")
@@ -50,7 +50,7 @@ public class ListingMipsMeasureEntity {
 
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "mips_type_id", unique = true, nullable = true)
+    @JoinColumn(name = "mips_type_id", unique = true, nullable = true, insertable = false, updatable = false)
     @Where(clause = " deleted = false ")
     private ListingMipsMeasureTypeEntity type;
 

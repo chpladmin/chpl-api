@@ -121,8 +121,8 @@ public class Edition2015ListingValidator extends Validator {
     private ChplNumberComparisonReviewer chplNumberComparisonReviewer;
 
     @Autowired
-    @Qualifier("macraMeasureComparisonReviewer")
-    private MipsMeasureComparisonReviewer macraComparisonReviewer;
+    @Qualifier("mipsMeasureComparisonReviewer")
+    private MipsMeasureComparisonReviewer mipsComparisonReviewer;
 
     @Autowired
     @Qualifier("oldCriteriaWithoutIcsReviewer")
@@ -211,7 +211,7 @@ public class Edition2015ListingValidator extends Validator {
             comparisonReviewers = new ArrayList<ComparisonReviewer>();
             comparisonReviewers.add(chplNumberComparisonReviewer);
             comparisonReviewers.add(devBanComparisonReviewer);
-            comparisonReviewers.add(macraComparisonReviewer);
+            comparisonReviewers.add(mipsComparisonReviewer);
             comparisonReviewers.add(criteriaComparisonReviewer);
             comparisonReviewers.add(testTaskCriteriaComparisonReviewer);
             comparisonReviewers.add(ucdCriteriaComparisonReviewer);

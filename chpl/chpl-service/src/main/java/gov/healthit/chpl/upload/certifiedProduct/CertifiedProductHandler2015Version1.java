@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
@@ -707,7 +706,8 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                         mmEntity.setMeasureId(measureWithName.getId());
                     }
                     mmEntity.setTypeId(type.getId());
-                    listing.getMipsMeasures().add(mmEntity);
+                    //TODO: put back in
+                    //listing.getMipsMeasures().add(mmEntity);
                 }
                 PendingListingMipsMeasureCriterionMapEntity criterionMap = new PendingListingMipsMeasureCriterionMapEntity();
                 criterionMap.setCertificationCriterionId(cert.getMappedCriterion().getId());
@@ -737,7 +737,8 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                         mmEntity.setMeasureId(measureWithName.getId());
                     }
                     mmEntity.setTypeId(type.getId());
-                    listing.getMipsMeasures().add(mmEntity);
+                    //TODO: put back in
+                    //listing.getMipsMeasures().add(mmEntity);
                 }
                 PendingListingMipsMeasureCriterionMapEntity criterionMap = new PendingListingMipsMeasureCriterionMapEntity();
                 criterionMap.setCertificationCriterionId(cert.getMappedCriterion().getId());
@@ -748,13 +749,14 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
 
     private PendingListingMipsMeasureEntity getMipsMeasureEntityFromListing(PendingCertifiedProductEntity listing,
             MipsMeasure measureToFind, MipsMeasurementType measurementType) {
-        Optional<PendingListingMipsMeasureEntity> foundMipsMeasure =
-                listing.getMipsMeasures().stream()
-                .filter(listingMipsMeasure -> listingMipsMeasure.getId().equals(measureToFind.getId()))
-                .filter(listingMipsMeasureSameId ->
-                    listingMipsMeasureSameId.getTypeId().equals(measurementType.getId()))
-                .findFirst();
-        return foundMipsMeasure.isPresent() ? foundMipsMeasure.get() : null;
+//        Optional<PendingListingMipsMeasureEntity> foundMipsMeasure =
+//                listing.getMipsMeasures().stream()
+//                .filter(listingMipsMeasure -> listingMipsMeasure.getId().equals(measureToFind.getId()))
+//                .filter(listingMipsMeasureSameId ->
+//                    listingMipsMeasureSameId.getTypeId().equals(measurementType.getId()))
+//                .findFirst();
+//        return foundMipsMeasure.isPresent() ? foundMipsMeasure.get() : null;
+        return null;
     }
 
     protected void parseTasksAndParticipants(final PendingCertifiedProductEntity product,

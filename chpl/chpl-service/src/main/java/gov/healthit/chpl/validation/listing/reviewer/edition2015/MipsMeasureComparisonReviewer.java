@@ -34,10 +34,10 @@ public class MipsMeasureComparisonReviewer implements ComparisonReviewer {
             return;
         }
 
-        List<ListingMipsMeasure> existingMacraMeasuresForListing = existingListing.getMipsMeasures();
-        List<ListingMipsMeasure> updatedMacraMeasuresForCriterion = updatedListing.getMipsMeasures();
+        List<ListingMipsMeasure> existingMipsMeasuresForListing = existingListing.getMipsMeasures();
+        List<ListingMipsMeasure> updatedMipsMeasuresForCriterion = updatedListing.getMipsMeasures();
 
-        getNewlyAddedRemovedItems(updatedMacraMeasuresForCriterion, existingMacraMeasuresForListing).stream()
+        getNewlyAddedRemovedItems(updatedMipsMeasuresForCriterion, existingMipsMeasuresForListing).stream()
                 .forEach(mm -> updatedListing.getErrorMessages()
                         .add(getErrorMessage("listing.removedMipsMeasure", mm)));
     }

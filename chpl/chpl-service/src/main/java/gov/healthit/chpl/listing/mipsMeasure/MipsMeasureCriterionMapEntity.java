@@ -19,7 +19,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "allowed_mips_measure_criterion")
+@Table(name = "allowed_mips_measure_criteria")
 public class MipsMeasureCriterionMapEntity {
 
     @Id

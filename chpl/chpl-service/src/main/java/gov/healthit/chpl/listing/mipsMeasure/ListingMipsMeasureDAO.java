@@ -25,12 +25,13 @@ public class ListingMipsMeasureDAO extends BaseDAOImpl {
     private static final String LISTING_MEASURE_MAP_HQL_BEGIN = "SELECT listingMipsMap "
             + "FROM ListingMipsMeasureEntity listingMipsMap "
             + "JOIN FETCH listingMipsMap.type "
-            + "LEFT JOIN FETCH listingMipsMap.assocaitedCriteria assocCC "
+            + "LEFT JOIN FETCH listingMipsMap.assocaitedCriteria assocCCMap "
+            + "LEFT JOIN FETCH assocCCMap.criterion assocCC "
             + "LEFT JOIN FETCH assocCC.certificationEdition "
             + "JOIN FETCH listingMipsMap.measure mm "
             + "JOIN FETCH mm.domain "
             + "JOIN FETCH mm.allowedCriteria ac "
-            + "JOIN FETCH ac.crierion allowedCC "
+            + "JOIN FETCH ac.criterion allowedCC "
             + "JOIN FETCH allowedCC.certificationEdition "
             + "WHERE listingMipsMap.deleted = false ";
 

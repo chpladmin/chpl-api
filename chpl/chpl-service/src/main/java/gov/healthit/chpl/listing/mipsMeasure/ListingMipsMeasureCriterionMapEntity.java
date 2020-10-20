@@ -19,7 +19,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "certified_product_mips_measure_criterion")
+@Table(name = "certified_product_mips_measure_criteria")
 public class ListingMipsMeasureCriterionMapEntity {
 
     @Id
@@ -28,7 +28,7 @@ public class ListingMipsMeasureCriterionMapEntity {
     private Long id;
 
     @Basic(optional = false)
-    @Column(name = "certified_product_mips_measure_map_id", nullable = false)
+    @Column(name = "certified_product_mips_measure_id", nullable = false)
     private Long listingMipsMeasureMapId;
 
     @Basic(optional = false)
