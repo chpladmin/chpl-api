@@ -2,6 +2,7 @@ package gov.healthit.chpl.scheduler.job;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +43,7 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.scheduler.SchedulerCertifiedProductSearchDetailsAsync;
+import gov.healthit.chpl.service.DirectReviewUpdateEmailService;
 import gov.healthit.chpl.util.EmailBuilder;
 import net.sf.ehcache.CacheManager;
 
@@ -74,6 +76,14 @@ public class SplitDeveloperJob implements Job {
     @Autowired
     private ActivityManager activityManager;
 
+    @Autowired
+    private DirectReviewUpdateEmailService directReviewEmailService;
+
+    private DeveloperDTO preSplitDeveloper;
+    private DeveloperDTO postSplitDeveloper;
+    private Map<Long, CertifiedProductSearchDetails> preSplitListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
+    private Map<Long, CertifiedProductSearchDetails> postSplitListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
+
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
@@ -87,29 +97,33 @@ public class SplitDeveloperJob implements Job {
         } else {
             setSecurityContext(user);
 
-            DeveloperDTO oldDeveloper = (DeveloperDTO) jobDataMap.get(OLD_DEVELOPER_KEY);
+            preSplitDeveloper = (DeveloperDTO) jobDataMap.get(OLD_DEVELOPER_KEY);
             DeveloperDTO newDeveloper = (DeveloperDTO) jobDataMap.get(NEW_DEVELOPER_KEY);
             List<Long> productIdsToMove = (List<Long>) jobDataMap.get(PRODUCT_IDS_TO_MOVE_KEY);
-            DeveloperDTO createdDeveloper = null;
             Exception splitException = null;
             try {
-                createdDeveloper = splitDeveloper(oldDeveloper, newDeveloper, productIdsToMove);
+                postSplitDeveloper = splitDeveloper(newDeveloper, productIdsToMove);
             } catch (Exception e) {
-                LOGGER.error("Error completing split of old developer '" + oldDeveloper.getName() + "' to new developer '"
+                LOGGER.error("Error completing split of old developer '" + preSplitDeveloper.getName() + "' to new developer '"
                         + newDeveloper.getName() + "'.", e);
                 splitException = e;
             }
 
-            if (createdDeveloper != null) {
+            if (postSplitDeveloper != null) {
                 CacheManager.getInstance().clearAll();
             }
+
+            directReviewEmailService.sendEmail(
+                    Arrays.asList(preSplitDeveloper),
+                    Arrays.asList(preSplitDeveloper, postSplitDeveloper),
+                    preSplitListingDetails, postSplitListingDetails);
 
             //send email about success/failure of job
             if (!StringUtils.isEmpty(user.getEmail())) {
                 List<String> recipients = new ArrayList<String>();
                 recipients.add(user.getEmail());
                 try {
-                    sendEmails(oldDeveloper, createdDeveloper != null ? createdDeveloper : newDeveloper,
+                    sendJobCompletionEmails(postSplitDeveloper != null ? postSplitDeveloper : newDeveloper,
                             productIdsToMove, splitException, recipients);
                 } catch (IOException | MessagingException e) {
                     LOGGER.error(e);
@@ -134,9 +148,8 @@ public class SplitDeveloperJob implements Job {
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 
-    private DeveloperDTO splitDeveloper(DeveloperDTO oldDeveloper, DeveloperDTO developerToCreate,
-            List<Long> productIdsToMove) throws JsonProcessingException, EntityCreationException,
-            EntityRetrievalException, Exception {
+    private DeveloperDTO splitDeveloper(DeveloperDTO developerToCreate, List<Long> productIdsToMove)
+            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, Exception {
         LOGGER.info("Creating new developer " + developerToCreate.getName());
         DeveloperDTO createdDeveloper = devManager.create(developerToCreate);
 
@@ -149,25 +162,24 @@ public class SplitDeveloperJob implements Job {
 
             // need to get details for affected listings now before the product is re-assigned
             // so that any listings with a generated new-style CHPL ID have the old developer code
-            Map<Long, CertifiedProductSearchDetails> beforeListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
             List<Future<CertifiedProductSearchDetails>> beforeListingFutures
                 = getCertifiedProductSearchDetailsFutures(affectedListings);
             for (Future<CertifiedProductSearchDetails> future : beforeListingFutures) {
                 CertifiedProductSearchDetails details = future.get();
                 LOGGER.info("Complete retrieving details for id: " + details.getId());
-                beforeListingDetails.put(details.getId(), details);
+                preSplitListingDetails.put(details.getId(), details);
             }
 
             // move the product to be owned by the new developer
             ProductDTO productToMove = productManager.getById(productIdToMove);
-            if (productToMove.getOwner().getId().longValue() != oldDeveloper.getId().longValue()) {
+            if (productToMove.getOwner().getId().longValue() != preSplitDeveloper.getId().longValue()) {
                 throw new AccessDeniedException("The product " + productToMove.getName()
-                    + " is not owned by " + oldDeveloper.getName());
+                    + " is not owned by " + preSplitDeveloper.getName());
             }
             productToMove.getOwner().setId(createdDeveloper.getId());
             ProductOwnerDTO newOwner = new ProductOwnerDTO();
             newOwner.setProductId(productToMove.getId());
-            newOwner.setDeveloper(oldDeveloper);
+            newOwner.setDeveloper(preSplitDeveloper);
             newOwner.setTransferDate(splitDate.getTime());
             productToMove.getOwnerHistory().add(newOwner);
             LOGGER.info("Moving product " + productToMove.getName());
@@ -177,17 +189,23 @@ public class SplitDeveloperJob implements Job {
             List<Future<CertifiedProductSearchDetails>> afterListingFutures
                 = getCertifiedProductSearchDetailsFutures(affectedListings);
             for (Future<CertifiedProductSearchDetails> future : afterListingFutures) {
-                CertifiedProductSearchDetails afterListing = future.get();
-                LOGGER.info("Complete retrieving details for id: " + afterListing.getId());
-                CertifiedProductSearchDetails beforeListing = beforeListingDetails.get(afterListing.getId());
-                activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeListing.getId(),
-                        "Updated certified product " + afterListing.getChplProductNumber() + ".", beforeListing,
-                        afterListing);
+                CertifiedProductSearchDetails details = future.get();
+                LOGGER.info("Complete retrieving details for id: " + details.getId());
+                postSplitListingDetails.put(details.getId(), details);
             }
         }
 
+        LOGGER.info("Logging listing split activity.");
+        for (Long id : postSplitListingDetails.keySet()) {
+            CertifiedProductSearchDetails preSplitListing = preSplitListingDetails.get(id);
+            CertifiedProductSearchDetails postSplitListing = postSplitListingDetails.get(id);
+            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, preSplitListing.getId(),
+                    "Updated certified product " + postSplitListing.getChplProductNumber() + ".", preSplitListing,
+                    postSplitListing);
+        }
+
         LOGGER.info("Logging developer split activity.");
-        DeveloperDTO origDeveloper = devManager.getById(oldDeveloper.getId());
+        DeveloperDTO origDeveloper = devManager.getById(preSplitDeveloper.getId());
         DeveloperDTO afterDeveloper = devManager.getById(createdDeveloper.getId());
         List<DeveloperDTO> splitDevelopers = new ArrayList<DeveloperDTO>();
         splitDevelopers.add(origDeveloper);
@@ -205,7 +223,7 @@ public class SplitDeveloperJob implements Job {
         List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
         for (CertifiedProductDetailsDTO currListing : listings) {
             try {
-                LOGGER.info("Getting pre-split details for affected listing " + currListing.getChplProductNumber());
+                LOGGER.info("Getting details for affected listing " + currListing.getChplProductNumber());
                 futures.add(schedulerCertifiedProductSearchDetailsAsync.getCertifiedProductDetail(
                         currListing.getId(), cpdManager));
             } catch (EntityRetrievalException e) {
@@ -215,20 +233,20 @@ public class SplitDeveloperJob implements Job {
         return futures;
     }
 
-    private void sendEmails(DeveloperDTO oldDeveloper, DeveloperDTO newDeveloper, List<Long> productIds,
+    private void sendJobCompletionEmails(DeveloperDTO newDeveloper, List<Long> productIds,
             Exception splitException, List<String> recipients)
             throws IOException, AddressException, MessagingException {
 
         String subject = getSubject(splitException == null);
         String htmlMessage = "";
         if (splitException == null) {
-            htmlMessage = createHtmlEmailBodySuccess(oldDeveloper, newDeveloper, productIds);
+            htmlMessage = createHtmlEmailBodySuccess(newDeveloper, productIds);
         } else {
             String[] errorEmailRecipients = env.getProperty("splitDeveloperErrorEmailRecipients").split(",");
             for (int i = 0; i < errorEmailRecipients.length; i++) {
                 recipients.add(errorEmailRecipients[i].trim());
             }
-            htmlMessage = createHtmlEmailBodyFailure(oldDeveloper, newDeveloper, splitException);
+            htmlMessage = createHtmlEmailBodyFailure(newDeveloper, splitException);
         }
 
         for (String emailAddress : recipients) {
@@ -261,7 +279,7 @@ public class SplitDeveloperJob implements Job {
         }
     }
 
-    private String createHtmlEmailBodySuccess(DeveloperDTO oldDeveloper, DeveloperDTO createdDeveloper,
+    private String createHtmlEmailBodySuccess(DeveloperDTO createdDeveloper,
             List<Long> productIds) {
         List<ProductDTO> products = new ArrayList<ProductDTO>(productIds.size());
         for (Long productId : productIds) {
@@ -281,8 +299,8 @@ public class SplitDeveloperJob implements Job {
                 createdDeveloper.getId(),
                 createdDeveloper.getName(),
                 env.getProperty("chplUrlBegin"),
-                oldDeveloper.getId(),
-                oldDeveloper.getName());
+                preSplitDeveloper.getId(),
+                preSplitDeveloper.getName());
         for (ProductDTO product : products) {
             htmlMessage += String.format("<li>%s</li>", product.getName());
         }
@@ -290,14 +308,14 @@ public class SplitDeveloperJob implements Job {
         return htmlMessage;
     }
 
-    private String createHtmlEmailBodyFailure(DeveloperDTO oldDeveloper, DeveloperDTO newDeveloper,
+    private String createHtmlEmailBodyFailure(DeveloperDTO newDeveloper,
             Exception ex) {
         String htmlMessage = String.format("<p>The Developer <a href=\"%s/#/organizations/developers/%d\">%s</a> could not "
                 + "be split into a new developer \"%s\".</p>"
                 + "<p>The error was: %s</p>",
                 env.getProperty("chplUrlBegin"), // root of URL
-                oldDeveloper.getId(),
-                oldDeveloper.getName(),
+                preSplitDeveloper.getId(),
+                preSplitDeveloper.getName(),
                 newDeveloper.getName(),
                 ex.getMessage());
         return htmlMessage;

@@ -1,6 +1,7 @@
 package gov.healthit.chpl.entity.listing;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -15,9 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
-import gov.healthit.chpl.util.Util;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -152,36 +151,30 @@ public class CertifiedProductEntity implements Serializable {
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
+    @Basic(optional = true)
+    @Column(name = "rwt_plans_url", nullable = true)
+    private String rwtPlansUrl;
+
+    @Basic(optional = true)
+    @Column(name = "rwt_plans_check_date", nullable = true)
+    private LocalDate rwtPlansCheckDate;
+
+    @Basic(optional = true)
+    @Column(name = "rwt_results_url", nullable = true)
+    private String rwtResultsUrl;
+
+    @Basic(optional = true)
+    @Column(name = "rwt_results_check_date", nullable = true)
+    private LocalDate rwtResultsCheckDate;
+
+
+    /**
+     * Constructor taking a given ID.
+     *
+     * @param id
+     *            to set
+     */
     public CertifiedProductEntity(Long id) {
         this.id = id;
-    }
-
-    @Transient
-    public Class<?> getClassType() {
-        return CertifiedProductEntity.class;
-    }
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setSedTestingEnd(final Date sedTestingEnd) {
-        this.sedTestingEnd = Util.getNewDate(sedTestingEnd);
-    }
-
-    public CertifiedProductEntity getCertifiedProduct() {
-        return this;
     }
 }
