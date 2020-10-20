@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "21c26d32-3ea4-4d99-ac3d-c4c557baa398",
+		"_postman_id": "ff4f1c43-8b9c-4727-9374-c2835a63b419",
 		"name": "developer-controller",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -11,7 +11,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "89af904b-9c4d-4c17-9fd1-83ff5d945beb",
+						"id": "d4272e6b-7591-4ef4-bbb4-3691c68b11f9",
 						"exec": [
 							"pm.test(\"Invalid api key header should return 401 status\", function () {\r",
 							"    pm.response.to.have.status(401);\r",
@@ -50,12 +50,120 @@
 			"response": []
 		},
 		{
+			"name": "developer schema and response validation_GET_/developers",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "23f1ef30-708d-492a-91e0-47ecb12ffa12",
+						"exec": [
+							"const developerSchema =",
+							"{",
+							"  \"developers\": [",
+							"    {",
+							"      \"address\": {",
+							"        \"addressId\": 0,",
+							"        \"city\": \"string\",",
+							"        \"country\": \"string\",",
+							"        \"line1\": \"string\",",
+							"        \"line2\": \"string\",",
+							"        \"state\": \"string\",",
+							"        \"zipcode\": \"string\"",
+							"      },",
+							"      \"contact\": {",
+							"        \"contactId\": 0,",
+							"        \"email\": \"string\",",
+							"        \"fullName\": \"string\",",
+							"        \"phoneNumber\": \"string\",",
+							"        \"title\": \"string\"",
+							"      },",
+							"      \"deleted\": false,",
+							"      \"developerCode\": \"string\",",
+							"      \"developerId\": 0,",
+							"      \"lastModifiedDate\": \"string\",",
+							"      \"name\": \"string\",",
+							"      \"selfDeveloper\": false,",
+							"      \"status\": {",
+							"        \"id\": 0,",
+							"        \"status\": \"string\"",
+							"      },",
+							"      \"statusEvents\": [",
+							"        {",
+							"          \"developerId\": 0,",
+							"          \"id\": 0,",
+							"          \"reason\": \"string\",",
+							"          \"status\": {",
+							"            \"id\": 0,",
+							"            \"status\": \"string\"",
+							"          },",
+							"          \"statusDate\": \"2020-10-09T17:08:51.022Z\"",
+							"        }",
+							"      ],",
+							"      \"transparencyAttestations\": [",
+							"        {",
+							"          \"acbId\": 0,",
+							"          \"acbName\": \"string\",",
+							"          \"attestation\": {",
+							"            \"removed\": false,",
+							"            \"transparencyAttestation\": \"string\"",
+							"          }",
+							"        }",
+							"      ],",
+							"      \"website\": \"string\"",
+							"    }",
+							"  ]",
+							"}",
+							"var jsonResponse = pm.response.json();",
+							"pm.test('developer schema is valid', function() {",
+							"  pm.expect(tv4.validate(jsonResponse, developerSchema)).to.be.true;  ",
+							"});",
+							"",
+							"pm.test(\"developer contact details do not include friendly name\", function () {",
+							"    pm.expect(pm.response.text()).to.not.include(\"friendlyName\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-KEY",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/developers",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+					    "rest",
+						"developers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "GET /developers - valid API Key header",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "ac72872c-356e-4790-8ea1-eada3f70d601",
+						"id": "3067d49c-979a-4aa8-8cd2-e5ec41bddee4",
 						"exec": [
 							"pm.test(\"Valid api key header should return 200 status and response body should not be empty\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
@@ -93,6 +201,28 @@
 				}
 			},
 			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "bcfaea18-270d-48dc-924c-7a77f897f26e",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "ed4e9aae-5d3f-426b-8488-bec8918cd1d5",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
 		}
 	],
 	"protocolProfileBehavior": {}

@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "6e1c03a3-35b0-496f-99c3-30c89f93aaa3",
+		"_postman_id": "1155f117-1b02-468c-8444-7d551d15731c",
 		"name": "products-controller",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -11,7 +11,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "e517dbed-0a00-403e-8fe6-429adda650cc",
+						"id": "b1ebe217-244c-41ee-a63d-d88b8f7c5980",
 						"exec": [
 							"pm.test(\"Invalid api key parameter should return 401 status\", function () {\r",
 							"    pm.response.to.have.status(401);\r",
@@ -56,7 +56,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "73b68fdc-ede9-4922-89e8-5b56606bd091",
+						"id": "ae446e8e-7416-4eda-a586-19e631126f44",
 						"exec": [
 							"pm.test(\"Valid API Key parameter should return 200 and response body should not be empty\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
@@ -85,6 +85,181 @@
 							"key": "api_key",
 							"value": "{{apiKey}}"
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "product schema and response validation_GET_/products",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fac5ca34-a693-418e-86e8-7ff45ea1a3e7",
+						"exec": [
+							"const developerSchema =\r",
+							"{\r",
+							"  \"products\": [\r",
+							"    {\r",
+							"      \"contact\": {\r",
+							"        \"contactId\": 0,\r",
+							"        \"email\": \"string\",\r",
+							"        \"fullName\": \"string\",\r",
+							"        \"phoneNumber\": \"string\",\r",
+							"        \"title\": \"string\"\r",
+							"      },\r",
+							"      \"lastModifiedDate\": \"string\",\r",
+							"      \"name\": \"string\",\r",
+							"      \"owner\": {\r",
+							"        \"address\": {\r",
+							"          \"addressId\": 0,\r",
+							"          \"city\": \"string\",\r",
+							"          \"country\": \"string\",\r",
+							"          \"line1\": \"string\",\r",
+							"          \"line2\": \"string\",\r",
+							"          \"state\": \"string\",\r",
+							"          \"zipcode\": \"string\"\r",
+							"        },\r",
+							"        \"contact\": {\r",
+							"          \"contactId\": 0,\r",
+							"          \"email\": \"string\",\r",
+							"          \"fullName\": \"string\",\r",
+							"          \"phoneNumber\": \"string\",\r",
+							"          \"title\": \"string\"\r",
+							"        },\r",
+							"        \"deleted\": false,\r",
+							"        \"developerCode\": \"string\",\r",
+							"        \"developerId\": 0,\r",
+							"        \"lastModifiedDate\": \"string\",\r",
+							"        \"name\": \"string\",\r",
+							"        \"selfDeveloper\": false,\r",
+							"        \"status\": {\r",
+							"          \"id\": 0,\r",
+							"          \"status\": \"string\"\r",
+							"        },\r",
+							"        \"statusEvents\": [\r",
+							"          {\r",
+							"            \"developerId\": 0,\r",
+							"            \"id\": 0,\r",
+							"            \"reason\": \"string\",\r",
+							"            \"status\": {\r",
+							"              \"id\": 0,\r",
+							"              \"status\": \"string\"\r",
+							"            },\r",
+							"            \"statusDate\": \"2020-10-20T13:16:36.892Z\"\r",
+							"          }\r",
+							"        ],\r",
+							"        \"transparencyAttestations\": [\r",
+							"          {\r",
+							"            \"acbId\": 0,\r",
+							"            \"acbName\": \"string\",\r",
+							"            \"attestation\": {\r",
+							"              \"removed\": false,\r",
+							"              \"transparencyAttestation\": \"string\"\r",
+							"            }\r",
+							"          }\r",
+							"        ],\r",
+							"        \"website\": \"string\"\r",
+							"      },\r",
+							"      \"ownerHistory\": [\r",
+							"        {\r",
+							"          \"developer\": {\r",
+							"            \"address\": {\r",
+							"              \"addressId\": 0,\r",
+							"              \"city\": \"string\",\r",
+							"              \"country\": \"string\",\r",
+							"              \"line1\": \"string\",\r",
+							"              \"line2\": \"string\",\r",
+							"              \"state\": \"string\",\r",
+							"              \"zipcode\": \"string\"\r",
+							"            },\r",
+							"            \"contact\": {\r",
+							"              \"contactId\": 0,\r",
+							"              \"email\": \"string\",\r",
+							"              \"fullName\": \"string\",\r",
+							"              \"phoneNumber\": \"string\",\r",
+							"              \"title\": \"string\"\r",
+							"            },\r",
+							"            \"deleted\": false,\r",
+							"            \"developerCode\": \"string\",\r",
+							"            \"developerId\": 0,\r",
+							"            \"lastModifiedDate\": \"string\",\r",
+							"            \"name\": \"string\",\r",
+							"            \"selfDeveloper\": false,\r",
+							"            \"status\": {\r",
+							"              \"id\": 0,\r",
+							"              \"status\": \"string\"\r",
+							"            },\r",
+							"            \"statusEvents\": [\r",
+							"              {\r",
+							"                \"developerId\": 0,\r",
+							"                \"id\": 0,\r",
+							"                \"reason\": \"string\",\r",
+							"                \"status\": {\r",
+							"                  \"id\": 0,\r",
+							"                  \"status\": \"string\"\r",
+							"                },\r",
+							"                \"statusDate\": \"2020-10-20T13:16:36.892Z\"\r",
+							"              }\r",
+							"            ],\r",
+							"            \"transparencyAttestations\": [\r",
+							"              {\r",
+							"                \"acbId\": 0,\r",
+							"                \"acbName\": \"string\",\r",
+							"                \"attestation\": {\r",
+							"                  \"removed\": false,\r",
+							"                  \"transparencyAttestation\": \"string\"\r",
+							"                }\r",
+							"              }\r",
+							"            ],\r",
+							"            \"website\": \"string\"\r",
+							"          },\r",
+							"          \"id\": 0,\r",
+							"          \"transferDate\": 0\r",
+							"        }\r",
+							"      ],\r",
+							"      \"productId\": 0,\r",
+							"      \"reportFileLocation\": \"string\"\r",
+							"    }\r",
+							"  ]\r",
+							"}\r",
+							"var jsonResponse = pm.response.json();\r",
+							"pm.test('product schema is valid', function() {\r",
+							"  pm.expect(tv4.validate(jsonResponse, developerSchema)).to.be.true;  \r",
+							"});\r",
+							"\r",
+							"pm.test(\"product contact details do not include friendly name\", function () {\r",
+							"    pm.expect(pm.response.text()).to.not.include(\"friendlyName\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-KEY",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/products",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+					    "rest",
+						"products"
 					]
 				}
 			},
