@@ -36,8 +36,6 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class RealWorldTestingManager {
-    //private static final String PLANS = "PLANS";
-    //private static final String RESULTS = "RESULTS";
     private static final int CHPL_PRODUCT_NUMBER_COLUMN_IDX = 0;
     private static final int RWT_TYPE_COLUMN_IDX = 1;
     private static final int LAST_CHECKED_COLUMN_IDX = 2;
