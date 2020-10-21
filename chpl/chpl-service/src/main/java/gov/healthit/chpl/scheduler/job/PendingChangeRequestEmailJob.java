@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -239,12 +240,12 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
     private void sendEmail(JobExecutionContext jobContext, List<List<String>> csvRows, List<CertificationBodyDTO> acbs)
             throws MessagingException {
         LOGGER.info("Sending email to {} with contents {} and a total of {} pending change requests",
-                getEmailRecipients(jobContext).get(0), getHtmlMessage(csvRows.size()), csvRows.size());
+                getEmailRecipients(jobContext).get(0), getHtmlMessage(csvRows.size(), getAcbNamesAsCommaSeparatedList(jobContext)));
 
         EmailBuilder emailBuilder = new EmailBuilder(env);
         emailBuilder.recipients(getEmailRecipients(jobContext))
         .subject(getSubject(jobContext))
-        .htmlMessage(getHtmlMessage(csvRows.size()))
+        .htmlMessage(getHtmlMessage(csvRows.size(), getAcbNamesAsCommaSeparatedList(jobContext)))
         .fileAttachments(getAttachments(csvRows, acbs))
         .sendEmail();
     }
@@ -273,15 +274,33 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         return csvFile;
     }
 
-    private String getHtmlMessage(Integer rowCount) {
+    private String getHtmlMessage(Integer rowCount, String acbList) {
         if (rowCount > 0) {
-            return String.format(env.getProperty("pendingChangeRequestHasDataEmailBody"), rowCount);
+            return String.format(env.getProperty("pendingChangeRequestHasDataEmailBody"), acbList, rowCount);
         } else {
-            return String.format(env.getProperty("pendingChangeRequestNoDataEmailBody"));
+            return String.format(env.getProperty("pendingChangeRequestNoDataEmailBody"), acbList);
         }
     }
 
     private List<String> getEmailRecipients(JobExecutionContext jobContext) {
         return Arrays.asList(jobContext.getMergedJobDataMap().getString("email"));
+    }
+    
+    private String getAcbNamesAsCommaSeparatedList(JobExecutionContext jobContext) {
+        if (Objects.nonNull(jobContext.getMergedJobDataMap().getString("acb"))) {
+            return Arrays.asList(
+                    jobContext.getMergedJobDataMap().getString("acb").split(SchedulerManager.DATA_DELIMITER)).stream()
+                    .map(acbId -> {
+                        try {
+                            return certificationBodyDAO.getById(Long.parseLong(acbId)).getName();
+                        } catch (NumberFormatException | EntityRetrievalException e) {
+                            LOGGER.error("Could not retreive ACB name based on value: " + acbId, e);
+                            return "";
+                        }
+                    })
+                    .collect(Collectors.joining(", "));
+        } else {
+            return "";
+        }
     }
 }
