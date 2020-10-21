@@ -78,6 +78,7 @@ import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
+import gov.healthit.chpl.domain.ListingMipsMeasure;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
@@ -155,6 +156,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.listing.mipsMeasure.ListingMipsMeasureDAO;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CuresUpdateService;
@@ -162,6 +164,7 @@ import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.Validator;
+import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -176,6 +179,7 @@ public class CertifiedProductManager extends SecuredManager {
     private TargetedUserDAO targetedUserDao;
     private AccessibilityStandardDAO asDao;
     private CertifiedProductQmsStandardDAO cpQmsDao;
+    private ListingMipsMeasureDAO cpMipsMeasureDao;
     private CertifiedProductTestingLabDAO cpTestingLabDao;
     private CertifiedProductTargetedUserDAO cpTargetedUserDao;
     private CertifiedProductAccessibilityStandardDAO cpAccStdDao;
@@ -225,6 +229,7 @@ public class CertifiedProductManager extends SecuredManager {
             CertificationResultDAO certDao, CertificationCriterionDAO certCriterionDao,
             QmsStandardDAO qmsDao, TargetedUserDAO targetedUserDao,
             AccessibilityStandardDAO asDao, CertifiedProductQmsStandardDAO cpQmsDao,
+            ListingMipsMeasureDAO cpMipsMeasureDao,
             CertifiedProductTestingLabDAO cpTestingLabDao,
             CertifiedProductTargetedUserDAO cpTargetedUserDao,
             CertifiedProductAccessibilityStandardDAO cpAccStdDao, CQMResultDAO cqmResultDAO,
@@ -254,6 +259,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.targetedUserDao = targetedUserDao;
         this.asDao = asDao;
         this.cpQmsDao = cpQmsDao;
+        this.cpMipsMeasureDao = cpMipsMeasureDao;
         this.cpTestingLabDao = cpTestingLabDao;
         this.cpTargetedUserDao = cpTargetedUserDao;
         this.cpAccStdDao = cpAccStdDao;
@@ -1119,6 +1125,7 @@ public class CertifiedProductManager extends SecuredManager {
         updateIcsChildren(updatedListing.getId(), existingListing.getIcs(), updatedListing.getIcs());
         updateIcsParents(updatedListing.getId(), existingListing.getIcs(), updatedListing.getIcs());
         updateQmsStandards(updatedListing.getId(), existingListing.getQmsStandards(), updatedListing.getQmsStandards());
+        updateMipsMeasures(updatedListing.getId(), existingListing.getMipsMeasures(), updatedListing.getMipsMeasures());
         updateTargetedUsers(updatedListing.getId(), existingListing.getTargetedUsers(),
                 updatedListing.getTargetedUsers());
         updateAccessibilityStandards(updatedListing.getId(), existingListing.getAccessibilityStandards(),
@@ -1549,6 +1556,85 @@ public class CertifiedProductManager extends SecuredManager {
 
         for (Long idToRemove : idsToRemove) {
             cpQmsDao.deleteCertifiedProductQms(idToRemove);
+        }
+        return numChanges;
+    }
+
+    private int updateMipsMeasures(Long listingId, List<ListingMipsMeasure> existingMipsMeasures,
+            List<ListingMipsMeasure> updatedMipsMeasures)
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
+
+        int numChanges = 0;
+        List<ListingMipsMeasure> measuresToAdd = new ArrayList<ListingMipsMeasure>();
+        List<MipsMeasurePair> measuresToUpdate = new ArrayList<MipsMeasurePair>();
+        List<Long> idsToRemove = new ArrayList<Long>();
+
+        // figure out which measures to add
+        if (updatedMipsMeasures != null && updatedMipsMeasures.size() > 0) {
+            if (existingMipsMeasures == null || existingMipsMeasures.size() == 0) {
+                // existing listing has none, add all from the update
+                for (ListingMipsMeasure updatedItem : updatedMipsMeasures) {
+                    measuresToAdd.add(updatedItem);
+                }
+            } else if (existingMipsMeasures.size() > 0) {
+                // existing listing has some, compare to the update to see if
+                // any are different
+                for (ListingMipsMeasure updatedItem : updatedMipsMeasures) {
+                    boolean inExistingListing = false;
+                    for (ListingMipsMeasure existingItem : existingMipsMeasures) {
+                        if (updatedItem.matches(existingItem)) {
+                            inExistingListing = true;
+                            measuresToUpdate.add(new MipsMeasurePair(existingItem, updatedItem));
+                        }
+                    }
+
+                    if (!inExistingListing) {
+                        measuresToAdd.add(updatedItem);
+                    }
+                }
+            }
+        }
+
+        // figure out which measures to remove
+        if (existingMipsMeasures != null && existingMipsMeasures.size() > 0) {
+            // if the updated listing has none, remove them all from existing
+            if (updatedMipsMeasures == null || updatedMipsMeasures.size() == 0) {
+                for (ListingMipsMeasure existingItem : existingMipsMeasures) {
+                    idsToRemove.add(existingItem.getId());
+                }
+            } else if (updatedMipsMeasures.size() > 0) {
+                for (ListingMipsMeasure existingItem : existingMipsMeasures) {
+                    boolean inUpdatedListing = false;
+                    for (ListingMipsMeasure updatedItem : updatedMipsMeasures) {
+                        inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
+                    }
+                    if (!inUpdatedListing) {
+                        idsToRemove.add(existingItem.getId());
+                    }
+                }
+            }
+        }
+
+        numChanges = measuresToAdd.size() + idsToRemove.size();
+
+        for (ListingMipsMeasure toAdd : measuresToAdd) {
+            cpMipsMeasureDao.createCertifiedProductMipsMapping(listingId, toAdd);
+        }
+
+        for (MipsMeasurePair toUpdate : measuresToUpdate) {
+            boolean hasChanged = false;
+            if (!toUpdate.getUpdated().matches(toUpdate.getOrig())) {
+                hasChanged = true;
+            }
+
+            if (hasChanged) {
+                cpMipsMeasureDao.updateCertifiedProductMipsMapping(toUpdate.getUpdated());
+                numChanges++;
+            }
+        }
+
+        for (Long idToRemove : idsToRemove) {
+            cpMipsMeasureDao.deleteCertifiedProductMips(idToRemove);
         }
         return numChanges;
     }
@@ -2286,6 +2372,7 @@ public class CertifiedProductManager extends SecuredManager {
         return scheduler;
     }
 
+    @Data
     private static class CertificationStatusEventPair {
         private CertificationStatusEvent orig;
         private CertificationStatusEvent updated;
@@ -2298,25 +2385,9 @@ public class CertifiedProductManager extends SecuredManager {
             this.orig = orig;
             this.updated = updated;
         }
-
-        public CertificationStatusEvent getOrig() {
-            return orig;
-        }
-
-        public void setOrig(CertificationStatusEvent orig) {
-            this.orig = orig;
-        }
-
-        public CertificationStatusEvent getUpdated() {
-            return updated;
-        }
-
-        public void setUpdated(CertificationStatusEvent updated) {
-            this.updated = updated;
-        }
-
     }
 
+    @Data
     private static class MeaningfulUseUserPair {
         private MeaningfulUseUser orig;
         private MeaningfulUseUser updated;
@@ -2329,25 +2400,9 @@ public class CertifiedProductManager extends SecuredManager {
             this.orig = orig;
             this.updated = updated;
         }
-
-        public MeaningfulUseUser getOrig() {
-            return orig;
-        }
-
-        public void setOrig(MeaningfulUseUser orig) {
-            this.orig = orig;
-        }
-
-        public MeaningfulUseUser getUpdated() {
-            return updated;
-        }
-
-        public void setUpdated(MeaningfulUseUser updated) {
-            this.updated = updated;
-        }
-
     }
 
+    @Data
     private static class QmsStandardPair {
         private CertifiedProductQmsStandard orig;
         private CertifiedProductQmsStandard updated;
@@ -2359,25 +2414,23 @@ public class CertifiedProductManager extends SecuredManager {
             this.orig = orig;
             this.updated = updated;
         }
-
-        public CertifiedProductQmsStandard getOrig() {
-            return orig;
-        }
-
-        public void setOrig(CertifiedProductQmsStandard orig) {
-            this.orig = orig;
-        }
-
-        public CertifiedProductQmsStandard getUpdated() {
-            return updated;
-        }
-
-        public void setUpdated(CertifiedProductQmsStandard updated) {
-            this.updated = updated;
-        }
-
     }
 
+    @Data
+    private static class MipsMeasurePair {
+        private ListingMipsMeasure orig;
+        private ListingMipsMeasure updated;
+
+        MipsMeasurePair() {
+        }
+
+        MipsMeasurePair(ListingMipsMeasure orig, ListingMipsMeasure updated) {
+            this.orig = orig;
+            this.updated = updated;
+        }
+    }
+
+    @Data
     private static class CQMResultDetailsPair {
         private CQMResultDetailsDTO orig;
         private CQMResultDetailsDTO updated;
@@ -2387,22 +2440,6 @@ public class CertifiedProductManager extends SecuredManager {
 
         CQMResultDetailsPair(CQMResultDetailsDTO orig, CQMResultDetailsDTO updated) {
             this.orig = orig;
-            this.updated = updated;
-        }
-
-        public CQMResultDetailsDTO getOrig() {
-            return orig;
-        }
-
-        public void setOrig(CQMResultDetailsDTO orig) {
-            this.orig = orig;
-        }
-
-        public CQMResultDetailsDTO getUpdated() {
-            return updated;
-        }
-
-        public void setUpdated(CQMResultDetailsDTO updated) {
             this.updated = updated;
         }
     }
