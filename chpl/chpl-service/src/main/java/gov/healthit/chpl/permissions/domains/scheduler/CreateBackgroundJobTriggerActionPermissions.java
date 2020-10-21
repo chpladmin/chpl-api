@@ -15,12 +15,12 @@ import gov.healthit.chpl.scheduler.job.SplitDeveloperJob;
 @Component(value = "schedulerCreateBackgroundJobTriggerActionPermissions")
 public class CreateBackgroundJobTriggerActionPermissions extends ActionPermissions {
 
-    private static final List<String> JOBS_ACB_CAN_CREATE = new ArrayList<String>();
+    private static final List<String> BACKGROUND_JOBS_ACB_CAN_CREATE = new ArrayList<String>();
 
     @PostConstruct
     public void init() {
-        JOBS_ACB_CAN_CREATE.add(SplitDeveloperJob.JOB_NAME);
-        JOBS_ACB_CAN_CREATE.add(RealWorldTestingUploadJob.JOB_NAME);
+        BACKGROUND_JOBS_ACB_CAN_CREATE.add(SplitDeveloperJob.JOB_NAME);
+        BACKGROUND_JOBS_ACB_CAN_CREATE.add(RealWorldTestingUploadJob.JOB_NAME);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class CreateBackgroundJobTriggerActionPermissions extends ActionPermissio
     }
 
     private boolean canAcbCreateJob(String jobName) {
-        return JOBS_ACB_CAN_CREATE.stream()
+        return BACKGROUND_JOBS_ACB_CAN_CREATE.stream()
                 .filter(job -> job.equalsIgnoreCase(jobName))
                 .findAny()
                 .isPresent();
