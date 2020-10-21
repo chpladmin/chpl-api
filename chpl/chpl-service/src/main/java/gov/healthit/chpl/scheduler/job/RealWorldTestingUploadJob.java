@@ -184,14 +184,14 @@ public class RealWorldTestingUploadJob implements Job {
     }
 
     private void setSecurityContext(UserDTO user) {
-        JWTAuthenticatedUser splitUser = new JWTAuthenticatedUser();
-        splitUser.setFullName(user.getFullName());
-        splitUser.setId(user.getId());
-        splitUser.setFriendlyName(user.getFriendlyName());
-        splitUser.setSubjectName(user.getUsername());
-        splitUser.getPermissions().add(user.getPermission().getGrantedPermission());
+        JWTAuthenticatedUser rwtUploadUser = new JWTAuthenticatedUser();
+        rwtUploadUser.setFullName(user.getFullName());
+        rwtUploadUser.setId(user.getId());
+        rwtUploadUser.setFriendlyName(user.getFriendlyName());
+        rwtUploadUser.setSubjectName(user.getUsername());
+        rwtUploadUser.getPermissions().add(user.getPermission().getGrantedPermission());
 
-        SecurityContextHolder.getContext().setAuthentication(splitUser);
+        SecurityContextHolder.getContext().setAuthentication(rwtUploadUser);
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 
