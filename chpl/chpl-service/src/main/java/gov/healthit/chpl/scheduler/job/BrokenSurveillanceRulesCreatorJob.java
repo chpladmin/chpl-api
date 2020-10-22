@@ -19,7 +19,12 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -36,7 +41,6 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.scheduler.BrokenSurveillanceRulesDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
-import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.scheduler.surveillance.rules.RuleComplianceCalculator;
@@ -64,6 +68,9 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
     private RuleComplianceCalculator ruleComplianceCalculator;
 
     @Autowired
+    private JpaTransactionManager txManager;
+
+    @Autowired
     private Environment env;
 
     public BrokenSurveillanceRulesCreatorJob() throws Exception {
@@ -79,15 +86,17 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         LOGGER.info("********* Starting the Broken Surveillance Rules Creator job. *********");
         ExecutorService executorService = null;
         try {
-            deleteAllExistingBrokenSurveillanceRules();
-
             executorService = Executors.newFixedThreadPool(getThreadCountForJob());
             List<CertifiedProductFlatSearchResult> listingsForReport = getListingsForReport();
             LOGGER.info(String.format("Found %s listings to process", listingsForReport.size()));
 
+            List<BrokenSurveillanceRulesDTO> allBrokenRules = new ArrayList<BrokenSurveillanceRulesDTO>();
+
             List<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
             for (CertifiedProductFlatSearchResult listing : listingsForReport) {
-                futures.add(CompletableFuture.runAsync(() -> processListing(listing.getId()), executorService));
+                futures.add(CompletableFuture.supplyAsync(() ->
+                    processListing(listing.getId()), executorService)
+                        .thenAccept(result -> allBrokenRules.addAll(result)));
             }
 
             CompletableFuture<Void> combinedFutures = CompletableFuture
@@ -97,7 +106,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
             // This is necessary so that the system can indicate that the job and it's threads are still running
             combinedFutures.get();
             LOGGER.info("All processes have completed");
-
+            saveAllBrokenSurveillanceRules(allBrokenRules);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         } finally {
@@ -127,17 +136,17 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         return listing.getSurveillanceCount() > 0;
     }
 
-    private void processListing(Long listingId) {
+    private List<BrokenSurveillanceRulesDTO> processListing(Long listingId) {
         CertifiedProductSearchDetails listing;
         try {
             LOGGER.info(String.format("Retrieving CertifiedProductDetails for: %s", listingId));
             listing = certifiedProductDetailsManager.getCertifiedProductDetails(listingId);
             LOGGER.info(String.format("Complete retrieving CertifiedProductDetails for: %s", listingId));
-            saveBrokenSurveillanceRules(brokenRules(listing), listingId);
+            return brokenRules(listing);
         } catch (EntityRetrievalException e) {
             LOGGER.error(String.format("Could not process listingId: %s  Reason: %s", listingId, e.getMessage()), e);
         }
-
+        return null;
     }
 
     private List<BrokenSurveillanceRulesDTO> brokenRules(CertifiedProductSearchDetails listing)
@@ -229,11 +238,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
                 getCertificationBody(
                         Long.parseLong(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString())));
         base.setChplProductNumber(listing.getChplProductNumber());
-        String productDetailsUrl = env.getProperty("chplUrlBegin").trim();
-        if (!productDetailsUrl.endsWith("/")) {
-            productDetailsUrl += "/";
-        }
-        productDetailsUrl += "#/product/" + listing.getId();
+        String productDetailsUrl = env.getProperty("chplUrlBegin").trim() + env.getProperty("listingDetailsUrl") + listing.getId();
         base.setUrl(productDetailsUrl);
 
         base.setCertificationStatus(listing.getCurrentStatus().getStatus().getName());
@@ -344,14 +349,29 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         return rule;
     }
 
-    private void saveBrokenSurveillanceRules(List<BrokenSurveillanceRulesDTO> items, Long listingId) {
-        try {
-            LOGGER.info(String.format("Saving %s Broken Surveillance Rules for listing: %s", items.size(), listingId));
-            brokenSurveillanceRulesDAO.create(items);
-        } catch (EntityCreationException | EntityRetrievalException e) {
-            LOGGER.error("Unable to save Broken Surveillance Rules {} with error message {}",
-                    items.toString(), e.getLocalizedMessage());
-        }
+    private void saveAllBrokenSurveillanceRules(List<BrokenSurveillanceRulesDTO> allBrokenRules) {
+
+        // We need to manually create a transaction in this case because of how AOP works. When a method is
+        // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
+        // The object's proxy is not called when the method is called from within this class. The object's proxy
+        // is called when the method is public and is called from a different object.
+        // https://stackoverflow.com/questions/3037006/starting-new-transaction-in-spring-bean
+        TransactionTemplate txTemplate = new TransactionTemplate(txManager);
+        txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        txTemplate.execute(new TransactionCallbackWithoutResult() {
+
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                try {
+                    LOGGER.info("Deleting {} OBE rules", brokenSurveillanceRulesDAO.findAll().size());
+                    brokenSurveillanceRulesDAO.deleteAll();
+                    LOGGER.info("Creating {} current broken rules", allBrokenRules.size());
+                    brokenSurveillanceRulesDAO.create(allBrokenRules);
+                } catch (Exception e) {
+                    status.setRollbackOnly();
+                }
+            }
+        });
     }
 
     private CertificationBodyDTO getCertificationBody(long certificationBodyId) throws EntityRetrievalException {
@@ -360,10 +380,5 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
 
     private Integer getThreadCountForJob() throws NumberFormatException {
         return Integer.parseInt(env.getProperty("executorThreadCountForQuartzJobs"));
-    }
-
-    private void deleteAllExistingBrokenSurveillanceRules() {
-        LOGGER.info("Deleting {} OBE rules", brokenSurveillanceRulesDAO.findAll().size());
-        brokenSurveillanceRulesDAO.deleteAll();
     }
 }

@@ -14,6 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Where;
+
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import lombok.Data;
@@ -39,6 +41,7 @@ public class CertificationBodyEntity implements Serializable {
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id", unique = true, nullable = true)
+    @Where(clause = "deleted <> 'true'")
     private AddressEntity address;
 
     @Column(name = "acb_code")

@@ -28,7 +28,7 @@
                 </entry>
             </job-data-map>
         </job>
-        
+
         <job>
             <name>downloadFileJob2014</name>
             <group>systemJobs</group>
@@ -43,7 +43,7 @@
                 </entry>
             </job-data-map>
         </job>
-        
+
         <job>
             <name>downloadFileJob2011</name>
             <group>systemJobs</group>
@@ -58,7 +58,7 @@
                 </entry>
             </job-data-map>
         </job>
-        
+
         <!-- Daily G3/SED details generator -->
         <job>
             <name>g3Sed2015DownloadFileJob</name>
@@ -68,7 +68,7 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
-        
+
         <!-- Daily surveillance downloads generator -->
         <job>
             <name>surveillanceDownloadFileJob</name>
@@ -78,7 +78,7 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
-        
+
         <!-- Summary statistics generator -->
         <job>
             <name>summaryStatisticsCreator</name>
@@ -94,7 +94,7 @@
                 </entry>
             </job-data-map>
         </job>
-        
+
         <!-- Summary statistics emailer -->
         <job>
             <name>Summary Statistics Email</name>
@@ -114,7 +114,7 @@
                 </entry>
             </job-data-map>
         </job>
-        
+
         <!-- Job fired when developer ban notification needs to happen -->
         <job>
             <name>Trigger Developer Ban Notification</name>
@@ -148,7 +148,7 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
-        
+
         <!-- Broken Surveillance Rules data creator -->
         <job>
             <name>brokenSurveillanceRulesCreator</name>
@@ -158,7 +158,7 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
-        
+
         <!-- Questionable Activity data emailer -->
         <job>
             <name>Questionable Activity Report</name>
@@ -301,23 +301,7 @@
             <job-class>gov.healthit.chpl.scheduler.job.UpdateSingleListingStatusJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
-            
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC</value>
-                </entry>
-            </job-data-map>
-        </job>
 
-        <!-- Job used to mark 2014 upload templates as deleted. -->
-        <job>
-            <name>remove2014UploadTemplates</name>
-            <group>systemJobs</group>
-            <description>Marks 2014 upload templates as deleted</description>
-            <job-class>gov.healthit.chpl.scheduler.job.Remove2014UploadTemplateJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
             <job-data-map>
                 <entry>
                     <key>authorities</key>
@@ -468,7 +452,7 @@
 
         <!-- Pending Change Request Job - by ONC-ACB -->
         <job>
-            <name>Pending Change Request Report</name>
+            <name>Pending "Change Request" Report</name>
             <group>chplJobs</group>
             <description>Sends a report of all pending change requests, filtered by ONC-ACB</description>
             <job-class>gov.healthit.chpl.scheduler.job.PendingChangeRequestEmailJob</job-class>

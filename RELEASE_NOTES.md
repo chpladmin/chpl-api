@@ -1,5 +1,36 @@
 # Release Notes
 
+## Version 25.15.0
+_19 October 2020_
+
+### Features
+* Add ability to validate and save Real World Testing data
+* Send email to Direct Review/Jira team upon developer split
+* Revise email subject and body for shared ONC-ACB reports
+
+---
+
+## Version 25.14.0
+_5 October 2020_
+
+### Features
+* GAP=TRUE should not be allowed for 170.315 (f)(3) during upload, confirm or edit of listing
+* Reschedule 2014 Download file generation to be monthly
+* Allow users to log in via either username or email address
+
+### Flagged Features
+* Add error handling for any error returned by Jira with respect to Direct Review
+
+### Bug Fixes
+* Do not mark old ICS error data deleted until job completes
+* Lookup user by email or name for password reset
+* Do not mark old broken surveillance rule data deleted until job completes
+
+### Flagged Bug Fixes
+* Re-enable Pending "Change Request" report for ONC-ACBs
+
+---
+
 ## Version 25.13.0
 _21 September 2020_
 
