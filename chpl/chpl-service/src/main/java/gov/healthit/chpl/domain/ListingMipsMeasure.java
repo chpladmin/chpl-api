@@ -112,7 +112,7 @@ public class ListingMipsMeasure implements Serializable {
                 && anotherMeasure.measure == null) {
             return false;
         } else if (ObjectUtils.allNotNull(this.measure, anotherMeasure.measure)
-                && this.measure.matches(anotherMeasure.measure)) {
+                && !this.measure.matches(anotherMeasure.measure)) {
             return false;
         }
 
@@ -120,7 +120,7 @@ public class ListingMipsMeasure implements Serializable {
                 || this.measurementType != null && anotherMeasure.measurementType == null) {
             return false;
         } else if (ObjectUtils.allNotNull(this.measurementType, anotherMeasure.measurementType)
-                && this.measurementType.matches(anotherMeasure.measurementType)) {
+                && !this.measurementType.matches(anotherMeasure.measurementType)) {
             return false;
         }
         return true;

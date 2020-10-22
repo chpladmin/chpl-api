@@ -13,7 +13,7 @@ import gov.healthit.chpl.domain.MipsMeasure;
 
 @Repository("mipsMeasuresDao")
 public class MipsMeasureDAO extends BaseDAOImpl {
-    private static final String MIPS_MEASURE_HQL_BEGIN = "SELECT mme "
+    private static final String MIPS_MEASURE_HQL_BEGIN = "SELECT DISTINCT mme "
             + "FROM MipsMeasureEntity mme "
             + "JOIN FETCH mme.domain "
             + "JOIN FETCH mme.allowedCriteria ac "

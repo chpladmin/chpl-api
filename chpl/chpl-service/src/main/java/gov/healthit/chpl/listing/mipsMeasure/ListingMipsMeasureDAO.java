@@ -22,7 +22,7 @@ import lombok.extern.log4j.Log4j2;
 @Repository("listingMipsMeasureDao")
 @Log4j2
 public class ListingMipsMeasureDAO extends BaseDAOImpl {
-    private static final String LISTING_MEASURE_MAP_HQL_BEGIN = "SELECT listingMipsMap "
+    private static final String LISTING_MEASURE_MAP_HQL_BEGIN = "SELECT DISTINCT listingMipsMap "
             + "FROM ListingMipsMeasureEntity listingMipsMap "
             + "JOIN FETCH listingMipsMap.type "
             + "LEFT JOIN FETCH listingMipsMap.associatedCriteria assocCCMap "
