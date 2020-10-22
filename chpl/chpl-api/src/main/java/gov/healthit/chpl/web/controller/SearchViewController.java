@@ -44,6 +44,7 @@ import gov.healthit.chpl.domain.FuzzyChoices;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.MipsMeasure;
+import gov.healthit.chpl.domain.MipsMeasurementType;
 import gov.healthit.chpl.domain.SearchOption;
 import gov.healthit.chpl.domain.SearchableDimensionalData;
 import gov.healthit.chpl.domain.TestFunctionality;
@@ -1117,13 +1118,27 @@ public class SearchViewController {
     @RequestMapping(value = "/data/mips-measures", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody SearchOption getMacraMeasures() {
+    public @ResponseBody SearchOption getMipsMeasures() {
         Set<MipsMeasure> data = dimensionalDataManager.getMipsMeasures();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
         return result;
     }
+
+    @ApiOperation(value = "Get all possible types of Mips measures in the CHPL, currently this is G1 and G2.",
+            notes = "This is useful for knowing what values one might possibly search for.")
+    @RequestMapping(value = "/data/mips-measure-types", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody SearchOption getMipsMeasureTypes() {
+        Set<MipsMeasurementType> data = dimensionalDataManager.getMipsMeasureTypes();
+        SearchOption result = new SearchOption();
+        result.setExpandable(false);
+        result.setData(data);
+        return result;
+    }
+
 
     @ApiOperation(value = "Get all possible developer status options in the CHPL")
     @RequestMapping(value = "/data/developer_statuses", method = RequestMethod.GET,

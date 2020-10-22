@@ -1,23 +1,21 @@
 package gov.healthit.chpl;
 
-import lombok.extern.log4j.Log4j2;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 
 import gov.healthit.chpl.caching.CacheNames;
+import lombok.extern.log4j.Log4j2;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.config.CacheConfiguration.TransactionalMode;
 import net.sf.ehcache.config.PersistenceConfiguration;
 import net.sf.ehcache.config.PersistenceConfiguration.Strategy;
 import net.sf.ehcache.store.MemoryStoreEvictionPolicy;
-import org.springframework.core.io.ClassPathResource;
 
 @Configuration
 @EnableCaching
@@ -66,6 +64,7 @@ public class ChplCacheConfig {
         backingManager.addCacheIfAbsent(createCache(CacheNames.GET_DECERTIFIED_DEVELOPERS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.JOB_TYPES));
         backingManager.addCacheIfAbsent(createCache(CacheNames.MIPS_MEASURES));
+        backingManager.addCacheIfAbsent(createCache(CacheNames.MIPS_MEASURE_TYPES));
         backingManager.addCacheIfAbsent(createCache(CacheNames.PRACTICE_TYPE_NAMES));
         backingManager.addCacheIfAbsent(createCache(CacheNames.PRODUCT_NAMES));
         backingManager.addCacheIfAbsent(createCache(CacheNames.TEST_DATA));

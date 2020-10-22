@@ -3,6 +3,7 @@ package gov.healthit.chpl.listing.mipsMeasure;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -196,6 +197,18 @@ public class ListingMipsMeasureDAO extends BaseDAOImpl {
             entity = result.get(0);
         }
         return entity;
+    }
+
+    public Set<MipsMeasurementType> getMeasurementTypes() {
+        Query query = entityManager.createQuery("SELECT mipsType "
+                + "FROM ListingMipsMeasureTypeEntity mipsType "
+                + "WHERE deleted = false");
+        List<ListingMipsMeasureTypeEntity> results = query.getResultList();
+        if (results == null || results.size() == 0) {
+            return null;
+        }
+        return results.stream().map(result -> result.convert())
+                .collect(Collectors.toSet());
     }
 
     public MipsMeasurementType getMeasurementType(String type) {

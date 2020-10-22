@@ -43,6 +43,7 @@ import gov.healthit.chpl.domain.DimensionalData;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.MipsMeasure;
+import gov.healthit.chpl.domain.MipsMeasurementType;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.SearchableDimensionalData;
 import gov.healthit.chpl.domain.TestFunctionality;
@@ -78,6 +79,7 @@ import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
 import gov.healthit.chpl.dto.job.JobTypeDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.listing.mipsMeasure.ListingMipsMeasureDAO;
 import gov.healthit.chpl.listing.mipsMeasure.MipsMeasureDAO;
 import lombok.extern.log4j.Log4j2;
 
@@ -106,10 +108,12 @@ public class DimensionalDataManager {
     private DeveloperDAO devDao;
     private JobDAO jobDao;
     private MipsMeasureDAO mipsMeasureDao;
+    private ListingMipsMeasureDAO listingMipsMeasureDao;
     private CQMCriterionDAO cqmCriterionDao;
     private CertificationEditionDAO certEditionDao;
 
     @Autowired
+    @SuppressWarnings("checkstyle:parameternumber")
     public DimensionalDataManager(CacheableDimensionalDataManager cacheableDimensionalDataManager,
                                   CertificationBodyDAO certificationBodyDao, CertificationCriterionDAO certificationCriterionDao,
                                   EducationTypeDAO educationTypeDao, AgeRangeDAO ageRangeDao, TestFunctionalityDAO testFuncDao,
@@ -118,7 +122,8 @@ public class DimensionalDataManager {
                                   QmsStandardDAO qmsDao, TargetedUserDAO tuDao, DeveloperStatusDAO devStatusDao,
                                   SurveillanceDAO survDao, UploadTemplateVersionDAO uploadTemplateDao, QuarterDAO quarterDao,
                                   ProductDAO productDao, DeveloperDAO devDao, JobDAO jobDao, MipsMeasureDAO mipsMeasureDao,
-                                  CQMCriterionDAO cqmCriterionDao, CertificationEditionDAO certEditionDao) {
+                                  ListingMipsMeasureDAO listingMipsMeasureDao, CQMCriterionDAO cqmCriterionDao,
+                                  CertificationEditionDAO certEditionDao) {
         this.cacheableDimensionalDataManager = cacheableDimensionalDataManager;
         this.certificationBodyDao = certificationBodyDao;
         this.certificationCriterionDao = certificationCriterionDao;
@@ -141,6 +146,7 @@ public class DimensionalDataManager {
         this.devDao = devDao;
         this.jobDao = jobDao;
         this.mipsMeasureDao = mipsMeasureDao;
+        this.listingMipsMeasureDao = listingMipsMeasureDao;
         this.cqmCriterionDao = cqmCriterionDao;
         this.certEditionDao = certEditionDao;
     }
@@ -475,6 +481,12 @@ public class DimensionalDataManager {
     @Cacheable(value = CacheNames.MIPS_MEASURES)
     public Set<MipsMeasure> getMipsMeasures() {
         return mipsMeasureDao.findAll();
+    }
+
+    @Transactional
+    @Cacheable(value = CacheNames.MIPS_MEASURE_TYPES)
+    public Set<MipsMeasurementType> getMipsMeasureTypes() {
+        return listingMipsMeasureDao.getMeasurementTypes();
     }
 
     @Transactional
