@@ -1,10 +1,59 @@
 {
 	"info": {
-		"_postman_id": "1155f117-1b02-468c-8444-7d551d15731c",
 		"name": "products-controller",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
+	    {
+			"name": "set auth token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e86c22fc-2510-46ff-b7f6-7db4c2add64e",
+						"exec": [
+							"var authRes = JSON.parse(responseBody);\r",
+							"if(data.KeyName = \"token\")\r",
+							"{\r",
+							"pm.environment.set(\"authToken\", authRes.token);\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "API-KEY",
+						"value": "{{apiKey}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"userName\":\"{{username}}\",\"password\":\"{{password}}\"}"
+				},
+				"url": {
+					"raw": "{{url}}/auth/authenticate",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+					    "rest",
+						"auth",
+						"authenticate"
+					]
+				}
+			},
+			"response": []
+		},
 		{
 			"name": "GET /products - invalid API Key parameter",
 			"event": [
@@ -229,7 +278,7 @@
 							"  pm.expect(tv4.validate(jsonResponse, developerSchema)).to.be.true;  \r",
 							"});\r",
 							"\r",
-							"pm.test(\"product contact details do not include friendly name\", function () {\r",
+							"pm.test(\"product contact details should not include friendly name\", function () {\r",
 							"    pm.expect(pm.response.text()).to.not.include(\"friendlyName\");\r",
 							"});\r",
 							""
@@ -252,6 +301,79 @@
 						"type": "text"
 					}
 				],
+				"url": {
+					"raw": "{{url}}/products",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+					    "rest",
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "product edit response validation_PUT_/products",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4f0998b5-d294-4279-a4cf-70d7372a1aa4",
+						"exec": [
+							"pm.test(\"valid product edit request should return valid response\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"validate edit response-product name is correct\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.name).to.eql('Centricity Perinatal');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"product contact details should not include friendly name\", function () {\r",
+							"    pm.expect(pm.response.text()).to.not.include(\"friendlyName\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+			"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "API-KEY",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{authToken}}",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"productIds\":[778],\"product\":{\"productId\":778,\"name\":\"Centricity Perinatal\",\"reportFileLocation\":null,\"contact\":{\"fullName\":\"Tamara Grassle\",\"email\":\"Tamara.grassle@med.ge.com\",\"phoneNumber\":\"847-277-5000\",\"title\":null,\"contactId\":782},\"owner\":{\"developerId\":2070,\"developerCode\":\"3069\",\"name\":\"GE Healthcare\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":null,\"deleted\":null,\"transparencyAttestations\":[],\"statusEvents\":[],\"status\":null},\"ownerHistory\":[{\"id\":115,\"developer\":{\"developerId\":1903,\"developerCode\":\"2902\",\"name\":\"Virence Health Technologies\",\"website\":\"http://www.athenahealth.com\",\"selfDeveloper\":false,\"address\":{\"addressId\":106,\"line1\":\"925 Fourth Avenue\",\"line2\":null,\"city\":\"Seattle\",\"state\":\"WA\",\"zipcode\":\"98104-1157\",\"country\":\"USA\"},\"contact\":{\"fullName\":\"Geoff Lay\",\"email\":\"glay@athenahealth.com\",\"phoneNumber\":\"971-282-5818\",\"title\":null,\"contactId\":906},\"lastModifiedDate\":\"1599256081508\",\"deleted\":false,\"transparencyAttestations\":[],\"statusEvents\":[{\"id\":1833,\"developerId\":1903,\"status\":{\"id\":1,\"status\":\"Active\"},\"statusDate\":1471551235098,\"reason\":null}],\"status\":{\"id\":1,\"status\":\"Active\"}},\"transferDate\":1580342432407,\"displayName\":\"undefined - active\"}],\"lastModifiedDate\":\"1580342432374\"}}"
+				},
 				"url": {
 					"raw": "{{url}}/products",
 					"host": [
