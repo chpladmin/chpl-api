@@ -4,19 +4,21 @@ import java.util.Date;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import lombok.Data;
 
-//@Entity
+@Entity
 @Data
-//@Table(name = "pending_certified_product_mips_measure_criterion_map")
+@Table(name = "pending_certified_product_mips_measure_criteria")
 public class PendingListingMipsMeasureCriterionMapEntity {
 
     @Id
@@ -25,8 +27,8 @@ public class PendingListingMipsMeasureCriterionMapEntity {
     private Long id;
 
     @Basic(optional = false)
-    @Column(name = "pending_listing_mips_measure_map_id", nullable = false)
-    private Long pendingListingMipsMeasureMapId;
+    @Column(name = "pending_listing_mips_measure_id", nullable = false)
+    private Long pendingListingMipsMeasureId;
 
     @Basic(optional = false)
     @Column(name = "certification_criterion_id", nullable = false)

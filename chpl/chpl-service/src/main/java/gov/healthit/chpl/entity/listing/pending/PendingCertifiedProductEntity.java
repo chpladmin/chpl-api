@@ -23,6 +23,7 @@ import org.hibernate.annotations.Type;
 
 import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.entity.AttestationType;
+import gov.healthit.chpl.listing.mipsMeasure.PendingListingMipsMeasureEntity;
 import lombok.Data;
 
 @Entity
@@ -183,10 +184,10 @@ public class PendingCertifiedProductEntity {
     @Column(name = "pending_certified_product_id", nullable = false)
     private Set<PendingCertifiedProductQmsStandardEntity> qmsStandards;
 
-    //@OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingCertifiedProductId")
-    //@Basic(optional = false)
-    //@Column(name = "pending_certified_product_id", nullable = false)
-    //private Set<PendingListingMipsMeasureEntity> mipsMeasures;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingCertifiedProductId")
+    @Basic(optional = false)
+    @Column(name = "pending_certified_product_id", nullable = false)
+    private Set<PendingListingMipsMeasureEntity> mipsMeasures;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingCertifiedProductId")
     @Basic(optional = false)

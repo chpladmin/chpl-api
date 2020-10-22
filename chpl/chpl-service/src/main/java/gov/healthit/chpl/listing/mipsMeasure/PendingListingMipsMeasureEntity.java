@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,12 +14,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 import lombok.Data;
 
-//@Entity
+@Entity
 @Data
-//@Table(name = "pending_certified_product_mips_measure")
+@Table(name = "pending_certified_product_mips_measure")
 public class PendingListingMipsMeasureEntity {
 
     @Id
@@ -31,24 +33,24 @@ public class PendingListingMipsMeasureEntity {
     @Column(name = "pending_certified_product_id")
     private Long pendingCertifiedProductId;
 
-    @Column(name = "measure_id")
-    private Long measureId;
+    @Column(name = "mips_measure_id")
+    private Long mipsMeasureId;
 
     @Basic(optional = false)
-    @Column(name = "entered_value")
+    @Column(name = "uploaded_value")
     private String value;
 
     @Column(name = "mips_type_id")
-    private Long typeId;
+    private Long mipsTypeId;
 
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "mips_type_id", unique = true, nullable = true)
+    @JoinColumn(name = "mips_type_id", unique = true, nullable = true, insertable = false, updatable = false)
     private ListingMipsMeasureTypeEntity type;
 
     @Basic(optional = false)
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingListingMipsMeasureMapId")
-    @Column(name = "pending_listing_mips_measure_map_id", nullable = false)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingListingMipsMeasureId")
+    @Column(name = "pending_listing_mips_measure_id", nullable = false)
     private List<PendingListingMipsMeasureCriterionMapEntity> associatedCriteria
         = new ArrayList<PendingListingMipsMeasureCriterionMapEntity>();
 
