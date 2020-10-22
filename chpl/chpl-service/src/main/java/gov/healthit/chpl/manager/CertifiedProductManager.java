@@ -1582,7 +1582,7 @@ public class CertifiedProductManager extends SecuredManager {
                 for (ListingMipsMeasure updatedItem : updatedMipsMeasures) {
                     boolean inExistingListing = false;
                     for (ListingMipsMeasure existingItem : existingMipsMeasures) {
-                        if (updatedItem.matches(existingItem)) {
+                        if (updatedItem.getId() != null && updatedItem.getId().equals(existingItem.getId())) {
                             inExistingListing = true;
                             measuresToUpdate.add(new MipsMeasurePair(existingItem, updatedItem));
                         }
@@ -1606,7 +1606,8 @@ public class CertifiedProductManager extends SecuredManager {
                 for (ListingMipsMeasure existingItem : existingMipsMeasures) {
                     boolean inUpdatedListing = false;
                     for (ListingMipsMeasure updatedItem : updatedMipsMeasures) {
-                        inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
+                        inUpdatedListing = !inUpdatedListing
+                                ? existingItem.getId().equals(updatedItem.getId()) : inUpdatedListing;
                     }
                     if (!inUpdatedListing) {
                         idsToRemove.add(existingItem.getId());
