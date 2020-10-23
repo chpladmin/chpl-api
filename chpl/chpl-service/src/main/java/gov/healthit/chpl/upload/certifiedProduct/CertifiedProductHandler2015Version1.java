@@ -702,7 +702,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                 PendingListingMipsMeasureEntity mmEntity = getMipsMeasureEntityFromListing(listing, measureWithName, type);
                 if (mmEntity == null) {
                     mmEntity = new PendingListingMipsMeasureEntity();
-                    mmEntity.setValue(measureVal);
+                    mmEntity.setUploadedValue(measureVal);
                     if (measureWithName != null) {
                         mmEntity.setMipsMeasureId(measureWithName.getId());
                     }
@@ -732,7 +732,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                 PendingListingMipsMeasureEntity mmEntity = getMipsMeasureEntityFromListing(listing, measureWithName, type);
                 if (mmEntity == null) {
                     mmEntity = new PendingListingMipsMeasureEntity();
-                    mmEntity.setValue(measureVal);
+                    mmEntity.setUploadedValue(measureVal);
                     if (measureWithName != null) {
                         mmEntity.setMipsMeasureId(measureWithName.getId());
                     }

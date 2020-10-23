@@ -36,9 +36,14 @@ public class PendingListingMipsMeasureEntity {
     @Column(name = "mips_measure_id")
     private Long mipsMeasureId;
 
+    @Basic(optional = true)
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "mips_measure_id", unique = true, nullable = true, insertable = false, updatable = false)
+    private MipsMeasureEntity measure;
+
     @Basic(optional = false)
     @Column(name = "uploaded_value")
-    private String value;
+    private String uploadedValue;
 
     @Column(name = "mips_type_id")
     private Long mipsTypeId;

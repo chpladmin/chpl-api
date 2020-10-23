@@ -39,6 +39,8 @@ import gov.healthit.chpl.entity.listing.pending.PendingTestParticipantEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingTestTaskEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.listing.mipsMeasure.PendingListingMipsMeasureCriterionMapEntity;
+import gov.healthit.chpl.listing.mipsMeasure.PendingListingMipsMeasureEntity;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -133,31 +135,31 @@ throws EntityCreationException {
             }
         }
 
-//        for (PendingListingMipsMeasureEntity mipsMeasure : toCreate.getMipsMeasures()) {
-//            mipsMeasure.setPendingCertifiedProductId(toCreate.getId());
-//            mipsMeasure.setDeleted(false);
-//            mipsMeasure.setLastModifiedUser(AuthUtil.getAuditId());
-//            try {
-//                entityManager.persist(mipsMeasure);
-//            } catch (Exception ex) {
-//                String msg = msgUtil.getMessage("listing.badMipsMeasure", mipsMeasure.getValue());
-//                LOGGER.error(msg, ex);
-//                throw new EntityCreationException(msg);
-//            }
-//            for (PendingListingMipsMeasureCriterionMapEntity measureCriterionMap : mipsMeasure.getAssociatedCriteria()) {
-//                measureCriterionMap.setPendingListingMipsMeasureMapId(mipsMeasure.getId());
-//                measureCriterionMap.setDeleted(false);
-//                measureCriterionMap.setLastModifiedUser(AuthUtil.getAuditId());
-//                try {
-//                    entityManager.persist(mipsMeasure);
-//                } catch (Exception ex) {
-//                    String msg = msgUtil.getMessage("listing.badMipsMeasureCriterionMap",
-//                            mipsMeasure.getValue(), measureCriterionMap.getCertificationCriterionId());
-//                    LOGGER.error(msg, ex);
-//                    throw new EntityCreationException(msg);
-//                }
-//            }
-//        }
+        for (PendingListingMipsMeasureEntity mipsMeasure : toCreate.getMipsMeasures()) {
+            mipsMeasure.setPendingCertifiedProductId(toCreate.getId());
+            mipsMeasure.setDeleted(false);
+            mipsMeasure.setLastModifiedUser(AuthUtil.getAuditId());
+            try {
+                entityManager.persist(mipsMeasure);
+            } catch (Exception ex) {
+                String msg = msgUtil.getMessage("listing.badMipsMeasure", mipsMeasure.getValue());
+                LOGGER.error(msg, ex);
+                throw new EntityCreationException(msg);
+            }
+            for (PendingListingMipsMeasureCriterionMapEntity measureCriterionMap : mipsMeasure.getAssociatedCriteria()) {
+                measureCriterionMap.setPendingListingMipsMeasureId(mipsMeasure.getId());
+                measureCriterionMap.setDeleted(false);
+                measureCriterionMap.setLastModifiedUser(AuthUtil.getAuditId());
+                try {
+                    entityManager.persist(mipsMeasure);
+                } catch (Exception ex) {
+                    String msg = msgUtil.getMessage("listing.badMipsMeasureCriterionMap",
+                            mipsMeasure.getValue(), measureCriterionMap.getCertificationCriterionId());
+                    LOGGER.error(msg, ex);
+                    throw new EntityCreationException(msg);
+                }
+            }
+        }
 
         for (PendingCertifiedProductParentListingEntity parentListing : toCreate.getParentListings()) {
             parentListing.setPendingCertifiedProductId(toCreate.getId());
