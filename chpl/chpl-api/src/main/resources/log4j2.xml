@@ -8,7 +8,7 @@
     <Appenders>
         <Console name="STDOUT" target="SYSTEM_OUT">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L) ID: %X{tracker}] %m%n</Pattern>
             </PatternLayout>
         </Console>
         <RollingFile name="chartDataCreatorJob"

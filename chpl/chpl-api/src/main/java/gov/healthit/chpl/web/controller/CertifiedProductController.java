@@ -10,12 +10,14 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 
 import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.CloseableThreadContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -180,9 +182,12 @@ public class CertifiedProductController {
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductById(
             @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
 
-        CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetails(certifiedProductId);
-        certifiedProduct = validateCertifiedProduct(certifiedProduct);
-        return certifiedProduct;
+        try (CloseableThreadContext.Instance ctc = CloseableThreadContext.put("tracker", UUID.randomUUID().toString())) {
+            LOGGER.info("In this method");
+            CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetails(certifiedProductId);
+            certifiedProduct = validateCertifiedProduct(certifiedProduct);
+            return certifiedProduct;
+        }
     }
 
     /**
