@@ -37,11 +37,10 @@ public class MipsMeasureValidityReviewer implements Reviewer {
         reviewG1RequiredMeasures(listing);
         reviewG2RequiredMeasures(listing);
 
-        //TODO: if a Mips measure is removed and the listing has no ICS, is it allowed?
-
         for (PendingCertifiedProductMipsMeasureDTO measure : listing.getMipsMeasures()) {
             if (measure != null && measure.getMeasure() != null) {
                 reviewMeasureHasId(listing, measure);
+                reviewIcsAndRemovedMeasures(listing, measure);
                 reviewMeasureHasAssociatedCriteria(listing, measure);
                 reviewMeasureHasOnlyAllowedCriteria(listing, measure);
                 if (measure.getMeasure().getRequiresCriteriaSelection() != null
@@ -83,6 +82,18 @@ public class MipsMeasureValidityReviewer implements Reviewer {
             if (g1MeasureCount == 0) {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.missingG2Measures"));
             }
+        }
+    }
+
+    private void reviewIcsAndRemovedMeasures(
+            PendingCertifiedProductDTO listing, PendingCertifiedProductMipsMeasureDTO measure) {
+        if (measure.getMeasure() != null
+                && (listing.getIcs() == null || !listing.getIcs().booleanValue())
+                && measure.getMeasure().getRemoved() != null
+                && measure.getMeasure().getRemoved().booleanValue()) {
+            listing.getErrorMessages().add(
+                    msgUtil.getMessage("listing.removedMipsMeasureNoIcs",
+                            measure.getMeasure().getAbbreviation()));
         }
     }
 
