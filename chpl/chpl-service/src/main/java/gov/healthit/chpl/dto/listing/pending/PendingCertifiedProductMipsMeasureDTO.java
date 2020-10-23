@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.MipsMeasure;
 import gov.healthit.chpl.domain.MipsMeasurementType;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
@@ -18,10 +19,10 @@ public class PendingCertifiedProductMipsMeasureDTO implements Serializable {
     private MipsMeasure measure;
     private MipsMeasurementType measurementType;
     private String uploadedValue;
-    private List<CertificationCriterionDTO> associatedCriteria;
+    private List<CertificationCriterion> associatedCriteria;
 
     public PendingCertifiedProductMipsMeasureDTO() {
-        this.associatedCriteria = new ArrayList<CertificationCriterionDTO>();
+        this.associatedCriteria = new ArrayList<CertificationCriterion>();
     }
 
     public PendingCertifiedProductMipsMeasureDTO(PendingListingMipsMeasureEntity entity) {

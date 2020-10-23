@@ -281,7 +281,7 @@ public class PendingCertifiedProductDTO implements Serializable {
                 mipsDto.setPendingCertifiedProductId(details.getId());
                 mipsDto.setUploadedValue(null);
                 mipsMeasure.getAssociatedCriteria().stream().forEach(criterion -> {
-                    mipsDto.getAssociatedCriteria().add(new CertificationCriterionDTO(criterion));
+                    mipsDto.getAssociatedCriteria().add(criterion);
                 });
                 this.mipsMeasures.add(mipsDto);
             }
