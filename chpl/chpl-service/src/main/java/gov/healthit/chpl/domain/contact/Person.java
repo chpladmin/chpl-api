@@ -110,7 +110,7 @@ public class Person implements Serializable {
         return fullName;
     }
 
-    public void setFullName(final String fullName) {
+    public void setFullName(String fullName) {
         this.fullName = fullName;
     }
 
@@ -118,7 +118,7 @@ public class Person implements Serializable {
         return email;
     }
 
-    public void setEmail(final String email) {
+    public void setEmail(String email) {
         this.email = email;
     }
 
@@ -126,7 +126,7 @@ public class Person implements Serializable {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(final String phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
@@ -134,7 +134,7 @@ public class Person implements Serializable {
         return title;
     }
 
-    public void setTitle(final String title) {
+    public void setTitle(String title) {
         this.title = title;
     }
 
