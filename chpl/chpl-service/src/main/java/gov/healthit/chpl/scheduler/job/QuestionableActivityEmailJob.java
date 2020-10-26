@@ -483,6 +483,12 @@ public class QuestionableActivityEmailJob extends QuartzJob {
                 .getName())) {
             currRow.set(ACTIVITY_DESCRIPTION_COL, "From " + activity.getBefore() + " to " + activity.getAfter());
             currRow.set(ACTIVITY_CERT_STATUS_CHANGE_REASON_COL, activity.getCertificationStatusChangeReason());
+        } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.MIPS_MEASURE_ADDED
+                .getName())) {
+            currRow.set(ACTIVITY_DESCRIPTION_COL, "Added " + activity.getAfter());
+        } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.MIPS_MEASURE_REMOVED
+                .getName())) {
+            currRow.set(ACTIVITY_DESCRIPTION_COL, "Removed " + activity.getBefore());
         }
 
         currRow.set(ACTIVITY_REASON_COL, activity.getReason());
@@ -510,22 +516,6 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": from " + activity.getBefore() + " to "
                     + activity.getAfter();
             currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-        } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G1_MEASURE_ADDED
-                .getName())) {
-            String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
-            if (!StringUtils.isEmpty(currActivityRowValue)) {
-                currActivityRowValue += "; ";
-            }
-            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": " + activity.getAfter();
-            currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-        } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G1_MEASURE_REMOVED
-                .getName())) {
-            String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
-            if (!StringUtils.isEmpty(currActivityRowValue)) {
-                currActivityRowValue += "; ";
-            }
-            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": " + activity.getBefore();
-            currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
         } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G2_SUCCESS_EDITED
                 .getName())) {
             String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
@@ -534,22 +524,6 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             }
             currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": from " + activity.getBefore() + " to "
                     + activity.getAfter();
-            currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-        } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G2_MEASURE_ADDED
-                .getName())) {
-            String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
-            if (!StringUtils.isEmpty(currActivityRowValue)) {
-                currActivityRowValue += "; ";
-            }
-            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": " + activity.getAfter();
-            currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-        } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G2_MEASURE_REMOVED
-                .getName())) {
-            String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
-            if (!StringUtils.isEmpty(currActivityRowValue)) {
-                currActivityRowValue += "; ";
-            }
-            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": " + activity.getBefore();
             currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
         } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.GAP_EDITED.getName())) {
             String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);

@@ -214,9 +214,24 @@ public class QuestionableActivityManager implements EnvironmentAware {
                         QuestionableActivityTriggerConcept.REAL_WORLD_TESTING_REMOVED, activityReason);
             }
             activity = listingQuestionableActivityProvider.checkRealWorldTestingResultsRemoved(origListing, newListing);
-            if (activity != null    ) {
+            if (activity != null) {
                 createListingActivity(activity, origListing.getId(), activityDate, activityUser,
                         QuestionableActivityTriggerConcept.REAL_WORLD_TESTING_REMOVED, activityReason);
+            }
+            List<QuestionableActivityListingDTO> activities
+                = listingQuestionableActivityProvider.checkMipsMeasuresAdded(origListing, newListing);
+            if (activities != null && activities.size() > 0) {
+                activities.stream().forEach(mipsMeasureActivity -> {
+                    createListingActivity(mipsMeasureActivity, origListing.getId(), activityDate, activityUser,
+                            QuestionableActivityTriggerConcept.MIPS_MEASURE_ADDED, activityReason);
+                });
+            }
+            activities = listingQuestionableActivityProvider.checkMipsMeasuresRemoved(origListing, newListing);
+            if (activities != null && activities.size() > 0) {
+                activities.stream().forEach(mipsMeasureActivity -> {
+                    createListingActivity(mipsMeasureActivity, origListing.getId(), activityDate, activityUser,
+                            QuestionableActivityTriggerConcept.MIPS_MEASURE_REMOVED, activityReason);
+                });
             }
 
             // finally check for other changes that are only questionable
@@ -247,7 +262,7 @@ public class QuestionableActivityManager implements EnvironmentAware {
                             activityReason);
                 }
 
-                List<QuestionableActivityListingDTO> activities = listingQuestionableActivityProvider
+                activities = listingQuestionableActivityProvider
                         .checkCqmsAdded(origListing, newListing);
                 for (QuestionableActivityListingDTO currActivity : activities) {
                     createListingActivity(currActivity, origListing.getId(), activityDate,
