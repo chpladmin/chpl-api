@@ -76,6 +76,7 @@ import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
 import gov.healthit.chpl.dto.MeaningfulUseUserDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.impl.CertifiedProductDetailsManagerAsync;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.AuthUtil;
@@ -173,6 +174,7 @@ public class CertifiedProductDetailsManager {
     }
 
     @Transactional
+    @Loggable
     public CertifiedProductSearchDetails getCertifiedProductDetails(Long certifiedProductId)
             throws EntityRetrievalException {
 
