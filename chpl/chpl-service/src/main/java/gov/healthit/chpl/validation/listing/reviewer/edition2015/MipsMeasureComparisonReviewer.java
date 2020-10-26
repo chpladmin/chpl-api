@@ -56,6 +56,8 @@ public class MipsMeasureComparisonReviewer implements ComparisonReviewer {
 
     private String getErrorMessage(String messageCode, ListingMipsMeasure listingMipsMeasure) {
         return msgUtil.getMessage(messageCode,
+                listingMipsMeasure.getMeasurementType().getName(),
+                listingMipsMeasure.getMeasure().getName(),
                 listingMipsMeasure.getMeasure().getAbbreviation());
     }
 

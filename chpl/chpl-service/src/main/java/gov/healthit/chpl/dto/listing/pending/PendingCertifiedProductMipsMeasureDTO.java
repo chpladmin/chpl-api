@@ -1,17 +1,21 @@
 package gov.healthit.chpl.dto.listing.pending;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.MipsMeasure;
 import gov.healthit.chpl.domain.MipsMeasurementType;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.listing.mipsMeasure.PendingListingMipsMeasureEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
+@AllArgsConstructor
 public class PendingCertifiedProductMipsMeasureDTO implements Serializable {
     private static final long serialVersionUID = 6800290521633648570L;
     private Long id;
@@ -19,10 +23,10 @@ public class PendingCertifiedProductMipsMeasureDTO implements Serializable {
     private MipsMeasure measure;
     private MipsMeasurementType measurementType;
     private String uploadedValue;
-    private List<CertificationCriterion> associatedCriteria;
+    private Set<CertificationCriterion> associatedCriteria;
 
     public PendingCertifiedProductMipsMeasureDTO() {
-        this.associatedCriteria = new ArrayList<CertificationCriterion>();
+        this.associatedCriteria = new LinkedHashSet<CertificationCriterion>();
     }
 
     public PendingCertifiedProductMipsMeasureDTO(PendingListingMipsMeasureEntity entity) {

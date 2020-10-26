@@ -1,4 +1,4 @@
-package gov.healthit.chpl.validation.listing.reviewer;
+package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -213,15 +213,16 @@ public class MipsMeasureValidityReviewerTest {
     @Test
     public void review_noAssociatedCriteria_errorMessage() throws ParseException {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.mipsMeasure.missingAssociatedCriteria"),
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-                .thenAnswer(i -> String.format("The %s measure %s must have at least one associated criterion.",
-                        i.getArgument(1), i.getArgument(2)));
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+                .thenAnswer(i -> String.format("The %s measure %s for %s must have at least one associated criterion.",
+                        i.getArgument(1), i.getArgument(2), i.getArgument(3)));
 
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         listing.getMipsMeasures().add(ListingMipsMeasure.builder()
                 .measure(MipsMeasure.builder()
                         .id(1L)
                         .name("Test")
+                        .abbreviation("T")
                         .build())
                 .measurementType(MipsMeasurementType.builder()
                         .id(1L)
@@ -232,15 +233,16 @@ public class MipsMeasureValidityReviewerTest {
         reviewer.review(listing);
 
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains("The G1 measure Test must have at least one associated criterion."));
+        assertTrue(listing.getErrorMessages().contains("The G1 measure Test for T must have at least one associated criterion."));
     }
 
     @Test
     public void review_missingRequiredAssociatedCriteria_errorMessage() throws ParseException {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.mipsMeasure.missingRequiredCriterion"),
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-                .thenAnswer(i -> String.format("The criterion %s is missing for %s measure %s.",
-                        i.getArgument(1), i.getArgument(2), i.getArgument(3)));
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyString()))
+                .thenAnswer(i -> String.format("The %s measure %s for %s is missing required criterion %s.",
+                        i.getArgument(1), i.getArgument(2), i.getArgument(3), i.getArgument(4)));
 
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         Set<CertificationCriterion> allowedCriterion = new LinkedHashSet<CertificationCriterion>();
@@ -256,6 +258,7 @@ public class MipsMeasureValidityReviewerTest {
                 .measure(MipsMeasure.builder()
                         .id(1L)
                         .name("Test")
+                        .abbreviation("T")
                         .requiresCriteriaSelection(false)
                         .allowedCriteria(allowedCriterion)
                         .build())
@@ -269,15 +272,17 @@ public class MipsMeasureValidityReviewerTest {
         reviewer.review(listing);
 
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains("The criterion 170.315 (a)(1) is missing for G1 measure Test."));
+        assertEquals("The G1 measure Test for T is missing required criterion 170.315 (a)(1).",
+                listing.getErrorMessages().iterator().next());
     }
 
     @Test
     public void review_associatesNotAllowedCriteria_errorMessage() throws ParseException {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.mipsMeasure.associatedCriterionNotAllowed"),
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-                .thenAnswer(i -> String.format("The criterion %s cannot be associated with %s measure %s.",
-                        i.getArgument(1), i.getArgument(2), i.getArgument(3)));
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyString()))
+                .thenAnswer(i -> String.format("The %s measure %s for %s cannot have associated criterion %s.",
+                        i.getArgument(1), i.getArgument(2), i.getArgument(3), i.getArgument(4)));
 
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         Set<CertificationCriterion> associatedCriterion = new LinkedHashSet<CertificationCriterion>();
@@ -293,6 +298,7 @@ public class MipsMeasureValidityReviewerTest {
                 .measure(MipsMeasure.builder()
                         .id(1L)
                         .name("Test")
+                        .abbreviation("T")
                         .requiresCriteriaSelection(false)
                         .allowedCriteria(buildCriterionSet(2L, "170.315 (a)(2)"))
                         .build())
@@ -306,8 +312,8 @@ public class MipsMeasureValidityReviewerTest {
         reviewer.review(listing);
 
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(
-                "The criterion 170.315 (a)(1) cannot be associated with G1 measure Test."));
+        assertEquals("The G1 measure Test for T cannot have associated criterion 170.315 (a)(1).",
+                listing.getErrorMessages().iterator().next());
     }
 
     @Test

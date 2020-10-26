@@ -37,8 +37,6 @@ public class MipsMeasureValidityReviewer implements Reviewer {
         reviewG1RequiredMeasures(listing);
         reviewG2RequiredMeasures(listing);
 
-        //TODO: if a Mips measure is removed and the listing has no ICS, is it allowed?
-
         for (ListingMipsMeasure measure : listing.getMipsMeasures()) {
             if (measure != null && measure.getMeasure() != null) {
                 reviewMeasureHasId(listing, measure);
@@ -104,9 +102,10 @@ public class MipsMeasureValidityReviewer implements Reviewer {
         assocCriteriaNotAllowed.stream().forEach(assocCriterionNotAllowed -> {
             listing.getErrorMessages().add(msgUtil.getMessage(
                     "listing.mipsMeasure.associatedCriterionNotAllowed",
-                    CertificationCriterionService.formatCriteriaNumber(assocCriterionNotAllowed),
                     measure.getMeasurementType().getName(),
-                    measure.getMeasure().getName()));
+                    measure.getMeasure().getName(),
+                    measure.getMeasure().getAbbreviation(),
+                    CertificationCriterionService.formatCriteriaNumber(assocCriterionNotAllowed)));
         });
     }
 
@@ -128,9 +127,10 @@ public class MipsMeasureValidityReviewer implements Reviewer {
         missingAllowedCriteria.stream().forEach(missingAllowedCriterion -> {
             listing.getErrorMessages().add(msgUtil.getMessage(
                     "listing.mipsMeasure.missingRequiredCriterion",
-                    CertificationCriterionService.formatCriteriaNumber(missingAllowedCriterion),
                     measure.getMeasurementType().getName(),
-                    measure.getMeasure().getName()));
+                    measure.getMeasure().getName(),
+                    measure.getMeasure().getAbbreviation(),
+                    CertificationCriterionService.formatCriteriaNumber(missingAllowedCriterion)));
         });
     }
 
@@ -139,7 +139,8 @@ public class MipsMeasureValidityReviewer implements Reviewer {
             listing.getErrorMessages().add(msgUtil.getMessage(
                     "listing.mipsMeasure.missingAssociatedCriteria",
                     measure.getMeasurementType().getName(),
-                    measure.getMeasure().getName()));
+                    measure.getMeasure().getName(),
+                    measure.getMeasure().getAbbreviation()));
         }
     }
 

@@ -17,7 +17,7 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class MipsMeasureComparisonReviewerTest {
-
+    private static final String ERROR_MSG = "The %s Measure %s for %s may not be referenced. The measure has been removed.";
     private ResourcePermissions resourcePermissions;
     private ErrorMessageUtil msgUtil;
 
@@ -31,11 +31,9 @@ public class MipsMeasureComparisonReviewerTest {
         resourcePermissions = Mockito.mock(ResourcePermissions.class);
 
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        Mockito.when(msgUtil.getMessage(
-                ArgumentMatchers.eq("listing.removedMipsMeasure"),
-                ArgumentMatchers.anyString()))
-        .thenAnswer(i -> i.getArguments()[1]);
-
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.removedMipsMeasure"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+                .thenAnswer(i -> String.format(ERROR_MSG, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
         reviewer = new MipsMeasureComparisonReviewer(resourcePermissions, msgUtil);
     }
 
@@ -78,6 +76,7 @@ public class MipsMeasureComparisonReviewerTest {
                         .measure(MipsMeasure.builder()
                             .id(GAP_EP_ID)
                             .abbreviation("GAP-EP")
+                            .name("Measure Name")
                             .removed(true)
                             .build())
                         .build())
@@ -93,6 +92,7 @@ public class MipsMeasureComparisonReviewerTest {
                         .measure(MipsMeasure.builder()
                             .id(GAP_EP_ID)
                             .abbreviation("GAP-EP")
+                            .name("Measure Name")
                             .removed(true)
                             .build())
                         .build())
@@ -119,6 +119,7 @@ public class MipsMeasureComparisonReviewerTest {
                         .measure(MipsMeasure.builder()
                             .id(GAP_EP_ID)
                             .abbreviation("GAP-EP")
+                            .name("Measure Name")
                             .removed(true)
                             .build())
                         .build())
@@ -134,6 +135,7 @@ public class MipsMeasureComparisonReviewerTest {
                         .measure(MipsMeasure.builder()
                             .id(GAP_EP_ID)
                             .abbreviation("GAP-EP")
+                            .name("Measure Name")
                             .removed(true)
                             .build())
                         .build())
@@ -146,6 +148,7 @@ public class MipsMeasureComparisonReviewerTest {
                         .measure(MipsMeasure.builder()
                             .id(GAP_EH_CAH)
                             .abbreviation("GAP-EH/CAH")
+                            .name("Measure Name 2")
                             .removed(true)
                             .build())
                         .build())
@@ -172,6 +175,7 @@ public class MipsMeasureComparisonReviewerTest {
                         .measure(MipsMeasure.builder()
                             .id(GAP_EP_ID)
                             .abbreviation("GAP-EP")
+                            .name("Measure Name")
                             .removed(true)
                             .build())
                         .build())
@@ -187,6 +191,7 @@ public class MipsMeasureComparisonReviewerTest {
                         .measure(MipsMeasure.builder()
                             .id(GAP_EP_ID)
                             .abbreviation("GAP-EP")
+                            .name("Measure Name")
                             .removed(true)
                             .build())
                         .build())
@@ -199,6 +204,7 @@ public class MipsMeasureComparisonReviewerTest {
                         .measure(MipsMeasure.builder()
                             .id(GAP_EH_CAH)
                             .abbreviation("GAP-EH/CAH")
+                            .name("Measure Name 2")
                             .removed(true)
                             .build())
                         .build())
@@ -228,6 +234,7 @@ public class MipsMeasureComparisonReviewerTest {
                         .measure(MipsMeasure.builder()
                             .id(GAP_EP_ID)
                             .abbreviation("GAP-EP")
+                            .name("Measure Name")
                             .removed(true)
                             .build())
                         .build())
@@ -240,6 +247,7 @@ public class MipsMeasureComparisonReviewerTest {
                         .measure(MipsMeasure.builder()
                             .id(GAP_EH_CAH)
                             .abbreviation("GAP-EH/CAH")
+                            .name("Measure Name 2")
                             .removed(true)
                             .build())
                         .build())
@@ -269,6 +277,7 @@ public class MipsMeasureComparisonReviewerTest {
                         .measure(MipsMeasure.builder()
                             .id(GAP_EP_ID)
                             .abbreviation("GAP-EP")
+                            .name("Measure Name")
                             .removed(false)
                             .build())
                         .build())
@@ -281,6 +290,7 @@ public class MipsMeasureComparisonReviewerTest {
                         .measure(MipsMeasure.builder()
                             .id(GAP_EH_CAH)
                             .abbreviation("GAP-EH/CAH")
+                            .name("Measure Name 2")
                             .removed(false)
                             .build())
                         .build())

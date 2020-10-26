@@ -93,6 +93,8 @@ public class MipsMeasureValidityReviewer implements Reviewer {
                 && measure.getMeasure().getRemoved().booleanValue()) {
             listing.getErrorMessages().add(
                     msgUtil.getMessage("listing.removedMipsMeasureNoIcs",
+                            measure.getMeasurementType().getName(),
+                            measure.getMeasure().getName(),
                             measure.getMeasure().getAbbreviation()));
         }
     }
@@ -116,9 +118,10 @@ public class MipsMeasureValidityReviewer implements Reviewer {
         assocCriteriaNotAllowed.stream().forEach(assocCriterionNotAllowed -> {
             listing.getErrorMessages().add(msgUtil.getMessage(
                     "listing.mipsMeasure.associatedCriterionNotAllowed",
-                    CertificationCriterionService.formatCriteriaNumber(assocCriterionNotAllowed),
                     measure.getMeasurementType().getName(),
-                    measure.getMeasure().getName()));
+                    measure.getMeasure().getName(),
+                    measure.getMeasure().getAbbreviation(),
+                    CertificationCriterionService.formatCriteriaNumber(assocCriterionNotAllowed)));
         });
     }
 
@@ -141,9 +144,10 @@ public class MipsMeasureValidityReviewer implements Reviewer {
         missingAllowedCriteria.stream().forEach(missingAllowedCriterion -> {
             listing.getErrorMessages().add(msgUtil.getMessage(
                     "listing.mipsMeasure.missingRequiredCriterion",
-                    CertificationCriterionService.formatCriteriaNumber(missingAllowedCriterion),
                     measure.getMeasurementType().getName(),
-                    measure.getMeasure().getName()));
+                    measure.getMeasure().getName(),
+                    measure.getMeasure().getAbbreviation(),
+                    CertificationCriterionService.formatCriteriaNumber(missingAllowedCriterion)));
         });
     }
 
@@ -153,7 +157,8 @@ public class MipsMeasureValidityReviewer implements Reviewer {
             listing.getErrorMessages().add(msgUtil.getMessage(
                     "listing.mipsMeasure.missingAssociatedCriteria",
                     measure.getMeasurementType().getName(),
-                    measure.getMeasure().getName()));
+                    measure.getMeasure().getName(),
+                    measure.getMeasure().getAbbreviation()));
         }
     }
 

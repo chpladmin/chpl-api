@@ -42,6 +42,7 @@ public class MipsMeasureDuplicateReviewer {
         for (ListingMipsMeasure duplicate : duplicates) {
             String warning = errorMessageUtil.getMessage("listing.duplicateMipsMeasure",
                     duplicate.getMeasurementType().getName(),
+                    duplicate.getMeasure().getName(),
                     duplicate.getMeasure().getAbbreviation());
             warnings.add(warning);
         }

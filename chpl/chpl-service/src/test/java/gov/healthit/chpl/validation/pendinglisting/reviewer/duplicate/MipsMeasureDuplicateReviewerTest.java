@@ -1,4 +1,4 @@
-package gov.healthit.chpl.validation.listing.reviewer.duplicate;
+package gov.healthit.chpl.validation.pendinglisting.reviewer.duplicate;
 
 import static org.junit.Assert.assertEquals;
 
@@ -10,11 +10,12 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.ListingMipsMeasure;
 import gov.healthit.chpl.domain.MipsMeasure;
 import gov.healthit.chpl.domain.MipsMeasurementType;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMipsMeasureDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.validation.pendingListing.reviewer.duplicate.MipsMeasureDuplicateReviewer;
 
 public class MipsMeasureDuplicateReviewerTest {
     private static final String DUPLICATE_MSG =
@@ -38,9 +39,9 @@ public class MipsMeasureDuplicateReviewerTest {
 
     @Test
     public void review_duplicateExists_warningFoundAndDuplicateRemoved() {
-        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-        ListingMipsMeasure measure1 = getMipsMeasure(1L, 1L, MEASURE_NAME, RT3, 1L, "G1");
-        ListingMipsMeasure measure2 = getMipsMeasure(2L, 1L, MEASURE_NAME, RT3, 1L, "G1");
+        PendingCertifiedProductDTO listing = new PendingCertifiedProductDTO();
+        PendingCertifiedProductMipsMeasureDTO measure1 = getMipsMeasure(1L, 1L, MEASURE_NAME, RT3, 1L, "G1");
+        PendingCertifiedProductMipsMeasureDTO measure2 = getMipsMeasure(2L, 1L, MEASURE_NAME, RT3, 1L, "G1");
         listing.getMipsMeasures().add(measure1);
         listing.getMipsMeasures().add(measure2);
 
@@ -55,13 +56,13 @@ public class MipsMeasureDuplicateReviewerTest {
 
     @Test
     public void review_duplicateExistsButDifferentCriteria_warningFoundAndDuplicateRemoved() {
-        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-        ListingMipsMeasure measure1 = getMipsMeasure(1L, 1L, MEASURE_NAME, RT3, 1L, "G1");
+        PendingCertifiedProductDTO listing = new PendingCertifiedProductDTO();
+        PendingCertifiedProductMipsMeasureDTO measure1 = getMipsMeasure(1L, 1L, MEASURE_NAME, RT3, 1L, "G1");
         measure1.getAssociatedCriteria().add(CertificationCriterion.builder()
                 .id(1L)
                 .number("170.315 (a)(1)")
                 .build());
-        ListingMipsMeasure measure2 = getMipsMeasure(2L, 1L, MEASURE_NAME, RT3, 1L, "G1");
+        PendingCertifiedProductMipsMeasureDTO measure2 = getMipsMeasure(2L, 1L, MEASURE_NAME, RT3, 1L, "G1");
         measure2.getAssociatedCriteria().add(CertificationCriterion.builder()
                 .id(2L)
                 .number("170.315 (a)(2)")
@@ -80,9 +81,9 @@ public class MipsMeasureDuplicateReviewerTest {
 
     @Test
     public void review_differentTypes_noWarning() {
-        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-        ListingMipsMeasure measure1 = getMipsMeasure(1L, 1L, MEASURE_NAME, RT3, 1L, "G1");
-        ListingMipsMeasure measure2 = getMipsMeasure(2L, 1L, MEASURE_NAME, RT3, 2L, "G2");
+        PendingCertifiedProductDTO listing = new PendingCertifiedProductDTO();
+        PendingCertifiedProductMipsMeasureDTO measure1 = getMipsMeasure(1L, 1L, MEASURE_NAME, RT3, 1L, "G1");
+        PendingCertifiedProductMipsMeasureDTO measure2 = getMipsMeasure(2L, 1L, MEASURE_NAME, RT3, 2L, "G2");
         listing.getMipsMeasures().add(measure1);
         listing.getMipsMeasures().add(measure2);
 
@@ -94,9 +95,9 @@ public class MipsMeasureDuplicateReviewerTest {
 
     @Test
     public void review_noDuplicates_noWarning() {
-        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-        ListingMipsMeasure measure1 = getMipsMeasure(1L, 1L, MEASURE_NAME, RT3, 1L, "G1");
-        ListingMipsMeasure measure2 = getMipsMeasure(2L, 2L, MEASURE_NAME_2, RT5, 2L, "G2");
+        PendingCertifiedProductDTO listing = new PendingCertifiedProductDTO();
+        PendingCertifiedProductMipsMeasureDTO measure1 = getMipsMeasure(1L, 1L, MEASURE_NAME, RT3, 1L, "G1");
+        PendingCertifiedProductMipsMeasureDTO measure2 = getMipsMeasure(2L, 2L, MEASURE_NAME_2, RT5, 2L, "G2");
         listing.getMipsMeasures().add(measure1);
         listing.getMipsMeasures().add(measure2);
 
@@ -108,7 +109,7 @@ public class MipsMeasureDuplicateReviewerTest {
 
     @Test
     public void review_emptyMipsMeasures_noWarning() {
-        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
+        PendingCertifiedProductDTO listing = new PendingCertifiedProductDTO();
         listing.getMipsMeasures().clear();
 
         reviewer.review(listing);
@@ -119,11 +120,11 @@ public class MipsMeasureDuplicateReviewerTest {
 
     @Test
     public void testDuplicateExistInLargerSet() {
-        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-        ListingMipsMeasure measure1 = getMipsMeasure(1L, 1L, MEASURE_NAME, RT3, 1L, "G1");
-        ListingMipsMeasure measure2 = getMipsMeasure(2L, 2L, MEASURE_NAME_2, RT5, 2L, "G2");
-        ListingMipsMeasure measure3 = getMipsMeasure(3L, 1L, MEASURE_NAME, RT3, 1L, "G1");
-        ListingMipsMeasure measure4 = getMipsMeasure(4L, 2L, MEASURE_NAME_2, RT5, 1L, "G1");
+        PendingCertifiedProductDTO listing = new PendingCertifiedProductDTO();
+        PendingCertifiedProductMipsMeasureDTO measure1 = getMipsMeasure(1L, 1L, MEASURE_NAME, RT3, 1L, "G1");
+        PendingCertifiedProductMipsMeasureDTO measure2 = getMipsMeasure(2L, 2L, MEASURE_NAME_2, RT5, 2L, "G2");
+        PendingCertifiedProductMipsMeasureDTO measure3 = getMipsMeasure(3L, 1L, MEASURE_NAME, RT3, 1L, "G1");
+        PendingCertifiedProductMipsMeasureDTO measure4 = getMipsMeasure(4L, 2L, MEASURE_NAME_2, RT5, 1L, "G1");
 
         listing.getMipsMeasures().add(measure1);
         listing.getMipsMeasures().add(measure2);
@@ -139,9 +140,9 @@ public class MipsMeasureDuplicateReviewerTest {
         assertEquals(3, listing.getMipsMeasures().size());
     }
 
-    private ListingMipsMeasure getMipsMeasure(Long id, Long measureId, String measureName,
+    private PendingCertifiedProductMipsMeasureDTO getMipsMeasure(Long id, Long measureId, String measureName,
             String rtAbbrev, Long typeId, String typeName) {
-        return ListingMipsMeasure.builder()
+        return PendingCertifiedProductMipsMeasureDTO.builder()
             .id(id)
             .measure(MipsMeasure.builder()
                     .id(measureId)
