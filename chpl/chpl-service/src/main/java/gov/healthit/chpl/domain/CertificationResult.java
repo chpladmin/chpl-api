@@ -220,7 +220,10 @@ public class CertificationResult implements Serializable {
     private List<MacraMeasure> g2MacraMeasures = new ArrayList<MacraMeasure>();
 
     /**
-     * NEED TO GET THIS TEXT
+     * ONC has established the Standards Version Advancement Process (SVAP) to enable health IT developers’
+     * ability to incorporate newer versions of Secretary-adopted standards and implementation specifications,
+     * as part of the "Real World Testing" Condition and Maintenance of Certification requirement (§170.405)
+     * of the 21st Century Cures Act
      */
     @XmlElementWrapper(name = "svaps", nillable = true, required = false)
     @XmlElement(name = "svap")
