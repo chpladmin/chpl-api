@@ -1,8 +1,8 @@
 package gov.healthit.chpl.listing.mipsMeasure;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -55,9 +55,9 @@ public class PendingListingMipsMeasureEntity {
 
     @Basic(optional = false)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingListingMipsMeasureId")
-    @Column(name = "pending_listing_mips_measure_id", nullable = false)
-    private List<PendingListingMipsMeasureCriterionMapEntity> associatedCriteria
-        = new ArrayList<PendingListingMipsMeasureCriterionMapEntity>();
+    @Column(name = "pending_certified_product_mips_measure_id", nullable = false)
+    private Set<PendingListingMipsMeasureCriterionMapEntity> associatedCriteria
+        = new LinkedHashSet<PendingListingMipsMeasureCriterionMapEntity>();
 
     @Column(name = "last_modified_date", updatable = false, insertable = false)
     private Date lastModifiedDate;

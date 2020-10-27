@@ -18,6 +18,7 @@ import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.dao.ContactDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
+import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
 import gov.healthit.chpl.dao.ProductDAO;
@@ -91,6 +92,8 @@ public abstract class CertifiedProductUploadHandler {
     protected AgeRangeDAO ageDao;
     @Autowired
     protected MipsMeasureDAO mipsMeasureDao;
+    @Autowired
+    protected MacraMeasureDAO macraMeasureDao;
     @Autowired
     protected ListingMipsMeasureDAO listingMipsDao;
 

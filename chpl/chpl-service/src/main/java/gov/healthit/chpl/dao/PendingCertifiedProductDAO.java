@@ -151,7 +151,7 @@ throws EntityCreationException {
                 measureCriterionMap.setDeleted(false);
                 measureCriterionMap.setLastModifiedUser(AuthUtil.getAuditId());
                 try {
-                    entityManager.persist(mipsMeasure);
+                    entityManager.persist(measureCriterionMap);
                 } catch (Exception ex) {
                     String msg = msgUtil.getMessage("listing.badMipsMeasureCriterionMap",
                             mipsMeasure.getUploadedValue(), measureCriterionMap.getCertificationCriterionId());

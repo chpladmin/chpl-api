@@ -245,9 +245,9 @@ public class PendingCertifiedProductDTO implements Serializable {
             }
         }
 
-        List<CertifiedProductTestingLab> testingLabs = details.getTestingLabs();
-        if (testingLabs != null && testingLabs.size() > 0) {
-            for (CertifiedProductTestingLab tl : testingLabs) {
+        List<CertifiedProductTestingLab> testingLabDomains = details.getTestingLabs();
+        if (testingLabDomains != null && testingLabDomains.size() > 0) {
+            for (CertifiedProductTestingLab tl : testingLabDomains) {
                 PendingCertifiedProductTestingLabDTO tlDto = new PendingCertifiedProductTestingLabDTO();
                 if (tl.getTestingLabId() != null) {
                     tlDto.setTestingLabId(tl.getTestingLabId());
@@ -259,9 +259,9 @@ public class PendingCertifiedProductDTO implements Serializable {
             }
         }
 
-        List<CertifiedProductQmsStandard> qmsStandards = details.getQmsStandards();
-        if (qmsStandards != null && qmsStandards.size() > 0) {
-            for (CertifiedProductQmsStandard qms : qmsStandards) {
+        List<CertifiedProductQmsStandard> qmsStandardDomains = details.getQmsStandards();
+        if (qmsStandardDomains != null && qmsStandardDomains.size() > 0) {
+            for (CertifiedProductQmsStandard qms : qmsStandardDomains) {
                 PendingCertifiedProductQmsStandardDTO qmsDto = new PendingCertifiedProductQmsStandardDTO();
                 qmsDto.setApplicableCriteria(qms.getApplicableCriteria());
                 qmsDto.setModification(qms.getQmsModification());
@@ -276,10 +276,18 @@ public class PendingCertifiedProductDTO implements Serializable {
             for (ListingMipsMeasure mipsMeasure : mipsMeasuresDomain) {
                 PendingCertifiedProductMipsMeasureDTO mipsDto = new PendingCertifiedProductMipsMeasureDTO();
                 mipsDto.setId(mipsMeasure.getId());
+                if (mipsMeasure.getMeasure() == null || mipsMeasure.getMeasure().getId() == null) {
+                    mipsDto.setMeasure(null);
+                    if (mipsMeasure.getMeasure() != null) {
+                        mipsDto.setUploadedValue(mipsMeasure.getMeasure().getName());
+                    }
+                } else {
+                    mipsDto.setMeasure(mipsMeasure.getMeasure());
+                    mipsDto.setUploadedValue(null);
+                }
                 mipsDto.setMeasure(mipsMeasure.getMeasure());
                 mipsDto.setMeasurementType(mipsMeasure.getMeasurementType());
                 mipsDto.setPendingCertifiedProductId(details.getId());
-                mipsDto.setUploadedValue(null);
                 mipsMeasure.getAssociatedCriteria().stream().forEach(criterion -> {
                     mipsDto.getAssociatedCriteria().add(criterion);
                 });
@@ -595,30 +603,30 @@ public class PendingCertifiedProductDTO implements Serializable {
 
         this.uploadDate = entity.getCreationDate();
 
-        Set<PendingCertifiedProductTestingLabMapEntity> testingLabs = entity.getTestingLabs();
-        if (testingLabs != null && testingLabs.size() > 0) {
-            for (PendingCertifiedProductTestingLabMapEntity testingLab : testingLabs) {
+        Set<PendingCertifiedProductTestingLabMapEntity> testingLabEntities = entity.getTestingLabs();
+        if (testingLabEntities != null && testingLabEntities.size() > 0) {
+            for (PendingCertifiedProductTestingLabMapEntity testingLab : testingLabEntities) {
                 this.testingLabs.add(new PendingCertifiedProductTestingLabDTO(testingLab));
             }
         }
 
-        Set<PendingCertifiedProductQmsStandardEntity> qmsStandards = entity.getQmsStandards();
-        if (qmsStandards != null && qmsStandards.size() > 0) {
-            for (PendingCertifiedProductQmsStandardEntity qmsStandard : qmsStandards) {
+        Set<PendingCertifiedProductQmsStandardEntity> qmsStandardEntities = entity.getQmsStandards();
+        if (qmsStandardEntities != null && qmsStandardEntities.size() > 0) {
+            for (PendingCertifiedProductQmsStandardEntity qmsStandard : qmsStandardEntities) {
                 this.qmsStandards.add(new PendingCertifiedProductQmsStandardDTO(qmsStandard));
             }
         }
 
-        Set<PendingListingMipsMeasureEntity> mipsMeasures = entity.getMipsMeasures();
-        if (mipsMeasures != null && mipsMeasures.size() > 0) {
-            for (PendingListingMipsMeasureEntity mipsMeasure : mipsMeasures) {
+        Set<PendingListingMipsMeasureEntity> mipsMeasureEntities = entity.getMipsMeasures();
+        if (mipsMeasureEntities != null && mipsMeasureEntities.size() > 0) {
+            for (PendingListingMipsMeasureEntity mipsMeasure : mipsMeasureEntities) {
                 this.mipsMeasures.add(new PendingCertifiedProductMipsMeasureDTO(mipsMeasure));
             }
         }
 
-        Set<PendingCertifiedProductTargetedUserEntity> targetedUsers = entity.getTargetedUsers();
-        if (targetedUsers != null && targetedUsers.size() > 0) {
-            for (PendingCertifiedProductTargetedUserEntity tu : targetedUsers) {
+        Set<PendingCertifiedProductTargetedUserEntity> targetedUserEntities = entity.getTargetedUsers();
+        if (targetedUserEntities != null && targetedUserEntities.size() > 0) {
+            for (PendingCertifiedProductTargetedUserEntity tu : targetedUserEntities) {
                 this.targetedUsers.add(new PendingCertifiedProductTargetedUserDTO(tu));
             }
         }

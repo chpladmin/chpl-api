@@ -211,16 +211,16 @@ public class ListingMipsMeasureDAO extends BaseDAOImpl {
                 .collect(Collectors.toSet());
     }
 
-    public MipsMeasurementType getMeasurementType(String type) {
+    public ListingMipsMeasureTypeEntity getMeasurementTypeEntity(String name) {
         Query query = entityManager.createQuery("SELECT mipsType "
                 + "FROM ListingMipsMeasureTypeEntity mipsType "
-                + "WHERE deleted = false"
-                + "AND name = :type");
-        query.setParameter("name", type);
+                + "WHERE deleted = false "
+                + "AND name = :name");
+        query.setParameter("name", name);
         List<ListingMipsMeasureTypeEntity> results = query.getResultList();
         if (results == null || results.size() == 0) {
             return null;
         }
-        return results.get(0).convert();
+        return results.get(0);
     }
 }

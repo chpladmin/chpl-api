@@ -36,18 +36,18 @@ public class MipsMeasureDAO extends BaseDAOImpl {
         return result;
     }
 
-    public MipsMeasure getByName(String name) {
+    public MipsMeasureEntity getEntityByMacraMeasureId(Long macraMeasureId) {
         Query query = entityManager.createQuery(
                 MIPS_MEASURE_HQL_BEGIN
-                + "WHERE mme.deleted false "
-                + "AND (UPPER(mme.value) = :name)",
+                + "WHERE mme.deleted = false "
+                + "AND ac.legacyMacraMeasureId = :macraMeasureId",
                 MipsMeasureEntity.class);
-        query.setParameter("name", name.trim().toUpperCase());
+        query.setParameter("macraMeasureId", macraMeasureId);
         List<MipsMeasureEntity> entities = query.getResultList();
 
-        MipsMeasure result = null;
+        MipsMeasureEntity result = null;
         if (entities != null && entities.size() > 0) {
-            result = entities.get(0).convert();
+            result = entities.get(0);
         }
         return result;
     }

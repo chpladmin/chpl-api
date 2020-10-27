@@ -13,6 +13,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.ObjectUtils;
+
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import lombok.Data;
 
@@ -27,7 +29,7 @@ public class PendingListingMipsMeasureCriterionMapEntity {
     private Long id;
 
     @Basic(optional = false)
-    @Column(name = "pending_listing_mips_measure_id", nullable = false)
+    @Column(name = "pending_certified_product_mips_measure_id", nullable = false)
     private Long pendingListingMipsMeasureId;
 
     @Basic(optional = false)
@@ -50,4 +52,27 @@ public class PendingListingMipsMeasureCriterionMapEntity {
 
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof PendingListingMipsMeasureCriterionMapEntity)) {
+            return false;
+        }
+        PendingListingMipsMeasureCriterionMapEntity otherEntity = (PendingListingMipsMeasureCriterionMapEntity) obj;
+        if (this.certificationCriterionId == null && otherEntity.certificationCriterionId != null) {
+            return false;
+        } else if (this.certificationCriterionId != null && otherEntity.certificationCriterionId == null) {
+            return false;
+        }
+        return ObjectUtils.allNotNull(this.certificationCriterionId, otherEntity.certificationCriterionId)
+                && this.certificationCriterionId.equals(otherEntity.certificationCriterionId);
+    }
+
+    @Override
+    public int hashCode() {
+        if (this.certificationCriterionId == null) {
+            return -1;
+        }
+        return this.certificationCriterionId.hashCode();
+    }
 }

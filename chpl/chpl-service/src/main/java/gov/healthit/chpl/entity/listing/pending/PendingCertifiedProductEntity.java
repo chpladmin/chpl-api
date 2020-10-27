@@ -237,7 +237,7 @@ public class PendingCertifiedProductEntity {
         certificationCriterion = new HashSet<PendingCertificationResultEntity>();
         cqmCriterion = new HashSet<PendingCqmCriterionEntity>();
         qmsStandards = new HashSet<PendingCertifiedProductQmsStandardEntity>();
-        //mipsMeasures = new HashSet<PendingListingMipsMeasureEntity>();
+        mipsMeasures = new HashSet<PendingListingMipsMeasureEntity>();
         targetedUsers = new HashSet<PendingCertifiedProductTargetedUserEntity>();
         accessibilityStandards = new HashSet<PendingCertifiedProductAccessibilityStandardEntity>();
         parentListings = new HashSet<PendingCertifiedProductParentListingEntity>();

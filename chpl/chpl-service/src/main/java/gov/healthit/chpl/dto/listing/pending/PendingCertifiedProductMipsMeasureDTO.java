@@ -30,7 +30,7 @@ public class PendingCertifiedProductMipsMeasureDTO implements Serializable {
     }
 
     public PendingCertifiedProductMipsMeasureDTO(PendingListingMipsMeasureEntity entity) {
-        super();
+        this();
         this.setId(entity.getId());
         this.setPendingCertifiedProductId(entity.getPendingCertifiedProductId());
         if (entity.getMeasure() != null) {
@@ -41,8 +41,8 @@ public class PendingCertifiedProductMipsMeasureDTO implements Serializable {
         }
         this.setUploadedValue(entity.getUploadedValue());
         entity.getAssociatedCriteria().stream().forEach(assocCriterionEntity -> {
-            CertificationCriterionDTO criterionDto = new CertificationCriterionDTO();
-            criterionDto.setId(assocCriterionEntity.getCertificationCriterionId());
+            CertificationCriterionDTO criterionDto = new CertificationCriterionDTO(assocCriterionEntity.getCriterion());
+            this.associatedCriteria.add(new CertificationCriterion(criterionDto));
         });
 
     }

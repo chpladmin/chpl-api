@@ -38,7 +38,9 @@ public class MipsMeasureValidityReviewer implements Reviewer {
         reviewG2RequiredMeasures(listing);
 
         for (PendingCertifiedProductMipsMeasureDTO measure : listing.getMipsMeasures()) {
-            if (measure != null && measure.getMeasure() != null) {
+            if (measure != null && measure.getMeasure() == null) {
+                reviewMeasureDidNotExist(listing, measure);
+            } else if (measure != null && measure.getMeasure() != null) {
                 reviewMeasureHasId(listing, measure);
                 reviewIcsAndRemovedMeasures(listing, measure);
                 reviewMeasureHasAssociatedCriteria(listing, measure);
@@ -169,7 +171,9 @@ public class MipsMeasureValidityReviewer implements Reviewer {
 
         if (measure.getMeasure().getId() == null) {
             String nameForMsg = "";
-            if (measure.getMeasure().getAbbreviation() != null) {
+            if (measure.getUploadedValue() != null) {
+                nameForMsg = measure.getUploadedValue();
+            } else if (measure.getMeasure().getAbbreviation() != null) {
                     nameForMsg = measure.getMeasure().getAbbreviation();
             } else if (measure.getMeasure().getName() != null) {
                 nameForMsg = measure.getMeasure().getName();
@@ -185,6 +189,17 @@ public class MipsMeasureValidityReviewer implements Reviewer {
                     : measure.getMeasurementType().getName();
             listing.getErrorMessages().add(
                     msgUtil.getMessage("listing.invalidMipsMeasureType", nameForMsg));
+        }
+    }
+
+    private void reviewMeasureDidNotExist(PendingCertifiedProductDTO listing, PendingCertifiedProductMipsMeasureDTO measure) {
+        if (measure == null) {
+            return;
+        }
+
+        if (measure.getMeasure() == null) {
+            listing.getErrorMessages().add(
+                    msgUtil.getMessage("listing.invalidMipsMeasure", measure.getUploadedValue()));
         }
     }
 }

@@ -171,8 +171,8 @@ public class MipsMeasureValidityReviewerTest {
 
         PendingCertifiedProductDTO listing = new PendingCertifiedProductDTO();
         listing.getMipsMeasures().add(PendingCertifiedProductMipsMeasureDTO.builder()
+                .uploadedValue("BAD VALUE")
                 .measure(MipsMeasure.builder()
-                        .name("Test")
                         .build())
                 .measurementType(MipsMeasurementType.builder()
                         .id(1L)
@@ -184,7 +184,7 @@ public class MipsMeasureValidityReviewerTest {
         reviewer.review(listing);
 
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains("Invalid G1/G2 Measure: 'Test' was not found."));
+        assertTrue(listing.getErrorMessages().contains("Invalid G1/G2 Measure: 'BAD VALUE' was not found."));
     }
 
     @Test
