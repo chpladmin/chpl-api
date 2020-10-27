@@ -200,14 +200,13 @@
 					}
 				],
 				"url": {
-					"raw": "{{url}}/developers/{{developerId}}",
+					"raw": "{{url}}/developers/107",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 					    "rest",
-						"developers",
-						"{{developerId}}"
+						"developers"
 					]
 				}
 			},
