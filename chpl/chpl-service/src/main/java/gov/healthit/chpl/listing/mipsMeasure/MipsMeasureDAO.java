@@ -40,7 +40,11 @@ public class MipsMeasureDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery(
                 MIPS_MEASURE_HQL_BEGIN
                 + "WHERE mme.deleted = false "
-                + "AND ac.legacyMacraMeasureId = :macraMeasureId",
+                + "AND mme.id = "
+                + " (SELECT DISTINCT mme2.id "
+                +   "FROM MipsMeasureEntity mme2 "
+                +   "JOIN mme2.allowedCriteria ac2 "
+                +   "WHERE ac2.legacyMacraMeasureId = :macraMeasureId)",
                 MipsMeasureEntity.class);
         query.setParameter("macraMeasureId", macraMeasureId);
         List<MipsMeasureEntity> entities = query.getResultList();

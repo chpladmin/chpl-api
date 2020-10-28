@@ -141,6 +141,7 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestToolD
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMipsMeasureDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTestingLabDTO;
@@ -559,6 +560,17 @@ public class CertifiedProductManager extends SecuredManager {
                 qmsDto.setApplicableCriteria(pendingQms.getApplicableCriteria());
                 qmsDto.setQmsModification(pendingQms.getModification());
                 cpQmsDao.createCertifiedProductQms(qmsDto);
+            }
+        }
+
+        //mips measures
+        if (pendingCp.getMipsMeasures() != null && pendingCp.getMipsMeasures().size() > 0) {
+            for (PendingCertifiedProductMipsMeasureDTO pendingMeasure : pendingCp.getMipsMeasures()) {
+                ListingMipsMeasure measureToAdd = new ListingMipsMeasure();
+                measureToAdd.setMeasure(pendingMeasure.getMeasure());
+                measureToAdd.setMeasurementType(pendingMeasure.getMeasurementType());
+                measureToAdd.setAssociatedCriteria(pendingMeasure.getAssociatedCriteria());
+                cpMipsMeasureDao.createCertifiedProductMipsMapping(newCertifiedProduct.getId(), measureToAdd);
             }
         }
 
