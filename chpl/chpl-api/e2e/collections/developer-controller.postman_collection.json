@@ -5,47 +5,408 @@
 	},
 	"item": [
 		{
-			"name": "GET /developers -invalid API Key header",
-			"event": [
+			"name": "GET : Developers: data driven tests",
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Invalid api key header should return 401 status\", function () {\r",
-							"    pm.response.to.have.status(401);\r",
-							"});"
+					"name": "GET /hierarchy - valid Deverloper Ids",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "1b156faa-475d-482e-b573-f0d184a409fa",
+								"exec": [
+									"const developerId= pm.iterationData.get(\"developerId\");\r",
+									"pm.environment.set(\"developerId\",\"developerId\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "5f35de1e-0aa3-4d75-93d8-b1c451e372bf",
+								"exec": [
+									"pm.test(\"Valid api key header should return 200 status and response is not  null\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.response).not.eq(null);\r",
+									"});\r",
+									"pm.test(\"Developer details are correct as per the id passed in\", function () {\r",
+									"    var actualBody= pm.response.json();\r",
+									"    var expectedname= pm.iterationData.get(\"name\");\r",
+									"    pm.expect(actualBody.name).to.equal(expectedname);\r",
+									"    var expectedcode= pm.iterationData.get(\"developerCode\");\r",
+									"    pm.expect(actualBody.developerCode).to.equal(expectedcode);\r",
+									"    var expectedid= pm.iterationData.get(\"developerId\");\r",
+									"    pm.expect(actualBody.developerId).to.equal(expectedid);\r",
+									"});\r",
+									"const schema = {\r",
+									"  \"address\": {\r",
+									"    \"addressId\": 0,\r",
+									"    \"city\": \"string\",\r",
+									"    \"country\": \"string\",\r",
+									"    \"line1\": \"string\",\r",
+									"    \"line2\": \"string\",\r",
+									"    \"state\": \"string\",\r",
+									"    \"zipcode\": \"string\"\r",
+									"  },\r",
+									"  \"contact\": {\r",
+									"    \"contactId\": 0,\r",
+									"    \"email\": \"string\",\r",
+									"    \"friendlyName\": \"string\",\r",
+									"    \"fullName\": \"string\",\r",
+									"    \"phoneNumber\": \"string\",\r",
+									"    \"title\": \"string\"\r",
+									"  },\r",
+									"  \"deleted\": false,\r",
+									"  \"developerCode\": \"string\",\r",
+									"  \"developerId\": 0,\r",
+									"  \"lastModifiedDate\": \"string\",\r",
+									"  \"name\": \"string\",\r",
+									"  \"products\": [\r",
+									"    {\r",
+									"      \"contact\": {\r",
+									"        \"contactId\": 0,\r",
+									"        \"email\": \"string\",\r",
+									"        \"friendlyName\": \"string\",\r",
+									"        \"fullName\": \"string\",\r",
+									"        \"phoneNumber\": \"string\",\r",
+									"        \"title\": \"string\"\r",
+									"      },\r",
+									"      \"lastModifiedDate\": \"string\",\r",
+									"      \"name\": \"string\",\r",
+									"      \"owner\": {\r",
+									"        \"address\": {\r",
+									"          \"addressId\": 0,\r",
+									"          \"city\": \"string\",\r",
+									"          \"country\": \"string\",\r",
+									"          \"line1\": \"string\",\r",
+									"          \"line2\": \"string\",\r",
+									"          \"state\": \"string\",\r",
+									"          \"zipcode\": \"string\"\r",
+									"        },\r",
+									"        \"contact\": {\r",
+									"          \"contactId\": 0,\r",
+									"          \"email\": \"string\",\r",
+									"          \"friendlyName\": \"string\",\r",
+									"          \"fullName\": \"string\",\r",
+									"          \"phoneNumber\": \"string\",\r",
+									"          \"title\": \"string\"\r",
+									"        },\r",
+									"        \"deleted\": false,\r",
+									"        \"developerCode\": \"string\",\r",
+									"        \"developerId\": 0,\r",
+									"        \"lastModifiedDate\": \"string\",\r",
+									"        \"name\": \"string\",\r",
+									"        \"selfDeveloper\": false,\r",
+									"        \"status\": {\r",
+									"          \"id\": 0,\r",
+									"          \"status\": \"string\"\r",
+									"        },\r",
+									"        \"statusEvents\": [\r",
+									"          {\r",
+									"            \"developerId\": 0,\r",
+									"            \"id\": 0,\r",
+									"            \"reason\": \"string\",\r",
+									"            \"status\": {\r",
+									"              \"id\": 0,\r",
+									"              \"status\": \"string\"\r",
+									"            },\r",
+									"            \"statusDate\": \"2020-10-09T20:00:35.961Z\"\r",
+									"          }\r",
+									"        ],\r",
+									"        \"transparencyAttestations\": [\r",
+									"          {\r",
+									"            \"acbId\": 0,\r",
+									"            \"acbName\": \"string\",\r",
+									"            \"attestation\": {\r",
+									"              \"removed\": false,\r",
+									"              \"transparencyAttestation\": \"string\"\r",
+									"            }\r",
+									"          }\r",
+									"        ],\r",
+									"        \"website\": \"string\"\r",
+									"      },\r",
+									"      \"ownerHistory\": [\r",
+									"        {\r",
+									"          \"developer\": {\r",
+									"            \"address\": {\r",
+									"              \"addressId\": 0,\r",
+									"              \"city\": \"string\",\r",
+									"              \"country\": \"string\",\r",
+									"              \"line1\": \"string\",\r",
+									"              \"line2\": \"string\",\r",
+									"              \"state\": \"string\",\r",
+									"              \"zipcode\": \"string\"\r",
+									"            },\r",
+									"            \"contact\": {\r",
+									"              \"contactId\": 0,\r",
+									"              \"email\": \"string\",\r",
+									"              \"friendlyName\": \"string\",\r",
+									"              \"fullName\": \"string\",\r",
+									"              \"phoneNumber\": \"string\",\r",
+									"              \"title\": \"string\"\r",
+									"            },\r",
+									"            \"deleted\": false,\r",
+									"            \"developerCode\": \"string\",\r",
+									"            \"developerId\": 0,\r",
+									"            \"lastModifiedDate\": \"string\",\r",
+									"            \"name\": \"string\",\r",
+									"            \"selfDeveloper\": false,\r",
+									"            \"status\": {\r",
+									"              \"id\": 0,\r",
+									"              \"status\": \"string\"\r",
+									"            },\r",
+									"            \"statusEvents\": [\r",
+									"              {\r",
+									"                \"developerId\": 0,\r",
+									"                \"id\": 0,\r",
+									"                \"reason\": \"string\",\r",
+									"                \"status\": {\r",
+									"                  \"id\": 0,\r",
+									"                  \"status\": \"string\"\r",
+									"                },\r",
+									"                \"statusDate\": \"2020-10-09T20:00:35.961Z\"\r",
+									"              }\r",
+									"            ],\r",
+									"            \"transparencyAttestations\": [\r",
+									"              {\r",
+									"                \"acbId\": 0,\r",
+									"                \"acbName\": \"string\",\r",
+									"                \"attestation\": {\r",
+									"                  \"removed\": false,\r",
+									"                  \"transparencyAttestation\": \"string\"\r",
+									"                }\r",
+									"              }\r",
+									"            ],\r",
+									"            \"website\": \"string\"\r",
+									"          },\r",
+									"          \"id\": 0,\r",
+									"          \"transferDate\": 0\r",
+									"        }\r",
+									"      ],\r",
+									"      \"productId\": 0,\r",
+									"      \"reportFileLocation\": \"string\",\r",
+									"      \"versions\": [\r",
+									"        {\r",
+									"          \"details\": \"string\",\r",
+									"          \"lastModifiedDate\": \"string\",\r",
+									"          \"listings\": [\r",
+									"            {\r",
+									"              \"acb\": {\r",
+									"                \"acbCode\": \"string\",\r",
+									"                \"address\": {\r",
+									"                  \"addressId\": 0,\r",
+									"                  \"city\": \"string\",\r",
+									"                  \"country\": \"string\",\r",
+									"                  \"line1\": \"string\",\r",
+									"                  \"line2\": \"string\",\r",
+									"                  \"state\": \"string\",\r",
+									"                  \"zipcode\": \"string\"\r",
+									"                },\r",
+									"                \"id\": 0,\r",
+									"                \"name\": \"string\",\r",
+									"                \"retired\": false,\r",
+									"                \"retirementDate\": \"2020-10-09T20:00:35.962Z\",\r",
+									"                \"website\": \"string\"\r",
+									"              },\r",
+									"              \"certificationDate\": 0,\r",
+									"              \"certificationStatus\": \"string\",\r",
+									"              \"chplProductNumber\": \"string\",\r",
+									"              \"curesUpdate\": false,\r",
+									"              \"edition\": \"string\",\r",
+									"              \"id\": 0,\r",
+									"              \"lastModifiedDate\": 0\r",
+									"            }\r",
+									"          ],\r",
+									"          \"version\": \"string\",\r",
+									"          \"versionId\": 0\r",
+									"        }\r",
+									"      ]\r",
+									"    }\r",
+									"  ],\r",
+									"  \"selfDeveloper\": false,\r",
+									"  \"status\": {\r",
+									"    \"id\": 0,\r",
+									"    \"status\": \"string\"\r",
+									"  },\r",
+									"  \"statusEvents\": [\r",
+									"    {\r",
+									"      \"developerId\": 0,\r",
+									"      \"id\": 0,\r",
+									"      \"reason\": \"string\",\r",
+									"      \"status\": {\r",
+									"        \"id\": 0,\r",
+									"        \"status\": \"string\"\r",
+									"      },\r",
+									"      \"statusDate\": \"2020-10-09T20:00:35.961Z\"\r",
+									"    }\r",
+									"  ],\r",
+									"  \"transparencyAttestations\": [\r",
+									"    {\r",
+									"      \"acbId\": 0,\r",
+									"      \"acbName\": \"string\",\r",
+									"      \"attestation\": {\r",
+									"        \"removed\": false,\r",
+									"        \"transparencyAttestation\": \"string\"\r",
+									"      }\r",
+									"    }\r",
+									"  ],\r",
+									"  \"website\": \"string\"\r",
+									"};\r",
+									"pm.test(\"Validate that /hierarchy end point has correct schema\", () => {\r",
+									"            pm.response.to.have.jsonSchema(schema);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+							],
+							"url": {
+							"raw": "{{url}}/rest/developers/{{developerId}}/hierarchy",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"developers",
+								"{{developerId}}",
+								"hierarchy"
+							]
+						},
+						"description": "/hierarchy end point returns 200 status and correct response for valid Developer Ids"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /hierarchy - Invalid developer Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f5f06c65-6b79-4c85-8a5d-3a73ef785980",
+								"exec": [
+									"pm.test(\"Invalid DeveloperId returns 404 status\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+						"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
 						],
-						"type": "text/javascript"
-					}
+						"url": {
+							"raw": "{{url}}/rest/developers/100/hierarchy",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"developers",
+								"100",
+								"hierarchy"
+							]
+						},
+						"description": "Invalid Developer Id returns 404 status"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /developers/deverloperId ",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "1f95c359-f52d-4b60-abd8-5ab5fa72b7dd",
+								"exec": [
+									"const developerId= pm.iterationData.get(\"developerId\");\r",
+									"pm.environment.set(\"developerId\",\"developerId\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "8648433c-dd18-47d0-ad72-e3549538a36f",
+								"exec": [
+									"pm.test(\"For valid developer Id ,valid api key header should return 200 status and response is not null\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.response).not.eq(null);\r",
+									"});\r",
+									"pm.test(\"Developer Names are correct as per the id passed in\", function () {\r",
+									"    var actualBody= pm.response.json();\r",
+									"    var expected= pm.iterationData.get(\"name\");\r",
+									"    pm.expect(actualBody.name).to.equal(expected);\r",
+									"    var expected= pm.iterationData.get(\"developerCode\");\r",
+									"    pm.expect(actualBody.developerCode).to.equal(expected);\r",
+									"    var expected= pm.iterationData.get(\"developerId\");\r",
+									"    pm.expect(actualBody.developerId).to.equal(expected);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/developers/{{developerId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"developers",
+								"{{developerId}}"
+							]
+						},
+						"description": "/developers/developerId end point functions as expected"
+					},
+					"response": []
 				}
 			],
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "API-Key",
-						"value": "atest123cg",
-						"type": "text"
-					},
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{url}}/rest/developers",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"rest",
-						"developers"
-					]
-				},
-				"description": "Request with Invalid API-Key header returns 401 status"
-			},
-			"response": []
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "developer schema and response validation_GET_/developers",
@@ -255,36 +616,118 @@
 							"    pm.expect(jsonData.response).not.eq(null);\r",
 							"});"
 						],
-						"type": "text/javascript"
-					}
+						"url": {
+							"raw": "{{url}}/rest/developers/{{developerId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"developers",
+								"{{developerId}}"
+							]
+						},
+						"description": "/developers/developerId end point functions as expected"
+					},
+					"response": []
 				}
 			],
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "API-Key",
-						"value": "{{apiKey}}",
-						"type": "text"
-					},
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{url}}/rest/developers",
-					"host": [
-						"{{url}}"
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "GET : Developers: non-data driven tests",
+			"item": [
+				{
+					"name": "GET /developers -invalid API Key header",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "06b29636-a133-432d-8279-256ec4551b6a",
+								"exec": [
+									"pm.test(\"Invalid api key header should return 401 status\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
 					],
-					"path": [
-						"rest",
-						"developers"
-					]
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "atest123cg",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/developers",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"developers"
+							]
+						},
+						"description": "Request with Invalid API-Key header returns 401 status"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /developers - valid API Key header",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "46b22627-72ab-438b-9ea3-5d6f0113685f",
+								"exec": [
+									"pm.test(\"Valid api key header should return 200 status and response body should not be empty\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.response).not.eq(null);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/developers",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"developers"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			],
+			"protocolProfileBehavior": {}
 		}
 	],
 	"protocolProfileBehavior": {}
