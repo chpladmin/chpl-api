@@ -5,62 +5,11 @@
 	},
 	"item": [
 	    {
-			"name": "set auth token",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "e86c22fc-2510-46ff-b7f6-7db4c2add64e",
-						"exec": [
-							"var authRes = JSON.parse(responseBody);\r",
-							"if(data.KeyName = \"token\")\r",
-							"{\r",
-							"pm.environment.set(\"authToken\", authRes.token);\r",
-							"}"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					},
-					{
-						"key": "API-KEY",
-						"value": "{{apiKey}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\"userName\":\"{{username}}\",\"password\":\"{{password}}\"}"
-				},
-				"url": {
-					"raw": "{{url}}/auth/authenticate",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-					    "rest",
-						"auth",
-						"authenticate"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "GET /products - invalid API Key parameter",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "b1ebe217-244c-41ee-a63d-d88b8f7c5980",
 						"exec": [
 							"pm.test(\"Invalid api key parameter should return 401 status\", function () {\r",
 							"    pm.response.to.have.status(401);\r",
@@ -105,7 +54,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "ae446e8e-7416-4eda-a586-19e631126f44",
 						"exec": [
 							"pm.test(\"Valid API Key parameter should return 200 and response body should not be empty\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
@@ -145,7 +93,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "fac5ca34-a693-418e-86e8-7ff45ea1a3e7",
 						"exec": [
 							"const developerSchema =\r",
 							"{\r",
@@ -320,7 +267,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "4f0998b5-d294-4279-a4cf-70d7372a1aa4",
 						"exec": [
 							"pm.test(\"valid product edit request should return valid response\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
@@ -338,6 +284,29 @@
 						],
 						"type": "text/javascript"
 					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"username\"),password:pm.environment.get(\"password\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
 				}
 			],
 			"request": {
@@ -346,7 +315,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{authToken}}",
+							"value": "{{token}}",
 							"type": "string"
 						}
 					]
@@ -362,12 +331,6 @@
 						"key": "API-KEY",
 						"value": "{{apiKey}}",
 						"type": "text"
-					},
-					{
-						"key": "Authorization",
-						"value": "{{authToken}}",
-						"type": "text",
-						"disabled": true
 					}
 				],
 				"body": {
