@@ -281,17 +281,15 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         List<List<String>> activityCsvRows = new ArrayList<List<String>>();
         Set<ActivityDateTriggerGroup> activityGroups = activityByGroup.keySet();
         for (ActivityDateTriggerGroup activityGroup : activityGroups) {
-            List<String> currRow = createEmptyRow();
-            currRow.set(ACTIVITY_DATE_COL, Util.getTimestampFormatter().format(activityGroup.getActivityDate()));
-            currRow.set(ACTIVITY_LEVEL_COL, activityGroup.getTrigger().getLevel());
-            currRow.set(ACTIVITY_TYPE_COL, activityGroup.getTrigger().getName());
-
             List<QuestionableActivityListingDTO> activitiesForGroup = activityByGroup.get(activityGroup);
             for (QuestionableActivityListingDTO activity : activitiesForGroup) {
+                List<String> currRow = createEmptyRow();
+                currRow.set(ACTIVITY_DATE_COL, Util.getTimestampFormatter().format(activityGroup.getActivityDate()));
+                currRow.set(ACTIVITY_LEVEL_COL, activityGroup.getTrigger().getLevel());
+                currRow.set(ACTIVITY_TYPE_COL, activityGroup.getTrigger().getName());
                 putListingActivityInRow(activity, currRow);
+                activityCsvRows.add(currRow);
             }
-
-            activityCsvRows.add(currRow);
         }
         return activityCsvRows;
     }
