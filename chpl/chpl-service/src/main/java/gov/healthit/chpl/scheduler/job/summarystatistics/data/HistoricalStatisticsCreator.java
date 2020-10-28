@@ -1,11 +1,14 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics.data;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,34 +17,48 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.statistics.DeveloperStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.ListingStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
 import gov.healthit.chpl.domain.DateRange;
+import gov.healthit.chpl.dto.CertificationStatusEventDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 
 @Component()
 public class HistoricalStatisticsCreator {
     private static final Logger LOGGER = LogManager.getLogger("summaryStatisticsCreatorJobLogger");
+    private static final Long EDITION_2015_ID = 3L;
+    private static final Long EDITION_2014_ID = 2L;
+    private static final Long EDITION_2011_ID = 1L;
 
     private ListingStatisticsDAO listingStatisticsDAO;
     private DeveloperStatisticsDAO developerStatisticsDAO;
     private SurveillanceStatisticsDAO surveillanceStatisticsDAO;
+    private CertificationStatusEventDAO certificationStatusEventDAO;
     private Environment env;
 
     @Autowired
     public HistoricalStatisticsCreator(ListingStatisticsDAO listingStatisticsDAO, DeveloperStatisticsDAO developerStatisticsDAO,
-            SurveillanceStatisticsDAO surveillanceStatisticsDAO, CertifiedProductDAO certifiedProductDAO, Environment env) {
+            SurveillanceStatisticsDAO surveillanceStatisticsDAO, CertifiedProductDAO certifiedProductDAO,
+            CertificationStatusEventDAO certificationStatusEventDAO, Environment env) {
         this.listingStatisticsDAO = listingStatisticsDAO;
         this.developerStatisticsDAO = developerStatisticsDAO;
         this.surveillanceStatisticsDAO = surveillanceStatisticsDAO;
+        this.certificationStatusEventDAO = certificationStatusEventDAO;
         this.env = env;
     }
 
     @Transactional(readOnly = true)
-    public CsvStatistics getStatistics(DateRange dateRange) throws InterruptedException, ExecutionException {
+    public CsvStatistics getStatistics(List<CertifiedProductDetailsDTO> allListings, DateRange dateRange)
+            throws InterruptedException, ExecutionException {
+
         ExecutorService executorService = Executors.newFixedThreadPool(getThreadCountForJob());
+
+        //Get all of the statuses for all of the listings
+        Map<Long, List<CertificationStatusEventDTO>> statusesForAllListings = getAllStatusesForAllListings();
 
         CsvStatistics stats = new CsvStatistics();
         stats.setDateRange(dateRange);
@@ -59,19 +76,26 @@ public class HistoricalStatisticsCreator {
             // listings
             futures.add(CompletableFuture.supplyAsync(() -> getTotalCertifiedProducts(dateRange), executorService)
                     .thenAccept(result -> stats.setTotalCertifiedProducts(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalCPsActive2014Listings(dateRange), executorService)
+            futures.add(CompletableFuture.supplyAsync(() ->
+                    getTotalCPsActive2014Listings(allListings, statusesForAllListings, dateRange), executorService)
                     .thenAccept(result -> stats.setTotalCPsActive2014Listings(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalCPsActive2015Listings(dateRange), executorService)
+            futures.add(CompletableFuture.supplyAsync(() ->
+                    getTotalCPsActive2015Listings(allListings, statusesForAllListings, dateRange), executorService)
                     .thenAccept(result -> stats.setTotalCPsActive2015Listings(result)));
             futures.add(CompletableFuture.supplyAsync(() -> getTotalCPsActiveListings(dateRange), executorService)
                     .thenAccept(result -> stats.setTotalCPsActiveListings(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalListings(dateRange), executorService)
+
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalListings(
+                    allListings, statusesForAllListings, dateRange), executorService)
                     .thenAccept(result -> stats.setTotalListings(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotal2014Listings(dateRange), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotal2014Listings(
+                    allListings, statusesForAllListings, dateRange), executorService)
                     .thenAccept(result -> stats.setTotal2014Listings(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotal2015Listings(dateRange), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotal2015Listings(
+                    allListings, statusesForAllListings, dateRange), executorService)
                     .thenAccept(result -> stats.setTotal2015Listings(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotal2011Listings(dateRange), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotal2011Listings(
+                    allListings, statusesForAllListings, dateRange), executorService)
                     .thenAccept(result -> stats.setTotal2011Listings(result)));
 
             // surveillance
@@ -121,20 +145,22 @@ public class HistoricalStatisticsCreator {
         return total;
     }
 
-    private Long getTotalCPsActive2014Listings(DateRange dateRange) {
-        List<String> activeStatuses = new ArrayList<String>();
-        activeStatuses.add(CertificationStatusType.Active.getName().toUpperCase());
-        Long total = listingStatisticsDAO
-                .getTotalUniqueProductsByEditionAndStatus(dateRange, "2014", activeStatuses);
-        return total;
+    private Long getTotalCPsActive2014Listings(List<CertifiedProductDetailsDTO> allListings,
+            Map<Long, List<CertificationStatusEventDTO>> allStatuses, DateRange dateRange) {
+
+        return allListings.stream()
+                .filter(listing -> listing.getCertificationEditionId().equals(EDITION_2014_ID)
+                        && isListingActiveAsOfDate(listing.getId(), allStatuses, dateRange.getEndDate()))
+                .count();
     }
 
-    private Long getTotalCPsActive2015Listings(DateRange dateRange) {
-        List<String> activeStatuses = new ArrayList<String>();
-        activeStatuses.add(CertificationStatusType.Active.getName().toUpperCase());
-        Long total = listingStatisticsDAO
-                .getTotalUniqueProductsByEditionAndStatus(dateRange, "2015", activeStatuses);
-        return total;
+    private Long getTotalCPsActive2015Listings(List<CertifiedProductDetailsDTO> allListings,
+            Map<Long, List<CertificationStatusEventDTO>> allStatuses, DateRange dateRange) {
+
+        return allListings.stream()
+                .filter(listing -> listing.getCertificationEditionId().equals(EDITION_2015_ID)
+                        && isListingActiveAsOfDate(listing.getId(), allStatuses, dateRange.getEndDate()))
+                .count();
     }
 
     private Long getTotalCPsActiveListings(DateRange dateRange) {
@@ -145,25 +171,46 @@ public class HistoricalStatisticsCreator {
         return total;
     }
 
-    private Long getTotalListings(DateRange dateRange) {
-        Long total = listingStatisticsDAO
-                .getTotalListingsByEditionAndStatus(dateRange, null, null);
-        return total;
+    private Long getTotalListings(List<CertifiedProductDetailsDTO> allListings,
+            Map<Long, List<CertificationStatusEventDTO>> allStatuses, DateRange dateRange) {
+        //Long total = listingStatisticsDAO
+        //        .getTotalListingsByEditionAndStatus(dateRange, null, null);
+        //return total;
+        return allListings.stream()
+                .filter(listing -> isListingActiveAsOfDate(listing.getId(), allStatuses, dateRange.getEndDate()))
+                .count();
     }
 
-    private Long getTotal2014Listings(DateRange dateRange) {
-        Long total = listingStatisticsDAO.getTotalListingsByEditionAndStatus(dateRange, "2014", null);
-        return total;
+    private Long getTotal2014Listings(List<CertifiedProductDetailsDTO> allListings,
+            Map<Long, List<CertificationStatusEventDTO>> allStatuses, DateRange dateRange) {
+        //Long total = listingStatisticsDAO.getTotalListingsByEditionAndStatus(dateRange, "2014", null);
+        //return total;
+        return allListings.stream()
+                .filter(listing -> listing.getCertificationEditionId().equals(EDITION_2014_ID)
+                        && isListingActiveAsOfDate(listing.getId(), allStatuses, dateRange.getEndDate()))
+                .count();
     }
 
-    private Long getTotal2015Listings(DateRange dateRange) {
-        Long total = listingStatisticsDAO.getTotalListingsByEditionAndStatus(dateRange, "2015", null);
-        return total;
+    private Long getTotal2015Listings(List<CertifiedProductDetailsDTO> allListings,
+            Map<Long, List<CertificationStatusEventDTO>> allStatuses, DateRange dateRange) {
+        //Long total = listingStatisticsDAO.getTotalListingsByEditionAndStatus(dateRange, "2015", null);
+        //return total;
+        return allListings.stream()
+                .filter(listing -> listing.getCertificationEditionId().equals(EDITION_2015_ID)
+                        && isListingActiveAsOfDate(listing.getId(), allStatuses, dateRange.getEndDate()))
+                .count();
+
     }
 
-    private Long getTotal2011Listings(DateRange dateRange) {
-        Long total = listingStatisticsDAO.getTotalListingsByEditionAndStatus(dateRange, "2011", null);
-        return total;
+    private Long getTotal2011Listings(List<CertifiedProductDetailsDTO> allListings,
+            Map<Long, List<CertificationStatusEventDTO>> allStatuses, DateRange dateRange) {
+        //Long total = listingStatisticsDAO.getTotalListingsByEditionAndStatus(dateRange, "2011", null);
+        //return total;
+        return allListings.stream()
+                .filter(listing -> listing.getCertificationEditionId().equals(EDITION_2011_ID)
+                        && isListingActiveAsOfDate(listing.getId(), allStatuses, dateRange.getEndDate()))
+                .count();
+
     }
 
     private Long getTotalSurveillanceActivities(DateRange dateRange) {
@@ -200,4 +247,39 @@ public class HistoricalStatisticsCreator {
         return Integer.parseInt(env.getProperty("executorThreadCountForQuartzJobs"));
     }
 
+    private boolean isListingActiveAsOfDate(Long certifiedProductId, Map<Long, List<CertificationStatusEventDTO>> allStatuses,
+            Date asOfDate) {
+
+        CertificationStatusEventDTO event = getStatusAsOfDate(allStatuses.get(certifiedProductId), asOfDate);
+        if (event == null) {
+            return false;
+        } else {
+            return event.getStatus().getStatus().toUpperCase().equals(CertificationStatusType.Active.getName().toUpperCase());
+        }
+    }
+
+    private CertificationStatusEventDTO getStatusAsOfDate(List<CertificationStatusEventDTO> events, Date asOfDate) {
+        List<CertificationStatusEventDTO> eventsSorted = events.stream()
+                .sorted((ev1, ev2) -> ev1.getEventDate().compareTo(ev2.getEventDate()))
+                .collect(Collectors.toList());
+
+        CertificationStatusEventDTO result = null;
+        for (CertificationStatusEventDTO event : eventsSorted) {
+            if (event.getEventDate().before(asOfDate)) {
+                result = event;
+            }
+        }
+
+//        if (result != null) {
+//            LOGGER.info("Current status: " + result.getStatus().getStatus());
+//        } else {
+//            LOGGER.info("Current status: UNKNOWN");
+//        }
+        return result;
+    }
+
+    private Map<Long, List<CertificationStatusEventDTO>> getAllStatusesForAllListings() {
+        return certificationStatusEventDAO.findAll().stream()
+                .collect(Collectors.groupingBy(CertificationStatusEventDTO::getCertifiedProductId));
+    }
 }

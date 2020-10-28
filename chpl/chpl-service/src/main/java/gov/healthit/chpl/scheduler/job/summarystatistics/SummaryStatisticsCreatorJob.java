@@ -26,8 +26,10 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
 import gov.healthit.chpl.domain.DateRange;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -51,6 +53,9 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
     private SummaryStatisticsDAO summaryStatisticsDAO;
 
     @Autowired
+    private CertifiedProductDAO certifiedProductDAO;
+
+    @Autowired
     private JpaTransactionManager txManager;
 
     @Autowired
@@ -61,10 +66,14 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
     }
 
     @Override
-    public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+    public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         LOGGER.info("********* Starting the Summary Statistics Creation job. *********");
         try {
             SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+
+            LOGGER.info("Getting all listings.");
+            List<CertifiedProductDetailsDTO> allListings = certifiedProductDAO.findAll();
+            LOGGER.info("Completing getting all listings.");
 
             Boolean generateCsv = Boolean.valueOf(jobContext.getMergedJobDataMap().getString("generateCsvFile"));
             Date startDate = getStartDate();
@@ -74,12 +83,12 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
             Date endDate = new Date();
             Integer numDaysInPeriod = Integer.valueOf(env.getProperty("summaryEmailPeriodInDays").toString());
 
-            EmailStatistics emailBodyStats = emailStatisticsCreator.getStatistics();
+            //EmailStatistics emailBodyStats = emailStatisticsCreator.getStatistics(allListings);
 
             if (generateCsv) {
-                createSummaryStatisticsFile(startDate, endDate, numDaysInPeriod);
+                createSummaryStatisticsFile(allListings, startDate, endDate, numDaysInPeriod);
             }
-            saveSummaryStatistics(emailBodyStats, endDate);
+            //saveSummaryStatistics(emailBodyStats, endDate);
 
         } catch (Exception e) {
             LOGGER.error("Caught unexpected exception: " + e.getMessage(), e);
@@ -87,7 +96,9 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         LOGGER.info("********* Completed the Summary Statistics Creation job. *********");
     }
 
-    private void createSummaryStatisticsFile(final Date startDate, final Date endDate, final Integer numDaysInPeriod)
+
+    @SuppressWarnings("checkstyle:linelength")
+    private void createSummaryStatisticsFile(List<CertifiedProductDetailsDTO> allListings, Date startDate, Date endDate, Integer numDaysInPeriod)
             throws InterruptedException, ExecutionException {
         List<CsvStatistics> csvStats = new ArrayList<CsvStatistics>();
         Calendar startDateCal = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
@@ -99,10 +110,11 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         while (endDate.compareTo(endDateCal.getTime()) >= 0) {
             LOGGER.info("Getting csvRecord for start date " + startDateCal.getTime().toString() + " end date "
                     + endDateCal.getTime().toString());
+
             DateRange csvRange = new DateRange(startDateCal.getTime(), new Date(endDateCal.getTimeInMillis()));
             CsvStatistics historyStat = new CsvStatistics();
             historyStat.setDateRange(csvRange);
-            historyStat = historicalStatisticsCreator.getStatistics(csvRange);
+            historyStat = historicalStatisticsCreator.getStatistics(allListings, csvRange);
             csvStats.add(historyStat);
             LOGGER.info("Finished getting csvRecord for start date " + startDateCal.getTime().toString() + " end date "
                     + endDateCal.getTime().toString());
@@ -122,12 +134,12 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         LOGGER.info("Completed statistics CSV");
     }
 
-    private String getJson(final EmailStatistics statistics) throws JsonProcessingException {
+    private String getJson(EmailStatistics statistics) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(statistics);
     }
 
-    public void saveSummaryStatistics(final EmailStatistics statistics, final Date endDate)
+    public void saveSummaryStatistics(EmailStatistics statistics, Date endDate)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
 
         // We need to manually create a transaction in this case because of how AOP works. When a method is
