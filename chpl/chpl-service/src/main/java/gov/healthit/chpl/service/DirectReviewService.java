@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -13,10 +14,14 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.exception.JiraRequestFailedException;
 import lombok.extern.log4j.Log4j2;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
 
 @Component("directReviewService")
 @Log4j2
@@ -28,8 +33,11 @@ public class DirectReviewService {
     @Value("${jira.baseUrl}")
     private String jiraBaseUrl;
 
-    @Value("${jira.directReviewUrl}")
-    private String jiraDirectReviewUrl;
+    @Value("${jira.directReviewsUrl}")
+    private String jiraAllDirectReviewsUrl;
+
+    @Value("${jira.directReviewsForDeveloperUrl}")
+    private String jiraDirectReviewsForDeveloperUrl;
 
     @Value("${jira.nonconformityUrl}")
     private String jiraNonconformityUrl;
@@ -43,6 +51,29 @@ public class DirectReviewService {
         this.mapper = new ObjectMapper();
     }
 
+    public List<DirectReview> getDirectReviews() throws JiraRequestFailedException {
+        LOGGER.info("Fetching all direct review data.");
+
+        String directReviewsJson = fetchDirectReviews();
+        List<DirectReview> drs = convertDirectReviewsFromJira(directReviewsJson);
+        List<Element> drCacheElements = new ArrayList<Element>(drs.size());
+        for (DirectReview dr : drs) {
+            String nonConformitiesJson = fetchNonConformities(dr.getJiraKey());
+            List<DirectReviewNonConformity> ncs = convertNonConformitiesFromJira(nonConformitiesJson);
+            if (ncs != null && ncs.size() > 0) {
+                dr.getNonConformities().addAll(ncs);
+            }
+            drCacheElements.add(new Element(dr.getDeveloperId(), dr));
+        }
+
+        CacheManager manager = CacheManager.getInstance();
+        Cache drCache = manager.getCache(CacheNames.DIRECT_REVIEWS);
+        LOGGER.info("Put " + drCacheElements + " into the Direct Review cache.");
+        drCache.putAll(drCacheElements);
+        return drs;
+    }
+
+    @Cacheable(CacheNames.DIRECT_REVIEWS)
     public List<DirectReview> getDirectReviews(Long developerId) throws JiraRequestFailedException {
         LOGGER.info("Fetching direct review data for developer " + developerId);
 
@@ -58,8 +89,21 @@ public class DirectReviewService {
         return drs;
     }
 
+    private String fetchDirectReviews() throws JiraRequestFailedException {
+        String url = jiraBaseUrl + jiraAllDirectReviewsUrl;
+        LOGGER.info("Making request to " + url);
+        ResponseEntity<String> response = null;
+        try {
+            response = jiraAuthenticatedRestTemplate.getForEntity(url, String.class);
+            LOGGER.debug("Response: " + response.getBody());
+        } catch (Exception ex) {
+            throw new JiraRequestFailedException(ex.getMessage());
+        }
+        return response == null ? "" : response.getBody();
+    }
+
     private String fetchDirectReviews(Long developerId) throws JiraRequestFailedException {
-        String url = String.format(jiraBaseUrl + jiraDirectReviewUrl, developerId + "");
+        String url = String.format(jiraBaseUrl + jiraDirectReviewsForDeveloperUrl, developerId + "");
         LOGGER.info("Making request to " + url);
         ResponseEntity<String> response = null;
         try {

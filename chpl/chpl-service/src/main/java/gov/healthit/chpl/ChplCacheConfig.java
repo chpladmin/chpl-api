@@ -1,23 +1,21 @@
 package gov.healthit.chpl;
 
-import lombok.extern.log4j.Log4j2;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 
 import gov.healthit.chpl.caching.CacheNames;
+import lombok.extern.log4j.Log4j2;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.config.CacheConfiguration.TransactionalMode;
 import net.sf.ehcache.config.PersistenceConfiguration;
 import net.sf.ehcache.config.PersistenceConfiguration.Strategy;
 import net.sf.ehcache.store.MemoryStoreEvictionPolicy;
-import org.springframework.core.io.ClassPathResource;
 
 @Configuration
 @EnableCaching
@@ -32,7 +30,7 @@ public class ChplCacheConfig {
     public EhCacheManagerFactoryBean ehCacheCacheManager() {
         EhCacheManagerFactoryBean cmfb = new EhCacheManagerFactoryBean();
         ClassPathResource ehCacheConfigResource = new ClassPathResource("ehcache.xml");
-        if(ehCacheConfigResource.exists()){
+        if (ehCacheConfigResource.exists()) {
             LOGGER.info("Configuring ehcahce using the ehcache.xml configuration file found on classpath.");
             cmfb.setConfigLocation(ehCacheConfigResource);
         }
@@ -57,6 +55,7 @@ public class ChplCacheConfig {
         backingManager.addCacheIfAbsent(createCache(CacheNames.CQM_CRITERION));
         backingManager.addCacheIfAbsent(createCache(CacheNames.CQM_CRITERION_NUMBERS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.DEVELOPER_NAMES));
+        backingManager.addCacheIfAbsent(createCache(CacheNames.DIRECT_REVIEWS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.EDITIONS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.EDITION_NAMES));
         backingManager.addCacheIfAbsent(createCache(CacheNames.FIND_SURVEILLANCE_NONCONFORMITY_STATUS_TYPE));
@@ -78,6 +77,7 @@ public class ChplCacheConfig {
         backingManager.addCacheIfAbsent(createCache(CacheNames.PREFETCHED_ALL_CERT_IDS_WITH_PRODUCTS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.PREFETCHED_PRODUCT_NAMES));
         backingManager.addCacheIfAbsent(createCache(CacheNames.PREFETCHED_DEVELOPER_NAMES));
+
         return cacheManager;
     }
 
