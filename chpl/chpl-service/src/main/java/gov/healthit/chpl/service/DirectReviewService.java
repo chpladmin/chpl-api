@@ -51,28 +51,44 @@ public class DirectReviewService {
         this.mapper = new ObjectMapper();
     }
 
-    public List<DirectReview> getDirectReviews() throws JiraRequestFailedException {
+    public void populateDirectReviewsCache() throws JiraRequestFailedException {
         LOGGER.info("Fetching all direct review data.");
-
+        //TODO: Could this response be too big? Maybe we just need to do it per developer?
         String directReviewsJson = fetchDirectReviews();
-        List<DirectReview> drs = convertDirectReviewsFromJira(directReviewsJson);
-        List<Element> drCacheElements = new ArrayList<Element>(drs.size());
-        for (DirectReview dr : drs) {
+        List<DirectReview> allDirectReviews = convertDirectReviewsFromJira(directReviewsJson);
+        for (DirectReview dr : allDirectReviews) {
             String nonConformitiesJson = fetchNonConformities(dr.getJiraKey());
             List<DirectReviewNonConformity> ncs = convertNonConformitiesFromJira(nonConformitiesJson);
             if (ncs != null && ncs.size() > 0) {
                 dr.getNonConformities().addAll(ncs);
             }
-            drCacheElements.add(new Element(dr.getDeveloperId(), dr));
+            allDirectReviews.add(dr);
         }
 
-        CacheManager manager = CacheManager.getInstance();
-        Cache drCache = manager.getCache(CacheNames.DIRECT_REVIEWS);
-        LOGGER.info("Put " + drCacheElements + " into the Direct Review cache.");
-        drCache.putAll(drCacheElements);
-        return drs;
+        if (allDirectReviews != null && allDirectReviews.size() > 0) {
+            CacheManager manager = CacheManager.getInstance();
+            Cache drCache = manager.getCache(CacheNames.DIRECT_REVIEWS);
+            LOGGER.info("Clearing the Direct Review cache.");
+            drCache.removeAll();
+            //insert each direct review into the right place in our cache
+            for (DirectReview dr : allDirectReviews) {
+                if (drCache.get(dr.getDeveloperId()) != null) {
+                    Element devDirectReviewElement = drCache.get(dr.getDeveloperId());
+                    Object devDirectReviewsObj = devDirectReviewElement.getObjectValue();
+                    if (devDirectReviewsObj instanceof List<?>) {
+                        List<DirectReview> devDirectReviews = (List<DirectReview>) devDirectReviewsObj;
+                        devDirectReviews.add(dr);
+                    }
+                } else {
+                    List<DirectReview> devDirectReviews = new ArrayList<DirectReview>();
+                    devDirectReviews.add(dr);
+                    Element devDirectReviewElement = new Element(dr.getDeveloperId(), devDirectReviews);
+                }
+            }
+        }
     }
 
+    //this will replace the direct reviews for the supplied developerId in the DR cache
     @Cacheable(CacheNames.DIRECT_REVIEWS)
     public List<DirectReview> getDirectReviews(Long developerId) throws JiraRequestFailedException {
         LOGGER.info("Fetching direct review data for developer " + developerId);
