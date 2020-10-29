@@ -3,8 +3,10 @@ package gov.healthit.chpl.realworldtesting.manager;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -122,35 +124,45 @@ public class RealWorldTestingManager {
             rwtUpload.getErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.chplProductNumberInvalid"));
         }
         if (!StringUtils.isEmpty(record.get(RWT_TYPE_COLUMN_IDX))) {
-            rwtUpload.setType(getType(record.get(RWT_TYPE_COLUMN_IDX)));
+            try {
+                rwtUpload.setType(getType(record.get(RWT_TYPE_COLUMN_IDX)));
+            } catch (ParseException e) {
+                rwtUpload.getErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.realWorldTestingTypeInvalid")
+                        + " [" + record.get(RWT_TYPE_COLUMN_IDX) + "]");
+            }
         } else {
             rwtUpload.getErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.realWorldTestingTypeInvalid"));
         }
         if (!StringUtils.isEmpty(record.get(LAST_CHECKED_COLUMN_IDX))) {
-            rwtUpload.setLastChecked(getLastCheckedDate(record.get(LAST_CHECKED_COLUMN_IDX)));
+            try {
+                rwtUpload.setLastChecked(getLastCheckedDate(record.get(LAST_CHECKED_COLUMN_IDX)));
+            } catch (DateTimeParseException e) {
+                rwtUpload.getErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.lastCheckedDateInvalid")
+                        + " [" + record.get(LAST_CHECKED_COLUMN_IDX) + "]");
+            }
         } else {
-            rwtUpload.getErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.lastCheckedDateInvalid"));
+            rwtUpload.setLastChecked(null);
         }
         if (!StringUtils.isEmpty(record.get(URL_COLUMN_IDX))) {
             rwtUpload.setUrl(record.get(URL_COLUMN_IDX));
         } else {
-            rwtUpload.getErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.url"));
+            rwtUpload.setUrl(null);
         }
         return rwtUpload;
     }
 
-    private LocalDate getLastCheckedDate(String unformatted) {
+    private LocalDate getLastCheckedDate(String unformatted) throws DateTimeParseException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyMMdd");
         return LocalDate.parse(unformatted, formatter);
     }
 
-    private RealWorldTestingType getType(String rwtType) {
+    private RealWorldTestingType getType(String rwtType) throws ParseException {
         if (rwtType.toUpperCase().equals(RealWorldTestingType.PLANS.getName())) {
             return RealWorldTestingType.PLANS;
         } else if (rwtType.toUpperCase().equals(RealWorldTestingType.RESULTS.getName())) {
             return RealWorldTestingType.RESULTS;
         } else {
-            return null;
+            throw new ParseException("Could not parse Real World Testing Type: " + rwtType, 0);
         }
     }
 

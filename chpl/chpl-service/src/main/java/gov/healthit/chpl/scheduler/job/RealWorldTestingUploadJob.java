@@ -167,19 +167,18 @@ public class RealWorldTestingUploadJob implements Job {
     private List<String> validateRwtUpload(RealWorldTestingUpload rwtUpload) {
         List<String> errors = new ArrayList<String>();
 
-        //Makes sure all 4 pieces of data are present
         if (StringUtils.isEmpty(rwtUpload.getChplProductNumber())) {
             errors.add(errorMessageUtil.getMessage("realWorldTesting.upload.chplProductNumberInvalid"));
         }
         if (rwtUpload.getType() == null) {
             errors.add(errorMessageUtil.getMessage("realWorldTesting.upload.realWorldTestingTypeInvalid"));
         }
-        if (rwtUpload.getLastChecked() == null) {
-            errors.add(errorMessageUtil.getMessage("realWorldTesting.upload.lastCheckedDateInvalid"));
-        }
-        if (StringUtils.isEmpty(rwtUpload.getUrl())) {
-            errors.add(errorMessageUtil.getMessage("realWorldTesting.upload.url"));
-        }
+        //if (rwtUpload.getLastChecked() == null) {
+        //    errors.add(errorMessageUtil.getMessage("realWorldTesting.upload.lastCheckedDateInvalid"));
+        //}
+        //if (StringUtils.isEmpty(rwtUpload.getUrl())) {
+        //    errors.add(errorMessageUtil.getMessage("realWorldTesting.upload.url"));
+        //}
         return errors;
     }
 
