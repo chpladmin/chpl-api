@@ -83,6 +83,7 @@ public class DirectReviewService {
                     List<DirectReview> devDirectReviews = new ArrayList<DirectReview>();
                     devDirectReviews.add(dr);
                     Element devDirectReviewElement = new Element(dr.getDeveloperId(), devDirectReviews);
+                    drCache.put(devDirectReviewElement);
                 }
             }
         }
