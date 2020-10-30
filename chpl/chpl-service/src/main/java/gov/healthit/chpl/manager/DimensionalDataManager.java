@@ -42,8 +42,8 @@ import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.DimensionalData;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
-import gov.healthit.chpl.domain.MipsMeasure;
-import gov.healthit.chpl.domain.MipsMeasurementType;
+import gov.healthit.chpl.domain.Measure;
+import gov.healthit.chpl.domain.MeasurementType;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.SearchableDimensionalData;
 import gov.healthit.chpl.domain.TestFunctionality;
@@ -79,8 +79,8 @@ import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
 import gov.healthit.chpl.dto.job.JobTypeDTO;
 import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.listing.mipsMeasure.ListingMipsMeasureDAO;
-import gov.healthit.chpl.listing.mipsMeasure.MipsMeasureDAO;
+import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
+import gov.healthit.chpl.listing.measure.MeasureDAO;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -107,8 +107,8 @@ public class DimensionalDataManager {
     private ProductDAO productDao;
     private DeveloperDAO devDao;
     private JobDAO jobDao;
-    private MipsMeasureDAO mipsMeasureDao;
-    private ListingMipsMeasureDAO listingMipsMeasureDao;
+    private MeasureDAO measureDao;
+    private ListingMeasureDAO listingMeasureDao;
     private CQMCriterionDAO cqmCriterionDao;
     private CertificationEditionDAO certEditionDao;
 
@@ -121,8 +121,8 @@ public class DimensionalDataManager {
                                   TestDataDAO testDataDao, AccessibilityStandardDAO asDao, UcdProcessDAO ucdDao,
                                   QmsStandardDAO qmsDao, TargetedUserDAO tuDao, DeveloperStatusDAO devStatusDao,
                                   SurveillanceDAO survDao, UploadTemplateVersionDAO uploadTemplateDao, QuarterDAO quarterDao,
-                                  ProductDAO productDao, DeveloperDAO devDao, JobDAO jobDao, MipsMeasureDAO mipsMeasureDao,
-                                  ListingMipsMeasureDAO listingMipsMeasureDao, CQMCriterionDAO cqmCriterionDao,
+                                  ProductDAO productDao, DeveloperDAO devDao, JobDAO jobDao, MeasureDAO measureDao,
+                                  ListingMeasureDAO listingMeasureDao, CQMCriterionDAO cqmCriterionDao,
                                   CertificationEditionDAO certEditionDao) {
         this.cacheableDimensionalDataManager = cacheableDimensionalDataManager;
         this.certificationBodyDao = certificationBodyDao;
@@ -145,8 +145,8 @@ public class DimensionalDataManager {
         this.productDao = productDao;
         this.devDao = devDao;
         this.jobDao = jobDao;
-        this.mipsMeasureDao = mipsMeasureDao;
-        this.listingMipsMeasureDao = listingMipsMeasureDao;
+        this.measureDao = measureDao;
+        this.listingMeasureDao = listingMeasureDao;
         this.cqmCriterionDao = cqmCriterionDao;
         this.certEditionDao = certEditionDao;
     }
@@ -478,15 +478,15 @@ public class DimensionalDataManager {
     }
 
     @Transactional
-    @Cacheable(value = CacheNames.MIPS_MEASURES)
-    public Set<MipsMeasure> getMipsMeasures() {
-        return mipsMeasureDao.findAll();
+    @Cacheable(value = CacheNames.MEASURES)
+    public Set<Measure> getMeasures() {
+        return measureDao.findAll();
     }
 
     @Transactional
-    @Cacheable(value = CacheNames.MIPS_MEASURE_TYPES)
-    public Set<MipsMeasurementType> getMipsMeasureTypes() {
-        return listingMipsMeasureDao.getMeasurementTypes();
+    @Cacheable(value = CacheNames.MEASURE_TYPES)
+    public Set<MeasurementType> getMeasureTypes() {
+        return listingMeasureDao.getMeasurementTypes();
     }
 
     @Transactional

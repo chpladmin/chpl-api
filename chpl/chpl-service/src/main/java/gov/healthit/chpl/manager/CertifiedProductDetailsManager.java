@@ -46,7 +46,7 @@ import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
-import gov.healthit.chpl.domain.ListingMipsMeasure;
+import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
@@ -75,7 +75,7 @@ import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
 import gov.healthit.chpl.dto.MeaningfulUseUserDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.listing.mipsMeasure.ListingMipsMeasureDAO;
+import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.manager.impl.CertifiedProductDetailsManagerAsync;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.AuthUtil;
@@ -91,7 +91,7 @@ public class CertifiedProductDetailsManager {
     private CQMResultDAO cqmResultDao;
     private CertificationResultDetailsDAO certificationResultDetailsDAO;
     private CertifiedProductQmsStandardDAO certifiedProductQmsStandardDao;
-    private ListingMipsMeasureDAO listingMipsDao;
+    private ListingMeasureDAO listingMeasureDao;
     private CertifiedProductTargetedUserDAO certifiedProductTargetedUserDao;
     private CertifiedProductAccessibilityStandardDAO certifiedProductAsDao;
     private CertificationResultManager certResultManager;
@@ -117,7 +117,7 @@ public class CertifiedProductDetailsManager {
             CQMResultDAO cqmResultDao,
             CertificationResultDetailsDAO certificationResultDetailsDAO,
             CertifiedProductQmsStandardDAO certifiedProductQmsStandardDao,
-            ListingMipsMeasureDAO listingMipsDao,
+            ListingMeasureDAO listingMeasureDao,
             CertifiedProductTargetedUserDAO certifiedProductTargetedUserDao,
             CertifiedProductAccessibilityStandardDAO certifiedProductAsDao,
             CertificationResultManager certResultManager,
@@ -140,7 +140,7 @@ public class CertifiedProductDetailsManager {
         this.cqmResultDao = cqmResultDao;
         this.certificationResultDetailsDAO = certificationResultDetailsDAO;
         this.certifiedProductQmsStandardDao = certifiedProductQmsStandardDao;
-        this.listingMipsDao = listingMipsDao;
+        this.listingMeasureDao = listingMeasureDao;
         this.certifiedProductTargetedUserDao = certifiedProductTargetedUserDao;
         this.certifiedProductAsDao = certifiedProductAsDao;
         this.certResultManager = certResultManager;
@@ -685,7 +685,7 @@ public class CertifiedProductDetailsManager {
         searchDetails.setCountClosedNonconformities(dto.getCountClosedNonconformities());
         searchDetails.setSurveillance(survManager.getByCertifiedProduct(dto.getId()));
         searchDetails.setQmsStandards(getCertifiedProductQmsStandards(dto.getId()));
-        searchDetails.setMipsMeasures(getCertifiedProductMipsMeasures(dto.getId()));
+        searchDetails.setMeasures(getCertifiedProductMeasures(dto.getId()));
         searchDetails.setTargetedUsers(getCertifiedProductTargetedUsers(dto.getId()));
         searchDetails.setAccessibilityStandards(getCertifiedProductAccessibilityStandards(dto.getId()));
         searchDetails.setRwtPlansUrl(dto.getRwtPlansUrl());
@@ -767,9 +767,9 @@ public class CertifiedProductDetailsManager {
         return qmsStandardResults;
     }
 
-    private List<ListingMipsMeasure> getCertifiedProductMipsMeasures(Long listingId)
+    private List<ListingMeasure> getCertifiedProductMeasures(Long listingId)
             throws EntityRetrievalException {
-        return listingMipsDao.getMipsMeasuresByListingId(listingId);
+        return listingMeasureDao.getMeasuresByListingId(listingId);
     }
 
     private List<CertifiedProductTargetedUser> getCertifiedProductTargetedUsers(Long id)

@@ -62,7 +62,7 @@ import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.listing.mipsMeasure.MipsMeasureDAO;
+import gov.healthit.chpl.listing.measure.MeasureDAO;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 
 @Service
@@ -92,7 +92,7 @@ public class CertificationResultManager extends SecuredManager {
     @Autowired
     private UcdProcessDAO ucdDao;
     @Autowired
-    private MipsMeasureDAO mmDao;
+    private MeasureDAO mmDao;
     @Autowired
     private FuzzyChoicesDAO fuzzyChoicesDao;
 

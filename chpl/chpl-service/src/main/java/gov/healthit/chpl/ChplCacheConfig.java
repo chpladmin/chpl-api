@@ -63,8 +63,8 @@ public class ChplCacheConfig {
         backingManager.addCacheIfAbsent(createCache(CacheNames.GET_ALL_UNRESTRICTED_APIKEYS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.GET_DECERTIFIED_DEVELOPERS));
         backingManager.addCacheIfAbsent(createCache(CacheNames.JOB_TYPES));
-        backingManager.addCacheIfAbsent(createCache(CacheNames.MIPS_MEASURES));
-        backingManager.addCacheIfAbsent(createCache(CacheNames.MIPS_MEASURE_TYPES));
+        backingManager.addCacheIfAbsent(createCache(CacheNames.MEASURES));
+        backingManager.addCacheIfAbsent(createCache(CacheNames.MEASURE_TYPES));
         backingManager.addCacheIfAbsent(createCache(CacheNames.PRACTICE_TYPE_NAMES));
         backingManager.addCacheIfAbsent(createCache(CacheNames.PRODUCT_NAMES));
         backingManager.addCacheIfAbsent(createCache(CacheNames.TEST_DATA));

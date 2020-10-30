@@ -19,15 +19,15 @@ import lombok.Builder;
 @Builder
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class MipsMeasurementType implements Serializable {
+public class MeasurementType implements Serializable {
     private static final long serialVersionUID = -8391253265541448011L;
     private Long id;
     private String name;
 
-    public MipsMeasurementType() {
+    public MeasurementType() {
     }
 
-    public boolean matches(MipsMeasurementType anotherType) {
+    public boolean matches(MeasurementType anotherType) {
         if (this.id == null && anotherType.id != null || this.id != null && anotherType.id == null) {
             return false;
         } else if (ObjectUtils.allNotNull(this.id, anotherType.id)

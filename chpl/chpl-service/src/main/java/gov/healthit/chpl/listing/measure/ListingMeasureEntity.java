@@ -1,4 +1,4 @@
-package gov.healthit.chpl.listing.mipsMeasure;
+package gov.healthit.chpl.listing.measure;
 
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -19,13 +19,13 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Where;
 
-import gov.healthit.chpl.domain.ListingMipsMeasure;
+import gov.healthit.chpl.domain.ListingMeasure;
 import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "certified_product_mips_measure")
-public class ListingMipsMeasureEntity {
+@Table(name = "certified_product_measure")
+public class ListingMeasureEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,29 +37,29 @@ public class ListingMipsMeasureEntity {
     @Column(name = "certified_product_id")
     private Long listingId;
 
-    @Column(name = "mips_measure_id")
+    @Column(name = "measure_id")
     private Long measureId;
 
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "mips_measure_id", unique = true, nullable = true, insertable = false, updatable = false)
-    private MipsMeasureEntity measure;
+    @JoinColumn(name = "measure_id", unique = true, nullable = true, insertable = false, updatable = false)
+    private MeasureEntity measure;
 
-    @Column(name = "mips_type_id")
+    @Column(name = "measure_type_id")
     private Long typeId;
 
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "mips_type_id", unique = true, nullable = true, insertable = false, updatable = false)
+    @JoinColumn(name = "measure_type_id", unique = true, nullable = true, insertable = false, updatable = false)
     @Where(clause = " deleted = false ")
-    private ListingMipsMeasureTypeEntity type;
+    private ListingMeasureTypeEntity type;
 
     @Basic(optional = false)
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "listingMipsMeasureMapId")
-    @Column(name = "listing_mips_measure_map_id", nullable = false)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "listingMeasureMapId")
+    @Column(name = "certified_product_measure_map_id", nullable = false)
     @Where(clause = " deleted = false ")
-    private Set<ListingMipsMeasureCriterionMapEntity> associatedCriteria
-        = new LinkedHashSet<ListingMipsMeasureCriterionMapEntity>();
+    private Set<ListingMeasureCriterionMapEntity> associatedCriteria
+        = new LinkedHashSet<ListingMeasureCriterionMapEntity>();
 
     @Column(name = "last_modified_date", updatable = false, insertable = false)
     private Date lastModifiedDate;
@@ -74,8 +74,8 @@ public class ListingMipsMeasureEntity {
     @Column(name = "deleted", nullable = false)
     private Boolean deleted;
 
-    public ListingMipsMeasure convert() {
-        ListingMipsMeasure listingMeasure = new ListingMipsMeasure();
+    public ListingMeasure convert() {
+        ListingMeasure listingMeasure = new ListingMeasure();
         listingMeasure.setId(getId());
         if (getMeasure() != null) {
             listingMeasure.setMeasure(getMeasure().convert());

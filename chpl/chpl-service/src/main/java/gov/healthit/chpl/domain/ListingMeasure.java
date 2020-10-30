@@ -21,7 +21,7 @@ import lombok.Builder;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @AllArgsConstructor
-public class ListingMipsMeasure implements Serializable {
+public class ListingMeasure implements Serializable {
     private static final long serialVersionUID = 3070403246291821852L;
 
     /**
@@ -34,22 +34,22 @@ public class ListingMipsMeasure implements Serializable {
      * The measure being applied to a listing.
      */
     @XmlElement(required = true)
-    private MipsMeasure measure;
+    private Measure measure;
 
     /**
      * Indicates whether this measure was applied to the listing using
      * Automated Numerator Recording (G1) or Automated Measure Calculation (G2).
      */
     @XmlElement(required = true)
-    private MipsMeasurementType measurementType;
+    private MeasurementType measurementType;
 
     @XmlElement(required = true)
     private Set<CertificationCriterion> associatedCriteria = new LinkedHashSet<CertificationCriterion>();
 
-    public ListingMipsMeasure() {
+    public ListingMeasure() {
     }
 
-    public boolean matches(ListingMipsMeasure anotherMeasure) {
+    public boolean matches(ListingMeasure anotherMeasure) {
         if (!propertiesMatch(anotherMeasure)) {
             return false;
         }
@@ -100,7 +100,7 @@ public class ListingMipsMeasure implements Serializable {
         return true;
     }
 
-    private boolean propertiesMatch(ListingMipsMeasure anotherMeasure) {
+    private boolean propertiesMatch(ListingMeasure anotherMeasure) {
         if (this.id == null && anotherMeasure.id != null || this.id != null && anotherMeasure.id == null) {
             return false;
         } else if (ObjectUtils.allNotNull(this.id, anotherMeasure.id)
@@ -134,19 +134,19 @@ public class ListingMipsMeasure implements Serializable {
         this.id = id;
     }
 
-    public MipsMeasure getMeasure() {
+    public Measure getMeasure() {
         return measure;
     }
 
-    public void setMeasure(MipsMeasure measure) {
+    public void setMeasure(Measure measure) {
         this.measure = measure;
     }
 
-    public MipsMeasurementType getMeasurementType() {
+    public MeasurementType getMeasurementType() {
         return measurementType;
     }
 
-    public void setMeasurementType(MipsMeasurementType measurementType) {
+    public void setMeasurementType(MeasurementType measurementType) {
         this.measurementType = measurementType;
     }
 

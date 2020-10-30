@@ -1,4 +1,4 @@
-package gov.healthit.chpl.listing.mipsMeasure;
+package gov.healthit.chpl.listing.measure;
 
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -18,13 +18,13 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Where;
 
-import gov.healthit.chpl.domain.MipsMeasure;
+import gov.healthit.chpl.domain.Measure;
 import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "mips_measure")
-public class MipsMeasureEntity {
+@Table(name = "measure")
+public class MeasureEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,8 +33,8 @@ public class MipsMeasureEntity {
 
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "mips_domain_id", unique = true, nullable = true)
-    private MipsMeasureDomainEntity domain;
+    @JoinColumn(name = "measure_domain_id", unique = true, nullable = true)
+    private MeasureDomainEntity domain;
 
     @Column(name = "required_test_abbr")
     private String abbreviation;
@@ -51,11 +51,11 @@ public class MipsMeasureEntity {
     @Column(name = "removed")
     private Boolean removed;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "mipsMeasureId")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "measureId")
     @Basic(optional = false)
-    @Column(name = "mips_measure_id", nullable = false)
+    @Column(name = "measure_id", nullable = false)
     @Where(clause = " deleted = false ")
-    private Set<MipsMeasureCriterionMapEntity> allowedCriteria = new LinkedHashSet<MipsMeasureCriterionMapEntity>();
+    private Set<MeasureCriterionMapEntity> allowedCriteria = new LinkedHashSet<MeasureCriterionMapEntity>();
 
 
     @Column(name = "creation_date", nullable = false, updatable = false, insertable = false)
@@ -70,8 +70,8 @@ public class MipsMeasureEntity {
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
-    public MipsMeasure convert() {
-        MipsMeasure measure = new MipsMeasure();
+    public Measure convert() {
+        Measure measure = new Measure();
         measure.setId(getId());
         measure.setAbbreviation(getAbbreviation());
         measure.setName(getName());

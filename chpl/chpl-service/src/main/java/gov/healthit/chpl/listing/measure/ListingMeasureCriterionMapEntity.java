@@ -1,4 +1,4 @@
-package gov.healthit.chpl.listing.mipsMeasure;
+package gov.healthit.chpl.listing.measure;
 
 import java.util.Date;
 
@@ -19,8 +19,8 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "allowed_mips_measure_criteria")
-public class MipsMeasureCriterionMapEntity {
+@Table(name = "certified_product_measure_criteria")
+public class ListingMeasureCriterionMapEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,8 +28,8 @@ public class MipsMeasureCriterionMapEntity {
     private Long id;
 
     @Basic(optional = false)
-    @Column(name = "mips_measure_id", nullable = false)
-    private Long mipsMeasureId;
+    @Column(name = "certified_product_measure_id", nullable = false)
+    private Long listingMeasureMapId;
 
     @Basic(optional = false)
     @Column(name = "certification_criterion_id", nullable = false)
@@ -39,9 +39,6 @@ public class MipsMeasureCriterionMapEntity {
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "certification_criterion_id", unique = true, nullable = true, insertable = false, updatable = false)
     private CertificationCriterionEntity criterion;
-
-    @Column(name = "macra_criteria_map_id", nullable = false, updatable = false, insertable = false)
-    private Long legacyMacraMeasureId;
 
     @Column(name = "creation_date", nullable = false, updatable = false, insertable = false)
     private Date creationDate;

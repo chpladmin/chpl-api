@@ -296,10 +296,10 @@ public class CertifiedProductSearchDetails implements Serializable {
      * This variable indicates if the listing utilizes automated numerator or automated measure
      * required tests.
      */
-    @XmlElementWrapper(name = "mipsMeasures", nillable = true, required = false)
-    @XmlElement(name = "mipsMeasure")
+    @XmlElementWrapper(name = "measures", nillable = true, required = false)
+    @XmlElement(name = "measure")
     @Singular
-    private List<ListingMipsMeasure> mipsMeasures = new ArrayList<ListingMipsMeasure>();
+    private List<ListingMeasure> measures = new ArrayList<ListingMeasure>();
 
     /**
      * The criteria to which this listing attests
@@ -619,12 +619,12 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.qmsStandards = qmsStandards;
     }
 
-    public List<ListingMipsMeasure> getMipsMeasures() {
-        return this.mipsMeasures;
+    public List<ListingMeasure> getMeasures() {
+        return this.measures;
     }
 
-    public void setMipsMeasures(List<ListingMipsMeasure> mipsMeasures) {
-        this.mipsMeasures = mipsMeasures;
+    public void setMeasures(List<ListingMeasure> measures) {
+        this.measures = measures;
     }
 
     public List<CertifiedProductTargetedUser> getTargetedUsers() {

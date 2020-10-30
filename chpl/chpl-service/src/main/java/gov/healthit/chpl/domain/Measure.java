@@ -21,7 +21,7 @@ import lombok.Builder;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @AllArgsConstructor
-public class MipsMeasure implements Serializable {
+public class Measure implements Serializable {
     private static final long serialVersionUID = 3070401446291821552L;
 
     /**
@@ -31,7 +31,7 @@ public class MipsMeasure implements Serializable {
     private Long id;
 
     @XmlElement(required = true)
-    private MipsMeasureDomain domain;
+    private MeasureDomain domain;
 
     /**
      * Abbreviation of the Required Test. Examples are "RT7" or "RT9"
@@ -68,13 +68,13 @@ public class MipsMeasure implements Serializable {
     @XmlElement(required = true)
     private Set<CertificationCriterion> allowedCriteria = new LinkedHashSet<CertificationCriterion>();
 
-    public MipsMeasure() {
+    public Measure() {
     }
 
     // not overriding equals on purpose
-    // this is meant to determine if a user would think two mips measures
+    // this is meant to determine if a user would think two measures
     // are the same, not as thorough as equals
-    public boolean matches(MipsMeasure anotherMeasure) {
+    public boolean matches(Measure anotherMeasure) {
         if (this.id == null && anotherMeasure.id != null || this.id != null && anotherMeasure.id == null) {
             return false;
         } else if (ObjectUtils.allNotNull(this.id, anotherMeasure.id)
@@ -133,11 +133,11 @@ public class MipsMeasure implements Serializable {
         this.requiresCriteriaSelection = requiresCriteriaSelection;
     }
 
-    public MipsMeasureDomain getDomain() {
+    public MeasureDomain getDomain() {
         return domain;
     }
 
-    public void setDomain(MipsMeasureDomain domain) {
+    public void setDomain(MeasureDomain domain) {
         this.domain = domain;
     }
 

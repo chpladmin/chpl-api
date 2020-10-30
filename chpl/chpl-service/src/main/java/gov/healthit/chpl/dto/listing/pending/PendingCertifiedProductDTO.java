@@ -27,7 +27,7 @@ import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
-import gov.healthit.chpl.domain.ListingMipsMeasure;
+import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
@@ -48,7 +48,7 @@ import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductQmsStanda
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTargetedUserEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTestingLabMapEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCqmCriterionEntity;
-import gov.healthit.chpl.listing.mipsMeasure.PendingListingMipsMeasureEntity;
+import gov.healthit.chpl.listing.measure.PendingListingMeasureEntity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -131,7 +131,7 @@ public class PendingCertifiedProductDTO implements Serializable {
     private List<PendingCertifiedProductQmsStandardDTO> qmsStandards = new ArrayList<PendingCertifiedProductQmsStandardDTO>();
 
     @Singular
-    private List<PendingCertifiedProductMipsMeasureDTO> mipsMeasures = new ArrayList<PendingCertifiedProductMipsMeasureDTO>();
+    private List<PendingCertifiedProductMeasureDTO> measures = new ArrayList<PendingCertifiedProductMeasureDTO>();
 
     @Singular
     private List<PendingCertifiedProductTargetedUserDTO> targetedUsers = new ArrayList<PendingCertifiedProductTargetedUserDTO>();
@@ -271,27 +271,27 @@ public class PendingCertifiedProductDTO implements Serializable {
             }
         }
 
-        List<ListingMipsMeasure> mipsMeasuresDomain = details.getMipsMeasures();
-        if (mipsMeasuresDomain != null && mipsMeasuresDomain.size() > 0) {
-            for (ListingMipsMeasure mipsMeasure : mipsMeasuresDomain) {
-                PendingCertifiedProductMipsMeasureDTO mipsDto = new PendingCertifiedProductMipsMeasureDTO();
-                mipsDto.setId(mipsMeasure.getId());
-                if (mipsMeasure.getMeasure() == null || mipsMeasure.getMeasure().getId() == null) {
-                    mipsDto.setMeasure(null);
-                    if (mipsMeasure.getMeasure() != null) {
-                        mipsDto.setUploadedValue(mipsMeasure.getMeasure().getName());
+        List<ListingMeasure> listingMeasures = details.getMeasures();
+        if (listingMeasures != null && listingMeasures.size() > 0) {
+            for (ListingMeasure listingMeasure : listingMeasures) {
+                PendingCertifiedProductMeasureDTO pendingMeasureDto = new PendingCertifiedProductMeasureDTO();
+                pendingMeasureDto.setId(listingMeasure.getId());
+                if (listingMeasure.getMeasure() == null || listingMeasure.getMeasure().getId() == null) {
+                    pendingMeasureDto.setMeasure(null);
+                    if (listingMeasure.getMeasure() != null) {
+                        pendingMeasureDto.setUploadedValue(listingMeasure.getMeasure().getName());
                     }
                 } else {
-                    mipsDto.setMeasure(mipsMeasure.getMeasure());
-                    mipsDto.setUploadedValue(null);
+                    pendingMeasureDto.setMeasure(listingMeasure.getMeasure());
+                    pendingMeasureDto.setUploadedValue(null);
                 }
-                mipsDto.setMeasure(mipsMeasure.getMeasure());
-                mipsDto.setMeasurementType(mipsMeasure.getMeasurementType());
-                mipsDto.setPendingCertifiedProductId(details.getId());
-                mipsMeasure.getAssociatedCriteria().stream().forEach(criterion -> {
-                    mipsDto.getAssociatedCriteria().add(criterion);
+                pendingMeasureDto.setMeasure(listingMeasure.getMeasure());
+                pendingMeasureDto.setMeasurementType(listingMeasure.getMeasurementType());
+                pendingMeasureDto.setPendingCertifiedProductId(details.getId());
+                listingMeasure.getAssociatedCriteria().stream().forEach(criterion -> {
+                    pendingMeasureDto.getAssociatedCriteria().add(criterion);
                 });
-                this.mipsMeasures.add(mipsDto);
+                this.measures.add(pendingMeasureDto);
             }
         }
 
@@ -617,10 +617,10 @@ public class PendingCertifiedProductDTO implements Serializable {
             }
         }
 
-        Set<PendingListingMipsMeasureEntity> mipsMeasureEntities = entity.getMipsMeasures();
-        if (mipsMeasureEntities != null && mipsMeasureEntities.size() > 0) {
-            for (PendingListingMipsMeasureEntity mipsMeasure : mipsMeasureEntities) {
-                this.mipsMeasures.add(new PendingCertifiedProductMipsMeasureDTO(mipsMeasure));
+        Set<PendingListingMeasureEntity> measureEntities = entity.getMeasures();
+        if (measureEntities != null && measureEntities.size() > 0) {
+            for (PendingListingMeasureEntity measureEntity : measureEntities) {
+                this.measures.add(new PendingCertifiedProductMeasureDTO(measureEntity));
             }
         }
 

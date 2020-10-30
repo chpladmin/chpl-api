@@ -9,38 +9,38 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.ListingMipsMeasure;
+import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.DuplicateReviewResult;
 
-@Component("mipsMeasureDuplicateReviewer")
-public class MipsMeasureDuplicateReviewer {
+@Component("measureDuplicateReviewer")
+public class MeasureDuplicateReviewer {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public MipsMeasureDuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
+    public MeasureDuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
     public void review(CertifiedProductSearchDetails listing) {
 
-        DuplicateReviewResult<ListingMipsMeasure> mipsMeasureDuplicateResults =
-                new DuplicateReviewResult<ListingMipsMeasure>(getPredicate());
-        if (listing.getMipsMeasures() != null) {
-            for (ListingMipsMeasure measure : listing.getMipsMeasures()) {
-                mipsMeasureDuplicateResults.addObject(measure);
+        DuplicateReviewResult<ListingMeasure> measureDuplicateResults =
+                new DuplicateReviewResult<ListingMeasure>(getPredicate());
+        if (listing.getMeasures() != null) {
+            for (ListingMeasure measure : listing.getMeasures()) {
+                measureDuplicateResults.addObject(measure);
             }
         }
-        if (mipsMeasureDuplicateResults.duplicatesExist()) {
-            listing.getWarningMessages().addAll(getWarnings(mipsMeasureDuplicateResults.getDuplicateList()));
-            listing.setMipsMeasures(mipsMeasureDuplicateResults.getUniqueList());
+        if (measureDuplicateResults.duplicatesExist()) {
+            listing.getWarningMessages().addAll(getWarnings(measureDuplicateResults.getDuplicateList()));
+            listing.setMeasures(measureDuplicateResults.getUniqueList());
         }
     }
 
-    private List<String> getWarnings(List<ListingMipsMeasure> duplicates) {
+    private List<String> getWarnings(List<ListingMeasure> duplicates) {
         List<String> warnings = new ArrayList<String>();
-        for (ListingMipsMeasure duplicate : duplicates) {
-            String warning = errorMessageUtil.getMessage("listing.duplicateMipsMeasure",
+        for (ListingMeasure duplicate : duplicates) {
+            String warning = errorMessageUtil.getMessage("listing.duplicateMeasure",
                     duplicate.getMeasurementType().getName(),
                     duplicate.getMeasure().getName(),
                     duplicate.getMeasure().getAbbreviation());
@@ -49,11 +49,11 @@ public class MipsMeasureDuplicateReviewer {
         return warnings;
     }
 
-    private BiPredicate<ListingMipsMeasure, ListingMipsMeasure> getPredicate() {
-        return new BiPredicate<ListingMipsMeasure, ListingMipsMeasure>() {
+    private BiPredicate<ListingMeasure, ListingMeasure> getPredicate() {
+        return new BiPredicate<ListingMeasure, ListingMeasure>() {
             @Override
-            public boolean test(ListingMipsMeasure measure1,
-                    ListingMipsMeasure measure2) {
+            public boolean test(ListingMeasure measure1,
+                    ListingMeasure measure2) {
                 return ObjectUtils.allNotNull(measure1, measure2, measure1.getMeasure(), measure2.getMeasure(),
                         measure2.getMeasurementType(), measure2.getMeasurementType())
                         && measure1.getMeasure().matches(measure2.getMeasure())

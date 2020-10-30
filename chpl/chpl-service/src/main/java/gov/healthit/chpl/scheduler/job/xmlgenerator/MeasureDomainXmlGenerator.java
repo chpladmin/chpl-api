@@ -5,21 +5,21 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import gov.healthit.chpl.domain.MipsMeasureDomain;
+import gov.healthit.chpl.domain.MeasureDomain;
 
-public class MipsMeasureDomainXmlGenerator extends XmlGenerator {
-    public static void add(List<MipsMeasureDomain> domains, String rootNodeName, XMLStreamWriter sw)
+public class MeasureDomainXmlGenerator extends XmlGenerator {
+    public static void add(List<MeasureDomain> domains, String rootNodeName, XMLStreamWriter sw)
             throws XMLStreamException {
         if (domains != null) {
             sw.writeStartElement(rootNodeName);
-            for (MipsMeasureDomain domain : domains) {
+            for (MeasureDomain domain : domains) {
                 add(domain, "domain", sw);
             }
             sw.writeEndElement();
         }
     }
 
-    public static void add(MipsMeasureDomain domain, String rootNodeName, XMLStreamWriter sw)
+    public static void add(MeasureDomain domain, String rootNodeName, XMLStreamWriter sw)
             throws XMLStreamException {
         if (domain != null) {
             sw.writeStartElement(rootNodeName);

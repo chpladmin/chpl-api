@@ -219,18 +219,18 @@ public class QuestionableActivityManager implements EnvironmentAware {
                         QuestionableActivityTriggerConcept.REAL_WORLD_TESTING_REMOVED, activityReason);
             }
             List<QuestionableActivityListingDTO> activities
-                = listingQuestionableActivityProvider.checkMipsMeasuresAdded(origListing, newListing);
+                = listingQuestionableActivityProvider.checkMeasuresAdded(origListing, newListing);
             if (activities != null && activities.size() > 0) {
-                activities.stream().forEach(mipsMeasureActivity -> {
-                    createListingActivity(mipsMeasureActivity, origListing.getId(), activityDate, activityUser,
-                            QuestionableActivityTriggerConcept.MIPS_MEASURE_ADDED, activityReason);
+                activities.stream().forEach(measureActivity -> {
+                    createListingActivity(measureActivity, origListing.getId(), activityDate, activityUser,
+                            QuestionableActivityTriggerConcept.MEASURE_ADDED, activityReason);
                 });
             }
-            activities = listingQuestionableActivityProvider.checkMipsMeasuresRemoved(origListing, newListing);
+            activities = listingQuestionableActivityProvider.checkMeasuresRemoved(origListing, newListing);
             if (activities != null && activities.size() > 0) {
-                activities.stream().forEach(mipsMeasureActivity -> {
-                    createListingActivity(mipsMeasureActivity, origListing.getId(), activityDate, activityUser,
-                            QuestionableActivityTriggerConcept.MIPS_MEASURE_REMOVED, activityReason);
+                activities.stream().forEach(measureActivity -> {
+                    createListingActivity(measureActivity, origListing.getId(), activityDate, activityUser,
+                            QuestionableActivityTriggerConcept.MEASURE_REMOVED, activityReason);
                 });
             }
 

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.listing.mipsMeasure;
+package gov.healthit.chpl.listing.measure;
 
 import java.util.Date;
 
@@ -9,13 +9,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.domain.MipsMeasurementType;
+import gov.healthit.chpl.domain.MeasurementType;
 import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "mips_type")
-public class ListingMipsMeasureTypeEntity {
+@Table(name = "measure_type")
+public class ListingMeasureTypeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,8 +37,8 @@ public class ListingMipsMeasureTypeEntity {
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
-    public MipsMeasurementType convert() {
-        MipsMeasurementType type = new MipsMeasurementType();
+    public MeasurementType convert() {
+        MeasurementType type = new MeasurementType();
         type.setId(getId());
         type.setName(getName());
         return type;

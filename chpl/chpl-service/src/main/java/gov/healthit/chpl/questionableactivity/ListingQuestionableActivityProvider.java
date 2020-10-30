@@ -23,7 +23,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
-import gov.healthit.chpl.domain.ListingMipsMeasure;
+import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.service.CertificationCriterionService;
@@ -468,70 +468,70 @@ public class ListingQuestionableActivityProvider {
         return activity;
     }
 
-    public List<QuestionableActivityListingDTO> checkMipsMeasuresAdded(
+    public List<QuestionableActivityListingDTO> checkMeasuresAdded(
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
-        List<QuestionableActivityListingDTO> mipsMeasuresAddedActivities = new ArrayList<QuestionableActivityListingDTO>();
-        if (origListing.getMipsMeasures() != null && origListing.getMipsMeasures().size() > 0
-                && newListing.getMipsMeasures() != null && newListing.getMipsMeasures().size() > 0) {
-            for (ListingMipsMeasure newMipsMeasure : newListing.getMipsMeasures()) {
-                Optional<ListingMipsMeasure> matchingOrigMeasure = origListing.getMipsMeasures().stream()
-                    .filter(origMipsMeasure -> origMipsMeasure.getId().equals(newMipsMeasure.getId()))
+        List<QuestionableActivityListingDTO> measuresAddedActivities = new ArrayList<QuestionableActivityListingDTO>();
+        if (origListing.getMeasures() != null && origListing.getMeasures().size() > 0
+                && newListing.getMeasures() != null && newListing.getMeasures().size() > 0) {
+            for (ListingMeasure newMeasure : newListing.getMeasures()) {
+                Optional<ListingMeasure> matchingOrigMeasure = origListing.getMeasures().stream()
+                    .filter(origMeasure -> origMeasure.getId().equals(newMeasure.getId()))
                     .findFirst();
                 if (!matchingOrigMeasure.isPresent()) {
                     QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
                     activity.setBefore(null);
-                    activity.setAfter(newMipsMeasure.getMeasurementType().getName()
-                            + " measure " + newMipsMeasure.getMeasure().getName()
-                            + " for " + newMipsMeasure.getMeasure().getAbbreviation());
-                    mipsMeasuresAddedActivities.add(activity);
+                    activity.setAfter(newMeasure.getMeasurementType().getName()
+                            + " measure " + newMeasure.getMeasure().getName()
+                            + " for " + newMeasure.getMeasure().getAbbreviation());
+                    measuresAddedActivities.add(activity);
                 }
             }
-        } else if (newListing.getMipsMeasures() != null
-                && (origListing.getMipsMeasures() == null || origListing.getMipsMeasures().size() == 0)) {
-            for (ListingMipsMeasure newMipsMeasure : newListing.getMipsMeasures()) {
+        } else if (newListing.getMeasures() != null
+                && (origListing.getMeasures() == null || origListing.getMeasures().size() == 0)) {
+            for (ListingMeasure newMeasure : newListing.getMeasures()) {
                     QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
                     activity.setBefore(null);
-                    activity.setAfter(newMipsMeasure.getMeasurementType().getName()
-                            + " measure " + newMipsMeasure.getMeasure().getName()
-                            + " for " + newMipsMeasure.getMeasure().getAbbreviation());
-                    mipsMeasuresAddedActivities.add(activity);
+                    activity.setAfter(newMeasure.getMeasurementType().getName()
+                            + " measure " + newMeasure.getMeasure().getName()
+                            + " for " + newMeasure.getMeasure().getAbbreviation());
+                    measuresAddedActivities.add(activity);
             }
         }
-        return mipsMeasuresAddedActivities;
+        return measuresAddedActivities;
     }
 
-    public List<QuestionableActivityListingDTO> checkMipsMeasuresRemoved(
+    public List<QuestionableActivityListingDTO> checkMeasuresRemoved(
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
-        List<QuestionableActivityListingDTO> mipsMeasuresRemovedActivities = new ArrayList<QuestionableActivityListingDTO>();
-        if (origListing.getMipsMeasures() != null && origListing.getMipsMeasures().size() > 0
-                && newListing.getMipsMeasures() != null && newListing.getMipsMeasures().size() > 0) {
-            for (ListingMipsMeasure origMipsMeasure : origListing.getMipsMeasures()) {
-                Optional<ListingMipsMeasure> matchingNewMeasure = newListing.getMipsMeasures().stream()
-                    .filter(newMipsMeasure -> origMipsMeasure.getId().equals(newMipsMeasure.getId()))
+        List<QuestionableActivityListingDTO> measuresRemovedActivities = new ArrayList<QuestionableActivityListingDTO>();
+        if (origListing.getMeasures() != null && origListing.getMeasures().size() > 0
+                && newListing.getMeasures() != null && newListing.getMeasures().size() > 0) {
+            for (ListingMeasure origMeasure : origListing.getMeasures()) {
+                Optional<ListingMeasure> matchingNewMeasure = newListing.getMeasures().stream()
+                    .filter(newMeasure -> origMeasure.getId().equals(newMeasure.getId()))
                     .findFirst();
                 if (!matchingNewMeasure.isPresent()) {
                     QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
-                    activity.setBefore(origMipsMeasure.getMeasurementType().getName()
-                            + " measure " + origMipsMeasure.getMeasure().getName()
-                            + " for " + origMipsMeasure.getMeasure().getAbbreviation());
+                    activity.setBefore(origMeasure.getMeasurementType().getName()
+                            + " measure " + origMeasure.getMeasure().getName()
+                            + " for " + origMeasure.getMeasure().getAbbreviation());
                     activity.setAfter(null);
-                    mipsMeasuresRemovedActivities.add(activity);
+                    measuresRemovedActivities.add(activity);
                 }
             }
-        } else if (origListing.getMipsMeasures() != null
-                && (newListing.getMipsMeasures() == null || newListing.getMipsMeasures().size() == 0)) {
-            for (ListingMipsMeasure origMipsMeasure : origListing.getMipsMeasures()) {
+        } else if (origListing.getMeasures() != null
+                && (newListing.getMeasures() == null || newListing.getMeasures().size() == 0)) {
+            for (ListingMeasure origMeasure : origListing.getMeasures()) {
                     QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
-                    activity.setBefore(origMipsMeasure.getMeasurementType().getName()
-                            + " measure " + origMipsMeasure.getMeasure().getName()
-                            + " for " + origMipsMeasure.getMeasure().getAbbreviation());
+                    activity.setBefore(origMeasure.getMeasurementType().getName()
+                            + " measure " + origMeasure.getMeasure().getName()
+                            + " for " + origMeasure.getMeasure().getAbbreviation());
                     activity.setAfter(null);
-                    mipsMeasuresRemovedActivities.add(activity);
+                    measuresRemovedActivities.add(activity);
             }
         }
-        return mipsMeasuresRemovedActivities;
+        return measuresRemovedActivities;
     }
 
     private Date getB3ChangeDate() throws ParseException {

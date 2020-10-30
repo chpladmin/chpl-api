@@ -8,44 +8,43 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.ListingMipsMeasure;
+import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 
-@Component("mipsMeasureComparisonReviewer")
-public class MipsMeasureComparisonReviewer implements ComparisonReviewer {
+@Component("measureComparisonReviewer")
+public class MeasureComparisonReviewer implements ComparisonReviewer {
     private ResourcePermissions resourcePermissions;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public MipsMeasureComparisonReviewer(ResourcePermissions resourcePermissions,
+    public MeasureComparisonReviewer(ResourcePermissions resourcePermissions,
             ErrorMessageUtil msgUtil) {
         this.resourcePermissions = resourcePermissions;
         this.msgUtil = msgUtil;
     }
 
     @Override
-    public void review(CertifiedProductSearchDetails existingListing,
-            final CertifiedProductSearchDetails updatedListing) {
-        // checking for the addition of a removed mips measure.
+    public void review(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing) {
+        // checking for the addition of a removed measure.
         // this is only disallowed if the user is not ADMIN/ONC, so first check the permissions
         if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
             return;
         }
 
-        List<ListingMipsMeasure> existingMipsMeasuresForListing = existingListing.getMipsMeasures();
-        List<ListingMipsMeasure> updatedMipsMeasuresForCriterion = updatedListing.getMipsMeasures();
+        List<ListingMeasure> existingMeasuresForListing = existingListing.getMeasures();
+        List<ListingMeasure> updatedMeasuresForCriterion = updatedListing.getMeasures();
 
-        getNewlyAddedRemovedItems(updatedMipsMeasuresForCriterion, existingMipsMeasuresForListing).stream()
+        getNewlyAddedRemovedItems(updatedMeasuresForCriterion, existingMeasuresForListing).stream()
                 .forEach(mm -> updatedListing.getErrorMessages()
-                        .add(getErrorMessage("listing.removedMipsMeasure", mm)));
+                        .add(getErrorMessage("listing.removedMeasure", mm)));
     }
 
-    private List<ListingMipsMeasure> getNewlyAddedRemovedItems(List<ListingMipsMeasure> listInUpdatedListing,
-            List<ListingMipsMeasure> listInOriginalListing) {
+    private List<ListingMeasure> getNewlyAddedRemovedItems(List<ListingMeasure> listInUpdatedListing,
+            List<ListingMeasure> listInOriginalListing) {
 
-        Predicate<ListingMipsMeasure> notInOriginalListing = updated -> !listInOriginalListing.stream()
+        Predicate<ListingMeasure> notInOriginalListing = updated -> !listInOriginalListing.stream()
                 .anyMatch(original -> updated.getId().equals(original.getId()));
 
         return listInUpdatedListing.stream()
@@ -54,11 +53,11 @@ public class MipsMeasureComparisonReviewer implements ComparisonReviewer {
                 .collect(Collectors.toList());
     }
 
-    private String getErrorMessage(String messageCode, ListingMipsMeasure listingMipsMeasure) {
+    private String getErrorMessage(String messageCode, ListingMeasure listingMeasure) {
         return msgUtil.getMessage(messageCode,
-                listingMipsMeasure.getMeasurementType().getName(),
-                listingMipsMeasure.getMeasure().getName(),
-                listingMipsMeasure.getMeasure().getAbbreviation());
+                listingMeasure.getMeasurementType().getName(),
+                listingMeasure.getMeasure().getName(),
+                listingMeasure.getMeasure().getAbbreviation());
     }
 
 }

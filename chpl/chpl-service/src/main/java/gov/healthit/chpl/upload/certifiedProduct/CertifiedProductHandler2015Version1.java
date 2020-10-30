@@ -53,11 +53,11 @@ import gov.healthit.chpl.entity.listing.pending.PendingTestParticipantEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingTestTaskEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
-import gov.healthit.chpl.listing.mipsMeasure.ListingMipsMeasureTypeEntity;
-import gov.healthit.chpl.listing.mipsMeasure.MipsMeasureCriterionMapEntity;
-import gov.healthit.chpl.listing.mipsMeasure.MipsMeasureEntity;
-import gov.healthit.chpl.listing.mipsMeasure.PendingListingMipsMeasureCriterionMapEntity;
-import gov.healthit.chpl.listing.mipsMeasure.PendingListingMipsMeasureEntity;
+import gov.healthit.chpl.listing.measure.ListingMeasureTypeEntity;
+import gov.healthit.chpl.listing.measure.MeasureCriterionMapEntity;
+import gov.healthit.chpl.listing.measure.MeasureEntity;
+import gov.healthit.chpl.listing.measure.PendingListingMeasureCriterionMapEntity;
+import gov.healthit.chpl.listing.measure.PendingListingMeasureEntity;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap2015Version1;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -466,11 +466,11 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                         currIndex += getColumnIndexMap().getTestFunctionalityColumnCount();
                     } else if (colTitle.equalsIgnoreCase(getColumnIndexMap().getG1MeasureColumnLabel())) {
                         parseMeasures(pendingCertifiedProduct, cert,
-                                listingMipsDao.getMeasurementTypeEntity(G1_MEASUREMENT_TYPE_NAME), currIndex);
+                                listingMeasureDao.getMeasurementTypeEntity(G1_MEASUREMENT_TYPE_NAME), currIndex);
                         currIndex += getColumnIndexMap().getG1MeasureColumnCount();
                     } else if (colTitle.equalsIgnoreCase(getColumnIndexMap().getG2MeasureColumnLabel())) {
                         parseMeasures(pendingCertifiedProduct, cert,
-                                listingMipsDao.getMeasurementTypeEntity(G2_MEASUREMENT_TYPE_NAME), currIndex);
+                                listingMeasureDao.getMeasurementTypeEntity(G2_MEASUREMENT_TYPE_NAME), currIndex);
                         currIndex += getColumnIndexMap().getG2MeasureColumnCount();
                     } else if (colTitle.equalsIgnoreCase(getColumnIndexMap().getAdditionalSoftwareColumnLabel())) {
                         Boolean hasAdditionalSoftware = asBoolean(firstRow.get(currIndex).trim());
@@ -688,7 +688,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
     }
 
     protected void parseMeasures(PendingCertifiedProductEntity listing, PendingCertificationResultEntity cert,
-            ListingMipsMeasureTypeEntity type, int measureCol) {
+            ListingMeasureTypeEntity type, int measureCol) {
         // ignore measures for G7
         if (cert.getMappedCriterion().getNumber().equals(MEASURE_CRITERIA_TO_IGNORE)) {
             return;
@@ -702,64 +702,64 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                         cert.getMappedCriterion().getId(), measureVal);
                 if (macraId == null) {
                     //no macra measure could be found - save entered values so we can make an error msg
-                    PendingListingMipsMeasureEntity mmEntity = getNotFoundMipsMeasureEntityFromListing(listing, measureVal, type);
-                    if (mmEntity != null) {
-                        addAssociatedCriterionToMeasure(mmEntity, cert);
+                    PendingListingMeasureEntity measureEntity = getNotFoundMeasureEntityFromListing(listing, measureVal, type);
+                    if (measureEntity != null) {
+                        addAssociatedCriterionToMeasure(measureEntity, cert);
                     } else {
-                        mmEntity = new PendingListingMipsMeasureEntity();
-                        mmEntity.setUploadedValue(measureVal);
-                        mmEntity.setMipsTypeId(type.getId());
-                        mmEntity.setType(type);
-                        addAssociatedCriterionToMeasure(mmEntity, cert);
-                        listing.getMipsMeasures().add(mmEntity);
+                        measureEntity = new PendingListingMeasureEntity();
+                        measureEntity.setUploadedValue(measureVal);
+                        measureEntity.setMeasureTypeId(type.getId());
+                        measureEntity.setType(type);
+                        addAssociatedCriterionToMeasure(measureEntity, cert);
+                        listing.getMeasures().add(measureEntity);
                     }
                 } else {
-                    MipsMeasureEntity mappedMipsMeasure = mipsMeasureDao.getEntityByMacraMeasureId(macraId);
-                    if (mappedMipsMeasure == null) {
-                        //no mips measure was mapped to this macra measure - save entered values so we can make an error msg
-                        PendingListingMipsMeasureEntity mmEntity
-                            = getNotFoundMipsMeasureEntityFromListing(listing, measureVal, type);
-                        if (mmEntity != null) {
-                            addAssociatedCriterionToMeasure(mmEntity, cert);
+                    MeasureEntity mappedMeasure = measureDao.getEntityByMacraMeasureId(macraId);
+                    if (mappedMeasure == null) {
+                        //no measure was mapped to this macra measure - save entered values so we can make an error msg
+                        PendingListingMeasureEntity measureEntity
+                            = getNotFoundMeasureEntityFromListing(listing, measureVal, type);
+                        if (measureEntity != null) {
+                            addAssociatedCriterionToMeasure(measureEntity, cert);
                         } else {
-                            mmEntity = new PendingListingMipsMeasureEntity();
-                            mmEntity.setUploadedValue(measureVal);
-                            mmEntity.setMipsTypeId(type.getId());
-                            mmEntity.setType(type);
-                            addAssociatedCriterionToMeasure(mmEntity, cert);
-                            listing.getMipsMeasures().add(mmEntity);
+                            measureEntity = new PendingListingMeasureEntity();
+                            measureEntity.setUploadedValue(measureVal);
+                            measureEntity.setMeasureTypeId(type.getId());
+                            measureEntity.setType(type);
+                            addAssociatedCriterionToMeasure(measureEntity, cert);
+                            listing.getMeasures().add(measureEntity);
                         }
                     } else {
-                        PendingListingMipsMeasureEntity mmEntity
-                            = getMipsMeasureEntityFromListing(listing, mappedMipsMeasure, type);
-                        if (mmEntity == null) {
-                            mmEntity = new PendingListingMipsMeasureEntity();
-                            mmEntity.setUploadedValue(measureVal);
-                            mmEntity.setMipsMeasureId(mappedMipsMeasure.getId());
-                            mmEntity.setMeasure(mappedMipsMeasure);
-                            mmEntity.setMipsTypeId(type.getId());
-                            mmEntity.setType(type);
+                        PendingListingMeasureEntity measureEntity
+                            = getMeasureEntityFromListing(listing, mappedMeasure, type);
+                        if (measureEntity == null) {
+                            measureEntity = new PendingListingMeasureEntity();
+                            measureEntity.setUploadedValue(measureVal);
+                            measureEntity.setMeasureId(mappedMeasure.getId());
+                            measureEntity.setMeasure(mappedMeasure);
+                            measureEntity.setMeasureTypeId(type.getId());
+                            measureEntity.setType(type);
                             //add all allowed criteria if the user cannot select
-                            if (!mappedMipsMeasure.getCriteriaSelectionRequired()) {
-                                for (MipsMeasureCriterionMapEntity requiredCriterionMap : mappedMipsMeasure.getAllowedCriteria()) {
-                                    PendingListingMipsMeasureCriterionMapEntity criterionMap
-                                        = new PendingListingMipsMeasureCriterionMapEntity();
+                            if (!mappedMeasure.getCriteriaSelectionRequired()) {
+                                for (MeasureCriterionMapEntity requiredCriterionMap : mappedMeasure.getAllowedCriteria()) {
+                                    PendingListingMeasureCriterionMapEntity criterionMap
+                                        = new PendingListingMeasureCriterionMapEntity();
                                     criterionMap.setCertificationCriterionId(requiredCriterionMap.getCertificationCriterionId());
                                     criterionMap.setCriterion(requiredCriterionMap.getCriterion());
-                                    mmEntity.getAssociatedCriteria().add(criterionMap);
+                                    measureEntity.getAssociatedCriteria().add(criterionMap);
                                 }
                             }
-                            listing.getMipsMeasures().add(mmEntity);
+                            listing.getMeasures().add(measureEntity);
                         }
-                        addAssociatedCriterionToMeasure(mmEntity, cert);
+                        addAssociatedCriterionToMeasure(measureEntity, cert);
                     }
                 }
             }
         }
     }
 
-    private void addAssociatedCriterionToMeasure(PendingListingMipsMeasureEntity mmEntity, PendingCertificationResultEntity cert) {
-        PendingListingMipsMeasureCriterionMapEntity criterionMap = new PendingListingMipsMeasureCriterionMapEntity();
+    private void addAssociatedCriterionToMeasure(PendingListingMeasureEntity mmEntity, PendingCertificationResultEntity cert) {
+        PendingListingMeasureCriterionMapEntity criterionMap = new PendingListingMeasureCriterionMapEntity();
         criterionMap.setCertificationCriterionId(cert.getMappedCriterion().getId());
         try {
             criterionMap.setCriterion(certDao.getEntityById(criterionMap.getCertificationCriterionId()));
@@ -767,29 +767,29 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
         mmEntity.getAssociatedCriteria().add(criterionMap);
     }
 
-    private PendingListingMipsMeasureEntity getMipsMeasureEntityFromListing(PendingCertifiedProductEntity listing,
-            MipsMeasureEntity measureToFind, ListingMipsMeasureTypeEntity measurementType) {
-        Optional<PendingListingMipsMeasureEntity> foundMipsMeasure =
-                listing.getMipsMeasures().stream()
-                .filter(listingMipsMeasure -> listingMipsMeasure.getMipsMeasureId() != null
+    private PendingListingMeasureEntity getMeasureEntityFromListing(PendingCertifiedProductEntity listing,
+            MeasureEntity measureToFind, ListingMeasureTypeEntity measurementType) {
+        Optional<PendingListingMeasureEntity> foundMeasure =
+                listing.getMeasures().stream()
+                .filter(listingMeasure -> listingMeasure.getMeasureId() != null
                                                 && measureToFind.getId() != null
-                                                && listingMipsMeasure.getMipsMeasureId().equals(measureToFind.getId()))
-                .filter(listingMipsMeasureSameId ->
-                    listingMipsMeasureSameId.getMipsTypeId().equals(measurementType.getId()))
+                                                && listingMeasure.getMeasureId().equals(measureToFind.getId()))
+                .filter(listingMeasureSameId ->
+                    listingMeasureSameId.getMeasureTypeId().equals(measurementType.getId()))
                 .findFirst();
-        return foundMipsMeasure.isPresent() ? foundMipsMeasure.get() : null;
+        return foundMeasure.isPresent() ? foundMeasure.get() : null;
     }
 
-    private PendingListingMipsMeasureEntity getNotFoundMipsMeasureEntityFromListing(PendingCertifiedProductEntity listing,
-            String uploadedText, ListingMipsMeasureTypeEntity measurementType) {
-        Optional<PendingListingMipsMeasureEntity> foundMipsMeasure =
-                listing.getMipsMeasures().stream()
-                .filter(listingMipsMeasure -> listingMipsMeasure.getUploadedValue() != null
-                                                && listingMipsMeasure.getUploadedValue().equals(uploadedText))
-                .filter(listingMipsMeasureSameId ->
-                    listingMipsMeasureSameId.getMipsTypeId().equals(measurementType.getId()))
+    private PendingListingMeasureEntity getNotFoundMeasureEntityFromListing(PendingCertifiedProductEntity listing,
+            String uploadedText, ListingMeasureTypeEntity measurementType) {
+        Optional<PendingListingMeasureEntity> foundMeasure =
+                listing.getMeasures().stream()
+                .filter(listingMeasure -> listingMeasure.getUploadedValue() != null
+                                                && listingMeasure.getUploadedValue().equals(uploadedText))
+                .filter(listingMeasureSameId ->
+                    listingMeasureSameId.getMeasureTypeId().equals(measurementType.getId()))
                 .findFirst();
-        return foundMipsMeasure.isPresent() ? foundMipsMeasure.get() : null;
+        return foundMeasure.isPresent() ? foundMeasure.get() : null;
     }
 
     protected void parseTasksAndParticipants(final PendingCertifiedProductEntity product,

@@ -29,7 +29,7 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestTaskP
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingTestTaskDTO;
-import gov.healthit.chpl.listing.mipsMeasure.MipsMeasureDAO;
+import gov.healthit.chpl.listing.measure.MeasureDAO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -109,7 +109,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     private List<String> g7g8g9Criterion = new ArrayList<String>();
     private List<String> d2d10Criterion = new ArrayList<String>();
 
-    private MipsMeasureDAO macraDao;
+    private MeasureDAO macraDao;
     private TestFunctionalityDAO testFuncDao;
     private TestProcedureDAO testProcDao;
     private TestDataDAO testDataDao;
@@ -117,7 +117,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     private ValidationUtils validationUtils;
 
     @Autowired
-    public RequiredData2015Reviewer(MipsMeasureDAO macraDao, TestFunctionalityDAO testFuncDao,
+    public RequiredData2015Reviewer(MeasureDAO macraDao, TestFunctionalityDAO testFuncDao,
             TestProcedureDAO testProcDao, TestDataDAO testDataDao, CertificationCriterionDAO criteriaDao,
             ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
             CertificationResultRules certRules, ValidationUtils validationUtils) {

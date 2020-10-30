@@ -11,12 +11,12 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.ListingMipsMeasure;
-import gov.healthit.chpl.domain.MipsMeasure;
-import gov.healthit.chpl.domain.MipsMeasurementType;
+import gov.healthit.chpl.domain.ListingMeasure;
+import gov.healthit.chpl.domain.Measure;
+import gov.healthit.chpl.domain.MeasurementType;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-public class MipsMeasureDuplicateReviewerTest {
+public class MeasureDuplicateReviewerTest {
     private static final String DUPLICATE_MSG =
             "Duplicate %s Measure: %s for %s was found. The duplicates have been removed.";
     private static final String MEASURE_NAME = "Patient-Specific Education: Eligible Professional";
@@ -25,24 +25,24 @@ public class MipsMeasureDuplicateReviewerTest {
     private static final String RT5 = "RT5";
 
     private ErrorMessageUtil msgUtil;
-    private MipsMeasureDuplicateReviewer reviewer;
+    private MeasureDuplicateReviewer reviewer;
 
     @Before
     public void setup() {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.duplicateMipsMeasure"),
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.duplicateMeasure"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format(DUPLICATE_MSG, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
-        reviewer = new MipsMeasureDuplicateReviewer(msgUtil);
+        reviewer = new MeasureDuplicateReviewer(msgUtil);
     }
 
     @Test
     public void review_duplicateExists_warningFoundAndDuplicateRemoved() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-        ListingMipsMeasure measure1 = getMipsMeasure(1L, 1L, MEASURE_NAME, RT3, 1L, "G1");
-        ListingMipsMeasure measure2 = getMipsMeasure(2L, 1L, MEASURE_NAME, RT3, 1L, "G1");
-        listing.getMipsMeasures().add(measure1);
-        listing.getMipsMeasures().add(measure2);
+        ListingMeasure measure1 = getMeasure(1L, 1L, MEASURE_NAME, RT3, 1L, "G1");
+        ListingMeasure measure2 = getMeasure(2L, 1L, MEASURE_NAME, RT3, 1L, "G1");
+        listing.getMeasures().add(measure1);
+        listing.getMeasures().add(measure2);
 
         reviewer.review(listing);
 
@@ -50,24 +50,24 @@ public class MipsMeasureDuplicateReviewerTest {
         assertEquals(1, listing.getWarningMessages().stream()
                 .filter(warning -> warning.equals(String.format(DUPLICATE_MSG, "G1", MEASURE_NAME, RT3)))
                 .count());
-        assertEquals(1, listing.getMipsMeasures().size());
+        assertEquals(1, listing.getMeasures().size());
     }
 
     @Test
     public void review_duplicateExistsButDifferentCriteria_warningFoundAndDuplicateRemoved() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-        ListingMipsMeasure measure1 = getMipsMeasure(1L, 1L, MEASURE_NAME, RT3, 1L, "G1");
+        ListingMeasure measure1 = getMeasure(1L, 1L, MEASURE_NAME, RT3, 1L, "G1");
         measure1.getAssociatedCriteria().add(CertificationCriterion.builder()
                 .id(1L)
                 .number("170.315 (a)(1)")
                 .build());
-        ListingMipsMeasure measure2 = getMipsMeasure(2L, 1L, MEASURE_NAME, RT3, 1L, "G1");
+        ListingMeasure measure2 = getMeasure(2L, 1L, MEASURE_NAME, RT3, 1L, "G1");
         measure2.getAssociatedCriteria().add(CertificationCriterion.builder()
                 .id(2L)
                 .number("170.315 (a)(2)")
                 .build());
-        listing.getMipsMeasures().add(measure1);
-        listing.getMipsMeasures().add(measure2);
+        listing.getMeasures().add(measure1);
+        listing.getMeasures().add(measure2);
 
         reviewer.review(listing);
 
@@ -75,60 +75,60 @@ public class MipsMeasureDuplicateReviewerTest {
         assertEquals(1, listing.getWarningMessages().stream()
                 .filter(warning -> warning.equals(String.format(DUPLICATE_MSG, "G1", MEASURE_NAME, RT3)))
                 .count());
-        assertEquals(1, listing.getMipsMeasures().size());
+        assertEquals(1, listing.getMeasures().size());
     }
 
     @Test
     public void review_differentTypes_noWarning() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-        ListingMipsMeasure measure1 = getMipsMeasure(1L, 1L, MEASURE_NAME, RT3, 1L, "G1");
-        ListingMipsMeasure measure2 = getMipsMeasure(2L, 1L, MEASURE_NAME, RT3, 2L, "G2");
-        listing.getMipsMeasures().add(measure1);
-        listing.getMipsMeasures().add(measure2);
+        ListingMeasure measure1 = getMeasure(1L, 1L, MEASURE_NAME, RT3, 1L, "G1");
+        ListingMeasure measure2 = getMeasure(2L, 1L, MEASURE_NAME, RT3, 2L, "G2");
+        listing.getMeasures().add(measure1);
+        listing.getMeasures().add(measure2);
 
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(2, listing.getMipsMeasures().size());
+        assertEquals(2, listing.getMeasures().size());
     }
 
     @Test
     public void review_noDuplicates_noWarning() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-        ListingMipsMeasure measure1 = getMipsMeasure(1L, 1L, MEASURE_NAME, RT3, 1L, "G1");
-        ListingMipsMeasure measure2 = getMipsMeasure(2L, 2L, MEASURE_NAME_2, RT5, 2L, "G2");
-        listing.getMipsMeasures().add(measure1);
-        listing.getMipsMeasures().add(measure2);
+        ListingMeasure measure1 = getMeasure(1L, 1L, MEASURE_NAME, RT3, 1L, "G1");
+        ListingMeasure measure2 = getMeasure(2L, 2L, MEASURE_NAME_2, RT5, 2L, "G2");
+        listing.getMeasures().add(measure1);
+        listing.getMeasures().add(measure2);
 
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(2, listing.getMipsMeasures().size());
+        assertEquals(2, listing.getMeasures().size());
     }
 
     @Test
-    public void review_emptyMipsMeasures_noWarning() {
+    public void review_emptyMeasures_noWarning() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-        listing.getMipsMeasures().clear();
+        listing.getMeasures().clear();
 
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(0, listing.getMipsMeasures().size());
+        assertEquals(0, listing.getMeasures().size());
     }
 
     @Test
     public void testDuplicateExistInLargerSet() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-        ListingMipsMeasure measure1 = getMipsMeasure(1L, 1L, MEASURE_NAME, RT3, 1L, "G1");
-        ListingMipsMeasure measure2 = getMipsMeasure(2L, 2L, MEASURE_NAME_2, RT5, 2L, "G2");
-        ListingMipsMeasure measure3 = getMipsMeasure(3L, 1L, MEASURE_NAME, RT3, 1L, "G1");
-        ListingMipsMeasure measure4 = getMipsMeasure(4L, 2L, MEASURE_NAME_2, RT5, 1L, "G1");
+        ListingMeasure measure1 = getMeasure(1L, 1L, MEASURE_NAME, RT3, 1L, "G1");
+        ListingMeasure measure2 = getMeasure(2L, 2L, MEASURE_NAME_2, RT5, 2L, "G2");
+        ListingMeasure measure3 = getMeasure(3L, 1L, MEASURE_NAME, RT3, 1L, "G1");
+        ListingMeasure measure4 = getMeasure(4L, 2L, MEASURE_NAME_2, RT5, 1L, "G1");
 
-        listing.getMipsMeasures().add(measure1);
-        listing.getMipsMeasures().add(measure2);
-        listing.getMipsMeasures().add(measure3);
-        listing.getMipsMeasures().add(measure4);
+        listing.getMeasures().add(measure1);
+        listing.getMeasures().add(measure2);
+        listing.getMeasures().add(measure3);
+        listing.getMeasures().add(measure4);
 
         reviewer.review(listing);
 
@@ -136,19 +136,19 @@ public class MipsMeasureDuplicateReviewerTest {
         assertEquals(1, listing.getWarningMessages().stream()
                 .filter(warning -> warning.equals(String.format(DUPLICATE_MSG, "G1", MEASURE_NAME, RT3)))
                 .count());
-        assertEquals(3, listing.getMipsMeasures().size());
+        assertEquals(3, listing.getMeasures().size());
     }
 
-    private ListingMipsMeasure getMipsMeasure(Long id, Long measureId, String measureName,
+    private ListingMeasure getMeasure(Long id, Long measureId, String measureName,
             String rtAbbrev, Long typeId, String typeName) {
-        return ListingMipsMeasure.builder()
+        return ListingMeasure.builder()
             .id(id)
-            .measure(MipsMeasure.builder()
+            .measure(Measure.builder()
                     .id(measureId)
                     .name(measureName)
                     .abbreviation(rtAbbrev)
                     .build())
-            .measurementType(MipsMeasurementType.builder()
+            .measurementType(MeasurementType.builder()
                     .id(typeId)
                     .name(typeName)
                     .build())

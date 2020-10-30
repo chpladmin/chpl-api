@@ -1,4 +1,4 @@
-package gov.healthit.chpl.validation.pendingListing.reviewer.edition2015;
+package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -8,15 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMipsMeasureDTO;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
-import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
-@Component("pendingMipsMeasureValidityReviewer")
-public class MipsMeasureValidityReviewer implements Reviewer {
+@Component("measureValidityReviewer")
+public class MeasureValidityReviewer implements Reviewer {
     private static final String MEASUREMENT_TYPE_G1 = "G1";
     private static final String MEASUREMENT_TYPE_G2 = "G2";
     private static final String G1_CRITERIA_NUMBER = "170.315 (g)(1)";
@@ -26,23 +26,20 @@ public class MipsMeasureValidityReviewer implements Reviewer {
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public MipsMeasureValidityReviewer(ValidationUtils validationUtils, ErrorMessageUtil msgUtil) {
+    public MeasureValidityReviewer(ValidationUtils validationUtils, ErrorMessageUtil msgUtil) {
         this.validationUtils = validationUtils;
         this.msgUtil = msgUtil;
     }
 
     @Override
-    public void review(PendingCertifiedProductDTO listing) {
+    public void review(CertifiedProductSearchDetails listing) {
         //if they have attested to G1 or G2 criterion, require at least one measure of that type
         reviewG1RequiredMeasures(listing);
         reviewG2RequiredMeasures(listing);
 
-        for (PendingCertifiedProductMipsMeasureDTO measure : listing.getMipsMeasures()) {
-            if (measure != null && measure.getMeasure() == null) {
-                reviewMeasureDidNotExist(listing, measure);
-            } else if (measure != null && measure.getMeasure() != null) {
+        for (ListingMeasure measure : listing.getMeasures()) {
+            if (measure != null && measure.getMeasure() != null) {
                 reviewMeasureHasId(listing, measure);
-                reviewIcsAndRemovedMeasures(listing, measure);
                 reviewMeasureHasAssociatedCriteria(listing, measure);
                 reviewMeasureHasOnlyAllowedCriteria(listing, measure);
                 if (measure.getMeasure().getRequiresCriteriaSelection() != null
@@ -53,16 +50,16 @@ public class MipsMeasureValidityReviewer implements Reviewer {
         }
     }
 
-    private void reviewG1RequiredMeasures(PendingCertifiedProductDTO listing) {
-        List<CertificationCriterion> attestedCriteria = listing.getCertificationCriterion().stream()
-                .filter(certResult -> certResult.getMeetsCriteria())
-                .map(certResult -> new CertificationCriterion(certResult.getCriterion()))
+    private void reviewG1RequiredMeasures(CertifiedProductSearchDetails listing) {
+        List<CertificationCriterion> attestedCriteria = listing.getCertificationResults().stream()
+                .filter(certResult -> certResult.isSuccess())
+                .map(certResult -> certResult.getCriterion())
                 .collect(Collectors.toList());
         if (validationUtils.hasCert(G1_CRITERIA_NUMBER, attestedCriteria)) {
-            // must have at least one mips measure of type G1
-            long g1MeasureCount = listing.getMipsMeasures().stream()
-                .filter(mipsMeasure -> mipsMeasure.getMeasurementType() != null
-                        && mipsMeasure.getMeasurementType().getName().equals(MEASUREMENT_TYPE_G1))
+            // must have at least one measure of type G1
+            long g1MeasureCount = listing.getMeasures().stream()
+                .filter(measure -> measure.getMeasurementType() != null
+                        && measure.getMeasurementType().getName().equals(MEASUREMENT_TYPE_G1))
                 .count();
             if (g1MeasureCount == 0) {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.missingG1Measures"));
@@ -70,16 +67,16 @@ public class MipsMeasureValidityReviewer implements Reviewer {
         }
     }
 
-    private void reviewG2RequiredMeasures(PendingCertifiedProductDTO listing) {
-        List<CertificationCriterion> attestedCriteria = listing.getCertificationCriterion().stream()
-                .filter(certResult -> certResult.getMeetsCriteria())
-                .map(certResult -> new CertificationCriterion(certResult.getCriterion()))
+    private void reviewG2RequiredMeasures(CertifiedProductSearchDetails listing) {
+        List<CertificationCriterion> attestedCriteria = listing.getCertificationResults().stream()
+                .filter(certResult -> certResult.isSuccess())
+                .map(certResult -> certResult.getCriterion())
                 .collect(Collectors.toList());
         if (validationUtils.hasCert(G2_CRITERIA_NUMBER, attestedCriteria)) {
-            // must have at least one mips measure of type G1
-            long g1MeasureCount = listing.getMipsMeasures().stream()
-                .filter(mipsMeasure -> mipsMeasure.getMeasurementType() != null
-                        && mipsMeasure.getMeasurementType().getName().equals(MEASUREMENT_TYPE_G2))
+            // must have at least one measure of type G1
+            long g1MeasureCount = listing.getMeasures().stream()
+                .filter(measure -> measure.getMeasurementType() != null
+                        && measure.getMeasurementType().getName().equals(MEASUREMENT_TYPE_G2))
                 .count();
             if (g1MeasureCount == 0) {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.missingG2Measures"));
@@ -87,22 +84,7 @@ public class MipsMeasureValidityReviewer implements Reviewer {
         }
     }
 
-    private void reviewIcsAndRemovedMeasures(
-            PendingCertifiedProductDTO listing, PendingCertifiedProductMipsMeasureDTO measure) {
-        if (measure.getMeasure() != null
-                && (listing.getIcs() == null || !listing.getIcs().booleanValue())
-                && measure.getMeasure().getRemoved() != null
-                && measure.getMeasure().getRemoved().booleanValue()) {
-            listing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.removedMipsMeasureNoIcs",
-                            measure.getMeasurementType().getName(),
-                            measure.getMeasure().getName(),
-                            measure.getMeasure().getAbbreviation()));
-        }
-    }
-
-    private void reviewMeasureHasOnlyAllowedCriteria(
-            PendingCertifiedProductDTO listing, PendingCertifiedProductMipsMeasureDTO measure) {
+    private void reviewMeasureHasOnlyAllowedCriteria(CertifiedProductSearchDetails listing, ListingMeasure measure) {
         if (measure.getMeasure() == null || measure.getAssociatedCriteria() == null
                 || measure.getMeasure().getAllowedCriteria() == null) {
             return;
@@ -119,7 +101,7 @@ public class MipsMeasureValidityReviewer implements Reviewer {
 
         assocCriteriaNotAllowed.stream().forEach(assocCriterionNotAllowed -> {
             listing.getErrorMessages().add(msgUtil.getMessage(
-                    "listing.mipsMeasure.associatedCriterionNotAllowed",
+                    "listing.measure.associatedCriterionNotAllowed",
                     measure.getMeasurementType().getName(),
                     measure.getMeasure().getName(),
                     measure.getMeasure().getAbbreviation(),
@@ -127,8 +109,7 @@ public class MipsMeasureValidityReviewer implements Reviewer {
         });
     }
 
-    private void reviewMeasureHasAllAllowedCriteria(
-            PendingCertifiedProductDTO listing, PendingCertifiedProductMipsMeasureDTO measure) {
+    private void reviewMeasureHasAllAllowedCriteria(CertifiedProductSearchDetails listing, ListingMeasure measure) {
         if (measure.getMeasure() == null || measure.getAssociatedCriteria() == null
                 || measure.getMeasure().getAllowedCriteria() == null) {
             return;
@@ -145,7 +126,7 @@ public class MipsMeasureValidityReviewer implements Reviewer {
 
         missingAllowedCriteria.stream().forEach(missingAllowedCriterion -> {
             listing.getErrorMessages().add(msgUtil.getMessage(
-                    "listing.mipsMeasure.missingRequiredCriterion",
+                    "listing.measure.missingRequiredCriterion",
                     measure.getMeasurementType().getName(),
                     measure.getMeasure().getName(),
                     measure.getMeasure().getAbbreviation(),
@@ -153,27 +134,24 @@ public class MipsMeasureValidityReviewer implements Reviewer {
         });
     }
 
-    private void reviewMeasureHasAssociatedCriteria(
-            PendingCertifiedProductDTO listing, PendingCertifiedProductMipsMeasureDTO measure) {
+    private void reviewMeasureHasAssociatedCriteria(CertifiedProductSearchDetails listing, ListingMeasure measure) {
         if (measure.getAssociatedCriteria() == null || measure.getAssociatedCriteria().size() == 0) {
             listing.getErrorMessages().add(msgUtil.getMessage(
-                    "listing.mipsMeasure.missingAssociatedCriteria",
+                    "listing.measure.missingAssociatedCriteria",
                     measure.getMeasurementType().getName(),
                     measure.getMeasure().getName(),
                     measure.getMeasure().getAbbreviation()));
         }
     }
 
-    private void reviewMeasureHasId(PendingCertifiedProductDTO listing, PendingCertifiedProductMipsMeasureDTO measure) {
+    private void reviewMeasureHasId(CertifiedProductSearchDetails listing, ListingMeasure measure) {
         if (measure == null) {
             return;
         }
 
         if (measure.getMeasure().getId() == null) {
             String nameForMsg = "";
-            if (measure.getUploadedValue() != null) {
-                nameForMsg = measure.getUploadedValue();
-            } else if (measure.getMeasure().getAbbreviation() != null) {
+            if (measure.getMeasure().getAbbreviation() != null) {
                     nameForMsg = measure.getMeasure().getAbbreviation();
             } else if (measure.getMeasure().getName() != null) {
                 nameForMsg = measure.getMeasure().getName();
@@ -181,25 +159,14 @@ public class MipsMeasureValidityReviewer implements Reviewer {
                 nameForMsg = measure.getMeasure().getRequiredTest();
             }
             listing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.invalidMipsMeasure", nameForMsg));
+                    msgUtil.getMessage("listing.invalidMeasure", nameForMsg));
         }
 
         if (measure.getMeasurementType() == null || measure.getMeasurementType().getId() == null) {
             String nameForMsg = measure.getMeasurementType() == null ? "null"
                     : measure.getMeasurementType().getName();
             listing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.invalidMipsMeasureType", nameForMsg));
-        }
-    }
-
-    private void reviewMeasureDidNotExist(PendingCertifiedProductDTO listing, PendingCertifiedProductMipsMeasureDTO measure) {
-        if (measure == null) {
-            return;
-        }
-
-        if (measure.getMeasure() == null) {
-            listing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.invalidMipsMeasure", measure.getUploadedValue()));
+                    msgUtil.getMessage("listing.invalidMeasureType", nameForMsg));
         }
     }
 }

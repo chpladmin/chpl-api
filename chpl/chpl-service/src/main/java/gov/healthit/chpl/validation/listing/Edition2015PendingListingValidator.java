@@ -26,7 +26,7 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.Attested
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.CqmAttestedCriteriaReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.GapAllowedReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.InvalidCriteriaCombinationReviewer;
-import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.MipsMeasureValidityReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.MeasureValidityReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.OldCriteriaWithoutIcsReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.PrivacyAndSecurityCriteriaReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.RequiredData2015Reviewer;
@@ -144,8 +144,8 @@ public class Edition2015PendingListingValidator extends PendingValidator {
     private GapAllowedReviewer gapAllowedReviewer;
 
     @Autowired
-    @Qualifier("pendingMipsMeasureValidityReviewer")
-    private MipsMeasureValidityReviewer mipsMeasureReviewer;
+    @Qualifier("pendingMeasureValidityReviewer")
+    private MeasureValidityReviewer measureReviewer;
 
     private List<Reviewer> reviewers;
 
@@ -178,7 +178,7 @@ public class Edition2015PendingListingValidator extends PendingValidator {
             reviewers.add(testFunctionalityAllowedByRoleReviewer);
             reviewers.add(testStandardReviewer);
             reviewers.add(gapAllowedReviewer);
-            reviewers.add(mipsMeasureReviewer);
+            reviewers.add(measureReviewer);
         }
         return reviewers;
     }

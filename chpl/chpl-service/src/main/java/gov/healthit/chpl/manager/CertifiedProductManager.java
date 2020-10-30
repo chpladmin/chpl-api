@@ -78,7 +78,7 @@ import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
-import gov.healthit.chpl.domain.ListingMipsMeasure;
+import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
@@ -141,7 +141,7 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestToolD
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMipsMeasureDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMeasureDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTestingLabDTO;
@@ -157,7 +157,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.listing.mipsMeasure.ListingMipsMeasureDAO;
+import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CuresUpdateService;
@@ -180,7 +180,7 @@ public class CertifiedProductManager extends SecuredManager {
     private TargetedUserDAO targetedUserDao;
     private AccessibilityStandardDAO asDao;
     private CertifiedProductQmsStandardDAO cpQmsDao;
-    private ListingMipsMeasureDAO cpMipsMeasureDao;
+    private ListingMeasureDAO cpMeasureDao;
     private CertifiedProductTestingLabDAO cpTestingLabDao;
     private CertifiedProductTargetedUserDAO cpTargetedUserDao;
     private CertifiedProductAccessibilityStandardDAO cpAccStdDao;
@@ -230,7 +230,7 @@ public class CertifiedProductManager extends SecuredManager {
             CertificationResultDAO certDao, CertificationCriterionDAO certCriterionDao,
             QmsStandardDAO qmsDao, TargetedUserDAO targetedUserDao,
             AccessibilityStandardDAO asDao, CertifiedProductQmsStandardDAO cpQmsDao,
-            ListingMipsMeasureDAO cpMipsMeasureDao,
+            ListingMeasureDAO cpMeasureDao,
             CertifiedProductTestingLabDAO cpTestingLabDao,
             CertifiedProductTargetedUserDAO cpTargetedUserDao,
             CertifiedProductAccessibilityStandardDAO cpAccStdDao, CQMResultDAO cqmResultDAO,
@@ -260,7 +260,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.targetedUserDao = targetedUserDao;
         this.asDao = asDao;
         this.cpQmsDao = cpQmsDao;
-        this.cpMipsMeasureDao = cpMipsMeasureDao;
+        this.cpMeasureDao = cpMeasureDao;
         this.cpTestingLabDao = cpTestingLabDao;
         this.cpTargetedUserDao = cpTargetedUserDao;
         this.cpAccStdDao = cpAccStdDao;
@@ -563,14 +563,13 @@ public class CertifiedProductManager extends SecuredManager {
             }
         }
 
-        //mips measures
-        if (pendingCp.getMipsMeasures() != null && pendingCp.getMipsMeasures().size() > 0) {
-            for (PendingCertifiedProductMipsMeasureDTO pendingMeasure : pendingCp.getMipsMeasures()) {
-                ListingMipsMeasure measureToAdd = new ListingMipsMeasure();
+        if (pendingCp.getMeasures() != null && pendingCp.getMeasures().size() > 0) {
+            for (PendingCertifiedProductMeasureDTO pendingMeasure : pendingCp.getMeasures()) {
+                ListingMeasure measureToAdd = new ListingMeasure();
                 measureToAdd.setMeasure(pendingMeasure.getMeasure());
                 measureToAdd.setMeasurementType(pendingMeasure.getMeasurementType());
                 measureToAdd.setAssociatedCriteria(pendingMeasure.getAssociatedCriteria());
-                cpMipsMeasureDao.createCertifiedProductMipsMapping(newCertifiedProduct.getId(), measureToAdd);
+                cpMeasureDao.createCertifiedProductMeasureMapping(newCertifiedProduct.getId(), measureToAdd);
             }
         }
 
@@ -1137,7 +1136,7 @@ public class CertifiedProductManager extends SecuredManager {
         updateIcsChildren(updatedListing.getId(), existingListing.getIcs(), updatedListing.getIcs());
         updateIcsParents(updatedListing.getId(), existingListing.getIcs(), updatedListing.getIcs());
         updateQmsStandards(updatedListing.getId(), existingListing.getQmsStandards(), updatedListing.getQmsStandards());
-        updateMipsMeasures(updatedListing.getId(), existingListing.getMipsMeasures(), updatedListing.getMipsMeasures());
+        updateMeasures(updatedListing.getId(), existingListing.getMeasures(), updatedListing.getMeasures());
         updateTargetedUsers(updatedListing.getId(), existingListing.getTargetedUsers(),
                 updatedListing.getTargetedUsers());
         updateAccessibilityStandards(updatedListing.getId(), existingListing.getAccessibilityStandards(),
@@ -1572,31 +1571,31 @@ public class CertifiedProductManager extends SecuredManager {
         return numChanges;
     }
 
-    private int updateMipsMeasures(Long listingId, List<ListingMipsMeasure> existingMipsMeasures,
-            List<ListingMipsMeasure> updatedMipsMeasures)
+    private int updateMeasures(Long listingId, List<ListingMeasure> existingMeasures,
+            List<ListingMeasure> updatedMeasures)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
 
         int numChanges = 0;
-        List<ListingMipsMeasure> measuresToAdd = new ArrayList<ListingMipsMeasure>();
-        List<MipsMeasurePair> measuresToUpdate = new ArrayList<MipsMeasurePair>();
+        List<ListingMeasure> measuresToAdd = new ArrayList<ListingMeasure>();
+        List<MeasurePair> measuresToUpdate = new ArrayList<MeasurePair>();
         List<Long> idsToRemove = new ArrayList<Long>();
 
         // figure out which measures to add
-        if (updatedMipsMeasures != null && updatedMipsMeasures.size() > 0) {
-            if (existingMipsMeasures == null || existingMipsMeasures.size() == 0) {
+        if (updatedMeasures != null && updatedMeasures.size() > 0) {
+            if (existingMeasures == null || existingMeasures.size() == 0) {
                 // existing listing has none, add all from the update
-                for (ListingMipsMeasure updatedItem : updatedMipsMeasures) {
+                for (ListingMeasure updatedItem : updatedMeasures) {
                     measuresToAdd.add(updatedItem);
                 }
-            } else if (existingMipsMeasures.size() > 0) {
+            } else if (existingMeasures.size() > 0) {
                 // existing listing has some, compare to the update to see if
                 // any are different
-                for (ListingMipsMeasure updatedItem : updatedMipsMeasures) {
+                for (ListingMeasure updatedItem : updatedMeasures) {
                     boolean inExistingListing = false;
-                    for (ListingMipsMeasure existingItem : existingMipsMeasures) {
+                    for (ListingMeasure existingItem : existingMeasures) {
                         if (updatedItem.getId() != null && updatedItem.getId().equals(existingItem.getId())) {
                             inExistingListing = true;
-                            measuresToUpdate.add(new MipsMeasurePair(existingItem, updatedItem));
+                            measuresToUpdate.add(new MeasurePair(existingItem, updatedItem));
                         }
                     }
 
@@ -1608,16 +1607,16 @@ public class CertifiedProductManager extends SecuredManager {
         }
 
         // figure out which measures to remove
-        if (existingMipsMeasures != null && existingMipsMeasures.size() > 0) {
+        if (existingMeasures != null && existingMeasures.size() > 0) {
             // if the updated listing has none, remove them all from existing
-            if (updatedMipsMeasures == null || updatedMipsMeasures.size() == 0) {
-                for (ListingMipsMeasure existingItem : existingMipsMeasures) {
+            if (updatedMeasures == null || updatedMeasures.size() == 0) {
+                for (ListingMeasure existingItem : existingMeasures) {
                     idsToRemove.add(existingItem.getId());
                 }
-            } else if (updatedMipsMeasures.size() > 0) {
-                for (ListingMipsMeasure existingItem : existingMipsMeasures) {
+            } else if (updatedMeasures.size() > 0) {
+                for (ListingMeasure existingItem : existingMeasures) {
                     boolean inUpdatedListing = false;
-                    for (ListingMipsMeasure updatedItem : updatedMipsMeasures) {
+                    for (ListingMeasure updatedItem : updatedMeasures) {
                         inUpdatedListing = !inUpdatedListing
                                 ? existingItem.getId().equals(updatedItem.getId()) : inUpdatedListing;
                     }
@@ -1630,24 +1629,24 @@ public class CertifiedProductManager extends SecuredManager {
 
         numChanges = measuresToAdd.size() + idsToRemove.size();
 
-        for (ListingMipsMeasure toAdd : measuresToAdd) {
-            cpMipsMeasureDao.createCertifiedProductMipsMapping(listingId, toAdd);
+        for (ListingMeasure toAdd : measuresToAdd) {
+            cpMeasureDao.createCertifiedProductMeasureMapping(listingId, toAdd);
         }
 
-        for (MipsMeasurePair toUpdate : measuresToUpdate) {
+        for (MeasurePair toUpdate : measuresToUpdate) {
             boolean hasChanged = false;
             if (!toUpdate.getUpdated().matches(toUpdate.getOrig())) {
                 hasChanged = true;
             }
 
             if (hasChanged) {
-                cpMipsMeasureDao.updateCertifiedProductMipsMapping(toUpdate.getUpdated());
+                cpMeasureDao.updateCertifiedProductMeasureMapping(toUpdate.getUpdated());
                 numChanges++;
             }
         }
 
         for (Long idToRemove : idsToRemove) {
-            cpMipsMeasureDao.deleteCertifiedProductMips(idToRemove);
+            cpMeasureDao.deleteCertifiedProductMeasure(idToRemove);
         }
         return numChanges;
     }
@@ -2430,14 +2429,14 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     @Data
-    private static class MipsMeasurePair {
-        private ListingMipsMeasure orig;
-        private ListingMipsMeasure updated;
+    private static class MeasurePair {
+        private ListingMeasure orig;
+        private ListingMeasure updated;
 
-        MipsMeasurePair() {
+        MeasurePair() {
         }
 
-        MipsMeasurePair(ListingMipsMeasure orig, ListingMipsMeasure updated) {
+        MeasurePair(ListingMeasure orig, ListingMeasure updated) {
             this.orig = orig;
             this.updated = updated;
         }

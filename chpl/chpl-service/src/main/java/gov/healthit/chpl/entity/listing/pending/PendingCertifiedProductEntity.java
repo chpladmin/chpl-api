@@ -23,7 +23,7 @@ import org.hibernate.annotations.Type;
 
 import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.entity.AttestationType;
-import gov.healthit.chpl.listing.mipsMeasure.PendingListingMipsMeasureEntity;
+import gov.healthit.chpl.listing.measure.PendingListingMeasureEntity;
 import lombok.Data;
 
 @Entity
@@ -187,7 +187,7 @@ public class PendingCertifiedProductEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingCertifiedProductId")
     @Basic(optional = false)
     @Column(name = "pending_certified_product_id", nullable = false)
-    private Set<PendingListingMipsMeasureEntity> mipsMeasures;
+    private Set<PendingListingMeasureEntity> measures;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingCertifiedProductId")
     @Basic(optional = false)
@@ -237,7 +237,7 @@ public class PendingCertifiedProductEntity {
         certificationCriterion = new HashSet<PendingCertificationResultEntity>();
         cqmCriterion = new HashSet<PendingCqmCriterionEntity>();
         qmsStandards = new HashSet<PendingCertifiedProductQmsStandardEntity>();
-        mipsMeasures = new HashSet<PendingListingMipsMeasureEntity>();
+        measures = new HashSet<PendingListingMeasureEntity>();
         targetedUsers = new HashSet<PendingCertifiedProductTargetedUserEntity>();
         accessibilityStandards = new HashSet<PendingCertifiedProductAccessibilityStandardEntity>();
         parentListings = new HashSet<PendingCertifiedProductParentListingEntity>();

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.listing.mipsMeasure;
+package gov.healthit.chpl.listing.measure;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,33 +13,33 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.domain.ListingMipsMeasure;
-import gov.healthit.chpl.domain.MipsMeasurementType;
+import gov.healthit.chpl.domain.ListingMeasure;
+import gov.healthit.chpl.domain.MeasurementType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
-@Repository("listingMipsMeasureDao")
+@Repository("listingMeasureDao")
 @Log4j2
-public class ListingMipsMeasureDAO extends BaseDAOImpl {
-    private static final String LISTING_MEASURE_MAP_HQL_BEGIN = "SELECT DISTINCT listingMipsMap "
-            + "FROM ListingMipsMeasureEntity listingMipsMap "
-            + "JOIN FETCH listingMipsMap.type "
-            + "LEFT JOIN FETCH listingMipsMap.associatedCriteria assocCCMap "
+public class ListingMeasureDAO extends BaseDAOImpl {
+    private static final String LISTING_MEASURE_MAP_HQL_BEGIN = "SELECT DISTINCT listingMeasureMap "
+            + "FROM ListingMeasureEntity listingMeasureMap "
+            + "JOIN FETCH listingMeasureMap.type "
+            + "LEFT JOIN FETCH listingMeasureMap.associatedCriteria assocCCMap "
             + "LEFT JOIN FETCH assocCCMap.criterion assocCC "
             + "LEFT JOIN FETCH assocCC.certificationEdition "
-            + "JOIN FETCH listingMipsMap.measure mm "
+            + "JOIN FETCH listingMeasureMap.measure mm "
             + "JOIN FETCH mm.domain "
             + "JOIN FETCH mm.allowedCriteria ac "
             + "JOIN FETCH ac.criterion allowedCC "
             + "JOIN FETCH allowedCC.certificationEdition "
-            + "WHERE listingMipsMap.deleted = false ";
+            + "WHERE listingMeasureMap.deleted = false ";
 
-    public void createCertifiedProductMipsMapping(Long listingId, ListingMipsMeasure mm)
+    public void createCertifiedProductMeasureMapping(Long listingId, ListingMeasure mm)
             throws EntityCreationException {
 
-        ListingMipsMeasureEntity mmEntity = new ListingMipsMeasureEntity();
+        ListingMeasureEntity mmEntity = new ListingMeasureEntity();
         mmEntity.setDeleted(false);
         mmEntity.setLastModifiedUser(AuthUtil.getAuditId());
         mmEntity.setListingId(listingId);
@@ -48,19 +48,19 @@ public class ListingMipsMeasureDAO extends BaseDAOImpl {
         create(mmEntity);
 
         for (CertificationCriterion associatedCriterion : mm.getAssociatedCriteria()) {
-            ListingMipsMeasureCriterionMapEntity mmCriterionEntity = new ListingMipsMeasureCriterionMapEntity();
+            ListingMeasureCriterionMapEntity mmCriterionEntity = new ListingMeasureCriterionMapEntity();
             mmCriterionEntity.setCertificationCriterionId(associatedCriterion.getId());
-            mmCriterionEntity.setListingMipsMeasureMapId(mmEntity.getId());
+            mmCriterionEntity.setListingMeasureMapId(mmEntity.getId());
             mmCriterionEntity.setDeleted(false);
             mmCriterionEntity.setLastModifiedUser(AuthUtil.getAuditId());
             create(mmCriterionEntity);
         }
     }
 
-    public void updateCertifiedProductMipsMapping(ListingMipsMeasure toUpdate)
+    public void updateCertifiedProductMeasureMapping(ListingMeasure toUpdate)
             throws EntityRetrievalException {
 
-        ListingMipsMeasureEntity existingEntity = getEntityById(toUpdate.getId());
+        ListingMeasureEntity existingEntity = getEntityById(toUpdate.getId());
         if (existingEntity == null) {
             throw new EntityRetrievalException("Could not find mapping with id " + toUpdate.getId());
         }
@@ -83,12 +83,12 @@ public class ListingMipsMeasureDAO extends BaseDAOImpl {
                 exsitingAssociatedCriteria);
 
         removed.stream().forEach(removedCriterion -> {
-            Optional<ListingMipsMeasureCriterionMapEntity> removedEntityOpt =
+            Optional<ListingMeasureCriterionMapEntity> removedEntityOpt =
                     existingEntity.getAssociatedCriteria().stream()
                         .filter(existingCrit -> existingCrit.getCriterion().getId().equals(removedCriterion.getId()))
                         .findAny();
             if (removedEntityOpt.isPresent()) {
-                ListingMipsMeasureCriterionMapEntity removedEntity = removedEntityOpt.get();
+                ListingMeasureCriterionMapEntity removedEntity = removedEntityOpt.get();
                 removedEntity.setDeleted(true);
                 removedEntity.setLastModifiedUser(AuthUtil.getAuditId());
                 update(removedEntity);
@@ -96,11 +96,11 @@ public class ListingMipsMeasureDAO extends BaseDAOImpl {
         });
 
         added.stream().forEach(addedCriterion -> {
-            ListingMipsMeasureCriterionMapEntity addedEntity = new ListingMipsMeasureCriterionMapEntity();
+            ListingMeasureCriterionMapEntity addedEntity = new ListingMeasureCriterionMapEntity();
             addedEntity.setCertificationCriterionId(addedCriterion.getId());
             addedEntity.setDeleted(false);
             addedEntity.setLastModifiedUser(AuthUtil.getAuditId());
-            addedEntity.setListingMipsMeasureMapId(existingEntity.getId());
+            addedEntity.setListingMeasureMapId(existingEntity.getId());
             create(addedEntity);
         });
     }
@@ -134,9 +134,9 @@ public class ListingMipsMeasureDAO extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
-    public void deleteCertifiedProductMips(Long id) throws EntityRetrievalException {
+    public void deleteCertifiedProductMeasure(Long id) throws EntityRetrievalException {
 
-        ListingMipsMeasureEntity existingMeasureMap = getEntityById(id);
+        ListingMeasureEntity existingMeasureMap = getEntityById(id);
         if (existingMeasureMap == null) {
             throw new EntityRetrievalException("Could not find mapping with id " + id);
         }
@@ -157,26 +157,26 @@ public class ListingMipsMeasureDAO extends BaseDAOImpl {
         }
     }
 
-    public List<ListingMipsMeasure> getMipsMeasuresByListingId(Long listingId)
+    public List<ListingMeasure> getMeasuresByListingId(Long listingId)
             throws EntityRetrievalException {
         Query query = entityManager.createQuery(LISTING_MEASURE_MAP_HQL_BEGIN
-                + " AND listingMipsMap.listingId = :listingId ",
-                ListingMipsMeasureEntity.class);
+                + " AND listingMeasureMap.listingId = :listingId ",
+                ListingMeasureEntity.class);
         query.setParameter("listingId", listingId);
-        List<ListingMipsMeasureEntity> entities = query.getResultList();
+        List<ListingMeasureEntity> entities = query.getResultList();
         return entities.stream().map(entity -> entity.convert())
                 .collect(Collectors.toList());
     }
 
-    public ListingMipsMeasure lookupMapping(Long listingId, Long measureId)
+    public ListingMeasure lookupMapping(Long listingId, Long measureId)
             throws EntityRetrievalException {
         Query query = entityManager.createQuery(LISTING_MEASURE_MAP_HQL_BEGIN
-                + "AND listingMipsMap.listingId = :listingId "
-                + "AND listingMipsMap.measureId = :measureId ",
-                ListingMipsMeasureEntity.class);
+                + "AND listingMeasureMap.listingId = :listingId "
+                + "AND listingMeasureMap.measureId = :measureId ",
+                ListingMeasureEntity.class);
         query.setParameter("listingId", listingId);
         query.setParameter("measureId", measureId);
-        List<ListingMipsMeasureEntity> entities = query.getResultList();
+        List<ListingMeasureEntity> entities = query.getResultList();
         if (entities == null || entities.size() == 0) {
             return null;
         }
@@ -185,25 +185,25 @@ public class ListingMipsMeasureDAO extends BaseDAOImpl {
                 .get(0);
     }
 
-    private ListingMipsMeasureEntity getEntityById(Long id) throws EntityRetrievalException {
-        ListingMipsMeasureEntity entity = null;
+    private ListingMeasureEntity getEntityById(Long id) throws EntityRetrievalException {
+        ListingMeasureEntity entity = null;
         Query query = entityManager.createQuery(LISTING_MEASURE_MAP_HQL_BEGIN
-                + " AND listingMipsMap.id = :entityid ",
-                ListingMipsMeasureEntity.class);
+                + " AND listingMeasureMap.id = :entityid ",
+                ListingMeasureEntity.class);
 
         query.setParameter("entityid", id);
-        List<ListingMipsMeasureEntity> result = query.getResultList();
+        List<ListingMeasureEntity> result = query.getResultList();
         if (result.size() >= 1) {
             entity = result.get(0);
         }
         return entity;
     }
 
-    public Set<MipsMeasurementType> getMeasurementTypes() {
-        Query query = entityManager.createQuery("SELECT mipsType "
-                + "FROM ListingMipsMeasureTypeEntity mipsType "
+    public Set<MeasurementType> getMeasurementTypes() {
+        Query query = entityManager.createQuery("SELECT measureType "
+                + "FROM ListingMeasureTypeEntity measureType "
                 + "WHERE deleted = false");
-        List<ListingMipsMeasureTypeEntity> results = query.getResultList();
+        List<ListingMeasureTypeEntity> results = query.getResultList();
         if (results == null || results.size() == 0) {
             return null;
         }
@@ -211,13 +211,13 @@ public class ListingMipsMeasureDAO extends BaseDAOImpl {
                 .collect(Collectors.toSet());
     }
 
-    public ListingMipsMeasureTypeEntity getMeasurementTypeEntity(String name) {
-        Query query = entityManager.createQuery("SELECT mipsType "
-                + "FROM ListingMipsMeasureTypeEntity mipsType "
+    public ListingMeasureTypeEntity getMeasurementTypeEntity(String name) {
+        Query query = entityManager.createQuery("SELECT measureType "
+                + "FROM ListingMeasureTypeEntity measureType "
                 + "WHERE deleted = false "
                 + "AND name = :name");
         query.setParameter("name", name);
-        List<ListingMipsMeasureTypeEntity> results = query.getResultList();
+        List<ListingMeasureTypeEntity> results = query.getResultList();
         if (results == null || results.size() == 0) {
             return null;
         }

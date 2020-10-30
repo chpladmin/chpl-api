@@ -74,7 +74,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.listing.mipsMeasure.ListingMipsMeasureDAO;
+import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CuresUpdateService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -95,7 +95,7 @@ public class CertifiedProductManagerTest {
     private TargetedUserDAO targetedUserDao;
     private AccessibilityStandardDAO asDao;
     private CertifiedProductQmsStandardDAO cpQmsDao;
-    private ListingMipsMeasureDAO cpMipsMeasureDao;
+    private ListingMeasureDAO cpMeasureDao;
     private CertifiedProductTestingLabDAO cpTestingLabDao;
     private CertifiedProductTargetedUserDAO cpTargetedUserDao;
     private CertifiedProductAccessibilityStandardDAO cpAccStdDao;
@@ -143,7 +143,7 @@ public class CertifiedProductManagerTest {
         targetedUserDao = Mockito.mock(TargetedUserDAO.class);
         asDao = Mockito.mock(AccessibilityStandardDAO.class);
         cpQmsDao = Mockito.mock(CertifiedProductQmsStandardDAO.class);
-        cpMipsMeasureDao = Mockito.mock(ListingMipsMeasureDAO.class);
+        cpMeasureDao = Mockito.mock(ListingMeasureDAO.class);
         cpTestingLabDao = Mockito.mock(CertifiedProductTestingLabDAO.class);
         cpTargetedUserDao = Mockito.mock(CertifiedProductTargetedUserDAO.class);
         cpAccStdDao = Mockito.mock(CertifiedProductAccessibilityStandardDAO.class);
@@ -178,7 +178,7 @@ public class CertifiedProductManagerTest {
         curesUpdateService = Mockito.mock(CuresUpdateService.class);
 
         certifiedProductManager = new  CertifiedProductManager(msgUtil, cpDao,  searchDao, certDao,
-                certCriterionDao, qmsDao,  targetedUserDao, asDao,  cpQmsDao, cpMipsMeasureDao, cpTestingLabDao,
+                certCriterionDao, qmsDao,  targetedUserDao, asDao,  cpQmsDao, cpMeasureDao, cpTestingLabDao,
                 cpTargetedUserDao, cpAccStdDao,  cqmResultDAO, cqmCriterionDao,  atlDao,
                 developerDao,  devStatusDao, developerManager,  productManager, versionManager,
                 statusEventDao, curesUpdateDao, muuDao,  certResultManager, testToolDao,  testStandardDao,

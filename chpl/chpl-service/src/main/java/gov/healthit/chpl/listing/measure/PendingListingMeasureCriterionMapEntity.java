@@ -1,4 +1,4 @@
-package gov.healthit.chpl.listing.mipsMeasure;
+package gov.healthit.chpl.listing.measure;
 
 import java.util.Date;
 
@@ -13,14 +13,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.domain.CertificationCriterion;
+import org.apache.commons.lang3.ObjectUtils;
+
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "certified_product_mips_measure_criteria")
-public class ListingMipsMeasureCriterionMapEntity {
+@Table(name = "pending_certified_product_measure_criteria")
+public class PendingListingMeasureCriterionMapEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,8 +29,8 @@ public class ListingMipsMeasureCriterionMapEntity {
     private Long id;
 
     @Basic(optional = false)
-    @Column(name = "certified_product_mips_measure_id", nullable = false)
-    private Long listingMipsMeasureMapId;
+    @Column(name = "pending_certified_product_measure_id", nullable = false)
+    private Long pendingListingMeasureId;
 
     @Basic(optional = false)
     @Column(name = "certification_criterion_id", nullable = false)
@@ -52,20 +53,26 @@ public class ListingMipsMeasureCriterionMapEntity {
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
-    public CertificationCriterion convert() {
-        if (getCriterion() == null) {
-            return null;
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof PendingListingMeasureCriterionMapEntity)) {
+            return false;
         }
-        CertificationCriterionEntity ccEntity = getCriterion();
-        CertificationCriterion cert = new CertificationCriterion();
-        cert.setId(getCertificationCriterionId());
-        cert.setNumber(ccEntity.getNumber());
-        cert.setRemoved(ccEntity.getRemoved());
-        cert.setTitle(ccEntity.getTitle());
-        cert.setCertificationEditionId(ccEntity.getCertificationEditionId());
-        if (ccEntity.getCertificationEdition() != null) {
-            cert.setCertificationEdition(ccEntity.getCertificationEdition().getYear());
+        PendingListingMeasureCriterionMapEntity otherEntity = (PendingListingMeasureCriterionMapEntity) obj;
+        if (this.certificationCriterionId == null && otherEntity.certificationCriterionId != null) {
+            return false;
+        } else if (this.certificationCriterionId != null && otherEntity.certificationCriterionId == null) {
+            return false;
         }
-        return cert;
+        return ObjectUtils.allNotNull(this.certificationCriterionId, otherEntity.certificationCriterionId)
+                && this.certificationCriterionId.equals(otherEntity.certificationCriterionId);
+    }
+
+    @Override
+    public int hashCode() {
+        if (this.certificationCriterionId == null) {
+            return -1;
+        }
+        return this.certificationCriterionId.hashCode();
     }
 }

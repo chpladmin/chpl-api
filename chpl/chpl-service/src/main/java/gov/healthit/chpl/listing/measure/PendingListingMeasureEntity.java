@@ -1,4 +1,4 @@
-package gov.healthit.chpl.listing.mipsMeasure;
+package gov.healthit.chpl.listing.measure;
 
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -20,8 +20,8 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "pending_certified_product_mips_measure")
-public class PendingListingMipsMeasureEntity {
+@Table(name = "pending_certified_product_measure")
+public class PendingListingMeasureEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,31 +33,31 @@ public class PendingListingMipsMeasureEntity {
     @Column(name = "pending_certified_product_id")
     private Long pendingCertifiedProductId;
 
-    @Column(name = "mips_measure_id")
-    private Long mipsMeasureId;
+    @Column(name = "measure_id")
+    private Long measureId;
 
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "mips_measure_id", unique = true, nullable = true, insertable = false, updatable = false)
-    private MipsMeasureEntity measure;
+    @JoinColumn(name = "measure_id", unique = true, nullable = true, insertable = false, updatable = false)
+    private MeasureEntity measure;
 
     @Basic(optional = false)
     @Column(name = "uploaded_value")
     private String uploadedValue;
 
-    @Column(name = "mips_type_id")
-    private Long mipsTypeId;
+    @Column(name = "measure_type_id")
+    private Long measureTypeId;
 
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "mips_type_id", unique = true, nullable = true, insertable = false, updatable = false)
-    private ListingMipsMeasureTypeEntity type;
+    @JoinColumn(name = "measure_type_id", unique = true, nullable = true, insertable = false, updatable = false)
+    private ListingMeasureTypeEntity type;
 
     @Basic(optional = false)
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingListingMipsMeasureId")
-    @Column(name = "pending_certified_product_mips_measure_id", nullable = false)
-    private Set<PendingListingMipsMeasureCriterionMapEntity> associatedCriteria
-        = new LinkedHashSet<PendingListingMipsMeasureCriterionMapEntity>();
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingListingMeasureId")
+    @Column(name = "pending_certified_product_measure_id", nullable = false)
+    private Set<PendingListingMeasureCriterionMapEntity> associatedCriteria
+        = new LinkedHashSet<PendingListingMeasureCriterionMapEntity>();
 
     @Column(name = "last_modified_date", updatable = false, insertable = false)
     private Date lastModifiedDate;

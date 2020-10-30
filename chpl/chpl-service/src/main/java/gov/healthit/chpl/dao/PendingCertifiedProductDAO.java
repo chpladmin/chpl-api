@@ -39,16 +39,11 @@ import gov.healthit.chpl.entity.listing.pending.PendingTestParticipantEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingTestTaskEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.listing.mipsMeasure.PendingListingMipsMeasureCriterionMapEntity;
-import gov.healthit.chpl.listing.mipsMeasure.PendingListingMipsMeasureEntity;
+import gov.healthit.chpl.listing.measure.PendingListingMeasureCriterionMapEntity;
+import gov.healthit.chpl.listing.measure.PendingListingMeasureEntity;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-/**
- * Data Access Object for Pending Certified Products.
- * @author alarned
- *
- */
 @Repository(value = "pendingCertifiedProductDAO")
 public class PendingCertifiedProductDAO extends BaseDAOImpl {
     private static final Logger LOGGER = LogManager.getLogger(PendingCertifiedProductDAO.class);
@@ -135,26 +130,26 @@ throws EntityCreationException {
             }
         }
 
-        for (PendingListingMipsMeasureEntity mipsMeasure : toCreate.getMipsMeasures()) {
-            mipsMeasure.setPendingCertifiedProductId(toCreate.getId());
-            mipsMeasure.setDeleted(false);
-            mipsMeasure.setLastModifiedUser(AuthUtil.getAuditId());
+        for (PendingListingMeasureEntity measure : toCreate.getMeasures()) {
+            measure.setPendingCertifiedProductId(toCreate.getId());
+            measure.setDeleted(false);
+            measure.setLastModifiedUser(AuthUtil.getAuditId());
             try {
-                entityManager.persist(mipsMeasure);
+                entityManager.persist(measure);
             } catch (Exception ex) {
-                String msg = msgUtil.getMessage("listing.badMipsMeasure", mipsMeasure.getUploadedValue());
+                String msg = msgUtil.getMessage("listing.badMeasure", measure.getUploadedValue());
                 LOGGER.error(msg, ex);
                 throw new EntityCreationException(msg);
             }
-            for (PendingListingMipsMeasureCriterionMapEntity measureCriterionMap : mipsMeasure.getAssociatedCriteria()) {
-                measureCriterionMap.setPendingListingMipsMeasureId(mipsMeasure.getId());
+            for (PendingListingMeasureCriterionMapEntity measureCriterionMap : measure.getAssociatedCriteria()) {
+                measureCriterionMap.setPendingListingMeasureId(measure.getId());
                 measureCriterionMap.setDeleted(false);
                 measureCriterionMap.setLastModifiedUser(AuthUtil.getAuditId());
                 try {
                     entityManager.persist(measureCriterionMap);
                 } catch (Exception ex) {
-                    String msg = msgUtil.getMessage("listing.badMipsMeasureCriterionMap",
-                            mipsMeasure.getUploadedValue(), measureCriterionMap.getCertificationCriterionId());
+                    String msg = msgUtil.getMessage("listing.badMeasureCriterionMap",
+                            measure.getUploadedValue(), measureCriterionMap.getCertificationCriterionId());
                     LOGGER.error(msg, ex);
                     throw new EntityCreationException(msg);
                 }

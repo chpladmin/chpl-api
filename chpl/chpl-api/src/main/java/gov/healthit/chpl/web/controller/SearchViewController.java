@@ -43,8 +43,8 @@ import gov.healthit.chpl.domain.DimensionalData;
 import gov.healthit.chpl.domain.FuzzyChoices;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
-import gov.healthit.chpl.domain.MipsMeasure;
-import gov.healthit.chpl.domain.MipsMeasurementType;
+import gov.healthit.chpl.domain.Measure;
+import gov.healthit.chpl.domain.MeasurementType;
 import gov.healthit.chpl.domain.SearchOption;
 import gov.healthit.chpl.domain.SearchableDimensionalData;
 import gov.healthit.chpl.domain.TestFunctionality;
@@ -1113,26 +1113,26 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible Mips measure options in the CHPL",
+    @ApiOperation(value = "Get all possible measure options in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
-    @RequestMapping(value = "/data/mips-measures", method = RequestMethod.GET,
+    @RequestMapping(value = "/data/measures", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody SearchOption getMipsMeasures() {
-        Set<MipsMeasure> data = dimensionalDataManager.getMipsMeasures();
+    public @ResponseBody SearchOption getMeasures() {
+        Set<Measure> data = dimensionalDataManager.getMeasures();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
         return result;
     }
 
-    @ApiOperation(value = "Get all possible types of Mips measures in the CHPL, currently this is G1 and G2.",
+    @ApiOperation(value = "Get all possible types of measures in the CHPL, currently this is G1 and G2.",
             notes = "This is useful for knowing what values one might possibly search for.")
-    @RequestMapping(value = "/data/mips-measure-types", method = RequestMethod.GET,
+    @RequestMapping(value = "/data/measure-types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody SearchOption getMipsMeasureTypes() {
-        Set<MipsMeasurementType> data = dimensionalDataManager.getMipsMeasureTypes();
+    public @ResponseBody SearchOption getMeasureTypes() {
+        Set<MeasurementType> data = dimensionalDataManager.getMeasureTypes();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
