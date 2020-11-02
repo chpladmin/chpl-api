@@ -2,6 +2,7 @@ package gov.healthit.chpl.scheduler.job.summarystatistics.data;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -279,7 +280,11 @@ public class HistoricalStatisticsCreator {
     }
 
     private Map<Long, List<CertificationStatusEventDTO>> getAllStatusesForAllListings() {
-        return certificationStatusEventDAO.findAll().stream()
+        Map<Long, List<CertificationStatusEventDTO>> map = certificationStatusEventDAO.findAll().stream()
                 .collect(Collectors.groupingBy(CertificationStatusEventDTO::getCertifiedProductId));
+
+        Map<Long, List<CertificationStatusEventDTO>> syncdMap = new Hashtable<Long, List<CertificationStatusEventDTO>>();
+        syncdMap.putAll(map);
+        return syncdMap;
     }
 }
