@@ -5,9 +5,12 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,9 +29,11 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
 import gov.healthit.chpl.domain.DateRange;
+import gov.healthit.chpl.dto.CertificationStatusEventDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -54,6 +59,9 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
 
     @Autowired
     private CertifiedProductDAO certifiedProductDAO;
+
+    @Autowired
+    private CertificationStatusEventDAO certificationStatusEventDAO;
 
     @Autowired
     private JpaTransactionManager txManager;
@@ -107,6 +115,8 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         endDateCal.setTime(startDate);
         endDateCal.add(Calendar.DATE, numDaysInPeriod);
 
+        Map<Long, List<CertificationStatusEventDTO>> statusesForAllListings = getAllStatusesForAllListings();
+
         while (endDate.compareTo(endDateCal.getTime()) >= 0) {
             LOGGER.info("Getting csvRecord for start date " + startDateCal.getTime().toString() + " end date "
                     + endDateCal.getTime().toString());
@@ -114,7 +124,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
             DateRange csvRange = new DateRange(startDateCal.getTime(), new Date(endDateCal.getTimeInMillis()));
             CsvStatistics historyStat = new CsvStatistics();
             historyStat.setDateRange(csvRange);
-            historyStat = historicalStatisticsCreator.getStatistics(allListings, csvRange);
+            historyStat = historicalStatisticsCreator.getStatistics(allListings, statusesForAllListings, csvRange);
             csvStats.add(historyStat);
             LOGGER.info("Finished getting csvRecord for start date " + startDateCal.getTime().toString() + " end date "
                     + endDateCal.getTime().toString());
@@ -189,4 +199,12 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         return null;
     }
 
+    private Map<Long, List<CertificationStatusEventDTO>> getAllStatusesForAllListings() {
+        Map<Long, List<CertificationStatusEventDTO>> map = certificationStatusEventDAO.findAll().stream()
+                .collect(Collectors.groupingBy(CertificationStatusEventDTO::getCertifiedProductId));
+
+        Map<Long, List<CertificationStatusEventDTO>> syncdMap = new Hashtable<Long, List<CertificationStatusEventDTO>>();
+        syncdMap.putAll(map);
+        return syncdMap;
+    }
 }

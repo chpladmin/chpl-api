@@ -59,10 +59,10 @@ public class StatsCsvFileWriter {
                 statRecord.add(String.valueOf(stat.getTotalDevelopers()));
                 statRecord.add(String.valueOf(stat.getTotalDevelopersWith2014Listings()));
                 statRecord.add(String.valueOf(stat.getTotalDevelopersWith2015Listings()));
-                statRecord.add(String.valueOf(stat.getTotalCertifiedProducts()));
-                statRecord.add(String.valueOf(stat.getTotalCPsActive2014Listings()));
-                statRecord.add(String.valueOf(stat.getTotalCPsActive2015Listings()));
-                statRecord.add(String.valueOf(stat.getTotalCPsActiveListings()));
+                statRecord.add(String.valueOf(stat.getTotalUniqueProducts()));
+                statRecord.add(String.valueOf(stat.getTotalProductsActive2014Listings()));
+                statRecord.add(String.valueOf(stat.getTotalProductsActive2015Listings()));
+                statRecord.add(String.valueOf(stat.getTotalProductsActiveListings()));
                 statRecord.add(String.valueOf(stat.getTotalListings()));
                 statRecord.add(String.valueOf(stat.getTotal2014Listings()));
                 statRecord.add(String.valueOf(stat.getTotal2015Listings()));
