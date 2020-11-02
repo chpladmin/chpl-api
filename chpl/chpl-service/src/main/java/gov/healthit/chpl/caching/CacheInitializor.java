@@ -24,9 +24,10 @@ public class CacheInitializor {
     private Long tInitEnd;
     private Double tInitElapsedSecs;
     private Future<Boolean> isInitializeSearchOptionsDone;
-    private Future<Boolean> isInitializeBasicSearch;
+    private Future<Boolean> isInitializeBasicSearchDone;
     private Future<Boolean> isInitializeCertificationIdsGetAllDone;
     private Future<Boolean> isInitializeCertificationIdsGetAllWithProductsDone;
+    private Future<Boolean> isInitializeDirectReviewsDone;
     private String enableCacheInitializationValue;
 
     private AsynchronousCacheInitialization asynchronousCacheInitialization;
@@ -44,6 +45,7 @@ public class CacheInitializor {
         caches.add(CacheNames.COLLECTIONS_LISTINGS);
         caches.add(CacheNames.ALL_CERT_IDS);
         caches.add(CacheNames.ALL_CERT_IDS_WITH_PRODUCTS);
+        caches.add(CacheNames.DIRECT_REVIEWS);
         // all below caches make up the search options
         caches.add(CacheNames.EDITION_NAMES);
         caches.add(CacheNames.CERTIFICATION_STATUSES);
@@ -88,10 +90,14 @@ public class CacheInitializor {
                     isInitializeCertificationIdsGetAllWithProductsDone = asynchronousCacheInitialization
                             .initializeCertificationIdsGetAllWithProducts();
 
-                    if (isInitializeBasicSearch != null && !isInitializeBasicSearch.isDone()) {
-                        isInitializeBasicSearch.cancel(true);
+                    if (isInitializeBasicSearchDone != null && !isInitializeBasicSearchDone.isDone()) {
+                        isInitializeBasicSearchDone.cancel(true);
                     }
-                    isInitializeBasicSearch = asynchronousCacheInitialization.initializeBasicSearch();
+                    isInitializeBasicSearchDone = asynchronousCacheInitialization.initializeBasicSearch();
+                    if (isInitializeDirectReviewsDone != null && !isInitializeDirectReviewsDone.isDone()) {
+                        isInitializeDirectReviewsDone.cancel(true);
+                    }
+                    isInitializeDirectReviewsDone = asynchronousCacheInitialization.initializeDirectReviews();
                 }
             } catch (Exception e) {
                 System.out.println("Caching failed to initialize");
