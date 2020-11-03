@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<job-scheduling-data
+    xmlns="http://www.quartz-scheduler.org/xml/JobSchedulingData"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData http://www.quartz-scheduler.org/xml/job_scheduling_data_2_0.xsd"
+    version="2.0">
+    <schedule>
+        <!-- Generate direct review download file -->
+        <job>
+            <name>directReviewDownloadFileGeneration</name>
+            <group>systemJobs</group>
+            <description>Generate direct review download file</description>
+            <job-class>gov.healthit.chpl.scheduler.job.DirectReviewDownloadableResourceCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+    </schedule>
+</job-scheduling-data>

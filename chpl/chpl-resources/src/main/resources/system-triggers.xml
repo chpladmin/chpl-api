@@ -52,12 +52,23 @@
 
         <trigger>
             <cron>
-                <name>surveillanceDownloadFileJob</name>
+                <name>surveillanceDownloadFileGeneration</name>
                 <group>downloadFileTrigger</group>
-                <job-name>surveillanceDownloadFileJob</job-name>
+                <job-name>directReviewDownloadFileGeneration</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
                 <cron-expression>0 0 5 * * ?</cron-expression> <!-- At 0500 UTC every day -->
+            </cron>
+        </trigger>
+
+        <trigger>
+            <cron>
+                <name>directReviewDownloadFileGeneration</name>
+                <group>downloadFileTrigger</group>
+                <job-name>downloadFileJob2015</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 0 9 * * ?</cron-expression> <!-- At 0900 UTC every day -->
             </cron>
         </trigger>
 

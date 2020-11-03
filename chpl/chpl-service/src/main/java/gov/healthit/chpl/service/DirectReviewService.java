@@ -73,18 +73,20 @@ public class DirectReviewService {
             drCache.removeAll();
             //insert each direct review into the right place in our cache
             for (DirectReview dr : allDirectReviews) {
-                if (drCache.get(dr.getDeveloperId()) != null) {
-                    Element devDirectReviewElement = drCache.get(dr.getDeveloperId());
-                    Object devDirectReviewsObj = devDirectReviewElement.getObjectValue();
-                    if (devDirectReviewsObj instanceof List<?>) {
-                        List<DirectReview> devDirectReviews = (List<DirectReview>) devDirectReviewsObj;
+                if (dr.getDeveloperId() != null) {
+                    if (drCache.get(dr.getDeveloperId()) != null) {
+                        Element devDirectReviewElement = drCache.get(dr.getDeveloperId());
+                        Object devDirectReviewsObj = devDirectReviewElement.getObjectValue();
+                        if (devDirectReviewsObj instanceof List<?>) {
+                            List<DirectReview> devDirectReviews = (List<DirectReview>) devDirectReviewsObj;
+                            devDirectReviews.add(dr);
+                        }
+                    } else {
+                        List<DirectReview> devDirectReviews = new ArrayList<DirectReview>();
                         devDirectReviews.add(dr);
+                        Element devDirectReviewElement = new Element(dr.getDeveloperId(), devDirectReviews);
+                        drCache.put(devDirectReviewElement);
                     }
-                } else {
-                    List<DirectReview> devDirectReviews = new ArrayList<DirectReview>();
-                    devDirectReviews.add(dr);
-                    Element devDirectReviewElement = new Element(dr.getDeveloperId(), devDirectReviews);
-                    drCache.put(devDirectReviewElement);
                 }
             }
         }

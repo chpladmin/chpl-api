@@ -264,15 +264,15 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
-        <RollingFile name="cacheListenerActivity"
-                     fileName="${logDir}/cache/cacheListenerActivity.log"
-                     filePattern="${logDir}/cache/history/cacheListenerActivity-%d{yyyy-MM-dd}.log">
+        <RollingFile name="directReviewDownloadableResourceCreatorJob"
+            fileName="${logDir}/scheduler/directReviewDownloadableResourceCreatorJob.log"
+            filePattern="${logDir}/scheduler/history/directReviewDownloadableResourceCreatorJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
                 <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
-                        interval="1" modulate="true" />
+                    interval="1" modulate="true" />
             </Policies>
         </RollingFile>
         <RollingFile name="developerAccessEmailJob"
@@ -313,7 +313,7 @@
             <AppenderRef ref="cacheListenerActivity" />
         </Logger>
         <logger name="org.springframework.cache" level="INFO">
-            <appender-ref ref="cacheListenerActivity" />
+            <AppenderRef ref="cacheListenerActivity" />
         </logger>
         <Logger name="gov.healthit.chpl" level="DEBUG" additivity="false">
             <AppenderRef ref="STDOUT" />
@@ -414,6 +414,10 @@
         <Logger name="developerAccessEmailJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="developerAccessEmailJob" />
+        </Logger>
+        <Logger name="directReviewDownloadableResourceCreatorJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="directReviewDownloadableResourceCreatorJob" />
         </Logger>
     </Loggers>
 </Configuration>

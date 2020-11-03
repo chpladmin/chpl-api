@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -17,13 +15,13 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@JsonIgnoreProperties(value = "developerId", ignoreUnknown = true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DirectReview implements Serializable {
     private static final long serialVersionUID = 7018071377912371691L;
 
-    @XmlTransient
+    @JsonProperty(value = "developerId")
     @JsonAlias("customfield_10900")
-    @JsonDeserialize(using = SimpleValueDeserializer.class)
+    @JsonDeserialize(using = DeveloperIdDeserializer.class)
     private Long developerId;
 
     @JsonProperty(value = "startDate")

@@ -28,6 +28,7 @@ import net.sf.ehcache.Element;
 
 @Log4j2
 public class DirectReviewCsvPresenter {
+    private static final int NON_CONFORMITY_FIELD_COUNT = 14;
     private Environment env;
     private DateTimeFormatter dateFormatter;
     private DateTimeFormatter dateTimeFormatter;
@@ -35,7 +36,7 @@ public class DirectReviewCsvPresenter {
 
     public DirectReviewCsvPresenter(Environment env, DeveloperManager developerManager) {
         dateFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd");
-        dateTimeFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm Z");
+        dateTimeFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm");
         this.env = env;
         this.developerManager = developerManager;
     }
@@ -46,7 +47,6 @@ public class DirectReviewCsvPresenter {
 
         try (FileWriter writer = new FileWriter(file);
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
-            writer.write('\ufeff');
             csvPrinter.printRecord(generateHeaderValues());
             for (Object developerIdKey : drCache.getKeys()) {
                 if (developerIdKey instanceof Long) {
@@ -138,7 +138,7 @@ public class DirectReviewCsvPresenter {
     private void addDeveloperFields(List<String> csvRow, DeveloperDTO developer) {
         csvRow.add(developer.getId().toString());
         csvRow.add(developer.getName());
-        csvRow.add("TODO: DEVELOPER LINK");
+        csvRow.add(env.getProperty("chplUrlBegin") + "/#/organizations/" + developer.getId());
         csvRow.add(developer.getStatus() == null || developer.getStatus().getStatus() == null
                 ? "Unknown" : developer.getStatus().getStatus().getStatusName());
     }
@@ -166,41 +166,41 @@ public class DirectReviewCsvPresenter {
     }
 
     private void addNonconformityDirectReviewFields(List<String> csvRow, DirectReviewNonConformity nc) {
-        csvRow.add(nc.getRequirement() != null ? nc.getRequirement() : "");
-        csvRow.add("TODO: Calculate Result");
-        csvRow.add(nc.getNonConformityType() != null ? nc.getNonConformityType() : "");
-        csvRow.add(nc.getNonConformityStatus() != null ? nc.getNonConformityStatus() : "");
+        csvRow.add(nc != null && nc.getRequirement() != null ? nc.getRequirement() : "");
+        csvRow.add(nc == null ? "No Non-Conformity" : "Non-Conformity");
+        csvRow.add(nc != null && nc.getNonConformityType() != null ? nc.getNonConformityType() : "");
+        csvRow.add(nc != null && nc.getNonConformityStatus() != null ? nc.getNonConformityStatus() : "");
 
-        if (nc.getDateOfDetermination() != null) {
+        if (nc != null && nc.getDateOfDetermination() != null) {
             csvRow.add(dateFormatter.format(nc.getDateOfDetermination()));
         } else {
             csvRow.add("");
         }
-        if (nc.getCapApprovalDate() != null) {
+        if (nc != null && nc.getCapApprovalDate() != null) {
             csvRow.add(dateFormatter.format(nc.getCapApprovalDate()));
         } else {
             csvRow.add("");
         }
-        if (nc.getCapStartDate() != null) {
+        if (nc != null && nc.getCapStartDate() != null) {
             csvRow.add(dateFormatter.format(nc.getCapStartDate()));
         } else {
             csvRow.add("");
         }
-        if (nc.getCapMustCompleteDate() != null) {
+        if (nc != null && nc.getCapMustCompleteDate() != null) {
             csvRow.add(dateFormatter.format(nc.getCapMustCompleteDate()));
         } else {
             csvRow.add("");
         }
-        if (nc.getCapEndDate() != null) {
+        if (nc != null && nc.getCapEndDate() != null) {
             csvRow.add(dateFormatter.format(nc.getCapEndDate()));
         } else {
             csvRow.add("");
         }
-        csvRow.add(nc.getNonConformitySummary() != null ? nc.getNonConformitySummary() : "");
-        csvRow.add(nc.getNonConformityFindings() != null ? nc.getNonConformityFindings() : "");
-        csvRow.add(nc.getDeveloperExplanation() != null ? nc.getDeveloperExplanation() : "");
-        csvRow.add(nc.getResolution() != null ? nc.getResolution() : "");
-        if (nc.getDeveloperAssociatedListings() != null && nc.getDeveloperAssociatedListings().size() > 0) {
+        csvRow.add(nc != null && nc.getNonConformitySummary() != null ? nc.getNonConformitySummary() : "");
+        csvRow.add(nc != null && nc.getNonConformityFindings() != null ? nc.getNonConformityFindings() : "");
+        csvRow.add(nc != null && nc.getDeveloperExplanation() != null ? nc.getDeveloperExplanation() : "");
+        csvRow.add(nc != null && nc.getResolution() != null ? nc.getResolution() : "");
+        if (nc != null && nc.getDeveloperAssociatedListings() != null && nc.getDeveloperAssociatedListings().size() > 0) {
             List<String> dalChplIds = nc.getDeveloperAssociatedListings().stream()
                     .map(dal -> dal.getChplProductNumber())
                     .collect(Collectors.toList());

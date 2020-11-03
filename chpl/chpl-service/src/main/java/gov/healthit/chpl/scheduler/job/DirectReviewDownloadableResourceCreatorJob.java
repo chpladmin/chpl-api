@@ -67,7 +67,7 @@ public class DirectReviewDownloadableResourceCreatorJob extends DownloadableReso
             DirectReviewCsvPresenter csvPresenter = new DirectReviewCsvPresenter(env, devManager);
             csvPresenter.presentAsFile(csvFile);
         } catch (Exception e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
         } finally {
             LOGGER.info("********* Completed the Direct Review Downloadable Resource Creator job. *********");
         }
