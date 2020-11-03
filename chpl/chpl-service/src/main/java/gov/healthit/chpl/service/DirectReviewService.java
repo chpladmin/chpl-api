@@ -62,7 +62,6 @@ public class DirectReviewService {
             if (ncs != null && ncs.size() > 0) {
                 dr.getNonConformities().addAll(ncs);
             }
-            allDirectReviews.add(dr);
         }
 
         if (allDirectReviews != null && allDirectReviews.size() > 0) {

@@ -1,23 +1,23 @@
 package gov.healthit.chpl.caching;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 
-import javax.annotation.PostConstruct;
-
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.exception.EntityRetrievalException;
+import lombok.extern.log4j.Log4j2;
 
 @Component
+@Log4j2
 @Aspect
-public class CacheInitializor {
+public class CacheInitializor implements ApplicationListener<ContextRefreshedEvent>{
 
     private Integer initializeTimeoutSecs;
     private Long tInitStart;
@@ -34,8 +34,8 @@ public class CacheInitializor {
     private Environment env;
 
     @Autowired
-    public CacheInitializor(final AsynchronousCacheInitialization asynchronousCacheInitialization,
-            final Environment env) {
+    public CacheInitializor(AsynchronousCacheInitialization asynchronousCacheInitialization,
+            Environment env) {
         this.asynchronousCacheInitialization = asynchronousCacheInitialization;
         this.env = env;
     }
@@ -58,9 +58,11 @@ public class CacheInitializor {
         return caches;
     }
 
-    @PostConstruct
     @Async
-    public void initialize() throws IOException, EntityRetrievalException, InterruptedException {
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent event) {
+        System.out.println(event.getApplicationContext().getApplicationName());
+        LOGGER.info("Spring context initialized. Loading caches.");
         enableCacheInitializationValue = env.getProperty("enableCacheInitialization");
         initializeTimeoutSecs = Integer.parseInt(env.getProperty("cacheInitializeTimeoutSecs").toString());
 

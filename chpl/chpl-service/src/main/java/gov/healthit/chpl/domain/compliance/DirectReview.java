@@ -23,6 +23,7 @@ public class DirectReview implements Serializable {
 
     @XmlTransient
     @JsonAlias("customfield_10900")
+    @JsonDeserialize(using = SimpleValueDeserializer.class)
     private Long developerId;
 
     @JsonProperty(value = "startDate")

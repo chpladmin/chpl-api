@@ -20,12 +20,17 @@ public class ListingDeserializer extends JsonDeserializer<List<DeveloperAssociat
     private ChplProductNumberUtil chplProductNumberUtil;
 
     public ListingDeserializer() {
+        System.out.println("Deserializer constructor called.");
+        System.out.println("chplProductNumberUtil: " + chplProductNumberUtil);
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+        System.out.println("Deserializer constructor complete.");
+        System.out.println("chplProductNumberUtil: " + chplProductNumberUtil);
     }
 
     @Override
     public List<DeveloperAssociatedListing> deserialize(JsonParser jsonParser, DeserializationContext context)
       throws IOException, JsonProcessingException {
+        System.out.println("chplProductNumberUtil: " + chplProductNumberUtil);
         List<DeveloperAssociatedListing> listings = new ArrayList<DeveloperAssociatedListing>();
         JsonNode listingDatabaseIdsNode = jsonParser.getCodec().readTree(jsonParser);
         if (listingDatabaseIdsNode != null && listingDatabaseIdsNode.isArray() && listingDatabaseIdsNode.size() > 0) {
