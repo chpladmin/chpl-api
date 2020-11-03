@@ -1,4 +1,4 @@
-package gov.healthit.chpl.domain.compliance;
+package gov.healthit.chpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -16,12 +16,12 @@ import com.fasterxml.jackson.databind.jsontype.TypeIdResolver;
 import com.fasterxml.jackson.databind.jsontype.TypeResolverBuilder;
 
 @Component
-public class SpringBeanHandlerInstantiator extends HandlerInstantiator {
+public class SpringBeanJsonHandlerInstantiator extends HandlerInstantiator {
 
     private ApplicationContext applicationContext;
 
     @Autowired
-    public SpringBeanHandlerInstantiator(ApplicationContext applicationContext) {
+    public SpringBeanJsonHandlerInstantiator(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
 

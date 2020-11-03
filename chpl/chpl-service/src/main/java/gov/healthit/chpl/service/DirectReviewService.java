@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.healthit.chpl.DirectReviewDeserializingObjectMapper;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
@@ -43,12 +43,14 @@ public class DirectReviewService {
     private String jiraNonconformityUrl;
 
     private RestTemplate jiraAuthenticatedRestTemplate;
-    private ObjectMapper mapper;
+    private DirectReviewDeserializingObjectMapper mapper;
+    //private ObjectMapper mapper;
 
     @Autowired
-    public DirectReviewService(RestTemplate jiraAuthenticatedRestTemplate) {
+    public DirectReviewService(RestTemplate jiraAuthenticatedRestTemplate, DirectReviewDeserializingObjectMapper mapper) {
         this.jiraAuthenticatedRestTemplate = jiraAuthenticatedRestTemplate;
-        this.mapper = new ObjectMapper();
+        //this.mapper = new ObjectMapper();
+        this.mapper = mapper;
     }
 
     public void populateDirectReviewsCache() throws JiraRequestFailedException {

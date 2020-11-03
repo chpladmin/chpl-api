@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -15,22 +15,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 
+@Component
 public class ListingDeserializer extends JsonDeserializer<List<DeveloperAssociatedListing>> {
     @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
 
-    public ListingDeserializer() {
-        System.out.println("Deserializer constructor called.");
-        System.out.println("chplProductNumberUtil: " + chplProductNumberUtil);
-        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        System.out.println("Deserializer constructor complete.");
-        System.out.println("chplProductNumberUtil: " + chplProductNumberUtil);
-    }
-
     @Override
     public List<DeveloperAssociatedListing> deserialize(JsonParser jsonParser, DeserializationContext context)
       throws IOException, JsonProcessingException {
-        System.out.println("chplProductNumberUtil: " + chplProductNumberUtil);
         List<DeveloperAssociatedListing> listings = new ArrayList<DeveloperAssociatedListing>();
         JsonNode listingDatabaseIdsNode = jsonParser.getCodec().readTree(jsonParser);
         if (listingDatabaseIdsNode != null && listingDatabaseIdsNode.isArray() && listingDatabaseIdsNode.size() > 0) {

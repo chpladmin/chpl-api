@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import javax.annotation.PostConstruct;
+
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -17,7 +17,8 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 @Aspect
-public class CacheInitializor implements ApplicationListener<ContextRefreshedEvent>{
+public class CacheInitializor {
+    private static final Double ONE_SECOND_MILLIS = 1000.0;
 
     private Integer initializeTimeoutSecs;
     private Long tInitStart;
@@ -59,16 +60,14 @@ public class CacheInitializor implements ApplicationListener<ContextRefreshedEve
     }
 
     @Async
-    @Override
-    public void onApplicationEvent(ContextRefreshedEvent event) {
-        System.out.println(event.getApplicationContext().getApplicationName());
-        LOGGER.info("Spring context initialized. Loading caches.");
+    @PostConstruct
+    public void initialize() {
         enableCacheInitializationValue = env.getProperty("enableCacheInitialization");
         initializeTimeoutSecs = Integer.parseInt(env.getProperty("cacheInitializeTimeoutSecs").toString());
 
         tInitStart = System.currentTimeMillis();
         if (tInitEnd != null) {
-            tInitElapsedSecs = (tInitStart - tInitEnd) / 1000.0;
+            tInitElapsedSecs = (tInitStart - tInitEnd) / ONE_SECOND_MILLIS;
         }
 
         if (tInitEnd == null || tInitElapsedSecs > initializeTimeoutSecs) {
@@ -102,7 +101,7 @@ public class CacheInitializor implements ApplicationListener<ContextRefreshedEve
                     isInitializeDirectReviewsDone = asynchronousCacheInitialization.initializeDirectReviews();
                 }
             } catch (Exception e) {
-                System.out.println("Caching failed to initialize");
+                LOGGER.error("Caching failed to initialize");
                 e.printStackTrace();
             }
         }
