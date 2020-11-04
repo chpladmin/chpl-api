@@ -275,6 +275,17 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <RollingFile name="directReviewCacheRefreshJob"
+            fileName="${logDir}/scheduler/directReviewCacheRefreshJob.log"
+            filePattern="${logDir}/scheduler/history/directReviewCacheRefreshJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
         <RollingFile name="developerAccessEmailJob"
             fileName="${logDir}/scheduler/developerAccessEmailJob.log"
             filePattern="${logDir}/scheduler/history/developerAccessEmailJob-%d{yyyy-MM-dd}.log">
@@ -418,6 +429,10 @@
         <Logger name="directReviewDownloadableResourceCreatorJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="directReviewDownloadableResourceCreatorJob" />
+        </Logger>
+        <Logger name="directReviewCacheRefreshJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="directReviewCacheRefreshJob" />
         </Logger>
     </Loggers>
 </Configuration>

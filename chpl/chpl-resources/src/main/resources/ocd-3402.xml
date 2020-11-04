@@ -5,6 +5,25 @@
     xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData http://www.quartz-scheduler.org/xml/job_scheduling_data_2_0.xsd"
     version="2.0">
     <schedule>
+        <!-- Refresh the direct review cache -->
+        <job>
+            <name>directReviewCacheRefresh</name>
+            <group>systemJobs</group>
+            <description>Periodically refresh the direct review cache</description>
+            <job-class>gov.healthit.chpl.scheduler.job.DirectReviewCacheRefreshJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+        <trigger>
+            <cron>
+                <name>refreshDirectReviews</name>
+                <group>refreshDirectReviewsTrigger</group>
+                <job-name>directReviewCacheRefresh</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
+                <cron-expression>0 0 0,3,6,9,12,15,18,21 ? * *</cron-expression> <!-- Every three hours -->
+            </cron>
+        </trigger>
         <!-- Generate direct review download file -->
         <job>
             <name>directReviewDownloadFileGeneration</name>
@@ -14,5 +33,15 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
+        <trigger>
+            <cron>
+                <name>generateDirectReviewFile</name>
+                <group>downloadFileTrigger</group>
+                <job-name>directReviewDownloadFileGeneration</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 0 8 * * ?</cron-expression> <!-- At 0800 UTC every day -->
+            </cron>
+        </trigger>
     </schedule>
 </job-scheduling-data>

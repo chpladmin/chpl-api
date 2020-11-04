@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -44,18 +44,16 @@ public class DirectReviewService {
 
     private RestTemplate jiraAuthenticatedRestTemplate;
     private DirectReviewDeserializingObjectMapper mapper;
-    //private ObjectMapper mapper;
 
     @Autowired
     public DirectReviewService(RestTemplate jiraAuthenticatedRestTemplate, DirectReviewDeserializingObjectMapper mapper) {
         this.jiraAuthenticatedRestTemplate = jiraAuthenticatedRestTemplate;
-        //this.mapper = new ObjectMapper();
         this.mapper = mapper;
     }
 
     public void populateDirectReviewsCache() throws JiraRequestFailedException {
         LOGGER.info("Fetching all direct review data.");
-        //TODO: Could this response be too big? Maybe we just need to do it per developer?
+        //Could this response ever be too big? Maybe we would just do it per developer at that point?
         String directReviewsJson = fetchDirectReviews();
         List<DirectReview> allDirectReviews = convertDirectReviewsFromJira(directReviewsJson);
         for (DirectReview dr : allDirectReviews) {
@@ -93,7 +91,7 @@ public class DirectReviewService {
     }
 
     //this will replace the direct reviews for the supplied developerId in the DR cache
-    @Cacheable(CacheNames.DIRECT_REVIEWS)
+    @CachePut(CacheNames.DIRECT_REVIEWS)
     public List<DirectReview> getDirectReviews(Long developerId) throws JiraRequestFailedException {
         LOGGER.info("Fetching direct review data for developer " + developerId);
 
