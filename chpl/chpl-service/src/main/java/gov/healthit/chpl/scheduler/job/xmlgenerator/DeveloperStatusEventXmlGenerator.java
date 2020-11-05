@@ -23,9 +23,9 @@ public class DeveloperStatusEventXmlGenerator extends XmlGenerator {
             sw.writeStartElement(rootNodeName);
             createSimpleElement(event.getDeveloperId(), "developerId", sw);
             createSimpleElement(event.getId(), "id", sw);
+            createSimpleElement(event.getReason(), "reason", sw);
             DeveloperStatusXmlGenerator.add(event.getStatus(), "status", sw);
             createSimpleElement(event.getStatusDate(), "statusDate", sw);
-            createSimpleElement(event.getReason(), "reason", sw);
             sw.writeEndElement();
         }
     }

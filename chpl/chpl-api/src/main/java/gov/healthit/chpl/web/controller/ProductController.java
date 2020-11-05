@@ -176,7 +176,6 @@ public class ProductController {
                 ContactDTO contact = new ContactDTO();
                 contact.setId(productInfo.getProduct().getContact().getContactId());
                 contact.setFullName(productInfo.getProduct().getContact().getFullName());
-                contact.setFriendlyName(productInfo.getProduct().getContact().getFriendlyName());
                 contact.setTitle(productInfo.getProduct().getContact().getTitle());
                 contact.setEmail(productInfo.getProduct().getContact().getEmail());
                 contact.setPhoneNumber(productInfo.getProduct().getContact().getPhoneNumber());

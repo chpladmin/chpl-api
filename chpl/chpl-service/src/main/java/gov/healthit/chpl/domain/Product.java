@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import lombok.AllArgsConstructor;
@@ -52,7 +53,7 @@ public class Product implements Serializable {
      * The point of contact for the product
      */
     @XmlElement(required = false, nillable = true)
-    private Contact contact;
+    private PointOfContact contact;
 
     /**
      * The developer that owns this product.
@@ -83,7 +84,7 @@ public class Product implements Serializable {
             this.lastModifiedDate = dto.getLastModifiedDate().getTime() + "";
         }
         if (dto.getContact() != null) {
-            this.contact = new Contact(dto.getContact());
+            this.contact = new PointOfContact(dto.getContact());
         }
         if (dto.getOwner() != null) {
             this.owner = new Developer();
@@ -104,7 +105,7 @@ public class Product implements Serializable {
         return productId;
     }
 
-    public void setProductId(final Long productId) {
+    public void setProductId(Long productId) {
         this.productId = productId;
     }
 
@@ -120,7 +121,7 @@ public class Product implements Serializable {
         return reportFileLocation;
     }
 
-    public void setReportFileLocation(final String reportFileLocation) {
+    public void setReportFileLocation(String reportFileLocation) {
         this.reportFileLocation = reportFileLocation;
     }
 
@@ -128,7 +129,7 @@ public class Product implements Serializable {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(final String lastModifiedDate) {
+    public void setLastModifiedDate(String lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -136,7 +137,7 @@ public class Product implements Serializable {
         return owner;
     }
 
-    public void setOwner(final Developer owner) {
+    public void setOwner(Developer owner) {
         this.owner = owner;
     }
 
@@ -144,15 +145,15 @@ public class Product implements Serializable {
         return ownerHistory;
     }
 
-    public void setOwnerHistory(final List<ProductOwner> ownerHistory) {
+    public void setOwnerHistory(List<ProductOwner> ownerHistory) {
         this.ownerHistory = ownerHistory;
     }
 
-    public Contact getContact() {
+    public PointOfContact getContact() {
         return contact;
     }
 
-    public void setContact(final Contact contact) {
+    public void setContact(PointOfContact contact) {
         this.contact = contact;
     }
 
