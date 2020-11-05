@@ -406,7 +406,7 @@
 					"response": []
 				},
 				{
-			"name": "developer schema and response validation_GET_/developers",
+			"name": "GET /developers - developer schema and response validation",
 			"event": [
 				{
 					"listen": "test",
@@ -511,7 +511,7 @@
 			"response": []
 		},
 		{
-			"name": "developer edit response validation_PUT_/developers",
+			"name": "PUT /developers - edit response validation on successful developer edit",
 			"event": [
 				{
 					"listen": "test",
