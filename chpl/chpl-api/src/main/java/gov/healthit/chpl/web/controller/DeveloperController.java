@@ -131,10 +131,6 @@ public class DeveloperController {
     produces = "application/json; charset=utf-8")
     public @ResponseBody ResponseEntity<List<DirectReview>> getDirectReviews(
             @PathVariable("developerId") Long developerId) throws JiraRequestFailedException {
-        if (!ff4j.check(FeatureList.DIRECT_REVIEW)) {
-            throw new NotImplementedException();
-        }
-
         return new ResponseEntity<List<DirectReview>>(
                 directReviewService.getDirectReviews(developerId), HttpStatus.OK);
     }
@@ -357,7 +353,7 @@ public class DeveloperController {
                 devMap.setAcbId(attMap.getAcbId());
                 devMap.setAcbName(attMap.getAcbName());
                 if (attMap.getAttestation() != null) {
-                    devMap.setTransparencyAttestation(new TransparencyAttestationDTO( attMap.getAttestation()));
+                    devMap.setTransparencyAttestation(new TransparencyAttestationDTO(attMap.getAttestation()));
                 }
                 toUpdate.getTransparencyAttestationMappings().add(devMap);
             }
