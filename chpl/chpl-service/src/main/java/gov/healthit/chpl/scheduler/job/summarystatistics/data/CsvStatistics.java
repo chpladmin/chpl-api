@@ -18,9 +18,9 @@ public class CsvStatistics implements Serializable {
 
     private Long totalUniqueProducts;
 
-    private Long totalProductsActive2014Listings;
-    private Long totalProductsActive2015Listings;
-    private Long totalProductsActiveListings;
+    private Long totalUniqueProductsActive2014Listings;
+    private Long totalUniqueProductsActive2015Listings;
+    private Long totalUniqueProductsActiveListings;
 
     private Long totalListings;
     private Long total2011Listings;

@@ -91,13 +91,12 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
             Date endDate = new Date();
             Integer numDaysInPeriod = Integer.valueOf(env.getProperty("summaryEmailPeriodInDays").toString());
 
-            //EmailStatistics emailBodyStats = emailStatisticsCreator.getStatistics(allListings);
+            EmailStatistics emailBodyStats = emailStatisticsCreator.getStatistics(allListings);
+            saveSummaryStatistics(emailBodyStats, endDate);
 
             if (generateCsv) {
                 createSummaryStatisticsFile(allListings, startDate, endDate, numDaysInPeriod);
             }
-            //saveSummaryStatistics(emailBodyStats, endDate);
-
         } catch (Exception e) {
             LOGGER.error("Caught unexpected exception: " + e.getMessage(), e);
         }

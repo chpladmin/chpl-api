@@ -2,7 +2,6 @@ package gov.healthit.chpl.scheduler.job.summarystatistics.data;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -26,7 +25,9 @@ import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
 import gov.healthit.chpl.domain.DateRange;
 import gov.healthit.chpl.dto.CertificationStatusEventDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import one.util.streamex.StreamEx;
 
 @Component()
 public class HistoricalStatisticsCreator {
@@ -58,9 +59,6 @@ public class HistoricalStatisticsCreator {
 
         ExecutorService executorService = Executors.newFixedThreadPool(getThreadCountForJob());
 
-        //Get all of the statuses for all of the listings
-        //Map<Long, List<CertificationStatusEventDTO>> statusesForAllListings = getAllStatusesForAllListings();
-
         CsvStatistics stats = new CsvStatistics();
         stats.setDateRange(dateRange);
         List<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
@@ -75,16 +73,16 @@ public class HistoricalStatisticsCreator {
                     .thenAccept(result -> stats.setTotalDevelopersWith2015Listings(result)));
 
             //products
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalUniqueProducts(dateRange), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalUniqueProducts(allListings, dateRange), executorService)
                     .thenAccept(result -> stats.setTotalUniqueProducts(result)));
             futures.add(CompletableFuture.supplyAsync(() ->
                     getTotalProductsActive2014Listings(allListings, statusesForAllListings, dateRange), executorService)
-                    .thenAccept(result -> stats.setTotalProductsActive2014Listings(result)));
+                    .thenAccept(result -> stats.setTotalUniqueProductsActive2014Listings(result)));
             futures.add(CompletableFuture.supplyAsync(() ->
                     getTotalProductsActive2015Listings(allListings, statusesForAllListings, dateRange), executorService)
-                    .thenAccept(result -> stats.setTotalProductsActive2015Listings(result)));
+                    .thenAccept(result -> stats.setTotalUniqueProductsActive2015Listings(result)));
             futures.add(CompletableFuture.supplyAsync(() -> getTotalProductsActiveListings(dateRange), executorService)
-                    .thenAccept(result -> stats.setTotalProductsActiveListings(result)));
+                    .thenAccept(result -> stats.setTotalUniqueProductsActiveListings(result)));
 
             // listings
             futures.add(CompletableFuture.supplyAsync(() -> getTotalListings(dateRange), executorService)
@@ -138,26 +136,41 @@ public class HistoricalStatisticsCreator {
         return total;
     }
 
-    private Long getTotalUniqueProducts(DateRange dateRange) {
-        Long total = listingStatisticsDAO.getTotalUniqueProductsByEditionAndStatus(dateRange, null, null);
-        return total;
+    private Long getTotalUniqueProducts(List<CertifiedProductDetailsDTO> allListings, DateRange dateRange) {
+        List<ProductDTO> products = allListings.stream()
+                .map(listing -> listing.getProduct())
+                .collect(Collectors.toList());
+
+        return StreamEx.of(products)
+                .distinct(ProductDTO::getId)
+                .count();
     }
 
     private Long getTotalProductsActive2014Listings(List<CertifiedProductDetailsDTO> allListings,
             Map<Long, List<CertificationStatusEventDTO>> allStatuses, DateRange dateRange) {
 
-        return allListings.stream()
+        List<ProductDTO> products = allListings.stream()
                 .filter(listing -> listing.getCertificationEditionId().equals(EDITION_2014_ID)
                         && isListingActiveAsOfDate(listing.getId(), allStatuses, dateRange.getEndDate()))
+                .map(listing -> listing.getProduct())
+                .collect(Collectors.toList());
+
+        return StreamEx.of(products)
+                .distinct(ProductDTO::getId)
                 .count();
     }
 
     private Long getTotalProductsActive2015Listings(List<CertifiedProductDetailsDTO> allListings,
             Map<Long, List<CertificationStatusEventDTO>> allStatuses, DateRange dateRange) {
 
-        return allListings.stream()
+        List<ProductDTO> products = allListings.stream()
                 .filter(listing -> listing.getCertificationEditionId().equals(EDITION_2015_ID)
                         && isListingActiveAsOfDate(listing.getId(), allStatuses, dateRange.getEndDate()))
+                .map(listing -> listing.getProduct())
+                .collect(Collectors.toList());
+
+        return StreamEx.of(products)
+                .distinct(ProductDTO::getId)
                 .count();
     }
 
@@ -246,14 +259,5 @@ public class HistoricalStatisticsCreator {
             }
         }
         return result;
-    }
-
-    private Map<Long, List<CertificationStatusEventDTO>> getAllStatusesForAllListings() {
-        Map<Long, List<CertificationStatusEventDTO>> map = certificationStatusEventDAO.findAll().stream()
-                .collect(Collectors.groupingBy(CertificationStatusEventDTO::getCertifiedProductId));
-
-        Map<Long, List<CertificationStatusEventDTO>> syncdMap = new Hashtable<Long, List<CertificationStatusEventDTO>>();
-        syncdMap.putAll(map);
-        return syncdMap;
     }
 }
