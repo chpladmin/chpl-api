@@ -84,6 +84,9 @@ public class DeveloperController {
     @Value("${directReviewsReportName}")
     private String directReviewsReportName;
 
+    @Value("${schemaDirectReviewsName}")
+    private String directReviewsSchemaName;
+
     @Autowired
     public DeveloperController(DeveloperManager developerManager,
             CertifiedProductManager cpManager,
@@ -158,13 +161,24 @@ public class DeveloperController {
             notes = "Once per day, all direct reviews are written out to a CSV "
                     + "file on the CHPL servers. This method allows any user to download that file.")
     @RequestMapping(value = "/direct-reviews/download", method = RequestMethod.GET, produces = "text/csv")
-    public void downloadDirectReviews(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void downloadDirectReviews(
+            @RequestParam(value = "definition", defaultValue = "false", required = false) Boolean isDefinition,
+            HttpServletRequest request, HttpServletResponse response) throws IOException {
         File downloadFile = null;
-        try {
-            downloadFile = fileUtils.getNewestFileMatchingName("^" + directReviewsReportName + "-.+\\.csv$");
-        } catch (final IOException ex) {
-            response.getWriter().append(ex.getMessage());
-            return;
+        if (isDefinition != null && isDefinition.booleanValue()) {
+            try {
+                downloadFile = fileUtils.getDownloadFile(directReviewsSchemaName);
+            } catch (IOException ex) {
+                response.getWriter().append(ex.getMessage());
+                return;
+            }
+        } else {
+            try {
+                downloadFile = fileUtils.getNewestFileMatchingName("^" + directReviewsReportName + "-.+\\.csv$");
+            } catch (IOException ex) {
+                response.getWriter().append(ex.getMessage());
+                return;
+            }
         }
 
         if (downloadFile == null) {
