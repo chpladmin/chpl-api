@@ -95,7 +95,7 @@ public class CQMResultDetails implements Serializable {
      * versions, please reference the CMS eCQM library.
      */
     @XmlElementWrapper(name = "successVersions", nillable = true, required = false)
-    @XmlElement(name = "version",required = false, nillable = true)
+    @XmlElement(name = "version", required = false, nillable = true)
     private Set<String> successVersions;
 
     /**
@@ -104,7 +104,7 @@ public class CQMResultDetails implements Serializable {
      * CMS eCQM library.
      */
     @XmlElementWrapper(name = "allVersions", nillable = true, required = false)
-    @XmlElement(name = "version",required = false, nillable = true)
+    @XmlElement(name = "version", required = false, nillable = true)
     private Set<String> allVersions;
 
     /**

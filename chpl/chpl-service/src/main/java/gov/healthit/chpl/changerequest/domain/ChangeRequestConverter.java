@@ -8,9 +8,9 @@ import gov.healthit.chpl.changerequest.entity.ChangeRequestTypeEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestWebsiteEntity;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.auth.UserPermission;
+import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.auth.UserPermissionDTO;
@@ -77,10 +77,10 @@ public class ChangeRequestConverter {
             address.setCountry(entity.getCountry());
         }
         crDev.setAddress(address);
-        Contact contact = null;
+        PointOfContact contact = null;
         if (entity.getContactFullName() != null || entity.getContactEmail() != null
                 || entity.getContactPhoneNumber() != null || entity.getContactTitle() != null) {
-            contact = new Contact();
+            contact = new PointOfContact();
             contact.setFullName(entity.getContactFullName());
             contact.setEmail(entity.getContactEmail());
             contact.setPhoneNumber(entity.getContactPhoneNumber());
