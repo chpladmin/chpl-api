@@ -92,6 +92,7 @@ public class DirectReviewCsvPresenter {
         result.add("Developer Explanation");
         result.add("Resolution Description");
         result.add("Developer-Associated Listings");
+        result.add("Non-conformity Last Updated Date");
         result.add("Retrieved from Jira Time");
         return result;
     }
@@ -205,6 +206,13 @@ public class DirectReviewCsvPresenter {
                     .map(dal -> dal.getChplProductNumber())
                     .collect(Collectors.toList());
             csvRow.add(String.join(";", dalChplIds));
+        } else {
+            csvRow.add("");
+        }
+        if (nc != null && nc.getLastUpdated() != null) {
+            LocalDateTime ncLastUpdatedDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getLastUpdated().getTime()),
+                    ZoneId.systemDefault());
+            csvRow.add(dateFormatter.format(ncLastUpdatedDate));
         } else {
             csvRow.add("");
         }
