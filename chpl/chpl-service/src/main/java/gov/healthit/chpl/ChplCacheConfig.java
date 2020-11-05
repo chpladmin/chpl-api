@@ -25,7 +25,7 @@ public class ChplCacheConfig {
     private static final int MAX_ENTRIES_LOCAL_HEAP_LISTING_COLLECTION = 300000;
     private static final int MAX_ENTRIES_LOCAL_DISK = 10000000;
     private static final int DISK_SPOOL_BUFFER_SIZE_MB = 20;
-    private static final int ONE_HOUR_IN_SECONDS = 60 * 60 * 1000;
+    private static final int SIX_HOURS_IN_SECONDS = 6 * 60 * 60 * 1000;
 
     @Bean
     public EhCacheManagerFactoryBean ehCacheCacheManager() {
@@ -86,7 +86,7 @@ public class ChplCacheConfig {
         //TODO: not sure if we need to change maxEntriesLocalDisk for this cache.
         //Setting it to 0 could cause us to run out of space IF there were tons of DRs
         //but setting to any other number might not make the cache work in the way we want to use it.
-        return createCache(name, ONE_HOUR_IN_SECONDS);
+        return createCache(name, SIX_HOURS_IN_SECONDS);
     }
 
     private Cache createEternalCache(String name) {
