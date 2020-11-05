@@ -1,19 +1,30 @@
 package gov.healthit.chpl.logging;
 
-import java.lang.reflect.Method;
-
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 
-@Component
 @Aspect
+@Component
 public class LoggingAspect {
 
-
     @Around(value = "@within(gov.healthit.chpl.logging.Loggable) || @annotation(gov.healthit.chpl.logging.Loggable)")
+    public Object around(ProceedingJoinPoint point) throws Throwable {
+        long start = System.currentTimeMillis();
+        Object result = point.proceed();
+        LogWriter.write(
+                point.getClass(), "INFO",
+                String.format("#%s(%s): %s in %s[msec]s",
+                        MethodSignature.class.cast(point.getSignature()).getMethod().getName(),
+                        point.getArgs(),
+                        result,
+                        System.currentTimeMillis() - start));
+        return result;
+    }
+}
+    /*
     public Object around(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 
 
@@ -72,4 +83,6 @@ public class LoggingAspect {
 
         return result;
     }
+
 }
+*/

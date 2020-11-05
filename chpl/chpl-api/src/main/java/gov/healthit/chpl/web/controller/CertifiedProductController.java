@@ -93,7 +93,6 @@ import lombok.extern.log4j.Log4j2;
 @RestController
 @RequestMapping("/certified_products")
 @Log4j2
-@Loggable
 public class CertifiedProductController {
 
     @Value("${uploadErrorEmailRecipients}")
@@ -179,6 +178,7 @@ public class CertifiedProductController {
     method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    @Loggable
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductById(
             @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
 
