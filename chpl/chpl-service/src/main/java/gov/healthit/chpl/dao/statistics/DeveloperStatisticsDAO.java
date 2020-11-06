@@ -67,9 +67,9 @@ public class DeveloperStatisticsDAO extends BaseDAOImpl {
             } else {
                 hql += " AND ";
             }
-            hql += "((deleted = false AND creationDate <= :endDate) "
+            hql += "((deleted = false AND certificationDate <= :endDate) "
                     + " OR "
-                    + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate)) ";
+                    + "(deleted = true AND certificationDate <= :endDate AND lastModifiedDate > :endDate)) ";
         }
         Query query = entityManager.createQuery(hql);
 
