@@ -145,7 +145,8 @@ public class RealWorldTestingUploadJob implements Job {
         if (txn.getPlansUpload() != null) {
             listing.setRwtPlansCheckDate(txn.getPlansUpload().getLastChecked());
             listing.setRwtPlansUrl(txn.getPlansUpload().getUrl());
-        } else if (txn.getResultsUpload() != null) {
+        }
+        if (txn.getResultsUpload() != null) {
             listing.setRwtResultsCheckDate(txn.getResultsUpload().getLastChecked());
             listing.setRwtResultsUrl(txn.getResultsUpload().getUrl());
         }
