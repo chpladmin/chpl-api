@@ -5,7 +5,7 @@ import java.io.Serializable;
 import org.apache.commons.lang.ObjectUtils;
 
 import gov.healthit.chpl.domain.Address;
-import gov.healthit.chpl.domain.Contact;
+import gov.healthit.chpl.domain.contact.PointOfContact;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +20,7 @@ public @Data class ChangeRequestDeveloperDetails implements Serializable {
     private Long id;
     private Boolean selfDeveloper;
     private Address address;
-    private Contact contact;
+    private PointOfContact contact;
 
     @Override
     public boolean equals(Object obj) {

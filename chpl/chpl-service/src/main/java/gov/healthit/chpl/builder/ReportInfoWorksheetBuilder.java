@@ -292,7 +292,7 @@ public abstract class ReportInfoWorksheetBuilder {
                 BorderStyle.THIN, BorderExtent.TOP);
         }
          //draw border around the table, including the heading row
-        pt.drawBorders(new CellRangeAddress(tableStartRow-1, row.getRowNum(), 1, 2),
+        pt.drawBorders(new CellRangeAddress(tableStartRow - 1, row.getRowNum(), 1, 2),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
 
         //skip a row after the table
@@ -302,7 +302,7 @@ public abstract class ReportInfoWorksheetBuilder {
         cell.setCellValue("Reactive Surveillance");
         row = workbook.getRow(sheet, currRow++);
         cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
-        row.setHeightInPoints((3*sheet.getDefaultRowHeightInPoints()));
+        row.setHeightInPoints((3 * sheet.getDefaultRowHeightInPoints()));
         cell.setCellValue("In order to meet its obligation to conduct reactive surveillance, "
                 + "the ONC-ACB undertook the following activities and implemented the following "
                 + "measures to ensure that it was able to systematically obtain, synthesize and "
