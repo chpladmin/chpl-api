@@ -477,7 +477,7 @@ public class ListingQuestionableActivityProvider {
             for (ListingMeasure newMeasure : newListing.getMeasures()) {
                 Optional<ListingMeasure> matchingOrigMeasure = origListing.getMeasures().stream()
                     .filter(origMeasure -> origMeasure.getId().equals(newMeasure.getId()))
-                    .findFirst();
+                    .findAny();
                 if (!matchingOrigMeasure.isPresent()) {
                     QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
                     activity.setBefore(null);
@@ -510,7 +510,7 @@ public class ListingQuestionableActivityProvider {
             for (ListingMeasure origMeasure : origListing.getMeasures()) {
                 Optional<ListingMeasure> matchingNewMeasure = newListing.getMeasures().stream()
                     .filter(newMeasure -> origMeasure.getId().equals(newMeasure.getId()))
-                    .findFirst();
+                    .findAny();
                 if (!matchingNewMeasure.isPresent()) {
                     QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
                     activity.setBefore(origMeasure.getMeasureType().getName()
