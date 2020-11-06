@@ -1139,7 +1139,6 @@ public class SearchViewController {
         return result;
     }
 
-
     @ApiOperation(value = "Get all possible developer status options in the CHPL")
     @RequestMapping(value = "/data/developer_statuses", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
