@@ -25,7 +25,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.Address;
-import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.PermissionDeletedResponse;
@@ -36,6 +35,7 @@ import gov.healthit.chpl.domain.UpdateDevelopersRequest;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.domain.compliance.DirectReview;
+import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.domain.developer.hierarchy.DeveloperTree;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.AddressDTO;
@@ -141,10 +141,6 @@ public class DeveloperController {
     produces = "application/json; charset=utf-8")
     public @ResponseBody ResponseEntity<List<DirectReview>> getDirectReviews(
             @PathVariable("developerId") Long developerId) throws JiraRequestFailedException {
-        if (!ff4j.check(FeatureList.DIRECT_REVIEW)) {
-            throw new NotImplementedException();
-        }
-
         return new ResponseEntity<List<DirectReview>>(
                 directReviewService.getDirectReviews(developerId), HttpStatus.OK);
     }
@@ -239,7 +235,6 @@ public class DeveloperController {
         if (splitRequest.getNewDeveloper().getContact() != null) {
             ContactDTO developerContact = new ContactDTO();
             developerContact.setFullName(splitRequest.getNewDeveloper().getContact().getFullName());
-            developerContact.setFriendlyName(splitRequest.getNewDeveloper().getContact().getFriendlyName());
             developerContact.setEmail(splitRequest.getNewDeveloper().getContact().getEmail());
             developerContact.setPhoneNumber(splitRequest.getNewDeveloper().getContact().getPhoneNumber());
             developerContact.setTitle(splitRequest.getNewDeveloper().getContact().getTitle());
@@ -339,12 +334,11 @@ public class DeveloperController {
                 toCreateAddress.setCountry(developerAddress.getCountry());
                 toCreate.setAddress(toCreateAddress);
             }
-            Contact developerContact = developerInfo.getDeveloper().getContact();
+            PointOfContact developerContact = developerInfo.getDeveloper().getContact();
             if (developerContact != null) {
                 ContactDTO toCreateContact = new ContactDTO();
                 toCreateContact.setEmail(developerContact.getEmail());
                 toCreateContact.setFullName(developerContact.getFullName());
-                toCreateContact.setFriendlyName(developerContact.getFriendlyName());
                 toCreateContact.setPhoneNumber(developerContact.getPhoneNumber());
                 toCreateContact.setTitle(developerContact.getTitle());
                 toCreate.setContact(toCreateContact);
@@ -367,7 +361,7 @@ public class DeveloperController {
                 devMap.setAcbId(attMap.getAcbId());
                 devMap.setAcbName(attMap.getAcbName());
                 if (attMap.getAttestation() != null) {
-                    devMap.setTransparencyAttestation(new TransparencyAttestationDTO( attMap.getAttestation()));
+                    devMap.setTransparencyAttestation(new TransparencyAttestationDTO(attMap.getAttestation()));
                 }
                 toUpdate.getTransparencyAttestationMappings().add(devMap);
             }
@@ -400,12 +394,11 @@ public class DeveloperController {
                 toUpdate.setAddress(address);
             }
             if (developerInfo.getDeveloper().getContact() != null) {
-                Contact developerContact = developerInfo.getDeveloper().getContact();
+                PointOfContact developerContact = developerInfo.getDeveloper().getContact();
                 ContactDTO toUpdateContact = new ContactDTO();
                 toUpdateContact.setId(developerContact.getContactId());
                 toUpdateContact.setEmail(developerContact.getEmail());
                 toUpdateContact.setFullName(developerContact.getFullName());
-                toUpdateContact.setFriendlyName(developerContact.getFriendlyName());
                 toUpdateContact.setPhoneNumber(developerContact.getPhoneNumber());
                 toUpdateContact.setTitle(developerContact.getTitle());
                 toUpdate.setContact(toUpdateContact);
