@@ -82,27 +82,30 @@ public class ListingMeasureDAO extends BaseDAOImpl {
         List<CertificationCriterion> added = getAddedAssociatedCriteria(updatedAssociatedCriteria,
                 exsitingAssociatedCriteria);
 
-        removed.stream().forEach(removedCriterion -> {
-            Optional<ListingMeasureCriterionMapEntity> removedEntityOpt =
-                    existingEntity.getAssociatedCriteria().stream()
-                        .filter(existingCrit -> existingCrit.getCriterion().getId().equals(removedCriterion.getId()))
-                        .findAny();
-            if (removedEntityOpt.isPresent()) {
-                ListingMeasureCriterionMapEntity removedEntity = removedEntityOpt.get();
-                removedEntity.setDeleted(true);
-                removedEntity.setLastModifiedUser(AuthUtil.getAuditId());
-                update(removedEntity);
-            }
-        });
+        removed.stream().forEach(removedCriterion -> deleteRemovedCriterion(existingEntity, removedCriterion));
+        added.stream().forEach(addedCriterion -> saveAddedCriterion(existingEntity, addedCriterion));
+    }
 
-        added.stream().forEach(addedCriterion -> {
-            ListingMeasureCriterionMapEntity addedEntity = new ListingMeasureCriterionMapEntity();
-            addedEntity.setCertificationCriterionId(addedCriterion.getId());
-            addedEntity.setDeleted(false);
-            addedEntity.setLastModifiedUser(AuthUtil.getAuditId());
-            addedEntity.setListingMeasureMapId(existingEntity.getId());
-            create(addedEntity);
-        });
+    private void saveAddedCriterion(ListingMeasureEntity listingMeasureEntity, CertificationCriterion addedCriterion) {
+        ListingMeasureCriterionMapEntity addedEntity = new ListingMeasureCriterionMapEntity();
+        addedEntity.setCertificationCriterionId(addedCriterion.getId());
+        addedEntity.setDeleted(false);
+        addedEntity.setLastModifiedUser(AuthUtil.getAuditId());
+        addedEntity.setListingMeasureMapId(listingMeasureEntity.getId());
+        create(addedEntity);
+    }
+
+    private void deleteRemovedCriterion(ListingMeasureEntity listingMeasureEntity, CertificationCriterion removedCriterion) {
+        Optional<ListingMeasureCriterionMapEntity> removedEntityOpt =
+                listingMeasureEntity.getAssociatedCriteria().stream()
+                    .filter(existingCrit -> existingCrit.getCriterion().getId().equals(removedCriterion.getId()))
+                    .findAny();
+        if (removedEntityOpt.isPresent()) {
+            ListingMeasureCriterionMapEntity removedEntity = removedEntityOpt.get();
+            removedEntity.setDeleted(true);
+            removedEntity.setLastModifiedUser(AuthUtil.getAuditId());
+            update(removedEntity);
+        }
     }
 
     private List<CertificationCriterion> getRemovedAssociatedCriteria(
@@ -143,11 +146,7 @@ public class ListingMeasureDAO extends BaseDAOImpl {
         try {
             if (existingMeasureMap.getAssociatedCriteria() != null) {
                 existingMeasureMap.getAssociatedCriteria().stream()
-                    .forEach(assocCriterion -> {
-                        assocCriterion.setDeleted(true);
-                        assocCriterion.setLastModifiedUser(AuthUtil.getAuditId());
-                        update(assocCriterion);
-                    });
+                    .forEach(assocCriterion -> deleteAssociatedCriterion(assocCriterion));
             }
             existingMeasureMap.setDeleted(true);
             existingMeasureMap.setLastModifiedUser(AuthUtil.getAuditId());
@@ -155,6 +154,12 @@ public class ListingMeasureDAO extends BaseDAOImpl {
         } catch (Exception ex) {
             LOGGER.error("Exception marking listing-measure map with ID " + id + " as deleted.", ex);
         }
+    }
+
+    private void deleteAssociatedCriterion(ListingMeasureCriterionMapEntity assocCriterion) {
+        assocCriterion.setDeleted(true);
+        assocCriterion.setLastModifiedUser(AuthUtil.getAuditId());
+        update(assocCriterion);
     }
 
     public List<ListingMeasure> getMeasuresByListingId(Long listingId)
