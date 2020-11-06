@@ -24,9 +24,9 @@ import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
@@ -242,20 +242,15 @@ public class PendingCertifiedProductManager extends SecuredManager {
             alreadyDeletedEx.setObjectId(pendingCp.getUniqueId());
 
             try {
-                UserDTO lastModifiedUser = userDAO.getById(pendingCp.getLastModifiedUser());
-                if (lastModifiedUser != null) {
-                    Contact contact = new Contact();
-                    contact.setFullName(lastModifiedUser.getFullName());
-                    contact.setFriendlyName(lastModifiedUser.getFriendlyName());
-                    contact.setEmail(lastModifiedUser.getEmail());
-                    contact.setPhoneNumber(lastModifiedUser.getPhoneNumber());
-                    contact.setTitle(lastModifiedUser.getTitle());
-                    alreadyDeletedEx.setContact(contact);
+                UserDTO lastModifiedUserDto = userDAO.getById(pendingCp.getLastModifiedUser());
+                if (lastModifiedUserDto != null) {
+                    User lastModifiedUser = new User(lastModifiedUserDto);
+                    alreadyDeletedEx.setUser(lastModifiedUser);
                 } else {
-                    alreadyDeletedEx.setContact(null);
+                    alreadyDeletedEx.setUser(null);
                 }
             } catch (final UserRetrievalException ex) {
-                alreadyDeletedEx.setContact(null);
+                alreadyDeletedEx.setUser(null);
             }
 
             throw alreadyDeletedEx;
