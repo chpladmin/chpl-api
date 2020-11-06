@@ -466,11 +466,11 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                         currIndex += getColumnIndexMap().getTestFunctionalityColumnCount();
                     } else if (colTitle.equalsIgnoreCase(getColumnIndexMap().getG1MeasureColumnLabel())) {
                         parseMeasures(pendingCertifiedProduct, cert,
-                                listingMeasureDao.getMeasurementTypeEntity(G1_MEASUREMENT_TYPE_NAME), currIndex);
+                                listingMeasureDao.getMeasureTypeEntity(G1_MEASUREMENT_TYPE_NAME), currIndex);
                         currIndex += getColumnIndexMap().getG1MeasureColumnCount();
                     } else if (colTitle.equalsIgnoreCase(getColumnIndexMap().getG2MeasureColumnLabel())) {
                         parseMeasures(pendingCertifiedProduct, cert,
-                                listingMeasureDao.getMeasurementTypeEntity(G2_MEASUREMENT_TYPE_NAME), currIndex);
+                                listingMeasureDao.getMeasureTypeEntity(G2_MEASUREMENT_TYPE_NAME), currIndex);
                         currIndex += getColumnIndexMap().getG2MeasureColumnCount();
                     } else if (colTitle.equalsIgnoreCase(getColumnIndexMap().getAdditionalSoftwareColumnLabel())) {
                         Boolean hasAdditionalSoftware = asBoolean(firstRow.get(currIndex).trim());
@@ -768,26 +768,26 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
     }
 
     private PendingListingMeasureEntity getMeasureEntityFromListing(PendingCertifiedProductEntity listing,
-            MeasureEntity measureToFind, ListingMeasureTypeEntity measurementType) {
+            MeasureEntity measureToFind, ListingMeasureTypeEntity measureType) {
         Optional<PendingListingMeasureEntity> foundMeasure =
                 listing.getMeasures().stream()
                 .filter(listingMeasure -> listingMeasure.getMeasureId() != null
                                                 && measureToFind.getId() != null
                                                 && listingMeasure.getMeasureId().equals(measureToFind.getId()))
                 .filter(listingMeasureSameId ->
-                    listingMeasureSameId.getMeasureTypeId().equals(measurementType.getId()))
+                    listingMeasureSameId.getMeasureTypeId().equals(measureType.getId()))
                 .findFirst();
         return foundMeasure.isPresent() ? foundMeasure.get() : null;
     }
 
     private PendingListingMeasureEntity getNotFoundMeasureEntityFromListing(PendingCertifiedProductEntity listing,
-            String uploadedText, ListingMeasureTypeEntity measurementType) {
+            String uploadedText, ListingMeasureTypeEntity measureType) {
         Optional<PendingListingMeasureEntity> foundMeasure =
                 listing.getMeasures().stream()
                 .filter(listingMeasure -> listingMeasure.getUploadedValue() != null
                                                 && listingMeasure.getUploadedValue().equals(uploadedText))
                 .filter(listingMeasureSameId ->
-                    listingMeasureSameId.getMeasureTypeId().equals(measurementType.getId()))
+                    listingMeasureSameId.getMeasureTypeId().equals(measureType.getId()))
                 .findFirst();
         return foundMeasure.isPresent() ? foundMeasure.get() : null;
     }

@@ -14,7 +14,7 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.Measure;
-import gov.healthit.chpl.domain.MeasurementType;
+import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
@@ -86,7 +86,7 @@ public class MeasureValidityReviewerTest {
                         .name("Test")
                         .allowedCriteria(buildCriterionSet(1L, "170.315 (a)(1)"))
                         .build())
-                .measurementType(MeasurementType.builder()
+                .measureType(MeasureType.builder()
                         .id(2L)
                         .name("G2")
                         .build())
@@ -150,7 +150,7 @@ public class MeasureValidityReviewerTest {
                         .name("Test")
                         .allowedCriteria(buildCriterionSet(1L, "170.315 (a)(1)"))
                         .build())
-                .measurementType(MeasurementType.builder()
+                .measureType(MeasureType.builder()
                         .id(1L)
                         .name("G1")
                         .build())
@@ -174,7 +174,7 @@ public class MeasureValidityReviewerTest {
                 .uploadedValue("BAD VALUE")
                 .measure(Measure.builder()
                         .build())
-                .measurementType(MeasurementType.builder()
+                .measureType(MeasureType.builder()
                         .id(1L)
                         .name("G1")
                         .build())
@@ -188,7 +188,7 @@ public class MeasureValidityReviewerTest {
     }
 
     @Test
-    public void review_noMeasurementTypeId_errorMessage() throws ParseException {
+    public void review_noMeasureTypeId_errorMessage() throws ParseException {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.invalidMeasureType"),
                 ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format("Invalid G1/G2 Measure Type: '%s' was not found.", i.getArgument(1), ""));
@@ -199,7 +199,7 @@ public class MeasureValidityReviewerTest {
                         .id(1L)
                         .name("Test")
                         .build())
-                .measurementType(MeasurementType.builder()
+                .measureType(MeasureType.builder()
                         .name("BOGUS")
                         .build())
                 .associatedCriteria(buildCriterionSet(1L, "170.315 (a)(1)"))
@@ -225,7 +225,7 @@ public class MeasureValidityReviewerTest {
                         .name("Test")
                         .abbreviation("T")
                         .build())
-                .measurementType(MeasurementType.builder()
+                .measureType(MeasureType.builder()
                         .id(1L)
                         .name("G1")
                         .build())
@@ -263,7 +263,7 @@ public class MeasureValidityReviewerTest {
                         .requiresCriteriaSelection(false)
                         .allowedCriteria(allowedCriterion)
                         .build())
-                .measurementType(MeasurementType.builder()
+                .measureType(MeasureType.builder()
                         .id(1L)
                         .name("G1")
                         .build())
@@ -303,7 +303,7 @@ public class MeasureValidityReviewerTest {
                         .requiresCriteriaSelection(false)
                         .allowedCriteria(buildCriterionSet(2L, "170.315 (a)(2)"))
                         .build())
-                .measurementType(MeasurementType.builder()
+                .measureType(MeasureType.builder()
                         .id(1L)
                         .name("G1")
                         .build())
@@ -344,7 +344,7 @@ public class MeasureValidityReviewerTest {
                         .removed(true)
                         .allowedCriteria(buildCriterionSet(1L, "170.315 (a)(1)"))
                         .build())
-                .measurementType(MeasurementType.builder()
+                .measureType(MeasureType.builder()
                         .id(1L)
                         .name("G1")
                         .build())
@@ -376,7 +376,7 @@ public class MeasureValidityReviewerTest {
                         .name("Test")
                         .allowedCriteria(buildCriterionSet(1L, "170.315 (a)(1)"))
                         .build())
-                .measurementType(MeasurementType.builder()
+                .measureType(MeasureType.builder()
                         .id(1L)
                         .name("G1")
                         .build())

@@ -24,7 +24,7 @@ public class ListingMeasureXmlGenerator extends XmlGenerator {
             CertificationCriterionXmlGenerator.add(measure.getAssociatedCriteria(), "associatedCriteria", sw);
             createSimpleElement(measure.getId(), "id", sw);
             MeasureXmlGenerator.add(measure.getMeasure(), "measure", sw);
-            MeasurementTypeXmlGenerator.add(measure.getMeasurementType(), "measurementType", sw);
+            MeasureTypeXmlGenerator.add(measure.getMeasureType(), "measureType", sw);
             sw.writeEndElement();
         }
     }

@@ -211,7 +211,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
                 } else {
                     measure.setMeasure(measureDto.getMeasure());
                 }
-                measure.setMeasurementType(measureDto.getMeasurementType());
+                measure.setMeasureType(measureDto.getMeasureType());
                 measure.setAssociatedCriteria(measureDto.getAssociatedCriteria());
                 this.getMeasures().add(measure);
             }

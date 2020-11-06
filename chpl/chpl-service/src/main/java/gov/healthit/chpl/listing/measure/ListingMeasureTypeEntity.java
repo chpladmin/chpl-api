@@ -9,7 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.domain.MeasurementType;
+import gov.healthit.chpl.domain.MeasureType;
 import lombok.Data;
 
 @Entity
@@ -37,8 +37,8 @@ public class ListingMeasureTypeEntity {
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
-    public MeasurementType convert() {
-        MeasurementType type = new MeasurementType();
+    public MeasureType convert() {
+        MeasureType type = new MeasureType();
         type.setId(getId());
         type.setName(getName());
         return type;

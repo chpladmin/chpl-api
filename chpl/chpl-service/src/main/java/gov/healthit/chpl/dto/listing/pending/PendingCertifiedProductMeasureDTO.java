@@ -6,7 +6,7 @@ import java.util.Set;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.Measure;
-import gov.healthit.chpl.domain.MeasurementType;
+import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.listing.measure.PendingListingMeasureEntity;
 import lombok.AllArgsConstructor;
@@ -21,7 +21,7 @@ public class PendingCertifiedProductMeasureDTO implements Serializable {
     private Long id;
     private Long pendingCertifiedProductId;
     private Measure measure;
-    private MeasurementType measurementType;
+    private MeasureType measureType;
     private String uploadedValue;
     private Set<CertificationCriterion> associatedCriteria;
 
@@ -37,7 +37,7 @@ public class PendingCertifiedProductMeasureDTO implements Serializable {
             this.measure = entity.getMeasure().convert();
         }
         if (entity.getType() != null) {
-            this.measurementType = entity.getType().convert();
+            this.measureType = entity.getType().convert();
         }
         this.setUploadedValue(entity.getUploadedValue());
         entity.getAssociatedCriteria().stream().forEach(assocCriterionEntity -> {

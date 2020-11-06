@@ -44,7 +44,7 @@ import gov.healthit.chpl.domain.FuzzyChoices;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.Measure;
-import gov.healthit.chpl.domain.MeasurementType;
+import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.domain.SearchOption;
 import gov.healthit.chpl.domain.SearchableDimensionalData;
 import gov.healthit.chpl.domain.TestFunctionality;
@@ -1132,7 +1132,7 @@ public class SearchViewController {
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getMeasureTypes() {
-        Set<MeasurementType> data = dimensionalDataManager.getMeasureTypes();
+        Set<MeasureType> data = dimensionalDataManager.getMeasureTypes();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);

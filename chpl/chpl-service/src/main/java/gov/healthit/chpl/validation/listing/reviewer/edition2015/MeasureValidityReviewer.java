@@ -58,8 +58,8 @@ public class MeasureValidityReviewer implements Reviewer {
         if (validationUtils.hasCert(G1_CRITERIA_NUMBER, attestedCriteria)) {
             // must have at least one measure of type G1
             long g1MeasureCount = listing.getMeasures().stream()
-                .filter(measure -> measure.getMeasurementType() != null
-                        && measure.getMeasurementType().getName().equals(MEASUREMENT_TYPE_G1))
+                .filter(measure -> measure.getMeasureType() != null
+                        && measure.getMeasureType().getName().equals(MEASUREMENT_TYPE_G1))
                 .count();
             if (g1MeasureCount == 0) {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.missingG1Measures"));
@@ -75,8 +75,8 @@ public class MeasureValidityReviewer implements Reviewer {
         if (validationUtils.hasCert(G2_CRITERIA_NUMBER, attestedCriteria)) {
             // must have at least one measure of type G1
             long g1MeasureCount = listing.getMeasures().stream()
-                .filter(measure -> measure.getMeasurementType() != null
-                        && measure.getMeasurementType().getName().equals(MEASUREMENT_TYPE_G2))
+                .filter(measure -> measure.getMeasureType() != null
+                        && measure.getMeasureType().getName().equals(MEASUREMENT_TYPE_G2))
                 .count();
             if (g1MeasureCount == 0) {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.missingG2Measures"));
@@ -102,7 +102,7 @@ public class MeasureValidityReviewer implements Reviewer {
         assocCriteriaNotAllowed.stream().forEach(assocCriterionNotAllowed -> {
             listing.getErrorMessages().add(msgUtil.getMessage(
                     "listing.measure.associatedCriterionNotAllowed",
-                    measure.getMeasurementType().getName(),
+                    measure.getMeasureType().getName(),
                     measure.getMeasure().getName(),
                     measure.getMeasure().getAbbreviation(),
                     CertificationCriterionService.formatCriteriaNumber(assocCriterionNotAllowed)));
@@ -127,7 +127,7 @@ public class MeasureValidityReviewer implements Reviewer {
         missingAllowedCriteria.stream().forEach(missingAllowedCriterion -> {
             listing.getErrorMessages().add(msgUtil.getMessage(
                     "listing.measure.missingRequiredCriterion",
-                    measure.getMeasurementType().getName(),
+                    measure.getMeasureType().getName(),
                     measure.getMeasure().getName(),
                     measure.getMeasure().getAbbreviation(),
                     CertificationCriterionService.formatCriteriaNumber(missingAllowedCriterion)));
@@ -138,7 +138,7 @@ public class MeasureValidityReviewer implements Reviewer {
         if (measure.getAssociatedCriteria() == null || measure.getAssociatedCriteria().size() == 0) {
             listing.getErrorMessages().add(msgUtil.getMessage(
                     "listing.measure.missingAssociatedCriteria",
-                    measure.getMeasurementType().getName(),
+                    measure.getMeasureType().getName(),
                     measure.getMeasure().getName(),
                     measure.getMeasure().getAbbreviation()));
         }
@@ -162,9 +162,9 @@ public class MeasureValidityReviewer implements Reviewer {
                     msgUtil.getMessage("listing.invalidMeasure", nameForMsg));
         }
 
-        if (measure.getMeasurementType() == null || measure.getMeasurementType().getId() == null) {
-            String nameForMsg = measure.getMeasurementType() == null ? "null"
-                    : measure.getMeasurementType().getName();
+        if (measure.getMeasureType() == null || measure.getMeasureType().getId() == null) {
+            String nameForMsg = measure.getMeasureType() == null ? "null"
+                    : measure.getMeasureType().getName();
             listing.getErrorMessages().add(
                     msgUtil.getMessage("listing.invalidMeasureType", nameForMsg));
         }

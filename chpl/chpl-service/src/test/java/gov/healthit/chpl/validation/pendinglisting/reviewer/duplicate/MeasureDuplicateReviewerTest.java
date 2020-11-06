@@ -11,7 +11,7 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.Measure;
-import gov.healthit.chpl.domain.MeasurementType;
+import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMeasureDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -149,7 +149,7 @@ public class MeasureDuplicateReviewerTest {
                     .name(measureName)
                     .abbreviation(rtAbbrev)
                     .build())
-            .measurementType(MeasurementType.builder()
+            .measureType(MeasureType.builder()
                     .id(typeId)
                     .name(typeName)
                     .build())

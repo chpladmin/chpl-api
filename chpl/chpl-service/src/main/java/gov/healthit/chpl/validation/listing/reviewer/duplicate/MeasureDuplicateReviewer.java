@@ -41,7 +41,7 @@ public class MeasureDuplicateReviewer {
         List<String> warnings = new ArrayList<String>();
         for (ListingMeasure duplicate : duplicates) {
             String warning = errorMessageUtil.getMessage("listing.duplicateMeasure",
-                    duplicate.getMeasurementType().getName(),
+                    duplicate.getMeasureType().getName(),
                     duplicate.getMeasure().getName(),
                     duplicate.getMeasure().getAbbreviation());
             warnings.add(warning);
@@ -55,9 +55,9 @@ public class MeasureDuplicateReviewer {
             public boolean test(ListingMeasure measure1,
                     ListingMeasure measure2) {
                 return ObjectUtils.allNotNull(measure1, measure2, measure1.getMeasure(), measure2.getMeasure(),
-                        measure2.getMeasurementType(), measure2.getMeasurementType())
+                        measure2.getMeasureType(), measure2.getMeasureType())
                         && measure1.getMeasure().matches(measure2.getMeasure())
-                        && measure1.getMeasurementType().matches(measure2.getMeasurementType());
+                        && measure1.getMeasureType().matches(measure2.getMeasureType());
             }
         };
     }

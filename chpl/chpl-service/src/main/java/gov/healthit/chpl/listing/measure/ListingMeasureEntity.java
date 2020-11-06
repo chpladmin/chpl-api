@@ -81,7 +81,7 @@ public class ListingMeasureEntity {
             listingMeasure.setMeasure(getMeasure().convert());
         }
         if (getType() != null) {
-            listingMeasure.setMeasurementType(getType().convert());
+            listingMeasure.setMeasureType(getType().convert());
         }
         if (getAssociatedCriteria() != null) {
             listingMeasure.setAssociatedCriteria(

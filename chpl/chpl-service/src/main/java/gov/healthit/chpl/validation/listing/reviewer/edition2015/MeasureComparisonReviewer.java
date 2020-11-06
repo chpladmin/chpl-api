@@ -55,7 +55,7 @@ public class MeasureComparisonReviewer implements ComparisonReviewer {
 
     private String getErrorMessage(String messageCode, ListingMeasure listingMeasure) {
         return msgUtil.getMessage(messageCode,
-                listingMeasure.getMeasurementType().getName(),
+                listingMeasure.getMeasureType().getName(),
                 listingMeasure.getMeasure().getName(),
                 listingMeasure.getMeasure().getAbbreviation());
     }

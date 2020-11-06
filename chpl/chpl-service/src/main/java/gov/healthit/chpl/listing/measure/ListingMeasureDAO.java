@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.ListingMeasure;
-import gov.healthit.chpl.domain.MeasurementType;
+import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
@@ -44,7 +44,7 @@ public class ListingMeasureDAO extends BaseDAOImpl {
         mmEntity.setLastModifiedUser(AuthUtil.getAuditId());
         mmEntity.setListingId(listingId);
         mmEntity.setMeasureId(mm.getMeasure().getId());
-        mmEntity.setTypeId(mm.getMeasurementType().getId());
+        mmEntity.setTypeId(mm.getMeasureType().getId());
         create(mmEntity);
 
         for (CertificationCriterion associatedCriterion : mm.getAssociatedCriteria()) {
@@ -65,7 +65,7 @@ public class ListingMeasureDAO extends BaseDAOImpl {
             throw new EntityRetrievalException("Could not find mapping with id " + toUpdate.getId());
         }
         existingEntity.setMeasureId(toUpdate.getMeasure().getId());
-        existingEntity.setTypeId(toUpdate.getMeasurementType().getId());
+        existingEntity.setTypeId(toUpdate.getMeasureType().getId());
         existingEntity.setLastModifiedUser(AuthUtil.getAuditId());
         update(existingEntity);
 
@@ -204,7 +204,7 @@ public class ListingMeasureDAO extends BaseDAOImpl {
         return entity;
     }
 
-    public Set<MeasurementType> getMeasurementTypes() {
+    public Set<MeasureType> getMeasureType() {
         Query query = entityManager.createQuery("SELECT measureType "
                 + "FROM ListingMeasureTypeEntity measureType "
                 + "WHERE deleted = false");
@@ -216,7 +216,7 @@ public class ListingMeasureDAO extends BaseDAOImpl {
                 .collect(Collectors.toSet());
     }
 
-    public ListingMeasureTypeEntity getMeasurementTypeEntity(String name) {
+    public ListingMeasureTypeEntity getMeasureTypeEntity(String name) {
         Query query = entityManager.createQuery("SELECT measureType "
                 + "FROM ListingMeasureTypeEntity measureType "
                 + "WHERE deleted = false "

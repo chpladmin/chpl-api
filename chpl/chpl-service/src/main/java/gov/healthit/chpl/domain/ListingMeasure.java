@@ -41,7 +41,7 @@ public class ListingMeasure implements Serializable {
      * Automated Numerator Recording (G1) or Automated Measure Calculation (G2).
      */
     @XmlElement(required = true)
-    private MeasurementType measurementType;
+    private MeasureType measureType;
 
     @XmlElement(required = true)
     private Set<CertificationCriterion> associatedCriteria = new LinkedHashSet<CertificationCriterion>();
@@ -116,11 +116,11 @@ public class ListingMeasure implements Serializable {
             return false;
         }
 
-        if (this.measurementType == null && anotherMeasure.measurementType != null
-                || this.measurementType != null && anotherMeasure.measurementType == null) {
+        if (this.measureType == null && anotherMeasure.measureType != null
+                || this.measureType != null && anotherMeasure.measureType == null) {
             return false;
-        } else if (ObjectUtils.allNotNull(this.measurementType, anotherMeasure.measurementType)
-                && !this.measurementType.matches(anotherMeasure.measurementType)) {
+        } else if (ObjectUtils.allNotNull(this.measureType, anotherMeasure.measureType)
+                && !this.measureType.matches(anotherMeasure.measureType)) {
             return false;
         }
         return true;
@@ -142,12 +142,12 @@ public class ListingMeasure implements Serializable {
         this.measure = measure;
     }
 
-    public MeasurementType getMeasurementType() {
-        return measurementType;
+    public MeasureType getMeasureType() {
+        return measureType;
     }
 
-    public void setMeasurementType(MeasurementType measurementType) {
-        this.measurementType = measurementType;
+    public void setMeasureType(MeasureType measureType) {
+        this.measureType = measureType;
     }
 
     public Set<CertificationCriterion> getAssociatedCriteria() {

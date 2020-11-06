@@ -286,7 +286,7 @@ public class PendingCertifiedProductDTO implements Serializable {
                     pendingMeasureDto.setUploadedValue(null);
                 }
                 pendingMeasureDto.setMeasure(listingMeasure.getMeasure());
-                pendingMeasureDto.setMeasurementType(listingMeasure.getMeasurementType());
+                pendingMeasureDto.setMeasureType(listingMeasure.getMeasureType());
                 pendingMeasureDto.setPendingCertifiedProductId(details.getId());
                 listingMeasure.getAssociatedCriteria().stream().forEach(criterion -> {
                     pendingMeasureDto.getAssociatedCriteria().add(criterion);

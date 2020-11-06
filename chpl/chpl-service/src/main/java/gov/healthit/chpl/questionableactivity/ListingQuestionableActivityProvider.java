@@ -481,7 +481,7 @@ public class ListingQuestionableActivityProvider {
                 if (!matchingOrigMeasure.isPresent()) {
                     QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
                     activity.setBefore(null);
-                    activity.setAfter(newMeasure.getMeasurementType().getName()
+                    activity.setAfter(newMeasure.getMeasureType().getName()
                             + " measure " + newMeasure.getMeasure().getName()
                             + " for " + newMeasure.getMeasure().getAbbreviation());
                     measuresAddedActivities.add(activity);
@@ -492,7 +492,7 @@ public class ListingQuestionableActivityProvider {
             for (ListingMeasure newMeasure : newListing.getMeasures()) {
                     QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
                     activity.setBefore(null);
-                    activity.setAfter(newMeasure.getMeasurementType().getName()
+                    activity.setAfter(newMeasure.getMeasureType().getName()
                             + " measure " + newMeasure.getMeasure().getName()
                             + " for " + newMeasure.getMeasure().getAbbreviation());
                     measuresAddedActivities.add(activity);
@@ -513,7 +513,7 @@ public class ListingQuestionableActivityProvider {
                     .findFirst();
                 if (!matchingNewMeasure.isPresent()) {
                     QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
-                    activity.setBefore(origMeasure.getMeasurementType().getName()
+                    activity.setBefore(origMeasure.getMeasureType().getName()
                             + " measure " + origMeasure.getMeasure().getName()
                             + " for " + origMeasure.getMeasure().getAbbreviation());
                     activity.setAfter(null);
@@ -524,7 +524,7 @@ public class ListingQuestionableActivityProvider {
                 && (newListing.getMeasures() == null || newListing.getMeasures().size() == 0)) {
             for (ListingMeasure origMeasure : origListing.getMeasures()) {
                     QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
-                    activity.setBefore(origMeasure.getMeasurementType().getName()
+                    activity.setBefore(origMeasure.getMeasureType().getName()
                             + " measure " + origMeasure.getMeasure().getName()
                             + " for " + origMeasure.getMeasure().getAbbreviation());
                     activity.setAfter(null);

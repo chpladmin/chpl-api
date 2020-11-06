@@ -567,7 +567,7 @@ public class CertifiedProductManager extends SecuredManager {
             for (PendingCertifiedProductMeasureDTO pendingMeasure : pendingCp.getMeasures()) {
                 ListingMeasure measureToAdd = new ListingMeasure();
                 measureToAdd.setMeasure(pendingMeasure.getMeasure());
-                measureToAdd.setMeasurementType(pendingMeasure.getMeasurementType());
+                measureToAdd.setMeasureType(pendingMeasure.getMeasureType());
                 measureToAdd.setAssociatedCriteria(pendingMeasure.getAssociatedCriteria());
                 cpMeasureDao.createCertifiedProductMeasureMapping(newCertifiedProduct.getId(), measureToAdd);
             }

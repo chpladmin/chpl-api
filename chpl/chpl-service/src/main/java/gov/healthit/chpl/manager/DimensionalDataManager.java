@@ -43,7 +43,7 @@ import gov.healthit.chpl.domain.DimensionalData;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.Measure;
-import gov.healthit.chpl.domain.MeasurementType;
+import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.SearchableDimensionalData;
 import gov.healthit.chpl.domain.TestFunctionality;
@@ -485,8 +485,8 @@ public class DimensionalDataManager {
 
     @Transactional
     @Cacheable(value = CacheNames.MEASURE_TYPES)
-    public Set<MeasurementType> getMeasureTypes() {
-        return listingMeasureDao.getMeasurementTypes();
+    public Set<MeasureType> getMeasureTypes() {
+        return listingMeasureDao.getMeasureType();
     }
 
     @Transactional

@@ -19,15 +19,15 @@ import lombok.Builder;
 @Builder
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class MeasurementType implements Serializable {
+public class MeasureType implements Serializable {
     private static final long serialVersionUID = -8391253265541448011L;
     private Long id;
     private String name;
 
-    public MeasurementType() {
+    public MeasureType() {
     }
 
-    public boolean matches(MeasurementType anotherType) {
+    public boolean matches(MeasureType anotherType) {
         if (this.id == null && anotherType.id != null || this.id != null && anotherType.id == null) {
             return false;
         } else if (ObjectUtils.allNotNull(this.id, anotherType.id)
