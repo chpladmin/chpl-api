@@ -85,7 +85,7 @@ public class QuarterlyReportDTO {
         }
         Calendar quarterStartCal = Calendar.getInstance();
         quarterStartCal.set(Calendar.YEAR, getYear());
-        quarterStartCal.set(Calendar.MONTH, getQuarter().getStartMonth()-1);
+        quarterStartCal.set(Calendar.MONTH, getQuarter().getStartMonth() - 1);
         quarterStartCal.set(Calendar.DAY_OF_MONTH, getQuarter().getStartDay());
         quarterStartCal.set(Calendar.HOUR_OF_DAY, 0);
         quarterStartCal.set(Calendar.MINUTE, 0);
@@ -100,7 +100,7 @@ public class QuarterlyReportDTO {
         }
         Calendar quarterEndCal = Calendar.getInstance();
         quarterEndCal.set(Calendar.YEAR, getYear());
-        quarterEndCal.set(Calendar.MONTH, getQuarter().getEndMonth()-1);
+        quarterEndCal.set(Calendar.MONTH, getQuarter().getEndMonth() - 1);
         quarterEndCal.set(Calendar.DAY_OF_MONTH, getQuarter().getEndDay());
         quarterEndCal.set(Calendar.HOUR_OF_DAY, 23);
         quarterEndCal.set(Calendar.MINUTE, 59);

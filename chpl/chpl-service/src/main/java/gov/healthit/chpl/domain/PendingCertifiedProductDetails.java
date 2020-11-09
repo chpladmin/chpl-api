@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
@@ -74,7 +75,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
         developer.setWebsite(dto.getDeveloperWebsite());
         developer.setSelfDeveloper(dto.getSelfDeveloper());
 
-        Contact developerContact = new Contact();
+        PointOfContact developerContact = new PointOfContact();
         developerContact.setFullName(dto.getDeveloperContactName());
         developerContact.setEmail(dto.getDeveloperEmail());
         developerContact.setPhoneNumber(dto.getDeveloperPhoneNumber());

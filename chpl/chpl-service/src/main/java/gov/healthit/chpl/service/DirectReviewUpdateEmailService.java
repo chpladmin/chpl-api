@@ -9,13 +9,11 @@ import javax.mail.MessagingException;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.dto.DeveloperDTO;
@@ -40,14 +38,11 @@ public class DirectReviewUpdateEmailService {
 
     private DirectReviewService directReviewService;
     private Environment env;
-    private FF4j ff4j;
 
     @Autowired
-    public DirectReviewUpdateEmailService(DirectReviewService directReviewService, Environment env,
-            FF4j ff4j) {
+    public DirectReviewUpdateEmailService(DirectReviewService directReviewService, Environment env) {
         this.directReviewService = directReviewService;
         this.env = env;
-        this.ff4j = ff4j;
     }
 
     /**
@@ -60,10 +55,6 @@ public class DirectReviewUpdateEmailService {
     public void sendEmail(List<DeveloperDTO> originalDevelopers, List<DeveloperDTO> changedDevelopers,
             Map<Long, CertifiedProductSearchDetails> originalListings,
             Map<Long, CertifiedProductSearchDetails> changedListings) {
-        if (!ff4j.check(FeatureList.DIRECT_REVIEW)) {
-            return;
-        }
-
         List<DirectReview> originalDeveloperDrs = new ArrayList<DirectReview>();
         for (DeveloperDTO originalDeveloper : originalDevelopers) {
             try {
