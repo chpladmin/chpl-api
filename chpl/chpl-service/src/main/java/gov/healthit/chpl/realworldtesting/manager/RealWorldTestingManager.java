@@ -103,7 +103,7 @@ public class RealWorldTestingManager {
                         + "Please make sure there are at least two rows in the CSV file.");
             }
 
-            //Remove the header row before processing, if it exists
+            records = removeEmptyRows(records);
             records = removeHeaderRow(records);
 
             List<RealWorldTestingUpload> rwts = records.stream()
@@ -171,6 +171,13 @@ public class RealWorldTestingManager {
             records.remove(0);
         }
         return records;
+    }
+
+    private List<CSVRecord> removeEmptyRows(List<CSVRecord> records) {
+        return records.stream()
+                .filter(rec -> !rec.get(CHPL_PRODUCT_NUMBER_COLUMN_IDX).trim().equals("")
+                        && !rec.get(LAST_CHECKED_COLUMN_IDX).trim().equals(""))
+                .collect(Collectors.toList());
     }
 
     private boolean doesHeaderRowExist(List<CSVRecord> records) {
