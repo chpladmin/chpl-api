@@ -68,7 +68,7 @@ public class AuthenticationManager {
         UserDTO user = getUserByNameOrEmail(credentials.getUserName());
         if (user != null) {
             if (user.getSignatureDate() == null) {
-                throw new ChplAccountStatusException(msgUtil.getMessage("auth.accountNotConfirmed", user.getSubjectName()));
+                throw new ChplAccountStatusException(msgUtil.getMessage("auth.accountNotConfirmed", user.getEmail()));
             }
             if (checkPassword(credentials.getPassword(), userManager.getEncodedPassword(user))) {
                 userDetailsChecker.check(user);
@@ -111,11 +111,11 @@ public class AuthenticationManager {
         Map<String, List<String>> listClaims = new HashMap<String, List<String>>();
         List<String> identity = new ArrayList<String>();
         identity.add(user.getId().toString());
-        identity.add(user.getUsername());
+        identity.add(user.getEmail());
         identity.add(user.getFullName());
         if (user.getImpersonatedBy() != null) {
             identity.add(user.getImpersonatedBy().getId().toString());
-            identity.add(user.getImpersonatedBy().getSubjectName());
+            identity.add(user.getImpersonatedBy().getEmail());
         }
         listClaims.put("Identity", identity);
 
@@ -123,11 +123,11 @@ public class AuthenticationManager {
         return jwt;
     }
 
-    public String refreshJWT() throws JWTCreationException, UserRetrievalException {
+    public String refreshJWT() throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
         JWTAuthenticatedUser user = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
 
         if (user != null) {
-            UserDTO userDto = getUserByName(user.getSubjectName());
+            UserDTO userDto = getUserByNameOrEmail(user.getEmail());
             if (user.getImpersonatingUser() != null) {
                 userDto.setImpersonatedBy(user.getImpersonatingUser());
             }
@@ -174,13 +174,14 @@ public class AuthenticationManager {
             userManager.updateFailedLoginCount(userToUpdate);
         } catch (Exception ex) {
             throw new UserManagementException(
-                    "Error increasing the failed login count for user " + userToUpdate.getSubjectName(), ex);
+                    "Error increasing the failed login count for user " + userToUpdate.getEmail(), ex);
         }
     }
 
+    @Deprecated
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).USER_PERMISSIONS, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).IMPERSONATE_USER, #username)")
-    public String impersonateUser(String username)
+    public String impersonateUserByUsername(String username)
             throws UserRetrievalException, JWTCreationException, UserManagementException {
         JWTAuthenticatedUser user = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
         if (user.getImpersonatingUser() != null) {
@@ -193,7 +194,23 @@ public class AuthenticationManager {
         return getJWT(impersonatedUser);
     }
 
-    public String unimpersonateUser(User user) throws JWTCreationException, UserRetrievalException {
-        return getJWT(getUserByName(user.getSubjectName()));
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).USER_PERMISSIONS, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).IMPERSONATE_USER, #username)")
+    public String impersonateUser(String email)
+            throws UserRetrievalException, JWTCreationException, UserManagementException, MultipleUserAccountsException {
+        JWTAuthenticatedUser user = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
+        if (user.getImpersonatingUser() != null) {
+            throw new UserManagementException(msgUtil.getMessage("user.impersonate.alreadyImpersonating"));
+        }
+        UserDTO impersonatingUser = getUserByNameOrEmail(user.getEmail());
+        UserDTO impersonatedUser = getUserByNameOrEmail(email);
+
+        impersonatedUser.setImpersonatedBy(impersonatingUser);
+        return getJWT(impersonatedUser);
+    }
+
+    public String unimpersonateUser(User user) throws JWTCreationException, UserRetrievalException,
+    MultipleUserAccountsException {
+        return getJWT(getUserByNameOrEmail(user.getSubjectName()));
     }
 }

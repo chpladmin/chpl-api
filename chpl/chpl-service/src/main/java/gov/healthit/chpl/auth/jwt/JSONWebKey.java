@@ -7,19 +7,19 @@ import java.security.PublicKey;
 
 public interface JSONWebKey {
 
-    public String getKeyId();
+    String getKeyId();
 
-    public String getAlgorithm();
+    String getAlgorithm();
 
-    public Key getKey();
+    Key getKey();
 
-    public PrivateKey getPrivateKey();
+    PrivateKey getPrivateKey();
 
-    public PublicKey getPublicKey();
+    PublicKey getPublicKey();
 
-    public void saveKey(String keyPairPath);
+    void saveKey(String keyPairPath);
 
-    public void loadSavedKey(String keyPairPath) throws IOException, ClassNotFoundException;
+    void loadSavedKey(String keyPairPath) throws IOException, ClassNotFoundException;
 
-    public void createOrLoadKey();
+    void createOrLoadKey();
 }

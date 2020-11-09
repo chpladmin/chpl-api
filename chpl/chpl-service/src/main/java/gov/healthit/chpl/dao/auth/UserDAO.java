@@ -20,9 +20,7 @@ import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.UserMapper;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 @Repository(value = "userDAO")
 public class UserDAO extends BaseDAOImpl {
     private UserContactDAO userContactDAO;
@@ -38,15 +36,14 @@ public class UserDAO extends BaseDAOImpl {
     public UserDTO create(UserDTO user, String encodedPassword) throws UserCreationException {
         UserEntity userEntity = null;
         try {
-            userEntity = getEntityByName(user.getSubjectName());
-        } catch (UserRetrievalException ignore) {
+            userEntity = getEntityByNameOrEmail(user.getEmail());
+        } catch (MultipleUserAccountsException | UserRetrievalException ignore) {
         }
 
         if (userEntity != null) {
-            throw new UserCreationException(msgUtil.getMessage("user.duplicateName", user.getSubjectName()));
+            throw new UserCreationException(msgUtil.getMessage("user.duplicateName", user.getEmail()));
         } else {
             userEntity = new UserEntity();
-            userEntity.setSubjectName(user.getSubjectName());
             if (user.getPermission() != null) {
                 userEntity.setUserPermissionId(user.getPermission().getId());
                 userEntity.setPermission(entityManager.find(UserPermissionEntity.class, user.getPermission().getId()));
@@ -85,8 +82,8 @@ public class UserDAO extends BaseDAOImpl {
     }
 
     @Transactional
-    public UserDTO update(UserDTO user) throws UserRetrievalException {
-        UserEntity userEntity = getEntityByName(user.getSubjectName());
+    public UserDTO update(UserDTO user) throws UserRetrievalException, MultipleUserAccountsException {
+        UserEntity userEntity = getEntityByNameOrEmail(user.getEmail());
         userEntity.setFailedLoginCount(user.getFailedLoginCount());
         userEntity.getContact().setEmail(user.getEmail());
         userEntity.getContact().setPhoneNumber(user.getPhoneNumber());
@@ -142,6 +139,23 @@ public class UserDAO extends BaseDAOImpl {
             users.add(user);
         }
         return users;
+    }
+
+    public UserDTO findUserByEmail(String email) {
+        UserDTO foundUser = null;
+
+        String userQuery = "from UserEntity u " + "JOIN FETCH u.contact " + "JOIN FETCH u.permission "
+                + "WHERE (NOT u.deleted = true) " + "AND (u.contact.email = :email)";
+
+        Query query = entityManager.createQuery(userQuery, UserEntity.class);
+        query.setParameter("email", email);
+        List<UserEntity> result = query.getResultList();
+        if (result.size() >= 1) {
+            UserEntity entity = result.get(0);
+            foundUser = userMapper.from(entity);
+        }
+
+        return foundUser;
     }
 
     public UserDTO findUserByNameAndEmail(String username, String email) {
@@ -251,6 +265,27 @@ public class UserDAO extends BaseDAOImpl {
         return result.get(0);
     }
 
+    private UserEntity getEntityByNameOrEmail(String email) throws MultipleUserAccountsException, UserRetrievalException {
+        Query query = entityManager
+                .createQuery("SELECT DISTINCT u "
+                        + "FROM UserEntity u "
+                        + "JOIN FETCH u.contact c "
+                        + "JOIN FETCH u.permission "
+                        + "WHERE u.deleted <> true "
+                        + "AND ((u.subjectName = (:email)) OR c.email = (:email)) ",
+                        UserEntity.class);
+        query.setParameter("email", email);
+        List<UserEntity> result = query.getResultList();
+
+        if (result == null || result.size() == 0) {
+            String msg = msgUtil.getMessage("user.notFound");
+            throw new UserRetrievalException(msg);
+        } else if (result.size() > 1) {
+            throw new MultipleUserAccountsException(msgUtil.getMessage("user.multipleAccountsFound", email));
+        }
+        return result.get(0);
+    }
+
     public UserDTO getById(Long userId) throws UserRetrievalException {
         UserEntity userEntity = this.getEntityById(userId);
         if (userEntity == null) {
@@ -329,8 +364,8 @@ public class UserDAO extends BaseDAOImpl {
         super.update(userEntity);
     }
 
-    public String getEncodedPassword(UserDTO user) throws UserRetrievalException {
-        UserEntity userEntity = getEntityByName(user.getUsername());
+    public String getEncodedPassword(UserDTO user) throws UserRetrievalException, MultipleUserAccountsException {
+        UserEntity userEntity = getEntityByNameOrEmail(user.getEmail());
         return userEntity.getPassword();
     }
 }

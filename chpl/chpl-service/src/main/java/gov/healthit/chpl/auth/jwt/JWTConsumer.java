@@ -7,7 +7,7 @@ import org.jose4j.jwt.consumer.InvalidJwtException;
 public interface JWTConsumer {
 
     /**
-     * Returns map of JWT claims, or returns null if token is invalid 
+     * Returns map of JWT claims, or returns null if token is invalid
      */
-    public Map<String, Object> consume(String jwt) throws InvalidJwtException;
+    Map<String, Object> consume(String jwt) throws InvalidJwtException;
 }

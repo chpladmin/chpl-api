@@ -95,11 +95,12 @@ public class AuthenticationController {
      * @return a new JWT with an extended expiration date
      * @throws JWTCreationException if unable to create the JWT
      * @throws UserRetrievalException if cannot find user to refresh
+     * @throws MultipleUserAccountsException 
      */
     @ApiIgnore
     @RequestMapping(value = "/keep_alive", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
-    public String keepAlive() throws JWTCreationException, UserRetrievalException {
+    public String keepAlive() throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
 
         String jwt = authenticationManager.refreshJWT();
 
@@ -113,6 +114,7 @@ public class AuthenticationController {
      * @param request the request containing old/new passwords
      * @return a confirmation response, or an error iff the user's new password does not meet requirements
      * @throws UserRetrievalException if unable to retrieve the user
+     * @throws MultipleUserAccountsException if user has multiple email addresses
      */
     @ApiOperation(value = "Change password.",
             notes = "Change the logged in user's password as long as the old password "
@@ -120,7 +122,7 @@ public class AuthenticationController {
     @RequestMapping(value = "/change_password", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public UpdatePasswordResponse changePassword(@RequestBody final UpdatePasswordRequest request)
-            throws UserRetrievalException {
+            throws UserRetrievalException, MultipleUserAccountsException {
         UpdatePasswordResponse response = new UpdatePasswordResponse();
         if (AuthUtil.getCurrentUser() == null) {
             throw new UserRetrievalException("No user is logged in.");
@@ -253,8 +255,7 @@ public class AuthenticationController {
     public String resetPassword(@RequestBody final UserResetPasswordRequest userInfo)
             throws UserRetrievalException, MessagingException {
 
-        UserResetTokenDTO userResetTokenDTO = userManager.createResetUserPasswordToken(userInfo.getUserName(),
-                userInfo.getEmail());
+        UserResetTokenDTO userResetTokenDTO = userManager.createResetUserPasswordToken(userInfo.getEmail());
         String htmlMessage = String.format(env.getProperty("user.resetPassword.body"),
                 env.getProperty("chplUrlBegin"), userResetTokenDTO.getUserResetToken());
         String[] toEmails = {
@@ -271,6 +272,7 @@ public class AuthenticationController {
         return "{\"passwordResetEmailSent\" : true }";
     }
 
+    @Deprecated
     @ApiOperation(value = "Impersonate another user.", notes = "")
     @RequestMapping(value = "/impersonate", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -278,16 +280,28 @@ public class AuthenticationController {
             @RequestParam(value = "username", required = true) final String username)
                     throws UserRetrievalException, JWTCreationException, UserManagementException, JWTValidationException {
 
-        String jwt = authenticationManager.impersonateUser(username);
+        String jwt = authenticationManager.impersonateUserByUsername(username);
         String jwtJSON = "{\"token\": \"" + jwt + "\"}";
         return jwtJSON;
     }
 
+    @ApiOperation(value = "Impersonate another user.", notes = "")
+    @RequestMapping(value = "/impersonate/beta", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public String impersonateUserByEmail(@RequestHeader(value = "Authorization", required = true) final String userJwt,
+            @RequestParam(value = "email", required = true) final String email)
+                    throws UserRetrievalException, JWTCreationException, UserManagementException,
+                    JWTValidationException, MultipleUserAccountsException {
+
+        String jwt = authenticationManager.impersonateUser(email);
+        String jwtJSON = "{\"token\": \"" + jwt + "\"}";
+        return jwtJSON;
+    }
     @ApiOperation(value = "Stop impersonating another user.", notes = "")
     @RequestMapping(value = "/unimpersonate", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public String unimpersonateUser(@RequestHeader(value = "Authorization", required = true) final String userJwt)
-            throws JWTValidationException, JWTCreationException, UserRetrievalException {
+            throws JWTValidationException, JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
         User user = userConverter.getImpersonatingUser(userJwt.split(" ")[1]);
         String jwt = authenticationManager.unimpersonateUser(user);
         String jwtJSON = "{\"token\": \"" + jwt + "\"}";

@@ -23,15 +23,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.log4j.Log4j2;
+
+@Log4j2
 @Service("RsaJose4JWebKey")
 public class JSONWebKeyRsaJoseJImpl implements JSONWebKey {
 
     @Autowired
     private Environment env = null;
     private RsaJsonWebKey rsaJsonWebKey = null;
-    private final static int KEY_BIT_LENGTH = 2048;
-
-    Logger logger = LogManager.getLogger(JSONWebKeyRsaJoseJImpl.class.getName());
+    private static final int KEY_BIT_LENGTH = 2048;
 
     public JSONWebKeyRsaJoseJImpl() {
     }
@@ -50,7 +51,7 @@ public class JSONWebKeyRsaJoseJImpl implements JSONWebKey {
                 loadSavedKey(keyLocation);
             } catch (ClassNotFoundException | IOException e1) {
 
-                logger.error("Key not found or error loading key. Creating new key. ", e1);
+                LOGGER.error("Key not found or error loading key. Creating new key. ", e1);
 
                 try {
                     RsaKeyUtil keyUtil = new RsaKeyUtil();
@@ -61,7 +62,7 @@ public class JSONWebKeyRsaJoseJImpl implements JSONWebKey {
                     saveKey(keyLocation);
                 } catch (JoseException e) {
 
-                    logger.error("Error creating key: ", e);
+                    LOGGER.error("Error creating key: ", e);
 
                     throw new RuntimeException(e);
                 }
@@ -110,7 +111,7 @@ public class JSONWebKeyRsaJoseJImpl implements JSONWebKey {
             }
 
         } catch (IOException e) {
-            logger.error("Error saving key: ", e);
+            LOGGER.error("Error saving key: ", e);
         }
     }
 

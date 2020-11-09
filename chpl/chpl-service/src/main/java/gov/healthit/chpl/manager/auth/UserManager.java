@@ -101,7 +101,7 @@ public class UserManager extends SecuredManager {
         UserDTO newUser = userDAO.create(userDto, encodePassword(password));
 
         // Grant the user administrative permission over itself.
-        addAclPermission(newUser, new PrincipalSid(newUser.getSubjectName()), BasePermission.ADMINISTRATION);
+        addAclPermission(newUser, new PrincipalSid(newUser.getEmail()), BasePermission.ADMINISTRATION);
 
         return newUser;
     }
@@ -242,11 +242,11 @@ public class UserManager extends SecuredManager {
     // no auth needed. create a random string and create a new reset token row
     // for the user
     @Transactional
-    public UserResetTokenDTO createResetUserPasswordToken(String username, String email)
+    public UserResetTokenDTO createResetUserPasswordToken(String email)
             throws UserRetrievalException {
-        UserDTO foundUser = userDAO.findUserByNameAndEmail(username, email);
+        UserDTO foundUser = userDAO.findUserByEmail(email);
         if (foundUser == null) {
-            throw new UserRetrievalException("Cannot find user with name " + username + " and email address " + email);
+            throw new UserRetrievalException("Cannot find user with email address " + email);
         }
 
         String password = UUID.randomUUID().toString();
@@ -275,7 +275,7 @@ public class UserManager extends SecuredManager {
         userResetTokenDAO.deletePreviousUserTokens(userResetToken.getUser().getId());
     }
 
-    public String getEncodedPassword(UserDTO user) throws UserRetrievalException {
+    public String getEncodedPassword(UserDTO user) throws UserRetrievalException, MultipleUserAccountsException {
         return userDAO.getEncodedPassword(user);
     }
 
@@ -310,8 +310,18 @@ public class UserManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME)")
     @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME, returnObject)")
-    public User getUserInfo(String userName) throws UserRetrievalException {
+    public User getUserInfoByName(String userName) throws UserRetrievalException {
         UserDTO user = getByNameUnsecured(userName);
+        return new User(user);
+    }
+
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME)")
+    @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME, returnObject)")
+    public User getUserInfo(Long id) throws UserRetrievalException {
+        UserDTO user = getById(id);
         return new User(user);
     }
 
@@ -320,7 +330,6 @@ public class UserManager extends SecuredManager {
         badWords.add("chpl");
         badWords.add(user.getEmail());
         badWords.add(user.getFullName());
-        badWords.add(user.getUsername());
         if (user.getFriendlyName() != null) {
             badWords.add(user.getFriendlyName());
         }
@@ -331,7 +340,7 @@ public class UserManager extends SecuredManager {
     }
 
     @Transactional
-    public void updateLastLoggedInDate(UserDTO user) throws UserRetrievalException {
+    public void updateLastLoggedInDate(UserDTO user) throws UserRetrievalException, MultipleUserAccountsException {
         user.setLastLoggedInDate(new Date());
         userDAO.update(user);
     }

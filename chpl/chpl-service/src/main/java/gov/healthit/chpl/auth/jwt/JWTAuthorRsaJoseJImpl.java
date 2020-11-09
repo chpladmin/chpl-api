@@ -3,8 +3,6 @@ package gov.healthit.chpl.auth.jwt;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jose4j.jws.AlgorithmIdentifiers;
 import org.jose4j.jws.JsonWebSignature;
 import org.jose4j.jwt.JwtClaims;
@@ -15,7 +13,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import gov.healthit.chpl.dto.auth.UserDTO;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Service
 public class JWTAuthorRsaJoseJImpl implements JWTAuthor {
 
@@ -26,10 +26,8 @@ public class JWTAuthorRsaJoseJImpl implements JWTAuthor {
     @Qualifier("RsaJose4JWebKey")
     JSONWebKey jwk;
 
-    Logger LOGGER = LogManager.getLogger(JWTAuthorRsaJoseJImpl.class.getName());
-
     @Override
-    public String createJWT(final UserDTO user, final Map<String, String> stringClaims, final Map<String, List<String>> listClaims) {
+    public String createJWT(UserDTO user, Map<String, String> stringClaims, Map<String, List<String>> listClaims) {
         // Create the Claims, which will be the content of the JWT
         JwtClaims claimsObj = new JwtClaims();
         // who creates the token and signs it
@@ -46,7 +44,7 @@ public class JWTAuthorRsaJoseJImpl implements JWTAuthor {
         // time before which the token is not yet valid (minutes ago)
         claimsObj.setNotBeforeMinutesInThePast(Integer.parseInt(env.getProperty("jwtNotBeforeMinutesInThePast")));
         // the subject/principal is whom the token is about
-        claimsObj.setSubject(user.getSubjectName());
+        claimsObj.setSubject(user.getEmail());
         // any other claims made about the user that have single string values
         if (stringClaims != null) {
             for (Map.Entry<String, String> claim : stringClaims.entrySet()) {

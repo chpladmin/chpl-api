@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.log4j.Log4j2;
+
+@Log4j2
 @Service
 public class JWTConsumerRsaJoseJImpl implements JWTConsumer {
 
@@ -23,7 +26,6 @@ public class JWTConsumerRsaJoseJImpl implements JWTConsumer {
     @Qualifier("RsaJose4JWebKey")
     JSONWebKey jwk;
 
-    Logger logger = LogManager.getLogger(JWTConsumerRsaJoseJImpl.class.getName());
 
     public Map<String, Object> consume(String jwt) throws InvalidJwtException {
 
@@ -44,7 +46,7 @@ public class JWTConsumerRsaJoseJImpl implements JWTConsumer {
             JwtClaims jwtClaims = jwtConsumer.processToClaims(jwt);
             return jwtClaims.getClaimsMap();
         } catch (InvalidJwtException e) {
-            logger.error("Invalid JWT - " + e.getMessage());
+            LOGGER.error("Invalid JWT - " + e.getMessage());
             throw new InvalidJwtException("Invalid JWT - failed in JWTConsumerRsaJoseJImpl.");
         }
     }

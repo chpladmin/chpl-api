@@ -7,6 +7,6 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 
 public interface JWTAuthor {
 
-    public String createJWT(UserDTO user, Map<String, String> stringClaims, Map<String, List<String>> listClaims);
+    String createJWT(UserDTO user, Map<String, String> stringClaims, Map<String, List<String>> listClaims);
 
 }
