@@ -14,8 +14,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.Address;
-import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -163,7 +163,7 @@ public class DeveloperDetailsUploadHandlerTest {
 
         Developer developer = handler.handle(headingRecord, listingRecords);
         assertNotNull(developer);
-        Contact contact = developer.getContact();
+        PointOfContact contact = developer.getContact();
         assertNotNull(contact);
         assertEquals("test@ainq.com", contact.getEmail());
         assertEquals("333-444-5555", contact.getPhoneNumber());
