@@ -158,25 +158,6 @@ public class UserDAO extends BaseDAOImpl {
         return foundUser;
     }
 
-    public UserDTO findUserByNameAndEmail(String username, String email) {
-        UserDTO foundUser = null;
-
-        String userQuery = "from UserEntity u " + "JOIN FETCH u.contact " + "JOIN FETCH u.permission "
-                + "WHERE (NOT u.deleted = true) " + "AND (u.subjectName = :subjectName) "
-                + "AND (u.contact.email = :email)";
-
-        Query query = entityManager.createQuery(userQuery, UserEntity.class);
-        query.setParameter("subjectName", username);
-        query.setParameter("email", email);
-        List<UserEntity> result = query.getResultList();
-        if (result.size() >= 1) {
-            UserEntity entity = result.get(0);
-            foundUser = userMapper.from(entity);
-        }
-
-        return foundUser;
-    }
-
     public UserDTO findUser(UserDTO toSearch) {
         UserDTO foundUser = null;
 
