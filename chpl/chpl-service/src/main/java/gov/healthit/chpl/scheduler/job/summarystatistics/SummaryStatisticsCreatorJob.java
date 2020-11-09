@@ -83,19 +83,12 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
             List<CertifiedProductDetailsDTO> allListings = certifiedProductDAO.findAll();
             LOGGER.info("Completing getting all listings.");
 
+            //EmailStatistics emailBodyStats = emailStatisticsCreator.getStatistics(allListings);
+            //saveSummaryStatistics(emailBodyStats, endDate);
+
             Boolean generateCsv = Boolean.valueOf(jobContext.getMergedJobDataMap().getString("generateCsvFile"));
-            Date startDate = getStartDate();
-            if (startDate == null) {
-                throw new RuntimeException("Could not obtain the startDate.");
-            }
-            Date endDate = new Date();
-            Integer numDaysInPeriod = Integer.valueOf(env.getProperty("summaryEmailPeriodInDays").toString());
-
-            EmailStatistics emailBodyStats = emailStatisticsCreator.getStatistics(allListings);
-            saveSummaryStatistics(emailBodyStats, endDate);
-
             if (generateCsv) {
-                createSummaryStatisticsFile(allListings, startDate, endDate, numDaysInPeriod);
+                createSummaryStatisticsFile(allListings, jobContext);
             }
         } catch (Exception e) {
             LOGGER.error("Caught unexpected exception: " + e.getMessage(), e);
@@ -105,8 +98,22 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
 
 
     @SuppressWarnings("checkstyle:linelength")
-    private void createSummaryStatisticsFile(List<CertifiedProductDetailsDTO> allListings, Date startDate, Date endDate, Integer numDaysInPeriod)
+    private void createSummaryStatisticsFile(List<CertifiedProductDetailsDTO> allListings, JobExecutionContext jobContext)
             throws InterruptedException, ExecutionException {
+
+
+        if (!isGenerateStatisticsFlagOn(jobContext)) {
+            return;
+        }
+
+        Date startDate = getStartDate();
+        if (startDate == null) {
+            throw new RuntimeException("Could not obtain the startDate.");
+        }
+        Date endDate = new Date();
+        Integer numDaysInPeriod = Integer.valueOf(env.getProperty("summaryEmailPeriodInDays").toString());
+
+
         List<CsvStatistics> csvStats = new ArrayList<CsvStatistics>();
         Calendar startDateCal = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
         startDateCal.setTime(startDate);
@@ -122,11 +129,16 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
 
             DateRange csvRange = new DateRange(startDateCal.getTime(), new Date(endDateCal.getTimeInMillis()));
             CsvStatistics historyStat = new CsvStatistics();
+
             historyStat.setDateRange(csvRange);
             historyStat = historicalStatisticsCreator.getStatistics(allListings, statusesForAllListings, csvRange);
+
             csvStats.add(historyStat);
+
             LOGGER.info("Finished getting csvRecord for start date " + startDateCal.getTime().toString() + " end date "
                     + endDateCal.getTime().toString());
+
+            //Increment the date range
             startDateCal.add(Calendar.DATE, numDaysInPeriod);
             endDateCal.setTime(startDateCal.getTime());
             endDateCal.add(Calendar.DATE, numDaysInPeriod);
@@ -206,4 +218,9 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         syncdMap.putAll(map);
         return syncdMap;
     }
+
+    private Boolean isGenerateStatisticsFlagOn(JobExecutionContext jobContext) {
+        return Boolean.valueOf(jobContext.getMergedJobDataMap().getString("generateCsvFile"));
+    }
+
 }
