@@ -3,10 +3,12 @@ package gov.healthit.chpl.scheduler.job;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -33,7 +35,6 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
-import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingType;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUpload;
 import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -76,8 +77,8 @@ public class RealWorldTestingUploadJob implements Job {
 
             //Run some basic validation on upload records that do not have any errors yet...
             rwts.stream()
-                    .filter(rwt -> rwt.getErrors().size() == 0)
-                    .forEach(rwt -> rwt.getErrors().addAll(validateRwtUpload(rwt)));
+                    .filter(rwt -> rwt.getValidationErrors().size() == 0)
+                    .forEach(rwt -> rwt.getValidationErrors().addAll(validateRwtUpload(rwt)));
 
             //Determine if there multiple Plans or Results for the same listing.  These will not get
             //get processed, and will have an error added to the upload record.
@@ -87,7 +88,6 @@ public class RealWorldTestingUploadJob implements Job {
             //a single object, allowing us to perform a single update for each listing, rather than an update
             //for each row in the upload file
             List<CombinedUploadTransaction> txns = getMergedRwtUploads(rwts.stream()
-                    .filter(rwt -> rwt.getErrors().size() == 0)
                     .collect(Collectors.toList()));
 
             //Process the list of combined transactions
@@ -100,7 +100,7 @@ public class RealWorldTestingUploadJob implements Job {
                     .map(f -> getRwtUploadFromFuture(f))
                     .collect(Collectors.toList());
 
-            sendResults(rwts, user.getEmail());
+            sendResults(txns, user.getEmail());
 
         } catch (Exception e) {
             LOGGER.error(e);
@@ -120,21 +120,21 @@ public class RealWorldTestingUploadJob implements Job {
         }
     }
 
+    @SuppressWarnings("checkstyle:linelength")
     private CombinedUploadTransaction processRwtUploadItem(CombinedUploadTransaction txn) {
         LOGGER.info("Processing record: " + txn.getChplProductNumber());
         Optional<CertifiedProductSearchDetails> listing = getListing(txn.getChplProductNumber());
 
         if (listing.isPresent()) {
             if (!hasDataRwtPlansChanged(listing.get(), txn)) {
-                txn.getPlansUpload().getErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.dataNotChanged"));
+                txn.getPlansUpload().getValidationErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.dataNotChanged") + " (PLANS)");
             }
             if (!hasDataRwtResultsChanged(listing.get(), txn)) {
-                txn.getResultsUpload().getErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.dataNotChanged"));
+                txn.getResultsUpload().getValidationErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.dataNotChanged") + " (RESULTS)");
             }
             txn = updateListing(listing.get(), txn);
         } else {
-            txn.getPlansUpload().getErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.listingNotFound"));
-            txn.getResultsUpload().getErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.listingNotFound"));
+            txn.getErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.listingNotFound"));
         }
 
         LOGGER.info("Completed processing record: " + txn.getChplProductNumber());
@@ -142,11 +142,11 @@ public class RealWorldTestingUploadJob implements Job {
     }
 
     private CombinedUploadTransaction updateListing(CertifiedProductSearchDetails listing, CombinedUploadTransaction txn) {
-        if (txn.getPlansUpload() != null) {
+        if (txn.getPlansUpload() != null && txn.getPlansUpload().getValidationErrors().size() == 0) {
             listing.setRwtPlansCheckDate(txn.getPlansUpload().getLastChecked());
             listing.setRwtPlansUrl(txn.getPlansUpload().getUrl());
         }
-        if (txn.getResultsUpload() != null) {
+        if (txn.getResultsUpload() != null && txn.getResultsUpload().getValidationErrors().size() == 0) {
             listing.setRwtResultsCheckDate(txn.getResultsUpload().getLastChecked());
             listing.setRwtResultsUrl(txn.getResultsUpload().getUrl());
         }
@@ -157,11 +157,9 @@ public class RealWorldTestingUploadJob implements Job {
         try {
             certifiedProductManager.update(request);
         } catch (ValidationException e) {
-            txn.getPlansUpload().getErrors().addAll(e.getErrorMessages());
-            txn.getResultsUpload().getErrors().addAll(e.getErrorMessages());
+            txn.getErrors().addAll(e.getErrorMessages());
         } catch (Exception e) {
-            txn.getPlansUpload().getErrors().add(e.getMessage());
-            txn.getResultsUpload().getErrors().add(e.getMessage());
+            txn.getErrors().add(e.getMessage());
         }
         return txn;
     }
@@ -217,14 +215,14 @@ public class RealWorldTestingUploadJob implements Job {
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 
-    private void sendResults(List<RealWorldTestingUpload> rwts, String address) throws MessagingException {
+    private void sendResults(List<CombinedUploadTransaction> txns, String address) throws MessagingException {
         RwtEmail rwtEmail = new RwtEmail(env);
         List<String> addresses = new ArrayList<String>(Arrays.asList(address));
 
         EmailBuilder emailBuilder = new EmailBuilder(env);
         emailBuilder.recipients(addresses)
         .subject("Real World Testing Upload Results")
-        .htmlMessage(rwtEmail.getEmail(rwts))
+        .htmlMessage(rwtEmail.getEmail(txns))
         .sendEmail();
     }
 
@@ -234,6 +232,7 @@ public class RealWorldTestingUploadJob implements Job {
 
     private List<RealWorldTestingUpload> markMultipleChangesForSamePlanTypeAndListing(List<RealWorldTestingUpload> rwts) {
         //Find any listings that have duplicate updates - multiple Plans
+        /*
         rwts.stream()
                 .filter(rwt -> rwt.getErrors().size() == 0
                     && rwt.getType().equals(RealWorldTestingType.PLANS))
@@ -252,7 +251,7 @@ public class RealWorldTestingUploadJob implements Job {
                 .filter(lst -> lst.getValue().size() > 1)
                 .forEach(lst -> lst.getValue().stream()
                     .forEach(rwt -> rwt.getErrors().add("Multiple Results found for this CHPL Product Number")));
-
+        */
         return rwts;
     }
 
@@ -286,6 +285,7 @@ public class RealWorldTestingUploadJob implements Job {
         private String chplProductNumber;
         private RealWorldTestingUpload plansUpload;
         private RealWorldTestingUpload resultsUpload;
+        private List<String> errors = new ArrayList<String>();
 
         CombinedUploadTransaction(String chplProductNumber) {
             this.chplProductNumber = chplProductNumber;
@@ -300,14 +300,14 @@ public class RealWorldTestingUploadJob implements Job {
             this.env = env;
         }
 
-        public String getEmail(List<RealWorldTestingUpload> rwts) {
+        public String getEmail(List<CombinedUploadTransaction> txns) {
             HtmlEmailTemplate email = new HtmlEmailTemplate();
             email.setStyles(getStyles());
-            email.setBody(getBody(rwts));
+            email.setBody(getBody(txns));
             return email.build();
         }
 
-        private String getBody(List<RealWorldTestingUpload> rwts) {
+        private String getBody(List<CombinedUploadTransaction> txns) {
             StringBuilder table = new StringBuilder();
 
             table.append("<table class='blueTable'>\n");
@@ -317,13 +317,16 @@ public class RealWorldTestingUploadJob implements Job {
             table.append("                CHPL Product Number\n");
             table.append("            </th>\n");
             table.append("            <th>\n");
-            table.append("                Type\n");
+            table.append("                Plans Last Checked Date\n");
             table.append("            </th>\n");
             table.append("            <th>\n");
-            table.append("                Last Checked Date\n");
+            table.append("                Plans URL\n");
             table.append("            </th>\n");
             table.append("            <th>\n");
-            table.append("                URL\n");
+            table.append("                Results Last Checked Date\n");
+            table.append("            </th>\n");
+            table.append("            <th>\n");
+            table.append("                Results URL\n");
             table.append("            </th>\n");
             table.append("            <th>\n");
             table.append("                Result or Errors\n");
@@ -332,24 +335,27 @@ public class RealWorldTestingUploadJob implements Job {
             table.append("    </thead>\n");
             table.append("    <tbody>\n");
             int i = 1;
-            for (RealWorldTestingUpload rwt : rwts) {
+            for (CombinedUploadTransaction txn : txns) {
                 String trClass = i % 2 == 0 ? "even" : "odd";
 
                 table.append("        <tr class=\"" + trClass + "\">\n");
                 table.append("            <td>");
-                table.append(rwt.getChplProductNumber());
+                table.append(txn.getChplProductNumber());
                 table.append("            </td>\n");
                 table.append("            <td>");
-                table.append(rwt.getType());
+                table.append(txn.getPlansUpload().getLastChecked());
                 table.append("            </td>\n");
                 table.append("            <td>");
-                table.append(rwt.getLastChecked());
+                table.append(txn.getPlansUpload().getUrl());
                 table.append("            </td>\n");
                 table.append("            <td>");
-                table.append(rwt.getUrl());
+                table.append(txn.getResultsUpload().getLastChecked());
                 table.append("            </td>\n");
                 table.append("            <td>");
-                table.append(getErrorsAsString(rwt.getErrors()));
+                table.append(txn.getResultsUpload().getUrl());
+                table.append("            </td>\n");
+                table.append("            <td>");
+                table.append(getErrorsAsString(txn));
                 table.append("            </td>\n");
                 table.append("        </tr>\n");
                 ++i;
@@ -361,7 +367,12 @@ public class RealWorldTestingUploadJob implements Job {
         }
 
 
-        private String getErrorsAsString(List<String> errors) {
+
+        private String getErrorsAsString(CombinedUploadTransaction txn) {
+            Set<String> errors = new HashSet<String>();
+            errors.addAll(txn.getPlansUpload().getValidationErrors());
+            errors.addAll(txn.getResultsUpload().getValidationErrors());
+            errors.addAll(txn.getErrors());
             if (errors.size() > 0) {
                 return StringUtils.join(errors, "<br/>");
             } else {

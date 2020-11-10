@@ -15,5 +15,5 @@ public class RealWorldTestingUpload implements Serializable {
     private LocalDate lastChecked;
     private RealWorldTestingType type;
     private String url;
-    private List<String> errors = new ArrayList<String>();
+    private List<String> validationErrors = new ArrayList<String>();
 }
