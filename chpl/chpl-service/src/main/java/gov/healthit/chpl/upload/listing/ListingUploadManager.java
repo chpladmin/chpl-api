@@ -81,7 +81,13 @@ public class ListingUploadManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).LISTING_UPLOAD, #uploadMetadata)")
     public void createOrReplaceListingUpload(ListingUpload uploadMetadata) throws ValidationException {
-        //TODO: should we actually only allow unique CHPL IDs here?
+        if (StringUtils.isEmpty(uploadMetadata.getChplProductNumber())) {
+            throw new ValidationException(msgUtil.getMessage("listing.upload.missingChplProductNumber"));
+        } else if (uploadMetadata.getAcb() == null) {
+            throw new ValidationException(msgUtil.getMessage("listing.upload.missingAcb"));
+        }
+
+        //Should we actually only allow unique CHPL IDs here?
         //It would keep functionality the same, but a file with new developer codes can have multiple
         //listings with the same pending CHPL ID and the latest one would overwrite the earlier one.
         ListingUpload existingListing =
