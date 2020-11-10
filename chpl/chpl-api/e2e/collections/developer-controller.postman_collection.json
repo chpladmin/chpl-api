@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "deee9dfd-4993-429c-a1b6-36190137a3c9",
+		"_postman_id": "2f46df48-e542-42e5-b23e-bdf973b601ae",
 		"name": "developer-controller",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -14,7 +14,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "054515dc-d2d4-4cb5-beae-552832088a3a",
+								"id": "2c37a20e-4c62-4a94-a418-0dfd016567c0",
 								"exec": [
 									"const developerId= pm.iterationData.get(\"developerId\");\r",
 									"pm.environment.set(\"developerId\",\"developerId\");"
@@ -25,7 +25,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "eccb3f5e-c806-44a1-aa4e-9005f9f70e45",
+								"id": "54443433-539e-4f34-abc8-3942baea6c86",
 								"exec": [
 									"pm.test(\"For valid developer Id ,valid api key header should return 200 status and response is not null\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -81,7 +81,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "36beffc2-aa5a-40c6-aea2-b45ee8281ef8",
+								"id": "b33e613d-3602-4c4d-8a30-3475fdfb449d",
 								"exec": [
 									"const developerId= pm.iterationData.get(\"developerId\");\r",
 									"pm.environment.set(\"developerId\",\"developerId\");"
@@ -92,7 +92,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "b4df1431-8f85-4fd0-89e2-6a56a3ca01e3",
+								"id": "3966d5f4-43c1-47a0-bc06-f936fdecc9f5",
 								"exec": [
 									"pm.test(\"Valid api key header should return 200 status and response is not  null\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -366,7 +366,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "5392ba63-f298-4284-b66a-3ccdf1e8eb5c",
+								"id": "7786639d-cc66-4f9d-bbb0-0a95680ab89e",
 								"exec": [
 									"pm.test(\"Invalid DeveloperId returns 404 status\", function () {\r",
 									"    pm.response.to.have.status(404);\r",
@@ -480,7 +480,7 @@
 									""
 								],
 								"type": "text/javascript",
-								"id": "6d74d0f4-ba67-4043-86cc-f7b2b49b2796"
+								"id": "2a68bac8-3342-4500-80a5-38907b13b4a6"
 							}
 						}
 					],
@@ -534,7 +534,7 @@
 									""
 								],
 								"type": "text/javascript",
-								"id": "1ab8c4c2-9495-4486-91f2-ac90c27b4c98"
+								"id": "32018869-43d2-4bcd-a0ff-8647eb6a7a9f"
 							}
 						},
 						{
@@ -558,7 +558,7 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"id": "11d4ab1d-3559-4337-bccc-f2616b6172c5"
+								"id": "c100998a-676d-4716-b0e1-ae3ada746c9b"
 							}
 						}
 					],
@@ -615,7 +615,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "b8721de7-4b44-4b32-a9f8-3fb2b49d2d8e",
+								"id": "2b9abe08-d074-4b6e-ac71-f186dcd2c364",
 								"exec": [
 									"pm.test(\"Invalid api key header should return 401 status\", function () {\r",
 									"    pm.response.to.have.status(401);\r",
@@ -659,7 +659,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "ec52bdda-0427-4096-855a-a56955fe7b27",
+								"id": "9be30b05-9282-4158-95af-cef84bc7ca0e",
 								"exec": [
 									"pm.test(\"Valid api key header should return 200 status and response body should not be empty\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -707,7 +707,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "86521d10-9a3b-45bf-9206-6a29a6c9e0fb",
+						"id": "b32ef4a7-06f3-4272-8ecd-a7c87590fd84",
 						"exec": [
 							"pm.test(\"Valid api key header should return 200 status and response body should not be empty\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
