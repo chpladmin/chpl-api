@@ -1,7 +1,5 @@
 package gov.healthit.chpl.permissions.domains.secureduser;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.auth.Authority;
