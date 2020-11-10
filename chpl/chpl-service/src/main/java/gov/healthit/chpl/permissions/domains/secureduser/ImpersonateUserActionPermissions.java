@@ -8,15 +8,11 @@ import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
+import lombok.extern.log4j.Log4j2;
 
-/**
- * Permission for impersonating another user.
- * @author alarned
- *
- */
+@Log4j2
 @Component(value = "userPermissionsImpersonateUserActionPermissions")
 public class ImpersonateUserActionPermissions extends ActionPermissions {
-    private static final Logger LOGGER = LogManager.getLogger(ImpersonateUserActionPermissions.class);
 
     @Override
     public boolean hasAccess() {
@@ -30,13 +26,17 @@ public class ImpersonateUserActionPermissions extends ActionPermissions {
      * ROLE_ONC > all roles except ROLE_ADMIN and ROLE_ONC
      */
     @Override
-    public boolean hasAccess(final Object obj) {
+    public boolean hasAccess(Object obj) {
         UserDTO target;
         try {
-            target = getResourcePermissions().getUserByName((String) obj);
-        } catch (UserRetrievalException e) {
-            LOGGER.error("Unable to get user by name %s", (String) obj);
-            return false;
+            target = getResourcePermissions().getUserById((Long) obj);
+        } catch (UserRetrievalException e1) {
+            try {
+                target = getResourcePermissions().getUserByName((String) obj);
+            } catch (UserRetrievalException e2) {
+                LOGGER.error("Unable to get user by name or id %s", (String) obj);
+                return false;
+            }
         }
         if (getResourcePermissions().isUserRoleAdmin()) {
             //admin user can't impersonate another admin user

@@ -65,9 +65,6 @@ public class AuthenticationController {
     @Autowired
     private Environment env;
 
-    // TODO: Create emergency "BUMP TOKENS" method which invalidates all active
-    // tokens.
-
     /**
      * Log in a user.
      * @param credentials the user's credentials
@@ -95,7 +92,7 @@ public class AuthenticationController {
      * @return a new JWT with an extended expiration date
      * @throws JWTCreationException if unable to create the JWT
      * @throws UserRetrievalException if cannot find user to refresh
-     * @throws MultipleUserAccountsException 
+     * @throws MultipleUserAccountsException if multiple users have the same email
      */
     @ApiIgnore
     @RequestMapping(value = "/keep_alive", method = RequestMethod.GET,
@@ -286,14 +283,14 @@ public class AuthenticationController {
     }
 
     @ApiOperation(value = "Impersonate another user.", notes = "")
-    @RequestMapping(value = "/impersonate/beta", method = RequestMethod.GET,
+    @RequestMapping(value = "/beta/impersonate", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public String impersonateUserByEmail(@RequestHeader(value = "Authorization", required = true) final String userJwt,
-            @RequestParam(value = "email", required = true) final String email)
+            @RequestParam(value = "id", required = true) final Long id)
                     throws UserRetrievalException, JWTCreationException, UserManagementException,
                     JWTValidationException, MultipleUserAccountsException {
 
-        String jwt = authenticationManager.impersonateUser(email);
+        String jwt = authenticationManager.impersonateUser(id);
         String jwtJSON = "{\"token\": \"" + jwt + "\"}";
         return jwtJSON;
     }

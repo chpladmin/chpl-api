@@ -169,6 +169,12 @@ public class AuthenticationManager {
         return user;
     }
 
+    private UserDTO getUserById(Long id)
+            throws MultipleUserAccountsException, UserRetrievalException {
+        UserDTO user = userDAO.getById(id);
+        return user;
+    }
+
     private void updateFailedLogins(UserDTO userToUpdate) throws UserRetrievalException, UserManagementException {
         try {
             userManager.updateFailedLoginCount(userToUpdate);
@@ -195,15 +201,15 @@ public class AuthenticationManager {
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).USER_PERMISSIONS, "
-            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).IMPERSONATE_USER, #username)")
-    public String impersonateUser(String email)
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).IMPERSONATE_USER, #id)")
+    public String impersonateUser(Long id)
             throws UserRetrievalException, JWTCreationException, UserManagementException, MultipleUserAccountsException {
         JWTAuthenticatedUser user = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
         if (user.getImpersonatingUser() != null) {
             throw new UserManagementException(msgUtil.getMessage("user.impersonate.alreadyImpersonating"));
         }
         UserDTO impersonatingUser = getUserByNameOrEmail(user.getEmail());
-        UserDTO impersonatedUser = getUserByNameOrEmail(email);
+        UserDTO impersonatedUser = getUserById(id);
 
         impersonatedUser.setImpersonatedBy(impersonatingUser);
         return getJWT(impersonatedUser);
