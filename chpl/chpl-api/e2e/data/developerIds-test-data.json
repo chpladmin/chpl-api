@@ -1,0 +1,37 @@
+[
+ {
+  "developerId":222,
+  "developerCode":"1221",
+  "name":"Cerner Corporation"
+ },
+ {
+  "developerId":223,
+  "developerCode":"1222",
+  "name":"Cerner Health Services, Inc."
+ },
+ {
+  "developerId":448,
+  "developerCode":"1447",
+  "name":"Epic Systems Corporation"
+ },
+ {
+  "developerId":2070,
+  "developerCode":"3069",
+  "name":"GE Healthcare"
+ },
+  {
+  "developerId":1695,
+  "developerCode":"2694",
+  "name":"CitiusTech, Inc."
+ },
+ {
+  "developerId":1892,
+  "developerCode":"2891",
+  "name":"Allscripts"
+ },
+ {
+  "developerId":2047,
+  "developerCode":"3046",
+  "name":"Acelis Connected Health Technologies"
+ }
+]

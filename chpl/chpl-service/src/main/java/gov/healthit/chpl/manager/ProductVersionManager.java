@@ -101,6 +101,10 @@ public class ProductVersionManager extends SecuredManager {
         return versionDao.getByProductIds(productIds);
     }
 
+    @Transactional(readOnly = true)
+    public List<ProductVersionDTO> getByDeveloper(Long developerId) {
+        return versionDao.getByDeveloper(developerId);
+    }
 
     @Transactional(readOnly = false)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
