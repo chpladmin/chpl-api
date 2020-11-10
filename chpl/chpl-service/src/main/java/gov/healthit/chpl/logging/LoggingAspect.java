@@ -30,7 +30,6 @@ public class LoggingAspect {
         //show params
         boolean showParams = loggableMethod != null ? loggableMethod.params() : loggableClass.params();
         if (showParams) {
-
             if (proceedingJoinPoint.getArgs() != null && proceedingJoinPoint.getArgs().length > 0) {
                 sb.append("[");
                 for (int i = 0; i < proceedingJoinPoint.getArgs().length; i++) {
@@ -40,10 +39,9 @@ public class LoggingAspect {
                     }
                 }
                 sb.append("]");
-                LogWriter.write(proceedingJoinPoint.getTarget().getClass(), sb.toString());
             }
-
         }
+        LogWriter.write(proceedingJoinPoint.getTarget().getClass(), sb.toString());
 
         long startTime = System.currentTimeMillis();
 
