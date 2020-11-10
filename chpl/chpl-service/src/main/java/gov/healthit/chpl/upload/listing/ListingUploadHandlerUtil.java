@@ -169,6 +169,7 @@ public class ListingUploadHandlerUtil {
         while (iter.hasNext()) {
             String currHeadingValue = iter.next();
             if (currHeadingValue != null && !StringUtils.isEmpty(currHeadingValue.trim())
+                    && Headings.getHeading(currHeadingValue.trim()) != null
                     && Headings.getHeading(currHeadingValue.trim()).equals(heading)) {
                 return index;
             }

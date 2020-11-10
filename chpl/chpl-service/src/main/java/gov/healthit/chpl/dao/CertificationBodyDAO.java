@@ -143,6 +143,22 @@ public class CertificationBodyDAO extends BaseDAOImpl {
         return dto;
     }
 
+    public CertificationBodyDTO getByCode(String code) {
+        Query query = entityManager.createQuery(
+                "SELECT acb from CertificationBodyEntity acb "
+                        + "LEFT OUTER JOIN FETCH acb.address "
+                        + "WHERE (acb.deleted = false) "
+                        + "AND (UPPER(acb.acbCode) = :code) ",
+                CertificationBodyEntity.class);
+        query.setParameter("code", code.toUpperCase());
+        List<CertificationBodyEntity> result = query.getResultList();
+
+        if (result != null && result.size() > 0) {
+            return new CertificationBodyDTO(result.get(0));
+        }
+        return null;
+    }
+
     public List<CertificationBodyDTO> getByWebsite(final String website) {
         Query query = entityManager.createQuery("SELECT acb "
                 + "FROM CertificationBodyEntity acb "

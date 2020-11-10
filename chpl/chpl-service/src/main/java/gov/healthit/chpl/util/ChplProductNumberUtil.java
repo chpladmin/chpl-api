@@ -26,7 +26,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 
 /**
  * A component that provides some helpful methods for dealing with Chpl Product Numbers.
- * 
+ *
  * @author TYoung
  *
  */
@@ -173,7 +173,7 @@ public class ChplProductNumberUtil {
 
     /**
      * Gets the CHPL Product Number as calculated by the DB.
-     * 
+     *
      * @param certifiedProductId
      *            - Long
      * @return - String
@@ -185,7 +185,7 @@ public class ChplProductNumberUtil {
 
     /**
      * Determines what the derived CHPL Product Number will be based on the values passed.
-     * 
+     *
      * @param uniqueId
      *            - Unique ID from the product
      * @param certificationEdition
@@ -219,7 +219,7 @@ public class ChplProductNumberUtil {
 
     /**
      * Determines if a CHPL Product Number already exists in the database.
-     * 
+     *
      * @param chplProductNumber
      *            - String representing the CHPL Product Number to check
      * @return Boolean - true if the value does not exist, false if the value exists
@@ -236,7 +236,7 @@ public class ChplProductNumberUtil {
 
     /**
      * Determines if the given CHPL ID is a listing in the system.
-     * 
+     *
      * @param id
      * @return true if there is a listing with the chpl product number, false otherwise
      * @throws EntityRetrievalException
@@ -294,7 +294,7 @@ public class ChplProductNumberUtil {
 
     /**
      * Properly concats all of the parts of a CHPL Product Number.
-     * 
+     *
      * @param year
      * @param testingLab
      * @param certBody
@@ -326,7 +326,7 @@ public class ChplProductNumberUtil {
 
     /**
      * Properly concats the parts of a legacy CHPL Product number.
-     * 
+     *
      * @param chplPrefix
      * @param identifier
      * @return
@@ -394,6 +394,11 @@ public class ChplProductNumberUtil {
     public String getDeveloperCode(final String chplProductNumber) {
         ChplProductNumberParts parts = parseChplProductNumber(chplProductNumber);
         return parts.getDeveloperCode();
+    }
+
+    public String getAcbCode(String chplProductNumber) {
+        ChplProductNumberParts parts = parseChplProductNumber(chplProductNumber);
+        return parts.getAcbCode();
     }
 
     private String[] splitUniqueIdParts(final String uniqueId) {

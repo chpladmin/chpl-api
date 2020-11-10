@@ -18,6 +18,9 @@ public class ListingUpload implements Serializable {
     private Long id;
     private String chplProductNumber;
     private CertificationBody acb;
+    private String developer;
+    private String product;
+    private String version;
     private Integer warningCount;
     private Integer errorCount;
     private Set<String> uploadErrors;

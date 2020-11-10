@@ -1,6 +1,7 @@
 package gov.healthit.chpl.upload.listing;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -9,7 +10,6 @@ public enum Headings {
     //while each heading can have multiple values that it matches to,
     //the values have to be unique among all headings for this to work
     UNIQUE_ID("UNIQUE_CHPL_ID__C", "UNIQUE_CHPL_ID_C", "UNIQUE_CHPL_ID", "CHPL_PRODUCT_NUMBER"),
-    RECORD_STATUS("RECORD_STATUS__C", "RECORD_STATUS_C", "RECORD_STATUS"),
     DEVELOPER("VENDOR__C", "VENDOR_C", "VENDOR", "DEVELOPER__C", "DEVELOPER_C", "DEVELOPER"),
     PRODUCT("PRODUCT__C", "PRODUCT_C", "PRODUCT"),
     VERSION("VERSION__C", "VERSION_C", "VERSION"),
@@ -208,5 +208,9 @@ public enum Headings {
             }
         }
         return null;
+    }
+
+    public static List<Headings> getRequiredHeadings() {
+        return Arrays.asList(Headings.UNIQUE_ID, Headings.DEVELOPER, Headings.PRODUCT, Headings.VERSION);
     }
 }
