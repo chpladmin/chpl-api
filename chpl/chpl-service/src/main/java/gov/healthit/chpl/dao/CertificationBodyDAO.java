@@ -18,8 +18,10 @@ import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.entity.UserCertificationBodyMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.util.AuthUtil;
 
+@Loggable
 @Repository(value = "certificationBodyDAO")
 public class CertificationBodyDAO extends BaseDAOImpl {
     private static final Logger LOGGER = LogManager.getLogger(CertificationBodyDAO.class);

@@ -38,6 +38,7 @@ import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
 import gov.healthit.chpl.domain.schedule.ScheduledSystemJob;
 import gov.healthit.chpl.domain.schedule.TriggerSchedule;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.ChplSchedulerReference;
@@ -49,6 +50,7 @@ import gov.healthit.chpl.util.AuthUtil;
  * @author alarned
  *
  */
+@Loggable
 @Service
 public class SchedulerManager extends SecuredManager {
 

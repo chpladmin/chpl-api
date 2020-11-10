@@ -19,9 +19,11 @@ import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.util.EmailBuilder;
 import lombok.extern.log4j.Log4j2;
 
+@Loggable
 @Component("directReviewUpdateEmailService")
 @Log4j2
 public class DirectReviewUpdateEmailService {

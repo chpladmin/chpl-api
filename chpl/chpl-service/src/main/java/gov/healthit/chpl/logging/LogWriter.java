@@ -8,7 +8,7 @@ public final class LogWriter {
 
     private LogWriter() {}
 
-    static void write(Class clazz, String logLevel, String message) {
+    static void write(Class clazz, String message) {
         final Logger LOGGER = LogManager.getLogger("loggableLogger");
 
         LOGGER.log(Level.INFO, message);

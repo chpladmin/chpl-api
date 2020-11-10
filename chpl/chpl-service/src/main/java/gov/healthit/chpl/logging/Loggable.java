@@ -13,9 +13,10 @@ import org.springframework.stereotype.Component;
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Loggable {
-    String value() default "INFO";
 
-    boolean params() default true;
+    //String value() default "INFO";
 
-    boolean result() default true;
+    boolean params() default false;
+
+    boolean result() default false;
 }

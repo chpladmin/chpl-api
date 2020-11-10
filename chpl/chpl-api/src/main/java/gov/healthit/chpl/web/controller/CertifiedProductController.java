@@ -89,6 +89,7 @@ import lombok.extern.log4j.Log4j2;
 /**
  * Certified Product Controller.
  */
+@Loggable
 @Api(value = "certified-products")
 @RestController
 @RequestMapping("/certified_products")
@@ -178,7 +179,6 @@ public class CertifiedProductController {
     method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    @Loggable
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductById(
             @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
 

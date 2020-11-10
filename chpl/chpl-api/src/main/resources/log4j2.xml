@@ -16,7 +16,7 @@
             fileName="${logDir}/loggable.log"
             filePattern="${logDir}/loggable/history/loggable-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) ID: %X{tracker} - %m%n</Pattern>
+                <Pattern>%d{ISO8601} %-5p Token: %X{tracker} - %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy

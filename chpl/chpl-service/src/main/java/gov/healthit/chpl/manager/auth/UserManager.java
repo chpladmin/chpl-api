@@ -53,6 +53,7 @@ import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.util.EmailBuilder;
@@ -61,6 +62,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Service
 @Log4j2
+@Loggable
 public class UserManager extends SecuredManager {
     public static final int MIN_PASSWORD_STRENGTH = 3;
 

@@ -84,6 +84,7 @@ import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.PropertyUtil;
 
+@Loggable
 @Service("certifiedProductDetailsManager")
 public class CertifiedProductDetailsManager {
 
@@ -174,7 +175,6 @@ public class CertifiedProductDetailsManager {
     }
 
     @Transactional
-    @Loggable
     public CertifiedProductSearchDetails getCertifiedProductDetails(Long certifiedProductId)
             throws EntityRetrievalException {
 
