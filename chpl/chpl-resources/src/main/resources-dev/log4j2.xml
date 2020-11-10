@@ -16,6 +16,17 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <RollingFile name="loggable"
+            fileName="${logDir}/loggable.log"
+            filePattern="${logDir}/loggable/history/loggable-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p Token: %X{tracker} - %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
         <RollingFile name="chartDataCreatorJob"
             fileName="${logDir}/scheduler/chartDataCreatorJob.log"
             filePattern="${logDir}/scheduler/history/chartDataCreatorJob-%d{yyyy-MM-dd}.log">
@@ -322,6 +333,10 @@
         </Logger>
         <Logger name="gov.healthit.chpl" level="INFO" additivity="false">
             <AppenderRef ref="FILE" />
+        </Logger>
+        <Logger name="loggableLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="loggable" />
         </Logger>
         <Logger name="summaryStatisticsEmailJobLogger" level="INFO"
             additivity="false">
