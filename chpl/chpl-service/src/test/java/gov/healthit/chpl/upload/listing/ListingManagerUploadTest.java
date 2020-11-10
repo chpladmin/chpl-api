@@ -191,7 +191,8 @@ public class ListingManagerUploadTest {
             throws JsonProcessingException, ValidationException,
         InvalidArgumentsException, DeprecatedUploadTemplateException {
         Mockito.when(acbDao.getByCode(ArgumentMatchers.anyString())).thenReturn(createAcb());
-        Mockito.when(chplProductNumberUtil.getAcbCode(ArgumentMatchers.anyString())).thenReturn(null);
+        Mockito.when(chplProductNumberUtil.getAcbCode(ArgumentMatchers.anyString()))
+            .thenThrow(ArrayIndexOutOfBoundsException.class);
 
         String fileContents = "UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,VERSION__C" + "\n"
                 + "JUNK,DEV Name,Prod Name,1.0";
