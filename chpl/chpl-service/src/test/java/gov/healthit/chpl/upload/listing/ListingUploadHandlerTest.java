@@ -28,7 +28,6 @@ public class ListingUploadHandlerTest {
     private static final String HEADER_COMMON_NAMES = "UNIQUE_CHPL_ID__C,RECORD_STATUS__C,VENDOR__C";
     private static final String HEADER_ALT_NAMES = "UNIQUE_CHPL_ID__C,RECORD_STATUS__C";
     private static final String HEADER_WITH_SPACES = " UNIQUE_CHPL_ID__C , RECORD_STATUS__C ";
-    private static final String HEADER_SINGLE_COLUMN = "RECORD_STATUS__C";
     private static final String HEADER_DUPLICATE = "UNIQUE_CHPL_ID__C,UNIQUE_CHPL_ID__C,RECORD_STATUS__C";
     private static final String MULTIPLE_ROWS = "UNIQUE_CHPL_ID__C,RECORD_STATUS__C\n"
                                                 + "15.02.02.3007.A056.01.00.0.180214,New";
@@ -85,7 +84,7 @@ public class ListingUploadHandlerTest {
 
     @Test
     public void getHeadingRecordIndex_HeadingOnlySingleColumn_ReturnsCorrectValue() {
-        List<CSVRecord> records = ListingUploadTestUtil.getRecordsFromString(HEADER_SINGLE_COLUMN);
+        List<CSVRecord> records = ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C");
         int index = handlerUtil.getHeadingRecordIndex(records);
         assertEquals(0, index);
     }
@@ -110,7 +109,7 @@ public class ListingUploadHandlerTest {
     @Test(expected = ValidationException.class)
     public void getChplProductNumber_NoChplProductNumberHeading_ThrowsException()
             throws IOException {
-        List<CSVRecord> headingRecords = ListingUploadTestUtil.getRecordsFromString(HEADER_SINGLE_COLUMN);
+        List<CSVRecord> headingRecords = ListingUploadTestUtil.getRecordsFromString("PRODUCT__C");
         assertNotNull(headingRecords);
         assertEquals(1, headingRecords.size());
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW);
