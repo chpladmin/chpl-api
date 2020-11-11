@@ -118,21 +118,39 @@ public class RealWorldTestingManager {
 
     private RealWorldTestingUpload createRwtUploadFromCsvRecord(CSVRecord record) {
         RealWorldTestingUpload rwtUpload = new RealWorldTestingUpload();
+        rwtUpload = setChplProductNumber(record, rwtUpload);
+        rwtUpload = setRwtType(record, rwtUpload);
+        rwtUpload = setLastCheckedDate(record, rwtUpload);
+        rwtUpload = setUrl(record, rwtUpload);
+        rwtUpload.setOrder(record.getRecordNumber());
+        return rwtUpload;
+    }
+
+    private RealWorldTestingUpload setChplProductNumber(CSVRecord record, RealWorldTestingUpload rwtUpload) {
         if (!StringUtils.isEmpty(record.get(CHPL_PRODUCT_NUMBER_COLUMN_IDX))) {
             rwtUpload.setChplProductNumber(record.get(CHPL_PRODUCT_NUMBER_COLUMN_IDX));
         } else {
             rwtUpload.getValidationErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.chplProductNumberInvalid"));
         }
+        return rwtUpload;
+    }
+
+    private RealWorldTestingUpload setRwtType(CSVRecord record, RealWorldTestingUpload rwtUpload) {
         if (!StringUtils.isEmpty(record.get(RWT_TYPE_COLUMN_IDX))) {
             try {
                 rwtUpload.setType(getType(record.get(RWT_TYPE_COLUMN_IDX)));
             } catch (ParseException e) {
-                rwtUpload.getValidationErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.realWorldTestingTypeInvalid")
+                rwtUpload.getValidationErrors().add(
+                        errorMessageUtil.getMessage("realWorldTesting.upload.realWorldTestingTypeInvalid")
                         + " [" + record.get(RWT_TYPE_COLUMN_IDX) + "]");
             }
         } else {
-            rwtUpload.getValidationErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.realWorldTestingTypeInvalid"));
+            rwtUpload.getValidationErrors().add(
+                    errorMessageUtil.getMessage("realWorldTesting.upload.realWorldTestingTypeInvalid"));
         }
+        return rwtUpload;
+    }
+    private RealWorldTestingUpload setLastCheckedDate(CSVRecord record, RealWorldTestingUpload rwtUpload) {
         if (!StringUtils.isEmpty(record.get(LAST_CHECKED_COLUMN_IDX))) {
             try {
                 rwtUpload.setLastChecked(getLastCheckedDate(record.get(LAST_CHECKED_COLUMN_IDX)));
@@ -143,6 +161,10 @@ public class RealWorldTestingManager {
         } else {
             rwtUpload.setLastChecked(null);
         }
+        return rwtUpload;
+    }
+
+    private RealWorldTestingUpload setUrl(CSVRecord record, RealWorldTestingUpload rwtUpload) {
         if (!StringUtils.isEmpty(record.get(URL_COLUMN_IDX))) {
             rwtUpload.setUrl(record.get(URL_COLUMN_IDX));
         } else {
@@ -176,7 +198,7 @@ public class RealWorldTestingManager {
     private List<CSVRecord> removeEmptyRows(List<CSVRecord> records) {
         return records.stream()
                 .filter(rec -> !rec.get(CHPL_PRODUCT_NUMBER_COLUMN_IDX).trim().equals("")
-                        && !rec.get(LAST_CHECKED_COLUMN_IDX).trim().equals(""))
+                        && !rec.get(RWT_TYPE_COLUMN_IDX).trim().equals(""))
                 .collect(Collectors.toList());
     }
 
