@@ -15,7 +15,7 @@ public class ListingStatisticsDAO extends BaseDAOImpl {
     public Long getTotalUniqueProductsByEditionAndStatus(final DateRange dateRange,
             final String edition, final List<String> statuses) {
         String hql = "SELECT DISTINCT UPPER(productName) || UPPER(developerName) "
-                + "FROM CertifiedProductSummaryEntity ";
+                + "FROM CertifiedProductDetailsEntity ";
 
         boolean hasWhere = false;
         if (edition != null) {
@@ -29,7 +29,7 @@ public class ListingStatisticsDAO extends BaseDAOImpl {
             } else {
                 hql += " AND ";
             }
-            hql += " UPPER(certificationStatus) IN (:statuses) ";
+            hql += " UPPER(certificationStatusName) IN (:statuses) ";
         }
         if (dateRange == null) {
             if (!hasWhere) {
