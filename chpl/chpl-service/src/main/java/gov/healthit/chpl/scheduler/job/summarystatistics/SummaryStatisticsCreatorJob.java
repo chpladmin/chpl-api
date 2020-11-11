@@ -83,8 +83,8 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
             List<CertifiedProductDetailsDTO> allListings = certifiedProductDAO.findAll();
             LOGGER.info("Completing getting all listings.");
 
-            //EmailStatistics emailBodyStats = emailStatisticsCreator.getStatistics(allListings);
-            //saveSummaryStatistics(emailBodyStats, endDate);
+            EmailStatistics emailBodyStats = emailStatisticsCreator.getStatistics(allListings);
+            saveSummaryStatistics(emailBodyStats);
 
             Boolean generateCsv = Boolean.valueOf(jobContext.getMergedJobDataMap().getString("generateCsvFile"));
             if (generateCsv) {
@@ -160,7 +160,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         return mapper.writeValueAsString(statistics);
     }
 
-    public void saveSummaryStatistics(EmailStatistics statistics, Date endDate)
+    public void saveSummaryStatistics(EmailStatistics statistics)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
 
         // We need to manually create a transaction in this case because of how AOP works. When a method is
@@ -178,7 +178,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
                     summaryStatisticsDAO.deleteAll();
 
                     SummaryStatisticsEntity entity = new SummaryStatisticsEntity();
-                    entity.setEndDate(endDate);
+                    entity.setEndDate(new Date());
                     entity.setSummaryStatistics(getJson(statistics));
                     summaryStatisticsDAO.create(entity);
                 } catch (Exception e) {
