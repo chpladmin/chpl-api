@@ -325,9 +325,11 @@ public class RealWorldTestingUploadJob implements Job {
 
         private String getErrorsAsString(RealWorldTestingUpload rwt) {
             if (rwt.getValidationErrors().size() > 0) {
-                return StringUtils.join(rwt.getValidationErrors(), "<br/>");
+                return rwt.getValidationErrors().stream()
+                        .map(err -> !err.startsWith("WARNING") ? "ERROR: " + err : err)
+                        .collect(Collectors.joining("<br/>"));
             } else {
-                return "Successfully updated.";
+                return "SUCCESS";
             }
         }
 
