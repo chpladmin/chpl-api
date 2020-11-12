@@ -270,7 +270,7 @@ public class AuthenticationController {
     }
 
     @Deprecated
-    @ApiOperation(value = "Impersonate another user.", notes = "")
+    @ApiOperation(value = "DEPRECATED. Impersonate another user.", notes = "")
     @RequestMapping(value = "/impersonate", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public String impersonateUser(@RequestHeader(value = "Authorization", required = true) final String userJwt,

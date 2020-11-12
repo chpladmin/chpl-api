@@ -288,7 +288,8 @@ public class UserManagementController {
         }
 
         // send email
-        String htmlMessage = "<p>Hi,</p>" + "<p>You have been granted a new role on ONC's Certified Health IT Product List (CHPL) "
+        String htmlMessage = "<p>Hi,</p>"
+                + "<p>You have been granted a new role on ONC's Certified Health IT Product List (CHPL) "
                 + "which will allow you to manage certified product listings on the CHPL. "
                 + "Please click the link below to create or update your account: <br/>"
                 + env.getProperty("chplUrlBegin") + "/#/registration/create-user/" + createdInvite.getInviteToken()
@@ -374,7 +375,7 @@ public class UserManagementController {
     }
 
     @Deprecated
-    @ApiOperation(value = "View a specific user's details.",
+    @ApiOperation(value = "DEPRECATED. View a specific user's details.",
             notes = "The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "
                     + "have ROLE_ACB.")
     @RequestMapping(value = "/{userName}/details", method = RequestMethod.GET,
