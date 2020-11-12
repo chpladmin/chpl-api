@@ -283,26 +283,12 @@ public class UserDAO extends BaseDAOImpl {
         return userMapper.from(userEntity);
     }
 
-    public UserDTO getByNameOrEmail(String username) throws MultipleUserAccountsException {
-        Query query = entityManager
-                .createQuery("SELECT DISTINCT u "
-                        + "FROM UserEntity u "
-                        + "JOIN FETCH u.contact c "
-                        + "JOIN FETCH u.permission "
-                        + "WHERE u.deleted <> true "
-                        + "AND ((u.subjectName = (:username)) OR c.email = (:username)) ",
-                        UserEntity.class);
-        query.setParameter("username", username);
-        List<UserEntity> userEntities = query.getResultList();
-        UserDTO user = null;
-        if (userEntities != null) {
-            if (userEntities.size() > 1) {
-                throw new MultipleUserAccountsException(msgUtil.getMessage("user.multipleAccountsFound", username));
-            } else if (userEntities.size() == 1) {
-                user = userMapper.from(userEntities.get(0));
-            }
+    public UserDTO getByNameOrEmail(String username) throws MultipleUserAccountsException, UserRetrievalException {
+        UserEntity userEntity = this.getEntityByNameOrEmail(username);
+        if (userEntity == null) {
+            return null;
         }
-        return user;
+        return userMapper.from(userEntity);
     }
 
     public List<UserDTO> getUsersWithPermission(String permissionName) {

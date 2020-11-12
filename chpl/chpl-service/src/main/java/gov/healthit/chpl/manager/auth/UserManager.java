@@ -297,11 +297,11 @@ public class UserManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME)")
     @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME, returnObject)")
-    public UserDTO getByNameOrEmail(String username) throws MultipleUserAccountsException {
+    public UserDTO getByNameOrEmail(String username) throws MultipleUserAccountsException, UserRetrievalException {
         return getByNameOrEmailUnsecured(username);
     }
 
-    public UserDTO getByNameOrEmailUnsecured(String username) throws MultipleUserAccountsException {
+    public UserDTO getByNameOrEmailUnsecured(String username) throws MultipleUserAccountsException, UserRetrievalException {
         return userDAO.getByNameOrEmail(username);
     }
 

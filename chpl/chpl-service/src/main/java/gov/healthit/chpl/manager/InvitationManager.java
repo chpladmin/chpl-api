@@ -189,7 +189,12 @@ public class InvitationManager extends SecuredManager {
         SecurityContextHolder.getContext().setAuthentication(authenticator);
 
         try {
-            userManager.getByNameOrEmail(user.getEmail());
+            UserDTO existingUser = userManager.getByNameOrEmail(user.getEmail());
+            if (existingUser != null) {
+                throw new InvalidArgumentsException(msgUtil.getMessage("user.accountAlreadyExists", user.getEmail()));
+            }
+        } catch (UserRetrievalException urex) {
+            //ignore
         } catch (MultipleUserAccountsException ex) {
             //hitting this block means there are multiple users registered with this account.
             //don't let them make a new one!
