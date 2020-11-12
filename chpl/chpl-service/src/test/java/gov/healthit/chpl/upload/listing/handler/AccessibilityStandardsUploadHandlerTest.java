@@ -17,10 +17,10 @@ import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class AccessibilityStandardsUploadHandlerTest {
-    private static final String HEADER_ROW = "UNIQUE_CHPL_ID__C,RECORD_STATUS__C,Accessibility Standard";
-    private static final String LISTING_ROW = "15.02.02.3007.A056.01.00.0.180214,New,170.204(a)(1)";
-    private static final String LISTING_ROWS = "15.02.02.3007.A056.01.00.0.180214,New,170.204(a)(1)\n"
-            + "15.02.02.3007.A056.01.00.0.180214,Subelement,IEE 802.11";
+    private static final String HEADER_ROW = "UNIQUE_CHPL_ID__C,Accessibility Standard";
+    private static final String LISTING_ROW = "15.02.02.3007.A056.01.00.0.180214,170.204(a)(1)";
+    private static final String LISTING_ROWS = "15.02.02.3007.A056.01.00.0.180214,170.204(a)(1)\n"
+            + "15.02.02.3007.A056.01.00.0.180214,IEE 802.11";
 
     private AccessibilityStandardsUploadHandler handler;
 
@@ -36,7 +36,7 @@ public class AccessibilityStandardsUploadHandlerTest {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
-                "15.02.02.3007.A056.01.00.0.180214,New,");
+                "15.02.02.3007.A056.01.00.0.180214,");
         assertNotNull(listingRecords);
 
         List<CertifiedProductAccessibilityStandard> foundStandards = handler.handle(headingRecord, listingRecords);
@@ -46,10 +46,10 @@ public class AccessibilityStandardsUploadHandlerTest {
 
     @Test
     public void parseStandards_NoColumnNoData_ReturnsEmptyList() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,RECORD_STATUS__C").get(0);
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
-                "15.02.02.3007.A056.01.00.0.180214,New");
+                "15.02.02.3007.A056.01.00.0.180214");
         assertNotNull(listingRecords);
 
         List<CertifiedProductAccessibilityStandard> foundStandards = handler.handle(headingRecord, listingRecords);
@@ -97,7 +97,7 @@ public class AccessibilityStandardsUploadHandlerTest {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
-                "15.02.02.3007.A056.01.00.0.180214,New, 170.204(a)(1) ");
+                "15.02.02.3007.A056.01.00.0.180214, 170.204(a)(1) ");
         assertNotNull(listingRecords);
 
         List<CertifiedProductAccessibilityStandard> foundStandards = handler.handle(headingRecord, listingRecords);

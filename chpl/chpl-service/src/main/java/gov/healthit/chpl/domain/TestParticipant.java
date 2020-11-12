@@ -99,6 +99,9 @@ public class TestParticipant implements Serializable {
     @XmlElement(required = true)
     private Integer professionalExperienceMonths;
 
+    @XmlTransient
+    private String professionalExperienceMonthsStr;
+
     /**
      * The corresponding participant's experience with computers (in general),
      * in number of months. It is only applicable for 2015 Edition and takes
@@ -106,6 +109,9 @@ public class TestParticipant implements Serializable {
      */
     @XmlElement(required = true)
     private Integer computerExperienceMonths;
+
+    @XmlTransient
+    private String computerExperienceMonthsStr;
 
     /**
      * The corresponding participant's experience with the certified product/
@@ -115,6 +121,9 @@ public class TestParticipant implements Serializable {
      */
     @XmlElement(required = true)
     private Integer productExperienceMonths;
+
+    @XmlTransient
+    private String productExperienceMonthsStr;
 
     /**
      * Any assistive technology needs as identified by the corresponding

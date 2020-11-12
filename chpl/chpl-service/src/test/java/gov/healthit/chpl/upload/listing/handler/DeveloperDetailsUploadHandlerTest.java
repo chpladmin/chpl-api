@@ -21,8 +21,8 @@ import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class DeveloperDetailsUploadHandlerTest {
-    private static final String HEADER_ROW = "UNIQUE_CHPL_ID__C,RECORD_STATUS__C";
-    private static final String LISTING_ROW = "15.02.02.3007.A056.01.00.0.180214,New";
+    private static final String HEADER_ROW = "UNIQUE_CHPL_ID__C";
+    private static final String LISTING_ROW = "15.02.02.3007.A056.01.00.0.180214";
 
     private DeveloperDetailsUploadHandler handler;
 

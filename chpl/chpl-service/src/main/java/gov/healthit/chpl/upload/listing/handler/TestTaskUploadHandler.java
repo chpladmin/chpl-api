@@ -86,9 +86,6 @@ public class TestTaskUploadHandler {
             try {
                 taskSuccessAvg = Float.parseFloat(taskSuccessAvgAtIndex);
             } catch (NumberFormatException ex) {
-                //TODO: the user won't be able to get an error message about this value being wrong
-                //the field will just be blank. They will get an error message about that if the field is required.
-                //Should we add some transient fields to these objects that save what the user has put in here?
                 LOGGER.warn("Cannot parse taskSuccessAvg '" + taskSuccessAvgAtIndex + "' into a Float.");
             }
         }
@@ -209,18 +206,30 @@ public class TestTaskUploadHandler {
                 .uniqueId(id)
                 .description(description)
                 .taskSuccessAverage(taskSuccessAvg)
+                .taskSuccessAverageStr(taskSuccessAvgAtIndex)
                 .taskSuccessStddev(taskSuccessStdDev)
+                .taskSuccessStddevStr(taskSuccessStdDevAtIndex)
                 .taskPathDeviationObserved(taskPathDevObs)
+                .taskPathDeviationObservedStr(taskPathDevObsAtIndex)
                 .taskPathDeviationOptimal(taskPathDevOpt)
+                .taskPathDeviationOptimalStr(taskPathDevOptAtIndex)
                 .taskTimeAvg(taskTimeAvg)
+                .taskTimeAvgStr(taskTimeAvgAtIndex)
                 .taskTimeStddev(taskTimeStdDev)
+                .taskTimeStddevStr(taskTimeStdDevAtIndex)
                 .taskTimeDeviationObservedAvg(taskTimeDevObs)
+                .taskTimeDeviationObservedAvgStr(taskTimeDevObsAtIndex)
                 .taskTimeDeviationOptimalAvg(taskTimeDevOpt)
+                .taskTimeDeviationOptimalAvgStr(taskTimeDevOptAtIndex)
                 .taskErrors(taskErrorsAvg)
+                .taskErrorsStr(taskErrorsAvgAtIndex)
                 .taskErrorsStddev(taskErrorsStdDev)
+                .taskErrorsStddevStr(taskErrorsStdDevAtIndex)
                 .taskRatingScale(taskRatingScaleAtIndex)
                 .taskRating(taskRating)
+                .taskRatingStr(taskRatingAtIndex)
                 .taskRatingStddev(taskRatingStdDev)
+                .taskRatingStddevStr(taskRatingStdDevAtIndex)
                 .build();
         return tt;
     }

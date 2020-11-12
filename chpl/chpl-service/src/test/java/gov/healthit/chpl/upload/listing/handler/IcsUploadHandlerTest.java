@@ -19,9 +19,9 @@ import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class IcsUploadHandlerTest {
-    private static final String HEADER_ROW_BEGIN = "UNIQUE_CHPL_ID__C,RECORD_STATUS__C";
-    private static final String LISTING_ROW_BEGIN = "15.02.02.3007.A056.01.00.0.180214,New";
-    private static final String LISTING_ROW_SUBELEMENT_BEGIN = "15.02.02.3007.A056.01.00.0.180214,Subelement";
+    private static final String HEADER_ROW_BEGIN = "UNIQUE_CHPL_ID__C";
+    private static final String LISTING_ROW_BEGIN = "15.02.02.3007.A056.01.00.0.180214";
+    private static final String LISTING_ROW_SUBELEMENT_BEGIN = "15.02.02.3007.A056.01.00.0.180214";
 
     private IcsUploadHandler handler;
 

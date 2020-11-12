@@ -20,10 +20,9 @@ import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class CqmUploadHandlerTest {
-    private static final String HEADER_ROW_BEGIN = "UNIQUE_CHPL_ID__C,RECORD_STATUS__C";
+    private static final String HEADER_ROW_BEGIN = "UNIQUE_CHPL_ID__C";
     private static final String HEADER_ROW = HEADER_ROW_BEGIN + ",CQM Number,CQM Version,CQM Criteria";
-    private static final String LISTING_ROW_BEGIN = "15.02.02.3007.A056.01.00.0.180214,New";
-    private static final String LISTING_ROW_SUBELEMENT_BEGIN = "15.02.02.3007.A056.01.00.0.180214,Subelement";
+    private static final String LISTING_ROW_BEGIN = "15.02.02.3007.A056.01.00.0.180214";
 
     private CqmUploadHandler handler;
 
@@ -36,7 +35,7 @@ public class CqmUploadHandlerTest {
 
     @Test
     public void parseCqm_NoCqmColumns_ReturnsEmptyList() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,RECORD_STATUS__C").get(0);
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN);
         assertNotNull(listingRecords);
@@ -603,7 +602,7 @@ public class CqmUploadHandlerTest {
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
                 LISTING_ROW_BEGIN + ",59,v1,c1;c2\n"
-                + LISTING_ROW_SUBELEMENT_BEGIN + ",61,v3,c3");
+                + LISTING_ROW_BEGIN + ",61,v3,c3");
         assertNotNull(listingRecords);
 
         List<CQMResultDetails> foundCqms = handler.handle(headingRecord, listingRecords);

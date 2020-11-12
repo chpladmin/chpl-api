@@ -79,9 +79,6 @@ public class TestParticipantsUploadHandler {
             try {
                 professionalExperienceMonths = Integer.parseInt(professionalExperienceAtIndex);
             } catch (NumberFormatException ex) {
-                //TODO: the user won't be able to get an error message about this value being wrong
-                //the field will just be blank. They will get an error message about that if the field is required.
-                //Should we add some transient fields to these objects that save what the user has put in here?
                 LOGGER.warn("Cannot parse professional experience '" + professionalExperienceAtIndex + "' into an Integer.");
             }
         }
@@ -115,8 +112,11 @@ public class TestParticipantsUploadHandler {
                 .educationTypeName(education)
                 .occupation(occupation)
                 .professionalExperienceMonths(professionalExperienceMonths)
+                .professionalExperienceMonthsStr(professionalExperienceAtIndex)
                 .computerExperienceMonths(computerExperienceMonths)
+                .computerExperienceMonthsStr(computerExperienceAtIndex)
                 .productExperienceMonths(productExperienceMonths)
+                .productExperienceMonthsStr(productExperienceAtIndex)
                 .assistiveTechnologyNeeds(assistiveTechAtIndex)
                 .build();
         return tp;

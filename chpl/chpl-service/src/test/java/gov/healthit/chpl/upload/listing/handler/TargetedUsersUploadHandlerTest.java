@@ -17,10 +17,10 @@ import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class TargetedUsersUploadHandlerTest {
-    private static final String HEADER_ROW = "UNIQUE_CHPL_ID__C,RECORD_STATUS__C,Developer-Identified Target Users";
-    private static final String LISTING_ROW = "15.02.02.3007.A056.01.00.0.180214,New,Pediatrics";
-    private static final String LISTING_ROWS = "15.02.02.3007.A056.01.00.0.180214,New,User 1\n"
-            + "15.02.02.3007.A056.01.00.0.180214,Subelement,User 2";
+    private static final String HEADER_ROW = "UNIQUE_CHPL_ID__C,Developer-Identified Target Users";
+    private static final String LISTING_ROW = "15.02.02.3007.A056.01.00.0.180214,Pediatrics";
+    private static final String LISTING_ROWS = "15.02.02.3007.A056.01.00.0.180214,User 1\n"
+            + "15.02.02.3007.A056.01.00.0.180214,User 2";
 
     private TargetedUsersUploadHandler handler;
 
@@ -33,9 +33,9 @@ public class TargetedUsersUploadHandlerTest {
 
     @Test
     public void parseUsers_NoUsersColumn_ReturnsEmptyList() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,RECORD_STATUS__C").get(0);
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C").get(0);
         assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("14.0.0,New");
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("14.0.0");
         assertNotNull(listingRecords);
 
         List<CertifiedProductTargetedUser> foundTargetedUsers = handler.handle(headingRecord, listingRecords);
@@ -47,7 +47,7 @@ public class TargetedUsersUploadHandlerTest {
     public void parseUsers_UsersColumnNoData_ReturnsListWithEmptyItem() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
         assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("14.0.0,New,");
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("14.0.0,");
         assertNotNull(listingRecords);
 
         List<CertifiedProductTargetedUser> foundTargetedUsers = handler.handle(headingRecord, listingRecords);
@@ -96,7 +96,7 @@ public class TargetedUsersUploadHandlerTest {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
-                "15.02.02.3007.A056.01.00.0.180214,New,  Test ");
+                "15.02.02.3007.A056.01.00.0.180214,  Test ");
         assertNotNull(listingRecords);
 
         List<CertifiedProductTargetedUser> foundTargetedUsers = handler.handle(headingRecord, listingRecords);

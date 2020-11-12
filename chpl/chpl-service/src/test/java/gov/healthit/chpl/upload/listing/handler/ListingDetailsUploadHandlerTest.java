@@ -21,9 +21,8 @@ import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class ListingDetailsUploadHandlerTest {
-    private static final String HEADER_ROW_BEGIN = "UNIQUE_CHPL_ID__C,RECORD_STATUS__C";
-    private static final String LISTING_ROW_BEGIN = "15.02.02.3007.A056.01.00.0.180214,New";
-    private static final String LISTING_SUBELEMENT_BEGIN = "15.02.02.3007.A056.01.00.0.180214,Subelement";
+    private static final String HEADER_ROW_BEGIN = "UNIQUE_CHPL_ID__C";
+    private static final String LISTING_ROW_BEGIN = "15.02.02.3007.A056.01.00.0.180214";
 
     private ErrorMessageUtil msgUtil;
     private ListingUploadHandlerUtil handlerUtil;
@@ -50,6 +49,8 @@ public class ListingDetailsUploadHandlerTest {
                 Mockito.mock(AccessibilityStandardsUploadHandler.class),
                 Mockito.mock(QmsUploadHandler.class), Mockito.mock(IcsUploadHandler.class),
                 Mockito.mock(CqmUploadHandler.class),
+                Mockito.mock(TestTaskUploadHandler.class),
+                Mockito.mock(TestParticipantsUploadHandler.class),
                 handlerUtil);
     }
 
@@ -70,7 +71,7 @@ public class ListingDetailsUploadHandlerTest {
     public void buildListing_ChplProductNumberEmpty_ReturnsEmptyString() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
         assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(",New");
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(",");
         assertNotNull(listingRecords);
 
         CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
@@ -83,7 +84,7 @@ public class ListingDetailsUploadHandlerTest {
     public void buildListing_ChplProductNumberWhitespace_TrimsResult() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
         assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("  ,New");
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("  ");
         assertNotNull(listingRecords);
 
         CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
@@ -93,9 +94,9 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     public void buildListing_ChplProductNumberColumnMissing_ReturnsNull() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString("RECORD_STATUS__C").get(0);
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString("SOME_OTHER_COLUMN__C").get(0);
         assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("New");
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("Test");
         assertNotNull(listingRecords);
 
         CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
@@ -467,7 +468,7 @@ public class ListingDetailsUploadHandlerTest {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",TESTING_ATL__C").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",Drummond Group\n"
-                + LISTING_SUBELEMENT_BEGIN + ",ICSA Labs");
+                + LISTING_ROW_BEGIN + ",ICSA Labs");
         assertNotNull(listingRecords);
 
         CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);

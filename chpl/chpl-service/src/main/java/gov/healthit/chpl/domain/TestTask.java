@@ -67,12 +67,18 @@ public class TestTask implements Serializable {
     @XmlElement(required = true)
     private Float taskSuccessAverage;
 
+    @XmlTransient
+    private String taskSuccessAverageStr;
+
     /**
      * Standard deviation of the task success rate (in percentages). It is only
      * applicable to 2015 Edition, and takes only positive decimal numbers.
      */
     @XmlElement(required = true)
     private Float taskSuccessStddev;
+
+    @XmlTransient
+    private String taskSuccessStddevStr;
 
     /**
      * This variable indicates observed number of steps taken for the
@@ -82,6 +88,9 @@ public class TestTask implements Serializable {
     @XmlElement(required = true)
     private Integer taskPathDeviationObserved;
 
+    @XmlTransient
+    private String taskPathDeviationObservedStr;
+
     /**
      * This variable indicates optimal number of steps for the corresponding
      * task. It is only applicable to 2015 Edition, and only takes positive
@@ -89,6 +98,9 @@ public class TestTask implements Serializable {
      */
     @XmlElement(required = true)
     private Integer taskPathDeviationOptimal;
+
+    @XmlTransient
+    private String taskPathDeviationOptimalStr;
 
     /**
      * Average time of completion for the corresponding task, in seconds. It is
@@ -98,12 +110,18 @@ public class TestTask implements Serializable {
     @XmlElement(required = true)
     private Long taskTimeAvg;
 
+    @XmlTransient
+    private String taskTimeAvgStr;
+
     /**
      * Standard deviation for task time, in seconds. It is only applicable to
      * 2015 Edition, and takes only positive integer number values.
      */
     @XmlElement(required = true)
     private Integer taskTimeStddev;
+
+    @XmlTransient
+    private String taskTimeStddevStr;
 
     /**
      * Observed number of time (in seconds) taken for the corresponding task. It
@@ -113,6 +131,9 @@ public class TestTask implements Serializable {
     @XmlElement(required = true)
     private Integer taskTimeDeviationObservedAvg;
 
+    @XmlTransient
+    private String taskTimeDeviationObservedAvgStr;
+
     /**
      * Optimal number of time (in seconds) taken for the corresponding task. It
      * is only applicable to 2015 Edition, and takes only positive integer
@@ -121,12 +142,18 @@ public class TestTask implements Serializable {
     @XmlElement(required = true)
     private Integer taskTimeDeviationOptimalAvg;
 
+    @XmlTransient
+    private String taskTimeDeviationOptimalAvgStr;
+
     /**
      * Mean task error rate (in percentages). It is only applicable to 2015
      * Edition, and takes only positive decimal numbers.
      */
     @XmlElement(required = true)
     private Float taskErrors;
+
+    @XmlTransient
+    private String taskErrorsStr;
 
     /**
      * Standard deviation of the task error rate (in percentages). This variable
@@ -135,6 +162,9 @@ public class TestTask implements Serializable {
      */
     @XmlElement(required = true)
     private Float taskErrorsStddev;
+
+    @XmlTransient
+    private String taskErrorsStddevStr;
 
     /**
      * This variable indicates the type of scale that was used to rate the
@@ -157,6 +187,9 @@ public class TestTask implements Serializable {
     @XmlElement(required = true)
     private Float taskRating;
 
+    @XmlTransient
+    private String taskRatingStr;
+
     /**
      * Standard deviation of the mean usability rating of the corresponding
      * task, based on the specified scale type. It is only applicable to 2015
@@ -164,6 +197,9 @@ public class TestTask implements Serializable {
      */
     @XmlElement(required = true)
     private Float taskRatingStddev;
+
+    @XmlTransient
+    private String taskRatingStddevStr;
 
     /**
      * The set of criteria within a listing to which this task is applied.
