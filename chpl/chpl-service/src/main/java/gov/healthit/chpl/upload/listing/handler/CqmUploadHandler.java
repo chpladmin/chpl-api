@@ -18,19 +18,14 @@ import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
-import gov.healthit.chpl.util.ErrorMessageUtil;
-import lombok.extern.log4j.Log4j2;
 
 @Component("cqmUploadHandler")
-@Log4j2
 public class CqmUploadHandler {
     private ListingUploadHandlerUtil uploadUtil;
-    private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public CqmUploadHandler(ListingUploadHandlerUtil uploadUtil, ErrorMessageUtil msgUtil) {
+    public CqmUploadHandler(ListingUploadHandlerUtil uploadUtil) {
         this.uploadUtil = uploadUtil;
-        this.msgUtil = msgUtil;
     }
 
     public List<CQMResultDetails> handle(CSVRecord headingRecord, List<CSVRecord> listingRecords) {

@@ -7,25 +7,23 @@ import java.util.stream.IntStream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
-import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Component("testTasksUploadHandler")
 @Log4j2
 public class TestTaskUploadHandler {
     private ListingUploadHandlerUtil uploadUtil;
-    private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public TestTaskUploadHandler(ListingUploadHandlerUtil uploadUtil, ErrorMessageUtil msgUtil) {
+    public TestTaskUploadHandler(ListingUploadHandlerUtil uploadUtil) {
         this.uploadUtil = uploadUtil;
-        this.msgUtil = msgUtil;
     }
 
     public List<TestTask> handle(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
@@ -74,44 +72,155 @@ public class TestTaskUploadHandler {
 
     @SuppressWarnings("checkstyle:parameternumber")
     private TestTask buildTestTask(int index, List<String> ids, List<String> descriptions,
-            List<String> taskSuccessAvg, List<String> taskSuccessStdDev, List<String> taskPathDevObs,
-            List<String> taskPathDevOpt, List<String> taskTimeAvg, List<String> taskTimeStdDev,
-            List<String> taskTimeDevObs, List<String> taskTimeDevOpt, List<String> taskErrorsAvg,
-            List<String> taskErrorsStdDev, List<String> taskRatingScale, List<String> taskRating,
-            List<String> taskRatingStdDev) {
+            List<String> taskSuccessAvgs, List<String> taskSuccessStdDevs, List<String> taskPathDevObserveds,
+            List<String> taskPathDevOpts, List<String> taskTimeAvgs, List<String> taskTimeStdDevs,
+            List<String> taskTimeDevObserveds, List<String> taskTimeDevOpts, List<String> taskErrorsAvgs,
+            List<String> taskErrorsStdDevs, List<String> taskRatingScales, List<String> taskRatings,
+            List<String> taskRatingStdDevs) {
         String id = (ids != null && ids.size() > index) ? ids.get(index) : null;
         String description = (descriptions != null && descriptions.size() > index) ? descriptions.get(index) : null;
-        String taskSuccessAvgAtIndex = (taskSuccessAvg != null && taskSuccessAvg.size() > index)
-                ? taskSuccessAvg.get(index) : null;
-        String taskSuccessStdDevAtIndex = (taskSuccessStdDev != null && taskSuccessStdDev.size() > index)
-                ? taskSuccessStdDev.get(index) : null;
-        String taskPathDevObsAtIndex = (taskPathDevObs != null && taskPathDevObs.size() > index)
-                ? taskPathDevObs.get(index) : null;
-        String taskPathDevOptAtIndex = (taskPathDevOpt != null && taskPathDevOpt.size() > index)
-                ? taskPathDevOpt.get(index) : null;
-        String taskTimeAvgAtIndex = (taskTimeAvg != null && taskTimeAvg.size() > index)
-                ? taskTimeAvg.get(index) : null;
-        String taskTimeStdDevAtIndex = (taskTimeStdDev != null && taskTimeStdDev.size() > index)
-                ? taskTimeStdDev.get(index) : null;
-        String taskTimeDevObsAtIndex = (taskTimeDevObs != null && taskTimeDevObs.size() > index)
-                ? taskTimeDevObs.get(index) : null;
-        String taskTimeDevOptAtIndex = (taskTimeDevOpt != null && taskTimeDevOpt.size() > index)
-                ? taskTimeDevOpt.get(index) : null;
-        String taskErrorsAvgAtIndex = (taskErrorsAvg != null && taskErrorsAvg.size() > index)
-                ? taskErrorsAvg.get(index) : null;
-        String taskErrorsStdDevAtIndex = (taskErrorsStdDev != null && taskErrorsStdDev.size() > index)
-                ? taskErrorsStdDev.get(index) : null;
-        String taskRatingScaleAtIndex = (taskRatingScale != null && taskRatingScale.size() > index)
-                ? taskRatingScale.get(index) : null;
-        String taskRatingAtIndex = (taskRating != null && taskRating.size() > index)
-                ? taskRating.get(index) : null;
-        String taskRatingStdDevAtIndex = (taskRatingStdDev != null && taskRatingStdDev.size() > index)
-                ? taskRatingStdDev.get(index) : null;
+        String taskSuccessAvgAtIndex = (taskSuccessAvgs != null && taskSuccessAvgs.size() > index)
+                ? taskSuccessAvgs.get(index) : null;
+        Float taskSuccessAvg = null;
+        if (!StringUtils.isEmpty(taskSuccessAvgAtIndex)) {
+            try {
+                taskSuccessAvg = Float.parseFloat(taskSuccessAvgAtIndex);
+            } catch (NumberFormatException ex) {
+                //TODO: the user won't be able to get an error message about this value being wrong
+                //the field will just be blank. They will get an error message about that if the field is required.
+                //Should we add some transient fields to these objects that save what the user has put in here?
+                LOGGER.warn("Cannot parse taskSuccessAvg '" + taskSuccessAvgAtIndex + "' into a Float.");
+            }
+        }
+        String taskSuccessStdDevAtIndex = (taskSuccessStdDevs != null && taskSuccessStdDevs.size() > index)
+                ? taskSuccessStdDevs.get(index) : null;
+        Float taskSuccessStdDev = null;
+        if (!StringUtils.isEmpty(taskSuccessStdDevAtIndex)) {
+            try {
+                taskSuccessStdDev = Float.parseFloat(taskSuccessStdDevAtIndex);
+            } catch (NumberFormatException ex) {
+                LOGGER.warn("Cannot parse taskSuccessStdDev '" + taskSuccessStdDevAtIndex + "' into a Float.");
+            }
+        }
+        String taskPathDevObsAtIndex = (taskPathDevObserveds != null && taskPathDevObserveds.size() > index)
+                ? taskPathDevObserveds.get(index) : null;
+        Integer taskPathDevObs = null;
+        if (!StringUtils.isEmpty(taskPathDevObsAtIndex)) {
+            try {
+                taskPathDevObs = Integer.parseInt(taskPathDevObsAtIndex);
+            } catch (NumberFormatException ex) {
+                LOGGER.warn("Cannot parse taskPathDevObs '" + taskPathDevObsAtIndex + "' into an Integer.");
+            }
+        }
+        String taskPathDevOptAtIndex = (taskPathDevOpts != null && taskPathDevOpts.size() > index)
+                ? taskPathDevOpts.get(index) : null;
+        Integer taskPathDevOpt = null;
+        if (!StringUtils.isEmpty(taskPathDevOptAtIndex)) {
+            try {
+                taskPathDevOpt = Integer.parseInt(taskPathDevOptAtIndex);
+            } catch (NumberFormatException ex) {
+                LOGGER.warn("Cannot parse taskPathDevOpt '" + taskPathDevOptAtIndex + "' into an Integer.");
+            }
+        }
+        String taskTimeAvgAtIndex = (taskTimeAvgs != null && taskTimeAvgs.size() > index)
+                ? taskTimeAvgs.get(index) : null;
+        Long taskTimeAvg = null;
+        if (!StringUtils.isEmpty(taskTimeAvgAtIndex)) {
+            try {
+                taskTimeAvg = Long.parseLong(taskTimeAvgAtIndex);
+            } catch (NumberFormatException ex) {
+                LOGGER.warn("Cannot parse taskTimeAvg '" + taskTimeAvgAtIndex + "' into a Long.");
+            }
+        }
+        String taskTimeStdDevAtIndex = (taskTimeStdDevs != null && taskTimeStdDevs.size() > index)
+                ? taskTimeStdDevs.get(index) : null;
+        Integer taskTimeStdDev = null;
+        if (!StringUtils.isEmpty(taskTimeStdDevAtIndex)) {
+            try {
+                taskTimeStdDev = Integer.parseInt(taskTimeStdDevAtIndex);
+            } catch (NumberFormatException ex) {
+                LOGGER.warn("Cannot parse taskTimeStdDev '" + taskTimeStdDevAtIndex + "' into an Integer.");
+            }
+        }
+        String taskTimeDevObsAtIndex = (taskTimeDevObserveds != null && taskTimeDevObserveds.size() > index)
+                ? taskTimeDevObserveds.get(index) : null;
+        Integer taskTimeDevObs = null;
+        if (!StringUtils.isEmpty(taskTimeDevObsAtIndex)) {
+            try {
+                taskTimeDevObs = Integer.parseInt(taskTimeDevObsAtIndex);
+            } catch (NumberFormatException ex) {
+                LOGGER.warn("Cannot parse taskTimeDevObs '" + taskTimeDevObsAtIndex + "' into an Integer.");
+            }
+        }
+        String taskTimeDevOptAtIndex = (taskTimeDevOpts != null && taskTimeDevOpts.size() > index)
+                ? taskTimeDevOpts.get(index) : null;
+        Integer taskTimeDevOpt = null;
+        if (!StringUtils.isEmpty(taskTimeDevOptAtIndex)) {
+            try {
+                taskTimeDevOpt = Integer.parseInt(taskTimeDevOptAtIndex);
+            } catch (NumberFormatException ex) {
+                LOGGER.warn("Cannot parse taskTimeDevOpt '" + taskTimeDevOptAtIndex + "' into an Integer.");
+            }
+        }
+        String taskErrorsAvgAtIndex = (taskErrorsAvgs != null && taskErrorsAvgs.size() > index)
+                ? taskErrorsAvgs.get(index) : null;
+        Float taskErrorsAvg = null;
+        if (!StringUtils.isEmpty(taskErrorsAvgAtIndex)) {
+            try {
+                taskErrorsAvg = Float.parseFloat(taskErrorsAvgAtIndex);
+            } catch (NumberFormatException ex) {
+                LOGGER.warn("Cannot parse taskErrorsAvg '" + taskErrorsAvgAtIndex + "' into a Float.");
+            }
+        }
+        String taskErrorsStdDevAtIndex = (taskErrorsStdDevs != null && taskErrorsStdDevs.size() > index)
+                ? taskErrorsStdDevs.get(index) : null;
+        Float taskErrorsStdDev = null;
+        if (!StringUtils.isEmpty(taskErrorsStdDevAtIndex)) {
+            try {
+                taskErrorsStdDev = Float.parseFloat(taskErrorsStdDevAtIndex);
+            } catch (NumberFormatException ex) {
+                LOGGER.warn("Cannot parse taskErrorsStdDev '" + taskErrorsStdDevAtIndex + "' into a Float.");
+            }
+        }
+        String taskRatingScaleAtIndex = (taskRatingScales != null && taskRatingScales.size() > index)
+                ? taskRatingScales.get(index) : null;
+        String taskRatingAtIndex = (taskRatings != null && taskRatings.size() > index)
+                ? taskRatings.get(index) : null;
+        Float taskRating = null;
+        if (!StringUtils.isEmpty(taskRatingAtIndex)) {
+            try {
+                taskRating = Float.parseFloat(taskRatingAtIndex);
+            } catch (NumberFormatException ex) {
+                LOGGER.warn("Cannot parse taskRating '" + taskRatingAtIndex + "' into a Float.");
+            }
+        }
+        String taskRatingStdDevAtIndex = (taskRatingStdDevs != null && taskRatingStdDevs.size() > index)
+                ? taskRatingStdDevs.get(index) : null;
+        Float taskRatingStdDev = null;
+        if (!StringUtils.isEmpty(taskRatingStdDevAtIndex)) {
+            try {
+                taskRatingStdDev = Float.parseFloat(taskRatingStdDevAtIndex);
+            } catch (NumberFormatException ex) {
+                LOGGER.warn("Cannot parse taskRatingStdDev '" + taskRatingStdDevAtIndex + "' into a Float.");
+            }
+        }
 
         TestTask tt = TestTask.builder()
                 .uniqueId(id)
                 .description(description)
-                //TODO: need some temporary/transient fields to hold the inputs as string values
+                .taskSuccessAverage(taskSuccessAvg)
+                .taskSuccessStddev(taskSuccessStdDev)
+                .taskPathDeviationObserved(taskPathDevObs)
+                .taskPathDeviationOptimal(taskPathDevOpt)
+                .taskTimeAvg(taskTimeAvg)
+                .taskTimeStddev(taskTimeStdDev)
+                .taskTimeDeviationObservedAvg(taskTimeDevObs)
+                .taskTimeDeviationOptimalAvg(taskTimeDevOpt)
+                .taskErrors(taskErrorsAvg)
+                .taskErrorsStddev(taskErrorsStdDev)
+                .taskRatingScale(taskRatingScaleAtIndex)
+                .taskRating(taskRating)
+                .taskRatingStddev(taskRatingStdDev)
                 .build();
         return tt;
     }

@@ -30,7 +30,7 @@ public class DeveloperDetailsUploadHandlerTest {
     public void setup() {
         ErrorMessageUtil msgUtil = Mockito.mock(ErrorMessageUtil.class);
         ListingUploadHandlerUtil handlerUtil = new ListingUploadHandlerUtil(msgUtil);
-        handler = new DeveloperDetailsUploadHandler(handlerUtil, msgUtil);
+        handler = new DeveloperDetailsUploadHandler(handlerUtil);
     }
 
     @Test

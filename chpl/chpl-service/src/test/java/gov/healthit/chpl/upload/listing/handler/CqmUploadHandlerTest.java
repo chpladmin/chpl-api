@@ -31,7 +31,7 @@ public class CqmUploadHandlerTest {
     public void setup() {
         ErrorMessageUtil msgUtil = Mockito.mock(ErrorMessageUtil.class);
         ListingUploadHandlerUtil handlerUtil = new ListingUploadHandlerUtil(msgUtil);
-        handler = new CqmUploadHandler(handlerUtil, msgUtil);
+        handler = new CqmUploadHandler(handlerUtil);
     }
 
     @Test

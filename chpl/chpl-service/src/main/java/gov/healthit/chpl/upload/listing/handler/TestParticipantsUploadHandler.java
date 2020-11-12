@@ -14,19 +14,16 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
-import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Component("testParticipantsUploadHandler")
 @Log4j2
 public class TestParticipantsUploadHandler {
     private ListingUploadHandlerUtil uploadUtil;
-    private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public TestParticipantsUploadHandler(ListingUploadHandlerUtil uploadUtil, ErrorMessageUtil msgUtil) {
+    public TestParticipantsUploadHandler(ListingUploadHandlerUtil uploadUtil) {
         this.uploadUtil = uploadUtil;
-        this.msgUtil = msgUtil;
     }
 
     public List<TestParticipant> handle(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
@@ -82,11 +79,9 @@ public class TestParticipantsUploadHandler {
             try {
                 professionalExperienceMonths = Integer.parseInt(professionalExperienceAtIndex);
             } catch (NumberFormatException ex) {
-                //TODO: the user won't be able to get an error message about this
-                //it will just look like their value is missing/null by the time it gets
-                //to validation. what to do?
-                //maybe make some Transient string fields in the TestParticiant object
-                //that can hold the parsed values?
+                //TODO: the user won't be able to get an error message about this value being wrong
+                //the field will just be blank. They will get an error message about that if the field is required.
+                //Should we add some transient fields to these objects that save what the user has put in here?
                 LOGGER.warn("Cannot parse professional experience '" + professionalExperienceAtIndex + "' into an Integer.");
             }
         }

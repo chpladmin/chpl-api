@@ -10,19 +10,14 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
-import gov.healthit.chpl.util.ErrorMessageUtil;
-import lombok.extern.log4j.Log4j2;
 
 @Component("targetedUsersUploadHandler")
-@Log4j2
 public class TargetedUsersUploadHandler {
     private ListingUploadHandlerUtil uploadUtil;
-    private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public TargetedUsersUploadHandler(ListingUploadHandlerUtil uploadUtil, ErrorMessageUtil msgUtil) {
+    public TargetedUsersUploadHandler(ListingUploadHandlerUtil uploadUtil) {
         this.uploadUtil = uploadUtil;
-        this.msgUtil = msgUtil;
     }
 
     public List<CertifiedProductTargetedUser> handle(CSVRecord headingRecord, List<CSVRecord> listingRecords) {

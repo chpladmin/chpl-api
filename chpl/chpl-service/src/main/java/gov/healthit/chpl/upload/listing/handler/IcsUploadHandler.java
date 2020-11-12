@@ -11,19 +11,14 @@ import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
-import gov.healthit.chpl.util.ErrorMessageUtil;
-import lombok.extern.log4j.Log4j2;
 
 @Component("icsUploadHandler")
-@Log4j2
 public class IcsUploadHandler {
     private ListingUploadHandlerUtil uploadUtil;
-    private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public IcsUploadHandler(ListingUploadHandlerUtil uploadUtil, ErrorMessageUtil msgUtil) {
+    public IcsUploadHandler(ListingUploadHandlerUtil uploadUtil) {
         this.uploadUtil = uploadUtil;
-        this.msgUtil = msgUtil;
     }
 
     public InheritedCertificationStatus handle(CSVRecord headingRecord, List<CSVRecord> listingRecords) {

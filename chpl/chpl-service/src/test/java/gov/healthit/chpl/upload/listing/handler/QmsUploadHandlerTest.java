@@ -28,7 +28,7 @@ public class QmsUploadHandlerTest {
     public void setup() {
         ErrorMessageUtil msgUtil = Mockito.mock(ErrorMessageUtil.class);
         ListingUploadHandlerUtil handlerUtil = new ListingUploadHandlerUtil(msgUtil);
-        handler = new QmsUploadHandler(handlerUtil, msgUtil);
+        handler = new QmsUploadHandler(handlerUtil);
     }
 
     @Test

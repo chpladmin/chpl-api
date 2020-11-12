@@ -102,6 +102,17 @@ public class ListingManagerUploadTest {
     }
 
     @Test
+    public void uploadV19SingleListing_NewlinesAfterHeader_Successful() throws JsonProcessingException, ValidationException,
+        InvalidArgumentsException, DeprecatedUploadTemplateException {
+        String fileContents = HEADER_2015_V19 + "\n\n\n\n" + listing1Csv;
+        MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
+
+        List<ListingUpload> parsedListings = uploadManager.parseUploadFile(file);
+        assertNotNull(parsedListings);
+        assertEquals(1, parsedListings.size());
+    }
+
+    @Test
     public void uploadV19_DuplicateChplIds_GroupsAsSingleListing() throws JsonProcessingException, ValidationException,
         InvalidArgumentsException, DeprecatedUploadTemplateException {
         String fileContents = HEADER_2015_V19 + "\n" + listing1Csv + "\n" + listing1Csv;

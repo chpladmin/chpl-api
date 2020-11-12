@@ -18,11 +18,8 @@ import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
-import gov.healthit.chpl.util.ErrorMessageUtil;
-import lombok.extern.log4j.Log4j2;
 
 @Component("listingDetailsUploadHandler")
-@Log4j2
 public class ListingDetailsUploadHandler {
     private DeveloperDetailsUploadHandler devDetailsUploadHandler;
     private TargetedUsersUploadHandler targetedUserUploadHandler;
@@ -31,7 +28,6 @@ public class ListingDetailsUploadHandler {
     private IcsUploadHandler icsHandler;
     private CqmUploadHandler cqmHandler;
     private ListingUploadHandlerUtil uploadUtil;
-    private ErrorMessageUtil msgUtil;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
@@ -40,7 +36,7 @@ public class ListingDetailsUploadHandler {
             AccessibilityStandardsUploadHandler accessibilityStandardsHandler,
             QmsUploadHandler qmsHandler, IcsUploadHandler icsHandler,
             CqmUploadHandler cqmHandler,
-            ListingUploadHandlerUtil uploadUtil, ErrorMessageUtil msgUtil) {
+            ListingUploadHandlerUtil uploadUtil) {
         this.devDetailsUploadHandler = devDetailsUploadHandler;
         this.targetedUserUploadHandler = targetedUserUploadHandler;
         this.accessibilityStandardsHandler = accessibilityStandardsHandler;
@@ -48,7 +44,6 @@ public class ListingDetailsUploadHandler {
         this.icsHandler = icsHandler;
         this.cqmHandler = cqmHandler;
         this.uploadUtil = uploadUtil;
-        this.msgUtil = msgUtil;
     }
 
     public CertifiedProductSearchDetails parseAsListing(CSVRecord headingRecord, List<CSVRecord> listingRecords)
@@ -77,7 +72,7 @@ public class ListingDetailsUploadHandler {
                 .sedIntendedUserDescription(parseSedIntendedUserDescription(headingRecord, listingRecords))
                 .sedTestingEndDate(parseSedTestingDate(headingRecord, listingRecords))
                 //TODO parsing participants, tasks, criteria stuff
-                //TODO: data normalizer
+                //TODO: data normalizer - look up IDs for everywhere that could have one
             .build();
 
         return listing;

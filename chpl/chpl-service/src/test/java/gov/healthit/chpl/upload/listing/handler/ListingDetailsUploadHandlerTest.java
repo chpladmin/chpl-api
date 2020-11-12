@@ -44,13 +44,13 @@ public class ListingDetailsUploadHandlerTest {
                 .thenAnswer(i -> String.format("The value %s could not be converted to a yes/no field..", i.getArgument(1), ""));
 
         handlerUtil = new ListingUploadHandlerUtil(msgUtil);
-        DeveloperDetailsUploadHandler devHandler = new DeveloperDetailsUploadHandler(handlerUtil, msgUtil);
+        DeveloperDetailsUploadHandler devHandler = new DeveloperDetailsUploadHandler(handlerUtil);
         handler = new ListingDetailsUploadHandler(devHandler,
                 Mockito.mock(TargetedUsersUploadHandler.class),
                 Mockito.mock(AccessibilityStandardsUploadHandler.class),
                 Mockito.mock(QmsUploadHandler.class), Mockito.mock(IcsUploadHandler.class),
                 Mockito.mock(CqmUploadHandler.class),
-                handlerUtil, msgUtil);
+                handlerUtil);
     }
 
     @Test

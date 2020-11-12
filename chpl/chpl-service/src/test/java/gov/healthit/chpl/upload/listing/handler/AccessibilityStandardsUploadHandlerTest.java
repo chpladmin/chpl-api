@@ -28,7 +28,7 @@ public class AccessibilityStandardsUploadHandlerTest {
     public void setup() {
         ErrorMessageUtil msgUtil = Mockito.mock(ErrorMessageUtil.class);
         ListingUploadHandlerUtil handlerUtil = new ListingUploadHandlerUtil(msgUtil);
-        handler = new AccessibilityStandardsUploadHandler(handlerUtil, msgUtil);
+        handler = new AccessibilityStandardsUploadHandler(handlerUtil);
     }
 
     @Test

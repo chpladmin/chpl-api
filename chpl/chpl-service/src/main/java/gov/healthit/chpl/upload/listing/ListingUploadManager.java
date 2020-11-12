@@ -56,8 +56,6 @@ public class ListingUploadManager {
             + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).LISTING_UPLOAD)")
     public List<ListingUpload> parseUploadFile(MultipartFile file) throws ValidationException {
         List<CSVRecord> allCsvRecords = getFileAsCsvRecords(file);
-        List<ListingUpload> uploadedListings = new ArrayList<ListingUpload>();
-
         int headingRowIndex = uploadUtil.getHeadingRecordIndex(allCsvRecords);
         CSVRecord headingRecord = uploadUtil.getHeadingRecord(allCsvRecords);
         List<CSVRecord> allListingRecords = allCsvRecords.subList(headingRowIndex + 1, allCsvRecords.size());
@@ -67,6 +65,7 @@ public class ListingUploadManager {
         }
         checkRequiredHeadings(headingRecord);
 
+        List<ListingUpload> uploadedListings = new ArrayList<ListingUpload>();
         Set<String> distinctChplProductNumbers = getDistinctChplProductNumbers(headingRecord, allListingRecords);
         distinctChplProductNumbers.stream()
                 .map(chplProductNumber -> getListingRecords(chplProductNumber, headingRecord, allListingRecords))
@@ -175,7 +174,7 @@ public class ListingUploadManager {
         try {
             acb = determineAcb(headingRecord, listingCsvRecords, listingUploadMetadata.getChplProductNumber());
         } catch (Exception ex) {
-            LOGGER.error("Could not parse ACB.", ex);
+            LOGGER.error("Could not determine ACB.", ex);
         }
         listingUploadMetadata.setAcb(acb);
         return listingUploadMetadata;

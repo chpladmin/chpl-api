@@ -11,19 +11,14 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
-import gov.healthit.chpl.util.ErrorMessageUtil;
-import lombok.extern.log4j.Log4j2;
 
 @Component("developerDetailsUploadHandler")
-@Log4j2
 public class DeveloperDetailsUploadHandler {
     private ListingUploadHandlerUtil uploadUtil;
-    private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public DeveloperDetailsUploadHandler(ListingUploadHandlerUtil uploadUtil, ErrorMessageUtil msgUtil) {
+    public DeveloperDetailsUploadHandler(ListingUploadHandlerUtil uploadUtil) {
         this.uploadUtil = uploadUtil;
-        this.msgUtil = msgUtil;
     }
 
     public Developer handle(CSVRecord headingRecord, List<CSVRecord> listingRecords) {

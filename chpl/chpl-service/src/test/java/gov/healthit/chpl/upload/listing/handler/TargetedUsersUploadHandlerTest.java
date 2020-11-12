@@ -28,7 +28,7 @@ public class TargetedUsersUploadHandlerTest {
     public void setup() {
         ErrorMessageUtil msgUtil = Mockito.mock(ErrorMessageUtil.class);
         ListingUploadHandlerUtil handlerUtil = new ListingUploadHandlerUtil(msgUtil);
-        handler = new TargetedUsersUploadHandler(handlerUtil, msgUtil);
+        handler = new TargetedUsersUploadHandler(handlerUtil);
     }
 
     @Test

@@ -29,7 +29,7 @@ public class IcsUploadHandlerTest {
     public void setup() {
         ErrorMessageUtil msgUtil = Mockito.mock(ErrorMessageUtil.class);
         ListingUploadHandlerUtil handlerUtil = new ListingUploadHandlerUtil(msgUtil);
-        handler = new IcsUploadHandler(handlerUtil, msgUtil);
+        handler = new IcsUploadHandler(handlerUtil);
     }
 
     @Test
