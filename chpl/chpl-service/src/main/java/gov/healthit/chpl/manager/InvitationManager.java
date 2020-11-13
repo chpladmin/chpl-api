@@ -96,6 +96,20 @@ public class InvitationManager extends SecuredManager {
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
+            + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ONC_STAFF)")
+    public InvitationDTO inviteOncStaff(String emailAddress)
+            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
+        InvitationDTO dto = new InvitationDTO();
+        dto.setEmail(emailAddress);
+        dto.setPermission(userPermissionDao.getPermissionFromAuthority(Authority.ROLE_ONC_STAFF));
+        Date now = new Date();
+        dto.setInviteToken(Util.md5(emailAddress + now.getTime()));
+
+        return createInvitation(dto);
+    }
+
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
             + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_CMS)")
     public InvitationDTO inviteCms(String emailAddress)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {

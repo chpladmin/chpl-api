@@ -274,6 +274,8 @@ public class UserManagementController {
             createdInvite = invitationManager.inviteAdmin(invitation.getEmailAddress());
         } else if (invitation.getRole().equals(Authority.ROLE_ONC)) {
             createdInvite = invitationManager.inviteOnc(invitation.getEmailAddress());
+        } else if (invitation.getRole().equals(Authority.ROLE_ONC_STAFF)) {
+            createdInvite = invitationManager.inviteOncStaff(invitation.getEmailAddress());
         } else if (invitation.getRole().equals(Authority.ROLE_CMS_STAFF)) {
             createdInvite = invitationManager.inviteCms(invitation.getEmailAddress());
         } else if (invitation.getRole().equals(Authority.ROLE_ACB)
