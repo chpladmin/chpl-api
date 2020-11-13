@@ -197,9 +197,15 @@ public class RealWorldTestingManager {
 
     private List<CSVRecord> removeEmptyRows(List<CSVRecord> records) {
         return records.stream()
-                .filter(rec -> !rec.get(CHPL_PRODUCT_NUMBER_COLUMN_IDX).trim().equals("")
-                        && !rec.get(RWT_TYPE_COLUMN_IDX).trim().equals(""))
+                .filter(rec -> !isRowEmpty(rec))
                 .collect(Collectors.toList());
+    }
+
+    private boolean isRowEmpty(CSVRecord rec) {
+        return rec.get(CHPL_PRODUCT_NUMBER_COLUMN_IDX).trim().equals("")
+                && rec.get(RWT_TYPE_COLUMN_IDX).trim().equals("")
+                && rec.get(LAST_CHECKED_COLUMN_IDX).trim().equals("")
+                && rec.get(URL_COLUMN_IDX).trim().equals("");
     }
 
     private boolean doesHeaderRowExist(List<CSVRecord> records) {
