@@ -20,42 +20,31 @@ import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-public class ListingDetailsUploadHandlerTest {
-    private static final String HEADER_ROW_BEGIN = "UNIQUE_CHPL_ID__C";
-    private static final String LISTING_ROW_BEGIN = "15.02.02.3007.A056.01.00.0.180214";
+public class CertificationResultUploadHandlerTest {
+    private static final String HEADER_ROW_BEGIN = "CRITERIA_170_315_B_3_Cures__C";
 
     private ErrorMessageUtil msgUtil;
     private ListingUploadHandlerUtil handlerUtil;
-    private ListingDetailsUploadHandler handler;
+    private CertificationResultUploadHandler handler;
 
     @Before
     public void setup() {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
 
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("upload.emptyFile"))).thenReturn("Empty file message");
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("upload.notCSV"))).thenReturn("Not CSV message");
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.upload.emptyRows"))).thenReturn("Header only message");
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.upload.requiredHeadingNotFound"),
-                ArgumentMatchers.anyString()))
-                .thenAnswer(i -> String.format("The required heading %s was not found.", i.getArgument(1), ""));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.upload.invalidBoolean"),
                 ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format("The value %s could not be converted to a yes/no field..", i.getArgument(1), ""));
 
         handlerUtil = new ListingUploadHandlerUtil(msgUtil);
-        DeveloperDetailsUploadHandler devHandler = new DeveloperDetailsUploadHandler(handlerUtil);
-        handler = new ListingDetailsUploadHandler(devHandler,
-                Mockito.mock(TargetedUsersUploadHandler.class),
-                Mockito.mock(AccessibilityStandardsUploadHandler.class),
-                Mockito.mock(QmsUploadHandler.class), Mockito.mock(IcsUploadHandler.class),
-                Mockito.mock(CqmUploadHandler.class),
-                Mockito.mock(SedUploadHandler.class),
-                Mockito.mock(CertificationResultUploadHandler.class),
+        handler = new CertificationResultUploadHandler(
+                Mockito.mock(TestProcedureUploadHandler.class),
+                Mockito.mock(TestToolUploadHandler.class),
+                Mockito.mock(TestDataUploadHandler.class),
                 handlerUtil);
     }
 
     @Test
-    public void buildListing_ChplProductNumberExists_ReturnsCorrectChplProductNumber() {
+    public void buildCertResult_SuccessFieldExists_ReturnsCorrectBoolean() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN);
@@ -68,7 +57,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_ChplProductNumberEmpty_ReturnsEmptyString() {
+    public void buildCertResult_ChplProductNumberEmpty_ReturnsEmptyString() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(",");
@@ -81,7 +70,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_ChplProductNumberWhitespace_TrimsResult() {
+    public void buildCertResult_ChplProductNumberWhitespace_TrimsResult() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("  ");
@@ -93,7 +82,7 @@ public class ListingDetailsUploadHandlerTest {
         assertEquals("", listing.getChplProductNumber());
     }
 
-    public void buildListing_ChplProductNumberColumnMissing_ReturnsNull() {
+    public void buildCertResult_ChplProductNumberColumnMissing_ReturnsNull() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString("SOME_OTHER_COLUMN__C").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("Test");
@@ -105,7 +94,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_AccessibilityCertifiedNoColumn_ReturnsNull() {
+    public void buildCertResult_AccessibilityCertifiedNoColumn_ReturnsNull() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN);
@@ -117,7 +106,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_BooleanValue0_ReturnsFalseAccessibilityCertified() {
+    public void buildCertResult_BooleanValue0_ReturnsFalseAccessibilityCertified() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 HEADER_ROW_BEGIN + ",Accessibility Certified").get(0);
         assertNotNull(headingRecord);
@@ -131,7 +120,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_BooleanValue1_ReturnsTrueAccessibilityCertified() {
+    public void buildCertResult_BooleanValue1_ReturnsTrueAccessibilityCertified() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 HEADER_ROW_BEGIN + ",Accessibility Certified").get(0);
         assertNotNull(headingRecord);
@@ -145,7 +134,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_BooleanValueNo_ReturnsFalseAccessibilityCertified() {
+    public void buildCertResult_BooleanValueNo_ReturnsFalseAccessibilityCertified() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 HEADER_ROW_BEGIN + ",Accessibility Certified").get(0);
         assertNotNull(headingRecord);
@@ -159,7 +148,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_BooleanValueYes_ReturnsTrueAccessibilityCertified() {
+    public void buildCertResult_BooleanValueYes_ReturnsTrueAccessibilityCertified() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 HEADER_ROW_BEGIN + ",Accessibility Certified").get(0);
         assertNotNull(headingRecord);
@@ -173,7 +162,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_BooleanValueEmptyString_ReturnsFalseAccessibilityCertified() {
+    public void buildCertResult_BooleanValueEmptyString_ReturnsFalseAccessibilityCertified() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 HEADER_ROW_BEGIN + ",Accessibility Certified").get(0);
         assertNotNull(headingRecord);
@@ -187,7 +176,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test(expected = ValidationException.class)
-    public void buildListing_BooleanValueBad_ThrowsException() {
+    public void buildCertResult_BooleanValueBad_ThrowsException() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 HEADER_ROW_BEGIN + ",Accessibility Certified").get(0);
         assertNotNull(headingRecord);
@@ -198,7 +187,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_CertificationDateNoColumn_ReturnsNull() {
+    public void buildCertResult_CertificationDateNoColumn_ReturnsNull() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN);
@@ -210,7 +199,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_CertificationDateGood_ParsesDateValue() {
+    public void buildCertResult_CertificationDateGood_ParsesDateValue() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",CERTIFICATION_DATE__C").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",20200909");
@@ -222,7 +211,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_CertificationDateEmpty_ParsesNullValue() {
+    public void buildCertResult_CertificationDateEmpty_ParsesNullValue() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",CERTIFICATION_DATE__C").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",");
@@ -234,7 +223,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test(expected = ValidationException.class)
-    public void buildListing_CertificationDateValueBad_ThrowsException() {
+    public void buildCertResult_CertificationDateValueBad_ThrowsException() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",CERTIFICATION_DATE__C").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",BADDATE");
@@ -244,7 +233,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_EditionNoColumn_ReturnsNull() {
+    public void buildCertResult_EditionNoColumn_ReturnsNull() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN);
@@ -256,7 +245,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_EditionGood_ReturnsCorrectValue() {
+    public void buildCertResult_EditionGood_ReturnsCorrectValue() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",CERT_YEAR__C").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",2015");
@@ -271,7 +260,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_AcbNoColumn_ReturnsNull() {
+    public void buildCertResult_AcbNoColumn_ReturnsNull() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN);
@@ -283,7 +272,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_AcbGood_ReturnsCorrectValue() {
+    public void buildCertResult_AcbGood_ReturnsCorrectValue() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",CERTIFYING_ACB__C").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",Drummond Group");
@@ -298,7 +287,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_K1UrlExists_ReturnsCorrectly() {
+    public void buildCertResult_K1UrlExists_ReturnsCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",170.523(k)(1) URL").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",http://examplek1.com");
@@ -311,7 +300,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_K1UrlHasWhitespace_ReturnsTrimmed() {
+    public void buildCertResult_K1UrlHasWhitespace_ReturnsTrimmed() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",170.523(k)(1) URL").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ", http://examplek1.com  ");
@@ -324,7 +313,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_K1UrlMissing_ReturnsEmptyString() {
+    public void buildCertResult_K1UrlMissing_ReturnsEmptyString() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",170.523(k)(1) URL").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",");
@@ -337,7 +326,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_K1UrlNoColumn_ReturnsNull() {
+    public void buildCertResult_K1UrlNoColumn_ReturnsNull() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN);
@@ -349,7 +338,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_ProductNoColumn_ReturnsNull() {
+    public void buildCertResult_ProductNoColumn_ReturnsNull() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN);
@@ -391,7 +380,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_VersionNoColumn_ReturnsNull() {
+    public void buildCertResult_VersionNoColumn_ReturnsNull() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN);
@@ -435,7 +424,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_AtlNoColumn_ReturnsEmptyList() {
+    public void buildCertResult_AtlNoColumn_ReturnsEmptyList() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN);
@@ -448,7 +437,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_SingleAtl_ReturnsCorrectValue() {
+    public void buildCertResult_SingleAtl_ReturnsCorrectValue() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",TESTING_ATL__C").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",Drummond Group");
@@ -464,7 +453,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_MultipleAtls_ReturnsCorrectValue() {
+    public void buildCertResult_MultipleAtls_ReturnsCorrectValue() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",TESTING_ATL__C").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",Drummond Group\n"
@@ -482,7 +471,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_SedUrlExists_ReturnsCorrectly() {
+    public void buildCertResult_SedUrlExists_ReturnsCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 HEADER_ROW_BEGIN + ",SED Report Hyperlink").get(0);
         assertNotNull(headingRecord);
@@ -497,7 +486,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_SedUrlHasWhitespace_ReturnsTrimmed() {
+    public void buildCertResult_SedUrlHasWhitespace_ReturnsTrimmed() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 HEADER_ROW_BEGIN + ",SED Report Hyperlink").get(0);
         assertNotNull(headingRecord);
@@ -512,7 +501,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_SedUrlMissing_ReturnsEmptyString() {
+    public void buildCertResult_SedUrlMissing_ReturnsEmptyString() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 HEADER_ROW_BEGIN + ",SED Report Hyperlink").get(0);
         assertNotNull(headingRecord);
@@ -527,7 +516,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_SedUrlNoColumn_ReturnsNull() {
+    public void buildCertResult_SedUrlNoColumn_ReturnsNull() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN);
@@ -539,7 +528,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_SedTestingDateNoColumn_ReturnsNull() {
+    public void buildCertResult_SedTestingDateNoColumn_ReturnsNull() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN);
@@ -551,7 +540,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_SedTestingDateGood_ParsesDateValue() {
+    public void buildCertResult_SedTestingDateGood_ParsesDateValue() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 HEADER_ROW_BEGIN + ",Date SED Testing was Concluded").get(0);
         assertNotNull(headingRecord);
@@ -564,7 +553,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_SedTestingDateEmpty_ParsesNullValue() {
+    public void buildCertResult_SedTestingDateEmpty_ParsesNullValue() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 HEADER_ROW_BEGIN + ",Date SED Testing was Concluded").get(0);
         assertNotNull(headingRecord);
@@ -577,7 +566,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test(expected = ValidationException.class)
-    public void buildListing_SedTestingDateValueBad_ThrowsException() {
+    public void buildCertResult_SedTestingDateValueBad_ThrowsException() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 HEADER_ROW_BEGIN + ",Date SED Testing was Concluded").get(0);
         assertNotNull(headingRecord);
@@ -588,7 +577,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_SedIntendedUsersExists_ReturnsCorrectly() {
+    public void buildCertResult_SedIntendedUsersExists_ReturnsCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 HEADER_ROW_BEGIN + ",Description of the Intended Users").get(0);
         assertNotNull(headingRecord);
@@ -603,7 +592,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_SedIntendedUsersHasWhitespace_ReturnsTrimmed() {
+    public void buildCertResult_SedIntendedUsersHasWhitespace_ReturnsTrimmed() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 HEADER_ROW_BEGIN + ",Description of the Intended Users").get(0);
         assertNotNull(headingRecord);
@@ -618,7 +607,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_SedIntendedUsersMissing_ReturnsEmptyString() {
+    public void buildCertResult_SedIntendedUsersMissing_ReturnsEmptyString() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 HEADER_ROW_BEGIN + ",Description of the Intended Users").get(0);
         assertNotNull(headingRecord);
@@ -633,7 +622,7 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_SedIntendedUsersNoColumn_ReturnsNull() {
+    public void buildCertResult_SedIntendedUsersNoColumn_ReturnsNull() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN);

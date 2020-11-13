@@ -16,14 +16,14 @@ import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 
 @Component("certificationResultUploadHandler")
-public class CertificationResultHandler {
+public class CertificationResultUploadHandler {
     private TestProcedureUploadHandler testProcedureHandler;
     private TestToolUploadHandler testToolHandler;
     private TestDataUploadHandler testDataHandler;
     private ListingUploadHandlerUtil uploadUtil;
 
     @Autowired
-    public CertificationResultHandler(TestProcedureUploadHandler testProcedureHandler,
+    public CertificationResultUploadHandler(TestProcedureUploadHandler testProcedureHandler,
             TestToolUploadHandler testToolHandler,
             TestDataUploadHandler testDataHandler,
             ListingUploadHandlerUtil uploadUtil) {

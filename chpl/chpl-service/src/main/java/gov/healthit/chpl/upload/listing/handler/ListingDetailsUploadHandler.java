@@ -28,7 +28,7 @@ public class ListingDetailsUploadHandler {
     private IcsUploadHandler icsHandler;
     private CqmUploadHandler cqmHandler;
     private SedUploadHandler sedUploadHandler;
-    private CertificationResultHandler certResultHandler;
+    private CertificationResultUploadHandler certResultHandler;
     private ListingUploadHandlerUtil uploadUtil;
 
     @Autowired
@@ -38,7 +38,7 @@ public class ListingDetailsUploadHandler {
             AccessibilityStandardsUploadHandler accessibilityStandardsHandler,
             QmsUploadHandler qmsHandler, IcsUploadHandler icsHandler,
             CqmUploadHandler cqmHandler, SedUploadHandler sedUploadHandler,
-            CertificationResultHandler certResultHandler,
+            CertificationResultUploadHandler certResultHandler,
             ListingUploadHandlerUtil uploadUtil) {
         this.devDetailsUploadHandler = devDetailsUploadHandler;
         this.targetedUserUploadHandler = targetedUserUploadHandler;
@@ -79,6 +79,9 @@ public class ListingDetailsUploadHandler {
                 .sed(sedUploadHandler.parseAsSed(headingRecord, listingRecords))
             .build();
         //TODO criteria stuff
+        //in the heading record, find all sets of criteria records
+        //for each criteria record
+            //call the cert result handler
 
         //TODO: data normalizer - look up IDs for everywhere that could have one
         return listing;
