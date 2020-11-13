@@ -95,6 +95,19 @@ public class ListingUploadHandlerUtil {
         return fieldValue;
     }
 
+    public String parseSingleRowFieldAtIndex(int fieldHeadingIndex, CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+        String fieldValue = null;
+        for (CSVRecord listingRecord : listingRecords) {
+            if (StringUtils.isEmpty(fieldValue) && fieldHeadingIndex < listingRecord.size()) {
+                String parsedFieldValue = listingRecord.get(fieldHeadingIndex);
+                if (parsedFieldValue != null) {
+                    fieldValue = parsedFieldValue.trim();
+                }
+            }
+        }
+        return fieldValue;
+    }
+
     public String parseSingleRowField(Headings field, CSVRecord headingRecord, CSVRecord listingRecord) {
         List<CSVRecord> data = new ArrayList<CSVRecord>();
         data.add(listingRecord);
@@ -178,7 +191,7 @@ public class ListingUploadHandlerUtil {
         return -1;
     }
 
-    private Boolean parseBoolean(String value) throws ValidationException {
+    public Boolean parseBoolean(String value) throws ValidationException {
         if (value == null) {
             return null;
         } else if (StringUtils.isEmpty(value.trim())) {

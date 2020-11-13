@@ -13,12 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.CertifiedProductSed;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
-import gov.healthit.chpl.domain.TestParticipant;
-import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 
@@ -30,8 +27,8 @@ public class ListingDetailsUploadHandler {
     private QmsUploadHandler qmsHandler;
     private IcsUploadHandler icsHandler;
     private CqmUploadHandler cqmHandler;
-    private TestTaskUploadHandler testTaskHandler;
-    private TestParticipantsUploadHandler testParticipantHandler;
+    private SedUploadHandler sedUploadHandler;
+    private CertificationResultHandler certResultHandler;
     private ListingUploadHandlerUtil uploadUtil;
 
     @Autowired
@@ -40,8 +37,8 @@ public class ListingDetailsUploadHandler {
             TargetedUsersUploadHandler targetedUserUploadHandler,
             AccessibilityStandardsUploadHandler accessibilityStandardsHandler,
             QmsUploadHandler qmsHandler, IcsUploadHandler icsHandler,
-            CqmUploadHandler cqmHandler, TestTaskUploadHandler testTaskHandler,
-            TestParticipantsUploadHandler testParticipantHandler,
+            CqmUploadHandler cqmHandler, SedUploadHandler sedUploadHandler,
+            CertificationResultHandler certResultHandler,
             ListingUploadHandlerUtil uploadUtil) {
         this.devDetailsUploadHandler = devDetailsUploadHandler;
         this.targetedUserUploadHandler = targetedUserUploadHandler;
@@ -49,8 +46,8 @@ public class ListingDetailsUploadHandler {
         this.qmsHandler = qmsHandler;
         this.icsHandler = icsHandler;
         this.cqmHandler = cqmHandler;
-        this.testTaskHandler = testTaskHandler;
-        this.testParticipantHandler = testParticipantHandler;
+        this.sedUploadHandler = sedUploadHandler;
+        this.certResultHandler = certResultHandler;
         this.uploadUtil = uploadUtil;
     }
 
@@ -79,12 +76,11 @@ public class ListingDetailsUploadHandler {
                 .sedReportFileLocation(parseSedReportLocationUrl(headingRecord, listingRecords))
                 .sedIntendedUserDescription(parseSedIntendedUserDescription(headingRecord, listingRecords))
                 .sedTestingEndDate(parseSedTestingDate(headingRecord, listingRecords))
-                //TODO: SED - has tasks and participants but needs criteria and UCD processes to be complete
-                .sed(parseSed(headingRecord, listingRecords))
-                //TODO criteria stuff
-                //TODO: data normalizer - look up IDs for everywhere that could have one
+                .sed(sedUploadHandler.parseAsSed(headingRecord, listingRecords))
             .build();
+        //TODO criteria stuff
 
+        //TODO: data normalizer - look up IDs for everywhere that could have one
         return listing;
     }
 
@@ -186,16 +182,5 @@ public class ListingDetailsUploadHandler {
         Date sedTestingDate = uploadUtil.parseSingleRowFieldAsDate(
                 Headings.SED_TESTING_DATE, headingRecord, listingRecords);
         return sedTestingDate;
-    }
-
-    private CertifiedProductSed parseSed(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        CertifiedProductSed sed = null;
-        List<TestTask> parsedTasks = testTaskHandler.handle(headingRecord, listingRecords);
-        if (parsedTasks != null && parsedTasks.size() > 0) {
-            sed = new CertifiedProductSed();
-            sed.setTestTasks(parsedTasks);
-        }
-        List<TestParticipant> parsedParticipants = testParticipantHandler.handle(headingRecord, listingRecords);
-        return sed;
     }
 }

@@ -10,6 +10,7 @@ public enum Headings {
     //while each heading can have multiple values that it matches to,
     //the values have to be unique among all headings for this to work
     UNIQUE_ID("UNIQUE_CHPL_ID__C", "UNIQUE_CHPL_ID_C", "UNIQUE_CHPL_ID", "CHPL_PRODUCT_NUMBER"),
+    RECORD_STATUS("RECORD_STATUS__C"), //included so we don't give errors of unrecognized col; should not used anywhere
     DEVELOPER("VENDOR__C", "VENDOR_C", "VENDOR", "DEVELOPER__C", "DEVELOPER_C", "DEVELOPER"),
     PRODUCT("PRODUCT__C", "PRODUCT_C", "PRODUCT"),
     VERSION("VERSION__C", "VERSION_C", "VERSION"),
