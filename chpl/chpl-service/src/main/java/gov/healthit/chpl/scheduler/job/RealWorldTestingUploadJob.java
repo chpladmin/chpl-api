@@ -78,13 +78,15 @@ public class RealWorldTestingUploadJob implements Job {
 
             //Process the plans
             List<RealWorldTestingUpload> rwtPlans = rwts.stream()
-                    .filter(rwt -> rwt.getType().equals(RealWorldTestingType.PLANS))
+                    .filter(rwt -> rwt.getValidationErrors().size() == 0
+                            && rwt.getType().equals(RealWorldTestingType.PLANS))
                     .collect(Collectors.toList());
             saveRealWorldTestingUploads(rwtPlans);
 
             //Process the results
             List<RealWorldTestingUpload> rwtResults = rwts.stream()
-                    .filter(rwt -> rwt.getType().equals(RealWorldTestingType.RESULTS))
+                    .filter(rwt -> rwt.getValidationErrors().size() == 0
+                            && rwt.getType().equals(RealWorldTestingType.RESULTS))
                     .collect(Collectors.toList());
             saveRealWorldTestingUploads(rwtResults);
 
@@ -303,10 +305,10 @@ public class RealWorldTestingUploadJob implements Job {
                 table.append(rwt.getChplProductNumber());
                 table.append("            </td>\n");
                 table.append("            <td>");
-                table.append(rwt.getType().toString());
+                table.append(rwt.getType() != null ? rwt.getType().toString() : "[Unknown]");
                 table.append("            </td>\n");
                 table.append("            <td>");
-                table.append(rwt.getLastChecked());
+                table.append(rwt.getLastChecked() != null ? rwt.getLastChecked() : "[Unknown]");
                 table.append("            </td>\n");
                 table.append("            <td>");
                 table.append(rwt.getUrl());
