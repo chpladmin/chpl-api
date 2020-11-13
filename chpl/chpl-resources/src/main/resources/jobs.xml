@@ -13,6 +13,14 @@
         <ignore-duplicates>true</ignore-duplicates>
     </processing-directives>
     <schedule>
+        <job>
+            <name>AuditDataRetention</name>
+            <group>systemJobs</group>
+            <description>Roll off the audit data to CSVs on the server</description>
+            <job-class>gov.healthit.chpl.scheduler.job.AuditDataRetentionJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
         <!-- Download file generation: 2015, 2014, 2011 -->
         <job>
             <name>downloadFileJob2015</name>
