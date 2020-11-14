@@ -135,10 +135,11 @@ public class RealWorldTestingUploadJob implements Job {
         Optional<CertifiedProductSearchDetails> listing = getListing(rwt.getChplProductNumber());
 
         if (listing.isPresent()) {
-            if (!hasDataRwtPlansChanged(listing.get(), rwt)) {
+            if (rwt.getType().equals(RealWorldTestingType.PLANS)
+                    && !hasDataRwtPlansChanged(listing.get(), rwt)) {
                 rwt.getValidationErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.dataNotChanged"));
-            }
-            if (!hasDataRwtResultsChanged(listing.get(), rwt)) {
+            } else if (rwt.getType().equals(RealWorldTestingType.RESULTS)
+                    && !hasDataRwtResultsChanged(listing.get(), rwt)) {
                 rwt.getValidationErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.dataNotChanged"));
             }
             if (rwt.getValidationErrors().size() == 0) {
