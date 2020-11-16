@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
@@ -72,7 +73,7 @@ public class Developer implements Serializable {
      * Contact information for the developer.
      */
     @XmlElement(required = false, nillable = true)
-    private Contact contact;
+    private PointOfContact contact;
 
     @XmlTransient
     private String lastModifiedDate;
@@ -118,7 +119,7 @@ public class Developer implements Serializable {
             this.address = new Address(dto.getAddress());
         }
         if (dto.getContact() != null) {
-            this.contact = new Contact(dto.getContact());
+            this.contact = new PointOfContact(dto.getContact());
         }
 
         if (dto.getLastModifiedDate() != null) {
@@ -151,7 +152,7 @@ public class Developer implements Serializable {
         return developerId;
     }
 
-    public void setDeveloperId(final Long developerId) {
+    public void setDeveloperId(Long developerId) {
         this.developerId = developerId;
     }
 
@@ -159,7 +160,7 @@ public class Developer implements Serializable {
         return name;
     }
 
-    public void setName(final String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -167,7 +168,7 @@ public class Developer implements Serializable {
         return website;
     }
 
-    public void setWebsite(final String website) {
+    public void setWebsite(String website) {
         this.website = website;
     }
 
@@ -183,7 +184,7 @@ public class Developer implements Serializable {
         return address;
     }
 
-    public void setAddress(final Address address) {
+    public void setAddress(Address address) {
         this.address = address;
     }
 
@@ -191,7 +192,7 @@ public class Developer implements Serializable {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(final String lastModifiedDate) {
+    public void setLastModifiedDate(String lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -199,15 +200,15 @@ public class Developer implements Serializable {
         return developerCode;
     }
 
-    public void setDeveloperCode(final String developerCode) {
+    public void setDeveloperCode(String developerCode) {
         this.developerCode = developerCode;
     }
 
-    public Contact getContact() {
+    public PointOfContact getContact() {
         return contact;
     }
 
-    public void setContact(final Contact contact) {
+    public void setContact(PointOfContact contact) {
         this.contact = contact;
     }
 
@@ -215,7 +216,7 @@ public class Developer implements Serializable {
         return transparencyAttestations;
     }
 
-    public void setTransparencyAttestations(final List<TransparencyAttestationMap> transparencyAttestations) {
+    public void setTransparencyAttestations(List<TransparencyAttestationMap> transparencyAttestations) {
         this.transparencyAttestations = transparencyAttestations;
     }
 
@@ -223,7 +224,7 @@ public class Developer implements Serializable {
         return deleted;
     }
 
-    public void setDeleted(final Boolean deleted) {
+    public void setDeleted(Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -231,7 +232,7 @@ public class Developer implements Serializable {
         return status;
     }
 
-    public void setStatus(final DeveloperStatus status) {
+    public void setStatus(DeveloperStatus status) {
         this.status = status;
     }
 
@@ -239,7 +240,7 @@ public class Developer implements Serializable {
         return statusEvents;
     }
 
-    public void setStatusEvents(final List<DeveloperStatusEvent> statusEvents) {
+    public void setStatusEvents(List<DeveloperStatusEvent> statusEvents) {
         this.statusEvents = statusEvents;
     }
 }
