@@ -4,6 +4,7 @@
     name="CHPL-Service-local" packages="">
     <Properties>
         <Property name="logDir">${sys:catalina.home}/logs</Property>
+        <Property name="isThreadContextMapInheritable">true</Property>
     </Properties>
     <Appenders>
         <Console name="STDOUT" target="SYSTEM_OUT">
@@ -11,6 +12,17 @@
                 <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
             </PatternLayout>
         </Console>
+        <RollingFile name="loggable"
+            fileName="${logDir}/loggable.log"
+            filePattern="${logDir}/loggable/history/loggable-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p Token: %X{tracker} - %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
         <RollingFile name="chartDataCreatorJob"
             fileName="${logDir}/scheduler/chartDataCreatorJob.log"
             filePattern="${logDir}/scheduler/history/chartDataCreatorJob-%d{yyyy-MM-dd}.log">
@@ -317,6 +329,10 @@
         </logger>
         <Logger name="gov.healthit.chpl" level="DEBUG" additivity="false">
             <AppenderRef ref="STDOUT" />
+        </Logger>
+        <Logger name="loggableLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="loggable" />
         </Logger>
         <Logger name="summaryStatisticsEmailJobLogger" level="INFO"
             additivity="false">
