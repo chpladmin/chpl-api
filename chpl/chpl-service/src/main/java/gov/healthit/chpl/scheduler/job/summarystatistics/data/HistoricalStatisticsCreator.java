@@ -1,5 +1,6 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics.data;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -10,8 +11,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -25,11 +24,12 @@ import gov.healthit.chpl.dto.CertificationStatusEventDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import lombok.extern.log4j.Log4j2;
 import one.util.streamex.StreamEx;
 
 @Component()
+@Log4j2(topic = "summaryStatisticsCreatorJobLogger")
 public class HistoricalStatisticsCreator {
-    private static final Logger LOGGER = LogManager.getLogger("summaryStatisticsCreatorJobLogger");
     private static final Long EDITION_2015_ID = 3L;
     private static final Long EDITION_2014_ID = 2L;
 
@@ -37,6 +37,8 @@ public class HistoricalStatisticsCreator {
     private DeveloperStatisticsDAO developerStatisticsDAO;
     private SurveillanceStatisticsDAO surveillanceStatisticsDAO;
     private Environment env;
+
+    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
 
     @Autowired
     public HistoricalStatisticsCreator(ListingStatisticsDAO listingStatisticsDAO, DeveloperStatisticsDAO developerStatisticsDAO,
@@ -53,6 +55,8 @@ public class HistoricalStatisticsCreator {
             throws InterruptedException, ExecutionException {
 
         ExecutorService executorService = Executors.newFixedThreadPool(getThreadCountForJob());
+
+        LOGGER.info("Getting csvRecord for end date " + sdf.format(endDate));
 
         CsvStatistics stats = new CsvStatistics();
         stats.setEndDate(endDate);
@@ -111,6 +115,7 @@ public class HistoricalStatisticsCreator {
             // This is necessary so that the system can indicate that the job and it's threads are still running
             combinedFutures.get();
 
+            LOGGER.info("Finished getting csvRecord for end date " + sdf.format(endDate));
         } finally {
             executorService.shutdown();
         }

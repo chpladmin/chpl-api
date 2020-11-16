@@ -42,6 +42,7 @@ public class StatsCsvFileWriter {
     };
 
     public void writeCsvFile(String fileName, List<CsvStatistics> statsCsvOutput) {
+        getLogger().info("Writing statistics CSV");
         CSVFormat csvFileFormat = CSVFormat.DEFAULT.withRecordSeparator(NEW_LINE_SEPARATOR);
         SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM dd yyyy");
 

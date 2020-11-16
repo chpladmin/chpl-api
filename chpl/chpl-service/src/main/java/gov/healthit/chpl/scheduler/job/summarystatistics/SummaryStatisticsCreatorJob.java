@@ -118,30 +118,18 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
 
         while (endDate.compareTo(endDateCal.getTime()) >= 0) {
             endDateCal.add(Calendar.DATE, numDaysInPeriod);
-
-            LOGGER.info("Getting csvRecord for end date " + endDateCal.getTime().toString());
-
             CsvStatistics historyStat = new CsvStatistics();
-
             historyStat.setEndDate(endDateCal.getTime());
             historyStat = historicalStatisticsCreator.getStatistics(allListings, statusesForAllListings, endDateCal.getTime());
-
             csvStats.add(historyStat);
-
-            LOGGER.info("Finished getting csvRecord for end date " + endDateCal.getTime().toString());
-
-
         }
-        LOGGER.info("Finished getting statistics");
 
-        LOGGER.info("Writing statistics CSV");
         StatsCsvFileWriter csvFileWriter = new StatsCsvFileWriter();
         csvFileWriter.writeCsvFile(env.getProperty("downloadFolderPath") + File.separator
                 + env.getProperty("summaryEmailName", "summaryStatistics.csv"), csvStats);
 
         new File(env.getProperty("downloadFolderPath") + File.separator
                 + env.getProperty("summaryEmailName", "summaryStatistics.csv"));
-        LOGGER.info("Completed statistics CSV");
     }
 
     private String getJson(EmailStatistics statistics) throws JsonProcessingException {
