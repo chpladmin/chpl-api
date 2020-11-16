@@ -50,7 +50,7 @@ public class CertificationResultUploadHandlerTest {
     public void buildCertResult_SuccessFieldEmpty_ReturnsFalse() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
         assertNotNull(headingRecord);
-        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString(",");
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString(" ");
         assertNotNull(certResultRecords);
 
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);

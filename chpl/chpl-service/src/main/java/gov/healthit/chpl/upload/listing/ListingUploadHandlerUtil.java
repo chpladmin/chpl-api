@@ -1,5 +1,6 @@
 package gov.healthit.chpl.upload.listing;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,7 +13,11 @@ import java.util.stream.Collectors;
 
 import javax.validation.ValidationException;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang.math.IntRange;
+import org.apache.commons.lang.math.Range;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -50,6 +55,71 @@ public class ListingUploadHandlerUtil {
 
     public CSVRecord getHeadingRecord(List<CSVRecord> allCsvRecords) {
         return allCsvRecords.get(getHeadingRecordIndex(allCsvRecords));
+    }
+
+    public int getNextIndexOfCertificationResult(int startIndex, CSVRecord headingRecord)
+        throws ValidationException {
+        int nextCertResultStartIndex = -1;
+        for (int i = startIndex; i < headingRecord.size() && nextCertResultStartIndex < 0; i++) {
+            String currHeading = headingRecord.get(i);
+            if (looksLikeCriteriaStart(currHeading)) {
+                nextCertResultStartIndex = i;
+            }
+        }
+        return nextCertResultStartIndex;
+    }
+
+    public List<CSVRecord> getCertificationResultRecordsFromIndex(int startIndex, CSVRecord headingRecord,
+            List<CSVRecord> dataRecords) {
+        CSVRecord certResultHeading = null;
+        List<CSVRecord> certResultRows = new ArrayList<CSVRecord>();
+        Range certResultColumnRange = calculateCertificationResultColumnRangeFromIndex(startIndex, headingRecord);
+        if (certResultColumnRange == null) {
+            return null;
+        } else if (certResultColumnRange.getMinimumInteger() >= 0 && certResultColumnRange.getMaximumInteger() >= 0
+                && certResultColumnRange.getMaximumInteger() < headingRecord.size()) {
+            //splice the heading record columns between the integer ranges
+            CSVParser csvParser = null;
+            try {
+                List<String> certResultHeadingValues = new ArrayList<String>();
+                for (int i = certResultColumnRange.getMinimumInteger(); i <= certResultColumnRange.getMaximumInteger(); i++) {
+                    if (isHeadingLevel(headingRecord.get(i), HeadingLevel.CERT_RESULT)) {
+                        certResultHeadingValues.add(headingRecord.get(i));
+                    }
+                }
+                csvParser = CSVParser.parse(certResultHeadingValues.stream().collect(Collectors.joining(",")),
+                        CSVFormat.EXCEL);
+                certResultHeading = csvParser.getRecords().get(0);
+
+                for (CSVRecord listingRecord : dataRecords) {
+                    List<String> certResultColumnValues = new ArrayList<String>();
+                    for (int i = certResultColumnRange.getMinimumInteger(); i <= certResultColumnRange.getMaximumInteger(); i++) {
+                        if (isHeadingLevel(headingRecord.get(i), HeadingLevel.CERT_RESULT)) {
+
+                            certResultColumnValues.add(listingRecord.get(i));
+                        }
+                    }
+                    csvParser = CSVParser.parse(certResultColumnValues.stream().collect(Collectors.joining(",")),
+                            CSVFormat.EXCEL);
+                    certResultRows.addAll(csvParser.getRecords());
+                }
+            } catch (IOException ex) {
+                LOGGER.error("Could not splice heading record between " + certResultColumnRange.getMinimumInteger()
+                    + " and " + certResultColumnRange.getMaximumInteger());
+            } finally {
+                try {
+                    csvParser.close();
+                } catch (Exception e) {
+                    LOGGER.error("Error closing csv parser.", e);
+                }
+            }
+        } else {
+            throw new ValidationException(msgUtil.getMessage("certResult.upload.invalidRange",
+                    certResultColumnRange.getMinimumInteger(), certResultColumnRange.getMaximumInteger()));
+        }
+
+        certResultRows.add(0, certResultHeading);
+        return certResultRows;
     }
 
     public String parseRequiredSingleRowField(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords)
@@ -162,6 +232,39 @@ public class ListingUploadHandlerUtil {
 
     public boolean hasHeading(Headings heading, CSVRecord headingRecord) {
         return getColumnIndexOfHeading(heading, headingRecord) >= 0;
+    }
+
+    private Range calculateCertificationResultColumnRangeFromIndex(int startIndex, CSVRecord headingRecord) {
+        int certResultStartIndex = -1, certResultEndIndex = -1;
+        for (int i = startIndex; i < headingRecord.size() && (certResultStartIndex < 0 || certResultEndIndex < 0); i++) {
+            String currHeading = headingRecord.get(i);
+            if (looksLikeCriteriaStart(currHeading)) {
+                if (certResultStartIndex < 0) {
+                    certResultStartIndex = i;
+                } else if (certResultEndIndex < 0) {
+                    certResultEndIndex = i - 1;
+                }
+            }
+            if (certResultStartIndex >= 0 && certResultEndIndex < 0 && i == headingRecord.size() - 1) {
+                certResultEndIndex = i;
+            }
+        }
+
+        if (certResultStartIndex == -1 && certResultEndIndex == -1) {
+            return null;
+        }
+
+        return new IntRange(certResultStartIndex, certResultEndIndex);
+    }
+
+    private boolean looksLikeCriteriaStart(String headingVal) {
+        return StringUtils.containsIgnoreCase(headingVal, "CRITERIA")
+                || StringUtils.containsIgnoreCase(headingVal, "CRITERION");
+    }
+
+    private boolean isHeadingLevel(String headingVal, HeadingLevel level) {
+        Headings heading = Headings.getHeading(headingVal);
+        return heading != null && heading.getLevel().equals(level);
     }
 
     private boolean hasHeading(CSVRecord record) {
