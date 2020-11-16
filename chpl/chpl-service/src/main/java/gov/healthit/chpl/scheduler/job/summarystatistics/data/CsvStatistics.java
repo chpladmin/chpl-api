@@ -1,8 +1,8 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics.data;
 
 import java.io.Serializable;
+import java.util.Date;
 
-import gov.healthit.chpl.domain.DateRange;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class CsvStatistics implements Serializable {
     private static final long serialVersionUID = -5219649276730810669L;
 
-    private DateRange dateRange;
+    private Date endDate;
     private Long totalDevelopers;
     private Long totalDevelopersWith2014Listings;
     private Long totalDevelopersWith2015Listings;

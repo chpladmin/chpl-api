@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dao.statistics;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -8,7 +9,6 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.domain.DateRange;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
 import gov.healthit.chpl.entity.surveillance.NonconformityAggregatedStatisticsEntity;
@@ -20,9 +20,9 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
     /**
      * Total # of Surveillance Activities.
      */
-    public Long getTotalSurveillanceActivities(final DateRange dateRange) {
+    public Long getTotalSurveillanceActivities(Date endDate) {
         String hql = "SELECT count(*) " + "FROM SurveillanceEntity " + "WHERE ";
-        if (dateRange == null) {
+        if (endDate == null) {
             hql += " deleted = false";
         } else {
             hql += "(deleted = false AND creationDate <= :endDate) " + " OR "
@@ -30,8 +30,8 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         }
 
         Query query = entityManager.createQuery(hql);
-        if (dateRange != null) {
-            query.setParameter("endDate", dateRange.getEndDate());
+        if (endDate != null) {
+            query.setParameter("endDate", endDate);
         }
         return (Long) query.getSingleResult();
     }
@@ -39,10 +39,10 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
     /**
      * Open Surveillance Activities.
      */
-    public Long getTotalOpenSurveillanceActivities(final DateRange dateRange) {
+    public Long getTotalOpenSurveillanceActivities(Date endDate) {
         String hql = "SELECT count(*) " + "FROM SurveillanceEntity " + "WHERE startDate <= now() "
                 + "AND (endDate IS NULL OR endDate >= now()) ";
-        if (dateRange == null) {
+        if (endDate == null) {
             hql += " AND deleted = false";
         } else {
             hql += "AND ((deleted = false AND creationDate <= :endDate) " + " OR "
@@ -50,8 +50,8 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         }
 
         Query query = entityManager.createQuery(hql);
-        if (dateRange != null) {
-            query.setParameter("endDate", dateRange.getEndDate());
+        if (endDate != null) {
+            query.setParameter("endDate", endDate);
         }
         return (Long) query.getSingleResult();
     }
@@ -59,10 +59,10 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
     /**
      * Closed Surveillance Activities.
      */
-    public Long getTotalClosedSurveillanceActivities(final DateRange dateRange) {
+    public Long getTotalClosedSurveillanceActivities(Date endDate) {
         String hql = "SELECT count(*) " + "FROM SurveillanceEntity " + "WHERE startDate <= now() "
                 + "AND (endDate IS NOT NULL AND endDate <= now()) ";
-        if (dateRange == null) {
+        if (endDate == null) {
             hql += " AND deleted = false";
         } else {
             hql += "AND ((deleted = false AND creationDate <= :endDate) " + " OR "
@@ -70,8 +70,8 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         }
 
         Query query = entityManager.createQuery(hql);
-        if (dateRange != null) {
-            query.setParameter("endDate", dateRange.getEndDate());
+        if (endDate != null) {
+            query.setParameter("endDate", endDate);
         }
         return (Long) query.getSingleResult();
     }
@@ -79,9 +79,9 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
     /**
      * Total # of NCs.
      */
-    public Long getTotalNonConformities(final DateRange dateRange) {
+    public Long getTotalNonConformities(Date endDate) {
         String hql = "SELECT count(*) " + "FROM SurveillanceNonconformityEntity " + "WHERE ";
-        if (dateRange == null) {
+        if (endDate == null) {
             hql += " deleted = false";
         } else {
             hql += "(deleted = false AND creationDate <= :endDate) " + " OR "
@@ -89,8 +89,8 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         }
 
         Query query = entityManager.createQuery(hql);
-        if (dateRange != null) {
-            query.setParameter("endDate", dateRange.getEndDate());
+        if (endDate != null) {
+            query.setParameter("endDate", endDate);
         }
         return (Long) query.getSingleResult();
     }
@@ -98,9 +98,9 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
     /**
      * Open NCs.
      */
-    public Long getTotalOpenNonconformities(final DateRange dateRange) {
+    public Long getTotalOpenNonconformities(Date endDate) {
         String hql = "SELECT count(*) " + "FROM SurveillanceNonconformityEntity " + "WHERE nonconformityStatusId = 1 ";
-        if (dateRange == null) {
+        if (endDate == null) {
             hql += " AND deleted = false";
         } else {
             hql += " AND ((deleted = false AND creationDate <= :endDate) " + " OR "
@@ -108,8 +108,8 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         }
 
         Query query = entityManager.createQuery(hql);
-        if (dateRange != null) {
-            query.setParameter("endDate", dateRange.getEndDate());
+        if (endDate != null) {
+            query.setParameter("endDate", endDate);
         }
         return (Long) query.getSingleResult();
     }
@@ -117,7 +117,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
     /**
      * Open NCs By ACB.
      */
-    public List<EmailCertificationBodyStatistic> getTotalOpenNonconformitiesByAcb(final DateRange dateRange) {
+    public List<EmailCertificationBodyStatistic> getTotalOpenNonconformitiesByAcb(Date endDate) {
         String hql = "SELECT cb.name, count(*) "
                 + "FROM CertifiedProductEntity cp, "
                 + "CertificationBodyEntity cb, "
@@ -130,7 +130,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
                 + "AND s.id = sr.surveillanceId "
                 + "AND sr.id = sn.surveillanceRequirementId ";
 
-        if (dateRange == null) {
+        if (endDate == null) {
             hql += "AND sn.deleted = false ";
         } else {
             hql += "AND ((sn.deleted = false AND sn.creationDate <= :endDate) " + " OR "
@@ -142,8 +142,8 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
 
         Query query = entityManager.createQuery(hql);
 
-        if (dateRange != null) {
-            query.setParameter("endDate", dateRange.getEndDate());
+        if (endDate != null) {
+            query.setParameter("endDate", endDate);
         }
 
         List<Object[]> results = query.getResultList();
@@ -160,9 +160,9 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
     /**
      * Closed NCs.
      */
-    public Long getTotalClosedNonconformities(final DateRange dateRange) {
+    public Long getTotalClosedNonconformities(Date endDate) {
         String hql = "SELECT count(*) " + "FROM SurveillanceNonconformityEntity " + "WHERE nonconformityStatusId = 2 ";
-        if (dateRange == null) {
+        if (endDate == null) {
             hql += " AND deleted = false";
         } else {
             hql += " AND ((deleted = false AND creationDate <= :endDate) " + " OR "
@@ -170,8 +170,8 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         }
 
         Query query = entityManager.createQuery(hql);
-        if (dateRange != null) {
-            query.setParameter("endDate", dateRange.getEndDate());
+        if (endDate != null) {
+            query.setParameter("endDate", endDate);
         }
         return (Long) query.getSingleResult();
     }
@@ -179,7 +179,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
     /**
      * Open Surveillance Activities By ACB.
      */
-    public List<EmailCertificationBodyStatistic> getTotalOpenSurveillanceActivitiesByAcb(final DateRange dateRange) {
+    public List<EmailCertificationBodyStatistic> getTotalOpenSurveillanceActivitiesByAcb(Date endDate) {
         String hql = "SELECT cb.name, count(*) "
                 + "FROM CertifiedProductEntity cp, "
                 + "CertificationBodyEntity cb, "
@@ -189,7 +189,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
                 + "AND cp.certificationBodyId = cb.id "
                 + "AND cp.id = s.certifiedProductId ";
 
-        if (dateRange == null) {
+        if (endDate == null) {
             hql += "AND s.deleted = false ";
         } else {
             hql += "AND ((s.deleted = false AND s.creationDate <= :endDate) " + " OR "
@@ -201,8 +201,8 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
 
         Query query = entityManager.createQuery(hql);
 
-        if (dateRange != null) {
-            query.setParameter("endDate", dateRange.getEndDate());
+        if (endDate != null) {
+            query.setParameter("endDate", endDate);
         }
 
         List<Object[]> results = query.getResultList();

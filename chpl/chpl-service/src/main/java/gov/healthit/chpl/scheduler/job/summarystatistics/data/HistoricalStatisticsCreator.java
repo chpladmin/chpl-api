@@ -21,7 +21,6 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.statistics.DeveloperStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.ListingStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
-import gov.healthit.chpl.domain.DateRange;
 import gov.healthit.chpl.dto.CertificationStatusEventDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.ProductDTO;
@@ -50,59 +49,59 @@ public class HistoricalStatisticsCreator {
 
     @Transactional(readOnly = true)
     public CsvStatistics getStatistics(List<CertifiedProductDetailsDTO> allListings,
-            Map<Long, List<CertificationStatusEventDTO>> statusesForAllListings, DateRange dateRange)
+            Map<Long, List<CertificationStatusEventDTO>> statusesForAllListings, Date endDate)
             throws InterruptedException, ExecutionException {
 
         ExecutorService executorService = Executors.newFixedThreadPool(getThreadCountForJob());
 
         CsvStatistics stats = new CsvStatistics();
-        stats.setDateRange(dateRange);
+        stats.setEndDate(endDate);
         List<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
 
         try {
             // developers
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopers(dateRange), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopers(endDate), executorService)
                     .thenAccept(result -> stats.setTotalDevelopers(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopersWith2014Listings(dateRange), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopersWith2014Listings(endDate), executorService)
                     .thenAccept(result -> stats.setTotalDevelopersWith2014Listings(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopersWith2015Listings(dateRange), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopersWith2015Listings(endDate), executorService)
                     .thenAccept(result -> stats.setTotalDevelopersWith2015Listings(result)));
 
             //products
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalUniqueProducts(dateRange), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalUniqueProducts(endDate), executorService)
                     .thenAccept(result -> stats.setTotalUniqueProducts(result)));
             futures.add(CompletableFuture.supplyAsync(() ->
-                    getTotalProductsActive2014Listings(allListings, statusesForAllListings, dateRange), executorService)
+                    getTotalProductsActive2014Listings(allListings, statusesForAllListings, endDate), executorService)
                     .thenAccept(result -> stats.setTotalUniqueProductsActive2014Listings(result)));
             futures.add(CompletableFuture.supplyAsync(() ->
-                    getTotalProductsActive2015Listings(allListings, statusesForAllListings, dateRange), executorService)
+                    getTotalProductsActive2015Listings(allListings, statusesForAllListings, endDate), executorService)
                     .thenAccept(result -> stats.setTotalUniqueProductsActive2015Listings(result)));
             futures.add(CompletableFuture.supplyAsync(() ->
-                    getTotalUniqueProductsActiveListings(allListings, statusesForAllListings, dateRange), executorService)
+                    getTotalUniqueProductsActiveListings(allListings, statusesForAllListings, endDate), executorService)
                     .thenAccept(result -> stats.setTotalUniqueProductsActiveListings(result)));
 
             // listings
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalListings(dateRange), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalListings(endDate), executorService)
                     .thenAccept(result -> stats.setTotalListings(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotal2014Listings(dateRange), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotal2014Listings(endDate), executorService)
                     .thenAccept(result -> stats.setTotal2014Listings(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotal2015Listings(dateRange), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotal2015Listings(endDate), executorService)
                     .thenAccept(result -> stats.setTotal2015Listings(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotal2011Listings(dateRange), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotal2011Listings(endDate), executorService)
                     .thenAccept(result -> stats.setTotal2011Listings(result)));
 
             // surveillance
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalSurveillanceActivities(dateRange), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalSurveillanceActivities(endDate), executorService)
                     .thenAccept(result -> stats.setTotalSurveillanceActivities(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalOpenSurveillanceActivities(dateRange), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalOpenSurveillanceActivities(endDate), executorService)
                     .thenAccept(result -> stats.setTotalOpenSurveillanceActivities(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalClosedSurveillanceActivities(dateRange), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalClosedSurveillanceActivities(endDate), executorService)
                     .thenAccept(result -> stats.setTotalClosedSurveillanceActivities(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalNonConformities(dateRange), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalNonConformities(endDate), executorService)
                     .thenAccept(result -> stats.setTotalNonConformities(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalOpenNonconformities(dateRange), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalOpenNonconformities(endDate), executorService)
                     .thenAccept(result -> stats.setTotalOpenNonconformities(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalClosedNonconformities(dateRange), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalClosedNonconformities(endDate), executorService)
                     .thenAccept(result -> stats.setTotalClosedNonconformities(result)));
 
             CompletableFuture<Void> combinedFutures = CompletableFuture
@@ -118,32 +117,32 @@ public class HistoricalStatisticsCreator {
         return stats;
     }
 
-    private Long getTotalDevelopers(DateRange dateRange) {
-        Long total = developerStatisticsDAO.getTotalDevelopers(dateRange);
+    private Long getTotalDevelopers(Date endDate) {
+        Long total = developerStatisticsDAO.getTotalDevelopers(endDate);
         return total;
     }
 
-    private Long getTotalDevelopersWith2014Listings(DateRange dateRange) {
-        Long total = developerStatisticsDAO.getTotalDevelopersWithListingsByEditionAndStatus(dateRange, "2014", null);
+    private Long getTotalDevelopersWith2014Listings(Date endDate) {
+        Long total = developerStatisticsDAO.getTotalDevelopersWithListingsByEditionAndStatus(endDate, "2014", null);
         return total;
     }
 
-    private Long getTotalDevelopersWith2015Listings(DateRange dateRange) {
-        Long total = developerStatisticsDAO.getTotalDevelopersWithListingsByEditionAndStatus(dateRange, "2015", null);
+    private Long getTotalDevelopersWith2015Listings(Date endDate) {
+        Long total = developerStatisticsDAO.getTotalDevelopersWithListingsByEditionAndStatus(endDate, "2015", null);
         return total;
     }
 
-    private Long getTotalUniqueProducts(DateRange dateRange) {
-        Long total = listingStatisticsDAO.getTotalUniqueProductsByEditionAndStatus(dateRange, null, null);
+    private Long getTotalUniqueProducts(Date endDate) {
+        Long total = listingStatisticsDAO.getTotalUniqueProductsByEditionAndStatus(endDate, null, null);
         return total;
     }
 
     private Long getTotalProductsActive2014Listings(List<CertifiedProductDetailsDTO> allListings,
-            Map<Long, List<CertificationStatusEventDTO>> allStatuses, DateRange dateRange) {
+            Map<Long, List<CertificationStatusEventDTO>> allStatuses, Date endDate) {
 
         List<ProductDTO> products = allListings.stream()
                 .filter(listing -> listing.getCertificationEditionId().equals(EDITION_2014_ID)
-                        && isListingActiveAsOfDate(listing.getId(), allStatuses, dateRange.getEndDate()))
+                        && isListingActiveAsOfDate(listing.getId(), allStatuses, endDate))
                 .map(listing -> listing.getProduct())
                 .collect(Collectors.toList());
 
@@ -153,11 +152,11 @@ public class HistoricalStatisticsCreator {
     }
 
     private Long getTotalProductsActive2015Listings(List<CertifiedProductDetailsDTO> allListings,
-            Map<Long, List<CertificationStatusEventDTO>> allStatuses, DateRange dateRange) {
+            Map<Long, List<CertificationStatusEventDTO>> allStatuses, Date endDate) {
 
         List<ProductDTO> products = allListings.stream()
                 .filter(listing -> listing.getCertificationEditionId().equals(EDITION_2015_ID)
-                        && isListingActiveAsOfDate(listing.getId(), allStatuses, dateRange.getEndDate()))
+                        && isListingActiveAsOfDate(listing.getId(), allStatuses, endDate))
                 .map(listing -> listing.getProduct())
                 .collect(Collectors.toList());
 
@@ -167,10 +166,10 @@ public class HistoricalStatisticsCreator {
     }
 
     private Long getTotalUniqueProductsActiveListings(List<CertifiedProductDetailsDTO> allListings,
-            Map<Long, List<CertificationStatusEventDTO>> allStatuses, DateRange dateRange) {
+            Map<Long, List<CertificationStatusEventDTO>> allStatuses, Date endDate) {
 
         List<ProductDTO> products = allListings.stream()
-                .filter(listing -> isListingActiveAsOfDate(listing.getId(), allStatuses, dateRange.getEndDate()))
+                .filter(listing -> isListingActiveAsOfDate(listing.getId(), allStatuses, endDate))
                 .map(listing -> listing.getProduct())
                 .collect(Collectors.toList());
 
@@ -179,53 +178,53 @@ public class HistoricalStatisticsCreator {
                 .count();
     }
 
-    private Long getTotalListings(DateRange dateRange) {
+    private Long getTotalListings(Date endDate) {
         Long total = listingStatisticsDAO
-                .getTotalListingsByEditionAndStatus(dateRange, null, null);
+                .getTotalListingsByEditionAndStatus(endDate, null, null);
         return total;
     }
-    private Long getTotal2014Listings(DateRange dateRange) {
-        Long total = listingStatisticsDAO.getTotalListingsByEditionAndStatus(dateRange, "2014", null);
-        return total;
-    }
-
-    private Long getTotal2015Listings(DateRange dateRange) {
-        Long total = listingStatisticsDAO.getTotalListingsByEditionAndStatus(dateRange, "2015", null);
+    private Long getTotal2014Listings(Date endDate) {
+        Long total = listingStatisticsDAO.getTotalListingsByEditionAndStatus(endDate, "2014", null);
         return total;
     }
 
-    private Long getTotal2011Listings(DateRange dateRange) {
-        Long total = listingStatisticsDAO.getTotalListingsByEditionAndStatus(dateRange, "2011", null);
+    private Long getTotal2015Listings(Date endDate) {
+        Long total = listingStatisticsDAO.getTotalListingsByEditionAndStatus(endDate, "2015", null);
         return total;
     }
 
-    private Long getTotalSurveillanceActivities(DateRange dateRange) {
-        Long total = surveillanceStatisticsDAO.getTotalSurveillanceActivities(dateRange);
+    private Long getTotal2011Listings(Date endDate) {
+        Long total = listingStatisticsDAO.getTotalListingsByEditionAndStatus(endDate, "2011", null);
         return total;
     }
 
-    private Long getTotalOpenSurveillanceActivities(DateRange dateRange) {
-        Long total = surveillanceStatisticsDAO.getTotalOpenSurveillanceActivities(dateRange);
+    private Long getTotalSurveillanceActivities(Date endDate) {
+        Long total = surveillanceStatisticsDAO.getTotalSurveillanceActivities(endDate);
         return total;
     }
 
-    private Long getTotalClosedSurveillanceActivities(DateRange dateRange) {
-        Long total = surveillanceStatisticsDAO.getTotalClosedSurveillanceActivities(dateRange);
+    private Long getTotalOpenSurveillanceActivities(Date endDate) {
+        Long total = surveillanceStatisticsDAO.getTotalOpenSurveillanceActivities(endDate);
         return total;
     }
 
-    private Long getTotalNonConformities(DateRange dateRange) {
-        Long total = surveillanceStatisticsDAO.getTotalNonConformities(dateRange);
+    private Long getTotalClosedSurveillanceActivities(Date endDate) {
+        Long total = surveillanceStatisticsDAO.getTotalClosedSurveillanceActivities(endDate);
         return total;
     }
 
-    private Long getTotalOpenNonconformities(DateRange dateRange) {
-        Long total = surveillanceStatisticsDAO.getTotalOpenNonconformities(dateRange);
+    private Long getTotalNonConformities(Date endDate) {
+        Long total = surveillanceStatisticsDAO.getTotalNonConformities(endDate);
         return total;
     }
 
-    private Long getTotalClosedNonconformities(DateRange dateRange) {
-        Long total = surveillanceStatisticsDAO.getTotalClosedNonconformities(dateRange);
+    private Long getTotalOpenNonconformities(Date endDate) {
+        Long total = surveillanceStatisticsDAO.getTotalOpenNonconformities(endDate);
+        return total;
+    }
+
+    private Long getTotalClosedNonconformities(Date endDate) {
+        Long total = surveillanceStatisticsDAO.getTotalClosedNonconformities(endDate);
         return total;
     }
 

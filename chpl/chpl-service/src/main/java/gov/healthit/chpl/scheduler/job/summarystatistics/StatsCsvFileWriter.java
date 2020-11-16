@@ -54,7 +54,7 @@ public class StatsCsvFileWriter {
             for (CsvStatistics stat : statsCsvOutput) {
                 List<String> statRecord = new ArrayList<String>();
                 dateFormat.setTimeZone(TimeZone.getTimeZone(ZoneOffset.UTC));
-                String dateString = dateFormat.format(stat.getDateRange().getEndDate());
+                String dateString = dateFormat.format(stat.getEndDate());
                 statRecord.add(dateString);
                 statRecord.add(String.valueOf(stat.getTotalDevelopers()));
                 statRecord.add(String.valueOf(stat.getTotalDevelopersWith2014Listings()));

@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dao.statistics;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -7,13 +8,11 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.domain.DateRange;
 
 @Repository("listingStatisticsDAO")
 public class ListingStatisticsDAO extends BaseDAOImpl {
 
-    public Long getTotalUniqueProductsByEditionAndStatus(final DateRange dateRange,
-            final String edition, final List<String> statuses) {
+    public Long getTotalUniqueProductsByEditionAndStatus(Date endDate, String edition, List<String> statuses) {
         String hql = "SELECT DISTINCT UPPER(productName) || UPPER(developerName) "
                 + "FROM CertifiedProductDetailsEntity ";
 
@@ -31,7 +30,7 @@ public class ListingStatisticsDAO extends BaseDAOImpl {
             }
             hql += " UPPER(certificationStatusName) IN (:statuses) ";
         }
-        if (dateRange == null) {
+        if (endDate == null) {
             if (!hasWhere) {
                 hql += " WHERE ";
                 hasWhere = true;
@@ -58,8 +57,8 @@ public class ListingStatisticsDAO extends BaseDAOImpl {
         if (statuses != null && statuses.size() > 0) {
             query.setParameter("statuses", statuses);
         }
-        if (dateRange != null) {
-            query.setParameter("endDate", dateRange.getEndDate());
+        if (endDate != null) {
+            query.setParameter("endDate", endDate);
         }
         return (long) query.getResultList().size();
     }
@@ -75,8 +74,7 @@ public class ListingStatisticsDAO extends BaseDAOImpl {
         return (long) query.getResultList().size();
     }
 
-    public Long getTotalListingsByEditionAndStatus(final DateRange dateRange,
-            final String edition, final List<String> statuses) {
+    public Long getTotalListingsByEditionAndStatus(Date endDate, String edition, List<String> statuses) {
         String hql = "SELECT COUNT(*) "
                 + "FROM CertifiedProductDetailsEntity ";
         boolean hasWhere = false;
@@ -93,7 +91,7 @@ public class ListingStatisticsDAO extends BaseDAOImpl {
             }
             hql += " UPPER(certificationStatusName) IN (:statuses) ";
         }
-        if (dateRange == null) {
+        if (endDate == null) {
             if (!hasWhere) {
                 hql += " WHERE ";
                 hasWhere = true;
@@ -120,8 +118,8 @@ public class ListingStatisticsDAO extends BaseDAOImpl {
         if (statuses != null && statuses.size() > 0) {
             query.setParameter("statuses", statuses);
         }
-        if (dateRange != null) {
-            query.setParameter("endDate", dateRange.getEndDate());
+        if (endDate != null) {
+            query.setParameter("endDate", endDate);
         }
 
         return (Long) query.getSingleResult();

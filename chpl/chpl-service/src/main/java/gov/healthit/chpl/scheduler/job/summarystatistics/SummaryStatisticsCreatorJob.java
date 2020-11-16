@@ -32,7 +32,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
-import gov.healthit.chpl.domain.DateRange;
 import gov.healthit.chpl.dto.CertificationStatusEventDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.SummaryStatisticsEntity;
@@ -113,35 +112,27 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         Date endDate = new Date();
         Integer numDaysInPeriod = Integer.valueOf(env.getProperty("summaryEmailPeriodInDays").toString());
 
-
         List<CsvStatistics> csvStats = new ArrayList<CsvStatistics>();
-        Calendar startDateCal = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
-        startDateCal.setTime(startDate);
         Calendar endDateCal = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
         endDateCal.setTime(startDate);
-        endDateCal.add(Calendar.DATE, numDaysInPeriod);
 
         Map<Long, List<CertificationStatusEventDTO>> statusesForAllListings = getAllStatusesForAllListings();
 
         while (endDate.compareTo(endDateCal.getTime()) >= 0) {
-            LOGGER.info("Getting csvRecord for start date " + startDateCal.getTime().toString() + " end date "
-                    + endDateCal.getTime().toString());
+            endDateCal.add(Calendar.DATE, numDaysInPeriod);
 
-            DateRange csvRange = new DateRange(startDateCal.getTime(), new Date(endDateCal.getTimeInMillis()));
+            LOGGER.info("Getting csvRecord for end date " + endDateCal.getTime().toString());
+
             CsvStatistics historyStat = new CsvStatistics();
 
-            historyStat.setDateRange(csvRange);
-            historyStat = historicalStatisticsCreator.getStatistics(allListings, statusesForAllListings, csvRange);
+            historyStat.setEndDate(endDateCal.getTime());
+            historyStat = historicalStatisticsCreator.getStatistics(allListings, statusesForAllListings, endDateCal.getTime());
 
             csvStats.add(historyStat);
 
-            LOGGER.info("Finished getting csvRecord for start date " + startDateCal.getTime().toString() + " end date "
-                    + endDateCal.getTime().toString());
+            LOGGER.info("Finished getting csvRecord for end date " + endDateCal.getTime().toString());
 
-            //Increment the date range
-            startDateCal.add(Calendar.DATE, numDaysInPeriod);
-            endDateCal.setTime(startDateCal.getTime());
-            endDateCal.add(Calendar.DATE, numDaysInPeriod);
+
         }
         LOGGER.info("Finished getting statistics");
 

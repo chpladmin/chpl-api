@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dao.statistics;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -7,17 +8,16 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.domain.DateRange;
 
 
 @Repository("developerStatisticsDAO")
 public class DeveloperStatisticsDAO extends BaseDAOImpl {
 
-    public Long getTotalDevelopers(final DateRange dateRange) {
+    public Long getTotalDevelopers(Date endDate) {
         String hql = "SELECT count(DISTINCT developerCode) "
                 + "FROM DeveloperEntity "
                 + " WHERE ";
-        if (dateRange == null) {
+        if (endDate == null) {
             hql += " deleted = false";
         } else {
             hql += "(deleted = false AND creationDate <= :endDate) "
@@ -26,14 +26,13 @@ public class DeveloperStatisticsDAO extends BaseDAOImpl {
         }
         Query query = entityManager.createQuery(hql);
 
-        if (dateRange != null) {
-            query.setParameter("endDate", dateRange.getEndDate());
+        if (endDate != null) {
+            query.setParameter("endDate", endDate);
         }
         return (Long) query.getSingleResult();
     }
 
-    public Long getTotalDevelopersWithListingsByEditionAndStatus(final DateRange dateRange,
-            final String edition, final List<String> statuses) {
+    public Long getTotalDevelopersWithListingsByEditionAndStatus(Date endDate, String edition, List<String> statuses) {
         String hql = "SELECT count(DISTINCT developerCode) "
                 + "FROM CertifiedProductDetailsEntity ";
 
@@ -52,7 +51,7 @@ public class DeveloperStatisticsDAO extends BaseDAOImpl {
             hql += " UPPER(certificationStatusName) IN (:statuses) ";
         }
 
-        if (dateRange == null) {
+        if (endDate == null) {
             if (!hasWhere) {
                 hql += " WHERE ";
                 hasWhere = true;
@@ -79,8 +78,8 @@ public class DeveloperStatisticsDAO extends BaseDAOImpl {
         if (statuses != null && statuses.size() > 0) {
             query.setParameter("statuses", statuses);
         }
-        if (dateRange != null) {
-            query.setParameter("endDate", dateRange.getEndDate());
+        if (endDate != null) {
+            query.setParameter("endDate", endDate);
         }
         return (Long) query.getSingleResult();
     }
