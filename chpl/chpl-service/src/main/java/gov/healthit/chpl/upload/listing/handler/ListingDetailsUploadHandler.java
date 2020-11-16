@@ -12,6 +12,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.Product;
@@ -78,10 +79,20 @@ public class ListingDetailsUploadHandler {
                 .sedTestingEndDate(parseSedTestingDate(headingRecord, listingRecords))
                 .sed(sedUploadHandler.parseAsSed(headingRecord, listingRecords))
             .build();
-        //TODO criteria stuff
-        //in the heading record, find all sets of criteria records
-        //for each criteria record
-            //call the cert result handler
+
+        //criteria stuff
+        int nextCertResultIndex = uploadUtil.getNextIndexOfCertificationResult(0, headingRecord);
+        while (nextCertResultIndex >= 0) {
+            List<CSVRecord> parsedCertResultRecords = uploadUtil.getCertificationResultRecordsFromIndex(
+                    nextCertResultIndex, headingRecord, listingRecords);
+            CSVRecord certHeadingRecord = uploadUtil.getHeadingRecord(parsedCertResultRecords);
+            CertificationResult certResult = certResultHandler.parseAsCertificationResult(certHeadingRecord,
+                    parsedCertResultRecords.subList(0, parsedCertResultRecords.size()));
+            listing.getCertificationResults().add(certResult);
+
+            nextCertResultIndex = uploadUtil.getNextIndexOfCertificationResult(
+                    nextCertResultIndex + parsedCertResultRecords.size() - 1, headingRecord);
+        }
 
         //TODO: data normalizer - look up IDs for everywhere that could have one
         return listing;
