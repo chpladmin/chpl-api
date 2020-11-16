@@ -85,10 +85,8 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
             EmailStatistics emailBodyStats = emailStatisticsCreator.getStatistics(allListings);
             saveSummaryStatistics(emailBodyStats);
 
-            Boolean generateCsv = Boolean.valueOf(jobContext.getMergedJobDataMap().getString("generateCsvFile"));
-            if (generateCsv) {
-                createSummaryStatisticsFile(allListings, jobContext);
-            }
+            createSummaryStatisticsFile(allListings, jobContext);
+
         } catch (Exception e) {
             LOGGER.error("Caught unexpected exception: " + e.getMessage(), e);
         }
