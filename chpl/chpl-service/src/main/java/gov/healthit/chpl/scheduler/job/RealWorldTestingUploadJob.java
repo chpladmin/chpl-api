@@ -65,28 +65,28 @@ public class RealWorldTestingUploadJob implements Job {
             UserDTO user = (UserDTO) context.getMergedJobDataMap().get(USER_KEY);
             setSecurityContext(user);
 
-            List<RealWorldTestingUpload> rwts = (List<RealWorldTestingUpload>) context.getMergedJobDataMap().get(RWT_UPLOAD_ITEMS);
+            List<RealWorldTestingUpload> rwts = (List<RealWorldTestingUpload>) context.getMergedJobDataMap()
+                    .get(RWT_UPLOAD_ITEMS);
 
-            //Run some basic validation on upload records that do not have any errors yet...
-            rwts.stream()
-                    .filter(rwt -> rwt.getValidationErrors().size() == 0)
+            // Run some basic validation on upload records that do not have any errors
+            // yet...
+            rwts.stream().filter(rwt -> rwt.getValidationErrors().size() == 0)
                     .forEach(rwt -> rwt.getValidationErrors().addAll(validateRwtUpload(rwt)));
 
-            //Determine if there multiple Plans or Results for the same listing.  These will not get
-            //get processed, and will have an error added to the upload record.
+            // Determine if there multiple Plans or Results for the same listing. These will
+            // not get
+            // get processed, and will have an error added to the upload record.
             rwts = markMultipleChangesForSamePlanTypeAndListing(rwts);
 
-            //Process the plans
-            List<RealWorldTestingUpload> rwtPlans = rwts.stream()
-                    .filter(rwt -> rwt.getValidationErrors().size() == 0
-                            && rwt.getType().equals(RealWorldTestingType.PLANS))
+            // Process the plans
+            List<RealWorldTestingUpload> rwtPlans = rwts.stream().filter(
+                    rwt -> rwt.getValidationErrors().size() == 0 && rwt.getType().equals(RealWorldTestingType.PLANS))
                     .collect(Collectors.toList());
             saveRealWorldTestingUploads(rwtPlans);
 
-            //Process the results
-            List<RealWorldTestingUpload> rwtResults = rwts.stream()
-                    .filter(rwt -> rwt.getValidationErrors().size() == 0
-                            && rwt.getType().equals(RealWorldTestingType.RESULTS))
+            // Process the results
+            List<RealWorldTestingUpload> rwtResults = rwts.stream().filter(
+                    rwt -> rwt.getValidationErrors().size() == 0 && rwt.getType().equals(RealWorldTestingType.RESULTS))
                     .collect(Collectors.toList());
             saveRealWorldTestingUploads(rwtResults);
 
@@ -112,9 +112,7 @@ public class RealWorldTestingUploadJob implements Job {
                 futures.add(CompletableFuture.supplyAsync(() -> processRwtUploadItem(rwt), executorService));
             }
 
-            return futures.stream()
-                    .map(f -> getRwtUploadFromFuture(f))
-                    .collect(Collectors.toList());
+            return futures.stream().map(f -> getRwtUploadFromFuture(f)).collect(Collectors.toList());
         } finally {
             executorService.shutdown();
         }
@@ -135,8 +133,7 @@ public class RealWorldTestingUploadJob implements Job {
         Optional<CertifiedProductSearchDetails> listing = getListing(rwt.getChplProductNumber());
 
         if (listing.isPresent()) {
-            if (rwt.getType().equals(RealWorldTestingType.PLANS)
-                    && !hasDataRwtPlansChanged(listing.get(), rwt)) {
+            if (rwt.getType().equals(RealWorldTestingType.PLANS) && !hasDataRwtPlansChanged(listing.get(), rwt)) {
                 rwt.getValidationErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.dataNotChanged"));
             } else if (rwt.getType().equals(RealWorldTestingType.RESULTS)
                     && !hasDataRwtResultsChanged(listing.get(), rwt)) {
@@ -168,7 +165,8 @@ public class RealWorldTestingUploadJob implements Job {
         return rwt;
     }
 
-    private RealWorldTestingUpload addRwtDataToListing(CertifiedProductSearchDetails listing, RealWorldTestingUpload rwt) {
+    private RealWorldTestingUpload addRwtDataToListing(CertifiedProductSearchDetails listing,
+            RealWorldTestingUpload rwt) {
         if (rwt.getType().equals(RealWorldTestingType.PLANS)) {
             listing.setRwtPlansCheckDate(rwt.getLastChecked());
             listing.setRwtPlansUrl(rwt.getUrl());
@@ -181,18 +179,19 @@ public class RealWorldTestingUploadJob implements Job {
 
     private boolean hasDataRwtPlansChanged(CertifiedProductSearchDetails listing, RealWorldTestingUpload rwt) {
         return !(Objects.equals(listing.getRwtPlansUrl(), rwt.getUrl())
-                    && Objects.equals(listing.getRwtPlansCheckDate(), rwt.getLastChecked()));
+                && Objects.equals(listing.getRwtPlansCheckDate(), rwt.getLastChecked()));
     }
 
     private boolean hasDataRwtResultsChanged(CertifiedProductSearchDetails listing, RealWorldTestingUpload rwt) {
         return !(Objects.equals(listing.getRwtResultsUrl(), rwt.getUrl())
-                    && Objects.equals(listing.getRwtResultsCheckDate(), rwt.getLastChecked()));
+                && Objects.equals(listing.getRwtResultsCheckDate(), rwt.getLastChecked()));
     }
 
     @SuppressWarnings("checkstyle:linelength")
     private Optional<CertifiedProductSearchDetails> getListing(String chplProductNumber) {
         try {
-            return Optional.ofNullable(certifiedProductDetailsManager.getCertifiedProductDetailsByChplProductNumber(chplProductNumber));
+            return Optional.ofNullable(
+                    certifiedProductDetailsManager.getCertifiedProductDetailsByChplProductNumber(chplProductNumber));
         } catch (Exception e) {
             return Optional.empty();
         }
@@ -227,35 +226,30 @@ public class RealWorldTestingUploadJob implements Job {
         List<String> addresses = new ArrayList<String>(Arrays.asList(address));
 
         EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipients(addresses)
-        .subject("Real World Testing Upload Results")
-        .htmlMessage(rwtEmail.getEmail(rwts))
-        .sendEmail();
+        emailBuilder.recipients(addresses).subject("Real World Testing Upload Results")
+                .htmlMessage(rwtEmail.getEmail(rwts)).sendEmail();
     }
 
     private Integer getThreadCountForJob() throws NumberFormatException {
         return Integer.parseInt(env.getProperty("executorThreadCountForQuartzJobs"));
     }
 
-    private List<RealWorldTestingUpload> markMultipleChangesForSamePlanTypeAndListing(List<RealWorldTestingUpload> rwts) {
-        //Find any listings that have duplicate updates - multiple Plans
+    private List<RealWorldTestingUpload> markMultipleChangesForSamePlanTypeAndListing(
+            List<RealWorldTestingUpload> rwts) {
+        // Find any listings that have duplicate updates - multiple Plans
         rwts.stream()
                 .filter(rwt -> rwt.getValidationErrors().size() == 0
-                    && rwt.getType().equals(RealWorldTestingType.PLANS))
-                .collect(Collectors.groupingBy(RealWorldTestingUpload::getChplProductNumber))
-                .entrySet().stream()
-                .filter(lst -> lst.getValue().size() > 1)
-                .forEach(lst -> lst.getValue().stream()
-                        .forEach(rwt -> rwt.getValidationErrors().add("Multiple Plans found for this CHPL Product Number")));
+                        && rwt.getType().equals(RealWorldTestingType.PLANS))
+                .collect(Collectors.groupingBy(RealWorldTestingUpload::getChplProductNumber)).entrySet().stream()
+                .filter(lst -> lst.getValue().size() > 1).forEach(lst -> lst.getValue().stream().forEach(
+                        rwt -> rwt.getValidationErrors().add("Multiple Plans found for this CHPL Product Number")));
 
         rwts.stream()
                 .filter(rwt -> rwt.getValidationErrors().size() == 0
-                    && rwt.getType().equals(RealWorldTestingType.RESULTS))
-                .collect(Collectors.groupingBy(RealWorldTestingUpload::getChplProductNumber))
-                .entrySet().stream()
-                .filter(lst -> lst.getValue().size() > 1)
-                .forEach(lst -> lst.getValue().stream()
-                    .forEach(rwt -> rwt.getValidationErrors().add("Multiple Results found for this CHPL Product Number")));
+                        && rwt.getType().equals(RealWorldTestingType.RESULTS))
+                .collect(Collectors.groupingBy(RealWorldTestingUpload::getChplProductNumber)).entrySet().stream()
+                .filter(lst -> lst.getValue().size() > 1).forEach(lst -> lst.getValue().stream().forEach(
+                        rwt -> rwt.getValidationErrors().add("Multiple Results found for this CHPL Product Number")));
         return rwts;
     }
 
@@ -303,16 +297,16 @@ public class RealWorldTestingUploadJob implements Job {
 
                 table.append("        <tr class=\"" + trClass + "\">\n");
                 table.append("            <td>");
-                table.append(rwt.getChplProductNumber());
+                table.append(rwt.getOriginalData().getChplProductNumber());
                 table.append("            </td>\n");
                 table.append("            <td>");
-                table.append(rwt.getType() != null ? rwt.getType().toString() : "[Unknown]");
+                table.append(rwt.getOriginalData().getType());
                 table.append("            </td>\n");
                 table.append("            <td>");
-                table.append(rwt.getLastChecked() != null ? rwt.getLastChecked() : "[Unknown]");
+                table.append(rwt.getOriginalData().getLastChecked());
                 table.append("            </td>\n");
                 table.append("            <td>");
-                table.append(rwt.getUrl());
+                table.append(rwt.getOriginalData().getUrl());
                 table.append("            </td>\n");
                 table.append("            <td>");
                 table.append(getErrorsAsString(rwt));
@@ -328,8 +322,7 @@ public class RealWorldTestingUploadJob implements Job {
 
         private String getErrorsAsString(RealWorldTestingUpload rwt) {
             if (rwt.getValidationErrors().size() > 0) {
-                return rwt.getValidationErrors().stream()
-                        .map(err -> !err.startsWith("WARNING") ? "ERROR: " + err : err)
+                return rwt.getValidationErrors().stream().map(err -> !err.startsWith("WARNING") ? "ERROR: " + err : err)
                         .collect(Collectors.joining("<br/>"));
             } else {
                 return "SUCCESS";
@@ -339,5 +332,5 @@ public class RealWorldTestingUploadJob implements Job {
         private String getStyles() {
             return env.getProperty("rwt_email_styles");
         }
-     }
+    }
 }
