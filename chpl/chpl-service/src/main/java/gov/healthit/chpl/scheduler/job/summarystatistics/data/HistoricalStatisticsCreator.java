@@ -17,7 +17,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.statistics.DeveloperStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.ListingStatisticsDAO;
@@ -38,17 +37,14 @@ public class HistoricalStatisticsCreator {
     private ListingStatisticsDAO listingStatisticsDAO;
     private DeveloperStatisticsDAO developerStatisticsDAO;
     private SurveillanceStatisticsDAO surveillanceStatisticsDAO;
-    private CertificationStatusEventDAO certificationStatusEventDAO;
     private Environment env;
 
     @Autowired
     public HistoricalStatisticsCreator(ListingStatisticsDAO listingStatisticsDAO, DeveloperStatisticsDAO developerStatisticsDAO,
-            SurveillanceStatisticsDAO surveillanceStatisticsDAO, CertifiedProductDAO certifiedProductDAO,
-            CertificationStatusEventDAO certificationStatusEventDAO, Environment env) {
+            SurveillanceStatisticsDAO surveillanceStatisticsDAO, CertifiedProductDAO certifiedProductDAO, Environment env) {
         this.listingStatisticsDAO = listingStatisticsDAO;
         this.developerStatisticsDAO = developerStatisticsDAO;
         this.surveillanceStatisticsDAO = surveillanceStatisticsDAO;
-        this.certificationStatusEventDAO = certificationStatusEventDAO;
         this.env = env;
     }
 
