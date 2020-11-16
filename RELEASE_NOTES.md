@@ -1,5 +1,18 @@
 # Release Notes
 
+## Version 25.16.0
+_16 November 2020_
+
+### Features
+* Add new endpoint to get developer hierarchy
+* Remove friendly name from developer and product points of contact
+
+### Bug Fixes
+* Correct the wrong URLs in few emails
+* Re-order "reason" element for dev status changes in XML
+
+---
+
 ## Version 25.15.0
 _19 October 2020_
 
