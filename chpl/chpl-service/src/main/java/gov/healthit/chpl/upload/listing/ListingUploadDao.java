@@ -55,20 +55,9 @@ public class ListingUploadDao extends BaseDAOImpl {
     public List<ListingUpload> getAll() {
         Query query = entityManager.createQuery("SELECT ul "
                 + "FROM ListingUploadEntity ul "
-                + "WHERE deleted = false", ListingUploadEntity.class);
-        List<ListingUploadEntity> entities = query.getResultList();
-        List<ListingUpload> allUploadedListings = entities.stream()
-                .map(entity -> convert(entity))
-                .collect(Collectors.<ListingUpload>toList());
-        return allUploadedListings;
-    }
-
-    public List<ListingUpload> getAllByAcbs(List<Long> acbIds) {
-        Query query = entityManager.createQuery("SELECT ul "
-                + "FROM ListingUploadEntity ul "
-                + "WHERE deleted = false "
-                + "AND certificationBodyId IN (:acbIds)", ListingUploadEntity.class);
-        query.setParameter("acbIds", acbIds);
+                + "LEFT JOIN FETCH ul.certificationBody acb "
+                + "LEFT JOIN FETCH acb.address "
+                + "WHERE ul.deleted = false", ListingUploadEntity.class);
         List<ListingUploadEntity> entities = query.getResultList();
         List<ListingUpload> allUploadedListings = entities.stream()
                 .map(entity -> convert(entity))
@@ -79,8 +68,10 @@ public class ListingUploadDao extends BaseDAOImpl {
     public ListingUpload getByChplProductNumber(String chplProductNumber) {
         Query query = entityManager.createQuery("SELECT ul "
                 + "FROM ListingUploadEntity ul "
-                + "WHERE deleted = false "
-                + "AND chplProductNumber = :chplProductNumber ", ListingUploadEntity.class);
+                + "LEFT JOIN FETCH ul.certificationBody acb "
+                + "LEFT JOIN FETCH acb.address "
+                + "WHERE ul.deleted = false "
+                + "AND ul.chplProductNumber = :chplProductNumber ", ListingUploadEntity.class);
         query.setParameter("chplProductNumber", chplProductNumber);
         List<ListingUploadEntity> entities = query.getResultList();
         if (entities != null && entities.size() > 0) {
@@ -92,10 +83,12 @@ public class ListingUploadDao extends BaseDAOImpl {
     private ListingUpload convert(ListingUploadEntity entity) {
         ListingUpload listingUpload = new ListingUpload();
         listingUpload.setId(entity.getId());
-        CertificationBody acb = new CertificationBody();
-        acb.setId(entity.getCertificationBodyId());
+        CertificationBody acb = null;
         if (entity.getCertificationBody() != null) {
-            acb.setName(entity.getCertificationBody().getName());
+            acb = new CertificationBody(entity.getCertificationBody());
+        } else {
+            acb = new CertificationBody();
+            acb.setId(entity.getCertificationBodyId());
         }
         listingUpload.setAcb(acb);
         listingUpload.setChplProductNumber(entity.getChplProductNumber());

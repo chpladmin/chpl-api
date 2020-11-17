@@ -3,12 +3,14 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
+
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
 
@@ -25,11 +27,11 @@ public class ListingUpload implements Serializable {
     private String version;
     private Integer warningCount;
     private Integer errorCount;
-    private Set<String> uploadErrors;
+    @XmlTransient
+    @JsonIgnore
     private List<CSVRecord> records;
 
     public ListingUpload() {
-        uploadErrors = new LinkedHashSet<String>();
         records = new ArrayList<CSVRecord>();
     }
 
