@@ -23,15 +23,14 @@ import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTestingLabDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.logging.Loggable;
 
 /**
- * A component that provides some helpful methods for dealing with Chpl Product Numbers.
+ * A component that provides some helpful methods for dealing with Chpl Product
+ * Numbers.
  *
  * @author TYoung
  *
  */
-@Loggable
 @Component
 public class ChplProductNumberUtil {
     private static final Logger LOGGER = LogManager.getLogger(ChplProductNumberUtil.class);
@@ -128,7 +127,8 @@ public class ChplProductNumberUtil {
     /**
      * Regex for valid certified date codes.
      */
-    public static final String CERTIFIED_DATE_CODE_REGEX = "^[0-9]{" + ChplProductNumberUtil.CERTIFIED_DATE_CODE_LENGTH + "}$";
+    public static final String CERTIFIED_DATE_CODE_REGEX = "^[0-9]{" + ChplProductNumberUtil.CERTIFIED_DATE_CODE_LENGTH
+            + "}$";
 
     /**
      * How many parts there are in the CHPL Product ID.
@@ -143,8 +143,8 @@ public class ChplProductNumberUtil {
     private static final String LEGACY_ID_BEGIN = "CHP-";
 
     /**
-     * REGEX that matches a CHPL Product ID for searching. Requires first four components (Edition, ATL, ACB, Developer
-     * Code). Optional for remaining parts.
+     * REGEX that matches a CHPL Product ID for searching. Requires first four
+     * components (Edition, ATL, ACB, Developer Code). Optional for remaining parts.
      */
     public static final String CHPL_PRODUCT_NUMBER_SEARCH_REGEX = "(\\d{2}\\.){3}\\d{4}\\.(\\w{4}\\.(\\w{2}\\.(\\d{2}\\.(\\d\\.(\\d{6})?)?)?)?)?";
 
@@ -156,12 +156,9 @@ public class ChplProductNumberUtil {
     private CertifiedProductDAO cpDao;
 
     @Autowired
-    public ChplProductNumberUtil(final TestingLabDAO testingLabDAO,
-            final CertificationBodyDAO certBodyDAO,
-            final DeveloperDAO developerDAO,
-            final CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
-            final ChplProductNumberDAO chplProductNumberDAO,
-            final CertifiedProductDAO cpDao) {
+    public ChplProductNumberUtil(final TestingLabDAO testingLabDAO, final CertificationBodyDAO certBodyDAO,
+            final DeveloperDAO developerDAO, final CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
+            final ChplProductNumberDAO chplProductNumberDAO, final CertifiedProductDAO cpDao) {
         this.testingLabDAO = testingLabDAO;
         this.certBodyDAO = certBodyDAO;
         this.developerDAO = developerDAO;
@@ -176,8 +173,7 @@ public class ChplProductNumberUtil {
     /**
      * Gets the CHPL Product Number as calculated by the DB.
      *
-     * @param certifiedProductId
-     *            - Long
+     * @param certifiedProductId - Long
      * @return - String
      */
     @Transactional
@@ -186,18 +182,14 @@ public class ChplProductNumberUtil {
     }
 
     /**
-     * Determines what the derived CHPL Product Number will be based on the values passed.
+     * Determines what the derived CHPL Product Number will be based on the values
+     * passed.
      *
-     * @param uniqueId
-     *            - Unique ID from the product
-     * @param certificationEdition
-     *            4 character year, i.e. "2015"
-     * @param testingLabs
-     *            the testing Labs used for the Listing
-     * @param certificationBodyId
-     *            Id (not code) for the certification body
-     * @param developerId
-     *            Id (not code) for the developer
+     * @param uniqueId             - Unique ID from the product
+     * @param certificationEdition 4 character year, i.e. "2015"
+     * @param testingLabs          the testing Labs used for the Listing
+     * @param certificationBodyId  Id (not code) for the certification body
+     * @param developerId          Id (not code) for the developer
      * @return String representing the derived CHPL Product Number
      */
     public String generate(final String uniqueId, final String certificationEdition,
@@ -206,7 +198,8 @@ public class ChplProductNumberUtil {
 
         String[] uniqueIdParts = splitUniqueIdParts(uniqueId);
         ChplProductNumberParts parts = new ChplProductNumberParts();
-        parts.editionCode = certificationEdition.substring(CERTIFICATION_EDITION_BEGIN_INDEX, CERTIFICATION_EDITION_END_INDEX);
+        parts.editionCode = certificationEdition.substring(CERTIFICATION_EDITION_BEGIN_INDEX,
+                CERTIFICATION_EDITION_END_INDEX);
         parts.atlCode = getTestingLabCode(testingLabs);
         parts.acbCode = getCertificationBodyCode(certificationBodyId);
         parts.developerCode = getDeveloperCode(developerId);
@@ -222,8 +215,8 @@ public class ChplProductNumberUtil {
     /**
      * Determines if a CHPL Product Number already exists in the database.
      *
-     * @param chplProductNumber
-     *            - String representing the CHPL Product Number to check
+     * @param chplProductNumber - String representing the CHPL Product Number to
+     *                          check
      * @return Boolean - true if the value does not exist, false if the value exists
      */
     public Boolean isUnique(final String chplProductNumber) {
@@ -240,7 +233,8 @@ public class ChplProductNumberUtil {
      * Determines if the given CHPL ID is a listing in the system.
      *
      * @param id
-     * @return true if there is a listing with the chpl product number, false otherwise
+     * @return true if there is a listing with the chpl product number, false
+     *         otherwise
      * @throws EntityRetrievalException
      */
     public boolean chplIdExists(final String chplProductNumber) throws EntityRetrievalException {
@@ -335,8 +329,7 @@ public class ChplProductNumberUtil {
      */
     public String getChplProductNumber(final String chplPrefix, final String identifier) {
         StringBuffer chplProductNumber = new StringBuffer();
-        chplProductNumber.append(chplPrefix)
-                .append("-").append(identifier);
+        chplProductNumber.append(chplPrefix).append("-").append(identifier);
 
         return chplProductNumber.toString();
     }
@@ -384,9 +377,8 @@ public class ChplProductNumberUtil {
                 if (hasIcs != null && hasIcs.equals(Boolean.TRUE)) {
                     hasIcsConflict = true;
                 }
-            } else if (hasIcs == null || hasIcs.equals(Boolean.FALSE)
-                    && icsCodeInteger != null
-                    && icsCodeInteger.intValue() > 0) {
+            } else if (hasIcs == null
+                    || hasIcs.equals(Boolean.FALSE) && icsCodeInteger != null && icsCodeInteger.intValue() > 0) {
                 hasIcsConflict = true;
             }
         }
@@ -409,11 +401,9 @@ public class ChplProductNumberUtil {
     private String concatParts(final ChplProductNumberParts chplProductNumberParts) {
         StringBuilder chplProductNumber = new StringBuilder();
         chplProductNumber.append(formatEdition(chplProductNumberParts.editionCode)).append(".")
-                .append(chplProductNumberParts.atlCode).append(".")
-                .append(chplProductNumberParts.acbCode).append(".")
-                .append(chplProductNumberParts.developerCode).append(".")
-                .append(chplProductNumberParts.productCode).append(".")
-                .append(chplProductNumberParts.versionCode).append(".")
+                .append(chplProductNumberParts.atlCode).append(".").append(chplProductNumberParts.acbCode).append(".")
+                .append(chplProductNumberParts.developerCode).append(".").append(chplProductNumberParts.productCode)
+                .append(".").append(chplProductNumberParts.versionCode).append(".")
                 .append(chplProductNumberParts.icsCode).append(".")
                 .append(chplProductNumberParts.additionalSoftwareCode).append(".")
                 .append(chplProductNumberParts.certifiedDateCode);
