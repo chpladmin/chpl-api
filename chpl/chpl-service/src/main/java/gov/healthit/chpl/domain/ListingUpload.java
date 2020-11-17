@@ -1,6 +1,7 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -18,6 +19,7 @@ public class ListingUpload implements Serializable {
     private Long id;
     private String chplProductNumber;
     private CertificationBody acb;
+    private LocalDate certificationDate;
     private String developer;
     private String product;
     private String version;

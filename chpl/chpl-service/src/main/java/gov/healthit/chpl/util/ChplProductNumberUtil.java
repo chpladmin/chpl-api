@@ -401,6 +401,11 @@ public class ChplProductNumberUtil {
         return parts.getAcbCode();
     }
 
+    public String getCertificationDateCode(String chplProductNumber) {
+        ChplProductNumberParts parts = parseChplProductNumber(chplProductNumber);
+        return parts.getCertifiedDateCode();
+    }
+
     private String[] splitUniqueIdParts(final String uniqueId) {
         String[] uniqueIdParts = uniqueId.split("\\.");
         if (uniqueIdParts == null || uniqueIdParts.length != ChplProductNumberUtil.CHPL_PRODUCT_ID_PARTS) {

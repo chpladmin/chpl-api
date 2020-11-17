@@ -4,7 +4,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -17,6 +23,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,6 +41,8 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ListingUploadManager {
     public static final String NEW_DEVELOPER_CODE = "XXXX";
+    private static final String CERT_DATE_CODE = "yyMMdd";
+    private DateFormat dateFormat;
 
     private ListingUploadHandlerUtil uploadUtil;
     private ChplProductNumberUtil chplProductNumberUtil;
@@ -44,11 +53,21 @@ public class ListingUploadManager {
     @Autowired
     public ListingUploadManager(ListingUploadHandlerUtil uploadUtil, ChplProductNumberUtil chplProductNumberUtil,
             ListingUploadDao listingUploadDao, CertificationBodyDAO acbDao, ErrorMessageUtil msgUtil) {
+        this.dateFormat = new SimpleDateFormat(CERT_DATE_CODE);
         this.uploadUtil = uploadUtil;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.listingUploadDao = listingUploadDao;
         this.acbDao = acbDao;
         this.msgUtil = msgUtil;
+    }
+
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).LISTING_UPLOAD)")
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).LISTING_UPLOAD, filterObject)")
+    public List<ListingUpload> getPendingListings() {
+        return listingUploadDao.getAll();
     }
 
     @Transactional
@@ -82,7 +101,7 @@ public class ListingUploadManager {
     public void createOrReplaceListingUpload(ListingUpload uploadMetadata) throws ValidationException {
         if (StringUtils.isEmpty(uploadMetadata.getChplProductNumber())) {
             throw new ValidationException(msgUtil.getMessage("listing.upload.missingChplProductNumber"));
-        } else if (uploadMetadata.getAcb() == null) {
+        } else if (uploadMetadata.getAcb() == null || uploadMetadata.getAcb().getId() == null) {
             throw new ValidationException(msgUtil.getMessage("listing.upload.missingAcb"));
         }
 
@@ -140,6 +159,23 @@ public class ListingUploadManager {
        return acb;
     }
 
+    private LocalDate determineCertificationDate(CSVRecord headingRecord,
+            List<CSVRecord> listingRecords, String chplProductNumber) throws ParseException, ValidationException {
+        LocalDate certificationDate = null;
+        //first look for a certification date column in the file
+       Date certDateFromFile = uploadUtil.parseSingleRowFieldAsDate(Headings.CERTIFICATION_DATE, headingRecord, listingRecords);
+       if (certDateFromFile != null) {
+           certificationDate = certDateFromFile.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+       }
+        //if it's not there use the cert date code from the CHPL product number
+       String certDateCode = chplProductNumberUtil.getCertificationDateCode(chplProductNumber);
+       if (!StringUtils.isEmpty(certDateCode)) {
+           Date certDateFromChplNumber = dateFormat.parse(certDateCode);
+           certificationDate = certDateFromChplNumber.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+       }
+       return certificationDate;
+    }
+
     private List<CSVRecord> getListingRecords(String chplProductNumber, CSVRecord headingRecord,
             List<CSVRecord> allListingRecords) {
         List<CSVRecord> listingCsvRecords = new ArrayList<CSVRecord>();
@@ -161,8 +197,6 @@ public class ListingUploadManager {
     }
 
     private ListingUpload createListingUploadMetadata(CSVRecord headingRecord, List<CSVRecord> listingCsvRecords) {
-        //After this is inserted into the database, a quartz job will be kicked off
-        //to populate the error and warning counts -
         ListingUpload listingUploadMetadata = new ListingUpload();
         listingUploadMetadata.getRecords().add(headingRecord);
         listingUploadMetadata.getRecords().addAll(listingCsvRecords);
@@ -177,6 +211,14 @@ public class ListingUploadManager {
             LOGGER.error("Could not determine ACB.", ex);
         }
         listingUploadMetadata.setAcb(acb);
+        LocalDate certificationDate = null;
+        try {
+            certificationDate = determineCertificationDate(headingRecord, listingCsvRecords,
+                    listingUploadMetadata.getChplProductNumber());
+        } catch (Exception ex) {
+            LOGGER.error("Could not determine certification date.", ex);
+        }
+        listingUploadMetadata.setCertificationDate(certificationDate);
         return listingUploadMetadata;
     }
 

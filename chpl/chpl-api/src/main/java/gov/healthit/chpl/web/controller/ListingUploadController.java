@@ -11,6 +11,8 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 
+import org.apache.commons.lang.NotImplementedException;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.upload.listing.ListingUploadManager;
@@ -46,13 +49,15 @@ public class ListingUploadController {
 
     private ListingUploadManager uploadManager;
     private ErrorMessageUtil msgUtil;
+    private FF4j ff4j;
     private Environment env;
 
     @Autowired
-    public ListingUploadController(ListingUploadManager uploadManager,
+    public ListingUploadController(ListingUploadManager uploadManager, FF4j ff4j,
             ErrorMessageUtil msgUtil, Environment env) {
         this.uploadManager = uploadManager;
         this.msgUtil = msgUtil;
+        this.ff4j = ff4j;
         this.env = env;
     }
 
@@ -60,8 +65,11 @@ public class ListingUploadController {
             notes = "Security Restrictions: User will be presented the pending listings that "
                     + "they have access to according to ACB(s) and CHPL permissions.")
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public void getPending() {
-        //TODO
+    public List<ListingUpload> getPending() {
+        if (!ff4j.check(FeatureList.ENHANCED_UPLOAD)) {
+            throw new NotImplementedException();
+        }
+        return uploadManager.getPendingListings();
     }
 
     /**
@@ -78,6 +86,10 @@ public class ListingUploadController {
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public void upload(@RequestParam("file") MultipartFile file)
             throws ValidationException, MaxUploadSizeExceededException {
+        if (!ff4j.check(FeatureList.ENHANCED_UPLOAD)) {
+            throw new NotImplementedException();
+        }
+
         List<ListingUpload> listingsToAdd = uploadManager.parseUploadFile(file);
         for (ListingUpload listingToAdd : listingsToAdd) {
             try {

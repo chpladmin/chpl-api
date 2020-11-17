@@ -24,8 +24,12 @@ public class ListingUploadDao extends BaseDAOImpl {
 
     public void create(ListingUpload uploadMetadata) {
         ListingUploadEntity toCreate = new ListingUploadEntity();
-        toCreate.setCertificationBodyId(uploadMetadata.getAcb().getId());
+        toCreate.setCertificationBodyId(uploadMetadata.getAcb() != null ? uploadMetadata.getAcb().getId() : null);
         toCreate.setChplProductNumber(uploadMetadata.getChplProductNumber());
+        toCreate.setCertificationDate(uploadMetadata.getCertificationDate());
+        toCreate.setDeveloperName(uploadMetadata.getDeveloper());
+        toCreate.setProductName(uploadMetadata.getProduct());
+        toCreate.setVersionName(uploadMetadata.getVersion());
         toCreate.setErrorCount(uploadMetadata.getErrorCount());
         toCreate.setWarningCount(uploadMetadata.getWarningCount());
         String fileContents = null;
@@ -95,6 +99,10 @@ public class ListingUploadDao extends BaseDAOImpl {
         }
         listingUpload.setAcb(acb);
         listingUpload.setChplProductNumber(entity.getChplProductNumber());
+        listingUpload.setCertificationDate(entity.getCertificationDate());
+        listingUpload.setDeveloper(entity.getDeveloperName());
+        listingUpload.setProduct(entity.getProductName());
+        listingUpload.setVersion(entity.getVersionName());
         listingUpload.setErrorCount(entity.getErrorCount());
         listingUpload.setWarningCount(entity.getWarningCount());
         return listingUpload;

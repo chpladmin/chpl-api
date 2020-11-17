@@ -1,5 +1,6 @@
 package gov.healthit.chpl.upload.listing;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -34,6 +35,18 @@ public class ListingUploadEntity {
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "certification_body_id", insertable = false, updatable = false)
     private CertificationBodyEntity certificationBody;
+
+    @Column(name = "vendor_name")
+    private String developerName;
+
+    @Column(name = "product_name")
+    private String productName;
+
+    @Column(name = "version_name")
+    private String versionName;
+
+    @Column(name = "certification_date")
+    private LocalDate certificationDate;
 
     @Column(name = "error_count")
     private Integer errorCount;
