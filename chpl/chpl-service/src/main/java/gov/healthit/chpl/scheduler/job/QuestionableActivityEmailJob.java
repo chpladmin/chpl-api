@@ -77,8 +77,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
     /**
      * Constructor that initializes the QuestionableActivityEmailJob object.
      *
-     * @throws Exception
-     *             if thrown
+     * @throws Exception if thrown
      */
     public QuestionableActivityEmailJob() throws Exception {
         super();
@@ -91,14 +90,14 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         LOGGER.info("Creating questionable activity email for: " + jobContext.getMergedJobDataMap().getString("email"));
 
         populateRangeDefaultsFromJobData(jobContext);
-        LOGGER.info("Valid range read from job context: " + rangeInDays.getMinimum() + " - " + rangeInDays.getMaximum());
+        LOGGER.info(
+                "Valid range read from job context: " + rangeInDays.getMinimum() + " - " + rangeInDays.getMaximum());
 
         String errors = "";
         Integer range = getRangeInDays(jobContext);
         if (!rangeInDays.contains(range)) {
             errors = String.format("Range is invalid.  It must be numeric and between %d and %d.  Using %d.",
-                    rangeInDays.getMinimum(),
-                    rangeInDays.getMaximum(), range);
+                    rangeInDays.getMinimum(), rangeInDays.getMaximum(), range);
             LOGGER.error(errors);
         }
 
@@ -112,8 +111,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         List<File> files = null;
         if (csvRows != null && csvRows.size() > 0) {
             htmlMessage = String.format(env.getProperty("questionableActivityHasDataEmailBody"),
-                    Util.getDateFormatter().format(start.getTime()),
-                    Util.getDateFormatter().format(end.getTime()));
+                    Util.getDateFormatter().format(start.getTime()), Util.getDateFormatter().format(end.getTime()));
             String filename = env.getProperty("questionableActivityReportFilename");
             File output = null;
             files = new ArrayList<File>();
@@ -123,8 +121,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             }
         } else {
             htmlMessage = String.format(env.getProperty("questionableActivityNoDataEmailBody"),
-                    Util.getDateFormatter().format(start.getTime()),
-                    Util.getDateFormatter().format(end.getTime()));
+                    Util.getDateFormatter().format(start.getTime()), Util.getDateFormatter().format(end.getTime()));
         }
 
         LOGGER.info("Sending email to {} with contents {} and a total of {} questionable activities", to, htmlMessage,
@@ -135,10 +132,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             recipients.add(to);
 
             EmailBuilder emailBuilder = new EmailBuilder(env);
-            emailBuilder.recipients(recipients)
-                    .subject(subject)
-                    .htmlMessage(htmlMessage)
-                    .fileAttachments(files)
+            emailBuilder.recipients(recipients).subject(subject).htmlMessage(htmlMessage).fileAttachments(files)
                     .sendEmail();
 
         } catch (MessagingException e) {
@@ -219,15 +213,13 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         LOGGER.debug("Found " + certResultActivities.size() + " questionable certification result activities");
 
         // create a bucket for each activity timestamp+trigger type
-        Map<ActivityDateTriggerGroup, List<QuestionableActivityCertificationResultDTO>> activityByGroup
-            = new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityCertificationResultDTO>>();
+        Map<ActivityDateTriggerGroup, List<QuestionableActivityCertificationResultDTO>> activityByGroup = new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityCertificationResultDTO>>();
         for (QuestionableActivityCertificationResultDTO activity : certResultActivities) {
-            ActivityDateTriggerGroup groupKey = new ActivityDateTriggerGroup(activity.getActivityDate(), activity
-                    .getTrigger());
+            ActivityDateTriggerGroup groupKey = new ActivityDateTriggerGroup(activity.getActivityDate(),
+                    activity.getTrigger());
 
             if (activityByGroup.get(groupKey) == null) {
-                List<QuestionableActivityCertificationResultDTO> activitiesForGroup
-                    = new ArrayList<QuestionableActivityCertificationResultDTO>();
+                List<QuestionableActivityCertificationResultDTO> activitiesForGroup = new ArrayList<QuestionableActivityCertificationResultDTO>();
                 activitiesForGroup.add(activity);
                 activityByGroup.put(groupKey, activitiesForGroup);
             } else {
@@ -262,11 +254,10 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         LOGGER.debug("Found " + listingActivities.size() + " questionable listing activities");
 
         // create a bucket for each activity timestamp+trigger type
-        Map<ActivityDateTriggerGroup, List<QuestionableActivityListingDTO>> activityByGroup
-            = new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityListingDTO>>();
+        Map<ActivityDateTriggerGroup, List<QuestionableActivityListingDTO>> activityByGroup = new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityListingDTO>>();
         for (QuestionableActivityListingDTO activity : listingActivities) {
-            ActivityDateTriggerGroup groupKey = new ActivityDateTriggerGroup(activity.getActivityDate(), activity
-                    .getTrigger());
+            ActivityDateTriggerGroup groupKey = new ActivityDateTriggerGroup(activity.getActivityDate(),
+                    activity.getTrigger());
 
             if (activityByGroup.get(groupKey) == null) {
                 List<QuestionableActivityListingDTO> activitiesForDate = new ArrayList<QuestionableActivityListingDTO>();
@@ -303,11 +294,10 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         LOGGER.debug("Found " + developerActivities.size() + " questionable developer activities");
 
         // create a bucket for each activity timestamp+trigger type
-        Map<ActivityDateTriggerGroup, List<QuestionableActivityDeveloperDTO>> activityByGroup
-            = new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityDeveloperDTO>>();
+        Map<ActivityDateTriggerGroup, List<QuestionableActivityDeveloperDTO>> activityByGroup = new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityDeveloperDTO>>();
         for (QuestionableActivityDeveloperDTO activity : developerActivities) {
-            ActivityDateTriggerGroup groupKey = new ActivityDateTriggerGroup(activity.getActivityDate(), activity
-                    .getTrigger());
+            ActivityDateTriggerGroup groupKey = new ActivityDateTriggerGroup(activity.getActivityDate(),
+                    activity.getTrigger());
 
             if (activityByGroup.get(groupKey) == null) {
                 List<QuestionableActivityDeveloperDTO> activitiesForDate = new ArrayList<QuestionableActivityDeveloperDTO>();
@@ -344,11 +334,10 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         LOGGER.debug("Found " + productActivities.size() + " questionable developer activities");
 
         // create a bucket for each activity timestamp+trigger type
-        Map<ActivityDateTriggerGroup, List<QuestionableActivityProductDTO>> activityByGroup
-            = new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityProductDTO>>();
+        Map<ActivityDateTriggerGroup, List<QuestionableActivityProductDTO>> activityByGroup = new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityProductDTO>>();
         for (QuestionableActivityProductDTO activity : productActivities) {
-            ActivityDateTriggerGroup groupKey = new ActivityDateTriggerGroup(activity.getActivityDate(), activity
-                    .getTrigger());
+            ActivityDateTriggerGroup groupKey = new ActivityDateTriggerGroup(activity.getActivityDate(),
+                    activity.getTrigger());
 
             if (activityByGroup.get(groupKey) == null) {
                 List<QuestionableActivityProductDTO> activitiesForDate = new ArrayList<QuestionableActivityProductDTO>();
@@ -385,11 +374,10 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         LOGGER.debug("Found " + versionActivities.size() + " questionable developer activities");
 
         // create a bucket for each activity timestamp+trigger type
-        Map<ActivityDateTriggerGroup, List<QuestionableActivityVersionDTO>> activityByGroup
-            = new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityVersionDTO>>();
+        Map<ActivityDateTriggerGroup, List<QuestionableActivityVersionDTO>> activityByGroup = new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityVersionDTO>>();
         for (QuestionableActivityVersionDTO activity : versionActivities) {
-            ActivityDateTriggerGroup groupKey = new ActivityDateTriggerGroup(activity.getActivityDate(), activity
-                    .getTrigger());
+            ActivityDateTriggerGroup groupKey = new ActivityDateTriggerGroup(activity.getActivityDate(),
+                    activity.getTrigger());
 
             if (activityByGroup.get(groupKey) == null) {
                 List<QuestionableActivityVersionDTO> activitiesForDate = new ArrayList<QuestionableActivityVersionDTO>();
@@ -428,8 +416,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         currRow.set(VERSION_COL, activity.getListing().getVersion().getVersion());
         currRow.set(LISTING_COL, activity.getListing().getChplProductNumber());
         currRow.set(STATUS_COL, activity.getListing().getCertificationStatusName());
-        currRow.set(LINK_COL, env.getProperty("chplUrlBegin") + env.getProperty("listingReportsUrlPart")
-            + "/" + activity.getListing().getId());
+        currRow.set(LINK_COL, env.getProperty("chplUrlBegin") + env.getProperty("listingReportsUrlPart") + "/"
+                + activity.getListing().getId());
         currRow.set(ACTIVITY_USER_COL, activity.getUser().getSubjectName());
 
         if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.CRITERIA_ADDED.getName())) {
@@ -439,8 +427,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             }
             currActivityRowValue += activity.getAfter();
             currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-        } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.CRITERIA_REMOVED
-                .getName())) {
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.CRITERIA_REMOVED.getName())) {
             String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
             if (!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; ";
@@ -461,30 +449,32 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             }
             currActivityRowValue += activity.getBefore();
             currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-        } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.SURVEILLANCE_REMOVED
-                .getName())) {
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.SURVEILLANCE_REMOVED.getName())) {
             currRow.set(ACTIVITY_DESCRIPTION_COL, "TRUE");
-        } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.EDITION_2011_EDITED
-                .getName())) {
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.EDITION_2011_EDITED.getName())) {
             currRow.set(ACTIVITY_DESCRIPTION_COL, "TRUE");
-        } else if (activity.getTrigger().getName().equals(
-                QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_CURRENT.getName())) {
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_CURRENT.getName())) {
             currRow.set(ACTIVITY_DESCRIPTION_COL, "From " + activity.getBefore() + " to " + activity.getAfter());
             currRow.set(ACTIVITY_CERT_STATUS_CHANGE_REASON_COL, activity.getCertificationStatusChangeReason());
-        } else if (activity.getTrigger().getName().equals(
-                QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_DATE_EDITED_CURRENT.getName())) {
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_DATE_EDITED_CURRENT.getName())) {
             currRow.set(ACTIVITY_DESCRIPTION_COL, "From " + activity.getBefore() + " to " + activity.getAfter());
             currRow.set(ACTIVITY_CERT_STATUS_CHANGE_REASON_COL, activity.getCertificationStatusChangeReason());
-        } else if (activity.getTrigger().getName().equals(
-                QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_HISTORY.getName())) {
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_HISTORY.getName())) {
             currRow.set(ACTIVITY_DESCRIPTION_COL, "From " + activity.getBefore() + " to " + activity.getAfter());
             currRow.set(ACTIVITY_CERT_STATUS_CHANGE_REASON_COL, activity.getCertificationStatusChangeReason());
-        } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.TESTING_LAB_CHANGED
-                .getName())) {
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.TESTING_LAB_CHANGED.getName())) {
             currRow.set(ACTIVITY_DESCRIPTION_COL, "From " + activity.getBefore() + " to " + activity.getAfter());
             currRow.set(ACTIVITY_CERT_STATUS_CHANGE_REASON_COL, activity.getCertificationStatusChangeReason());
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.REAL_WORLD_TESTING_REMOVED.getName())) {
+            currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getBefore());
         }
-
         currRow.set(ACTIVITY_REASON_COL, activity.getReason());
     }
 
@@ -498,8 +488,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         currRow.set(VERSION_COL, activity.getListing().getVersion().getVersion());
         currRow.set(LISTING_COL, activity.getListing().getChplProductNumber());
         currRow.set(STATUS_COL, activity.getListing().getCertificationStatusName());
-        currRow.set(LINK_COL, env.getProperty("chplUrlBegin") + env.getProperty("listingReportsUrlPart")
-            + "/" + activity.getListing().getId());
+        currRow.set(LINK_COL, env.getProperty("chplUrlBegin") + env.getProperty("listingReportsUrlPart") + "/"
+                + activity.getListing().getId());
         currRow.set(ACTIVITY_USER_COL, activity.getUser().getSubjectName());
 
         if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G1_SUCCESS_EDITED.getName())) {
@@ -507,44 +497,44 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             if (!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; ";
             }
-            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": from " + activity.getBefore() + " to "
-                    + activity.getAfter();
+            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": from " + activity.getBefore()
+                    + " to " + activity.getAfter();
             currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-        } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G1_MEASURE_ADDED
-                .getName())) {
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.G1_MEASURE_ADDED.getName())) {
             String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
             if (!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; ";
             }
             currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": " + activity.getAfter();
             currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-        } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G1_MEASURE_REMOVED
-                .getName())) {
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.G1_MEASURE_REMOVED.getName())) {
             String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
             if (!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; ";
             }
             currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": " + activity.getBefore();
             currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-        } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G2_SUCCESS_EDITED
-                .getName())) {
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.G2_SUCCESS_EDITED.getName())) {
             String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
             if (!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; ";
             }
-            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": from " + activity.getBefore() + " to "
-                    + activity.getAfter();
+            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": from " + activity.getBefore()
+                    + " to " + activity.getAfter();
             currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-        } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G2_MEASURE_ADDED
-                .getName())) {
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.G2_MEASURE_ADDED.getName())) {
             String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
             if (!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; ";
             }
             currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": " + activity.getAfter();
             currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-        } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G2_MEASURE_REMOVED
-                .getName())) {
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.G2_MEASURE_REMOVED.getName())) {
             String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
             if (!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; ";
@@ -556,8 +546,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             if (!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; ";
             }
-            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + " from " + activity.getBefore() + " to "
-                    + activity.getAfter();
+            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + " from " + activity.getBefore()
+                    + " to " + activity.getAfter();
             currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
         }
 
@@ -572,80 +562,79 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             activityRow.set(ACTIVITY_CERT_STATUS_CHANGE_REASON_COL, developerActivity.getReason());
         }
 
-        if (developerActivity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.DEVELOPER_NAME_EDITED
-                .getName())) {
-            activityRow.set(ACTIVITY_DESCRIPTION_COL, "From " + developerActivity.getBefore() + " to "
-                    + developerActivity.getAfter());
-        } else if (developerActivity.getTrigger().getName().equals(
-                QuestionableActivityTriggerConcept.DEVELOPER_STATUS_EDITED.getName())) {
+        if (developerActivity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.DEVELOPER_NAME_EDITED.getName())) {
+            activityRow.set(ACTIVITY_DESCRIPTION_COL,
+                    "From " + developerActivity.getBefore() + " to " + developerActivity.getAfter());
+        } else if (developerActivity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.DEVELOPER_STATUS_EDITED.getName())) {
             String currActivityRowValue = activityRow.get(ACTIVITY_DESCRIPTION_COL);
             if (!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; ";
             }
             currActivityRowValue += "From " + developerActivity.getBefore() + " to " + developerActivity.getAfter();
             activityRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-        } else if (developerActivity.getTrigger().getName().equals(
-                QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_ADDED.getName())) {
+        } else if (developerActivity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_ADDED.getName())) {
             String currActivityRowValue = activityRow.get(ACTIVITY_DESCRIPTION_COL);
             if (!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; ";
             }
             currActivityRowValue += "Added status " + developerActivity.getAfter();
             activityRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-        } else if (developerActivity.getTrigger().getName().equals(
-                QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_REMOVED.getName())) {
+        } else if (developerActivity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_REMOVED.getName())) {
             String currActivityRowValue = activityRow.get(ACTIVITY_DESCRIPTION_COL);
             if (!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; ";
             }
             currActivityRowValue += "Removed status " + developerActivity.getBefore();
             activityRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-        } else if (developerActivity.getTrigger().getName().equals(
-                QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_EDITED.getName())) {
+        } else if (developerActivity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_EDITED.getName())) {
             String currActivityRowValue = activityRow.get(ACTIVITY_DESCRIPTION_COL);
             if (!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; ";
             }
-            currActivityRowValue += "Changed status from " + developerActivity.getBefore()
-                    + " to " + developerActivity.getAfter();
+            currActivityRowValue += "Changed status from " + developerActivity.getBefore() + " to "
+                    + developerActivity.getAfter();
             activityRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
         }
     }
 
-    private void putProductActivityInRow(QuestionableActivityProductDTO activity,
-            List<String> activityRow) {
+    private void putProductActivityInRow(QuestionableActivityProductDTO activity, List<String> activityRow) {
         activityRow.set(DEVELOPER_COL, activity.getProduct().getOwner().getName());
         activityRow.set(PRODUCT_COL, activity.getProduct().getName());
         activityRow.set(ACTIVITY_USER_COL, activity.getUser().getSubjectName());
 
         if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.PRODUCT_NAME_EDITED.getName())) {
             activityRow.set(ACTIVITY_DESCRIPTION_COL, "From " + activity.getBefore() + " to " + activity.getAfter());
-        } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.PRODUCT_OWNER_EDITED
-                .getName())) {
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.PRODUCT_OWNER_EDITED.getName())) {
             String currActivityRowValue = activityRow.get(ACTIVITY_DESCRIPTION_COL);
             if (!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; ";
             }
             currActivityRowValue += "From " + activity.getBefore() + " to " + activity.getAfter();
             activityRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-        } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.PRODUCT_OWNER_HISTORY_ADDED
-                .getName())) {
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.PRODUCT_OWNER_HISTORY_ADDED.getName())) {
             String currActivityRowValue = activityRow.get(ACTIVITY_DESCRIPTION_COL);
             if (!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; ";
             }
             currActivityRowValue += "Added owner " + activity.getAfter();
             activityRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-        } else if (activity.getTrigger().getName().equals(
-                QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_REMOVED.getName())) {
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_REMOVED.getName())) {
             String currActivityRowValue = activityRow.get(ACTIVITY_DESCRIPTION_COL);
             if (!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; ";
             }
             currActivityRowValue += "Removed owner " + activity.getBefore();
             activityRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-        } else if (activity.getTrigger().getName().equals(
-                QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_EDITED.getName())) {
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_EDITED.getName())) {
             String currActivityRowValue = activityRow.get(ACTIVITY_DESCRIPTION_COL);
             if (!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; ";
@@ -682,9 +671,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         try {
             rootNode = mapper.readTree(parametersJson);
         } catch (Exception e) {
-            LOGGER.error(
-                    String.format("Could not determine min and max range values.  Using default: %d - %d.",
-                            rangeInDays.getMinimum(), rangeInDays.getMaximum()));
+            LOGGER.error(String.format("Could not determine min and max range values.  Using default: %d - %d.",
+                    rangeInDays.getMinimum(), rangeInDays.getMaximum()));
             return;
         }
         if (rootNode != null) {
