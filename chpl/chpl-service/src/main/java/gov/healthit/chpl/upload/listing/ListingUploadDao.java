@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.ListingUpload;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -63,6 +64,35 @@ public class ListingUploadDao extends BaseDAOImpl {
                 .map(entity -> convert(entity))
                 .collect(Collectors.<ListingUpload>toList());
         return allUploadedListings;
+    }
+
+    public ListingUpload getById(Long id) throws EntityRetrievalException {
+        Query query = entityManager.createQuery("SELECT ul "
+                + "FROM ListingUploadEntity ul "
+                + "LEFT JOIN FETCH ul.certificationBody acb "
+                + "LEFT JOIN FETCH acb.address "
+                + "WHERE ul.id = :id "
+                + "AND ul.deleted = false", ListingUploadEntity.class);
+        query.setParameter("id", id);
+        List<ListingUploadEntity> entities = query.getResultList();
+        if (entities == null || entities.size() == 0) {
+            throw new EntityRetrievalException();
+        }
+        return convert(entities.get(0));
+    }
+
+    ListingUploadEntity getEntityByIdIncludingDeleted(Long id) throws EntityRetrievalException {
+        Query query = entityManager.createQuery("SELECT ul "
+                + "FROM ListingUploadEntity ul "
+                + "LEFT JOIN FETCH ul.certificationBody acb "
+                + "LEFT JOIN FETCH acb.address "
+                + "WHERE ul.id = :id ", ListingUploadEntity.class);
+        query.setParameter("id", id);
+        List<ListingUploadEntity> entities = query.getResultList();
+        if (entities == null || entities.size() == 0) {
+            throw new EntityRetrievalException();
+        }
+        return entities.get(0);
     }
 
     public ListingUpload getByChplProductNumber(String chplProductNumber) {

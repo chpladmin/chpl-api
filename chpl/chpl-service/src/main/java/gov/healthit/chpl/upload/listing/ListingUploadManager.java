@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 
 import org.apache.commons.csv.CSVFormat;
@@ -23,16 +24,28 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.ListingUpload;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.ObjectMissingValidationException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
@@ -48,31 +61,27 @@ public class ListingUploadManager {
     private ChplProductNumberUtil chplProductNumberUtil;
     private ListingUploadDao listingUploadDao;
     private CertificationBodyDAO acbDao;
+    private UserDAO userDao;
+    private ActivityManager activityManager;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
     public ListingUploadManager(ListingUploadHandlerUtil uploadUtil, ChplProductNumberUtil chplProductNumberUtil,
-            ListingUploadDao listingUploadDao, CertificationBodyDAO acbDao, ErrorMessageUtil msgUtil) {
+            ListingUploadDao listingUploadDao, CertificationBodyDAO acbDao, UserDAO userDao,
+            ActivityManager activityManager, ErrorMessageUtil msgUtil) {
         this.dateFormat = new SimpleDateFormat(CERT_DATE_CODE);
         this.uploadUtil = uploadUtil;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.listingUploadDao = listingUploadDao;
         this.acbDao = acbDao;
+        this.userDao = userDao;
+        this.activityManager = activityManager;
         this.msgUtil = msgUtil;
     }
 
     @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).LISTING_UPLOAD)")
-    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).LISTING_UPLOAD, filterObject)")
-    public List<ListingUpload> getPendingListings() {
-        return listingUploadDao.getAll();
-    }
-
-    @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).LISTING_UPLOAD)")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
+            + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).CREATE)")
     public List<ListingUpload> parseUploadFile(MultipartFile file) throws ValidationException {
         List<CSVRecord> allCsvRecords = getFileAsCsvRecords(file);
         int headingRowIndex = uploadUtil.getHeadingRecordIndex(allCsvRecords);
@@ -96,8 +105,8 @@ public class ListingUploadManager {
     }
 
     @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).LISTING_UPLOAD, #uploadMetadata)")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
+            + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).CREATE, #uploadMetadata)")
     public void createOrReplaceListingUpload(ListingUpload uploadMetadata) throws ValidationException {
         if (StringUtils.isEmpty(uploadMetadata.getChplProductNumber())) {
             throw new ValidationException(msgUtil.getMessage("listing.upload.missingChplProductNumber"));
@@ -114,6 +123,66 @@ public class ListingUploadManager {
             listingUploadDao.delete(existingListing.getId());
         }
         listingUploadDao.create(uploadMetadata);
+    }
+
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
+            + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).GET_ALL)")
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
+            + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).GET_ALL, filterObject)")
+    public List<ListingUpload> getAll() {
+        return listingUploadDao.getAll();
+    }
+
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
+            + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).GET_ALL)")
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
+            + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).GET_ALL, filterObject)")
+    public ListingUpload getById(Long id) throws EntityRetrievalException {
+        return listingUploadDao.getById(id);
+    }
+
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
+            + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).DELETE, #id)")
+    public void delete(Long id)
+            throws EntityRetrievalException, EntityNotFoundException, EntityCreationException, AccessDeniedException,
+            JsonProcessingException, ObjectMissingValidationException {
+        if (isListingUploadAvailableForDelete(id)) {
+            ListingUpload listingUploadBeforeDelete = listingUploadDao.getById(id);
+            listingUploadDao.delete(id);
+            String activityMsg = "Listing upload " + listingUploadBeforeDelete.getChplProductNumber() + " has been rejected.";
+            activityManager.addActivity(ActivityConcept.LISTING_UPLOAD, listingUploadBeforeDelete.getId(),
+                    activityMsg, listingUploadBeforeDelete, null);
+        }
+    }
+
+    private boolean isListingUploadAvailableForDelete(Long id)
+            throws EntityRetrievalException, ObjectMissingValidationException {
+
+        ListingUploadEntity entity = listingUploadDao.getEntityByIdIncludingDeleted(id);
+        if (entity.getDeleted()) {
+            ObjectMissingValidationException alreadyDeletedEx = new ObjectMissingValidationException();
+            alreadyDeletedEx.getErrorMessages()
+                    .add("This pending certified product has already been confirmed or rejected by another user.");
+            alreadyDeletedEx.setObjectId(entity.getChplProductNumber());
+            try {
+                UserDTO lastModifiedUserDto = userDao.getById(entity.getLastModifiedUser());
+                if (lastModifiedUserDto != null) {
+                    User lastModifiedUser = new User(lastModifiedUserDto);
+                    alreadyDeletedEx.setUser(lastModifiedUser);
+                } else {
+                    alreadyDeletedEx.setUser(null);
+                }
+            } catch (final UserRetrievalException ex) {
+                alreadyDeletedEx.setUser(null);
+            }
+            throw alreadyDeletedEx;
+        } else {
+            return true;
+        }
+
     }
 
     private void checkRequiredHeadings(CSVRecord headingRecord) throws ValidationException {

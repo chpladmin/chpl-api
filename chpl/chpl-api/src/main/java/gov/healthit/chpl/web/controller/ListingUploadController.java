@@ -10,13 +10,17 @@ import java.util.Date;
 import java.util.List;
 
 import javax.mail.MessagingException;
+import javax.persistence.EntityNotFoundException;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,8 +28,16 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.ListingUpload;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.ObjectMissingValidationException;
+import gov.healthit.chpl.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.upload.listing.ListingUploadManager;
 import gov.healthit.chpl.util.AuthUtil;
@@ -47,15 +59,15 @@ public class ListingUploadController {
     @Value("${uploadErrorEmailSubject}")
     private String uploadErrorEmailSubject;
 
-    private ListingUploadManager uploadManager;
+    private ListingUploadManager listingUploadManager;
     private ErrorMessageUtil msgUtil;
     private FF4j ff4j;
     private Environment env;
 
     @Autowired
-    public ListingUploadController(ListingUploadManager uploadManager, FF4j ff4j,
-            ErrorMessageUtil msgUtil, Environment env) {
-        this.uploadManager = uploadManager;
+    public ListingUploadController(ListingUploadManager listingUploadManager,
+            FF4j ff4j, ErrorMessageUtil msgUtil, Environment env) {
+        this.listingUploadManager = listingUploadManager;
         this.msgUtil = msgUtil;
         this.ff4j = ff4j;
         this.env = env;
@@ -65,20 +77,13 @@ public class ListingUploadController {
             notes = "Security Restrictions: User will be presented the pending listings that "
                     + "they have access to according to ACB(s) and CHPL permissions.")
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ListingUpload> getPending() {
+    public List<ListingUpload> geAll() {
         if (!ff4j.check(FeatureList.ENHANCED_UPLOAD)) {
             throw new NotImplementedException();
         }
-        return uploadManager.getPendingListings();
+        return listingUploadManager.getAll();
     }
 
-    /**
-     * Upload a file with certified products.
-     * @param file the file
-     * @return the list of pending listings
-     * @throws ValidationException if validation fails
-     * @throws MaxUploadSizeExceededException if the file is too large
-     */
     @ApiOperation(value = "Upload a file with certified products",
             notes = "Accepts a CSV file with very specific fields to create pending certified products. "
                     + "Security Restrictions: ROLE_ADMIN or user uploading the file must have ROLE_ACB "
@@ -90,10 +95,10 @@ public class ListingUploadController {
             throw new NotImplementedException();
         }
 
-        List<ListingUpload> listingsToAdd = uploadManager.parseUploadFile(file);
+        List<ListingUpload> listingsToAdd = listingUploadManager.parseUploadFile(file);
         for (ListingUpload listingToAdd : listingsToAdd) {
             try {
-                uploadManager.createOrReplaceListingUpload(listingToAdd);
+                listingUploadManager.createOrReplaceListingUpload(listingToAdd);
             } catch (Exception ex) {
                 String error = "Error uploading listing(s) from file " + file.getOriginalFilename()
                 + ". Error was: " + ex.getMessage();
@@ -102,6 +107,56 @@ public class ListingUploadController {
                 sendUploadError(file, ex);
                 throw new ValidationException(error);
             }
+        }
+    }
+    @ApiOperation(value = "Reject a pending certified product.",
+            notes = "Essentially deletes a pending certified product. Security Restrictions: ROLE_ADMIN or have ROLE_ACB "
+                    + "and administrative authority on the ACB for each pending certified product is required.")
+    @RequestMapping(value = "/pending/{id}", method = RequestMethod.DELETE,
+    produces = "application/json; charset=utf-8")
+    public void rejectListingUpload(@PathVariable("id") Long id)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
+            AccessDeniedException, ObjectMissingValidationException {
+        if (!ff4j.check(FeatureList.ENHANCED_UPLOAD)) {
+            throw new NotImplementedException();
+        }
+
+        //call the GET to return bad request if the id is not something that can be deleted
+        listingUploadManager.getById(id);
+        //perform delete
+        listingUploadManager.delete(id);
+    }
+
+    @ApiOperation(value = "Reject several pending certified products.",
+            notes = "Marks a list of pending certified products as deleted. ROLE_ADMIN or ROLE_ACB "
+                    + " and administrative authority on the ACB for each pending certified product is required.")
+    @RequestMapping(value = "/pending", method = RequestMethod.DELETE,
+    produces = "application/json; charset=utf-8")
+    public void rejectListingUploads(@RequestBody IdListContainer idList)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
+            AccessDeniedException, InvalidArgumentsException, ObjectsMissingValidationException {
+        if (!ff4j.check(FeatureList.ENHANCED_UPLOAD)) {
+            throw new NotImplementedException();
+        }
+
+        if (idList == null || idList.getIds() == null || idList.getIds().size() == 0) {
+            throw new InvalidArgumentsException("At least one id must be provided for rejection.");
+        }
+
+        ObjectsMissingValidationException possibleExceptions = new ObjectsMissingValidationException();
+        for (Long id : idList.getIds()) {
+            try {
+                //call the GET to return bad request if the id is not something that can be deleted
+                listingUploadManager.getById(id);
+                //perform delete
+                listingUploadManager.delete(id);
+            } catch (ObjectMissingValidationException ex) {
+                possibleExceptions.getExceptions().add(ex);
+            }
+        }
+
+        if (possibleExceptions.getExceptions() != null && possibleExceptions.getExceptions().size() > 0) {
+            throw possibleExceptions;
         }
     }
 

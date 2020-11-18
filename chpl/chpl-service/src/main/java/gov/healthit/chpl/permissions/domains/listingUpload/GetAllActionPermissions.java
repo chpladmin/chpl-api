@@ -1,4 +1,4 @@
-package gov.healthit.chpl.permissions.domains.certifiedproduct;
+package gov.healthit.chpl.permissions.domains.listingUpload;
 
 import java.util.List;
 
@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
-@Component("listingUploadActionPermissions")
-public class ListingUploadActionPermissions extends ActionPermissions {
+@Component("getAllListingUploadsActionPermissions")
+public class GetAllActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess() {

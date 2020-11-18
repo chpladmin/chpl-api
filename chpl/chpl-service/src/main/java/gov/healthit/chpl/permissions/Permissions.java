@@ -20,6 +20,7 @@ import gov.healthit.chpl.permissions.domains.FilterDomainPermissions;
 import gov.healthit.chpl.permissions.domains.FuzzyMatchPermissions;
 import gov.healthit.chpl.permissions.domains.InvitationDomainPermissions;
 import gov.healthit.chpl.permissions.domains.JobDomainPermissions;
+import gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions;
 import gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions;
 import gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions;
 import gov.healthit.chpl.permissions.domains.ProductDomainPermissions;
@@ -39,6 +40,7 @@ public class Permissions {
     public static final String CORRECTIVE_ACTION_PLAN = "CORRECTIVE_ACTION_PLAN";
     public static final String INVITATION = "INVITATION";
     public static final String PENDING_CERTIFIED_PRODUCT = "PENDING_CERTIFIED_PRODUCT";
+    public static final String LISTING_UPLOAD = "LISTING_UPLOAD";
     public static final String SURVEILLANCE = "SURVEILLANCE";
     public static final String SURVEILLANCE_REPORT = "SURVEILLANCE_REPORT";
     public static final String CERTIFICATION_BODY = "CERTIFICATION_BODY";
@@ -61,28 +63,29 @@ public class Permissions {
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
     @Autowired
-    public Permissions(final PendingSurveillanceDomainPermissions pendingSurveillanceDomainPermissions,
-            final CertificationResultsDomainPermissions certificationResultsDomainPermissions,
-            final CertifiedProductDomainPermissions certifiedProductDomainPermissions,
-            final CorrectiveActionPlanDomainPermissions correctiveActionPlanDomainPermissions,
-            final InvitationDomainPermissions invitationDomainPermissions,
-            final PendingCertifiedProductDomainPermissions pendingCertifiedProductDomainPermissions,
-            final SurveillanceDomainPermissions surveillanceDomainPermissions,
-            final SurveillanceReportDomainPermissions surveillanceReportDomainPermissions,
-            final CertificationBodyDomainPermissions certificationBodyDomainPermissions,
-            final UserPermissionsDomainPermissions userPermissionsDomainPermissions,
-            final ActivityDomainPermissions activityDomainPermissions, final JobDomainPermissions jobDomainPermissions,
-            final ProductDomainPermissions productDomainPermissions,
-            final DeveloperDomainPermissions developerDomainPermissions,
-            final ProductVersionDomainPermissions productVersionDomainPermissions,
-            final SecuredUserDomainPermissions securedUserDomainPermissions,
-            final SchedulerDomainPermissions schedulerDomainPermissions,
-            final TestingLabDomainPermissions testingLabDomainPermissions,
-            final FilterDomainPermissions filterDomainPermissions,
-            final ComplaintDomainPermissions complaintDomainPermissions,
-            final FuzzyMatchPermissions fuzzyMatchPermissions,
-            final AnnouncementDomainPermissions announcementDomainPermissions,
-            final ChangeRequestDomainPermissions changeRequestDomainPermissions) {
+    public Permissions(PendingSurveillanceDomainPermissions pendingSurveillanceDomainPermissions,
+            CertificationResultsDomainPermissions certificationResultsDomainPermissions,
+            CertifiedProductDomainPermissions certifiedProductDomainPermissions,
+            CorrectiveActionPlanDomainPermissions correctiveActionPlanDomainPermissions,
+            InvitationDomainPermissions invitationDomainPermissions,
+            PendingCertifiedProductDomainPermissions pendingCertifiedProductDomainPermissions,
+            ListingUploadDomainPerissions listingUploadDomainPermissions,
+            SurveillanceDomainPermissions surveillanceDomainPermissions,
+            SurveillanceReportDomainPermissions surveillanceReportDomainPermissions,
+            CertificationBodyDomainPermissions certificationBodyDomainPermissions,
+            UserPermissionsDomainPermissions userPermissionsDomainPermissions,
+            ActivityDomainPermissions activityDomainPermissions, JobDomainPermissions jobDomainPermissions,
+            ProductDomainPermissions productDomainPermissions,
+            DeveloperDomainPermissions developerDomainPermissions,
+            ProductVersionDomainPermissions productVersionDomainPermissions,
+            SecuredUserDomainPermissions securedUserDomainPermissions,
+            SchedulerDomainPermissions schedulerDomainPermissions,
+            TestingLabDomainPermissions testingLabDomainPermissions,
+            FilterDomainPermissions filterDomainPermissions,
+            ComplaintDomainPermissions complaintDomainPermissions,
+            FuzzyMatchPermissions fuzzyMatchPermissions,
+            AnnouncementDomainPermissions announcementDomainPermissions,
+            ChangeRequestDomainPermissions changeRequestDomainPermissions) {
 
         domainPermissions.put(PENDING_SURVEILLANCE, pendingSurveillanceDomainPermissions);
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
@@ -90,6 +93,7 @@ public class Permissions {
         domainPermissions.put(CORRECTIVE_ACTION_PLAN, correctiveActionPlanDomainPermissions);
         domainPermissions.put(INVITATION, invitationDomainPermissions);
         domainPermissions.put(PENDING_CERTIFIED_PRODUCT, pendingCertifiedProductDomainPermissions);
+        domainPermissions.put(LISTING_UPLOAD, listingUploadDomainPermissions);
         domainPermissions.put(SURVEILLANCE, surveillanceDomainPermissions);
         domainPermissions.put(SURVEILLANCE_REPORT, surveillanceReportDomainPermissions);
         domainPermissions.put(CERTIFICATION_BODY, certificationBodyDomainPermissions);

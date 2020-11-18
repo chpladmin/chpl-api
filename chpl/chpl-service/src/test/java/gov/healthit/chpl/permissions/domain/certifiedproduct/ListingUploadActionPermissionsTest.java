@@ -14,7 +14,7 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
-import gov.healthit.chpl.permissions.domains.certifiedproduct.ListingUploadActionPermissions;
+import gov.healthit.chpl.permissions.domains.listingUpload.CreateActionPermissions;
 
 public class ListingUploadActionPermissionsTest extends ActionPermissionsBaseTest {
     private static final Long USER_ACB_ID = 2L;
@@ -24,7 +24,7 @@ public class ListingUploadActionPermissionsTest extends ActionPermissionsBaseTes
     private ResourcePermissions resourcePermissions;
 
     @InjectMocks
-    private ListingUploadActionPermissions permissions;
+    private CreateActionPermissions permissions;
 
     @Before
     public void setup() {
