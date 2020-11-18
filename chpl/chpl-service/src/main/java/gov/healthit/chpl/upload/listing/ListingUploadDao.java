@@ -1,6 +1,7 @@
 package gov.healthit.chpl.upload.listing;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,6 +9,7 @@ import java.util.stream.Collectors;
 import javax.persistence.Query;
 
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.stereotype.Repository;
@@ -22,6 +24,10 @@ import lombok.extern.log4j.Log4j2;
 @Repository("listingUploadDao")
 @Log4j2
 public class ListingUploadDao extends BaseDAOImpl {
+    private static final String GET_ENTITY_HQL_BEGIN = "SELECT ul "
+            + "FROM ListingUploadEntity ul "
+            + "LEFT JOIN FETCH ul.certificationBody acb "
+            + "LEFT JOIN FETCH acb.address ";
 
     public ListingUpload create(ListingUpload uploadMetadata) {
         ListingUploadEntity toCreate = new ListingUploadEntity();
@@ -56,10 +62,7 @@ public class ListingUploadDao extends BaseDAOImpl {
     }
 
     public List<ListingUpload> getAll() {
-        Query query = entityManager.createQuery("SELECT ul "
-                + "FROM ListingUploadEntity ul "
-                + "LEFT JOIN FETCH ul.certificationBody acb "
-                + "LEFT JOIN FETCH acb.address "
+        Query query = entityManager.createQuery(GET_ENTITY_HQL_BEGIN
                 + "WHERE ul.deleted = false", ListingUploadEntity.class);
         List<ListingUploadEntity> entities = query.getResultList();
         List<ListingUpload> allUploadedListings = entities.stream()
@@ -69,10 +72,7 @@ public class ListingUploadDao extends BaseDAOImpl {
     }
 
     public ListingUpload getById(Long id) throws EntityRetrievalException {
-        Query query = entityManager.createQuery("SELECT ul "
-                + "FROM ListingUploadEntity ul "
-                + "LEFT JOIN FETCH ul.certificationBody acb "
-                + "LEFT JOIN FETCH acb.address "
+        Query query = entityManager.createQuery(GET_ENTITY_HQL_BEGIN
                 + "WHERE ul.id = :id "
                 + "AND ul.deleted = false", ListingUploadEntity.class);
         query.setParameter("id", id);
@@ -84,10 +84,7 @@ public class ListingUploadDao extends BaseDAOImpl {
     }
 
     ListingUploadEntity getEntityByIdIncludingDeleted(Long id) throws EntityRetrievalException {
-        Query query = entityManager.createQuery("SELECT ul "
-                + "FROM ListingUploadEntity ul "
-                + "LEFT JOIN FETCH ul.certificationBody acb "
-                + "LEFT JOIN FETCH acb.address "
+        Query query = entityManager.createQuery(GET_ENTITY_HQL_BEGIN
                 + "WHERE ul.id = :id ", ListingUploadEntity.class);
         query.setParameter("id", id);
         List<ListingUploadEntity> entities = query.getResultList();
@@ -97,11 +94,20 @@ public class ListingUploadDao extends BaseDAOImpl {
         return entities.get(0);
     }
 
+    public ListingUpload getByIdIncludingRecords(Long id) throws EntityRetrievalException {
+        Query query = entityManager.createQuery(GET_ENTITY_HQL_BEGIN
+                + "WHERE ul.id = :id "
+                + "AND ul.deleted = false", ListingUploadEntity.class);
+        query.setParameter("id", id);
+        List<ListingUploadEntity> entities = query.getResultList();
+        if (entities == null || entities.size() == 0) {
+            throw new EntityRetrievalException();
+        }
+        return convert(entities.get(0), true);
+    }
+
     public ListingUpload getByChplProductNumber(String chplProductNumber) {
-        Query query = entityManager.createQuery("SELECT ul "
-                + "FROM ListingUploadEntity ul "
-                + "LEFT JOIN FETCH ul.certificationBody acb "
-                + "LEFT JOIN FETCH acb.address "
+        Query query = entityManager.createQuery(GET_ENTITY_HQL_BEGIN
                 + "WHERE ul.deleted = false "
                 + "AND ul.chplProductNumber = :chplProductNumber ", ListingUploadEntity.class);
         query.setParameter("chplProductNumber", chplProductNumber);
@@ -113,6 +119,10 @@ public class ListingUploadDao extends BaseDAOImpl {
     }
 
     private ListingUpload convert(ListingUploadEntity entity) {
+        return convert(entity, false);
+    }
+
+    private ListingUpload convert(ListingUploadEntity entity, boolean includeRecords) {
         ListingUpload listingUpload = new ListingUpload();
         listingUpload.setId(entity.getId());
         CertificationBody acb = null;
@@ -130,6 +140,9 @@ public class ListingUploadDao extends BaseDAOImpl {
         listingUpload.setVersion(entity.getVersionName());
         listingUpload.setErrorCount(entity.getErrorCount());
         listingUpload.setWarningCount(entity.getWarningCount());
+        if (includeRecords) {
+            listingUpload.setRecords(recordsFromString(entity.getFileContents()));
+        }
         return listingUpload;
     }
 
@@ -146,5 +159,17 @@ public class ListingUploadDao extends BaseDAOImpl {
         printer.flush();
         printer.close();
         return writer.toString();
+    }
+
+    private List<CSVRecord> recordsFromString(String csvRecordStr) {
+        List<CSVRecord> records = null;
+        try {
+            StringReader in = new StringReader(csvRecordStr);
+            CSVParser csvParser = CSVFormat.EXCEL.parse(in);
+            records = csvParser.getRecords();
+        } catch (IOException ex) {
+            LOGGER.error("Could not convert the string: '" + csvRecordStr + "' to CSV records.");
+        }
+        return records;
     }
 }

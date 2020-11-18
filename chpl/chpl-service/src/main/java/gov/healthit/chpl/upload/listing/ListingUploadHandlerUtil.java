@@ -9,6 +9,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.validation.ValidationException;
@@ -28,14 +30,18 @@ import lombok.extern.log4j.Log4j2;
 @Component("listingUploadHandlerUtil")
 @Log4j2
 public class ListingUploadHandlerUtil {
+    private static final String CRITERION_COL_HEADING_REGEX = "CRITERIA_(\\d+)_(\\d+)_([A-Z])_([0-9]+)([A-Z])?(_CURES)?__C";
+    protected static final String CRITERIA_CURES_COL_HEADING = "CURES";
     private static final String UPLOAD_DATE_FORMAT = "yyyyMMdd";
     private DateFormat dateFormat;
+    private Pattern criterionColHeadingPattern;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
     public ListingUploadHandlerUtil(ErrorMessageUtil msgUtil) {
         this.msgUtil = msgUtil;
         this.dateFormat = new SimpleDateFormat(UPLOAD_DATE_FORMAT);
+        this.criterionColHeadingPattern = Pattern.compile(CRITERION_COL_HEADING_REGEX);
     }
 
     public int getHeadingRecordIndex(List<CSVRecord> allCsvRecords) {
@@ -120,6 +126,28 @@ public class ListingUploadHandlerUtil {
 
         certResultRows.add(0, certResultHeading);
         return certResultRows;
+    }
+
+    @SuppressWarnings("checkstyle:magicnumber")
+    public String parseCriteriaNumberFromHeading(String headingVal) {
+        if (StringUtils.isEmpty(headingVal)) {
+            return null;
+        }
+        headingVal = headingVal.trim().toUpperCase();
+        String criterionNumber = null;
+        Matcher m = criterionColHeadingPattern.matcher(headingVal);
+        if (m.find()) {
+            criterionNumber = m.group(1) + "." + m.group(2)
+                + " (" + m.group(3).toLowerCase() + ")(" + m.group(4) + ")";
+            if (m.group(5) != null) {
+                criterionNumber += "(" + m.group(5).toUpperCase() + ")";
+            }
+         }
+        return criterionNumber;
+    }
+
+    public boolean isCriteriaNumberHeadingCures(String headingVal) {
+        return headingVal.toUpperCase().contains(CRITERIA_CURES_COL_HEADING);
     }
 
     public String parseRequiredSingleRowField(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords)

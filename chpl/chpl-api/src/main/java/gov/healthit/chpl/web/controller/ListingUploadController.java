@@ -31,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -82,6 +83,17 @@ public class ListingUploadController {
             throw new NotImplementedException();
         }
         return listingUploadManager.getAll();
+    }
+
+    @ApiOperation(value = "Get the details of an uploaded listing.",
+            notes = "Security Restrictions: User must be authorized to view the uploaded listing "
+                    + "according to ACB(s) and CHPL permissions.")
+    @RequestMapping(value = "/pending/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public CertifiedProductSearchDetails geById(@PathVariable("id") Long id) throws EntityRetrievalException {
+        if (!ff4j.check(FeatureList.ENHANCED_UPLOAD)) {
+            throw new NotImplementedException();
+        }
+        return listingUploadManager.getDetailsById(id);
     }
 
     @ApiOperation(value = "Upload a file with certified products",

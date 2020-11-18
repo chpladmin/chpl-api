@@ -35,6 +35,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.auth.User;
@@ -46,6 +47,7 @@ import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.upload.listing.handler.ListingDetailsUploadHandler;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
@@ -57,6 +59,7 @@ public class ListingUploadManager {
     private static final String CERT_DATE_CODE = "yyMMdd";
     private DateFormat dateFormat;
 
+    private ListingDetailsUploadHandler listingDetailsHandler;
     private ListingUploadHandlerUtil uploadUtil;
     private ChplProductNumberUtil chplProductNumberUtil;
     private ListingUploadDao listingUploadDao;
@@ -66,10 +69,13 @@ public class ListingUploadManager {
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public ListingUploadManager(ListingUploadHandlerUtil uploadUtil, ChplProductNumberUtil chplProductNumberUtil,
+    @SuppressWarnings("checkstyle:parameternumber")
+    public ListingUploadManager(ListingDetailsUploadHandler listingDetailsHandler,
+            ListingUploadHandlerUtil uploadUtil, ChplProductNumberUtil chplProductNumberUtil,
             ListingUploadDao listingUploadDao, CertificationBodyDAO acbDao, UserDAO userDao,
             ActivityManager activityManager, ErrorMessageUtil msgUtil) {
         this.dateFormat = new SimpleDateFormat(CERT_DATE_CODE);
+        this.listingDetailsHandler = listingDetailsHandler;
         this.uploadUtil = uploadUtil;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.listingUploadDao = listingUploadDao;
@@ -141,11 +147,24 @@ public class ListingUploadManager {
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
-            + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).GET_ALL)")
-    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
-            + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).GET_ALL, filterObject)")
+            + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).GET_BY_ID, #id)")
     public ListingUpload getById(Long id) throws EntityRetrievalException {
         return listingUploadDao.getById(id);
+    }
+
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
+            + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).GET_BY_ID), #id")
+    public CertifiedProductSearchDetails getDetailsById(Long id) throws EntityRetrievalException {
+        ListingUpload listingUpload = listingUploadDao.getByIdIncludingRecords(id);
+        List<CSVRecord> allCsvRecords = listingUpload.getRecords();
+        if (allCsvRecords == null) {
+            return null;
+        }
+        int headingRowIndex = uploadUtil.getHeadingRecordIndex(allCsvRecords);
+        CSVRecord headingRecord = uploadUtil.getHeadingRecord(allCsvRecords);
+        List<CSVRecord> allListingRecords = allCsvRecords.subList(headingRowIndex + 1, allCsvRecords.size());
+        return listingDetailsHandler.parseAsListing(headingRecord, allListingRecords);
     }
 
     @Transactional

@@ -32,6 +32,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.upload.listing.handler.ListingDetailsUploadHandler;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -44,7 +45,6 @@ public class ListingUploadManagerTest {
     private ListingUploadManager uploadManager;
     private ListingUploadHandlerUtil uploadUtil;
     private ChplProductNumberUtil chplProductNumberUtil;
-    private ListingUploadDao uploadDao;
     private CertificationBodyDAO acbDao;
 
     @Before
@@ -53,7 +53,6 @@ public class ListingUploadManagerTest {
         loadFiles();
 
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        uploadDao = Mockito.mock(ListingUploadDao.class);
         acbDao = Mockito.mock(CertificationBodyDAO.class);
         chplProductNumberUtil = Mockito.mock(ChplProductNumberUtil.class);
 
@@ -68,7 +67,8 @@ public class ListingUploadManagerTest {
                 i.getArgument(1), ""));
 
         uploadUtil = new ListingUploadHandlerUtil(msgUtil);
-        uploadManager = new ListingUploadManager(uploadUtil, chplProductNumberUtil, uploadDao, acbDao,
+        uploadManager = new ListingUploadManager(Mockito.mock(ListingDetailsUploadHandler.class),
+                uploadUtil, chplProductNumberUtil, Mockito.mock(ListingUploadDao.class), acbDao,
                 Mockito.mock(UserDAO.class), Mockito.mock(ActivityManager.class), msgUtil);
     }
 

@@ -17,16 +17,19 @@ import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 
 @Component("certificationResultUploadHandler")
 public class CertificationResultUploadHandler {
+    private CertificationCriterionUploadHandler criterionHandler;
     private TestProcedureUploadHandler testProcedureHandler;
     private TestToolUploadHandler testToolHandler;
     private TestDataUploadHandler testDataHandler;
     private ListingUploadHandlerUtil uploadUtil;
 
     @Autowired
-    public CertificationResultUploadHandler(TestProcedureUploadHandler testProcedureHandler,
+    public CertificationResultUploadHandler(CertificationCriterionUploadHandler criterionHandler,
+            TestProcedureUploadHandler testProcedureHandler,
             TestToolUploadHandler testToolHandler,
             TestDataUploadHandler testDataHandler,
             ListingUploadHandlerUtil uploadUtil) {
+        this.criterionHandler = criterionHandler;
         this.testProcedureHandler = testProcedureHandler;
         this.testToolHandler = testToolHandler;
         this.testDataHandler = testDataHandler;
@@ -36,7 +39,7 @@ public class CertificationResultUploadHandler {
     public CertificationResult parseAsCertificationResult(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords)
         throws ValidationException {
         CertificationResult certResult = CertificationResult.builder()
-                //TODO: certification criterion
+                .criterion(criterionHandler.handle(certHeadingRecord))
                 .success(parseSuccess(certHeadingRecord, certResultRecords))
                 .gap(parseGap(certHeadingRecord, certResultRecords))
                 .privacySecurityFramework(parsePrivacyAndSecurityFramework(certHeadingRecord, certResultRecords))
