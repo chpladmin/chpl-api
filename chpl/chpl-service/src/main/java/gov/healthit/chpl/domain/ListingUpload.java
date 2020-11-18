@@ -16,9 +16,13 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
+@AllArgsConstructor
 public class ListingUpload implements Serializable {
     private static final long serialVersionUID = 7978604053959535573L;
 

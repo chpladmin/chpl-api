@@ -107,7 +107,8 @@ public class ListingUploadManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
             + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).CREATE, #uploadMetadata)")
-    public void createOrReplaceListingUpload(ListingUpload uploadMetadata) throws ValidationException {
+    public ListingUpload createOrReplaceListingUpload(ListingUpload uploadMetadata) throws ValidationException,
+        JsonProcessingException, EntityRetrievalException, EntityCreationException {
         if (StringUtils.isEmpty(uploadMetadata.getChplProductNumber())) {
             throw new ValidationException(msgUtil.getMessage("listing.upload.missingChplProductNumber"));
         } else if (uploadMetadata.getAcb() == null || uploadMetadata.getAcb().getId() == null) {
@@ -122,7 +123,11 @@ public class ListingUploadManager {
         if (existingListing != null) {
             listingUploadDao.delete(existingListing.getId());
         }
-        listingUploadDao.create(uploadMetadata);
+        ListingUpload created = listingUploadDao.create(uploadMetadata);
+        String activityMsg = "Listing upload " + created.getChplProductNumber() + " has been created.";
+        activityManager.addActivity(ActivityConcept.LISTING_UPLOAD, created.getId(),
+                activityMsg, null, created);
+        return created;
     }
 
     @Transactional

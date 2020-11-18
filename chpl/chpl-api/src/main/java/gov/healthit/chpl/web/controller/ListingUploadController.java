@@ -73,8 +73,8 @@ public class ListingUploadController {
         this.env = env;
     }
 
-    @ApiOperation(value = "Get all pending listings.",
-            notes = "Security Restrictions: User will be presented the pending listings that "
+    @ApiOperation(value = "Get all uploaded listings to which the current user has access.",
+            notes = "Security Restrictions: User will be presented the uploaded listings that "
                     + "they have access to according to ACB(s) and CHPL permissions.")
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ListingUpload> geAll() {
@@ -85,20 +85,22 @@ public class ListingUploadController {
     }
 
     @ApiOperation(value = "Upload a file with certified products",
-            notes = "Accepts a CSV file with very specific fields to create pending certified products. "
+            notes = "Accepts a CSV file with a valid set of fields to upload a listing. "
                     + "Security Restrictions: ROLE_ADMIN or user uploading the file must have ROLE_ACB "
                     + "and administrative authority on the ACB(s) specified in the file.")
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public void upload(@RequestParam("file") MultipartFile file)
+    public List<ListingUpload> upload(@RequestParam("file") MultipartFile file)
             throws ValidationException, MaxUploadSizeExceededException {
         if (!ff4j.check(FeatureList.ENHANCED_UPLOAD)) {
             throw new NotImplementedException();
         }
 
+        List<ListingUpload> createdListingUploads = new ArrayList<ListingUpload>();
         List<ListingUpload> listingsToAdd = listingUploadManager.parseUploadFile(file);
         for (ListingUpload listingToAdd : listingsToAdd) {
             try {
-                listingUploadManager.createOrReplaceListingUpload(listingToAdd);
+                ListingUpload created = listingUploadManager.createOrReplaceListingUpload(listingToAdd);
+                createdListingUploads.add(created);
             } catch (Exception ex) {
                 String error = "Error uploading listing(s) from file " + file.getOriginalFilename()
                 + ". Error was: " + ex.getMessage();
@@ -108,10 +110,12 @@ public class ListingUploadController {
                 throw new ValidationException(error);
             }
         }
+        return createdListingUploads;
     }
-    @ApiOperation(value = "Reject a pending certified product.",
-            notes = "Essentially deletes a pending certified product. Security Restrictions: ROLE_ADMIN or have ROLE_ACB "
-                    + "and administrative authority on the ACB for each pending certified product is required.")
+
+    @ApiOperation(value = "Reject an uploaded listing.",
+            notes = "Deletes an uploaded listing. Security Restrictions: ROLE_ADMIN or have ROLE_ACB "
+                    + "and administrative authority on the ACB for each uploaded listing is required.")
     @RequestMapping(value = "/pending/{id}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public void rejectListingUpload(@PathVariable("id") Long id)
@@ -127,9 +131,9 @@ public class ListingUploadController {
         listingUploadManager.delete(id);
     }
 
-    @ApiOperation(value = "Reject several pending certified products.",
-            notes = "Marks a list of pending certified products as deleted. ROLE_ADMIN or ROLE_ACB "
-                    + " and administrative authority on the ACB for each pending certified product is required.")
+    @ApiOperation(value = "Reject several uploaded listings.",
+            notes = "Marks a list of uploaded listings as deleted. ROLE_ADMIN or ROLE_ACB "
+                    + " and administrative authority on the ACB for each uploaded listing is required.")
     @RequestMapping(value = "/pending", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public void rejectListingUploads(@RequestBody IdListContainer idList)

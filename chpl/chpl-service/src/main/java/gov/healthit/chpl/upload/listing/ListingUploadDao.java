@@ -23,7 +23,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ListingUploadDao extends BaseDAOImpl {
 
-    public void create(ListingUpload uploadMetadata) {
+    public ListingUpload create(ListingUpload uploadMetadata) {
         ListingUploadEntity toCreate = new ListingUploadEntity();
         toCreate.setCertificationBodyId(uploadMetadata.getAcb() != null ? uploadMetadata.getAcb().getId() : null);
         toCreate.setChplProductNumber(uploadMetadata.getChplProductNumber());
@@ -43,6 +43,8 @@ public class ListingUploadDao extends BaseDAOImpl {
         toCreate.setDeleted(false);
         toCreate.setLastModifiedUser(AuthUtil.getAuditId());
         create(toCreate);
+
+        return convert(toCreate);
     }
 
     public void delete(Long listingUploadId) {
