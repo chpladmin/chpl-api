@@ -22,6 +22,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -30,6 +31,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -66,7 +68,8 @@ public class ListingManagerUploadTest {
                 i.getArgument(1), ""));
 
         uploadUtil = new ListingUploadHandlerUtil(msgUtil);
-        uploadManager = new ListingUploadManager(uploadUtil, chplProductNumberUtil, uploadDao, acbDao, msgUtil);
+        uploadManager = new ListingUploadManager(uploadUtil, chplProductNumberUtil, uploadDao, acbDao,
+                Mockito.mock(UserDAO.class), Mockito.mock(ActivityManager.class), msgUtil);
     }
 
     @Test(expected = ValidationException.class)
