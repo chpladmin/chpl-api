@@ -87,7 +87,7 @@ public class ListingDetailsUploadHandler {
                     nextCertResultIndex, headingRecord, listingRecords);
             CSVRecord certHeadingRecord = uploadUtil.getHeadingRecord(parsedCertResultRecords);
             CertificationResult certResult = certResultHandler.parseAsCertificationResult(certHeadingRecord,
-                    parsedCertResultRecords.subList(0, parsedCertResultRecords.size()));
+                    parsedCertResultRecords.subList(1, parsedCertResultRecords.size()));
             listing.getCertificationResults().add(certResult);
 
             nextCertResultIndex = uploadUtil.getNextIndexOfCertificationResult(
