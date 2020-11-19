@@ -33,7 +33,7 @@
             filePermissions="rw-rw-r--"
             filePattern="${logDir}/scheduler/history/chartDataCreatorJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id:-0} %X{dd.span_id:-0} - %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
@@ -45,7 +45,7 @@
             filePermissions="rw-rw-r--"
             filePattern="${logDir}/scheduler/history/summaryStatisticsEmailJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id:-0} %X{dd.span_id:-0} - %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
@@ -57,7 +57,7 @@
             filePermissions="rw-rw-r--"
             filePattern="${logDir}/scheduler/history/summaryStatisticsCreatorJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id:-0} %X{dd.span_id:-0} - %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
@@ -69,7 +69,7 @@
             filePermissions="rw-rw-r--"
             filePattern="${logDir}/scheduler/history/urlStatusDataCollectorJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id:-0} %X{dd.span_id:-0} - %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
@@ -81,7 +81,7 @@
             filePermissions="rw-rw-r--"
             filePattern="${logDir}/scheduler/history/questionableUrlReportGeneratorJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id:-0} %X{dd.span_id:-0} - %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
@@ -93,7 +93,7 @@
             filePermissions="rw-rw-r--"
             filePattern="${logDir}/scheduler/history/certifiedProductDownloadableResourceCreatorJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id:-0} %X{dd.span_id:-0} - %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
@@ -105,7 +105,7 @@
             filePermissions="rw-rw-r--"
             filePattern="${logDir}/scheduler/history/g3Sed2015DownloadableResourceCreatorJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id:-0} %X{dd.span_id:-0} - %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
@@ -117,7 +117,7 @@
             filePermissions="rw-rw-r--"
             filePattern="${logDir}/scheduler/history/surveillanceDownloadableResourceCreatorJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id:-0} %X{dd.span_id:-0} - %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
@@ -129,7 +129,7 @@
             filePermissions="rw-rw-r--"
             filePattern="${logDir}/scheduler/history/brokenSurveillanceRulesCreatorJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id:-0} %X{dd.span_id:-0} - %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
@@ -141,7 +141,7 @@
             filePermissions="rw-rw-r--"
             filePattern="${logDir}/scheduler/history/brokenSurveillanceRulesEmailJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id:-0} %X{dd.span_id:-0} - %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
@@ -153,7 +153,7 @@
             filePermissions="rw-rw-r--"
             filePattern="${logDir}/scheduler/history/inheritanceErrorsReportCreatorJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id:-0} %X{dd.span_id:-0} - %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
@@ -165,7 +165,7 @@
             filePermissions="rw-rw-r--"
             filePattern="${logDir}/scheduler/history/inheritanceErrorsReportEmailJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id:-0} %X{dd.span_id:-0} - %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
@@ -177,7 +177,7 @@
             filePermissions="rw-rw-r--"
             filePattern="${logDir}/scheduler/history/cacheStatusAgeJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id:-0} %X{dd.span_id:-0} - %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
@@ -189,7 +189,7 @@
             filePermissions="rw-rw-r--"
             filePattern="${logDir}/scheduler/history/triggerDeveloperBanJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id:-0} %X{dd.span_id:-0} - %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
@@ -201,7 +201,7 @@
             filePermissions="rw-rw-r--"
             filePattern="${logDir}/scheduler/history/splitDeveloperJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id:-0} %X{dd.span_id:-0} - %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
@@ -213,7 +213,7 @@
             filePermissions="rw-rw-r--"
             filePattern="${logDir}/scheduler/history/apiKeyWarningEmailJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id:-0} %X{dd.span_id:-0} - %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
@@ -225,7 +225,7 @@
             filePermissions="rw-rw-r--"
             filePattern="${logDir}/scheduler/history/apiKeyDeleteJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id:-0} %X{dd.span_id:-0} - %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
@@ -237,7 +237,7 @@
             filePermissions="rw-rw-r--"
             filePattern="${logDir}/scheduler/history/questionableActivityEmailJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id:-0} %X{dd.span_id:-0} - %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
@@ -249,7 +249,7 @@
             filePermissions="rw-rw-r--"
             filePattern="${logDir}/scheduler/history/pendingChangeRequestEmailJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id:-0} %X{dd.span_id:-0} - %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
@@ -261,7 +261,7 @@
             filePermissions="rw-rw-r--"
             filePattern="${logDir}/scheduler/history/interruptJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id:-0} %X{dd.span_id:-0} - %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
@@ -273,7 +273,7 @@
             filePermissions="rw-rw-r--"
             filePattern="${logDir}/scheduler/history/massRequirePasswordChangeJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id:-0} %X{dd.span_id:-0} - %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
@@ -285,7 +285,7 @@
             filePermissions="rw-rw-r--"
             filePattern="${logDir}/scheduler/history/updateListingStatusJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id:-0} %X{dd.span_id:-0} - %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
@@ -297,7 +297,7 @@
             filePermissions="rw-rw-r--"
             filePattern="${logDir}/scheduler/history/realWorldTestingEligibilityJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id:-0} %X{dd.span_id:-0} - %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
@@ -309,7 +309,7 @@
                      filePermissions="rw-rw-r--"
                      filePattern="${logDir}/cache/history/cacheListenerActivity-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id:-0} %X{dd.span_id:-0} - %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
@@ -321,7 +321,7 @@
             filePermissions="rw-rw-r--"
             filePattern="${logDir}/scheduler/history/developerAccessEmailJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id:-0} %X{dd.span_id:-0} - %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
@@ -333,7 +333,7 @@
                      filePermissions="rw-rw-r--"
                      filePattern="${logDir}/cache/history/cacheListenerActivity-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id:-0} %X{dd.span_id:-0} - %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
