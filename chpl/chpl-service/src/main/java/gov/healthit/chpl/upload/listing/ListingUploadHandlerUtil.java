@@ -286,8 +286,7 @@ public class ListingUploadHandlerUtil {
     }
 
     private boolean looksLikeCriteriaStart(String headingVal) {
-        return StringUtils.containsIgnoreCase(headingVal, "CRITERIA")
-                || StringUtils.containsIgnoreCase(headingVal, "CRITERION");
+        return StringUtils.startsWithIgnoreCase(headingVal, "CRITERIA");
     }
 
     private boolean isHeadingForCriteriaField(String headingVal) {
