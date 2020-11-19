@@ -82,14 +82,15 @@ public class ListingUploadHandlerUtil {
         Range certResultColumnRange = calculateCertificationResultColumnRangeFromIndex(startIndex, headingRecord);
         if (certResultColumnRange == null) {
             return null;
-        } else if (certResultColumnRange.getMinimumInteger() >= 0 && certResultColumnRange.getMaximumInteger() >= 0
+        } else if (certResultColumnRange.getMinimumInteger() >= 0
+                && certResultColumnRange.getMaximumInteger() >= certResultColumnRange.getMinimumInteger()
                 && certResultColumnRange.getMaximumInteger() < headingRecord.size()) {
             //splice the heading record columns between the integer ranges
             CSVParser csvParser = null;
             try {
                 List<String> certResultHeadingValues = new ArrayList<String>();
                 for (int i = certResultColumnRange.getMinimumInteger(); i <= certResultColumnRange.getMaximumInteger(); i++) {
-                    if (isHeadingLevel(headingRecord.get(i), HeadingLevel.CERT_RESULT)) {
+                    if (isHeadingForCriteriaField(headingRecord.get(i))) {
                         certResultHeadingValues.add(headingRecord.get(i));
                     }
                 }
@@ -100,8 +101,7 @@ public class ListingUploadHandlerUtil {
                 for (CSVRecord listingRecord : dataRecords) {
                     List<String> certResultColumnValues = new ArrayList<String>();
                     for (int i = certResultColumnRange.getMinimumInteger(); i <= certResultColumnRange.getMaximumInteger(); i++) {
-                        if (isHeadingLevel(headingRecord.get(i), HeadingLevel.CERT_RESULT)) {
-
+                        if (isHeadingForCriteriaField(headingRecord.get(i))) {
                             certResultColumnValues.add(listingRecord.get(i));
                         }
                     }
@@ -290,6 +290,17 @@ public class ListingUploadHandlerUtil {
                 || StringUtils.containsIgnoreCase(headingVal, "CRITERION");
     }
 
+    private boolean isHeadingForCriteriaField(String headingVal) {
+        //The task id and participant id fields cannot be specified as CertResult level
+        //because identical headings are used at the listing level.
+        //Probably only want to call this method if you know the passed-in heading occurs AFTER
+        //a CRITERIA_170_* field.
+        Headings heading = Headings.getHeading(headingVal);
+        return heading != null
+                && (isHeadingLevel(headingVal, HeadingLevel.CERT_RESULT)
+                || Headings.getHeading(headingVal).equals(Headings.TASK_ID)
+                || Headings.getHeading(headingVal).equals(Headings.PARTICIPANT_ID));
+    }
     private boolean isHeadingLevel(String headingVal, HeadingLevel level) {
         Headings heading = Headings.getHeading(headingVal);
         return heading != null && heading.getLevel().equals(level);

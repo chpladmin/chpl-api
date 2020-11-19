@@ -561,6 +561,54 @@ public class ListingUploadHandlerUtilTest {
         assertEquals("v3", parsedData.get(2));
     }
 
+    @Test
+    public void getCertResultRecords_CriteriaWithTaskIdColumn_ReturnsCorrectColumns() {
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString(
+                "CRITERIA_170_315_A_1__C,Task Identifier\n1,A1.1");
+        assertEquals(2, certResultRecords.size());
+        CSVRecord heading = handlerUtil.getHeadingRecord(certResultRecords);
+        assertNotNull(heading);
+        List<CSVRecord> parsedCertResultRecords = handlerUtil.getCertificationResultRecordsFromIndex(
+                0, heading, certResultRecords.subList(1, 2));
+        assertNotNull(parsedCertResultRecords);
+        assertEquals(2, parsedCertResultRecords.size());
+
+        CSVRecord parsedHeading = parsedCertResultRecords.get(0);
+        assertNotNull(parsedHeading);
+        assertEquals(2, parsedHeading.size());
+        assertEquals("CRITERIA_170_315_A_1__C", parsedHeading.get(0));
+        assertEquals("Task Identifier", parsedHeading.get(1));
+        CSVRecord parsedData = parsedCertResultRecords.get(1);
+        assertNotNull(parsedData);
+        assertEquals(2, parsedData.size());
+        assertEquals("1", parsedData.get(0));
+        assertEquals("A1.1", parsedData.get(1));
+    }
+
+    @Test
+    public void getCertResultRecords_CriteriaWithParticipantIdColumn_ReturnsCorrectColumns() {
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString(
+                "CRITERIA_170_315_A_1__C,Participant Identifier\n1,A1.1");
+        assertEquals(2, certResultRecords.size());
+        CSVRecord heading = handlerUtil.getHeadingRecord(certResultRecords);
+        assertNotNull(heading);
+        List<CSVRecord> parsedCertResultRecords = handlerUtil.getCertificationResultRecordsFromIndex(
+                0, heading, certResultRecords.subList(1, 2));
+        assertNotNull(parsedCertResultRecords);
+        assertEquals(2, parsedCertResultRecords.size());
+
+        CSVRecord parsedHeading = parsedCertResultRecords.get(0);
+        assertNotNull(parsedHeading);
+        assertEquals(2, parsedHeading.size());
+        assertEquals("CRITERIA_170_315_A_1__C", parsedHeading.get(0));
+        assertEquals("Participant Identifier", parsedHeading.get(1));
+        CSVRecord parsedData = parsedCertResultRecords.get(1);
+        assertNotNull(parsedData);
+        assertEquals(2, parsedData.size());
+        assertEquals("1", parsedData.get(0));
+        assertEquals("A1.1", parsedData.get(1));
+    }
+
     @Test(expected = ValidationException.class)
     public void getChplProductNumber_NoChplProductNumberHeading_ThrowsException()
             throws IOException {

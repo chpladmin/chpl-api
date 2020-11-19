@@ -154,7 +154,7 @@ public class ListingUploadManager {
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
-            + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).GET_BY_ID), #id")
+            + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).GET_BY_ID, #id)")
     public CertifiedProductSearchDetails getDetailsById(Long id) throws EntityRetrievalException {
         ListingUpload listingUpload = listingUploadDao.getByIdIncludingRecords(id);
         List<CSVRecord> allCsvRecords = listingUpload.getRecords();

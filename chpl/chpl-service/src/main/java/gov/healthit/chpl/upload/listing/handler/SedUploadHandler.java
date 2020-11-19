@@ -1,11 +1,20 @@
 package gov.healthit.chpl.upload.listing.handler;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.validation.ValidationException;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +23,7 @@ import gov.healthit.chpl.domain.CertifiedProductSed;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.UcdProcess;
+import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 
 @Component("sedUploadHandler")
@@ -69,5 +79,62 @@ public class SedUploadHandler {
                 .ucdProcesses(ucdProcesses)
             .build();
         return sed;
+    }
+
+    private Map<String, Set<String>> parseTestTaskIdsWithParticipantIds(
+            CSVRecord certResultHeading, List<CSVRecord> certResultRecords) {
+        Map<String, Set<String>> uniqueTaskMaps = new LinkedHashMap<String, Set<String>>();
+        List<String> testTaskIds = parseTaskIds(certResultHeading, certResultRecords);
+        List<String> testParticipantIds = parseParticipantIds(certResultHeading, certResultRecords);
+        if (CollectionUtils.isEmpty(testTaskIds)
+                && CollectionUtils.isEmpty(testParticipantIds)) {
+            return uniqueTaskMaps;
+        }
+
+        int max = 0;
+        if (CollectionUtils.isNotEmpty(testTaskIds)) {
+            max = Math.max(max, testTaskIds.size());
+        }
+        if (CollectionUtils.isNotEmpty(testParticipantIds)) {
+            max = Math.max(max, testParticipantIds.size());
+        }
+
+        IntStream.range(0, max)
+                .forEachOrdered(index -> updateUniqueTaskIdMaps(uniqueTaskMaps, index, testTaskIds, testParticipantIds));
+        return uniqueTaskMaps;
+    }
+
+    private void updateUniqueTaskIdMaps(Map<String, Set<String>> uniqueTaskIdMaps, int index, List<String> testTaskIds,
+            List<String> testParticipantIds) {
+        String testTaskId = (testTaskIds != null && testTaskIds.size() > index) ? testTaskIds.get(index) : null;
+        String testParticipantIdsDelimited = (testParticipantIds != null && testParticipantIds.size() > index)
+                ? testParticipantIds.get(index) : null;
+
+        Set<String> participantIds = new HashSet<String>();
+        if (!StringUtils.isEmpty(testParticipantIdsDelimited)) {
+            String[] splitParticipantIds = testParticipantIdsDelimited.split(";");
+            if (splitParticipantIds.length == 1) {
+                splitParticipantIds = testParticipantIdsDelimited.split(",");
+            }
+            List<String> splitTrimmedParticipantIds = Arrays.stream(splitParticipantIds)
+                    .map(String::trim)
+                    .collect(Collectors.toList());
+            participantIds.addAll(splitTrimmedParticipantIds);
+        }
+
+        if (uniqueTaskIdMaps.containsKey(testTaskId)) {
+            Set<String> taskParticipantIds = uniqueTaskIdMaps.get(testTaskId);
+            taskParticipantIds.addAll(participantIds);
+        } else {
+            uniqueTaskIdMaps.put(testTaskId, participantIds);
+        }
+    }
+
+    private List<String> parseTaskIds(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
+        return uploadUtil.parseMultiRowFieldWithoutEmptyValues(Headings.TASK_ID, certHeadingRecord, certResultRecords);
+    }
+
+    private List<String> parseParticipantIds(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
+        return uploadUtil.parseMultiRowFieldWithoutEmptyValues(Headings.PARTICIPANT_ID, certHeadingRecord, certResultRecords);
     }
 }
