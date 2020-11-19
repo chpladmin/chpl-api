@@ -198,12 +198,12 @@ public enum Headings {
     public String getNamesAsString() {
         String names = "";
         for (int i = 0; i < this.colNames.size(); i++) {
+            if (i == this.colNames.size() - 1) {
+                names += " or ";
+            }
             names += this.colNames.get(i);
             if (i < this.colNames.size() - 1) {
                 names += ", ";
-            }
-            if (i == this.colNames.size() - 1) {
-                names += " or ";
             }
         }
         return names;

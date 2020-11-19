@@ -91,6 +91,9 @@ public class ListingUploadManager {
     public List<ListingUpload> parseUploadFile(MultipartFile file) throws ValidationException {
         List<CSVRecord> allCsvRecords = getFileAsCsvRecords(file);
         int headingRowIndex = uploadUtil.getHeadingRecordIndex(allCsvRecords);
+        if (headingRowIndex < 0) {
+            throw new ValidationException(msgUtil.getMessage("listing.upload.noHeadingFound"));
+        }
         CSVRecord headingRecord = uploadUtil.getHeadingRecord(allCsvRecords);
         List<CSVRecord> allListingRecords = allCsvRecords.subList(headingRowIndex + 1, allCsvRecords.size());
         if (headingRecord == null) {
@@ -216,7 +219,7 @@ public class ListingUploadManager {
             .collect(Collectors.toList());
         if (missingRequiredHeadings != null && missingRequiredHeadings.size() > 0) {
             throw new ValidationException(msgUtil.getMessage("listing.upload.missingRequiredHeadings",
-                    String.join(";", missingRequiredHeadings)));
+                    String.join("; ", missingRequiredHeadings)));
         }
     }
 
