@@ -81,20 +81,24 @@ public class ListingDetailsUploadHandler {
             .build();
 
         //criteria stuff
+        List<CertificationResult> certResultList = new ArrayList<CertificationResult>();
         int nextCertResultIndex = uploadUtil.getNextIndexOfCertificationResult(0, headingRecord);
         while (nextCertResultIndex >= 0) {
             List<CSVRecord> parsedCertResultRecords = uploadUtil.getCertificationResultRecordsFromIndex(
                     nextCertResultIndex, headingRecord, listingRecords);
             CSVRecord certHeadingRecord = uploadUtil.getHeadingRecord(parsedCertResultRecords);
+
             CertificationResult certResult = certResultHandler.parseAsCertificationResult(certHeadingRecord,
                     parsedCertResultRecords.subList(1, parsedCertResultRecords.size()));
-            listing.getCertificationResults().add(certResult);
+            certResultList.add(certResult);
 
             nextCertResultIndex = uploadUtil.getNextIndexOfCertificationResult(
                     nextCertResultIndex + parsedCertResultRecords.size() - 1, headingRecord);
         }
+        listing.setCertificationResults(certResultList);
 
         //TODO: data normalizer - look up IDs for everywhere that could have one
+        //add criteria that weren't in the file
         return listing;
     }
 
