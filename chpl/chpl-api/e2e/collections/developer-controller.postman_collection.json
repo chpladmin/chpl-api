@@ -1,734 +1,793 @@
 {
-    "info": {
-        "name": "developer-controller",
-        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-    },
-    "item": [
-        {
-            "name": "GET : Developers: data driven tests",
-            "item": [
-                {
-                    "name": "GET /hierarchy - valid Deverloper Ids",
-                    "event": [
-                        {
-                            "listen": "prerequest",
-                            "script": {
-                                "id": "1b156faa-475d-482e-b573-f0d184a409fa",
-                                "exec": [
-                                    "const developerId= pm.iterationData.get(\"developerId\");\r",
-                                    "pm.environment.set(\"developerId\",\"developerId\");"
-                                ],
-                                "type": "text/javascript"
-                            }
-                        },
-                        {
-                            "listen": "test",
-                            "script": {
-                                "id": "5f35de1e-0aa3-4d75-93d8-b1c451e372bf",
-                                "exec": [
-                                    "pm.test(\"Valid api key header should return 200 status and response is not  null\", function () {\r",
-                                    "    pm.response.to.have.status(200);\r",
-                                    "    var jsonData = pm.response.json();\r",
-                                    "    pm.expect(jsonData.response).not.eq(null);\r",
-                                    "});\r",
-                                    "pm.test(\"Developer details are correct as per the id passed in\", function () {\r",
-                                    "    var actualBody= pm.response.json();\r",
-                                    "    var expectedname= pm.iterationData.get(\"name\");\r",
-                                    "    pm.expect(actualBody.name).to.equal(expectedname);\r",
-                                    "    var expectedcode= pm.iterationData.get(\"developerCode\");\r",
-                                    "    pm.expect(actualBody.developerCode).to.equal(expectedcode);\r",
-                                    "    var expectedid= pm.iterationData.get(\"developerId\");\r",
-                                    "    pm.expect(actualBody.developerId).to.equal(expectedid);\r",
-                                    "});\r",
-                                    "const schema = {\r",
-                                    "  \"address\": {\r",
-                                    "    \"addressId\": 0,\r",
-                                    "    \"city\": \"string\",\r",
-                                    "    \"country\": \"string\",\r",
-                                    "    \"line1\": \"string\",\r",
-                                    "    \"line2\": \"string\",\r",
-                                    "    \"state\": \"string\",\r",
-                                    "    \"zipcode\": \"string\"\r",
-                                    "  },\r",
-                                    "  \"contact\": {\r",
-                                    "    \"contactId\": 0,\r",
-                                    "    \"email\": \"string\",\r",
-                                    "    \"friendlyName\": \"string\",\r",
-                                    "    \"fullName\": \"string\",\r",
-                                    "    \"phoneNumber\": \"string\",\r",
-                                    "    \"title\": \"string\"\r",
-                                    "  },\r",
-                                    "  \"deleted\": false,\r",
-                                    "  \"developerCode\": \"string\",\r",
-                                    "  \"developerId\": 0,\r",
-                                    "  \"lastModifiedDate\": \"string\",\r",
-                                    "  \"name\": \"string\",\r",
-                                    "  \"products\": [\r",
-                                    "    {\r",
-                                    "      \"contact\": {\r",
-                                    "        \"contactId\": 0,\r",
-                                    "        \"email\": \"string\",\r",
-                                    "        \"friendlyName\": \"string\",\r",
-                                    "        \"fullName\": \"string\",\r",
-                                    "        \"phoneNumber\": \"string\",\r",
-                                    "        \"title\": \"string\"\r",
-                                    "      },\r",
-                                    "      \"lastModifiedDate\": \"string\",\r",
-                                    "      \"name\": \"string\",\r",
-                                    "      \"owner\": {\r",
-                                    "        \"address\": {\r",
-                                    "          \"addressId\": 0,\r",
-                                    "          \"city\": \"string\",\r",
-                                    "          \"country\": \"string\",\r",
-                                    "          \"line1\": \"string\",\r",
-                                    "          \"line2\": \"string\",\r",
-                                    "          \"state\": \"string\",\r",
-                                    "          \"zipcode\": \"string\"\r",
-                                    "        },\r",
-                                    "        \"contact\": {\r",
-                                    "          \"contactId\": 0,\r",
-                                    "          \"email\": \"string\",\r",
-                                    "          \"friendlyName\": \"string\",\r",
-                                    "          \"fullName\": \"string\",\r",
-                                    "          \"phoneNumber\": \"string\",\r",
-                                    "          \"title\": \"string\"\r",
-                                    "        },\r",
-                                    "        \"deleted\": false,\r",
-                                    "        \"developerCode\": \"string\",\r",
-                                    "        \"developerId\": 0,\r",
-                                    "        \"lastModifiedDate\": \"string\",\r",
-                                    "        \"name\": \"string\",\r",
-                                    "        \"selfDeveloper\": false,\r",
-                                    "        \"status\": {\r",
-                                    "          \"id\": 0,\r",
-                                    "          \"status\": \"string\"\r",
-                                    "        },\r",
-                                    "        \"statusEvents\": [\r",
-                                    "          {\r",
-                                    "            \"developerId\": 0,\r",
-                                    "            \"id\": 0,\r",
-                                    "            \"reason\": \"string\",\r",
-                                    "            \"status\": {\r",
-                                    "              \"id\": 0,\r",
-                                    "              \"status\": \"string\"\r",
-                                    "            },\r",
-                                    "            \"statusDate\": \"2020-10-09T20:00:35.961Z\"\r",
-                                    "          }\r",
-                                    "        ],\r",
-                                    "        \"transparencyAttestations\": [\r",
-                                    "          {\r",
-                                    "            \"acbId\": 0,\r",
-                                    "            \"acbName\": \"string\",\r",
-                                    "            \"attestation\": {\r",
-                                    "              \"removed\": false,\r",
-                                    "              \"transparencyAttestation\": \"string\"\r",
-                                    "            }\r",
-                                    "          }\r",
-                                    "        ],\r",
-                                    "        \"website\": \"string\"\r",
-                                    "      },\r",
-                                    "      \"ownerHistory\": [\r",
-                                    "        {\r",
-                                    "          \"developer\": {\r",
-                                    "            \"address\": {\r",
-                                    "              \"addressId\": 0,\r",
-                                    "              \"city\": \"string\",\r",
-                                    "              \"country\": \"string\",\r",
-                                    "              \"line1\": \"string\",\r",
-                                    "              \"line2\": \"string\",\r",
-                                    "              \"state\": \"string\",\r",
-                                    "              \"zipcode\": \"string\"\r",
-                                    "            },\r",
-                                    "            \"contact\": {\r",
-                                    "              \"contactId\": 0,\r",
-                                    "              \"email\": \"string\",\r",
-                                    "              \"friendlyName\": \"string\",\r",
-                                    "              \"fullName\": \"string\",\r",
-                                    "              \"phoneNumber\": \"string\",\r",
-                                    "              \"title\": \"string\"\r",
-                                    "            },\r",
-                                    "            \"deleted\": false,\r",
-                                    "            \"developerCode\": \"string\",\r",
-                                    "            \"developerId\": 0,\r",
-                                    "            \"lastModifiedDate\": \"string\",\r",
-                                    "            \"name\": \"string\",\r",
-                                    "            \"selfDeveloper\": false,\r",
-                                    "            \"status\": {\r",
-                                    "              \"id\": 0,\r",
-                                    "              \"status\": \"string\"\r",
-                                    "            },\r",
-                                    "            \"statusEvents\": [\r",
-                                    "              {\r",
-                                    "                \"developerId\": 0,\r",
-                                    "                \"id\": 0,\r",
-                                    "                \"reason\": \"string\",\r",
-                                    "                \"status\": {\r",
-                                    "                  \"id\": 0,\r",
-                                    "                  \"status\": \"string\"\r",
-                                    "                },\r",
-                                    "                \"statusDate\": \"2020-10-09T20:00:35.961Z\"\r",
-                                    "              }\r",
-                                    "            ],\r",
-                                    "            \"transparencyAttestations\": [\r",
-                                    "              {\r",
-                                    "                \"acbId\": 0,\r",
-                                    "                \"acbName\": \"string\",\r",
-                                    "                \"attestation\": {\r",
-                                    "                  \"removed\": false,\r",
-                                    "                  \"transparencyAttestation\": \"string\"\r",
-                                    "                }\r",
-                                    "              }\r",
-                                    "            ],\r",
-                                    "            \"website\": \"string\"\r",
-                                    "          },\r",
-                                    "          \"id\": 0,\r",
-                                    "          \"transferDate\": 0\r",
-                                    "        }\r",
-                                    "      ],\r",
-                                    "      \"productId\": 0,\r",
-                                    "      \"reportFileLocation\": \"string\",\r",
-                                    "      \"versions\": [\r",
-                                    "        {\r",
-                                    "          \"details\": \"string\",\r",
-                                    "          \"lastModifiedDate\": \"string\",\r",
-                                    "          \"listings\": [\r",
-                                    "            {\r",
-                                    "              \"acb\": {\r",
-                                    "                \"acbCode\": \"string\",\r",
-                                    "                \"address\": {\r",
-                                    "                  \"addressId\": 0,\r",
-                                    "                  \"city\": \"string\",\r",
-                                    "                  \"country\": \"string\",\r",
-                                    "                  \"line1\": \"string\",\r",
-                                    "                  \"line2\": \"string\",\r",
-                                    "                  \"state\": \"string\",\r",
-                                    "                  \"zipcode\": \"string\"\r",
-                                    "                },\r",
-                                    "                \"id\": 0,\r",
-                                    "                \"name\": \"string\",\r",
-                                    "                \"retired\": false,\r",
-                                    "                \"retirementDate\": \"2020-10-09T20:00:35.962Z\",\r",
-                                    "                \"website\": \"string\"\r",
-                                    "              },\r",
-                                    "              \"certificationDate\": 0,\r",
-                                    "              \"certificationStatus\": \"string\",\r",
-                                    "              \"chplProductNumber\": \"string\",\r",
-                                    "              \"curesUpdate\": false,\r",
-                                    "              \"edition\": \"string\",\r",
-                                    "              \"id\": 0,\r",
-                                    "              \"lastModifiedDate\": 0\r",
-                                    "            }\r",
-                                    "          ],\r",
-                                    "          \"version\": \"string\",\r",
-                                    "          \"versionId\": 0\r",
-                                    "        }\r",
-                                    "      ]\r",
-                                    "    }\r",
-                                    "  ],\r",
-                                    "  \"selfDeveloper\": false,\r",
-                                    "  \"status\": {\r",
-                                    "    \"id\": 0,\r",
-                                    "    \"status\": \"string\"\r",
-                                    "  },\r",
-                                    "  \"statusEvents\": [\r",
-                                    "    {\r",
-                                    "      \"developerId\": 0,\r",
-                                    "      \"id\": 0,\r",
-                                    "      \"reason\": \"string\",\r",
-                                    "      \"status\": {\r",
-                                    "        \"id\": 0,\r",
-                                    "        \"status\": \"string\"\r",
-                                    "      },\r",
-                                    "      \"statusDate\": \"2020-10-09T20:00:35.961Z\"\r",
-                                    "    }\r",
-                                    "  ],\r",
-                                    "  \"transparencyAttestations\": [\r",
-                                    "    {\r",
-                                    "      \"acbId\": 0,\r",
-                                    "      \"acbName\": \"string\",\r",
-                                    "      \"attestation\": {\r",
-                                    "        \"removed\": false,\r",
-                                    "        \"transparencyAttestation\": \"string\"\r",
-                                    "      }\r",
-                                    "    }\r",
-                                    "  ],\r",
-                                    "  \"website\": \"string\"\r",
-                                    "};\r",
-                                    "pm.test(\"Validate that /hierarchy end point has correct schema\", () => {\r",
-                                    "            pm.response.to.have.jsonSchema(schema);\r",
-                                    "});"
-                                ],
-                                "type": "text/javascript"
-                            }
-                        }
-                    ],
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "API-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json",
-                                "type": "text"
-                            }
-                            ],
-                            "url": {
-                            "raw": "{{url}}/rest/developers/{{developerId}}/hierarchy",
-                            "host": [
-                                "{{url}}"
-                            ],
-                            "path": [
-                                "rest",
-                                "developers",
-                                "{{developerId}}",
-                                "hierarchy"
-                            ]
-                        },
-                        "description": "/hierarchy end point returns 200 status and correct response for valid Developer Ids"
-                    },
-                    "response": []
-                },
-                {
-                    "name": "GET /hierarchy - Invalid developer Id",
-                    "event": [
-                        {
-                            "listen": "test",
-                            "script": {
-                                "id": "f5f06c65-6b79-4c85-8a5d-3a73ef785980",
-                                "exec": [
-                                    "pm.test(\"Invalid DeveloperId returns 404 status\", function () {\r",
-                                    "    pm.response.to.have.status(404);\r",
-                                    "});"
-                                ],
-                                "type": "text/javascript"
-                            }
-                        }
-                    ],
-                        "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "API-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json",
-                                "type": "text"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{url}}/rest/developers/100/hierarchy",
-                            "host": [
-                                "{{url}}"
-                            ],
-                            "path": [
-                                "rest",
-                                "developers",
-                                "100",
-                                "hierarchy"
-                            ]
-                        },
-                        "description": "Invalid Developer Id returns 404 status"
-                    },
-                    "response": []
-                },
-                {
-                    "name": "GET /developers/deverloperId ",
-                    "event": [
-                        {
-                            "listen": "prerequest",
-                            "script": {
-                                "id": "1f95c359-f52d-4b60-abd8-5ab5fa72b7dd",
-                                "exec": [
-                                    "const developerId= pm.iterationData.get(\"developerId\");\r",
-                                    "pm.environment.set(\"developerId\",\"developerId\");"
-                                ],
-                                "type": "text/javascript"
-                            }
-                        },
-                        {
-                            "listen": "test",
-                            "script": {
-                                "id": "8648433c-dd18-47d0-ad72-e3549538a36f",
-                                "exec": [
-                                    "pm.test(\"For valid developer Id ,valid api key header should return 200 status and response is not null\", function () {\r",
-                                    "    pm.response.to.have.status(200);\r",
-                                    "    var jsonData = pm.response.json();\r",
-                                    "    pm.expect(jsonData.response).not.eq(null);\r",
-                                    "});\r",
-                                    "pm.test(\"Developer Names are correct as per the id passed in\", function () {\r",
-                                    "    var actualBody= pm.response.json();\r",
-                                    "    var expected= pm.iterationData.get(\"name\");\r",
-                                    "    pm.expect(actualBody.name).to.equal(expected);\r",
-                                    "    var expected= pm.iterationData.get(\"developerCode\");\r",
-                                    "    pm.expect(actualBody.developerCode).to.equal(expected);\r",
-                                    "    var expected= pm.iterationData.get(\"developerId\");\r",
-                                    "    pm.expect(actualBody.developerId).to.equal(expected);\r",
-                                    "});"
-                                ],
-                                "type": "text/javascript"
-                            }
-                        }
-                    ],
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "API-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json",
-                                "type": "text"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{url}}/rest/developers/{{developerId}}",
-                            "host": [
-                                "{{url}}"
-                            ],
-                            "path": [
-                                "rest",
-                                "developers",
-                                "{{developerId}}"
-                            ]
-                        },
-                        "description": "/developers/developerId end point functions as expected"
-                    },
-                    "response": []
-                },
-                {
-            "name": "developer schema and response validation_GET_/developers",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "exec": [
-                            "const developerSchema =",
-                            "{",
-                            "  \"developers\": [",
-                            "    {",
-                            "      \"address\": {",
-                            "        \"addressId\": 0,",
-                            "        \"city\": \"string\",",
-                            "        \"country\": \"string\",",
-                            "        \"line1\": \"string\",",
-                            "        \"line2\": \"string\",",
-                            "        \"state\": \"string\",",
-                            "        \"zipcode\": \"string\"",
-                            "      },",
-                            "      \"contact\": {",
-                            "        \"contactId\": 0,",
-                            "        \"email\": \"string\",",
-                            "        \"fullName\": \"string\",",
-                            "        \"phoneNumber\": \"string\",",
-                            "        \"title\": \"string\"",
-                            "      },",
-                            "      \"deleted\": false,",
-                            "      \"developerCode\": \"string\",",
-                            "      \"developerId\": 0,",
-                            "      \"lastModifiedDate\": \"string\",",
-                            "      \"name\": \"string\",",
-                            "      \"selfDeveloper\": false,",
-                            "      \"status\": {",
-                            "        \"id\": 0,",
-                            "        \"status\": \"string\"",
-                            "      },",
-                            "      \"statusEvents\": [",
-                            "        {",
-                            "          \"developerId\": 0,",
-                            "          \"id\": 0,",
-                            "          \"reason\": \"string\",",
-                            "          \"status\": {",
-                            "            \"id\": 0,",
-                            "            \"status\": \"string\"",
-                            "          },",
-                            "          \"statusDate\": \"2020-10-09T17:08:51.022Z\"",
-                            "        }",
-                            "      ],",
-                            "      \"transparencyAttestations\": [",
-                            "        {",
-                            "          \"acbId\": 0,",
-                            "          \"acbName\": \"string\",",
-                            "          \"attestation\": {",
-                            "            \"removed\": false,",
-                            "            \"transparencyAttestation\": \"string\"",
-                            "          }",
-                            "        }",
-                            "      ],",
-                            "      \"website\": \"string\"",
-                            "    }",
-                            "  ]",
-                            "}",
-                            "var jsonResponse = pm.response.json();",
-                            "pm.test('developer schema is valid', function() {",
-                            "  pm.expect(tv4.validate(jsonResponse, developerSchema)).to.be.true;  ",
-                            "});",
-                            "",
-                            "pm.test(\"developer contact details should not include friendly name\", function () {",
-                            "    pm.expect(pm.response.text()).to.not.include(\"friendlyName\");",
-                            "});",
-                            ""
-                        ],
-                        "type": "text/javascript"
-                    }
-                }
-            ],
-            "request": {
-                "method": "GET",
-                "header": [
-                    {
-                        "key": "API-KEY",
-                        "value": "{{apiKey}}",
-                        "type": "text"
-                    },
-                    {
-                        "key": "Content-Type",
-                        "value": "application/json",
-                        "type": "text"
-                    }
-                ],
-                "url": {
-
-                    "raw": "{{url}}/developers/107",
-                    "host": [
-                        "{{url}}"
-                    ],
-                    "path": [
-                        "rest",
-                        "developers"
-                    ]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "developer edit response validation_PUT_/developers",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "exec": [
-                            "\r",
-                            "pm.test(\"valid developer edit request should return valid response\", function () {\r",
-                            "    pm.response.to.have.status(200);\r",
-                            "});\r",
-                            "\r",
-                            "pm.test(\"validate edit response-developer name is correct\", function () {\r",
-                            "    var jsonData = pm.response.json();\r",
-                            "    pm.expect(jsonData.name).to.eql('DSS, Inc');\r",
-                            "});\r",
-                            "\r",
-                            "pm.test(\"developer contact details should not include friendly name\", function () {\r",
-                            "    pm.expect(pm.response.text()).to.not.include(\"friendlyName\");\r",
-                            "});\r",
-                            ""
-                        ],
-                        "type": "text/javascript"
-                    }
-                },
-                {
-                    "listen": "prerequest",
-                    "script": {
-                        "exec": [
-                            "var ReqBody= {\r",
-                            "        userName:pm.environment.get(\"usernameACB\"),password:pm.environment.get(\"passwordACB\")\r",
-                            "    };\r",
-                            "pm.sendRequest({\r",
-                            "    url: pm.environment.get(\"authurl\"),\r",
-                            "    method: \"POST\",\r",
-                            "    header: {\r",
-                            "        \"Content-Type\": \"application/json\",\r",
-                            "        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
-                            "    },\r",
-                            "    body: JSON.stringify(ReqBody)\r",
-                            "}, function (err, response) {\r",
-                            "   var jsonData = response.json();\r",
-                            "   pm.environment.set(\"token\",jsonData[\"token\"])\r",
-                            "});"
-                        ],
-                        "type": "text/javascript"
-                    }
-                }
-            ],
-            "request": {
-                "auth": {
-                    "type": "bearer",
-                    "bearer": [
-                        {
-                            "key": "token",
-                            "value": "{{token}}",
-                            "type": "string"
-                        }
-                    ]
-                },
-                "method": "PUT",
-                "header": [
-                    {
-                        "key": "API-KEY",
-                        "value": "{{apiKey}}",
-                        "type": "text"
-                    },
-                    {
-                        "key": "Content-Type",
-                        "value": "application/json",
-                        "type": "text"
-                    }
-                ],
-                "body": {
-                    "mode": "raw",
-                    "raw": "{\"developer\":{\"developerId\":1902,\"developerCode\":\"2901\",\"name\":\"DSS, Inc\",\"website\":\"http://www.dssinc.com\",\"selfDeveloper\":false,\"address\":{\"addressId\":883,\"line1\":\"12575 US Highway 1, Suite 200\",\"line2\":null,\"city\":\"Juno Beach\",\"state\":\"FL\",\"zipcode\":\"33408\",\"country\":\"USA\"},\"contact\":{\"fullName\":\"Document Storage Systems, Inc.\",\"email\":\"certifications@dssinc.com\",\"phoneNumber\":\"561-284-7838\",\"title\":null,\"contactId\":1195},\"lastModifiedDate\":\"1592858677511\",\"deleted\":false,\"transparencyAttestations\":[{\"acbName\":\"Drummond Group\",\"attestation\":{\"transparencyAttestation\":\"Affirmative\",\"removed\":true}},{\"acbName\":\"SLI Compliance\",\"attestation\":null},{\"acbName\":\"ICSA Labs\",\"attestation\":{\"transparencyAttestation\":\"Affirmative\",\"removed\":true}},{\"acbName\":\"CCHIT\",\"attestation\":null},{\"acbName\":\"Surescripts LLC\",\"attestation\":null},{\"acbName\":\"UL LLC\",\"attestation\":null}],\"statusEvents\":[{\"id\":1832,\"developerId\":1902,\"status\":{\"id\":1,\"status\":\"Active\"},\"statusDate\":1471551206170,\"reason\":null,\"statusDateObject\":\"2016-08-18T20:13:26.170Z\"}],\"status\":{\"id\":1,\"status\":\"Active\"},\"products\":[{\"productId\":3221,\"name\":\"FDB MedsTracker\",\"reportFileLocation\":null,\"contact\":null,\"owner\":{\"developerId\":1902,\"developerCode\":\"2901\",\"name\":\"DSS, Inc\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":null,\"deleted\":null,\"transparencyAttestations\":[],\"statusEvents\":[],\"status\":null},\"ownerHistory\":[],\"lastModifiedDate\":\"1569517081783\",\"versions\":[{\"versionId\":4028,\"version\":\"5.0\",\"details\":null,\"lastModifiedDate\":\"1569517081783\",\"listings\":[{\"id\":6807,\"chplProductNumber\":\"CHP-021517\",\"lastModifiedDate\":1459470044433,\"edition\":\"2011\",\"certificationDate\":1299196800000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":6,\"acbCode\":\"07\",\"name\":\"ICSA Labs\",\"website\":\"https://www.icsalabs.com\",\"address\":{\"addressId\":7,\"line1\":\"1000 Bent Creek Blvd.\",\"line2\":\"Suite 200\",\"city\":\"Mechanicsburg\",\"state\":\"PA\",\"zipcode\":\"17050\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":6811,\"chplProductNumber\":\"CHP-021516\",\"lastModifiedDate\":1459470044453,\"edition\":\"2011\",\"certificationDate\":1299196800000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":6,\"acbCode\":\"07\",\"name\":\"ICSA Labs\",\"website\":\"https://www.icsalabs.com\",\"address\":{\"addressId\":7,\"line1\":\"1000 Bent Creek Blvd.\",\"line2\":\"Suite 200\",\"city\":\"Mechanicsburg\",\"state\":\"PA\",\"zipcode\":\"17050\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]},{\"versionId\":4333,\"version\":\"6\",\"details\":null,\"lastModifiedDate\":\"1569517081783\",\"listings\":[{\"id\":6687,\"chplProductNumber\":\"CHP-022013\",\"lastModifiedDate\":1593514449506,\"edition\":\"2014\",\"certificationDate\":1393286400000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":6,\"acbCode\":\"07\",\"name\":\"ICSA Labs\",\"website\":\"https://www.icsalabs.com\",\"address\":{\"addressId\":7,\"line1\":\"1000 Bent Creek Blvd.\",\"line2\":\"Suite 200\",\"city\":\"Mechanicsburg\",\"state\":\"PA\",\"zipcode\":\"17050\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":6685,\"chplProductNumber\":\"CHP-022012\",\"lastModifiedDate\":1593490201632,\"edition\":\"2014\",\"certificationDate\":1393286400000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":6,\"acbCode\":\"07\",\"name\":\"ICSA Labs\",\"website\":\"https://www.icsalabs.com\",\"address\":{\"addressId\":7,\"line1\":\"1000 Bent Creek Blvd.\",\"line2\":\"Suite 200\",\"city\":\"Mechanicsburg\",\"state\":\"PA\",\"zipcode\":\"17050\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":6312,\"chplProductNumber\":\"CHP-023175\",\"lastModifiedDate\":1593511464037,\"edition\":\"2014\",\"certificationDate\":1403827200000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":6,\"acbCode\":\"07\",\"name\":\"ICSA Labs\",\"website\":\"https://www.icsalabs.com\",\"address\":{\"addressId\":7,\"line1\":\"1000 Bent Creek Blvd.\",\"line2\":\"Suite 200\",\"city\":\"Mechanicsburg\",\"state\":\"PA\",\"zipcode\":\"17050\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":5996,\"chplProductNumber\":\"CHP-024147\",\"lastModifiedDate\":1593506388617,\"edition\":\"2014\",\"certificationDate\":1412553600000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":6,\"acbCode\":\"07\",\"name\":\"ICSA Labs\",\"website\":\"https://www.icsalabs.com\",\"address\":{\"addressId\":7,\"line1\":\"1000 Bent Creek Blvd.\",\"line2\":\"Suite 200\",\"city\":\"Mechanicsburg\",\"state\":\"PA\",\"zipcode\":\"17050\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":6002,\"chplProductNumber\":\"CHP-024149\",\"lastModifiedDate\":1593499211217,\"edition\":\"2014\",\"certificationDate\":1412553600000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":6,\"acbCode\":\"07\",\"name\":\"ICSA Labs\",\"website\":\"https://www.icsalabs.com\",\"address\":{\"addressId\":7,\"line1\":\"1000 Bent Creek Blvd.\",\"line2\":\"Suite 200\",\"city\":\"Mechanicsburg\",\"state\":\"PA\",\"zipcode\":\"17050\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":6310,\"chplProductNumber\":\"CHP-023174\",\"lastModifiedDate\":1593493657165,\"edition\":\"2014\",\"certificationDate\":1403827200000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":6,\"acbCode\":\"07\",\"name\":\"ICSA Labs\",\"website\":\"https://www.icsalabs.com\",\"address\":{\"addressId\":7,\"line1\":\"1000 Bent Creek Blvd.\",\"line2\":\"Suite 200\",\"city\":\"Mechanicsburg\",\"state\":\"PA\",\"zipcode\":\"17050\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]},{\"versionId\":7458,\"version\":\"8\",\"details\":null,\"lastModifiedDate\":\"1569517081783\",\"listings\":[{\"id\":9643,\"chplProductNumber\":\"14.07.07.2901.FD01.01.01.1.180910\",\"lastModifiedDate\":1593482180903,\"edition\":\"2014\",\"certificationDate\":1536537600000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":6,\"acbCode\":\"07\",\"name\":\"ICSA Labs\",\"website\":\"https://www.icsalabs.com\",\"address\":{\"addressId\":7,\"line1\":\"1000 Bent Creek Blvd.\",\"line2\":\"Suite 200\",\"city\":\"Mechanicsburg\",\"state\":\"PA\",\"zipcode\":\"17050\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":9642,\"chplProductNumber\":\"14.07.07.2901.FD01.01.01.1.180909\",\"lastModifiedDate\":1593528534234,\"edition\":\"2014\",\"certificationDate\":1536451200000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":6,\"acbCode\":\"07\",\"name\":\"ICSA Labs\",\"website\":\"https://www.icsalabs.com\",\"address\":{\"addressId\":7,\"line1\":\"1000 Bent Creek Blvd.\",\"line2\":\"Suite 200\",\"city\":\"Mechanicsburg\",\"state\":\"PA\",\"zipcode\":\"17050\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":9972,\"chplProductNumber\":\"15.04.04.2901.FDB1.08.00.1.190411\",\"lastModifiedDate\":1584042323020,\"edition\":\"2015\",\"certificationDate\":1554940800000,\"certificationStatus\":\"Withdrawn by Developer\",\"curesUpdate\":false,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]}]}]},\"developerIds\":[1902]}"
-                },
-                "url": {
-                    "raw": "{{url}}/rest/developers",
-                    "host": [
-                        "{{url}}"
-                    ],
-                    "path": [
-                        "rest",
-                        "developers"
-                    ]
-                }
-            },
-            "response": []
-        }
-            ],
-            "protocolProfileBehavior": {}
-        },
-        {
-            "name": "GET /developers - valid API Key header",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "exec": [
-                            "pm.test(\"Valid api key header should return 200 status and response body should not be empty\", function () {\r",
-                            "    pm.response.to.have.status(200);\r",
-                            "    var jsonData = pm.response.json();\r",
-                            "    pm.expect(jsonData.response).not.eq(null);\r",
-                            "});"
-                        ],
-                        "url": {
-                            "raw": "{{url}}/rest/developers/{{developerId}}",
-                            "host": [
-                                "{{url}}"
-                            ],
-                            "path": [
-                                "rest",
-                                "developers",
-                                "{{developerId}}"
-                            ]
-                        },
-                        "description": "/developers/developerId end point functions as expected"
-                    },
-                    "response": []
-                }
-            ],
-            "protocolProfileBehavior": {}
-        },
-        {
-            "name": "GET : Developers: non-data driven tests",
-            "item": [
-                {
-                    "name": "GET /developers -invalid API Key header",
-                    "event": [
-                        {
-                            "listen": "test",
-                            "script": {
-                                "id": "06b29636-a133-432d-8279-256ec4551b6a",
-                                "exec": [
-                                    "pm.test(\"Invalid api key header should return 401 status\", function () {\r",
-                                    "    pm.response.to.have.status(401);\r",
-                                    "});"
-                                ],
-                                "type": "text/javascript"
-                            }
-                        }
-                    ],
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "API-Key",
-                                "value": "atest123cg",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json",
-                                "type": "text"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{url}}/rest/developers",
-                            "host": [
-                                "{{url}}"
-                            ],
-                            "path": [
-                                "rest",
-                                "developers"
-                            ]
-                        },
-                        "description": "Request with Invalid API-Key header returns 401 status"
-                    },
-                    "response": []
-                },
-                {
-                    "name": "GET /developers - valid API Key header",
-                    "event": [
-                        {
-                            "listen": "test",
-                            "script": {
-                                "id": "46b22627-72ab-438b-9ea3-5d6f0113685f",
-                                "exec": [
-                                    "pm.test(\"Valid api key header should return 200 status and response body should not be empty\", function () {\r",
-                                    "    pm.response.to.have.status(200);\r",
-                                    "    var jsonData = pm.response.json();\r",
-                                    "    pm.expect(jsonData.response).not.eq(null);\r",
-                                    "});"
-                                ],
-                                "type": "text/javascript"
-                            }
-                        }
-                    ],
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "API-Key",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json",
-                                "type": "text"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{url}}/rest/developers",
-                            "host": [
-                                "{{url}}"
-                            ],
-                            "path": [
-                                "rest",
-                                "developers"
-                            ]
-                        }
-                    },
-                    "response": []
-                }
-            ],
-            "protocolProfileBehavior": {}
-        }
-    ],
-    "protocolProfileBehavior": {}
+	"info": {
+		"name": "developer-controller",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET : Developers: data driven tests",
+			"item": [
+				{
+					"name": "GET /hierarchy - valid Deverloper Ids",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "1b156faa-475d-482e-b573-f0d184a409fa",
+								"exec": [
+									"const developerId= pm.iterationData.get(\"developerId\");\r",
+									"pm.environment.set(\"developerId\",\"developerId\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "5f35de1e-0aa3-4d75-93d8-b1c451e372bf",
+								"exec": [
+									"pm.test(\"Valid api key header should return 200 status and response is not  null\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.response).not.eq(null);\r",
+									"});\r",
+									"pm.test(\"Developer details are correct as per the id passed in\", function () {\r",
+									"    var actualBody= pm.response.json();\r",
+									"    var expectedname= pm.iterationData.get(\"name\");\r",
+									"    pm.expect(actualBody.name).to.equal(expectedname);\r",
+									"    var expectedcode= pm.iterationData.get(\"developerCode\");\r",
+									"    pm.expect(actualBody.developerCode).to.equal(expectedcode);\r",
+									"    var expectedid= pm.iterationData.get(\"developerId\");\r",
+									"    pm.expect(actualBody.developerId).to.equal(expectedid);\r",
+									"});\r",
+									"const schema = {\r",
+									"  \"address\": {\r",
+									"    \"addressId\": 0,\r",
+									"    \"city\": \"string\",\r",
+									"    \"country\": \"string\",\r",
+									"    \"line1\": \"string\",\r",
+									"    \"line2\": \"string\",\r",
+									"    \"state\": \"string\",\r",
+									"    \"zipcode\": \"string\"\r",
+									"  },\r",
+									"  \"contact\": {\r",
+									"    \"contactId\": 0,\r",
+									"    \"email\": \"string\",\r",
+									"    \"friendlyName\": \"string\",\r",
+									"    \"fullName\": \"string\",\r",
+									"    \"phoneNumber\": \"string\",\r",
+									"    \"title\": \"string\"\r",
+									"  },\r",
+									"  \"deleted\": false,\r",
+									"  \"developerCode\": \"string\",\r",
+									"  \"developerId\": 0,\r",
+									"  \"lastModifiedDate\": \"string\",\r",
+									"  \"name\": \"string\",\r",
+									"  \"products\": [\r",
+									"    {\r",
+									"      \"contact\": {\r",
+									"        \"contactId\": 0,\r",
+									"        \"email\": \"string\",\r",
+									"        \"friendlyName\": \"string\",\r",
+									"        \"fullName\": \"string\",\r",
+									"        \"phoneNumber\": \"string\",\r",
+									"        \"title\": \"string\"\r",
+									"      },\r",
+									"      \"lastModifiedDate\": \"string\",\r",
+									"      \"name\": \"string\",\r",
+									"      \"owner\": {\r",
+									"        \"address\": {\r",
+									"          \"addressId\": 0,\r",
+									"          \"city\": \"string\",\r",
+									"          \"country\": \"string\",\r",
+									"          \"line1\": \"string\",\r",
+									"          \"line2\": \"string\",\r",
+									"          \"state\": \"string\",\r",
+									"          \"zipcode\": \"string\"\r",
+									"        },\r",
+									"        \"contact\": {\r",
+									"          \"contactId\": 0,\r",
+									"          \"email\": \"string\",\r",
+									"          \"friendlyName\": \"string\",\r",
+									"          \"fullName\": \"string\",\r",
+									"          \"phoneNumber\": \"string\",\r",
+									"          \"title\": \"string\"\r",
+									"        },\r",
+									"        \"deleted\": false,\r",
+									"        \"developerCode\": \"string\",\r",
+									"        \"developerId\": 0,\r",
+									"        \"lastModifiedDate\": \"string\",\r",
+									"        \"name\": \"string\",\r",
+									"        \"selfDeveloper\": false,\r",
+									"        \"status\": {\r",
+									"          \"id\": 0,\r",
+									"          \"status\": \"string\"\r",
+									"        },\r",
+									"        \"statusEvents\": [\r",
+									"          {\r",
+									"            \"developerId\": 0,\r",
+									"            \"id\": 0,\r",
+									"            \"reason\": \"string\",\r",
+									"            \"status\": {\r",
+									"              \"id\": 0,\r",
+									"              \"status\": \"string\"\r",
+									"            },\r",
+									"            \"statusDate\": \"2020-10-09T20:00:35.961Z\"\r",
+									"          }\r",
+									"        ],\r",
+									"        \"transparencyAttestations\": [\r",
+									"          {\r",
+									"            \"acbId\": 0,\r",
+									"            \"acbName\": \"string\",\r",
+									"            \"attestation\": {\r",
+									"              \"removed\": false,\r",
+									"              \"transparencyAttestation\": \"string\"\r",
+									"            }\r",
+									"          }\r",
+									"        ],\r",
+									"        \"website\": \"string\"\r",
+									"      },\r",
+									"      \"ownerHistory\": [\r",
+									"        {\r",
+									"          \"developer\": {\r",
+									"            \"address\": {\r",
+									"              \"addressId\": 0,\r",
+									"              \"city\": \"string\",\r",
+									"              \"country\": \"string\",\r",
+									"              \"line1\": \"string\",\r",
+									"              \"line2\": \"string\",\r",
+									"              \"state\": \"string\",\r",
+									"              \"zipcode\": \"string\"\r",
+									"            },\r",
+									"            \"contact\": {\r",
+									"              \"contactId\": 0,\r",
+									"              \"email\": \"string\",\r",
+									"              \"friendlyName\": \"string\",\r",
+									"              \"fullName\": \"string\",\r",
+									"              \"phoneNumber\": \"string\",\r",
+									"              \"title\": \"string\"\r",
+									"            },\r",
+									"            \"deleted\": false,\r",
+									"            \"developerCode\": \"string\",\r",
+									"            \"developerId\": 0,\r",
+									"            \"lastModifiedDate\": \"string\",\r",
+									"            \"name\": \"string\",\r",
+									"            \"selfDeveloper\": false,\r",
+									"            \"status\": {\r",
+									"              \"id\": 0,\r",
+									"              \"status\": \"string\"\r",
+									"            },\r",
+									"            \"statusEvents\": [\r",
+									"              {\r",
+									"                \"developerId\": 0,\r",
+									"                \"id\": 0,\r",
+									"                \"reason\": \"string\",\r",
+									"                \"status\": {\r",
+									"                  \"id\": 0,\r",
+									"                  \"status\": \"string\"\r",
+									"                },\r",
+									"                \"statusDate\": \"2020-10-09T20:00:35.961Z\"\r",
+									"              }\r",
+									"            ],\r",
+									"            \"transparencyAttestations\": [\r",
+									"              {\r",
+									"                \"acbId\": 0,\r",
+									"                \"acbName\": \"string\",\r",
+									"                \"attestation\": {\r",
+									"                  \"removed\": false,\r",
+									"                  \"transparencyAttestation\": \"string\"\r",
+									"                }\r",
+									"              }\r",
+									"            ],\r",
+									"            \"website\": \"string\"\r",
+									"          },\r",
+									"          \"id\": 0,\r",
+									"          \"transferDate\": 0\r",
+									"        }\r",
+									"      ],\r",
+									"      \"productId\": 0,\r",
+									"      \"reportFileLocation\": \"string\",\r",
+									"      \"versions\": [\r",
+									"        {\r",
+									"          \"details\": \"string\",\r",
+									"          \"lastModifiedDate\": \"string\",\r",
+									"          \"listings\": [\r",
+									"            {\r",
+									"              \"acb\": {\r",
+									"                \"acbCode\": \"string\",\r",
+									"                \"address\": {\r",
+									"                  \"addressId\": 0,\r",
+									"                  \"city\": \"string\",\r",
+									"                  \"country\": \"string\",\r",
+									"                  \"line1\": \"string\",\r",
+									"                  \"line2\": \"string\",\r",
+									"                  \"state\": \"string\",\r",
+									"                  \"zipcode\": \"string\"\r",
+									"                },\r",
+									"                \"id\": 0,\r",
+									"                \"name\": \"string\",\r",
+									"                \"retired\": false,\r",
+									"                \"retirementDate\": \"2020-10-09T20:00:35.962Z\",\r",
+									"                \"website\": \"string\"\r",
+									"              },\r",
+									"              \"certificationDate\": 0,\r",
+									"              \"certificationStatus\": \"string\",\r",
+									"              \"chplProductNumber\": \"string\",\r",
+									"              \"curesUpdate\": false,\r",
+									"              \"edition\": \"string\",\r",
+									"              \"id\": 0,\r",
+									"              \"lastModifiedDate\": 0\r",
+									"            }\r",
+									"          ],\r",
+									"          \"version\": \"string\",\r",
+									"          \"versionId\": 0\r",
+									"        }\r",
+									"      ]\r",
+									"    }\r",
+									"  ],\r",
+									"  \"selfDeveloper\": false,\r",
+									"  \"status\": {\r",
+									"    \"id\": 0,\r",
+									"    \"status\": \"string\"\r",
+									"  },\r",
+									"  \"statusEvents\": [\r",
+									"    {\r",
+									"      \"developerId\": 0,\r",
+									"      \"id\": 0,\r",
+									"      \"reason\": \"string\",\r",
+									"      \"status\": {\r",
+									"        \"id\": 0,\r",
+									"        \"status\": \"string\"\r",
+									"      },\r",
+									"      \"statusDate\": \"2020-10-09T20:00:35.961Z\"\r",
+									"    }\r",
+									"  ],\r",
+									"  \"transparencyAttestations\": [\r",
+									"    {\r",
+									"      \"acbId\": 0,\r",
+									"      \"acbName\": \"string\",\r",
+									"      \"attestation\": {\r",
+									"        \"removed\": false,\r",
+									"        \"transparencyAttestation\": \"string\"\r",
+									"      }\r",
+									"    }\r",
+									"  ],\r",
+									"  \"website\": \"string\"\r",
+									"};\r",
+									"pm.test(\"Validate that /hierarchy end point has correct schema\", () => {\r",
+									"            pm.response.to.have.jsonSchema(schema);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/developers/{{developerId}}/hierarchy",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"developers",
+								"{{developerId}}",
+								"hierarchy"
+							]
+						},
+						"description": "/hierarchy end point returns 200 status and correct response for valid Developer Ids"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /hierarchy - Invalid developer Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f5f06c65-6b79-4c85-8a5d-3a73ef785980",
+								"exec": [
+									"pm.test(\"Invalid DeveloperId returns 404 status\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/developers/100/hierarchy",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"developers",
+								"100",
+								"hierarchy"
+							]
+						},
+						"description": "Invalid Developer Id returns 404 status"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /developers/deverloperId ",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "1f95c359-f52d-4b60-abd8-5ab5fa72b7dd",
+								"exec": [
+									"const developerId= pm.iterationData.get(\"developerId\");\r",
+									"pm.environment.set(\"developerId\",\"developerId\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "8648433c-dd18-47d0-ad72-e3549538a36f",
+								"exec": [
+									"pm.test(\"For valid developer Id ,valid api key header should return 200 status and response is not null\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.response).not.eq(null);\r",
+									"});\r",
+									"pm.test(\"Developer Names are correct as per the id passed in\", function () {\r",
+									"    var actualBody= pm.response.json();\r",
+									"    var expected= pm.iterationData.get(\"name\");\r",
+									"    pm.expect(actualBody.name).to.equal(expected);\r",
+									"    var expected= pm.iterationData.get(\"developerCode\");\r",
+									"    pm.expect(actualBody.developerCode).to.equal(expected);\r",
+									"    var expected= pm.iterationData.get(\"developerId\");\r",
+									"    pm.expect(actualBody.developerId).to.equal(expected);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/developers/{{developerId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"developers",
+								"{{developerId}}"
+							]
+						},
+						"description": "/developers/developerId end point functions as expected"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /developers - developer schema and response validation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const developerSchema =",
+									"{",
+									"  \"developers\": [",
+									"    {",
+									"      \"address\": {",
+									"        \"addressId\": 0,",
+									"        \"city\": \"string\",",
+									"        \"country\": \"string\",",
+									"        \"line1\": \"string\",",
+									"        \"line2\": \"string\",",
+									"        \"state\": \"string\",",
+									"        \"zipcode\": \"string\"",
+									"      },",
+									"      \"contact\": {",
+									"        \"contactId\": 0,",
+									"        \"email\": \"string\",",
+									"        \"fullName\": \"string\",",
+									"        \"phoneNumber\": \"string\",",
+									"        \"title\": \"string\"",
+									"      },",
+									"      \"deleted\": false,",
+									"      \"developerCode\": \"string\",",
+									"      \"developerId\": 0,",
+									"      \"lastModifiedDate\": \"string\",",
+									"      \"name\": \"string\",",
+									"      \"selfDeveloper\": false,",
+									"      \"status\": {",
+									"        \"id\": 0,",
+									"        \"status\": \"string\"",
+									"      },",
+									"      \"statusEvents\": [",
+									"        {",
+									"          \"developerId\": 0,",
+									"          \"id\": 0,",
+									"          \"reason\": \"string\",",
+									"          \"status\": {",
+									"            \"id\": 0,",
+									"            \"status\": \"string\"",
+									"          },",
+									"          \"statusDate\": \"2020-10-09T17:08:51.022Z\"",
+									"        }",
+									"      ],",
+									"      \"transparencyAttestations\": [",
+									"        {",
+									"          \"acbId\": 0,",
+									"          \"acbName\": \"string\",",
+									"          \"attestation\": {",
+									"            \"removed\": false,",
+									"            \"transparencyAttestation\": \"string\"",
+									"          }",
+									"        }",
+									"      ],",
+									"      \"website\": \"string\"",
+									"    }",
+									"  ]",
+									"}",
+									"var jsonResponse = pm.response.json();",
+									"pm.test('developer schema is valid', function() {",
+									"  pm.expect(tv4.validate(jsonResponse, developerSchema)).to.be.true;  ",
+									"});",
+									"",
+									"pm.test(\"developer contact details should not include friendly name\", function () {",
+									"    pm.expect(pm.response.text()).to.not.include(\"friendlyName\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/developers/107",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"developers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT /developers - developer edit response validation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"valid developer edit request should return valid response\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"validate edit response-developer name is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.name).to.eql('DSS, Inc');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"developer contact details should not include friendly name\", function () {\r",
+									"    pm.expect(pm.response.text()).to.not.include(\"friendlyName\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var ReqBody= {\r",
+									"        userName:pm.environment.get(\"usernameACB\"),password:pm.environment.get(\"passwordACB\")\r",
+									"    };\r",
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"authurl\"),\r",
+									"    method: \"POST\",\r",
+									"    header: {\r",
+									"        \"Content-Type\": \"application/json\",\r",
+									"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+									"    },\r",
+									"    body: JSON.stringify(ReqBody)\r",
+									"}, function (err, response) {\r",
+									"   var jsonData = response.json();\r",
+									"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"developer\":{\"developerId\":1902,\"developerCode\":\"2901\",\"name\":\"DSS, Inc\",\"website\":\"http://www.dssinc.com\",\"selfDeveloper\":false,\"address\":{\"addressId\":883,\"line1\":\"12575 US Highway 1, Suite 200\",\"line2\":null,\"city\":\"Juno Beach\",\"state\":\"FL\",\"zipcode\":\"33408\",\"country\":\"USA\"},\"contact\":{\"fullName\":\"Document Storage Systems, Inc.\",\"email\":\"certifications@dssinc.com\",\"phoneNumber\":\"561-284-7838\",\"title\":null,\"contactId\":1195},\"lastModifiedDate\":\"1592858677511\",\"deleted\":false,\"transparencyAttestations\":[{\"acbName\":\"Drummond Group\",\"attestation\":{\"transparencyAttestation\":\"Affirmative\",\"removed\":true}},{\"acbName\":\"SLI Compliance\",\"attestation\":null},{\"acbName\":\"ICSA Labs\",\"attestation\":{\"transparencyAttestation\":\"Affirmative\",\"removed\":true}},{\"acbName\":\"CCHIT\",\"attestation\":null},{\"acbName\":\"Surescripts LLC\",\"attestation\":null},{\"acbName\":\"UL LLC\",\"attestation\":null}],\"statusEvents\":[{\"id\":1832,\"developerId\":1902,\"status\":{\"id\":1,\"status\":\"Active\"},\"statusDate\":1471551206170,\"reason\":null,\"statusDateObject\":\"2016-08-18T20:13:26.170Z\"}],\"status\":{\"id\":1,\"status\":\"Active\"},\"products\":[{\"productId\":3221,\"name\":\"FDB MedsTracker\",\"reportFileLocation\":null,\"contact\":null,\"owner\":{\"developerId\":1902,\"developerCode\":\"2901\",\"name\":\"DSS, Inc\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":null,\"deleted\":null,\"transparencyAttestations\":[],\"statusEvents\":[],\"status\":null},\"ownerHistory\":[],\"lastModifiedDate\":\"1569517081783\",\"versions\":[{\"versionId\":4028,\"version\":\"5.0\",\"details\":null,\"lastModifiedDate\":\"1569517081783\",\"listings\":[{\"id\":6807,\"chplProductNumber\":\"CHP-021517\",\"lastModifiedDate\":1459470044433,\"edition\":\"2011\",\"certificationDate\":1299196800000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":6,\"acbCode\":\"07\",\"name\":\"ICSA Labs\",\"website\":\"https://www.icsalabs.com\",\"address\":{\"addressId\":7,\"line1\":\"1000 Bent Creek Blvd.\",\"line2\":\"Suite 200\",\"city\":\"Mechanicsburg\",\"state\":\"PA\",\"zipcode\":\"17050\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":6811,\"chplProductNumber\":\"CHP-021516\",\"lastModifiedDate\":1459470044453,\"edition\":\"2011\",\"certificationDate\":1299196800000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":6,\"acbCode\":\"07\",\"name\":\"ICSA Labs\",\"website\":\"https://www.icsalabs.com\",\"address\":{\"addressId\":7,\"line1\":\"1000 Bent Creek Blvd.\",\"line2\":\"Suite 200\",\"city\":\"Mechanicsburg\",\"state\":\"PA\",\"zipcode\":\"17050\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]},{\"versionId\":4333,\"version\":\"6\",\"details\":null,\"lastModifiedDate\":\"1569517081783\",\"listings\":[{\"id\":6687,\"chplProductNumber\":\"CHP-022013\",\"lastModifiedDate\":1593514449506,\"edition\":\"2014\",\"certificationDate\":1393286400000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":6,\"acbCode\":\"07\",\"name\":\"ICSA Labs\",\"website\":\"https://www.icsalabs.com\",\"address\":{\"addressId\":7,\"line1\":\"1000 Bent Creek Blvd.\",\"line2\":\"Suite 200\",\"city\":\"Mechanicsburg\",\"state\":\"PA\",\"zipcode\":\"17050\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":6685,\"chplProductNumber\":\"CHP-022012\",\"lastModifiedDate\":1593490201632,\"edition\":\"2014\",\"certificationDate\":1393286400000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":6,\"acbCode\":\"07\",\"name\":\"ICSA Labs\",\"website\":\"https://www.icsalabs.com\",\"address\":{\"addressId\":7,\"line1\":\"1000 Bent Creek Blvd.\",\"line2\":\"Suite 200\",\"city\":\"Mechanicsburg\",\"state\":\"PA\",\"zipcode\":\"17050\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":6312,\"chplProductNumber\":\"CHP-023175\",\"lastModifiedDate\":1593511464037,\"edition\":\"2014\",\"certificationDate\":1403827200000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":6,\"acbCode\":\"07\",\"name\":\"ICSA Labs\",\"website\":\"https://www.icsalabs.com\",\"address\":{\"addressId\":7,\"line1\":\"1000 Bent Creek Blvd.\",\"line2\":\"Suite 200\",\"city\":\"Mechanicsburg\",\"state\":\"PA\",\"zipcode\":\"17050\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":5996,\"chplProductNumber\":\"CHP-024147\",\"lastModifiedDate\":1593506388617,\"edition\":\"2014\",\"certificationDate\":1412553600000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":6,\"acbCode\":\"07\",\"name\":\"ICSA Labs\",\"website\":\"https://www.icsalabs.com\",\"address\":{\"addressId\":7,\"line1\":\"1000 Bent Creek Blvd.\",\"line2\":\"Suite 200\",\"city\":\"Mechanicsburg\",\"state\":\"PA\",\"zipcode\":\"17050\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":6002,\"chplProductNumber\":\"CHP-024149\",\"lastModifiedDate\":1593499211217,\"edition\":\"2014\",\"certificationDate\":1412553600000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":6,\"acbCode\":\"07\",\"name\":\"ICSA Labs\",\"website\":\"https://www.icsalabs.com\",\"address\":{\"addressId\":7,\"line1\":\"1000 Bent Creek Blvd.\",\"line2\":\"Suite 200\",\"city\":\"Mechanicsburg\",\"state\":\"PA\",\"zipcode\":\"17050\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":6310,\"chplProductNumber\":\"CHP-023174\",\"lastModifiedDate\":1593493657165,\"edition\":\"2014\",\"certificationDate\":1403827200000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":6,\"acbCode\":\"07\",\"name\":\"ICSA Labs\",\"website\":\"https://www.icsalabs.com\",\"address\":{\"addressId\":7,\"line1\":\"1000 Bent Creek Blvd.\",\"line2\":\"Suite 200\",\"city\":\"Mechanicsburg\",\"state\":\"PA\",\"zipcode\":\"17050\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]},{\"versionId\":7458,\"version\":\"8\",\"details\":null,\"lastModifiedDate\":\"1569517081783\",\"listings\":[{\"id\":9643,\"chplProductNumber\":\"14.07.07.2901.FD01.01.01.1.180910\",\"lastModifiedDate\":1593482180903,\"edition\":\"2014\",\"certificationDate\":1536537600000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":6,\"acbCode\":\"07\",\"name\":\"ICSA Labs\",\"website\":\"https://www.icsalabs.com\",\"address\":{\"addressId\":7,\"line1\":\"1000 Bent Creek Blvd.\",\"line2\":\"Suite 200\",\"city\":\"Mechanicsburg\",\"state\":\"PA\",\"zipcode\":\"17050\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":9642,\"chplProductNumber\":\"14.07.07.2901.FD01.01.01.1.180909\",\"lastModifiedDate\":1593528534234,\"edition\":\"2014\",\"certificationDate\":1536451200000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":6,\"acbCode\":\"07\",\"name\":\"ICSA Labs\",\"website\":\"https://www.icsalabs.com\",\"address\":{\"addressId\":7,\"line1\":\"1000 Bent Creek Blvd.\",\"line2\":\"Suite 200\",\"city\":\"Mechanicsburg\",\"state\":\"PA\",\"zipcode\":\"17050\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":9972,\"chplProductNumber\":\"15.04.04.2901.FDB1.08.00.1.190411\",\"lastModifiedDate\":1584042323020,\"edition\":\"2015\",\"certificationDate\":1554940800000,\"certificationStatus\":\"Withdrawn by Developer\",\"curesUpdate\":false,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]}]}]},\"developerIds\":[1902]}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/developers",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"developers"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "GET : Developers: non-data driven tests",
+			"item": [
+				{
+					"name": "GET /developers -invalid API Key header",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "06b29636-a133-432d-8279-256ec4551b6a",
+								"exec": [
+									"pm.test(\"Invalid api key header should return 401 status\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "atest123cg",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/developers",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"developers"
+							]
+						},
+						"description": "Request with Invalid API-Key header returns 401 status"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /developers - valid API Key header",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d8eeade5-bda0-4fac-ae6f-8461c10eb8f7",
+								"exec": [
+									"pm.test(\"Valid api key header should return 200 status and response body should not be empty\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.response).not.eq(null);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/developers",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"developers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+			        "name": "PUT /developers - merge request permission restriction validation",
+			        "event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"merge request attempt by anonymous user should return Status code 401\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"anonymous user should be denied access to merge developers\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "API-KEY",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"developer\":{\"developerId\":2069,\"developerCode\":\"3068\",\"name\":\"Accelerated Care Plus\",\"website\":\"https://acplus.com/index.php/acplustm\",\"selfDeveloper\":false,\"address\":{\"addressId\":811,\"line1\":\"4999 Aircenter Cir., STE 103\",\"line2\":null,\"city\":\"Reno,\",\"state\":\"NV\",\"zipcode\":\"89502\",\"country\":\"US\"},\"contact\":{\"fullName\":\"Barry Thomson\",\"email\":\"BThomson@hanger.com\",\"phoneNumber\":\"775-287-4955\",\"title\":null,\"contactId\":1369},\"lastModifiedDate\":\"1580312732548\",\"deleted\":false,\"transparencyAttestations\":[{\"acbName\":\"Drummond Group\",\"attestation\":{\"transparencyAttestation\":\"Affirmative\",\"removed\":true}},{\"acbName\":\"SLI Compliance\",\"attestation\":null},{\"acbName\":\"ICSA Labs\",\"attestation\":null},{\"acbName\":\"CCHIT\",\"attestation\":null},{\"acbName\":\"Surescripts LLC\",\"attestation\":null},{\"acbName\":\"UL LLC\",\"attestation\":null}],\"statusEvents\":[{\"id\":2072,\"developerId\":2069,\"status\":{\"id\":1,\"status\":\"Active\"},\"statusDate\":1580312732548,\"reason\":null,\"statusDateObject\":\"2020-01-29T15:45:32.548Z\"}],\"status\":{\"id\":1,\"status\":\"Active\"},\"products\":[{\"productId\":3522,\"name\":\"ACPlus™ MDS\",\"reportFileLocation\":null,\"contact\":null,\"owner\":{\"developerId\":2069,\"developerCode\":\"3068\",\"name\":\"Accelerated Care Plus\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":null,\"deleted\":null,\"transparencyAttestations\":[],\"statusEvents\":[],\"status\":null},\"ownerHistory\":[],\"lastModifiedDate\":\"1580313127273\",\"versions\":[{\"versionId\":8014,\"version\":\"V1\",\"details\":null,\"lastModifiedDate\":\"1580312732667\",\"listings\":[{\"id\":10284,\"chplProductNumber\":\"15.04.04.3068.ACPl.01.00.0.200129\",\"lastModifiedDate\":1580313075116,\"edition\":\"2015\",\"certificationDate\":1580256000000,\"certificationStatus\":\"Active\",\"curesUpdate\":false,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]}]}]},\"developerIds\":[6,2069]}"
+				},
+				"url": {
+					"raw": "{{url}}/rest/developers",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+					    "rest",
+						"developers"
+					]
+				}
+			},
+			"response": []
+		}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "GET /developers - valid API Key header",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+					     "id": "46b22627-72ab-438b-9ea3-5d6f0113685f",									 
+						 "exec": [
+							"pm.test(\"Valid api key header should return 200 status and response body should not be empty\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.response).not.eq(null);\r",
+							"});"
+						],
+						"url": {
+							"raw": "{{url}}/rest/developers/{{developerId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"developers",
+								"{{developerId}}"
+							]
+						},
+						"description": "/developers/developerId end point functions as expected",
+						"type": "text/javascript",
+						"id": "5676bb79-bbbc-4905-937b-25e14e723df1"
+					},
+					"response": []
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
 }
