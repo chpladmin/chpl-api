@@ -9,7 +9,7 @@
         <RollingFile name="FILE" fileName="${logDir}/chplservice.log" filePermissions="rw-rw-r--"
             filePattern="${logDir}/chplservice-%d{yyyyMMdd}.log">
             <PatternLayout>
-                <Pattern>%d %p %C %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id:-0} %X{dd.span_id:-0} - %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
@@ -21,7 +21,7 @@
             filePermissions="rw-rw-r--"
             filePattern="${logDir}/loggable/history/loggable-%d{yyyy-MM-dd}.log">
             <PatternLayout>
-                <Pattern>%d{ISO8601} %-5p Token: %X{tracker} - %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id:-0} %X{dd.span_id:-0} - %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
