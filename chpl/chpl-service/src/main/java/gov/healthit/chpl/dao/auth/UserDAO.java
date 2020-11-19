@@ -203,7 +203,8 @@ public class UserDAO extends BaseDAOImpl {
         List<UserEntity> result = entityManager.createQuery("from UserEntity u "
                 + "JOIN FETCH u.contact "
                 + "JOIN FETCH u.permission "
-                + "WHERE (NOT u.deleted = true) ", UserEntity.class).getResultList();
+                + "WHERE NOT u.deleted = true "
+                + "AND u.id >= 0 ", UserEntity.class).getResultList();
 
         return result;
     }
