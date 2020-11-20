@@ -46,7 +46,6 @@ public class CacheInitializor {
         caches.add(CacheNames.COLLECTIONS_LISTINGS);
         caches.add(CacheNames.ALL_CERT_IDS);
         caches.add(CacheNames.ALL_CERT_IDS_WITH_PRODUCTS);
-        caches.add(CacheNames.DIRECT_REVIEWS);
         // all below caches make up the search options
         caches.add(CacheNames.EDITION_NAMES);
         caches.add(CacheNames.CERTIFICATION_STATUSES);
