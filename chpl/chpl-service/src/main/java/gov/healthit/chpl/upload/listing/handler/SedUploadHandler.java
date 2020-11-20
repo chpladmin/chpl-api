@@ -2,10 +2,10 @@ package gov.healthit.chpl.upload.listing.handler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -25,8 +25,10 @@ import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
+import lombok.extern.log4j.Log4j2;
 
 @Component("sedUploadHandler")
+@Log4j2
 public class SedUploadHandler {
     private CertificationCriterionUploadHandler criterionHandler;
     private TestTaskUploadHandler testTaskHandler;
@@ -62,13 +64,12 @@ public class SedUploadHandler {
             CertificationCriterion criterion = criterionHandler.handle(certHeadingRecord);
             if (criterion != null) {
                 List<UcdProcess> certResultUcdProcesses = ucdHandler.handle(certHeadingRecord,
-                        parsedCertResultRecords.subList(0, parsedCertResultRecords.size()));
-                //TODO: add each ucd process to ucdProcesses if it's not already there;
-                //add criterion to the ucd process if it IS already there
-                //TODO: parse applied test task and participant unique IDs
-                //TODO: create new task task object(s) with the relevant participants from the master list
-                //look for matching task id+participant ids in the master list of test tasks
-                //add this criterion to it if it's there; add it to the master list if it's not
+                        parsedCertResultRecords.subList(1, parsedCertResultRecords.size()));
+                updateUcdProcessList(ucdProcesses, certResultUcdProcesses, criterion);
+
+                List<TestTask> certResultTestTasks = parseTestTaskIdsWithParticipantIds(
+                        certHeadingRecord, parsedCertResultRecords.subList(1, parsedCertResultRecords.size()));
+                updateTaskList(testTasks, certResultTestTasks, criterion, availableTestTasks, availableTestParticipants);
             }
             nextCertResultIndex = uploadUtil.getNextIndexOfCertificationResult(
                     nextCertResultIndex + parsedCertResultRecords.size() - 1, headingRecord);
@@ -81,14 +82,123 @@ public class SedUploadHandler {
         return sed;
     }
 
-    private Map<String, Set<String>> parseTestTaskIdsWithParticipantIds(
+    private void updateUcdProcessList(List<UcdProcess> ucdProcesses, List<UcdProcess> certResultUcdProcesses,
+            CertificationCriterion criterion) {
+        certResultUcdProcesses.stream().forEach(certResultUcdProcess -> {
+            if (listingContainsUcdProcess(ucdProcesses, certResultUcdProcess)) {
+                addCriteriaToExistingUcdProcess(ucdProcesses, certResultUcdProcess, criterion);
+            } else {
+                Set<CertificationCriterion> criteriaSet = new LinkedHashSet<CertificationCriterion>();
+                criteriaSet.add(criterion);
+                certResultUcdProcess.setCriteria(criteriaSet);
+                ucdProcesses.add(certResultUcdProcess);
+            }
+        });
+    }
+
+    private boolean listingContainsUcdProcess(List<UcdProcess> listingUcdProcesses, UcdProcess certResultUcdProcess) {
+        return listingUcdProcesses.stream()
+            .filter(listingUcdProcess -> listingUcdProcess.getName().equals(certResultUcdProcess.getName()))
+            .findAny().isPresent();
+    }
+
+    private void addCriteriaToExistingUcdProcess(List<UcdProcess> listingUcdProcesses, UcdProcess certResultUcdProcess,
+            CertificationCriterion criterion) {
+        listingUcdProcesses.stream()
+            .filter(listingUcdProcess -> listingUcdProcess.getName().equals(certResultUcdProcess.getName()))
+            .forEach(listingUcdProcess -> {
+                listingUcdProcess.getCriteria().add(criterion);
+            });
+    }
+
+    private void updateTaskList(List<TestTask> tasks, List<TestTask> certResultTasks, CertificationCriterion criterion,
+            List<TestTask> availableTestTasks, List<TestParticipant> availableTestParticipants) {
+        certResultTasks.stream().forEach(certResultTask -> {
+            if (listingContainsTask(tasks, certResultTask)) {
+                addCriteriaToExistingTestTask(tasks, certResultTask, criterion);
+            } else {
+                Set<CertificationCriterion> criteriaSet = new LinkedHashSet<CertificationCriterion>();
+                criteriaSet.add(criterion);
+                TestTask task = buildTestTaskFromAvailable(certResultTask, availableTestTasks, availableTestParticipants);
+                task.setCriteria(criteriaSet);
+                tasks.add(task);
+            }
+        });
+    }
+
+    private boolean listingContainsTask(List<TestTask> listingTestTasks, TestTask certResultTask) {
+        return listingTestTasks.stream()
+            .filter(listingTestTask -> listingTestTask.getUniqueId().equals(certResultTask.getUniqueId()))
+            .filter(listingTestTask ->
+                participantsUniqueIdsMatch(listingTestTask.getTestParticipants(), certResultTask.getTestParticipants()))
+            .findAny().isPresent();
+    }
+
+    private void addCriteriaToExistingTestTask(List<TestTask> listingTestTasks, TestTask certResultTask,
+            CertificationCriterion criterion) {
+        listingTestTasks.stream()
+            .filter(listingTestTask -> listingTestTask.getUniqueId().equals(certResultTask.getUniqueId()))
+            .filter(listingTestTask ->
+                participantsUniqueIdsMatch(listingTestTask.getTestParticipants(), certResultTask.getTestParticipants()))
+            .forEach(listingTestTask -> {
+                listingTestTask.getCriteria().add(criterion);
+            });
+    }
+
+    private TestTask buildTestTaskFromAvailable(TestTask certResultTask,
+            List<TestTask> availableTestTasks, List<TestParticipant> availableTestParticipants) {
+        TestTask result = null;
+        Optional<TestTask> taskFromAvailOpt = availableTestTasks.stream()
+                .filter(availTask -> availTask.getUniqueId().equals(certResultTask.getUniqueId()))
+                .findAny();
+        if (taskFromAvailOpt.isPresent()) {
+            TestTask taskFromAvail = taskFromAvailOpt.get();
+            result = taskFromAvail.toBuilder().build();
+        } else {
+            LOGGER.error("Could not find available test task with unique ID " + certResultTask.getUniqueId());
+            result = certResultTask.toBuilder().build();
+        }
+
+        Set<TestParticipant> builtParticipants = certResultTask.getTestParticipants().stream()
+            .map(testParticipant -> buildTestParticipantFromAvailable(testParticipant, availableTestParticipants))
+            .collect(Collectors.toSet());
+        result.setTestParticipants(builtParticipants);
+        return result;
+    }
+
+    private TestParticipant buildTestParticipantFromAvailable(TestParticipant testParticipant,
+            List<TestParticipant> availableTestParticipants) {
+        TestParticipant result = null;
+        Optional<TestParticipant> participantFromAvailOpt = availableTestParticipants.stream()
+            .filter(availParticipant -> availParticipant.getUniqueId().equals(testParticipant.getUniqueId()))
+            .findAny();
+        if (participantFromAvailOpt.isPresent()) {
+            TestParticipant participantFromAvail = participantFromAvailOpt.get();
+            result = participantFromAvail.toBuilder().build();
+        } else {
+            result = testParticipant.toBuilder().build();
+        }
+        return result;
+    }
+
+    private boolean participantsUniqueIdsMatch(Set<TestParticipant> participantList1, Set<TestParticipant> participantList2) {
+        List<String> participantUniqueIds1 = participantList1.stream().map(participant -> participant.getUniqueId())
+                .collect(Collectors.toList());
+        List<String> participantUniqueIds2 = participantList2.stream().map(participant -> participant.getUniqueId())
+                .collect(Collectors.toList());
+        Collections.sort(participantUniqueIds1);
+        Collections.sort(participantUniqueIds2);
+        return participantUniqueIds1.equals(participantUniqueIds2);
+    }
+
+    private List<TestTask> parseTestTaskIdsWithParticipantIds(
             CSVRecord certResultHeading, List<CSVRecord> certResultRecords) {
-        Map<String, Set<String>> uniqueTaskMaps = new LinkedHashMap<String, Set<String>>();
+        List<TestTask> certResultTasks = new ArrayList<TestTask>();
         List<String> testTaskIds = parseTaskIds(certResultHeading, certResultRecords);
         List<String> testParticipantIds = parseParticipantIds(certResultHeading, certResultRecords);
         if (CollectionUtils.isEmpty(testTaskIds)
                 && CollectionUtils.isEmpty(testParticipantIds)) {
-            return uniqueTaskMaps;
+            return certResultTasks;
         }
 
         int max = 0;
@@ -100,17 +210,17 @@ public class SedUploadHandler {
         }
 
         IntStream.range(0, max)
-                .forEachOrdered(index -> updateUniqueTaskIdMaps(uniqueTaskMaps, index, testTaskIds, testParticipantIds));
-        return uniqueTaskMaps;
+                .forEachOrdered(index -> updateCertResultTasks(certResultTasks, index, testTaskIds, testParticipantIds));
+        return certResultTasks;
     }
 
-    private void updateUniqueTaskIdMaps(Map<String, Set<String>> uniqueTaskIdMaps, int index, List<String> testTaskIds,
+    private void updateCertResultTasks(List<TestTask> certResultTasks, int index, List<String> testTaskIds,
             List<String> testParticipantIds) {
         String testTaskId = (testTaskIds != null && testTaskIds.size() > index) ? testTaskIds.get(index) : null;
         String testParticipantIdsDelimited = (testParticipantIds != null && testParticipantIds.size() > index)
                 ? testParticipantIds.get(index) : null;
 
-        Set<String> participantIds = new HashSet<String>();
+        List<String> participantIds = new ArrayList<String>();
         if (!StringUtils.isEmpty(testParticipantIdsDelimited)) {
             String[] splitParticipantIds = testParticipantIdsDelimited.split(";");
             if (splitParticipantIds.length == 1) {
@@ -122,12 +232,13 @@ public class SedUploadHandler {
             participantIds.addAll(splitTrimmedParticipantIds);
         }
 
-        if (uniqueTaskIdMaps.containsKey(testTaskId)) {
-            Set<String> taskParticipantIds = uniqueTaskIdMaps.get(testTaskId);
-            taskParticipantIds.addAll(participantIds);
-        } else {
-            uniqueTaskIdMaps.put(testTaskId, participantIds);
-        }
+        TestTask certResultTask = TestTask.builder()
+                .uniqueId(testTaskId)
+                .testParticipants(participantIds.stream()
+                        .map(participantId -> TestParticipant.builder().uniqueId(participantId).build())
+                        .collect(Collectors.toList()))
+                .build();
+        certResultTasks.add(certResultTask);
     }
 
     private List<String> parseTaskIds(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {

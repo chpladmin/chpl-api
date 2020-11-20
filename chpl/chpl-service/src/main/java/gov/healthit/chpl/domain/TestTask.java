@@ -31,7 +31,7 @@ import lombok.Singular;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 public class TestTask implements Serializable {
     private static final long serialVersionUID = -3761135258451736516L;

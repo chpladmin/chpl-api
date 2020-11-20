@@ -22,7 +22,7 @@ import lombok.Builder;
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 public class TestParticipant implements Serializable {
     private static final long serialVersionUID = -3771155258451736516L;
