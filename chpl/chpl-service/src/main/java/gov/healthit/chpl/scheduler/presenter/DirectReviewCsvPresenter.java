@@ -28,7 +28,6 @@ import net.sf.ehcache.Element;
 
 @Log4j2
 public class DirectReviewCsvPresenter {
-    private static final int NON_CONFORMITY_FIELD_COUNT = 14;
     private Environment env;
     private DateTimeFormatter dateFormatter;
     private DateTimeFormatter dateTimeFormatter;
@@ -139,7 +138,7 @@ public class DirectReviewCsvPresenter {
     private void addDeveloperFields(List<String> csvRow, DeveloperDTO developer) {
         csvRow.add(developer.getId().toString());
         csvRow.add(developer.getName());
-        csvRow.add(env.getProperty("chplUrlBegin") + "/#/organizations/" + developer.getId());
+        csvRow.add(env.getProperty("chplUrlBegin") + "/#/organizations/developers/" + developer.getId());
         csvRow.add(developer.getStatus() == null || developer.getStatus().getStatus() == null
                 ? "Unknown" : developer.getStatus().getStatus().getStatusName());
     }
@@ -212,7 +211,7 @@ public class DirectReviewCsvPresenter {
         if (nc != null && nc.getLastUpdated() != null) {
             LocalDateTime ncLastUpdatedDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getLastUpdated().getTime()),
                     ZoneId.systemDefault());
-            csvRow.add(dateFormatter.format(ncLastUpdatedDate));
+            csvRow.add(dateTimeFormatter.format(ncLastUpdatedDate));
         } else {
             csvRow.add("");
         }
