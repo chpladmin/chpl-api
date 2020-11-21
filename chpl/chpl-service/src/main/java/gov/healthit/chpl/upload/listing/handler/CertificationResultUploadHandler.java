@@ -18,6 +18,7 @@ import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 @Component("certificationResultUploadHandler")
 public class CertificationResultUploadHandler {
     private CertificationCriterionUploadHandler criterionHandler;
+    private AdditionalSoftwareUploadHandler additionalSoftwareHandler;
     private TestProcedureUploadHandler testProcedureHandler;
     private TestToolUploadHandler testToolHandler;
     private TestDataUploadHandler testDataHandler;
@@ -25,11 +26,13 @@ public class CertificationResultUploadHandler {
 
     @Autowired
     public CertificationResultUploadHandler(CertificationCriterionUploadHandler criterionHandler,
+            AdditionalSoftwareUploadHandler additionalSoftwareHandler,
             TestProcedureUploadHandler testProcedureHandler,
             TestToolUploadHandler testToolHandler,
             TestDataUploadHandler testDataHandler,
             ListingUploadHandlerUtil uploadUtil) {
         this.criterionHandler = criterionHandler;
+        this.additionalSoftwareHandler = additionalSoftwareHandler;
         this.testProcedureHandler = testProcedureHandler;
         this.testToolHandler = testToolHandler;
         this.testDataHandler = testDataHandler;
@@ -46,7 +49,7 @@ public class CertificationResultUploadHandler {
                 .testFunctionality(parseTestFunctionalities(certHeadingRecord, certResultRecords))
                 .testStandards(parseTestStandards(certHeadingRecord, certResultRecords))
                 //TODO: Macra measures
-                //TODO: Additional Software
+                .additionalSoftware(additionalSoftwareHandler.handle(certHeadingRecord, certResultRecords))
                 .testDataUsed(testDataHandler.handle(certHeadingRecord, certResultRecords))
                 .testProcedures(testProcedureHandler.handle(certHeadingRecord, certResultRecords))
                 .testToolsUsed(testToolHandler.handle(certHeadingRecord, certResultRecords))

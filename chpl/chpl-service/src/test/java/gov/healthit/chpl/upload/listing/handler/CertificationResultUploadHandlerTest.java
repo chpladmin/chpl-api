@@ -41,6 +41,7 @@ public class CertificationResultUploadHandlerTest {
         handlerUtil = new ListingUploadHandlerUtil(msgUtil);
         handler = new CertificationResultUploadHandler(
                 Mockito.mock(CertificationCriterionUploadHandler.class),
+                Mockito.mock(AdditionalSoftwareUploadHandler.class),
                 Mockito.mock(TestProcedureUploadHandler.class),
                 Mockito.mock(TestToolUploadHandler.class),
                 Mockito.mock(TestDataUploadHandler.class),
