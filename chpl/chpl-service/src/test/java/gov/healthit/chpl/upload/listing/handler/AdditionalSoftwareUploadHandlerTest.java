@@ -152,6 +152,31 @@ public class AdditionalSoftwareUploadHandlerTest {
     }
 
     @Test
+    public void parseAdditionalSoftware_AdditionalSoftwareAllFieldsWithData_ParsesCorrectGroup() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_AS_FIELDS).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,1,CHP-12345,a,Windows,10,b");
+        assertNotNull(certResultRecords);
+
+        List<CertificationResultAdditionalSoftware> parsedAdditionalSoftware = handler.handle(headingRecord, certResultRecords);
+        assertNotNull(parsedAdditionalSoftware);
+        assertEquals(2, parsedAdditionalSoftware.size());
+        parsedAdditionalSoftware.stream().forEach(as -> {
+            if (as.getGrouping().equals("a")) {
+                assertEquals("CHP-12345", as.getCertifiedProductNumber());
+                assertNull(as.getName());
+                assertNull(as.getVersion());
+            } else if (as.getGrouping().equals("b")) {
+                assertNull(as.getCertifiedProductNumber());
+                assertEquals("Windows", as.getName());
+                assertEquals("10", as.getVersion());
+            } else {
+                fail("No grouping with value " + as.getGrouping() + " was expected.");
+            }
+        });
+    }
+
+    @Test
     public void parseAdditionalSoftware_MultipleAdditionalSoftwaresAllFieldsPopulated_ParsesCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_AS_FIELDS).get(0);
         assertNotNull(headingRecord);
