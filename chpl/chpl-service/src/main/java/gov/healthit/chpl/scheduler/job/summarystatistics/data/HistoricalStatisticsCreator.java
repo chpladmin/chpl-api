@@ -38,11 +38,13 @@ public class HistoricalStatisticsCreator {
     private SurveillanceStatisticsDAO surveillanceStatisticsDAO;
     private Environment env;
 
-    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+    private SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
 
     @Autowired
-    public HistoricalStatisticsCreator(ListingStatisticsDAO listingStatisticsDAO, DeveloperStatisticsDAO developerStatisticsDAO,
-            SurveillanceStatisticsDAO surveillanceStatisticsDAO, CertifiedProductDAO certifiedProductDAO, Environment env) {
+    public HistoricalStatisticsCreator(ListingStatisticsDAO listingStatisticsDAO,
+            DeveloperStatisticsDAO developerStatisticsDAO,
+            SurveillanceStatisticsDAO surveillanceStatisticsDAO, CertifiedProductDAO certifiedProductDAO,
+            Environment env) {
         this.listingStatisticsDAO = listingStatisticsDAO;
         this.developerStatisticsDAO = developerStatisticsDAO;
         this.surveillanceStatisticsDAO = surveillanceStatisticsDAO;
@@ -66,22 +68,24 @@ public class HistoricalStatisticsCreator {
             // developers
             futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopers(endDate), executorService)
                     .thenAccept(result -> stats.setTotalDevelopers(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopersWith2014Listings(endDate), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopersWith2014Listings(endDate),
+                    executorService)
                     .thenAccept(result -> stats.setTotalDevelopersWith2014Listings(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopersWith2015Listings(endDate), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopersWith2015Listings(endDate),
+                    executorService)
                     .thenAccept(result -> stats.setTotalDevelopersWith2015Listings(result)));
 
-            //products
+            // products
             futures.add(CompletableFuture.supplyAsync(() -> getTotalUniqueProducts(endDate), executorService)
                     .thenAccept(result -> stats.setTotalUniqueProducts(result)));
-            futures.add(CompletableFuture.supplyAsync(() ->
-                    getTotalProductsActive2014Listings(allListings, statusesForAllListings, endDate), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalProductsActive2014Listings(allListings,
+                    statusesForAllListings, endDate), executorService)
                     .thenAccept(result -> stats.setTotalUniqueProductsActive2014Listings(result)));
-            futures.add(CompletableFuture.supplyAsync(() ->
-                    getTotalProductsActive2015Listings(allListings, statusesForAllListings, endDate), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalProductsActive2015Listings(allListings,
+                    statusesForAllListings, endDate), executorService)
                     .thenAccept(result -> stats.setTotalUniqueProductsActive2015Listings(result)));
-            futures.add(CompletableFuture.supplyAsync(() ->
-                    getTotalUniqueProductsActiveListings(allListings, statusesForAllListings, endDate), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalUniqueProductsActiveListings(allListings,
+                    statusesForAllListings, endDate), executorService)
                     .thenAccept(result -> stats.setTotalUniqueProductsActiveListings(result)));
 
             // listings
@@ -97,9 +101,11 @@ public class HistoricalStatisticsCreator {
             // surveillance
             futures.add(CompletableFuture.supplyAsync(() -> getTotalSurveillanceActivities(endDate), executorService)
                     .thenAccept(result -> stats.setTotalSurveillanceActivities(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalOpenSurveillanceActivities(endDate), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalOpenSurveillanceActivities(endDate),
+                    executorService)
                     .thenAccept(result -> stats.setTotalOpenSurveillanceActivities(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalClosedSurveillanceActivities(endDate), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalClosedSurveillanceActivities(endDate),
+                    executorService)
                     .thenAccept(result -> stats.setTotalClosedSurveillanceActivities(result)));
             futures.add(CompletableFuture.supplyAsync(() -> getTotalNonConformities(endDate), executorService)
                     .thenAccept(result -> stats.setTotalNonConformities(result)));
@@ -111,8 +117,10 @@ public class HistoricalStatisticsCreator {
             CompletableFuture<Void> combinedFutures = CompletableFuture
                     .allOf(futures.toArray(new CompletableFuture[futures.size()]));
 
-            // This is not blocking - presumably because the job executes using it's own ExecutorService
-            // This is necessary so that the system can indicate that the job and it's threads are still running
+            // This is not blocking - presumably because the job executes using it's own
+            // ExecutorService
+            // This is necessary so that the system can indicate that the job and it's
+            // threads are still running
             combinedFutures.get();
 
             LOGGER.info("Finished getting csvRecord for end date " + sdf.format(endDate));
@@ -188,6 +196,7 @@ public class HistoricalStatisticsCreator {
                 .getTotalListingsByEditionAndStatus(endDate, null, null);
         return total;
     }
+
     private Long getTotal2014Listings(Date endDate) {
         Long total = listingStatisticsDAO.getTotalListingsByEditionAndStatus(endDate, "2014", null);
         return total;
@@ -237,14 +246,16 @@ public class HistoricalStatisticsCreator {
         return Integer.parseInt(env.getProperty("executorThreadCountForQuartzJobs"));
     }
 
-    private boolean isListingActiveAsOfDate(Long certifiedProductId, Map<Long, List<CertificationStatusEventDTO>> allStatuses,
+    private boolean isListingActiveAsOfDate(Long certifiedProductId,
+            Map<Long, List<CertificationStatusEventDTO>> allStatuses,
             Date asOfDate) {
 
         CertificationStatusEventDTO event = getStatusAsOfDate(allStatuses.get(certifiedProductId), asOfDate);
         if (event == null) {
             return false;
         } else {
-            return event.getStatus().getStatus().toUpperCase().equals(CertificationStatusType.Active.getName().toUpperCase());
+            return event.getStatus().getStatus().toUpperCase().equals(CertificationStatusType.Active.getName()
+                    .toUpperCase());
         }
     }
 

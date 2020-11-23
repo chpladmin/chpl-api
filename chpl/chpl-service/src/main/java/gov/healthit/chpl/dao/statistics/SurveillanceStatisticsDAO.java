@@ -25,8 +25,8 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         if (endDate == null) {
             hql += " deleted = false";
         } else {
-            hql += "(deleted = false AND creationDate <= :endDate) " + " OR "
-                    + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate) ";
+            hql += "(deleted = false AND startDate <= :endDate) " + " OR "
+                    + "(deleted = true AND startDate <= :endDate AND lastModifiedDate > :endDate) ";
         }
 
         Query query = entityManager.createQuery(hql);
@@ -45,8 +45,8 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         if (endDate == null) {
             hql += " AND deleted = false";
         } else {
-            hql += "AND ((deleted = false AND creationDate <= :endDate) " + " OR "
-                    + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate)) ";
+            hql += "AND ((deleted = false AND startDate <= :endDate) " + " OR "
+                    + "(deleted = true AND startDate <= :endDate AND lastModifiedDate > :endDate)) ";
         }
 
         Query query = entityManager.createQuery(hql);
@@ -65,8 +65,8 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         if (endDate == null) {
             hql += " AND deleted = false";
         } else {
-            hql += "AND ((deleted = false AND creationDate <= :endDate) " + " OR "
-                    + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate)) ";
+            hql += "AND ((deleted = false AND startDate <= :endDate) " + " OR "
+                    + "(deleted = true AND startDate <= :endDate AND lastModifiedDate > :endDate)) ";
         }
 
         Query query = entityManager.createQuery(hql);
@@ -217,7 +217,8 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
     }
 
     /**
-     * Examine nonconformities to get a count of how many of each type of NC there are.
+     * Examine nonconformities to get a count of how many of each type of NC there
+     * are.
      *
      * @return a list of the DTOs that hold the counts
      */
@@ -236,7 +237,8 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
             dto.setNonconformityCount(entity.getNonconformityCount());
             dto.setNonconformityType(entity.getNonconformityType());
             if (entity.getCertificationCriterionId() != null && entity.getCertificationCriterionEntity() != null) {
-                CertificationCriterionDTO criterion = new CertificationCriterionDTO(entity.getCertificationCriterionEntity());
+                CertificationCriterionDTO criterion = new CertificationCriterionDTO(entity
+                        .getCertificationCriterionEntity());
                 dto.setCriterion(criterion);
             }
             dtos.add(dto);
