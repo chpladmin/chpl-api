@@ -54,7 +54,6 @@ public class UcdProcessUploadHandler {
         UcdProcess ucdProcess = UcdProcess.builder()
                 .name(ucdName)
                 .details(ucdDetail)
-                //TODO: add criterion
         .build();
         return ucdProcess;
     }

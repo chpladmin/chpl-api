@@ -5,6 +5,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -242,7 +243,9 @@ public class ListingUploadHandlerUtil {
                     }
                 }
             }
-            return fieldValues;
+            //if all field values are empty return empty list
+            long nonEmptyCount = fieldValues.stream().filter(fieldValue -> !StringUtils.isEmpty(fieldValue)).count();
+            return nonEmptyCount > 0 ? fieldValues : Collections.emptyList();
     }
 
     public List<String> parseMultiRowFieldWithoutEmptyValues(

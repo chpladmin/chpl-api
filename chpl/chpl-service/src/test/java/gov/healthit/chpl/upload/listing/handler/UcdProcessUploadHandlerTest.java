@@ -42,7 +42,7 @@ public class UcdProcessUploadHandlerTest {
     }
 
     @Test
-    public void parseUcdProcess_UcdProcessAllColumnsNoData_ReturnsListWithEmptyItems() {
+    public void parseUcdProcess_UcdProcessAllColumnsNoData_ReturnsEmptyList() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_UCD_FIELDS).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,,");
@@ -50,15 +50,11 @@ public class UcdProcessUploadHandlerTest {
 
         List<UcdProcess> parsedUcdProcesss = handler.handle(headingRecord, certResultRecords);
         assertNotNull(parsedUcdProcesss);
-        assertEquals(1, parsedUcdProcesss.size());
-        UcdProcess ucd = parsedUcdProcesss.get(0);
-        assertEquals("", ucd.getName());
-        assertEquals("", ucd.getDetails());
-        assertNull(ucd.getId());
+        assertEquals(0, parsedUcdProcesss.size());
     }
 
     @Test
-    public void parseUcdProcess_SingleUcdProcessNameOnlyNoData_ReturnsListWithEmptyItems() {
+    public void parseUcdProcess_SingleUcdProcessNameOnlyNoData_ReturnsEmptyList() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 "CRITERIA_170_315_A_1__C,UCD Process Selected").get(0);
         assertNotNull(headingRecord);
@@ -67,11 +63,7 @@ public class UcdProcessUploadHandlerTest {
 
         List<UcdProcess> parsedUcdProcesss = handler.handle(headingRecord, certResultRecords);
         assertNotNull(parsedUcdProcesss);
-        assertEquals(1, parsedUcdProcesss.size());
-        UcdProcess ucd = parsedUcdProcesss.get(0);
-        assertEquals("", ucd.getName());
-        assertNull(ucd.getDetails());
-        assertNull(ucd.getId());
+        assertEquals(0, parsedUcdProcesss.size());
     }
 
     @Test

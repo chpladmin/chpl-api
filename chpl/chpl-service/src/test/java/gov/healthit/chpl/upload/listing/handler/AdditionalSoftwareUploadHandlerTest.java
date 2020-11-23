@@ -43,7 +43,7 @@ public class AdditionalSoftwareUploadHandlerTest {
     }
 
     @Test
-    public void parseAdditionalSoftware_AdditionalSoftwareAllColumnsNoData_ReturnsListWithEmptyItems() {
+    public void parseAdditionalSoftware_AdditionalSoftwareAllColumnsNoData_ReturnsEmptyList() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_AS_FIELDS).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,,,,,,");
