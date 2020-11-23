@@ -93,6 +93,19 @@ public class TestDataUploadHandlerTest {
     }
 
     @Test
+    public void parseTestData_SingleTestDataAndBlankLine_ParsesCorrectly() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_TD_FIELDS).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString(
+                "1,TD 1,1.0,1,Alteration" + "\n" + ",,,,");
+        assertNotNull(certResultRecords);
+
+        List<CertificationResultTestData> parsedTestDatas = handler.handle(headingRecord, certResultRecords);
+        assertNotNull(parsedTestDatas);
+        assertEquals(1, parsedTestDatas.size());
+    }
+
+    @Test
     public void parseTestData_MultipleTestDatasAllFieldsPopulated_ParsesCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_TD_FIELDS).get(0);
         assertNotNull(headingRecord);

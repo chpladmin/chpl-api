@@ -2,12 +2,13 @@ package gov.healthit.chpl.upload.listing.handler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVRecord;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -51,6 +52,7 @@ public class TestParticipantsUploadHandler {
             .mapToObj(index -> buildTestParticipant(index, ids, genders, ages,
                     educations, occupations, professionalExperience, computerExperience,
                     productExperience, assistiveTech))
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
         return testParticipants;
     }
@@ -100,7 +102,12 @@ public class TestParticipantsUploadHandler {
         String assistiveTechAtIndex = (assistiveTech != null && assistiveTech.size() > index)
                 ? assistiveTech.get(index) : null;
 
-        TestParticipant tp = TestParticipant.builder()
+        if (StringUtils.isAllEmpty(id, gender, age, education, occupation, professionalExperienceAtIndex,
+                computerExperienceAtIndex, productExperienceAtIndex, assistiveTechAtIndex)) {
+            return null;
+        }
+
+        return TestParticipant.builder()
                 .uniqueId(id)
                 .gender(gender)
                 .ageRange(age)
@@ -114,7 +121,6 @@ public class TestParticipantsUploadHandler {
                 .productExperienceMonthsStr(productExperienceAtIndex)
                 .assistiveTechnologyNeeds(assistiveTechAtIndex)
                 .build();
-        return tp;
     }
 
     @SafeVarargs

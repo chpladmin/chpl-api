@@ -1,6 +1,7 @@
 package gov.healthit.chpl.upload.listing.handler;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -25,6 +26,7 @@ public class SedUploadHandlerTest {
     private static final String TEST_PARTICIPANT_HEADER = "Participant Identifier,Participant Gender,"
             + "Participant Age,Participant Education,Participant Occupation/Role,Participant Professional Experience,"
             + "Participant Computer Experience,Participant Product Experience,Participant Assistive Technology Needs";
+    private static final String TEST_PARTICIPANT_B2 = "B2,Male,40-49,Bachelor's Degree,Clinical Assistant,60,220,16,No";
     private static final String TEST_TASK_HEADER = "Task Identifier,Task Description,"
             + "Task Success - Mean (%),Task Success - Standard Deviation (%),Task Path Deviation - Observed #,"
             + "Task Path Deviation - Optimal #,Task Time - Mean (seconds),Task Time - Standard Deviation (seconds),"
@@ -168,6 +170,40 @@ public class SedUploadHandlerTest {
         assertEquals(1, parsedTestTask.getTestParticipants().size());
         TestParticipant parsedParticipant = parsedTestTask.getTestParticipants().iterator().next();
         assertEquals("B2", parsedParticipant.getUniqueId());
+        assertNotNull(parsedSed.getUcdProcesses());
+        assertEquals(0, parsedSed.getUcdProcesses().size());
+    }
+
+    @Test
+    public void parseTasks_CriterionParticipantAndAvailableParticipantColumns_ReturnsSedWithParticipantData() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
+                "UNIQUE_CHPL_ID__C," + TEST_PARTICIPANT_HEADER
+                + ",CRITERIA_170_315_A_1__C,Task Identifier,Participant Identifier").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
+                "14.05.05," + TEST_PARTICIPANT_B2 + ",1,A1.1,B2");
+        assertNotNull(listingRecords);
+
+        CertifiedProductSed parsedSed = handler.parseAsSed(headingRecord, listingRecords);
+        assertNotNull(parsedSed);
+        assertNotNull(parsedSed.getTestTasks());
+        assertEquals(1, parsedSed.getTestTasks().size());
+        TestTask parsedTestTask = parsedSed.getTestTasks().get(0);
+        assertEquals("A1.1", parsedTestTask.getUniqueId());
+        assertNotNull(parsedTestTask.getTestParticipants());
+        assertEquals(1, parsedTestTask.getTestParticipants().size());
+        TestParticipant parsedParticipant = parsedTestTask.getTestParticipants().iterator().next();
+        assertEquals("B2", parsedParticipant.getUniqueId());
+        assertEquals("40-49", parsedParticipant.getAgeRange());
+        assertNull(parsedParticipant.getAgeRangeId());
+        assertEquals("No", parsedParticipant.getAssistiveTechnologyNeeds());
+        assertEquals(220, parsedParticipant.getComputerExperienceMonths());
+        assertNull(parsedParticipant.getEducationTypeId());
+        assertEquals("Bachelor's Degree", parsedParticipant.getEducationTypeName());
+        assertEquals("Male", parsedParticipant.getGender());
+        assertEquals("Clinical Assistant", parsedParticipant.getOccupation());
+        assertEquals(16, parsedParticipant.getProductExperienceMonths());
+        assertEquals(60, parsedParticipant.getProfessionalExperienceMonths());
         assertNotNull(parsedSed.getUcdProcesses());
         assertEquals(0, parsedSed.getUcdProcesses().size());
     }

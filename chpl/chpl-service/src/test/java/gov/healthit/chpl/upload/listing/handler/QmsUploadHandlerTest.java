@@ -115,6 +115,20 @@ public class QmsUploadHandlerTest {
     }
 
     @Test
+    public void parseQms_SingleQmsAndBlankLine_ReturnsCorrectly() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
+                LISTING_ROW_BEGIN + ",ISO 9001,All Criteria,None\n"
+                + LISTING_ROW_BEGIN + ",,,");
+        assertNotNull(listingRecords);
+
+        List<CertifiedProductQmsStandard> foundQms = handler.handle(headingRecord, listingRecords);
+        assertNotNull(foundQms);
+        assertEquals(1, foundQms.size());
+    }
+
+    @Test
     public void parseQms_SingleQmsSomeFieldsPopulated_ReturnsCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
         assertNotNull(headingRecord);

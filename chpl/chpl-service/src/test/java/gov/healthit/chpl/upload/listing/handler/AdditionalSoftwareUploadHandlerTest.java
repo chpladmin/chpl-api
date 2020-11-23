@@ -177,6 +177,19 @@ public class AdditionalSoftwareUploadHandlerTest {
     }
 
     @Test
+    public void parseAdditionalSoftware_SingleAdditionalSoftwareAndBlankLine_ParsesCorrectGroup() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_AS_FIELDS).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString(
+                "1,1,CHP-12345,a,,,\n,,,,,,");
+        assertNotNull(certResultRecords);
+
+        List<CertificationResultAdditionalSoftware> parsedAdditionalSoftware = handler.handle(headingRecord, certResultRecords);
+        assertNotNull(parsedAdditionalSoftware);
+        assertEquals(1, parsedAdditionalSoftware.size());
+    }
+
+    @Test
     public void parseAdditionalSoftware_MultipleAdditionalSoftwaresAllFieldsPopulated_ParsesCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_AS_FIELDS).get(0);
         assertNotNull(headingRecord);

@@ -2,12 +2,13 @@ package gov.healthit.chpl.upload.listing.handler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVRecord;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -62,6 +63,7 @@ public class TestTaskUploadHandler {
                     taskPathDevObs, taskPathDevOpt, taskTimeAvg, taskTimeStdDev, taskTimeDevObs,
                     taskTimeDevOpt, taskErrorsAvg, taskErrorsStdDev, taskRatingScale, taskRating,
                     taskRatingStdDev))
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
         return testTasks;
     }
@@ -198,7 +200,15 @@ public class TestTaskUploadHandler {
             }
         }
 
-        TestTask tt = TestTask.builder()
+        if (StringUtils.isAllEmpty(id, description, taskSuccessAvgAtIndex,
+                taskSuccessStdDevAtIndex, taskPathDevObsAtIndex, taskPathDevOptAtIndex,
+                taskTimeAvgAtIndex, taskTimeStdDevAtIndex, taskTimeDevObsAtIndex,
+                taskTimeDevOptAtIndex, taskErrorsAvgAtIndex, taskErrorsStdDevAtIndex,
+                taskRatingScaleAtIndex, taskRatingAtIndex, taskRatingStdDevAtIndex)) {
+            return null;
+        }
+
+        return TestTask.builder()
                 .uniqueId(id)
                 .description(description)
                 .taskSuccessAverage(taskSuccessAvg)
@@ -227,7 +237,6 @@ public class TestTaskUploadHandler {
                 .taskRatingStddev(taskRatingStdDev)
                 .taskRatingStddevStr(taskRatingStdDevAtIndex)
                 .build();
-        return tt;
     }
 
     @SafeVarargs

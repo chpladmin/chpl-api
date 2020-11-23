@@ -2,11 +2,13 @@ package gov.healthit.chpl.upload.listing.handler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -42,6 +44,7 @@ public class TestProcedureUploadHandler {
         //I think everything remains ordered using these data structures so this should be okay.
         testProcedures = IntStream.range(0, max)
             .mapToObj(index -> buildTestProcedure(index, testProcedureNames, testProcedureVersions))
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
         return testProcedures;
     }
@@ -52,11 +55,14 @@ public class TestProcedureUploadHandler {
         String tpVersion = (testProcedureVersions != null && testProcedureVersions.size() > index)
                 ? testProcedureVersions.get(index) : null;
 
-                CertificationResultTestProcedure testProcedure = CertificationResultTestProcedure.builder()
-                .testProcedure(tpName == null ? null : TestProcedure.builder().name(tpName).build())
-                .testProcedureVersion(tpVersion)
-                .build();
-        return testProcedure;
+        if (StringUtils.isAllEmpty(tpName, tpVersion)) {
+            return null;
+        }
+
+        return CertificationResultTestProcedure.builder()
+            .testProcedure(tpName == null ? null : TestProcedure.builder().name(tpName).build())
+            .testProcedureVersion(tpVersion)
+            .build();
     }
 
     private List<String> parseTestProceduredNames(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {

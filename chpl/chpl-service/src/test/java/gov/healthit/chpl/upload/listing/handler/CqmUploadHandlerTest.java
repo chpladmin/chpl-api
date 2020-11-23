@@ -80,6 +80,29 @@ public class CqmUploadHandlerTest {
     }
 
     @Test
+    public void parseCqm_SingleCqmAndBlankLine_ReturnsCorrectly() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
+                LISTING_ROW_BEGIN + ",61,v0,c1\n"
+                + LISTING_ROW_BEGIN + ",,,");
+        assertNotNull(listingRecords);
+
+        List<CQMResultDetails> foundCqms = handler.handle(headingRecord, listingRecords);
+        assertNotNull(foundCqms);
+        assertEquals(1, foundCqms.size());
+        CQMResultDetails cqm = foundCqms.get(0);
+        assertNotNull(cqm.getNumber());
+        assertEquals("61", cqm.getNumber());
+        assertNotNull(cqm.getSuccessVersions());
+        assertEquals(1, cqm.getSuccessVersions().size());
+        assertEquals("v0", cqm.getSuccessVersions().iterator().next());
+        assertNotNull(cqm.getCriteria());
+        assertEquals(1, cqm.getCriteria().size());
+        assertEquals("c1", cqm.getCriteria().get(0).getCertificationNumber());
+    }
+
+    @Test
     public void parseCqm_SingleCqm_SemicolonSeparatedVersionList_AllFieldsPopulated_ReturnsCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
         assertNotNull(headingRecord);

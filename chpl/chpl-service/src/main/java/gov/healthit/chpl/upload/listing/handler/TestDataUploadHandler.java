@@ -2,11 +2,13 @@ package gov.healthit.chpl.upload.listing.handler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -46,6 +48,7 @@ public class TestDataUploadHandler {
         //I think everything remains ordered using these data structures so this should be okay.
         testData = IntStream.range(0, max)
             .mapToObj(index -> buildTestTool(index, testDataNames, testDataVersions, testDataAlterations))
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
         return testData;
     }
@@ -57,6 +60,10 @@ public class TestDataUploadHandler {
                 ? testDataVersions.get(index) : null;
         String tdAlteration = (testDataAlterations != null && testDataAlterations.size() > index)
                 ? testDataAlterations.get(index) : null;
+
+        if (StringUtils.isAllEmpty(tdName, tdVersion, tdAlteration)) {
+            return null;
+        }
 
         CertificationResultTestData testData = CertificationResultTestData.builder()
                 .testData(tdName == null ? null : TestData.builder().name(tdName).build())

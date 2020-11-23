@@ -2,11 +2,13 @@ package gov.healthit.chpl.upload.listing.handler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -45,6 +47,7 @@ public class QmsUploadHandler {
         //I think everything remains ordered using these data structures so this should be okay.
         qmsStandards = IntStream.range(0, max)
             .mapToObj(index -> buildQmsStandard(index, qmsStandardNames, qmsApplicableCriteria, qmsModifications))
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
         return qmsStandards;
     }
@@ -56,6 +59,10 @@ public class QmsUploadHandler {
                 ? qmsApplicableCriterias.get(index) : null;
         String qmsModification = (qmsModifications != null && qmsModifications.size() > index)
                 ? qmsModifications.get(index) : null;
+
+        if (StringUtils.isAllEmpty(qmsName, qmsApplicableCriteria, qmsModification)) {
+            return null;
+        }
 
         CertifiedProductQmsStandard qms = CertifiedProductQmsStandard.builder()
                 .qmsStandardName(qmsName)

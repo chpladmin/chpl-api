@@ -2,6 +2,7 @@ package gov.healthit.chpl.upload.listing.handler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -57,6 +58,7 @@ public class AdditionalSoftwareUploadHandler {
         additionalSoftware = IntStream.range(0, max)
                 .mapToObj(index -> buildAdditionalSoftware(index, listingSources, listingGroupings, nonlistingSources,
                         nonlistingVersions, nonlistingGroupings))
+                .filter(Objects::nonNull)
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
         return additionalSoftware;
@@ -75,6 +77,11 @@ public class AdditionalSoftwareUploadHandler {
                 ? nonlistingVersions.get(index) : null;
         String nonlistingGrouping = (nonlistingGroupings != null && nonlistingGroupings.size() > index)
                 ? nonlistingGroupings.get(index) : null;
+
+        if (StringUtils.isAllEmpty(listingSource, listingGrouping, nonlistingSource,
+                nonlistingVersion, nonlistingGrouping)) {
+            return null;
+        }
 
         List<CertificationResultAdditionalSoftware> parsedAdditionalSoftware
             = new ArrayList<CertificationResultAdditionalSoftware>();

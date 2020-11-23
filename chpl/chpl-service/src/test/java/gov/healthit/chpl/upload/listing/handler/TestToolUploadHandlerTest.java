@@ -68,6 +68,19 @@ public class TestToolUploadHandlerTest {
     }
 
     @Test
+    public void parseTestTool_SingleTestToolsAndBlankLine_ParsesCorrectly() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_TT_FIELDS).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString(
+                "1,Test Tool 1,2.0" + "\n" + ",,");
+        assertNotNull(certResultRecords);
+
+        List<CertificationResultTestTool> parsedTestTools = handler.handle(headingRecord, certResultRecords);
+        assertNotNull(parsedTestTools);
+        assertEquals(1, parsedTestTools.size());
+    }
+
+    @Test
     public void parseTestTool_MultipleTestToolsAllFieldsPopulated_ParsesCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_TT_FIELDS).get(0);
         assertNotNull(headingRecord);

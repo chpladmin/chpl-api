@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -50,6 +51,7 @@ public class CqmUploadHandler {
 
         cqms = IntStream.range(0, max)
                 .mapToObj(index -> buildCqmDetails(index, cqmNumbers, cqmVersions, cqmCriteria))
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         return cqms;
     }
@@ -61,6 +63,10 @@ public class CqmUploadHandler {
                 ? cqmVersions.get(index) : null;
         String cqmCriteriaDelimited = (cqmCriteria != null && cqmCriteria.size() > index)
                 ? cqmCriteria.get(index) : null;
+
+        if (StringUtils.isAllEmpty(cqmNumber, cqmVersionDelimited, cqmCriteriaDelimited)) {
+            return null;
+        }
 
         Set<String> versions = new HashSet<String>();
         if (!StringUtils.isEmpty(cqmVersionDelimited) && !"0".equals(cqmVersionDelimited)) {

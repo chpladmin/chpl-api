@@ -117,6 +117,20 @@ public class TestParticipantUploadHandlerTest {
     }
 
     @Test
+    public void parseParticipants_SingleParticipantAndBlankLine_ReturnsCorrectly() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
+                LISTING_ROW_BEGIN + "," + TEST_PARTICIPANT_1 + "\n"
+                        + LISTING_ROW_BEGIN + ",,,,,,,,,");
+        assertNotNull(listingRecords);
+
+        List<TestParticipant> parsedParticipants = handler.handle(headingRecord, listingRecords);
+        assertNotNull(parsedParticipants);
+        assertEquals(1, parsedParticipants.size());
+    }
+
+    @Test
     public void parseParticipants_MultipleParticipants_AllFieldsPopulated_ReturnsCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
         assertNotNull(headingRecord);

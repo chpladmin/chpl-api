@@ -68,6 +68,19 @@ public class TestProcedureUploadHandlerTest {
     }
 
     @Test
+    public void parseTestProcedure_SingleTestProcedureAndBlankLine_ParsesCorrectly() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_TP_FIELDS).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString(
+                "1,ONC Test Procedure,2.0" + "\n" + ",,");
+        assertNotNull(certResultRecords);
+
+        List<CertificationResultTestProcedure> parsedTps = handler.handle(headingRecord, certResultRecords);
+        assertNotNull(parsedTps);
+        assertEquals(1, parsedTps.size());
+    }
+
+    @Test
     public void parseTestProcedure_MultipleTestProceduresAllFieldsPopulated_ParsesCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_TP_FIELDS).get(0);
         assertNotNull(headingRecord);

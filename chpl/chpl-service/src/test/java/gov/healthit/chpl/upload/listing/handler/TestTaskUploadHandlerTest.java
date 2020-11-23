@@ -112,6 +112,22 @@ public class TestTaskUploadHandlerTest {
     }
 
     @Test
+    public void parseTasks_SingleTaskAndBlankLine_ParsesFields() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
+                + ",Task Time Deviation - Optimal Seconds,Task Rating - Scale Type,"
+                + "Task Identifier,Task Rating,Task Errors  Mean(%)").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
+                LISTING_ROW_BEGIN + ",2,something,A1.1,5.6,7\n"
+                        + ",,,,,");
+        assertNotNull(listingRecords);
+
+        List<TestTask> parsedTasks = handler.handle(headingRecord, listingRecords);
+        assertNotNull(parsedTasks);
+        assertEquals(1, parsedTasks.size());
+    }
+
+    @Test
     public void parseTasks_InvalidNumberInFloatField_SetsFieldNull() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
                 + ",Task Rating").get(0);

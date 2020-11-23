@@ -2,11 +2,13 @@ package gov.healthit.chpl.upload.listing.handler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -41,6 +43,7 @@ public class UcdProcessUploadHandler {
         //I think everything remains ordered using these data structures so this should be okay.
         ucdProcesses = IntStream.range(0, max)
             .mapToObj(index -> buildUcdProcess(index, ucdNames, ucdDetails))
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
         return ucdProcesses;
     }
@@ -50,11 +53,14 @@ public class UcdProcessUploadHandler {
         String ucdDetail = (ucdDetails != null && ucdDetails.size() > index)
                 ? ucdDetails.get(index) : null;
 
-        UcdProcess ucdProcess = UcdProcess.builder()
+        if (StringUtils.isAllEmpty(ucdName, ucdDetail)) {
+            return null;
+        }
+
+        return UcdProcess.builder()
                 .name(ucdName)
                 .details(ucdDetail)
         .build();
-        return ucdProcess;
     }
 
     private List<String> parseUcdNames(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {

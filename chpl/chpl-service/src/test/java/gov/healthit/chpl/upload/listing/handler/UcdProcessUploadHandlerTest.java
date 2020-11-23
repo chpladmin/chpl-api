@@ -100,6 +100,23 @@ public class UcdProcessUploadHandlerTest {
     }
 
     @Test
+    public void parseUcdProcess_SingleUcdProcessAndBlankUcdProcess_ParsesCorrectly() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_UCD_FIELDS).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString(
+                "1,NISTIR 7741,NISTIR 7741 was used\n,,");
+        assertNotNull(certResultRecords);
+
+        List<UcdProcess> parsedUcdProcesss = handler.handle(headingRecord, certResultRecords);
+        assertNotNull(parsedUcdProcesss);
+        assertEquals(1, parsedUcdProcesss.size());
+        UcdProcess ucd = parsedUcdProcesss.get(0);
+        assertEquals("NISTIR 7741", ucd.getName());
+        assertEquals("NISTIR 7741 was used", ucd.getDetails());
+        assertNull(ucd.getId());
+    }
+
+    @Test
     public void parseUcdProcess_MultipleUcdProcesssAllFieldsPopulated_ParsesCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_UCD_FIELDS).get(0);
         assertNotNull(headingRecord);
