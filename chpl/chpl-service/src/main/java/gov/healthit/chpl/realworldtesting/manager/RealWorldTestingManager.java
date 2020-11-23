@@ -101,10 +101,15 @@ public class RealWorldTestingManager {
                 throw new ValidationException(errorMessageUtil.getMessage("realWorldTesting.upload.headerOnly"));
             }
 
-            records = removeEmptyRows(records);
             records = removeHeaderRow(records);
+            records = removeEmptyRows(records);
 
-            List<RealWorldTestingUpload> rwts = records.stream().map(rec -> createRwtUploadFromCsvRecord(rec))
+            if (records.size() == 0) {
+                throw new ValidationException(errorMessageUtil.getMessage("realWorldTesting.upload.emptyFile"));
+            }
+
+            List<RealWorldTestingUpload> rwts = records.stream()
+                    .map(rec -> createRwtUploadFromCsvRecord(rec))
                     .collect(Collectors.toList());
 
             return rwts;
@@ -156,8 +161,7 @@ public class RealWorldTestingManager {
             try {
                 rwtUpload.setLastChecked(getLastCheckedDate(record.get(LAST_CHECKED_COLUMN_IDX)));
             } catch (DateTimeParseException e) {
-                rwtUpload.getValidationErrors()
-                        .add(errorMessageUtil.getMessage("realWorldTesting.upload.lastCheckedDateInvalid"));
+                rwtUpload.getValidationErrors().add(errorMessageUtil.getMessage("realWorldTesting.upload.lastCheckedDateInvalid"));
             }
         } else {
             rwtUpload.setLastChecked(null);

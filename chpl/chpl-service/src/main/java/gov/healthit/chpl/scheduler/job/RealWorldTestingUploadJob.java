@@ -65,8 +65,7 @@ public class RealWorldTestingUploadJob implements Job {
             UserDTO user = (UserDTO) context.getMergedJobDataMap().get(USER_KEY);
             setSecurityContext(user);
 
-            List<RealWorldTestingUpload> rwts = (List<RealWorldTestingUpload>) context.getMergedJobDataMap()
-                    .get(RWT_UPLOAD_ITEMS);
+            List<RealWorldTestingUpload> rwts = (List<RealWorldTestingUpload>) context.getMergedJobDataMap().get(RWT_UPLOAD_ITEMS);
 
             // Run some basic validation on upload records that do not have any errors
             // yet...
