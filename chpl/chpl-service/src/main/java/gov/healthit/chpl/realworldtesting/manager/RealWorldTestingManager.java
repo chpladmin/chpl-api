@@ -98,8 +98,7 @@ public class RealWorldTestingManager {
 
             List<CSVRecord> records = parser.getRecords();
             if (records.size() <= 1 && doesHeaderRowExist(records)) {
-                throw new ValidationException("The file appears to have a header line with no other information. "
-                        + "Please make sure there are at least two rows in the CSV file.");
+                throw new ValidationException(errorMessageUtil.getMessage("realWorldTesting.upload.headerOnly"));
             }
 
             records = removeEmptyRows(records);
@@ -215,7 +214,7 @@ public class RealWorldTestingManager {
 
     private void checkBasicFileProperties(MultipartFile file) throws ValidationException {
         if (file.isEmpty()) {
-            throw new ValidationException("You cannot upload an empty file!");
+            throw new ValidationException(errorMessageUtil.getMessage("realWorldTesting.upload.emptyFile"));
         }
 
         if (!file.getContentType().equalsIgnoreCase("text/csv")

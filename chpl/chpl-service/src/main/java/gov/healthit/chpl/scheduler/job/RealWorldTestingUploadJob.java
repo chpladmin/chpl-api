@@ -190,8 +190,7 @@ public class RealWorldTestingUploadJob implements Job {
     @SuppressWarnings("checkstyle:linelength")
     private Optional<CertifiedProductSearchDetails> getListing(String chplProductNumber) {
         try {
-            return Optional.ofNullable(
-                    certifiedProductDetailsManager.getCertifiedProductDetailsByChplProductNumber(chplProductNumber));
+            return Optional.ofNullable(certifiedProductDetailsManager.getCertifiedProductDetailsByChplProductNumber(chplProductNumber));
         } catch (Exception e) {
             return Optional.empty();
         }
