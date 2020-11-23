@@ -196,8 +196,7 @@ public class SedUploadHandler {
         List<TestTask> certResultTasks = new ArrayList<TestTask>();
         List<String> testTaskIds = parseTaskIds(certResultHeading, certResultRecords);
         List<String> testParticipantIds = parseParticipantIds(certResultHeading, certResultRecords);
-        if (CollectionUtils.isEmpty(testTaskIds)
-                && CollectionUtils.isEmpty(testParticipantIds)) {
+        if (uploadUtil.areCollectionsEmpty(testTaskIds, testParticipantIds)) {
             return certResultTasks;
         }
 

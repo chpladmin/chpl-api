@@ -27,8 +27,7 @@ public class UcdProcessUploadHandler {
         List<UcdProcess> ucdProcesses = new ArrayList<UcdProcess>();
         List<String> ucdNames = parseUcdNames(certHeadingRecord, certResultRecords);
         List<String> ucdDetails = parseUcdDetails(certHeadingRecord, certResultRecords);
-        if (CollectionUtils.isEmpty(ucdNames)
-                && CollectionUtils.isEmpty(ucdDetails)) {
+        if (uploadUtil.areCollectionsEmpty(ucdNames, ucdDetails)) {
             return ucdProcesses;
         }
 

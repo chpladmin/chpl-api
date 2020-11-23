@@ -33,9 +33,7 @@ public class CqmUploadHandler {
         List<String> cqmNumbers = parseCqmNumbers(headingRecord, listingRecords);
         List<String> cqmVersions = parseCqmVersions(headingRecord, listingRecords);
         List<String> cqmCriteria = parseCqmCriteria(headingRecord, listingRecords);
-        if (CollectionUtils.isEmpty(cqmNumbers)
-                && CollectionUtils.isEmpty(cqmVersions)
-                && CollectionUtils.isEmpty(cqmCriteria)) {
+        if (uploadUtil.areCollectionsEmpty(cqmNumbers, cqmVersions, cqmCriteria)) {
             return cqms;
         }
 

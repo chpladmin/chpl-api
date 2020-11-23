@@ -27,8 +27,7 @@ public class TestToolUploadHandler {
         List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
         List<String> testToolNames = parseTestToolNames(certHeadingRecord, certResultRecords);
         List<String> testToolVersions = parseTestToolVersions(certHeadingRecord, certResultRecords);
-        if (CollectionUtils.isEmpty(testToolNames)
-                && CollectionUtils.isEmpty(testToolVersions)) {
+        if (uploadUtil.areCollectionsEmpty(testToolNames, testToolVersions)) {
             return testTools;
         }
 

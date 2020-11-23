@@ -29,9 +29,7 @@ public class TestDataUploadHandler {
         List<String> testDataNames = parseTestDataNames(certHeadingRecord, certResultRecords);
         List<String> testDataVersions = parseTestDataVersions(certHeadingRecord, certResultRecords);
         List<String> testDataAlterations = parseTestDataAlterations(certHeadingRecord, certResultRecords);
-        if (CollectionUtils.isEmpty(testDataNames)
-                && CollectionUtils.isEmpty(testDataVersions)
-                && CollectionUtils.isEmpty(testDataAlterations)) {
+        if (uploadUtil.areCollectionsEmpty(testDataNames, testDataVersions, testDataAlterations)) {
             return testData;
         }
 

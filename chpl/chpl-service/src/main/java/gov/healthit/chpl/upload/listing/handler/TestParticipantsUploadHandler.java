@@ -38,13 +38,8 @@ public class TestParticipantsUploadHandler {
         List<String> productExperience = parseProductExperience(headingRecord, listingRecords);
         List<String> assistiveTech = parseAssistiveTechnologyNeeds(headingRecord, listingRecords);
 
-        if (CollectionUtils.isEmpty(ids) && CollectionUtils.isEmpty(genders)
-                && CollectionUtils.isEmpty(ages) && CollectionUtils.isEmpty(educations)
-                && CollectionUtils.isEmpty(occupations)
-                && CollectionUtils.isEmpty(professionalExperience)
-                && CollectionUtils.isEmpty(computerExperience)
-                && CollectionUtils.isEmpty(productExperience)
-                && CollectionUtils.isEmpty(assistiveTech)) {
+        if (uploadUtil.areCollectionsEmpty(ids, genders, ages, educations, occupations,
+                professionalExperience, computerExperience, productExperience, assistiveTech)) {
             return testParticipants;
         }
 

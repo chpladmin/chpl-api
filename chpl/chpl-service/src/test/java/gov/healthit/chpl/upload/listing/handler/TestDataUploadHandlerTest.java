@@ -43,7 +43,7 @@ public class TestDataUploadHandlerTest {
     }
 
     @Test
-    public void parseTestData_TestDataAllColumnsNoData_ReturnsListWithEmptyItems() {
+    public void parseTestData_TestDataAllColumnsNoData_ReturnsEmptyList() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_TD_FIELDS).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,,,,");
@@ -51,13 +51,7 @@ public class TestDataUploadHandlerTest {
 
         List<CertificationResultTestData> parsedTestDatas = handler.handle(headingRecord, certResultRecords);
         assertNotNull(parsedTestDatas);
-        assertEquals(1, parsedTestDatas.size());
-        CertificationResultTestData td = parsedTestDatas.get(0);
-        assertNotNull(td.getTestData());
-        assertEquals("", td.getTestData().getName());
-        assertNull(td.getTestData().getId());
-        assertEquals("", td.getVersion());
-        assertEquals("", td.getAlteration());
+        assertEquals(0, parsedTestDatas.size());
     }
 
     @Test

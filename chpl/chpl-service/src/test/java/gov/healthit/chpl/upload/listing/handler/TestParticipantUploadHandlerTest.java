@@ -48,7 +48,7 @@ public class TestParticipantUploadHandlerTest {
     }
 
     @Test
-    public void parseParticipants_ParticipantColumnsNoData_ReturnsListWithEmptyItems() {
+    public void parseParticipants_ParticipantColumnsNoData_ReturnsEmptyList() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",,,,,,,,,");
@@ -56,19 +56,7 @@ public class TestParticipantUploadHandlerTest {
 
         List<TestParticipant> parsedParticipants = handler.handle(headingRecord, listingRecords);
         assertNotNull(parsedParticipants);
-        assertEquals(1, parsedParticipants.size());
-        TestParticipant participant = parsedParticipants.get(0);
-        assertEquals("", participant.getUniqueId());
-        assertEquals("", participant.getAgeRange());
-        assertNull(participant.getAgeRangeId());
-        assertEquals("", participant.getAssistiveTechnologyNeeds());
-        assertNull(participant.getComputerExperienceMonths());
-        assertNull(participant.getEducationTypeId());
-        assertEquals("", participant.getEducationTypeName());
-        assertEquals("", participant.getGender());
-        assertEquals("", participant.getOccupation());
-        assertNull(participant.getProductExperienceMonths());
-        assertNull(participant.getProfessionalExperienceMonths());
+        assertEquals(0, parsedParticipants.size());
     }
 
     @Test

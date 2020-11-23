@@ -5,17 +5,20 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.validation.ValidationException;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -151,6 +154,28 @@ public class ListingUploadHandlerUtil {
         return headingVal.toUpperCase().contains(CRITERIA_CURES_COL_HEADING);
     }
 
+    @SafeVarargs
+    public final boolean areCollectionsEmpty(Collection<String>... collections) {
+        List<Collection<String>> nonEmptyNonNullCollections =
+                Stream.of(collections)
+                    .filter(Objects::nonNull)
+                    .filter(CollectionUtils::isNotEmpty)
+                    .collect(Collectors.toList());
+        if (nonEmptyNonNullCollections.size() == 0) {
+            return true;
+        }
+        long numCollectionsWithNonEmptyStrings = 0;
+        for (Collection<String> collection : nonEmptyNonNullCollections) {
+            if (collection.stream().filter(StringUtils::isNotEmpty).count() > 0) {
+                numCollectionsWithNonEmptyStrings++;
+            }
+        }
+        if (numCollectionsWithNonEmptyStrings > 0) {
+            return false;
+        }
+        return true;
+    }
+
     public String parseRequiredSingleRowField(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords)
             throws ValidationException {
         String fieldValue = null;
@@ -243,9 +268,7 @@ public class ListingUploadHandlerUtil {
                     }
                 }
             }
-            //if all field values are empty return empty list
-            long nonEmptyCount = fieldValues.stream().filter(fieldValue -> !StringUtils.isEmpty(fieldValue)).count();
-            return nonEmptyCount > 0 ? fieldValues : Collections.emptyList();
+            return fieldValues;
     }
 
     public List<String> parseMultiRowFieldWithoutEmptyValues(

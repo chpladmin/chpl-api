@@ -46,7 +46,7 @@ public class CqmUploadHandlerTest {
     }
 
     @Test
-    public void parseCqm_CqmColumnsNoData_ReturnsListWithEmptyItems() {
+    public void parseCqm_CqmColumnsNoData_ReturnsEmptyList() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",,,");
@@ -54,21 +54,7 @@ public class CqmUploadHandlerTest {
 
         List<CQMResultDetails> parsedCqms = handler.handle(headingRecord, listingRecords);
         assertNotNull(parsedCqms);
-        assertEquals(1, parsedCqms.size());
-        CQMResultDetails cqm = parsedCqms.get(0);
-        assertEquals("", cqm.getNumber());
-        assertNull(cqm.getCmsId());
-        assertNull(cqm.getDescription());
-        assertNull(cqm.getDomain());
-        assertNull(cqm.getNqfNumber());
-        assertNull(cqm.getTitle());
-        assertNull(cqm.getTypeId());
-        assertNotNull(cqm.getAllVersions());
-        assertEquals(0, cqm.getAllVersions().size());
-        assertNotNull(cqm.getSuccessVersions());
-        assertEquals(0, cqm.getSuccessVersions().size());
-        assertNotNull(cqm.getCriteria());
-        assertEquals(0, cqm.getCriteria().size());
+        assertEquals(0, parsedCqms.size());
     }
 
     @Test

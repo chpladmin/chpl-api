@@ -32,11 +32,8 @@ public class AdditionalSoftwareUploadHandler {
         List<String> nonlistingVersions = parseNonListingVersions(certHeadingRecord, certResultRecords);
         List<String> nonlistingGroupings = parseNonListingGroupings(certHeadingRecord, certResultRecords);
 
-        if (CollectionUtils.isEmpty(listingSources)
-                && CollectionUtils.isEmpty(listingGroupings)
-                && CollectionUtils.isEmpty(nonlistingSources)
-                && CollectionUtils.isEmpty(nonlistingVersions)
-                && CollectionUtils.isEmpty(nonlistingGroupings)) {
+        if (uploadUtil.areCollectionsEmpty(listingSources, listingGroupings, nonlistingSources,
+                nonlistingVersions, nonlistingGroupings)) {
             return additionalSoftware;
         }
 

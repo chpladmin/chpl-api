@@ -28,9 +28,7 @@ public class QmsUploadHandler {
         List<String> qmsStandardNames = parseQmsStandardNames(headingRecord, listingRecords);
         List<String> qmsApplicableCriteria = parseQmsApplicableCriteria(headingRecord, listingRecords);
         List<String> qmsModifications = parseQmsModifications(headingRecord, listingRecords);
-        if (CollectionUtils.isEmpty(qmsStandardNames)
-                && CollectionUtils.isEmpty(qmsApplicableCriteria)
-                && CollectionUtils.isEmpty(qmsModifications)) {
+        if (uploadUtil.areCollectionsEmpty(qmsStandardNames, qmsApplicableCriteria, qmsModifications)) {
             return qmsStandards;
         }
 

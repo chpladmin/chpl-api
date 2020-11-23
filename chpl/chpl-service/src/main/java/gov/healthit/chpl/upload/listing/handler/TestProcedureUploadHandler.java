@@ -28,8 +28,7 @@ public class TestProcedureUploadHandler {
         List<CertificationResultTestProcedure> testProcedures = new ArrayList<CertificationResultTestProcedure>();
         List<String> testProcedureNames = parseTestProceduredNames(certHeadingRecord, certResultRecords);
         List<String> testProcedureVersions = parseTestProcedureVersions(certHeadingRecord, certResultRecords);
-        if (CollectionUtils.isEmpty(testProcedureNames)
-                && CollectionUtils.isEmpty(testProcedureVersions)) {
+        if (uploadUtil.areCollectionsEmpty(testProcedureNames, testProcedureVersions)) {
             return testProcedures;
         }
 

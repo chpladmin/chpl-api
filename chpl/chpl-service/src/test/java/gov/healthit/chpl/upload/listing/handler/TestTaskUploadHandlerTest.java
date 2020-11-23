@@ -55,7 +55,7 @@ public class TestTaskUploadHandlerTest {
     }
 
     @Test
-    public void parseTasks_TaskColumnsNoData_ReturnsListWithEmptyItems() {
+    public void parseTasks_TaskColumnsNoData_ReturnsEmptyList() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",,,,,,,,,,,,,,,");
@@ -63,23 +63,7 @@ public class TestTaskUploadHandlerTest {
 
         List<TestTask> parsedTasks = handler.handle(headingRecord, listingRecords);
         assertNotNull(parsedTasks);
-        assertEquals(1, parsedTasks.size());
-        TestTask task = parsedTasks.get(0);
-        assertEquals("", task.getUniqueId());
-        assertEquals("", task.getDescription());
-        assertNull(task.getTaskErrors());
-        assertNull(task.getTaskErrorsStddev());
-        assertNull(task.getTaskPathDeviationObserved());
-        assertNull(task.getTaskPathDeviationOptimal());
-        assertNull(task.getTaskRating());
-        assertEquals("", task.getTaskRatingScale());
-        assertNull(task.getTaskRatingStddev());
-        assertNull(task.getTaskSuccessAverage());
-        assertNull(task.getTaskSuccessStddev());
-        assertNull(task.getTaskTimeAvg());
-        assertNull(task.getTaskTimeDeviationObservedAvg());
-        assertNull(task.getTaskTimeDeviationOptimalAvg());
-        assertNull(task.getTaskTimeStddev());
+        assertEquals(0, parsedTasks.size());
     }
 
     @Test

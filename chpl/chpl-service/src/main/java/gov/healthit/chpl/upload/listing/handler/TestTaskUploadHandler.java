@@ -44,14 +44,10 @@ public class TestTaskUploadHandler {
         List<String> taskRating = parseTaskRating(headingRecord, listingRecords);
         List<String> taskRatingStdDev = parseTaskRatingStdDev(headingRecord, listingRecords);
 
-        if (CollectionUtils.isEmpty(ids) && CollectionUtils.isEmpty(descriptions)
-                && CollectionUtils.isEmpty(taskSuccessAvg) && CollectionUtils.isEmpty(taskSuccessStdDev)
-                && CollectionUtils.isEmpty(taskPathDevObs) && CollectionUtils.isEmpty(taskPathDevOpt)
-                && CollectionUtils.isEmpty(taskTimeAvg) && CollectionUtils.isEmpty(taskTimeStdDev)
-                && CollectionUtils.isEmpty(taskTimeDevObs) && CollectionUtils.isEmpty(taskTimeDevOpt)
-                && CollectionUtils.isEmpty(taskErrorsAvg) && CollectionUtils.isEmpty(taskErrorsStdDev)
-                && CollectionUtils.isEmpty(taskRatingScale) && CollectionUtils.isEmpty(taskRating)
-                && CollectionUtils.isEmpty(taskRatingStdDev)) {
+        if (uploadUtil.areCollectionsEmpty(ids, descriptions, taskSuccessAvg, taskSuccessStdDev,
+                taskPathDevObs, taskPathDevOpt, taskTimeAvg, taskTimeStdDev, taskTimeDevObs,
+                taskTimeDevOpt, taskErrorsAvg, taskErrorsStdDev, taskRatingScale, taskRating,
+                taskRatingStdDev)) {
             return testTasks;
         }
 

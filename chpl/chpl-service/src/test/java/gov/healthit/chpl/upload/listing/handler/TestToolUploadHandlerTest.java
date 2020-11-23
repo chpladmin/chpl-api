@@ -44,7 +44,7 @@ public class TestToolUploadHandlerTest {
     }
 
     @Test
-    public void parseTestTool_TestToolAllColumnsNoData_ReturnsListWithEmptyItems() {
+    public void parseTestTool_TestToolAllColumnsNoData_ReturnsEmptyList() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_TT_FIELDS).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,,");
@@ -52,15 +52,11 @@ public class TestToolUploadHandlerTest {
 
         List<CertificationResultTestTool> parsedTestTools = handler.handle(headingRecord, certResultRecords);
         assertNotNull(parsedTestTools);
-        assertEquals(1, parsedTestTools.size());
-        CertificationResultTestTool tt = parsedTestTools.get(0);
-        assertEquals("", tt.getTestToolName());
-        assertEquals("", tt.getTestToolVersion());
-        assertNull(tt.getTestToolId());
+        assertEquals(0, parsedTestTools.size());
     }
 
     @Test
-    public void parseTestTool_TestToolVersionColumnNoData_ReturnsListWithEmptyItems() {
+    public void parseTestTool_TestToolVersionColumnNoData_ReturnsEmptyList() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_TT_VERSION_ONLY).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,");
@@ -68,11 +64,7 @@ public class TestToolUploadHandlerTest {
 
         List<CertificationResultTestTool> parsedTestTools = handler.handle(headingRecord, certResultRecords);
         assertNotNull(parsedTestTools);
-        assertEquals(1, parsedTestTools.size());
-        CertificationResultTestTool tt = parsedTestTools.get(0);
-        assertNull(tt.getTestToolName());
-        assertEquals("", tt.getTestToolVersion());
-        assertNull(tt.getTestToolId());
+        assertEquals(0, parsedTestTools.size());
     }
 
     @Test

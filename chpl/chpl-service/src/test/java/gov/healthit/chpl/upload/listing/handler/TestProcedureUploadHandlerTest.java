@@ -44,7 +44,7 @@ public class TestProcedureUploadHandlerTest {
     }
 
     @Test
-    public void parseTestProcedure_TestProcedureAllColumnsNoData_ReturnsListWithEmptyItems() {
+    public void parseTestProcedure_TestProcedureAllColumnsNoData_ReturnsEmptyList() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_TP_FIELDS).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,,");
@@ -52,16 +52,11 @@ public class TestProcedureUploadHandlerTest {
 
         List<CertificationResultTestProcedure> parsedTps = handler.handle(headingRecord, certResultRecords);
         assertNotNull(parsedTps);
-        assertEquals(1, parsedTps.size());
-        CertificationResultTestProcedure tp = parsedTps.get(0);
-        assertNotNull(tp.getTestProcedure());
-        assertEquals("", tp.getTestProcedure().getName());
-        assertNull(tp.getTestProcedure().getId());
-        assertEquals("", tp.getTestProcedureVersion());
+        assertEquals(0, parsedTps.size());
     }
 
     @Test
-    public void parseTestProcedure_TestProcedureVersionColumnNoData_ReturnsListWithEmptyItems() {
+    public void parseTestProcedure_TestProcedureVersionColumnNoData_ReturnsEmptyList() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_TP_VERSION_ONLY).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,");
@@ -69,10 +64,7 @@ public class TestProcedureUploadHandlerTest {
 
         List<CertificationResultTestProcedure> parsedTps = handler.handle(headingRecord, certResultRecords);
         assertNotNull(parsedTps);
-        assertEquals(1, parsedTps.size());
-        CertificationResultTestProcedure tp = parsedTps.get(0);
-        assertNull(tp.getTestProcedure());
-        assertEquals("", tp.getTestProcedureVersion());
+        assertEquals(0, parsedTps.size());
     }
 
     @Test

@@ -43,7 +43,7 @@ public class QmsUploadHandlerTest {
     }
 
     @Test
-    public void parseQms_QmsColumnNoData_ReturnsListWithEmptyItems() {
+    public void parseQms_QmsColumnNoData_ReturnsEmptyLists() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",,,");
@@ -51,12 +51,7 @@ public class QmsUploadHandlerTest {
 
         List<CertifiedProductQmsStandard> foundQms = handler.handle(headingRecord, listingRecords);
         assertNotNull(foundQms);
-        assertEquals(1, foundQms.size());
-        CertifiedProductQmsStandard qms = foundQms.get(0);
-        assertEquals("", qms.getQmsStandardName());
-        assertEquals("", qms.getQmsModification());
-        assertEquals("", qms.getApplicableCriteria());
-        assertNull(qms.getQmsStandardId());
+        assertEquals(0, foundQms.size());
     }
 
     @Test
