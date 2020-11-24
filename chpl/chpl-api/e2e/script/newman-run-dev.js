@@ -92,7 +92,7 @@ const jobs = [
     cb => newman.run(productsControllerTests,cb),
 	cb => newman.run(productVersionControllerTests,cb),
     cb => newman.run(statusControllerTests,cb),
-    cb => newman.run(testinglabControllerTests,cb),	 
+    cb => newman.run(testinglabControllerTests,cb),
 ];
 
 const responseCallback = (err) => {
