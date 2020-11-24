@@ -103,9 +103,6 @@ public class ListingDetailsUploadHandler {
                     nextCertResultIndex + parsedCertResultRecords.size() - 1, headingRecord);
         }
         listing.setCertificationResults(certResultList);
-
-        //TODO: data normalizer - look up IDs for everywhere that could have one
-        //add criteria that weren't in the file
         return listing;
     }
 
