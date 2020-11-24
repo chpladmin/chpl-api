@@ -65,8 +65,8 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         if (endDate == null) {
             hql += " AND deleted = false";
         } else {
-            hql += "AND ((deleted = false AND startDate <= :endDate) " + " OR "
-                    + "(deleted = true AND startDate <= :endDate AND lastModifiedDate > :endDate)) ";
+            hql += "AND ((deleted = false AND endDate <= :endDate) " + " OR "
+                    + "(deleted = true AND endDate <= :endDate AND lastModifiedDate > :endDate)) ";
         }
 
         Query query = entityManager.createQuery(hql);
@@ -84,7 +84,8 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         if (endDate == null) {
             hql += " deleted = false";
         } else {
-            hql += "(deleted = false AND dateOfDetermination <= :endDate) " + " OR " + "(deleted = true AND dateOfDetermination <= :endDate AND lastModifiedDate > :endDate) ";
+            hql += "(deleted = false AND dateOfDetermination <= :endDate) "
+                    + " OR (deleted = true AND dateOfDetermination <= :endDate AND lastModifiedDate > :endDate) ";
         }
 
         Query query = entityManager.createQuery(hql);
@@ -102,7 +103,8 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         if (endDate == null) {
             hql += " AND deleted = false";
         } else {
-            hql += " AND ((deleted = false AND dateOfDetermination <= :endDate) " + " OR " + "(deleted = true AND dateOfDetermination <= :endDate AND lastModifiedDate > :endDate)) ";
+            hql += " AND ((deleted = false AND dateOfDetermination <= :endDate) "
+                    + " OR (deleted = true AND dateOfDetermination <= :endDate AND lastModifiedDate > :endDate)) ";
         }
 
         Query query = entityManager.createQuery(hql);
@@ -131,7 +133,8 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         if (endDate == null) {
             hql += "AND sn.deleted = false ";
         } else {
-            hql += "AND ((sn.deleted = false AND sn.dateOfDetermination <= :endDate) " + " OR " + "(sn.deleted = true AND sn.dateOfDetermination <= :endDate AND sn.lastModifiedDate > :endDate)) ";
+            hql += "AND ((sn.deleted = false AND sn.dateOfDetermination <= :endDate) "
+                    + " OR " + "(sn.deleted = true AND sn.dateOfDetermination <= :endDate AND sn.lastModifiedDate > :endDate)) ";
         }
 
         hql += "GROUP BY name ";
@@ -158,11 +161,14 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
      * Closed NCs.
      */
     public Long getTotalClosedNonconformities(Date endDate) {
-        String hql = "SELECT count(*) " + "FROM SurveillanceNonconformityEntity " + "WHERE nonconformityStatusId = 2 ";
+        String hql = "SELECT count(*) "
+                + "FROM SurveillanceNonconformityEntity "
+                + "WHERE nonconformityStatusId = 2 ";
         if (endDate == null) {
             hql += " AND deleted = false";
         } else {
-            hql += " AND ((deleted = false AND dateOfDetermination <= :endDate) " + " OR " + "(deleted = true AND dateOfDetermination <= :endDate AND lastModifiedDate > :endDate)) ";
+            hql += " AND ((deleted = false AND capEndDate <= :endDate) "
+                    + " OR " + "(deleted = true AND capEndDate <= :endDate AND lastModifiedDate > :endDate)) ";
         }
 
         Query query = entityManager.createQuery(hql);
@@ -188,7 +194,8 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         if (endDate == null) {
             hql += "AND s.deleted = false ";
         } else {
-            hql += "AND ((s.deleted = false AND s.startDate <= :endDate) " + " OR " + "(s.deleted = true AND s.startDate <= :endDate AND s.lastModifiedDate > :endDate)) ";
+            hql += "AND ((s.deleted = false AND s.startDate <= :endDate) "
+                    + " OR " + "(s.deleted = true AND s.startDate <= :endDate AND s.lastModifiedDate > :endDate)) ";
         }
 
         hql += "GROUP BY name ";
