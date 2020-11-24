@@ -55,6 +55,16 @@ const productsControllerTests = {
     },
 };
 
+const productVersionControllerTests = {
+    ...commonOptions,
+    collection: collection_path + '/product-version-controller.postman_collection.json',
+    reporter: {
+        junit: {
+            export: reports_path + '/product-version-controller-tests.xml',
+        },
+    },
+};
+
 const statusControllerTests = {
     ...commonOptions,
     collection: collection_path + '/status-controller.postman_collection.json',
@@ -80,8 +90,9 @@ const jobs = [
     cb => newman.run(developerControllerDataTests,cb),
     cb => newman.run(developerControllerNoDataTests,cb),
     cb => newman.run(productsControllerTests,cb),
+	cb => newman.run(productVersionControllerTests,cb),
     cb => newman.run(statusControllerTests,cb),
-    cb => newman.run(testinglabControllerTests,cb),
+    cb => newman.run(testinglabControllerTests,cb),	 
 ];
 
 const responseCallback = (err) => {
