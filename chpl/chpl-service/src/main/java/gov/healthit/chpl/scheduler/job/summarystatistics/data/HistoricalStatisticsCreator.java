@@ -22,6 +22,7 @@ import gov.healthit.chpl.dao.statistics.ListingStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
 import gov.healthit.chpl.dto.CertificationStatusEventDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import lombok.extern.log4j.Log4j2;
@@ -52,6 +53,7 @@ public class HistoricalStatisticsCreator {
     }
 
     @Transactional(readOnly = true)
+    @SuppressWarnings("checkstyle:linelength")
     public CsvStatistics getStatistics(List<CertifiedProductDetailsDTO> allListings,
             Map<Long, List<CertificationStatusEventDTO>> statusesForAllListings, Date endDate)
             throws InterruptedException, ExecutionException {
@@ -66,26 +68,21 @@ public class HistoricalStatisticsCreator {
 
         try {
             // developers
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopers(endDate), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopers(allListings, statusesForAllListings, endDate), executorService)
                     .thenAccept(result -> stats.setTotalDevelopers(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopersWith2014Listings(endDate),
-                    executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopersWith2014Listings(allListings, statusesForAllListings, endDate), executorService)
                     .thenAccept(result -> stats.setTotalDevelopersWith2014Listings(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopersWith2015Listings(endDate),
-                    executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalDevelopersWith2015Listings(allListings, statusesForAllListings, endDate), executorService)
                     .thenAccept(result -> stats.setTotalDevelopersWith2015Listings(result)));
 
             // products
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalUniqueProducts(endDate), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalUniqueProducts(allListings, statusesForAllListings, endDate), executorService)
                     .thenAccept(result -> stats.setTotalUniqueProducts(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalProductsActive2014Listings(allListings,
-                    statusesForAllListings, endDate), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalProductsActive2014Listings(allListings, statusesForAllListings, endDate), executorService)
                     .thenAccept(result -> stats.setTotalUniqueProductsActive2014Listings(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalProductsActive2015Listings(allListings,
-                    statusesForAllListings, endDate), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalProductsActive2015Listings(allListings, statusesForAllListings, endDate), executorService)
                     .thenAccept(result -> stats.setTotalUniqueProductsActive2015Listings(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalUniqueProductsActiveListings(allListings,
-                    statusesForAllListings, endDate), executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalUniqueProductsActiveListings(allListings, statusesForAllListings, endDate), executorService)
                     .thenAccept(result -> stats.setTotalUniqueProductsActiveListings(result)));
 
             // listings
@@ -101,11 +98,9 @@ public class HistoricalStatisticsCreator {
             // surveillance
             futures.add(CompletableFuture.supplyAsync(() -> getTotalSurveillanceActivities(endDate), executorService)
                     .thenAccept(result -> stats.setTotalSurveillanceActivities(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalOpenSurveillanceActivities(endDate),
-                    executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalOpenSurveillanceActivities(endDate), executorService)
                     .thenAccept(result -> stats.setTotalOpenSurveillanceActivities(result)));
-            futures.add(CompletableFuture.supplyAsync(() -> getTotalClosedSurveillanceActivities(endDate),
-                    executorService)
+            futures.add(CompletableFuture.supplyAsync(() -> getTotalClosedSurveillanceActivities(endDate), executorService)
                     .thenAccept(result -> stats.setTotalClosedSurveillanceActivities(result)));
             futures.add(CompletableFuture.supplyAsync(() -> getTotalNonConformities(endDate), executorService)
                     .thenAccept(result -> stats.setTotalNonConformities(result)));
@@ -119,8 +114,6 @@ public class HistoricalStatisticsCreator {
 
             // This is not blocking - presumably because the job executes using it's own
             // ExecutorService
-            // This is necessary so that the system can indicate that the job and it's
-            // threads are still running
             combinedFutures.get();
 
             LOGGER.info("Finished getting csvRecord for end date " + sdf.format(endDate));
@@ -130,24 +123,62 @@ public class HistoricalStatisticsCreator {
         return stats;
     }
 
-    private Long getTotalDevelopers(Date endDate) {
-        Long total = developerStatisticsDAO.getTotalDevelopers(endDate);
-        return total;
+    private Long getTotalDevelopers(List<CertifiedProductDetailsDTO> allListings,
+            Map<Long, List<CertificationStatusEventDTO>> allStatuses, Date endDate) {
+
+        List<DeveloperDTO> developers = allListings.stream()
+                .filter(listing -> doesListingExistAsOfDate(listing.getId(),
+                        allStatuses,
+                        endDate))
+                .map(listing -> listing.getDeveloper())
+                .collect(Collectors.toList());
+
+        return StreamEx.of(developers)
+                .distinct(DeveloperDTO::getId)
+                .count();
     }
 
-    private Long getTotalDevelopersWith2014Listings(Date endDate) {
-        Long total = developerStatisticsDAO.getTotalDevelopersWithListingsByEditionAndStatus(endDate, "2014", null);
-        return total;
+    private Long getTotalDevelopersWith2014Listings(List<CertifiedProductDetailsDTO> allListings,
+            Map<Long, List<CertificationStatusEventDTO>> allStatuses, Date endDate) {
+
+        List<DeveloperDTO> developers = allListings.stream()
+                .filter(listing -> listing.getCertificationEditionId().equals(EDITION_2014_ID)
+                        && doesListingExistAsOfDate(listing.getId(), allStatuses, endDate))
+                .map(listing -> listing.getDeveloper())
+                .collect(Collectors.toList());
+
+        return StreamEx.of(developers)
+                .distinct(DeveloperDTO::getId)
+                .count();
     }
 
-    private Long getTotalDevelopersWith2015Listings(Date endDate) {
-        Long total = developerStatisticsDAO.getTotalDevelopersWithListingsByEditionAndStatus(endDate, "2015", null);
-        return total;
+    private Long getTotalDevelopersWith2015Listings(List<CertifiedProductDetailsDTO> allListings,
+            Map<Long, List<CertificationStatusEventDTO>> allStatuses, Date endDate) {
+
+        List<DeveloperDTO> developers = allListings.stream()
+                .filter(listing -> listing.getCertificationEditionId().equals(EDITION_2015_ID)
+                        && doesListingExistAsOfDate(listing.getId(), allStatuses, endDate))
+                .map(listing -> listing.getDeveloper())
+                .collect(Collectors.toList());
+
+        return StreamEx.of(developers)
+                .distinct(DeveloperDTO::getId)
+                .count();
+
     }
 
-    private Long getTotalUniqueProducts(Date endDate) {
-        Long total = listingStatisticsDAO.getTotalUniqueProductsByEditionAndStatus(endDate, null, null);
-        return total;
+    private Long getTotalUniqueProducts(List<CertifiedProductDetailsDTO> allListings,
+            Map<Long, List<CertificationStatusEventDTO>> allStatuses, Date endDate) {
+
+        List<ProductDTO> products = allListings.stream()
+                .filter(listing -> doesListingExistAsOfDate(listing.getId(), allStatuses, endDate))
+                .map(listing -> listing.getProduct())
+                .collect(Collectors.toList());
+
+        return StreamEx.of(products)
+                .distinct(ProductDTO::getId)
+                .count();
+
     }
 
     private Long getTotalProductsActive2014Listings(List<CertifiedProductDetailsDTO> allListings,
@@ -271,5 +302,11 @@ public class HistoricalStatisticsCreator {
             }
         }
         return result;
+    }
+
+    private boolean doesListingExistAsOfDate(Long certifiedProductId, Map<Long, List<CertificationStatusEventDTO>> allStatuses,
+            Date asOfDate) {
+
+        return getStatusAsOfDate(allStatuses.get(certifiedProductId), asOfDate) != null;
     }
 }
