@@ -22,9 +22,9 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDetails;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.domain.Address;
-import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
@@ -215,7 +215,7 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
             crDevDetails.setAddress(address);
         }
         if (map.containsKey("contact") && map.get("contact") != null) {
-            Contact contact = new Contact((HashMap<String, Object>) map.get("contact"));
+            PointOfContact contact = new PointOfContact((HashMap<String, Object>) map.get("contact"));
             crDevDetails.setContact(contact);
         }
         return crDevDetails;
@@ -251,7 +251,7 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
         return addrHtml;
     }
 
-    private String formatContactHtml(Contact contact) {
+    private String formatContactHtml(PointOfContact contact) {
         String contactHtml = "";
         if (!StringUtils.isEmpty(contact.getFullName())) {
             contactHtml += "Name: " + contact.getFullName();

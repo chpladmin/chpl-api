@@ -172,7 +172,7 @@ public class ApiExceptionControllerAdvice {
                 ObjectMissingValidationErrorResponse error = new ObjectMissingValidationErrorResponse();
                 error.setErrorMessages(currEx.getErrorMessages());
                 error.setWarningMessages(currEx.getWarningMessages());
-                error.setContact(currEx.getContact());
+                error.setContact(currEx.getUser());
                 error.setObjectId(currEx.getObjectId());
                 errorContainer.getErrors().add(error);
             }
@@ -186,7 +186,7 @@ public class ApiExceptionControllerAdvice {
         ObjectMissingValidationErrorResponse error = new ObjectMissingValidationErrorResponse();
         error.setErrorMessages(e.getErrorMessages());
         error.setWarningMessages(e.getWarningMessages());
-        error.setContact(e.getContact());
+        error.setContact(e.getUser());
         error.setObjectId(e.getObjectId());
         return new ResponseEntity<ObjectMissingValidationErrorResponse>(error, HttpStatus.BAD_REQUEST);
     }

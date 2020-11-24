@@ -15,10 +15,10 @@ import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSed;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
-import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.UcdProcess;
+import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -73,7 +73,7 @@ public class UnsupportedCharacterReviewer implements Reviewer {
         }
 
         if (listing.getDeveloper() != null && listing.getDeveloper().getContact() != null) {
-            Contact contact = listing.getDeveloper().getContact();
+            PointOfContact contact = listing.getDeveloper().getContact();
             addListingWarningIfNotValid(listing, contact.getFullName(),
                     "Developer Contact's Name '" + contact.getFullName() + "'");
             addListingWarningIfNotValid(listing, contact.getEmail(),

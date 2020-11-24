@@ -49,7 +49,7 @@ public class UserDTO implements UserDetails {
     /**
      * We return null rather than returning authorities here because we don't actually want the DTO to have granted
      * permissions (those come from the JWT token).
-     * 
+     *
      * @return a null collection
      */
     public Collection<? extends GrantedAuthority> getAuthorities() {

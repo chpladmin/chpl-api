@@ -1255,8 +1255,8 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         Set<String> nonconformityTypes = new HashSet<String>();
         //get unique set of nonconformity types
         for (SurveillanceRequirement req : surv.getRequirements()) {
-            if (req.getResult() != null &&
-                    req.getResult().getName().equalsIgnoreCase(SurveillanceResultType.NON_CONFORMITY)) {
+            if (req.getResult() != null
+                    && req.getResult().getName().equalsIgnoreCase(SurveillanceResultType.NON_CONFORMITY)) {
                 for (SurveillanceNonconformity nc : req.getNonconformities()) {
                     if (!StringUtils.isEmpty(nc.getNonconformityType())) {
                         nonconformityTypes.add(nc.getNonconformityType());
@@ -1273,9 +1273,9 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
             if (nonconformityTypes.size() == 2 && i == 0) {
                 buf.append(" and ");
             }
-            if (nonconformityTypes.size() > 2 && i < (nonconformityTypes.size()-2)) {
+            if (nonconformityTypes.size() > 2 && i < (nonconformityTypes.size() - 2)) {
                 buf.append(", ");
-            } else if (nonconformityTypes.size() > 2 && i == (nonconformityTypes.size()-2)) {
+            } else if (nonconformityTypes.size() > 2 && i == (nonconformityTypes.size() - 2)) {
                 buf.append(", and ");
             }
             i++;
