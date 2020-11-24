@@ -70,6 +70,9 @@ public class AuthenticationManager {
             if (user.getSignatureDate() == null) {
                 throw new ChplAccountStatusException(msgUtil.getMessage("auth.accountNotConfirmed", user.getEmail()));
             }
+            if (user.getId() < 0) {
+                throw new ChplAccountStatusException(msgUtil.getMessage("auth.loginNotAllowed"));
+            }
             if (checkPassword(credentials.getPassword(), userManager.getEncodedPassword(user))) {
                 userDetailsChecker.check(user);
                 userManager.updateLastLoggedInDate(user);
