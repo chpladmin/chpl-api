@@ -117,11 +117,11 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         Map<Long, List<CertificationStatusEventDTO>> statusesForAllListings = getAllStatusesForAllListings();
 
         while (endDate.compareTo(endDateCal.getTime()) >= 0) {
-            endDateCal.add(Calendar.DATE, numDaysInPeriod);
             CsvStatistics historyStat = new CsvStatistics();
             historyStat.setEndDate(endDateCal.getTime());
             historyStat = historicalStatisticsCreator.getStatistics(allListings, statusesForAllListings, endDateCal.getTime());
             csvStats.add(historyStat);
+            endDateCal.add(Calendar.DATE, numDaysInPeriod);
         }
 
         StatsCsvFileWriter csvFileWriter = new StatsCsvFileWriter();
@@ -179,7 +179,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
             return startDateCalendar.getTime();
         }
         for (int i = 0; i <= 6; i++) {
-            startDateCalendar.add(Calendar.DATE, (-1));
+            startDateCalendar.add(Calendar.DATE, 1);
             if (startDateCalendar.get(Calendar.DAY_OF_WEEK) == dow) {
                 return startDateCalendar.getTime();
             }
