@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import javax.validation.ValidationException;
 
@@ -12,11 +14,15 @@ import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.CertifiedProductSed;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
+import gov.healthit.chpl.domain.TestTask;
+import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 
@@ -80,7 +86,7 @@ public class ListingDetailsUploadHandler {
                 .sed(sedUploadHandler.parseAsSed(headingRecord, listingRecords))
             .build();
 
-        //criteria stuff
+        //add cert result data
         List<CertificationResult> certResultList = new ArrayList<CertificationResult>();
         int nextCertResultIndex = uploadUtil.getNextIndexOfCertificationResult(0, headingRecord);
         while (nextCertResultIndex >= 0) {
@@ -90,6 +96,7 @@ public class ListingDetailsUploadHandler {
 
             CertificationResult certResult = certResultHandler.parseAsCertificationResult(certHeadingRecord,
                     parsedCertResultRecords.subList(1, parsedCertResultRecords.size()));
+            certResult.setSed(sedExists(listing.getSed(), certResult.getCriterion()));
             certResultList.add(certResult);
 
             nextCertResultIndex = uploadUtil.getNextIndexOfCertificationResult(
@@ -200,5 +207,36 @@ public class ListingDetailsUploadHandler {
         Date sedTestingDate = uploadUtil.parseSingleRowFieldAsDate(
                 Headings.SED_TESTING_DATE, headingRecord, listingRecords);
         return sedTestingDate;
+    }
+
+    private boolean sedExists(CertifiedProductSed sed, CertificationCriterion criterion) {
+        if (sed == null || (sed.getUcdProcesses() == null && sed.getTestTasks() == null)
+                || (sed.getUcdProcesses().size() == 0 && sed.getTestTasks().size() == 0)) {
+            return false;
+        }
+
+        Optional<UcdProcess> ucdWithCriterion = null;
+        Optional<TestTask> taskWithCriterion = null;
+        if (sed.getUcdProcesses() != null) {
+            ucdWithCriterion = sed.getUcdProcesses().stream()
+                .filter(ucdProcess -> containsCriterion(ucdProcess.getCriteria(), criterion))
+                .findAny();
+        }
+        if (sed.getTestTasks() != null) {
+            taskWithCriterion = sed.getTestTasks().stream()
+                .filter(testTask -> containsCriterion(testTask.getCriteria(), criterion))
+                .findAny();
+        }
+        return (ucdWithCriterion != null && ucdWithCriterion.isPresent())
+                || (taskWithCriterion != null && taskWithCriterion.isPresent());
+    }
+
+    private boolean containsCriterion(Set<CertificationCriterion> criteriaList, CertificationCriterion criterion) {
+        if (criteriaList == null || criteriaList.size() == 0) {
+            return false;
+        }
+        return criteriaList.stream()
+            .filter(criterionFromList -> criterionFromList.getId().equals(criterion.getId()))
+            .findAny().isPresent();
     }
 }

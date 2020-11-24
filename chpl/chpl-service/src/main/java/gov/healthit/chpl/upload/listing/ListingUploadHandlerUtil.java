@@ -1,6 +1,7 @@
 package gov.healthit.chpl.upload.listing;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,7 +22,9 @@ import javax.validation.ValidationException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.csv.QuoteMode;
 import org.apache.commons.lang.math.IntRange;
 import org.apache.commons.lang.math.Range;
 import org.apache.commons.lang3.StringUtils;
@@ -90,37 +93,24 @@ public class ListingUploadHandlerUtil {
                 && certResultColumnRange.getMaximumInteger() >= certResultColumnRange.getMinimumInteger()
                 && certResultColumnRange.getMaximumInteger() < headingRecord.size()) {
             //splice the heading record columns between the integer ranges
-            CSVParser csvParser = null;
-            try {
-                List<String> certResultHeadingValues = new ArrayList<String>();
+            List<String> certResultHeadingValues = new ArrayList<String>();
+            for (int i = certResultColumnRange.getMinimumInteger(); i <= certResultColumnRange.getMaximumInteger(); i++) {
+                if (isHeadingForCriteriaField(headingRecord.get(i))) {
+                    certResultHeadingValues.add(headingRecord.get(i));
+                }
+            }
+            certResultHeading = convertToCsvRecord(certResultHeadingValues);
+
+            for (CSVRecord dataRecord : dataRecords) {
+                List<String> certResultColumnValues = new ArrayList<String>();
                 for (int i = certResultColumnRange.getMinimumInteger(); i <= certResultColumnRange.getMaximumInteger(); i++) {
                     if (isHeadingForCriteriaField(headingRecord.get(i))) {
-                        certResultHeadingValues.add(headingRecord.get(i));
+                        certResultColumnValues.add(dataRecord.get(i));
                     }
                 }
-                csvParser = CSVParser.parse(certResultHeadingValues.stream().collect(Collectors.joining(",")),
-                        CSVFormat.EXCEL);
-                certResultHeading = csvParser.getRecords().get(0);
-
-                for (CSVRecord listingRecord : dataRecords) {
-                    List<String> certResultColumnValues = new ArrayList<String>();
-                    for (int i = certResultColumnRange.getMinimumInteger(); i <= certResultColumnRange.getMaximumInteger(); i++) {
-                        if (isHeadingForCriteriaField(headingRecord.get(i))) {
-                            certResultColumnValues.add(listingRecord.get(i));
-                        }
-                    }
-                    csvParser = CSVParser.parse(certResultColumnValues.stream().collect(Collectors.joining(",")),
-                            CSVFormat.EXCEL);
-                    certResultRows.addAll(csvParser.getRecords());
-                }
-            } catch (IOException ex) {
-                LOGGER.error("Could not splice heading record between " + certResultColumnRange.getMinimumInteger()
-                    + " and " + certResultColumnRange.getMaximumInteger());
-            } finally {
-                try {
-                    csvParser.close();
-                } catch (Exception e) {
-                    LOGGER.error("Error closing csv parser.", e);
+                CSVRecord writtenDataRecord = convertToCsvRecord(certResultColumnValues);
+                if (writtenDataRecord != null) {
+                    certResultRows.add(writtenDataRecord);
                 }
             }
         } else {
@@ -130,6 +120,21 @@ public class ListingUploadHandlerUtil {
 
         certResultRows.add(0, certResultHeading);
         return certResultRows;
+    }
+
+    private CSVRecord convertToCsvRecord(List<String> values) {
+        CSVFormat csvFormat = CSVFormat.EXCEL.withRecordSeparator(System.lineSeparator())
+                .withQuoteMode(QuoteMode.ALL);
+        CSVRecord csvRecord = null;
+        final StringWriter out = new StringWriter();
+        try (CSVPrinter csvPrinter = new CSVPrinter(out, csvFormat)) {
+            csvPrinter.printRecord(values);
+            String value = out.toString().trim();
+            csvRecord = CSVParser.parse(value, CSVFormat.EXCEL).getRecords().get(0);
+        } catch (IOException ex) {
+            LOGGER.error("Cannot write values as CSVRecord.", ex);
+        }
+        return csvRecord;
     }
 
     @SuppressWarnings("checkstyle:magicnumber")

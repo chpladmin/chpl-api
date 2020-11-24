@@ -89,7 +89,8 @@ public class ListingUploadController {
             notes = "Security Restrictions: User must be authorized to view the uploaded listing "
                     + "according to ACB(s) and CHPL permissions.")
     @RequestMapping(value = "/pending/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public CertifiedProductSearchDetails geById(@PathVariable("id") Long id) throws EntityRetrievalException {
+    public CertifiedProductSearchDetails geById(@PathVariable("id") Long id)
+            throws ValidationException, EntityRetrievalException {
         if (!ff4j.check(FeatureList.ENHANCED_UPLOAD)) {
             throw new NotImplementedException();
         }

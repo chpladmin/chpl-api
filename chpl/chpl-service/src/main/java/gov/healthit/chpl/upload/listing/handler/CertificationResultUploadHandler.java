@@ -59,6 +59,12 @@ public class CertificationResultUploadHandler {
                 .useCases(parseUseCases(certHeadingRecord, certResultRecords))
                 .apiDocumentation(parseApiDocumentation(certHeadingRecord, certResultRecords))
             .build();
+
+        //TODO: should these be filled in?
+        if (certResult.getCriterion() != null) {
+            certResult.setNumber(certResult.getCriterion().getNumber());
+            certResult.setTitle(certResult.getCriterion().getTitle());
+        }
         return certResult;
     }
 

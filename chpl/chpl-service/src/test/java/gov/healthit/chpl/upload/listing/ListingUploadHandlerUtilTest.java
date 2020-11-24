@@ -322,6 +322,64 @@ public class ListingUploadHandlerUtilTest {
     }
 
     @Test
+    public void getCertResultRecords_CriteriaAndTestDataWithInnerCommaColumns_ReturnsCorrectColumns() {
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString(
+                "CRITERIA_170_315_A_1__C,Test Data,Test data version,Test data alteration description\n"
+                + "1,something,v1,\"i altered this, and i'm not sorry\"");
+        assertEquals(2, certResultRecords.size());
+        CSVRecord heading = handlerUtil.getHeadingRecord(certResultRecords);
+        assertNotNull(heading);
+        List<CSVRecord> parsedCertResultRecords = handlerUtil.getCertificationResultRecordsFromIndex(
+                0, heading, certResultRecords.subList(1, 2));
+        assertNotNull(parsedCertResultRecords);
+        assertEquals(2, parsedCertResultRecords.size());
+
+        CSVRecord parsedHeading = parsedCertResultRecords.get(0);
+        assertNotNull(parsedHeading);
+        assertEquals(4, parsedHeading.size());
+        assertEquals("CRITERIA_170_315_A_1__C", parsedHeading.get(0));
+        assertEquals("Test Data", parsedHeading.get(1));
+        assertEquals("Test data version", parsedHeading.get(2));
+        assertEquals("Test data alteration description", parsedHeading.get(3));
+        CSVRecord parsedData = parsedCertResultRecords.get(1);
+        assertNotNull(parsedData);
+        assertEquals(4, parsedData.size());
+        assertEquals("1", parsedData.get(0));
+        assertEquals("something", parsedData.get(1));
+        assertEquals("v1", parsedData.get(2));
+        assertEquals("i altered this, and i'm not sorry", parsedData.get(3));
+    }
+
+    @Test
+    public void getCertResultRecords_CriteriaAndTestDataWithInnerLineBreakColumns_ReturnsCorrectColumns() {
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString(
+                "CRITERIA_170_315_A_1__C,Test Data,Test data version,Test data alteration description\n"
+                + "1,something,v1,\"i altered this\nand i'm not sorry\"");
+        assertEquals(2, certResultRecords.size());
+        CSVRecord heading = handlerUtil.getHeadingRecord(certResultRecords);
+        assertNotNull(heading);
+        List<CSVRecord> parsedCertResultRecords = handlerUtil.getCertificationResultRecordsFromIndex(
+                0, heading, certResultRecords.subList(1, 2));
+        assertNotNull(parsedCertResultRecords);
+        assertEquals(2, parsedCertResultRecords.size());
+
+        CSVRecord parsedHeading = parsedCertResultRecords.get(0);
+        assertNotNull(parsedHeading);
+        assertEquals(4, parsedHeading.size());
+        assertEquals("CRITERIA_170_315_A_1__C", parsedHeading.get(0));
+        assertEquals("Test Data", parsedHeading.get(1));
+        assertEquals("Test data version", parsedHeading.get(2));
+        assertEquals("Test data alteration description", parsedHeading.get(3));
+        CSVRecord parsedData = parsedCertResultRecords.get(1);
+        assertNotNull(parsedData);
+        assertEquals(4, parsedData.size());
+        assertEquals("1", parsedData.get(0));
+        assertEquals("something", parsedData.get(1));
+        assertEquals("v1", parsedData.get(2));
+        assertEquals("i altered this\nand i'm not sorry", parsedData.get(3));
+    }
+
+    @Test
     public void getCertResultRecords_MultipleCriteriaColumns_ReturnsCorrectColumns() {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString(
                 "CRITERIA_170_315_A_1__C,CRITERIA_170_315_A_2__C\n0,1");

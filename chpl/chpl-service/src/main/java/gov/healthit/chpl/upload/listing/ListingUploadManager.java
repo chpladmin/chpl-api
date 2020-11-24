@@ -47,6 +47,7 @@ import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.upload.listing.augmenter.CertificationCriterionAugmenter;
 import gov.healthit.chpl.upload.listing.handler.ListingDetailsUploadHandler;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -60,6 +61,7 @@ public class ListingUploadManager {
     private DateFormat dateFormat;
 
     private ListingDetailsUploadHandler listingDetailsHandler;
+    private CertificationCriterionAugmenter criterionAugmenter;
     private ListingUploadHandlerUtil uploadUtil;
     private ChplProductNumberUtil chplProductNumberUtil;
     private ListingUploadDao listingUploadDao;
@@ -71,11 +73,13 @@ public class ListingUploadManager {
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
     public ListingUploadManager(ListingDetailsUploadHandler listingDetailsHandler,
+            CertificationCriterionAugmenter criterionAugmenter,
             ListingUploadHandlerUtil uploadUtil, ChplProductNumberUtil chplProductNumberUtil,
             ListingUploadDao listingUploadDao, CertificationBodyDAO acbDao, UserDAO userDao,
             ActivityManager activityManager, ErrorMessageUtil msgUtil) {
         this.dateFormat = new SimpleDateFormat(CERT_DATE_CODE);
         this.listingDetailsHandler = listingDetailsHandler;
+        this.criterionAugmenter = criterionAugmenter;
         this.uploadUtil = uploadUtil;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.listingUploadDao = listingUploadDao;
@@ -158,7 +162,7 @@ public class ListingUploadManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
             + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).GET_BY_ID, #id)")
-    public CertifiedProductSearchDetails getDetailsById(Long id) throws EntityRetrievalException {
+    public CertifiedProductSearchDetails getDetailsById(Long id) throws ValidationException, EntityRetrievalException {
         ListingUpload listingUpload = listingUploadDao.getByIdIncludingRecords(id);
         List<CSVRecord> allCsvRecords = listingUpload.getRecords();
         if (allCsvRecords == null) {
@@ -167,7 +171,11 @@ public class ListingUploadManager {
         int headingRowIndex = uploadUtil.getHeadingRecordIndex(allCsvRecords);
         CSVRecord headingRecord = uploadUtil.getHeadingRecord(allCsvRecords);
         List<CSVRecord> allListingRecords = allCsvRecords.subList(headingRowIndex + 1, allCsvRecords.size());
-        return listingDetailsHandler.parseAsListing(headingRecord, allListingRecords);
+        CertifiedProductSearchDetails listing =
+                listingDetailsHandler.parseAsListing(headingRecord, allListingRecords);
+        //TODO normalize
+        criterionAugmenter.augment(listing);
+        return listing;
     }
 
     @Transactional
