@@ -157,10 +157,14 @@ public class UserManager extends SecuredManager {
                         errorMessageUtil.getMessage("user.accountAlreadyExists", user.getSubjectName()));
             }
         } else if (ObjectUtils.notEqual(before.getEmail(), user.getEmail())) {
-            UserDTO existingUser = userDAO.getByNameOrEmail(user.getEmail());
-            if (existingUser != null) {
-                throw new UserAccountExistsException(
-                        errorMessageUtil.getMessage("user.accountAlreadyExists", user.getEmail()));
+            try {
+                UserDTO existingUser = userDAO.getByNameOrEmail(user.getEmail());
+                if (existingUser != null) {
+                    throw new UserAccountExistsException(
+                            errorMessageUtil.getMessage("user.accountAlreadyExists", user.getEmail()));
+                }
+            } catch (UserRetrievalException ex) {
+                // discard; we don't want to find a user
             }
         }
 
@@ -205,7 +209,7 @@ public class UserManager extends SecuredManager {
         return userDAO.getById(id);
     }
 
-    public void updateFailedLoginCount(UserDTO userToUpdate) throws UserRetrievalException {
+    public void updateFailedLoginCount(UserDTO userToUpdate) throws UserRetrievalException, MultipleUserAccountsException {
         userDAO.updateFailedLoginCount(userToUpdate.getSubjectName(), userToUpdate.getFailedLoginCount());
         String maxLoginsStr = env.getProperty("authMaximumLoginAttempts");
         int maxLogins = Integer.parseInt(maxLoginsStr);
@@ -226,17 +230,17 @@ public class UserManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE_PASSWORD, #user)")
-    public void updateUserPassword(UserDTO user, String password) throws UserRetrievalException {
-        updateUserPasswordUnsecured(user.getSubjectName(), password);
+    public void updateUserPassword(UserDTO user, String password) throws UserRetrievalException, MultipleUserAccountsException {
+        updateUserPasswordUnsecured(user.getEmail(), password);
     }
 
     @Transactional
-    public void updateUserPasswordUnsecured(String userName, String password)
-            throws UserRetrievalException {
+    public void updateUserPasswordUnsecured(String email, String password)
+            throws UserRetrievalException, MultipleUserAccountsException {
         String encodedPassword = encodePassword(password);
-        userDAO.updatePassword(userName, encodedPassword);
-        userDAO.updateFailedLoginCount(userName, 0);
-        userDAO.updateAccountLockedStatus(userName, false);
+        userDAO.updatePassword(email, encodedPassword);
+        userDAO.updateFailedLoginCount(email, 0);
+        userDAO.updateAccountLockedStatus(email, false);
     }
 
     // no auth needed. create a random string and create a new reset token row

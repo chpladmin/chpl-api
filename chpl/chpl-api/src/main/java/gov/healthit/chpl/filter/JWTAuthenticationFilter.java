@@ -70,7 +70,7 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
                     SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
                     chain.doFilter(req, res); // continue
                     SecurityContextHolder.getContext().setAuthentication(null);
-                } catch (JWTValidationException e) {
+                } catch (JWTValidationException | MultipleUserAccountsException e) {
                     HttpServletResponse response = (HttpServletResponse) res;
                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
                 }

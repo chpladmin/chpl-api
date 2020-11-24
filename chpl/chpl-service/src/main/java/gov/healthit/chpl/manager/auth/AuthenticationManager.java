@@ -211,7 +211,7 @@ public class AuthenticationManager {
         if (user.getImpersonatingUser() != null) {
             throw new UserManagementException(msgUtil.getMessage("user.impersonate.alreadyImpersonating"));
         }
-        UserDTO impersonatingUser = getUserByNameOrEmail(user.getEmail());
+        UserDTO impersonatingUser = getUserById(user.getId());
         UserDTO impersonatedUser = getUserById(id);
 
         impersonatedUser.setImpersonatedBy(impersonatingUser);

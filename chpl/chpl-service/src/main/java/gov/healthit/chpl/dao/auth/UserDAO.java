@@ -83,7 +83,7 @@ public class UserDAO extends BaseDAOImpl {
 
     @Transactional
     public UserDTO update(UserDTO user) throws UserRetrievalException, MultipleUserAccountsException {
-        UserEntity userEntity = getEntityByNameOrEmail(user.getEmail());
+        UserEntity userEntity = getEntityById(user.getId());
         userEntity.setFailedLoginCount(user.getFailedLoginCount());
         userEntity.getContact().setEmail(user.getEmail());
         userEntity.getContact().setPhoneNumber(user.getPhoneNumber());
@@ -311,23 +311,26 @@ public class UserDAO extends BaseDAOImpl {
     }
 
     @Transactional
-    public void updatePassword(String uname, String encodedPassword) throws UserRetrievalException {
-        UserEntity userEntity = this.getEntityByName(uname);
+    public void updatePassword(String uname, String encodedPassword) throws UserRetrievalException,
+    MultipleUserAccountsException {
+        UserEntity userEntity = this.getEntityByNameOrEmail(uname);
         userEntity.setPassword(encodedPassword);
         userEntity.setPasswordResetRequired(false);
         super.update(userEntity);
     }
 
     @Transactional
-    public void updateFailedLoginCount(String uname, int failedLoginCount) throws UserRetrievalException {
-        UserEntity userEntity = this.getEntityByName(uname);
+    public void updateFailedLoginCount(String uname, int failedLoginCount) throws UserRetrievalException,
+    MultipleUserAccountsException {
+        UserEntity userEntity = this.getEntityByNameOrEmail(uname);
         userEntity.setFailedLoginCount(failedLoginCount);
         super.update(userEntity);
     }
 
     @Transactional
-    public void updateAccountLockedStatus(String uname, boolean locked) throws UserRetrievalException {
-        UserEntity userEntity = this.getEntityByName(uname);
+    public void updateAccountLockedStatus(String uname, boolean locked) throws UserRetrievalException,
+    MultipleUserAccountsException {
+        UserEntity userEntity = this.getEntityByNameOrEmail(uname);
         userEntity.setAccountLocked(locked);
         super.update(userEntity);
     }

@@ -149,7 +149,7 @@ public class AuthenticationController {
         if (!oldPasswordMatches) {
             throw new UserRetrievalException("The provided old password does not match the database.");
         } else {
-            userManager.updateUserPassword(userManager.getByName(currUser.getSubjectName()), request.getNewPassword());
+            userManager.updateUserPassword(userManager.getByNameOrEmail(currUser.getEmail()), request.getNewPassword());
         }
         response.setPasswordUpdated(true);
         return response;
@@ -203,7 +203,7 @@ public class AuthenticationController {
             String jwt = authenticationManager.getJWT(currUser);
             User authenticatedUser = userConverter.getAuthenticatedUser(jwt);
             SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
-            userManager.updateUserPasswordUnsecured(currUser.getSubjectName(), request.getNewPassword());
+            userManager.updateUserPasswordUnsecured(currUser.getEmail(), request.getNewPassword());
             SecurityContextHolder.getContext().setAuthentication(null);
         }
         response.setPasswordUpdated(true);
@@ -237,7 +237,7 @@ public class AuthenticationController {
             return response;
         }
         if (userManager.authorizePasswordReset(request.getToken())) {
-            userManager.updateUserPasswordUnsecured(currUser.getSubjectName(), request.getNewPassword());
+            userManager.updateUserPasswordUnsecured(currUser.getEmail(), request.getNewPassword());
             userManager.deletePreviousTokens(request.getToken());
             response.setPasswordUpdated(true);
         } else {
