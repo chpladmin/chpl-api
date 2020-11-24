@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.statistics.DeveloperStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.ListingStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
 import gov.healthit.chpl.dto.CertificationStatusEventDTO;
@@ -35,7 +34,6 @@ public class HistoricalStatisticsCreator {
     private static final Long EDITION_2014_ID = 2L;
 
     private ListingStatisticsDAO listingStatisticsDAO;
-    private DeveloperStatisticsDAO developerStatisticsDAO;
     private SurveillanceStatisticsDAO surveillanceStatisticsDAO;
     private Environment env;
 
@@ -43,11 +41,9 @@ public class HistoricalStatisticsCreator {
 
     @Autowired
     public HistoricalStatisticsCreator(ListingStatisticsDAO listingStatisticsDAO,
-            DeveloperStatisticsDAO developerStatisticsDAO,
             SurveillanceStatisticsDAO surveillanceStatisticsDAO, CertifiedProductDAO certifiedProductDAO,
             Environment env) {
         this.listingStatisticsDAO = listingStatisticsDAO;
-        this.developerStatisticsDAO = developerStatisticsDAO;
         this.surveillanceStatisticsDAO = surveillanceStatisticsDAO;
         this.env = env;
     }
