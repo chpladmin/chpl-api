@@ -278,7 +278,7 @@ public class UserManagerTest {
 
     @Test
     public void updateFailedLoginCount_FailedLoginCountLessThanMaxFailedAttempts_NoErrors()
-            throws UserRetrievalException {
+            throws UserRetrievalException, MultipleUserAccountsException {
 
         UserManager userManager = new UserManager(env, userDAO, null, null, null, null, null);
 
@@ -288,7 +288,8 @@ public class UserManagerTest {
     }
 
     @Test(expected = UserRetrievalException.class)
-    public void updateFailedLoginCount_UserNotFound_UserRetrievalExceptionThrown() throws UserRetrievalException {
+    public void updateFailedLoginCount_UserNotFound_UserRetrievalExceptionThrown() throws UserRetrievalException,
+    MultipleUserAccountsException {
 
         Mockito.doThrow(UserRetrievalException.class).when(userDAO).updateFailedLoginCount(
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyInt());
@@ -302,7 +303,7 @@ public class UserManagerTest {
 
     @Test
     public void updateFailedLoginCount_FailedLoginCountGreaterThanMaxFailedAttempts_AccountIsLocked()
-            throws UserRetrievalException {
+            throws UserRetrievalException, MultipleUserAccountsException {
 
         UserManager userManager = new UserManager(env, userDAO, null, null, null, null, null);
 

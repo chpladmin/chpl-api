@@ -148,7 +148,7 @@ public class UserManagementController {
         return result;
     }
 
-    private Set<String> validateCreateUserFromInvitationRequest(final CreateUserFromInvitationRequest request) {
+    private Set<String> validateCreateUserFromInvitationRequest(CreateUserFromInvitationRequest request) {
         Set<String> validationErrors = new HashSet<String>();
 
         if (request.getUser().getFullName().length() > errorMessageUtil.getMessageAsInteger("maxLength.fullName")) {
@@ -185,7 +185,7 @@ public class UserManagementController {
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm ")
     @RequestMapping(value = "/confirm", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public User confirmUser(@RequestBody final String hash) throws InvalidArgumentsException, UserRetrievalException,
+    public User confirmUser(@RequestBody String hash) throws InvalidArgumentsException, UserRetrievalException,
     EntityRetrievalException, MessagingException, JsonProcessingException, EntityCreationException,
     MultipleUserAccountsException {
         InvitationDTO invitation = invitationManager.getByConfirmationHash(hash);
@@ -207,7 +207,7 @@ public class UserManagementController {
     @RequestMapping(value = "/{userId}/authorize", method = RequestMethod.POST,
     consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public String authorizeUser(@RequestBody final AuthorizeCredentials credentials)
+    public String authorizeUser(@RequestBody AuthorizeCredentials credentials)
             throws InvalidArgumentsException, JWTCreationException, UserRetrievalException,
             EntityRetrievalException, MultipleUserAccountsException {
 
@@ -258,7 +258,7 @@ public class UserManagementController {
                     + "ROLE_ACB and ROLE_ATL can add users to their own organization.")
     @RequestMapping(value = "/invite", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public UserInvitation inviteUser(@RequestBody final UserInvitation invitation)
+    public UserInvitation inviteUser(@RequestBody UserInvitation invitation)
             throws InvalidArgumentsException, UserCreationException, UserRetrievalException,
             UserPermissionRetrievalException, AddressException, MessagingException {
 
@@ -315,7 +315,7 @@ public class UserManagementController {
     @ApiOperation(value = "Modify user information.", notes = "")
     @RequestMapping(value = "/{userId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public User updateUserDetails(@RequestBody final User userInfo)
+    public User updateUserDetails(@RequestBody User userInfo)
             throws UserRetrievalException, UserPermissionRetrievalException, JsonProcessingException,
             EntityCreationException, EntityRetrievalException, ValidationException, UserAccountExistsException,
             MultipleUserAccountsException {
@@ -333,7 +333,7 @@ public class UserManagementController {
                     + "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
-    public String deleteUser(@PathVariable("userId") final Long userId)
+    public String deleteUser(@PathVariable("userId") Long userId)
             throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException,
             JsonProcessingException, EntityCreationException, EntityRetrievalException {
 

@@ -9,8 +9,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.ff4j.FF4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
@@ -19,11 +17,9 @@ import org.springframework.web.filter.GenericFilterBean;
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.exception.JWTValidationException;
+import gov.healthit.chpl.exception.MultipleUserAccountsException;
 
 public class JWTAuthenticationFilter extends GenericFilterBean {
-
-    @Autowired
-    private FF4j ff4j;
 
     private static final String[] ALLOWED_REQUEST_PATHS = {
             "/monitoring", "/ff4j-console"
@@ -31,13 +27,13 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 
     private JWTUserConverter userConverter;
 
-    public JWTAuthenticationFilter(final JWTUserConverter userConverter) {
+    public JWTAuthenticationFilter(JWTUserConverter userConverter) {
         this.userConverter = userConverter;
     }
 
     @Override
-    public void doFilter(final ServletRequest req, final ServletResponse res,
-            final FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest req, ServletResponse res,
+            FilterChain chain) throws IOException, ServletException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         HttpServletRequest request = (HttpServletRequest) req;
 

@@ -32,17 +32,17 @@ public class JWTAuthenticatedUser implements User {
         this.email = null;
     }
 
-    public void addPermission(final GrantedPermission permission) {
+    public void addPermission(GrantedPermission permission) {
         this.permissions.add(permission);
     }
 
-    public void addPermission(final String permissionValue) {
+    public void addPermission(String permissionValue) {
         GrantedPermission permission = new GrantedPermission(permissionValue);
         this.permissions.add(permission);
     }
 
     @Override
-    public void removePermission(final String permissionValue) {
+    public void removePermission(String permissionValue) {
         this.permissions.remove(new GrantedPermission(permissionValue));
     }
 
@@ -72,7 +72,7 @@ public class JWTAuthenticatedUser implements User {
     }
 
     @Override
-    public void setAuthenticated(final boolean arg0) throws IllegalArgumentException {
+    public void setAuthenticated(boolean arg0) throws IllegalArgumentException {
         this.authenticated = arg0;
     }
 
