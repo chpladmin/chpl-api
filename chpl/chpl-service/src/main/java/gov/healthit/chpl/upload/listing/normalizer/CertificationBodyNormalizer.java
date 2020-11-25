@@ -1,19 +1,23 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
 
 @Component
 public class CertificationBodyNormalizer {
     private CertificationBodyDAO acbDao;
+    private ChplProductNumberUtil chplProductNumberUtil;
 
     @Autowired
-    public CertificationBodyNormalizer(CertificationBodyDAO acbDao) {
+    public CertificationBodyNormalizer(CertificationBodyDAO acbDao, ChplProductNumberUtil chplProductNumberUtil) {
         this.acbDao = acbDao;
+        this.chplProductNumberUtil = chplProductNumberUtil;
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
@@ -24,6 +28,15 @@ public class CertificationBodyNormalizer {
             CertificationBodyDTO foundAcb = acbDao.getByName(acbName);
             if (foundAcb != null) {
                 listing.getCertifyingBody().put(CertifiedProductSearchDetails.ACB_ID_KEY, foundAcb.getId());
+            }
+        } else if (!StringUtils.isEmpty(listing.getChplProductNumber())) {
+            String acbCode = chplProductNumberUtil.getAcbCode(listing.getChplProductNumber());
+            if (!StringUtils.isEmpty(acbCode)) {
+                CertificationBodyDTO foundAcb = acbDao.getByCode(acbCode);
+                if (foundAcb != null) {
+                    listing.getCertifyingBody().put(CertifiedProductSearchDetails.ACB_ID_KEY, foundAcb.getId());
+                    listing.getCertifyingBody().put(CertifiedProductSearchDetails.ACB_NAME_KEY, foundAcb.getName());
+                }
             }
         }
     }
