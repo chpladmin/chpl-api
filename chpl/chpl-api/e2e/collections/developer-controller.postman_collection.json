@@ -695,13 +695,13 @@
 					"response": []
 				},
 				{
-			        "name": "PUT /developers - merge request permission restriction validation",
+			        "name": "PUT /developers - merge request permission restriction validation - anonymous",
 			        "event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"merge request attempt by anonymous user should return Status code 401\", function () {\r",
+							"pm.test(\"developer merge request attempt by anonymous user should return Status code 401\", function () {\r",
 							"    pm.response.to.have.status(401);\r",
 							"});\r",
 							"\r",
@@ -743,7 +743,91 @@
 				}
 			},
 			"response": []
-		}
+		},
+		{
+                    "name": "PUT /developers - merge request permission restriction validation - ACB",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"developer merge request attempt by ACB user should return Status code 401\", function () {\r",
+                                    "    pm.response.to.have.status(401);\r",
+                                    "});\r",
+                                    "\r",
+                                    "pm.test(\"ACB user should be denied access to merge developers\", function () {\r",
+                                    "    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        },
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "id": "ee674be3-532c-4a6b-8551-9ce175a67974",
+                                "exec": [
+                                    "var ReqBody= {\r",
+                                    "        userName:pm.environment.get(\"usernameACB\"),password:pm.environment.get(\"passwordACB\")\r",
+                                    "    };\r",
+                                    "pm.sendRequest({\r",
+                                    "    url: pm.environment.get(\"authurl\"),\r",
+                                    "    method: \"POST\",\r",
+                                    "    header: {\r",
+                                    "        \"Content-Type\": \"application/json\",\r",
+                                    "        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+                                    "    },\r",
+                                    "    body: JSON.stringify(ReqBody)\r",
+                                    "}, function (err, response) {\r",
+                                    "   var jsonData = response.json();\r",
+                                    "   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "API-KEY",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"developer\":{\"developerId\":2069,\"developerCode\":\"3068\",\"name\":\"Accelerated Care Plus\",\"website\":\"https://acplus.com/index.php/acplustm\",\"selfDeveloper\":false,\"address\":{\"addressId\":811,\"line1\":\"4999 Aircenter Cir., STE 103\",\"line2\":null,\"city\":\"Reno,\",\"state\":\"NV\",\"zipcode\":\"89502\",\"country\":\"US\"},\"contact\":{\"fullName\":\"Barry Thomson\",\"email\":\"BThomson@hanger.com\",\"phoneNumber\":\"775-287-4955\",\"title\":null,\"contactId\":1369},\"lastModifiedDate\":\"1580312732548\",\"deleted\":false,\"transparencyAttestations\":[{\"acbName\":\"Drummond Group\",\"attestation\":{\"transparencyAttestation\":\"Affirmative\",\"removed\":true}},{\"acbName\":\"SLI Compliance\",\"attestation\":null},{\"acbName\":\"ICSA Labs\",\"attestation\":null},{\"acbName\":\"CCHIT\",\"attestation\":null},{\"acbName\":\"Surescripts LLC\",\"attestation\":null},{\"acbName\":\"UL LLC\",\"attestation\":null}],\"statusEvents\":[{\"id\":2072,\"developerId\":2069,\"status\":{\"id\":1,\"status\":\"Active\"},\"statusDate\":1580312732548,\"reason\":null,\"statusDateObject\":\"2020-01-29T15:45:32.548Z\"}],\"status\":{\"id\":1,\"status\":\"Active\"},\"products\":[{\"productId\":3522,\"name\":\"ACPlus™ MDS\",\"reportFileLocation\":null,\"contact\":null,\"owner\":{\"developerId\":2069,\"developerCode\":\"3068\",\"name\":\"Accelerated Care Plus\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":null,\"deleted\":null,\"transparencyAttestations\":[],\"statusEvents\":[],\"status\":null},\"ownerHistory\":[],\"lastModifiedDate\":\"1580313127273\",\"versions\":[{\"versionId\":8014,\"version\":\"V1\",\"details\":null,\"lastModifiedDate\":\"1580312732667\",\"listings\":[{\"id\":10284,\"chplProductNumber\":\"15.04.04.3068.ACPl.01.00.0.200129\",\"lastModifiedDate\":1580313075116,\"edition\":\"2015\",\"certificationDate\":1580256000000,\"certificationStatus\":\"Active\",\"curesUpdate\":false,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]}]}]},\"developerIds\":[6,2069]}"
+                        },
+                        "url": {
+                            "raw": "{{url}}/rest/developers",
+                            "host": [
+                                "{{url}}"
+                            ],
+                            "path": [
+                                "rest",
+                                "developers"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
 			],
 			"protocolProfileBehavior": {}
 		},

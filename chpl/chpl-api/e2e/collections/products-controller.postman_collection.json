@@ -349,7 +349,141 @@
 				}
 			},
 			"response": []
-		}
+		},
+		      {
+            "name": "PUT /products - merge request permission restriction validation - ACB",
+            "event": [
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "exec": [
+                            "var ReqBody= {\r",
+                            "        userName:pm.environment.get(\"usernameACB\"),password:pm.environment.get(\"passwordACB\")\r",
+                            "    };\r",
+                            "pm.sendRequest({\r",
+                            "    url: pm.environment.get(\"authurl\"),\r",
+                            "    method: \"POST\",\r",
+                            "    header: {\r",
+                            "        \"Content-Type\": \"application/json\",\r",
+                            "        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+                            "    },\r",
+                            "    body: JSON.stringify(ReqBody)\r",
+                            "}, function (err, response) {\r",
+                            "   var jsonData = response.json();\r",
+                            "   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+                            "});"
+                        ],
+                        "type": "text/javascript"
+                    }
+                },
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "f02cc537-282f-4d92-9cef-ee57bb3239c6",
+                        "exec": [
+                            "pm.test(\"product merge request attempt by ACB user should return Status code 401\", function () {\r",
+                            "    pm.response.to.have.status(401);\r",
+                            "});\r",
+                            "\r",
+                            "pm.test(\"ACB user should be denied access to merge products\", function () {\r",
+                            "    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+                            "});"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "request": {
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                        {
+                            "key": "token",
+                            "value": "{{token}}",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "method": "PUT",
+                "header": [
+                    {
+                        "key": "API-KEY",
+                        "value": "{{apiKey}}",
+                        "type": "text"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"product\":{\"productId\":2446,\"name\":\"Welligent\",\"reportFileLocation\":null,\"contact\":null,\"owner\":{\"developerId\":1537,\"developerCode\":\"2536\",\"name\":\"Welligent, Inc.\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":null,\"deleted\":null,\"transparencyAttestations\":[],\"statusEvents\":[],\"status\":null},\"ownerHistory\":[],\"lastModifiedDate\":\"1459469989099\",\"versions\":[{\"versionId\":4789,\"version\":\"8\",\"details\":null,\"lastModifiedDate\":\"1459470008677\",\"listings\":[{\"id\":4469,\"chplProductNumber\":\"CHP-027121\",\"lastModifiedDate\":1593499845945,\"edition\":\"2014\",\"certificationDate\":1432166400000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]},{\"versionId\":4914,\"version\":\"8MU\",\"details\":null,\"lastModifiedDate\":\"1459470009198\",\"listings\":[{\"id\":4635,\"chplProductNumber\":\"CHP-028405\",\"lastModifiedDate\":1593498377638,\"edition\":\"2014\",\"certificationDate\":1447286400000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]}]},\"productIds\":[2445,2446],\"newDeveloperId\":1537}"
+                },
+                "url": {
+                    "raw": "{{url}}/rest/products",
+                    "host": [
+                        "{{url}}"
+                    ],
+                    "path": [
+                        "rest",
+                        "products"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "PUT /products - merge request permission restriction validation - anonymous",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"product merge request attempt by anonymous user should return Status code 401\", function () {\r",
+                            "    pm.response.to.have.status(401);\r",
+                            "});\r",
+                            "\r",
+                            "pm.test(\"anonymous user should be denied access to merge products\", function () {\r",
+                            "    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+                            "});"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "request": {
+                "method": "PUT",
+                "header": [
+                    {
+                        "key": "API-KEY",
+                        "type": "text",
+                        "value": "{{apiKey}}"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "type": "text",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"product\":{\"productId\":2446,\"name\":\"Welligent\",\"reportFileLocation\":null,\"contact\":null,\"owner\":{\"developerId\":1537,\"developerCode\":\"2536\",\"name\":\"Welligent, Inc.\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":null,\"deleted\":null,\"transparencyAttestations\":[],\"statusEvents\":[],\"status\":null},\"ownerHistory\":[],\"lastModifiedDate\":\"1459469989099\",\"versions\":[{\"versionId\":4789,\"version\":\"8\",\"details\":null,\"lastModifiedDate\":\"1459470008677\",\"listings\":[{\"id\":4469,\"chplProductNumber\":\"CHP-027121\",\"lastModifiedDate\":1593499845945,\"edition\":\"2014\",\"certificationDate\":1432166400000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]},{\"versionId\":4914,\"version\":\"8MU\",\"details\":null,\"lastModifiedDate\":\"1459470009198\",\"listings\":[{\"id\":4635,\"chplProductNumber\":\"CHP-028405\",\"lastModifiedDate\":1593498377638,\"edition\":\"2014\",\"certificationDate\":1447286400000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]}]},\"productIds\":[2445,2446],\"newDeveloperId\":1537}"
+                },
+                "url": {
+                    "raw": "{{url}}/rest/products",
+                    "host": [
+                        "{{url}}"
+                    ],
+                    "path": [
+                        "rest",
+                        "products"
+                    ]
+                }
+            },
+            "response": []
+        }
 	],
 	"protocolProfileBehavior": {}
 }
