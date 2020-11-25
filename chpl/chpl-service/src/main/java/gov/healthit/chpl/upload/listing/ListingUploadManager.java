@@ -47,8 +47,8 @@ import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.upload.listing.augmenter.CertificationCriterionAugmenter;
 import gov.healthit.chpl.upload.listing.handler.ListingDetailsUploadHandler;
+import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
@@ -61,7 +61,7 @@ public class ListingUploadManager {
     private DateFormat dateFormat;
 
     private ListingDetailsUploadHandler listingDetailsHandler;
-    private CertificationCriterionAugmenter criterionAugmenter;
+    private ListingDetailsNormalizer listingNormalizer;
     private ListingUploadHandlerUtil uploadUtil;
     private ChplProductNumberUtil chplProductNumberUtil;
     private ListingUploadDao listingUploadDao;
@@ -73,13 +73,13 @@ public class ListingUploadManager {
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
     public ListingUploadManager(ListingDetailsUploadHandler listingDetailsHandler,
-            CertificationCriterionAugmenter criterionAugmenter,
+            ListingDetailsNormalizer listingNormalizer,
             ListingUploadHandlerUtil uploadUtil, ChplProductNumberUtil chplProductNumberUtil,
             ListingUploadDao listingUploadDao, CertificationBodyDAO acbDao, UserDAO userDao,
             ActivityManager activityManager, ErrorMessageUtil msgUtil) {
         this.dateFormat = new SimpleDateFormat(CERT_DATE_CODE);
         this.listingDetailsHandler = listingDetailsHandler;
-        this.criterionAugmenter = criterionAugmenter;
+        this.listingNormalizer = listingNormalizer;
         this.uploadUtil = uploadUtil;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.listingUploadDao = listingUploadDao;
@@ -173,8 +173,7 @@ public class ListingUploadManager {
         List<CSVRecord> allListingRecords = allCsvRecords.subList(headingRowIndex + 1, allCsvRecords.size());
         CertifiedProductSearchDetails listing =
                 listingDetailsHandler.parseAsListing(headingRecord, allListingRecords);
-        //TODO normalize
-        criterionAugmenter.augment(listing);
+        listingNormalizer.normalize(listing);
         return listing;
     }
 

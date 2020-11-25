@@ -69,8 +69,8 @@ public class CqmUploadHandlerTest {
         assertNotNull(foundCqms);
         assertEquals(1, foundCqms.size());
         CQMResultDetails cqm = foundCqms.get(0);
-        assertNotNull(cqm.getNumber());
-        assertEquals("61", cqm.getNumber());
+        assertNotNull(cqm.getCmsId());
+        assertEquals("61", cqm.getCmsId());
         assertNotNull(cqm.getSuccessVersions());
         assertEquals(1, cqm.getSuccessVersions().size());
         assertEquals("v0", cqm.getSuccessVersions().iterator().next());
@@ -92,8 +92,8 @@ public class CqmUploadHandlerTest {
         assertNotNull(foundCqms);
         assertEquals(1, foundCqms.size());
         CQMResultDetails cqm = foundCqms.get(0);
-        assertNotNull(cqm.getNumber());
-        assertEquals("61", cqm.getNumber());
+        assertNotNull(cqm.getCmsId());
+        assertEquals("61", cqm.getCmsId());
         assertNotNull(cqm.getSuccessVersions());
         assertEquals(1, cqm.getSuccessVersions().size());
         assertEquals("v0", cqm.getSuccessVersions().iterator().next());
@@ -114,8 +114,8 @@ public class CqmUploadHandlerTest {
         assertNotNull(foundCqms);
         assertEquals(1, foundCqms.size());
         CQMResultDetails cqm = foundCqms.get(0);
-        assertNotNull(cqm.getNumber());
-        assertEquals("61", cqm.getNumber());
+        assertNotNull(cqm.getCmsId());
+        assertEquals("61", cqm.getCmsId());
         assertNotNull(cqm.getSuccessVersions());
         assertEquals(3, cqm.getSuccessVersions().size());
         int i = 0;
@@ -154,8 +154,8 @@ public class CqmUploadHandlerTest {
         assertNotNull(foundCqms);
         assertEquals(1, foundCqms.size());
         CQMResultDetails cqm = foundCqms.get(0);
-        assertNotNull(cqm.getNumber());
-        assertEquals("61", cqm.getNumber());
+        assertNotNull(cqm.getCmsId());
+        assertEquals("61", cqm.getCmsId());
         assertNotNull(cqm.getSuccessVersions());
         assertEquals(3, cqm.getSuccessVersions().size());
         int i = 0;
@@ -194,8 +194,8 @@ public class CqmUploadHandlerTest {
         assertNotNull(foundCqms);
         assertEquals(1, foundCqms.size());
         CQMResultDetails cqm = foundCqms.get(0);
-        assertNotNull(cqm.getNumber());
-        assertEquals("61", cqm.getNumber());
+        assertNotNull(cqm.getCmsId());
+        assertEquals("61", cqm.getCmsId());
         assertNotNull(cqm.getSuccessVersions());
         String cqmVersion = cqm.getSuccessVersions().iterator().next();
         assertNotNull(cqmVersion);
@@ -236,8 +236,8 @@ public class CqmUploadHandlerTest {
         assertNotNull(foundCqms);
         assertEquals(1, foundCqms.size());
         CQMResultDetails cqm = foundCqms.get(0);
-        assertNotNull(cqm.getNumber());
-        assertEquals("61", cqm.getNumber());
+        assertNotNull(cqm.getCmsId());
+        assertEquals("61", cqm.getCmsId());
         assertNotNull(cqm.getSuccessVersions());
         String cqmVersion = cqm.getSuccessVersions().iterator().next();
         assertNotNull(cqmVersion);
@@ -278,8 +278,8 @@ public class CqmUploadHandlerTest {
         assertNotNull(foundCqms);
         assertEquals(1, foundCqms.size());
         CQMResultDetails cqm = foundCqms.get(0);
-        assertNotNull(cqm.getNumber());
-        assertEquals("61", cqm.getNumber());
+        assertNotNull(cqm.getCmsId());
+        assertEquals("61", cqm.getCmsId());
         assertNotNull(cqm.getSuccessVersions());
         assertEquals(0, cqm.getSuccessVersions().size());
         assertNotNull(cqm.getCriteria());
@@ -298,8 +298,8 @@ public class CqmUploadHandlerTest {
         assertNotNull(foundCqms);
         assertEquals(1, foundCqms.size());
         CQMResultDetails cqm = foundCqms.get(0);
-        assertNotNull(cqm.getNumber());
-        assertEquals("61", cqm.getNumber());
+        assertNotNull(cqm.getCmsId());
+        assertEquals("61", cqm.getCmsId());
         assertNotNull(cqm.getSuccessVersions());
         String cqmVersion = cqm.getSuccessVersions().iterator().next();
         assertNotNull(cqmVersion);
@@ -320,8 +320,8 @@ public class CqmUploadHandlerTest {
         assertNotNull(foundCqms);
         assertEquals(1, foundCqms.size());
         CQMResultDetails cqm = foundCqms.get(0);
-        assertNotNull(cqm.getNumber());
-        assertEquals("", cqm.getNumber());
+        assertNotNull(cqm.getCmsId());
+        assertEquals("", cqm.getCmsId());
         assertNotNull(cqm.getSuccessVersions());
         String cqmVersion = cqm.getSuccessVersions().iterator().next();
         assertNotNull(cqmVersion);
@@ -342,8 +342,8 @@ public class CqmUploadHandlerTest {
         assertNotNull(foundCqms);
         assertEquals(1, foundCqms.size());
         CQMResultDetails cqm = foundCqms.get(0);
-        assertNotNull(cqm.getNumber());
-        assertEquals("", cqm.getNumber());
+        assertNotNull(cqm.getCmsId());
+        assertEquals("", cqm.getCmsId());
         assertNotNull(cqm.getSuccessVersions());
         String cqmVersion = cqm.getSuccessVersions().iterator().next();
         assertNotNull(cqmVersion);
@@ -378,8 +378,8 @@ public class CqmUploadHandlerTest {
         assertNotNull(foundCqms);
         assertEquals(1, foundCqms.size());
         CQMResultDetails cqm = foundCqms.get(0);
-        assertNotNull(cqm.getNumber());
-        assertEquals("", cqm.getNumber());
+        assertNotNull(cqm.getCmsId());
+        assertEquals("", cqm.getCmsId());
         assertNotNull(cqm.getSuccessVersions());
         assertEquals(0, cqm.getSuccessVersions().size());
         assertNotNull(cqm.getCriteria());
@@ -412,8 +412,8 @@ public class CqmUploadHandlerTest {
         assertNotNull(foundCqms);
         assertEquals(1, foundCqms.size());
         CQMResultDetails cqm = foundCqms.get(0);
-        assertNotNull(cqm.getNumber());
-        assertEquals("61", cqm.getNumber());
+        assertNotNull(cqm.getCmsId());
+        assertEquals("61", cqm.getCmsId());
         assertNotNull(cqm.getSuccessVersions());
         assertEquals(0, cqm.getSuccessVersions().size());
         assertNotNull(cqm.getCriteria());
@@ -447,8 +447,8 @@ public class CqmUploadHandlerTest {
         assertNotNull(foundCqms);
         assertEquals(1, foundCqms.size());
         CQMResultDetails cqm = foundCqms.get(0);
-        assertNotNull(cqm.getNumber());
-        assertEquals("61", cqm.getNumber());
+        assertNotNull(cqm.getCmsId());
+        assertEquals("61", cqm.getCmsId());
         assertNotNull(cqm.getSuccessVersions());
         assertEquals(0, cqm.getSuccessVersions().size());
         assertNotNull(cqm.getCriteria());
@@ -468,7 +468,7 @@ public class CqmUploadHandlerTest {
         assertNotNull(foundCqms);
         assertEquals(1, foundCqms.size());
         CQMResultDetails cqm = foundCqms.get(0);
-        assertNull(cqm.getNumber());
+        assertNull(cqm.getCmsId());
         assertNotNull(cqm.getSuccessVersions());
         assertEquals(1, cqm.getSuccessVersions().size());
         assertEquals("v3", cqm.getSuccessVersions().iterator().next());
@@ -489,7 +489,7 @@ public class CqmUploadHandlerTest {
         assertNotNull(foundCqms);
         assertEquals(1, foundCqms.size());
         CQMResultDetails cqm = foundCqms.get(0);
-        assertNull(cqm.getNumber());
+        assertNull(cqm.getCmsId());
         assertNotNull(cqm.getSuccessVersions());
         assertEquals(0, cqm.getSuccessVersions().size());
         assertNotNull(cqm.getCriteria());
@@ -526,8 +526,8 @@ public class CqmUploadHandlerTest {
         assertNotNull(foundCqms);
         assertEquals(1, foundCqms.size());
         CQMResultDetails cqm = foundCqms.get(0);
-        assertNotNull(cqm.getNumber());
-        assertEquals("61", cqm.getNumber());
+        assertNotNull(cqm.getCmsId());
+        assertEquals("61", cqm.getCmsId());
         assertNotNull(cqm.getSuccessVersions());
         assertEquals(1, cqm.getSuccessVersions().size());
         assertEquals("v3", cqm.getSuccessVersions().iterator().next());
@@ -548,8 +548,8 @@ public class CqmUploadHandlerTest {
         assertNotNull(foundCqms);
         assertEquals(1, foundCqms.size());
         CQMResultDetails cqm = foundCqms.get(0);
-        assertNotNull(cqm.getNumber());
-        assertEquals("61", cqm.getNumber());
+        assertNotNull(cqm.getCmsId());
+        assertEquals("61", cqm.getCmsId());
         assertNotNull(cqm.getSuccessVersions());
         assertEquals(0, cqm.getSuccessVersions().size());
         assertNotNull(cqm.getCriteria());
@@ -583,7 +583,7 @@ public class CqmUploadHandlerTest {
         assertNotNull(foundCqms);
         assertEquals(1, foundCqms.size());
         CQMResultDetails cqm = foundCqms.get(0);
-        assertNull(cqm.getNumber());
+        assertNull(cqm.getCmsId());
         assertNotNull(cqm.getSuccessVersions());
         assertEquals(1, cqm.getSuccessVersions().size());
         assertEquals("v3", cqm.getSuccessVersions().iterator().next());
@@ -619,18 +619,18 @@ public class CqmUploadHandlerTest {
         assertEquals(2, foundCqms.size());
         foundCqms.stream().forEach(cqm -> {
             assertNull(cqm.getId());
-            assertNotNull(cqm.getNumber());
-            if (cqm.getNumber().equals("59")) {
+            assertNotNull(cqm.getCmsId());
+            if (cqm.getCmsId().equals("59")) {
                 assertEquals("v1", cqm.getSuccessVersions().iterator().next());
                 assertEquals(2, cqm.getCriteria().size());
                 assertEquals("c1", cqm.getCriteria().get(0).getCertificationNumber());
                 assertEquals("c2", cqm.getCriteria().get(1).getCertificationNumber());
-            } else if (cqm.getNumber().equals("61")) {
+            } else if (cqm.getCmsId().equals("61")) {
                 assertEquals("v3", cqm.getSuccessVersions().iterator().next());
                 assertEquals(1, cqm.getCriteria().size());
                 assertEquals("c3", cqm.getCriteria().get(0).getCertificationNumber());
             } else {
-                fail("No CQM with number " + cqm.getNumber() + " should have been found.");
+                fail("No CQM with number " + cqm.getCmsId() + " should have been found.");
             }
         });
     }

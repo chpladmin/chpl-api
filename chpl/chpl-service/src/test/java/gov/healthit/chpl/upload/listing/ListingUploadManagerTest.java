@@ -32,8 +32,8 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.upload.listing.augmenter.CertificationCriterionAugmenter;
 import gov.healthit.chpl.upload.listing.handler.ListingDetailsUploadHandler;
+import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -56,7 +56,7 @@ public class ListingUploadManagerTest {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         acbDao = Mockito.mock(CertificationBodyDAO.class);
         chplProductNumberUtil = Mockito.mock(ChplProductNumberUtil.class);
-        CertificationCriterionAugmenter criterionAugmenter = Mockito.mock(CertificationCriterionAugmenter.class);
+        ListingDetailsNormalizer listingNormalizer = Mockito.mock(ListingDetailsNormalizer.class);
 
         Mockito.when(acbDao.getByName(ArgumentMatchers.anyString())).thenReturn(createAcb());
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("upload.emptyFile"))).thenReturn("Empty file message");
@@ -67,11 +67,11 @@ public class ListingUploadManagerTest {
                 ArgumentMatchers.anyString()))
         .thenAnswer(i -> String.format("Headings with the following values are required but were not found: %s.",
                 i.getArgument(1), ""));
-        Mockito.doNothing().when(criterionAugmenter).augment(ArgumentMatchers.any());
+        Mockito.doNothing().when(listingNormalizer).normalize(ArgumentMatchers.any());
 
         uploadUtil = new ListingUploadHandlerUtil(msgUtil);
         uploadManager = new ListingUploadManager(Mockito.mock(ListingDetailsUploadHandler.class),
-                criterionAugmenter,
+                listingNormalizer,
                 uploadUtil, chplProductNumberUtil, Mockito.mock(ListingUploadDao.class), acbDao,
                 Mockito.mock(UserDAO.class), Mockito.mock(ActivityManager.class), msgUtil);
     }

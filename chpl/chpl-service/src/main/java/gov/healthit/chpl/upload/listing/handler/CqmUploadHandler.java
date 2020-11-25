@@ -98,7 +98,7 @@ public class CqmUploadHandler {
 
         CQMResultDetails cqm = CQMResultDetails.builder()
                 .success(Boolean.TRUE)
-                .number(cqmNumber)
+                .cmsId(cqmNumber)
                 .successVersions(versions)
                 .criteria(criteria)
         .build();

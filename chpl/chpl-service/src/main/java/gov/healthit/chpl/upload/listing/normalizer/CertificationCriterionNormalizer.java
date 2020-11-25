@@ -1,4 +1,4 @@
-package gov.healthit.chpl.upload.listing.augmenter;
+package gov.healthit.chpl.upload.listing.normalizer;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,16 +14,16 @@ import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 
 @Component
-public class CertificationCriterionAugmenter {
+public class CertificationCriterionNormalizer {
 
     private CertificationCriterionDAO criterionDao;
 
     @Autowired
-    public CertificationCriterionAugmenter(CertificationCriterionDAO criterionDao) {
+    public CertificationCriterionNormalizer(CertificationCriterionDAO criterionDao) {
         this.criterionDao = criterionDao;
     }
 
-    public void augment(CertifiedProductSearchDetails listing) {
+    public void normalize(CertifiedProductSearchDetails listing) {
         List<CertificationCriterionDTO> all2015Criteria = criterionDao.findByCertificationEditionYear(
                 CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
         if (listing != null && listing.getCertificationResults() != null) {
