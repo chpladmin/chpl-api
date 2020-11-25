@@ -379,7 +379,6 @@
                 {
                     "listen": "test",
                     "script": {
-                        "id": "f02cc537-282f-4d92-9cef-ee57bb3239c6",
                         "exec": [
                             "pm.test(\"product merge request attempt by ACB user should return Status code 401\", function () {\r",
                             "    pm.response.to.have.status(401);\r",

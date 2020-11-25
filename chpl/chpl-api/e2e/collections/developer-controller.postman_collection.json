@@ -765,7 +765,6 @@
                         {
                             "listen": "prerequest",
                             "script": {
-                                "id": "ee674be3-532c-4a6b-8551-9ce175a67974",
                                 "exec": [
                                     "var ReqBody= {\r",
                                     "        userName:pm.environment.get(\"usernameACB\"),password:pm.environment.get(\"passwordACB\")\r",
