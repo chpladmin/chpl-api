@@ -56,8 +56,9 @@ public class SedUploadHandler {
         List<TestTask> testTasks = new ArrayList<TestTask>();
         List<UcdProcess> ucdProcesses = new ArrayList<UcdProcess>();
 
+        int prevCertResultIndex = -1;
         int nextCertResultIndex = uploadUtil.getNextIndexOfCertificationResult(0, headingRecord);
-        while (nextCertResultIndex >= 0) {
+        while (nextCertResultIndex >= 0 && prevCertResultIndex != nextCertResultIndex) {
             List<CSVRecord> parsedCertResultRecords = uploadUtil.getCertificationResultRecordsFromIndex(
                     nextCertResultIndex, headingRecord, listingRecords);
             CSVRecord certHeadingRecord = uploadUtil.getHeadingRecord(parsedCertResultRecords);
@@ -71,6 +72,7 @@ public class SedUploadHandler {
                         certHeadingRecord, parsedCertResultRecords.subList(1, parsedCertResultRecords.size()));
                 updateTaskList(testTasks, certResultTestTasks, criterion, availableTestTasks, availableTestParticipants);
             }
+            prevCertResultIndex = nextCertResultIndex;
             nextCertResultIndex = uploadUtil.getNextIndexOfCertificationResult(
                     nextCertResultIndex + certHeadingRecord.size() - 1, headingRecord);
         }

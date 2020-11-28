@@ -88,8 +88,9 @@ public class ListingDetailsUploadHandler {
 
         //add cert result data
         List<CertificationResult> certResultList = new ArrayList<CertificationResult>();
+        int prevCertResultIndex = -1;
         int nextCertResultIndex = uploadUtil.getNextIndexOfCertificationResult(0, headingRecord);
-        while (nextCertResultIndex >= 0) {
+        while (nextCertResultIndex >= 0 && prevCertResultIndex != nextCertResultIndex) {
             List<CSVRecord> parsedCertResultRecords = uploadUtil.getCertificationResultRecordsFromIndex(
                     nextCertResultIndex, headingRecord, listingRecords);
             CSVRecord certHeadingRecord = uploadUtil.getHeadingRecord(parsedCertResultRecords);
@@ -99,6 +100,7 @@ public class ListingDetailsUploadHandler {
             certResult.setSed(sedExists(listing.getSed(), certResult.getCriterion()));
             certResultList.add(certResult);
 
+            prevCertResultIndex = nextCertResultIndex;
             nextCertResultIndex = uploadUtil.getNextIndexOfCertificationResult(
                     nextCertResultIndex + certHeadingRecord.size() - 1, headingRecord);
         }
