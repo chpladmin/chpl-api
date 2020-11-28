@@ -40,6 +40,7 @@ public class TestToolNormalizer {
                     testToolDao.getByName(testTool.getTestToolName());
             if (testToolDto != null) {
                 testTool.setTestToolId(testToolDto.getId());
+                testTool.setRetired(testToolDto.isRetired());
             }
         }
     }

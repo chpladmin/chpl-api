@@ -72,7 +72,7 @@ public class SedUploadHandler {
                 updateTaskList(testTasks, certResultTestTasks, criterion, availableTestTasks, availableTestParticipants);
             }
             nextCertResultIndex = uploadUtil.getNextIndexOfCertificationResult(
-                    nextCertResultIndex + parsedCertResultRecords.size() - 1, headingRecord);
+                    nextCertResultIndex + certHeadingRecord.size() - 1, headingRecord);
         }
 
         CertifiedProductSed sed = CertifiedProductSed.builder()

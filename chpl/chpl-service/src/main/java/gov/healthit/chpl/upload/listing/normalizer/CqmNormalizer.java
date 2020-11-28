@@ -2,6 +2,11 @@ package gov.healthit.chpl.upload.listing.normalizer;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -40,6 +45,9 @@ public class CqmNormalizer {
     @PostConstruct
     private void initializeAllCqmsWithVersions() {
         allCqmsWithVersions = cqmDao.findAll();
+        allCqmsWithVersions = allCqmsWithVersions.stream()
+                .filter(cqm -> !StringUtils.isEmpty(cqm.getCmsId()) && cqm.getCmsId().startsWith(CMS_ID_BEGIN))
+                .collect(Collectors.toList());
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
@@ -48,10 +56,12 @@ public class CqmNormalizer {
                 .forEach(cqmResult -> {
                     normalizeCmsId(cqmResult);
                     lookupCqmCriterionData(cqmResult);
-                    addAllVersions(cqmResult);
                     lookupMappedCriteriaIds(listing, cqmResult);
                 });
         }
+        addUnattestedCqms(listing);
+        listing.getCqmResults().stream()
+            .forEach(cqmResult -> addAllVersions(cqmResult));
     }
 
 
@@ -78,8 +88,7 @@ public class CqmNormalizer {
     private void addAllVersions(CQMResultDetails cqmResult) {
         if (allCqmsWithVersions != null && allCqmsWithVersions.size() > 0) {
             allCqmsWithVersions.stream().forEach(cqm -> {
-                if (!StringUtils.isEmpty(cqmResult.getCmsId()) && cqmResult.getCmsId().startsWith(CMS_ID_BEGIN)
-                        && !StringUtils.isEmpty(cqm.getCmsId())
+                if (!StringUtils.isEmpty(cqm.getCmsId())
                         && cqm.getCmsId().equalsIgnoreCase(cqmResult.getCmsId())) {
                     cqmResult.getAllVersions().add(cqm.getCqmVersion());
                 }
@@ -108,7 +117,8 @@ public class CqmNormalizer {
         } else if (criterionNumber.equals("c4") || criterionNumber.equals("(c)(4)")) {
             criterion.setCertificationNumber("170.315 (c)(4)");
         }
-        CertificationCriterion foundCriteron = lookupCriterion(criterionNumber, determineCures(listing, criterionNumber));
+        CertificationCriterion foundCriteron = lookupCriterion(criterion.getCertificationNumber(),
+                determineCures(listing, criterion.getCertificationNumber()));
         if (foundCriteron != null) {
             criterion.setCertificationId(foundCriteron.getId());
             criterion.setCriterion(foundCriteron);
@@ -133,20 +143,61 @@ public class CqmNormalizer {
             LOGGER.error("Could not find a certification criterion matching " + number);
         }
 
-        Optional<CertificationCriterionDTO> criterion = null;
+        Optional<CertificationCriterionDTO> foundCriterion = null;
         if (isCures) {
-            criterion = certDtos.stream()
+            foundCriterion = certDtos.stream()
                     .filter(certDto -> Util.isCures(certDto))
                     .findFirst();
         } else {
-            criterion = certDtos.stream()
-                    .filter(certDto -> Util.isCures(certDto))
+            foundCriterion = certDtos.stream()
+                    .filter(certDto -> !Util.isCures(certDto))
                     .findFirst();
         }
 
-        if (criterion == null || !criterion.isPresent()) {
+        if (foundCriterion == null || !foundCriterion.isPresent()) {
             LOGGER.error("Could not find a certification criterion (cures=" + isCures + ") matching " + number);
+            return null;
         }
-        return new CertificationCriterion(criterion.get());
+        return new CertificationCriterion(foundCriterion.get());
+    }
+
+    private void addUnattestedCqms(CertifiedProductSearchDetails listing) {
+        List<CQMCriterionDTO> cqmsWithDistinctCmsIds = allCqmsWithVersions.stream()
+            .filter(distinctByKey(CQMCriterionDTO::getCmsId))
+            .collect(Collectors.toList());
+
+        if (cqmsWithDistinctCmsIds != null && cqmsWithDistinctCmsIds.size() > 0) {
+            List<CQMCriterionDTO> cqmsToAdd = cqmsWithDistinctCmsIds.stream()
+                    .filter(cqmDto -> !existsInListing(listing.getCqmResults(), cqmDto))
+                    .collect(Collectors.toList());
+            cqmsToAdd.stream().forEach(cqmToAdd -> {
+                    listing.getCqmResults().add(buildCqmDetails(cqmToAdd));
+                });
+        }
+    }
+
+    private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+        Set<Object> seen = ConcurrentHashMap.newKeySet();
+        return t -> seen.add(keyExtractor.apply(t));
+    }
+
+    private boolean existsInListing(List<CQMResultDetails> cqmsInListing, CQMCriterionDTO cqmDto) {
+        Optional<CQMResultDetails> cqmInListing =
+                cqmsInListing.stream().filter(cqm -> cqm.getCmsId().equals(cqmDto.getCmsId()))
+                .findAny();
+        return cqmInListing != null && cqmInListing.isPresent() && cqmInListing.get().isSuccess();
+    }
+
+    private CQMResultDetails buildCqmDetails(CQMCriterionDTO cqmDto) {
+        CQMResultDetails cqmDetails = new CQMResultDetails();
+        cqmDetails.setCmsId(cqmDto.getCmsId());
+        cqmDetails.setNqfNumber(cqmDto.getNqfNumber());
+        cqmDetails.setNumber(cqmDto.getNumber());
+        cqmDetails.setTitle(cqmDto.getTitle());
+        cqmDetails.setDescription(cqmDto.getDescription());
+        cqmDetails.setSuccess(Boolean.FALSE);
+        cqmDetails.getAllVersions().add(cqmDto.getCqmVersion());
+        cqmDetails.setTypeId(cqmDto.getCqmCriterionTypeId());
+        return cqmDetails;
     }
 }

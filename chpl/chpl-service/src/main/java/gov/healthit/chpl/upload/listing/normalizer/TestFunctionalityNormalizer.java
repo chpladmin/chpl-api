@@ -41,7 +41,7 @@ public class TestFunctionalityNormalizer {
             CertificationResultTestFunctionality testFunctionality) {
         if (!StringUtils.isEmpty(testFunctionality.getName())
                 && listing.getCertificationEdition() != null
-                && listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY) == null) {
+                && listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY) != null) {
             Long editionId = null;
             try {
                 editionId = Long.parseLong(

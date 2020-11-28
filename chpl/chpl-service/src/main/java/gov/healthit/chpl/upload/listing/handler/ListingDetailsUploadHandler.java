@@ -100,7 +100,7 @@ public class ListingDetailsUploadHandler {
             certResultList.add(certResult);
 
             nextCertResultIndex = uploadUtil.getNextIndexOfCertificationResult(
-                    nextCertResultIndex + parsedCertResultRecords.size() - 1, headingRecord);
+                    nextCertResultIndex + certHeadingRecord.size() - 1, headingRecord);
         }
         listing.setCertificationResults(certResultList);
         return listing;

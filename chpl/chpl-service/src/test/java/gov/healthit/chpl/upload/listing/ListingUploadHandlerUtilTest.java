@@ -712,6 +712,27 @@ public class ListingUploadHandlerUtilTest {
         assertEquals(17, parsedCertResultRecords.get(0).size());
     }
 
+    @Test
+    public void getCertResultIndex_MultipleCriteriaColumnsWithData_ReturnsCorrectIndex() {
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString(
+                "CRITERIA_170_315_A_1__C,Test tool name,Test tool version,"
+                + "CRITERIA_170_315_A_2__C,Privacy and Security Framework,Functionality Tested,Standard Tested Against\n"
+                + "1,ttname,ver1,1,Approach 1,func1,std1");
+        assertEquals(2, certResultRecords.size());
+
+        CSVRecord heading = handlerUtil.getHeadingRecord(certResultRecords);
+        assertNotNull(heading);
+        int nextIndex = handlerUtil.getNextIndexOfCertificationResult(0, heading);
+        assertEquals(0, nextIndex);
+        List<CSVRecord> parsedCertResultRecords = handlerUtil.getCertificationResultRecordsFromIndex(
+                nextIndex, heading, certResultRecords.subList(1, 2));
+
+        assertEquals(3, parsedCertResultRecords.get(0).size());
+        nextIndex = handlerUtil.getNextIndexOfCertificationResult(
+                nextIndex + parsedCertResultRecords.get(0).size() -1, heading);
+        assertEquals(3, nextIndex);
+    }
+
     @Test(expected = ValidationException.class)
     public void getChplProductNumber_NoChplProductNumberHeading_ThrowsException()
             throws IOException {

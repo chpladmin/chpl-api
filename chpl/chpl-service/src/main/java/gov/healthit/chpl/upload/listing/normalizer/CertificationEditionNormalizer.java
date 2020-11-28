@@ -24,7 +24,7 @@ public class CertificationEditionNormalizer {
             String year = listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
             CertificationEditionDTO foundEdition = editionDao.getByYear(year);
             if (foundEdition != null) {
-                listing.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_ID_KEY, foundEdition.getYear());
+                listing.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_ID_KEY, foundEdition.getId());
             }
         }
     }

@@ -40,7 +40,7 @@ public class TestStandardNormalizer {
     private void lookupTestStandardId(CertifiedProductSearchDetails listing, CertificationResultTestStandard testStandard) {
         if (!StringUtils.isEmpty(testStandard.getTestStandardName())
                 && listing.getCertificationEdition() != null
-                && listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY) == null) {
+                && listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY) != null) {
             Long editionId = null;
             try {
                 editionId = Long.parseLong(
