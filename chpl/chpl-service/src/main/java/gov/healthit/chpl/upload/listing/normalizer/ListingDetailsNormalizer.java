@@ -18,6 +18,7 @@ public class ListingDetailsNormalizer {
     private TargetedUserNormalizer targetedUserNormalizer;
     private CertificationResultNormalizer certResultNormalizer;
     private CqmNormalizer cqmNormalizer;
+    private SedNormalizer sedNormalizer;
 
     @SuppressWarnings("checkstyle:parameternumber")
     @Autowired
@@ -31,7 +32,8 @@ public class ListingDetailsNormalizer {
         QmsStandardNormalizer qmsNormalizer,
         TargetedUserNormalizer targetedUserNormalizer,
         CertificationResultNormalizer certResultNormalizer,
-        CqmNormalizer cqmNormalizer) {
+        CqmNormalizer cqmNormalizer,
+        SedNormalizer sedNormalizer) {
         this.editionNormalizer = editionNormalizer;
         this.acbNormalizer = acbNormalizer;
         this.atlNormalizer = atlNormalizer;
@@ -43,6 +45,7 @@ public class ListingDetailsNormalizer {
         this.targetedUserNormalizer = targetedUserNormalizer;
         this.certResultNormalizer = certResultNormalizer;
         this.cqmNormalizer = cqmNormalizer;
+        this.sedNormalizer = sedNormalizer;
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
@@ -57,6 +60,7 @@ public class ListingDetailsNormalizer {
         this.targetedUserNormalizer.normalize(listing);
         this.certResultNormalizer.normalize(listing);
         this.cqmNormalizer.normalize(listing);
+        this.sedNormalizer.normalize(listing);
     }
 
 }

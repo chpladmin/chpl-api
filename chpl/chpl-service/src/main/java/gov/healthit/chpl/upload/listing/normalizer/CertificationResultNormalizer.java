@@ -14,7 +14,6 @@ public class CertificationResultNormalizer {
     private TestProcedureNormalizer testProcedureNormalizer;
     private TestStandardNormalizer testStandardNormalizer;
     private TestToolNormalizer testToolNormalizer;
-    private UcdProcessNormalizer ucdProcessNormalizer;
 
     @Autowired
     public CertificationResultNormalizer(CertificationCriterionNormalizer criterionNormalizer,
@@ -23,8 +22,7 @@ public class CertificationResultNormalizer {
         TestFunctionalityNormalizer testFunctionalityNormalizer,
         TestProcedureNormalizer testProcedureNormalizer,
         TestStandardNormalizer testStandardNormalizer,
-        TestToolNormalizer testToolNormalizer,
-        UcdProcessNormalizer ucdProcessNormalizer) {
+        TestToolNormalizer testToolNormalizer) {
         this.criterionNormalizer = criterionNormalizer;
         this.additionalSoftwareNormalizer = additionalSoftwareNormalizer;
         this.testDataNormalizer = testDataNormalizer;
@@ -32,7 +30,6 @@ public class CertificationResultNormalizer {
         this.testProcedureNormalizer = testProcedureNormalizer;
         this.testStandardNormalizer = testStandardNormalizer;
         this.testToolNormalizer = testToolNormalizer;
-        this.ucdProcessNormalizer = ucdProcessNormalizer;
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
@@ -43,6 +40,5 @@ public class CertificationResultNormalizer {
         this.testProcedureNormalizer.normalize(listing);
         this.testStandardNormalizer.normalize(listing);
         this.testToolNormalizer.normalize(listing);
-        this.ucdProcessNormalizer.normalize(listing);
     }
 }
