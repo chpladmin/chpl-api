@@ -25,6 +25,7 @@ import gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermis
 import gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions;
 import gov.healthit.chpl.permissions.domains.ProductDomainPermissions;
 import gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions;
+import gov.healthit.chpl.permissions.domains.RealWorldTestingDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions;
@@ -59,9 +60,11 @@ public class Permissions {
     public static final String FUZZY_MATCH = "FUZZY_MATCH";
     public static final String ANNOUNCEMENT = "ANNOUNCEMENT";
     public static final String CHANGE_REQUEST = "CHANGE_REQUEST";
+    public static final String REAL_WORLD_TESTING = "REAL_WORLD_TESTING";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
+    @SuppressWarnings("checkstyle:parameternumber")
     @Autowired
     public Permissions(PendingSurveillanceDomainPermissions pendingSurveillanceDomainPermissions,
             CertificationResultsDomainPermissions certificationResultsDomainPermissions,
@@ -74,7 +77,8 @@ public class Permissions {
             SurveillanceReportDomainPermissions surveillanceReportDomainPermissions,
             CertificationBodyDomainPermissions certificationBodyDomainPermissions,
             UserPermissionsDomainPermissions userPermissionsDomainPermissions,
-            ActivityDomainPermissions activityDomainPermissions, JobDomainPermissions jobDomainPermissions,
+            ActivityDomainPermissions activityDomainPermissions,
+            JobDomainPermissions jobDomainPermissions,
             ProductDomainPermissions productDomainPermissions,
             DeveloperDomainPermissions developerDomainPermissions,
             ProductVersionDomainPermissions productVersionDomainPermissions,
@@ -85,8 +89,8 @@ public class Permissions {
             ComplaintDomainPermissions complaintDomainPermissions,
             FuzzyMatchPermissions fuzzyMatchPermissions,
             AnnouncementDomainPermissions announcementDomainPermissions,
-            ChangeRequestDomainPermissions changeRequestDomainPermissions) {
-
+            ChangeRequestDomainPermissions changeRequestDomainPermissions,
+            RealWorldTestingDomainPermissions realWorldTestingDomainPermissions) {
         domainPermissions.put(PENDING_SURVEILLANCE, pendingSurveillanceDomainPermissions);
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
         domainPermissions.put(CERTIFIED_PRODUCT, certifiedProductDomainPermissions);
@@ -111,6 +115,7 @@ public class Permissions {
         domainPermissions.put(FUZZY_MATCH, fuzzyMatchPermissions);
         domainPermissions.put(ANNOUNCEMENT, announcementDomainPermissions);
         domainPermissions.put(CHANGE_REQUEST, changeRequestDomainPermissions);
+        domainPermissions.put(REAL_WORLD_TESTING, realWorldTestingDomainPermissions);
     }
 
     public boolean hasAccess(final String domain, final String action) {
