@@ -19,6 +19,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
@@ -91,6 +92,10 @@ public class CertifiedProductSearchDetails implements Serializable {
      */
     @XmlElement(required = false, nillable = true)
     private Date sedTestingEndDate;
+
+    @XmlTransient
+    @JsonIgnore
+    private String sedTestingEndDateStr;
 
     /**
      * The ID used by ONC-ACBs for internal tracking for 2014 and 2015 Certification Edition. It is a string variable
@@ -165,6 +170,10 @@ public class CertifiedProductSearchDetails implements Serializable {
     @XmlElement(required = true)
     private Long certificationDate;
 
+    @XmlTransient
+    @JsonIgnore
+    private String certificationDateStr;
+
     /**
      * Decertification date represented in milliseconds since epoch
      */
@@ -228,6 +237,10 @@ public class CertifiedProductSearchDetails implements Serializable {
      */
     @XmlElement(required = false, nillable = true)
     private Boolean accessibilityCertified;
+
+    @XmlTransient
+    @JsonIgnore
+    private String accessibilityCertifiedStr;
 
     /**
      * For legacy CHPL listings, any additional software needed.
@@ -398,7 +411,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return id;
     }
 
-    public void setId(final Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -406,7 +419,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return chplProductNumber;
     }
 
-    public void setChplProductNumber(final String chplProductNumber) {
+    public void setChplProductNumber(String chplProductNumber) {
         this.chplProductNumber = chplProductNumber;
     }
 
@@ -414,7 +427,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return reportFileLocation;
     }
 
-    public void setReportFileLocation(final String reportFileLocation) {
+    public void setReportFileLocation(String reportFileLocation) {
         this.reportFileLocation = reportFileLocation;
     }
 
@@ -422,7 +435,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return acbCertificationId;
     }
 
-    public void setAcbCertificationId(final String acbCertificationId) {
+    public void setAcbCertificationId(String acbCertificationId) {
         this.acbCertificationId = acbCertificationId;
     }
 
@@ -430,7 +443,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return classificationType;
     }
 
-    public void setClassificationType(final Map<String, Object> classificationType) {
+    public void setClassificationType(Map<String, Object> classificationType) {
         this.classificationType = classificationType;
     }
 
@@ -438,7 +451,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return otherAcb;
     }
 
-    public void setOtherAcb(final String otherAcb) {
+    public void setOtherAcb(String otherAcb) {
         this.otherAcb = otherAcb;
     }
 
@@ -446,7 +459,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return developer;
     }
 
-    public void setDeveloper(final Developer developer) {
+    public void setDeveloper(Developer developer) {
         this.developer = developer;
     }
 
@@ -454,7 +467,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return certificationEdition;
     }
 
-    public void setCertificationEdition(final Map<String, Object> certificationEdition) {
+    public void setCertificationEdition(Map<String, Object> certificationEdition) {
         this.certificationEdition = certificationEdition;
     }
 
@@ -462,7 +475,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return practiceType;
     }
 
-    public void setPracticeType(final Map<String, Object> practiceType) {
+    public void setPracticeType(Map<String, Object> practiceType) {
         this.practiceType = practiceType;
     }
 
@@ -470,7 +483,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return certifyingBody;
     }
 
-    public void setCertifyingBody(final Map<String, Object> certifyingBody) {
+    public void setCertifyingBody(Map<String, Object> certifyingBody) {
         this.certifyingBody = certifyingBody;
     }
 
@@ -478,15 +491,23 @@ public class CertifiedProductSearchDetails implements Serializable {
         return certificationDate;
     }
 
-    public void setCertificationDate(final Long certificationDate) {
+    public void setCertificationDate(Long certificationDate) {
         this.certificationDate = certificationDate;
+    }
+
+    public String getCertificationDateStr() {
+        return certificationDateStr;
+    }
+
+    public void setCertificationDateStr(String certificationDateStr) {
+        this.certificationDateStr = certificationDateStr;
     }
 
     public List<CertificationResult> getCertificationResults() {
         return certificationResults;
     }
 
-    public void setCertificationResults(final List<CertificationResult> certificationResults) {
+    public void setCertificationResults(List<CertificationResult> certificationResults) {
         this.certificationResults = certificationResults;
     }
 
@@ -494,7 +515,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return cqmResults;
     }
 
-    public void setCqmResults(final List<CQMResultDetails> cqmResults) {
+    public void setCqmResults(List<CQMResultDetails> cqmResults) {
         this.cqmResults = cqmResults;
     }
 
@@ -502,7 +523,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return countCerts;
     }
 
-    public void setCountCerts(final Integer countCertsSuccessful) {
+    public void setCountCerts(Integer countCertsSuccessful) {
         this.countCerts = countCertsSuccessful;
     }
 
@@ -510,7 +531,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return countCqms;
     }
 
-    public void setCountCqms(final Integer countCQMsSuccessful) {
+    public void setCountCqms(Integer countCQMsSuccessful) {
         this.countCqms = countCQMsSuccessful;
     }
 
@@ -518,7 +539,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return certificationEvents;
     }
 
-    public void setCertificationEvents(final List<CertificationStatusEvent> certificationEvents) {
+    public void setCertificationEvents(List<CertificationStatusEvent> certificationEvents) {
         this.certificationEvents = certificationEvents;
     }
 
@@ -534,7 +555,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(final Long lastModifiedDate) {
+    public void setLastModifiedDate(Long lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -542,7 +563,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return warningMessages;
     }
 
-    public void setWarningMessages(final Set<String> warningMessages) {
+    public void setWarningMessages(Set<String> warningMessages) {
         this.warningMessages = warningMessages;
     }
 
@@ -550,7 +571,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return errorMessages;
     }
 
-    public void setErrorMessages(final Set<String> errorMessages) {
+    public void setErrorMessages(Set<String> errorMessages) {
         this.errorMessages = errorMessages;
     }
 
@@ -558,7 +579,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return transparencyAttestation;
     }
 
-    public void setTransparencyAttestation(final TransparencyAttestation transparencyAttestation) {
+    public void setTransparencyAttestation(TransparencyAttestation transparencyAttestation) {
         this.transparencyAttestation = transparencyAttestation;
     }
 
@@ -566,7 +587,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return ics;
     }
 
-    public void setIcs(final InheritedCertificationStatus ics) {
+    public void setIcs(InheritedCertificationStatus ics) {
         this.ics = ics;
     }
 
@@ -574,7 +595,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return testingLabs;
     }
 
-    public void setTestingLabs(final List<CertifiedProductTestingLab> testingLabs) {
+    public void setTestingLabs(List<CertifiedProductTestingLab> testingLabs) {
         this.testingLabs = testingLabs;
     }
 
@@ -582,7 +603,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return sedReportFileLocation;
     }
 
-    public void setSedReportFileLocation(final String sedReportFileLocation) {
+    public void setSedReportFileLocation(String sedReportFileLocation) {
         this.sedReportFileLocation = sedReportFileLocation;
     }
 
@@ -590,7 +611,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return productAdditionalSoftware;
     }
 
-    public void setProductAdditionalSoftware(final String productAdditionalSoftware) {
+    public void setProductAdditionalSoftware(String productAdditionalSoftware) {
         this.productAdditionalSoftware = productAdditionalSoftware;
     }
 
@@ -598,7 +619,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return transparencyAttestationUrl;
     }
 
-    public void setTransparencyAttestationUrl(final String transparencyAttestationUrl) {
+    public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
         this.transparencyAttestationUrl = transparencyAttestationUrl;
     }
 
@@ -606,7 +627,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return qmsStandards;
     }
 
-    public void setQmsStandards(final List<CertifiedProductQmsStandard> qmsStandards) {
+    public void setQmsStandards(List<CertifiedProductQmsStandard> qmsStandards) {
         this.qmsStandards = qmsStandards;
     }
 
@@ -614,7 +635,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return targetedUsers;
     }
 
-    public void setTargetedUsers(final List<CertifiedProductTargetedUser> targetedUsers) {
+    public void setTargetedUsers(List<CertifiedProductTargetedUser> targetedUsers) {
         this.targetedUsers = targetedUsers;
     }
 
@@ -622,8 +643,16 @@ public class CertifiedProductSearchDetails implements Serializable {
         return accessibilityCertified;
     }
 
-    public void setAccessibilityCertified(final Boolean accessibilityCertified) {
+    public void setAccessibilityCertified(Boolean accessibilityCertified) {
         this.accessibilityCertified = accessibilityCertified;
+    }
+
+    public String getAccessibilityCertifiedStr() {
+        return accessibilityCertifiedStr;
+    }
+
+    public void setAccessibilityCertifiedStr(String accessibilityCertifiedStr) {
+        this.accessibilityCertifiedStr = accessibilityCertifiedStr;
     }
 
     public List<CertifiedProductAccessibilityStandard> getAccessibilityStandards() {
@@ -631,7 +660,7 @@ public class CertifiedProductSearchDetails implements Serializable {
     }
 
     public void setAccessibilityStandards(
-            final List<CertifiedProductAccessibilityStandard> accessibilityStandards) {
+            List<CertifiedProductAccessibilityStandard> accessibilityStandards) {
         this.accessibilityStandards = accessibilityStandards;
     }
 
@@ -639,7 +668,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return sedIntendedUserDescription;
     }
 
-    public void setSedIntendedUserDescription(final String sedIntendedUserDescription) {
+    public void setSedIntendedUserDescription(String sedIntendedUserDescription) {
         this.sedIntendedUserDescription = sedIntendedUserDescription;
     }
 
@@ -647,15 +676,23 @@ public class CertifiedProductSearchDetails implements Serializable {
         return Util.getNewDate(sedTestingEndDate);
     }
 
-    public void setSedTestingEndDate(final Date sedTestingEndDate) {
+    public void setSedTestingEndDate(Date sedTestingEndDate) {
         this.sedTestingEndDate = Util.getNewDate(sedTestingEndDate);
+    }
+
+    public String getSedTestingEndDateStr() {
+        return sedTestingEndDateStr;
+    }
+
+    public void setSedTestingEndDateStr(String sedTestingEndDateStr) {
+        this.sedTestingEndDateStr = sedTestingEndDateStr;
     }
 
     public Product getProduct() {
         return product;
     }
 
-    public void setProduct(final Product product) {
+    public void setProduct(Product product) {
         this.product = product;
     }
 
@@ -663,7 +700,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return version;
     }
 
-    public void setVersion(final ProductVersion version) {
+    public void setVersion(ProductVersion version) {
         this.version = version;
     }
 
@@ -671,7 +708,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return surveillance;
     }
 
-    public void setSurveillance(final List<Surveillance> surveillance) {
+    public void setSurveillance(List<Surveillance> surveillance) {
         this.surveillance = surveillance;
     }
 
@@ -679,7 +716,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return meaningfulUseUserHistory;
     }
 
-    public void setMeaningfulUseUserHistory(final List<MeaningfulUseUser> meaningfulUseUserHistory) {
+    public void setMeaningfulUseUserHistory(List<MeaningfulUseUser> meaningfulUseUserHistory) {
         this.meaningfulUseUserHistory = meaningfulUseUserHistory;
     }
 
@@ -687,7 +724,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return countSurveillance;
     }
 
-    public void setCountSurveillance(final Integer countSurveillance) {
+    public void setCountSurveillance(Integer countSurveillance) {
         this.countSurveillance = countSurveillance;
     }
 
@@ -695,7 +732,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return countOpenSurveillance;
     }
 
-    public void setCountOpenSurveillance(final Integer countOpenSurveillance) {
+    public void setCountOpenSurveillance(Integer countOpenSurveillance) {
         this.countOpenSurveillance = countOpenSurveillance;
     }
 
@@ -703,7 +740,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return countClosedSurveillance;
     }
 
-    public void setCountClosedSurveillance(final Integer countClosedSurveillance) {
+    public void setCountClosedSurveillance(Integer countClosedSurveillance) {
         this.countClosedSurveillance = countClosedSurveillance;
     }
 
@@ -711,7 +748,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return countOpenNonconformities;
     }
 
-    public void setCountOpenNonconformities(final Integer countOpenNonconformities) {
+    public void setCountOpenNonconformities(Integer countOpenNonconformities) {
         this.countOpenNonconformities = countOpenNonconformities;
     }
 
@@ -719,7 +756,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return countClosedNonconformities;
     }
 
-    public void setCountClosedNonconformities(final Integer countClosedNonconformities) {
+    public void setCountClosedNonconformities(Integer countClosedNonconformities) {
         this.countClosedNonconformities = countClosedNonconformities;
     }
 
@@ -727,7 +764,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return decertificationDate;
     }
 
-    public void setDecertificationDate(final Long decertificationDate) {
+    public void setDecertificationDate(Long decertificationDate) {
         this.decertificationDate = decertificationDate;
     }
 
@@ -735,7 +772,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return sed;
     }
 
-    public void setSed(final CertifiedProductSed sed) {
+    public void setSed(CertifiedProductSed sed) {
         this.sed = sed;
     }
 
@@ -782,7 +819,7 @@ public class CertifiedProductSearchDetails implements Serializable {
      *
      * @return certification status
      */
-    public CertificationStatusEvent getStatusOnDate(final Date date) {
+    public CertificationStatusEvent getStatusOnDate(Date date) {
         if (this.getCertificationEvents() == null || this.getCertificationEvents().size() == 0) {
             return null;
         }
@@ -790,7 +827,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         // first we need to make sure the status events are in ascending order
         this.getCertificationEvents().sort(new Comparator<CertificationStatusEvent>() {
             @Override
-            public int compare(final CertificationStatusEvent o1, final CertificationStatusEvent o2) {
+            public int compare(CertificationStatusEvent o1, CertificationStatusEvent o2) {
                 if (o1.getEventDate() == null || o2.getEventDate() == null
                         || o1.getEventDate().equals(o2.getEventDate())) {
                     return 0;

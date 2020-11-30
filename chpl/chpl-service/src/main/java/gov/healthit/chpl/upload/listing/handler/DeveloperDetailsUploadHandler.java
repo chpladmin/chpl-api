@@ -29,7 +29,8 @@ public class DeveloperDetailsUploadHandler {
         Developer developer = Developer.builder()
                 .name(uploadUtil.parseSingleRowField(Headings.DEVELOPER, headingRecord, listingRecords))
                 .website(uploadUtil.parseSingleRowField(Headings.DEVELOPER_WEBSITE, headingRecord, listingRecords))
-                .selfDeveloper(uploadUtil.parseSingleRowFieldAsBoolean(Headings.SELF_DEVELOPER, headingRecord, listingRecords))
+                .selfDeveloper(parseSelfDeveloper(headingRecord, listingRecords))
+                .selfDeveloperStr(parseSelfDeveloperStr(headingRecord, listingRecords))
                 .build();
         Address address = Address.builder()
                 .line1(uploadUtil.parseSingleRowField(Headings.DEVELOPER_ADDRESS, headingRecord, listingRecords))
@@ -45,6 +46,19 @@ public class DeveloperDetailsUploadHandler {
                 .build();
         developer.setContact(contact);
         return developer;
+    }
+
+    private Boolean parseSelfDeveloper(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+        Boolean result = null;
+        try {
+            result = uploadUtil.parseSingleRowFieldAsBoolean(Headings.SELF_DEVELOPER, headingRecord, listingRecords);
+        } catch (Exception e) {
+        }
+        return result;
+    }
+
+    private String parseSelfDeveloperStr(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+        return uploadUtil.parseSingleRowField(Headings.SELF_DEVELOPER, headingRecord, listingRecords);
     }
 
     private boolean hasNoDeveloperFields(CSVRecord headingRecord) {

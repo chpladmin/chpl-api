@@ -470,7 +470,7 @@ public class ListingUploadHandlerUtilTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString(
                 "CRITERIA_170_315_A_2__C,Privacy and Security Framework,Functionality Tested,Standard Tested Against,"
                 + "UNIQUE_CHPL_ID__C,VENDOR__C\n"
-                + "1,Approach 1,func1,std1,chpid,dev");
+                + "1,Approach 1,func1,std1,chplid,dev");
         assertEquals(2, certResultRecords.size());
 
         CSVRecord heading = handlerUtil.getHeadingRecord(certResultRecords);
@@ -482,18 +482,22 @@ public class ListingUploadHandlerUtilTest {
 
         CSVRecord parsedHeading = parsedCertResultRecords.get(0);
         assertNotNull(parsedHeading);
-        assertEquals(4, parsedHeading.size());
+        assertEquals(6, parsedHeading.size());
         assertEquals("CRITERIA_170_315_A_2__C", parsedHeading.get(0));
         assertEquals("Privacy and Security Framework", parsedHeading.get(1));
         assertEquals("Functionality Tested", parsedHeading.get(2));
         assertEquals("Standard Tested Against", parsedHeading.get(3));
+        assertEquals("UNIQUE_CHPL_ID__C", parsedHeading.get(4));
+        assertEquals("VENDOR__C", parsedHeading.get(5));
         CSVRecord parsedData = parsedCertResultRecords.get(1);
         assertNotNull(parsedData);
-        assertEquals(4, parsedData.size());
+        assertEquals(6, parsedData.size());
         assertEquals("1", parsedData.get(0));
         assertEquals("Approach 1", parsedData.get(1));
         assertEquals("func1", parsedData.get(2));
         assertEquals("std1", parsedData.get(3));
+        assertEquals("chplid", parsedData.get(4));
+        assertEquals("dev", parsedData.get(5));
     }
 
     @Test
@@ -512,16 +516,20 @@ public class ListingUploadHandlerUtilTest {
 
         CSVRecord parsedHeading = parsedCertResultRecords.get(0);
         assertNotNull(parsedHeading);
-        assertEquals(3, parsedHeading.size());
+        assertEquals(5, parsedHeading.size());
         assertEquals("CRITERIA_170_315_A_1__C", parsedHeading.get(0));
         assertEquals("Test tool name", parsedHeading.get(1));
-        assertEquals("Test tool version", parsedHeading.get(2));
+        assertEquals("UNIQUE_CHPL_ID__C", parsedHeading.get(2));
+        assertEquals("VENDOR__C", parsedHeading.get(3));
+        assertEquals("Test tool version", parsedHeading.get(4));
         CSVRecord parsedData = parsedCertResultRecords.get(1);
         assertNotNull(parsedData);
-        assertEquals(3, parsedData.size());
+        assertEquals(5, parsedData.size());
         assertEquals("1", parsedData.get(0));
         assertEquals("ttname", parsedData.get(1));
-        assertEquals("v1", parsedData.get(2));
+        assertEquals("chplid", parsedData.get(2));
+        assertEquals("dev", parsedData.get(3));
+        assertEquals("v1", parsedData.get(4));
     }
 
     @Test
@@ -540,16 +548,18 @@ public class ListingUploadHandlerUtilTest {
 
         CSVRecord parsedHeading = parsedCertResultRecords.get(0);
         assertNotNull(parsedHeading);
-        assertEquals(3, parsedHeading.size());
+        assertEquals(4, parsedHeading.size());
         assertEquals("CRITERIA_170_315_A_1__C", parsedHeading.get(0));
         assertEquals("Test tool name", parsedHeading.get(1));
-        assertEquals("Test tool version", parsedHeading.get(2));
+        assertEquals("JUNK", parsedHeading.get(2));
+        assertEquals("Test tool version", parsedHeading.get(3));
         CSVRecord parsedData = parsedCertResultRecords.get(1);
         assertNotNull(parsedData);
-        assertEquals(3, parsedData.size());
+        assertEquals(4, parsedData.size());
         assertEquals("1", parsedData.get(0));
         assertEquals("ttname", parsedData.get(1));
-        assertEquals("v1", parsedData.get(2));
+        assertEquals("junkdata", parsedData.get(2));
+        assertEquals("v1", parsedData.get(3));
     }
 
     @Test
@@ -568,18 +578,20 @@ public class ListingUploadHandlerUtilTest {
 
         CSVRecord parsedHeading = parsedCertResultRecords.get(0);
         assertNotNull(parsedHeading);
-        assertEquals(4, parsedHeading.size());
+        assertEquals(5, parsedHeading.size());
         assertEquals("CRITERIA_170_315_A_2__C", parsedHeading.get(0));
         assertEquals("Privacy and Security Framework", parsedHeading.get(1));
         assertEquals("Functionality Tested", parsedHeading.get(2));
         assertEquals("Standard Tested Against", parsedHeading.get(3));
+        assertEquals("JUNK", parsedHeading.get(4));
         CSVRecord parsedData = parsedCertResultRecords.get(1);
         assertNotNull(parsedData);
-        assertEquals(4, parsedData.size());
+        assertEquals(5, parsedData.size());
         assertEquals("1", parsedData.get(0));
         assertEquals("Approach 1", parsedData.get(1));
         assertEquals("func1", parsedData.get(2));
         assertEquals("std1", parsedData.get(3));
+        assertEquals("junkdata", parsedData.get(4));
     }
 
     @Test

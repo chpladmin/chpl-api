@@ -95,18 +95,14 @@ public class ListingUploadHandlerUtil {
             //splice the heading record columns between the integer ranges
             List<String> certResultHeadingValues = new ArrayList<String>();
             for (int i = certResultColumnRange.getMinimumInteger(); i <= certResultColumnRange.getMaximumInteger(); i++) {
-                if (isHeadingForCriteriaField(headingRecord.get(i))) {
-                    certResultHeadingValues.add(headingRecord.get(i));
-                }
+                certResultHeadingValues.add(headingRecord.get(i));
             }
             certResultHeading = convertToCsvRecord(certResultHeadingValues);
 
             for (CSVRecord dataRecord : dataRecords) {
                 List<String> certResultColumnValues = new ArrayList<String>();
                 for (int i = certResultColumnRange.getMinimumInteger(); i <= certResultColumnRange.getMaximumInteger(); i++) {
-                    if (isHeadingForCriteriaField(headingRecord.get(i))) {
-                        certResultColumnValues.add(dataRecord.get(i));
-                    }
+                    certResultColumnValues.add(dataRecord.get(i));
                 }
                 CSVRecord writtenDataRecord = convertToCsvRecord(certResultColumnValues);
                 if (writtenDataRecord != null) {
@@ -320,22 +316,6 @@ public class ListingUploadHandlerUtil {
         return StringUtils.startsWithIgnoreCase(headingVal, "CRITERIA");
     }
 
-    private boolean isHeadingForCriteriaField(String headingVal) {
-        //The task id and participant id fields cannot be specified as CertResult level
-        //because identical headings are used at the listing level.
-        //Probably only want to call this method if you know the passed-in heading occurs AFTER
-        //a CRITERIA_170_* field.
-        Headings heading = Headings.getHeading(headingVal);
-        return heading != null
-                && (isHeadingLevel(headingVal, HeadingLevel.CERT_RESULT)
-                || Headings.getHeading(headingVal).equals(Headings.TASK_ID)
-                || Headings.getHeading(headingVal).equals(Headings.PARTICIPANT_ID));
-    }
-    private boolean isHeadingLevel(String headingVal, HeadingLevel level) {
-        Headings heading = Headings.getHeading(headingVal);
-        return heading != null && heading.getLevel().equals(level);
-    }
-
     private boolean hasHeading(CSVRecord record) {
         Iterator<String> iter = record.iterator();
         while (iter.hasNext()) {
@@ -364,30 +344,36 @@ public class ListingUploadHandlerUtil {
     }
 
     public Boolean parseBoolean(String value) throws ValidationException {
+        Boolean result = null;
         if (value == null) {
-            return null;
+            return result;
         } else if (StringUtils.isEmpty(value.trim())) {
-            return false;
+            result = false;
         }
 
         if (value.equalsIgnoreCase("t") || value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes")
                 || value.equalsIgnoreCase("y")) {
-            return true;
+            result = true;
         } else if (value.equalsIgnoreCase("f") || value.equalsIgnoreCase("false") || value.equalsIgnoreCase("no")
                 || value.equalsIgnoreCase("n")) {
-            return false;
+            result = false;
         }
 
         try {
             double numValue = Double.parseDouble(value);
             if (numValue > 0) {
-                return true;
+                result = true;
+            } else {
+                result = false;
             }
         } catch (NumberFormatException ex) {
             LOGGER.error("Could not parse " + value + " as an integer. " + ex.getMessage());
+        }
+
+        if (result == null) {
             throw new ValidationException(msgUtil.getMessage("listing.upload.invalidBoolean", value));
         }
-        return false;
+        return result;
     }
 
     private Date parseDate(String value) {

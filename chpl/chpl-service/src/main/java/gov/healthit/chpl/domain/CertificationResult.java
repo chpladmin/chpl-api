@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
@@ -57,12 +58,20 @@ public class CertificationResult implements Serializable {
     @XmlElement(required = true)
     private Boolean success;
 
+    @XmlTransient
+    @JsonIgnore
+    private String successStr;
+
     /**
      * This variable indicates if the certification criteria was gap certified. It is a binary variable that takes true
      * or false value, and is applicable to 2014 and 2015 Edition.
      */
     @XmlElement(required = false, nillable = true)
     private Boolean gap;
+
+    @XmlTransient
+    @JsonIgnore
+    private String gapStr;
 
     /**
      * This variable indicates if the corresponding certification criteria was submitted for safety-enhanced design
@@ -93,6 +102,9 @@ public class CertificationResult implements Serializable {
      */
     @XmlElement(required = false, nillable = true)
     private Boolean attestationAnswer;
+
+    @XmlTransient
+    private String attestationAnswerStr;
 
     /**
      * The hyperlink to access an application programming interface (API)'s documentation and terms of use. This
@@ -458,5 +470,29 @@ public class CertificationResult implements Serializable {
             result.append(frameworks[i].trim());
         }
         return result.toString();
+    }
+
+    public String getGapStr() {
+        return gapStr;
+    }
+
+    public void setGapStr(String gapStr) {
+        this.gapStr = gapStr;
+    }
+
+    public String getAttestationAnswerStr() {
+        return attestationAnswerStr;
+    }
+
+    public void setAttestationAnswerStr(String attestationAnswerStr) {
+        this.attestationAnswerStr = attestationAnswerStr;
+    }
+
+    public String getSuccessStr() {
+        return successStr;
+    }
+
+    public void setSuccessStr(String successStr) {
+        this.successStr = successStr;
     }
 }

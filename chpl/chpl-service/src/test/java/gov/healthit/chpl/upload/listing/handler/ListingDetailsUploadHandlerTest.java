@@ -6,8 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
-import javax.validation.ValidationException;
-
 import org.apache.commons.csv.CSVRecord;
 import org.junit.Before;
 import org.junit.Test;
@@ -186,15 +184,18 @@ public class ListingDetailsUploadHandlerTest {
         assertEquals(Boolean.FALSE, listing.getAccessibilityCertified());
     }
 
-    @Test(expected = ValidationException.class)
-    public void buildListing_BooleanValueBad_ThrowsException() {
+    @Test
+    public void buildListing_BooleanValueBad_RetunsNull() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 HEADER_ROW_BEGIN + ",Accessibility Certified").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",JUNK");
         assertNotNull(listingRecords);
 
-        handler.parseAsListing(headingRecord, listingRecords);
+        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
+        assertNull(listing.getAccessibilityCertified());
+        assertNotNull(listing.getAccessibilityCertifiedStr());
+        assertEquals("JUNK", listing.getAccessibilityCertifiedStr());
     }
 
     @Test
@@ -233,14 +234,17 @@ public class ListingDetailsUploadHandlerTest {
         assertNull(listing.getCertificationDate());
     }
 
-    @Test(expected = ValidationException.class)
-    public void buildListing_CertificationDateValueBad_ThrowsException() {
+    @Test
+    public void buildListing_CertificationDateValueBad_ReturnsNull() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",CERTIFICATION_DATE__C").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",BADDATE");
         assertNotNull(listingRecords);
 
-        handler.parseAsListing(headingRecord, listingRecords);
+        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
+        assertNull(listing.getCertificationDate());
+        assertNotNull(listing.getCertificationDateStr());
+        assertEquals("BADDATE", listing.getCertificationDateStr());
     }
 
     @Test
@@ -576,15 +580,18 @@ public class ListingDetailsUploadHandlerTest {
         assertNull(listing.getSedTestingEndDate());
     }
 
-    @Test(expected = ValidationException.class)
-    public void buildListing_SedTestingDateValueBad_ThrowsException() {
+    @Test
+    public void buildListing_SedTestingDateValueBad_ReturnsNull() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 HEADER_ROW_BEGIN + ",Date SED Testing was Concluded").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",BADDATE");
         assertNotNull(listingRecords);
 
-        handler.parseAsListing(headingRecord, listingRecords);
+        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
+        assertNull(listing.getSedTestingEndDate());
+        assertNotNull(listing.getSedTestingEndDateStr());
+        assertEquals("BADDATE", listing.getSedTestingEndDateStr());
     }
 
     @Test

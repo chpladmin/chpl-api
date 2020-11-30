@@ -43,8 +43,10 @@ public class CertificationResultUploadHandler {
         throws ValidationException {
         CertificationResult certResult = CertificationResult.builder()
                 .criterion(criterionHandler.handle(certHeadingRecord))
+                .successStr(parseSuccessStr(certHeadingRecord, certResultRecords))
                 .success(parseSuccess(certHeadingRecord, certResultRecords))
                 .gap(parseGap(certHeadingRecord, certResultRecords))
+                .gapStr(parseGapStr(certHeadingRecord, certResultRecords))
                 .privacySecurityFramework(parsePrivacyAndSecurityFramework(certHeadingRecord, certResultRecords))
                 .testFunctionality(parseTestFunctionalities(certHeadingRecord, certResultRecords))
                 .testStandards(parseTestStandards(certHeadingRecord, certResultRecords))
@@ -55,6 +57,7 @@ public class CertificationResultUploadHandler {
                 .testToolsUsed(testToolHandler.handle(certHeadingRecord, certResultRecords))
                 .exportDocumentation(parseExportDocumentation(certHeadingRecord, certResultRecords))
                 .attestationAnswer(parseAttestationAnswer(certHeadingRecord, certResultRecords))
+                .attestationAnswerStr(parseAttestationAnswerStr(certHeadingRecord, certResultRecords))
                 .documentationUrl(parseDocumentationUrl(certHeadingRecord, certResultRecords))
                 .useCases(parseUseCases(certHeadingRecord, certResultRecords))
                 .apiDocumentation(parseApiDocumentation(certHeadingRecord, certResultRecords))
@@ -72,11 +75,29 @@ public class CertificationResultUploadHandler {
     //this gives us the criteria number/cures designation and the success value
     private Boolean parseSuccess(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
         String successField = uploadUtil.parseSingleRowFieldAtIndex(0, certHeadingRecord, certResultRecords);
-        return uploadUtil.parseBoolean(successField);
+        Boolean success = null;
+        try {
+            success = uploadUtil.parseBoolean(successField);
+        } catch (Exception ex) {
+        }
+        return success;
+    }
+
+    private String parseSuccessStr(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
+        return uploadUtil.parseSingleRowFieldAtIndex(0, certHeadingRecord, certResultRecords);
     }
 
     private Boolean parseGap(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
-        return uploadUtil.parseSingleRowFieldAsBoolean(Headings.GAP, certHeadingRecord, certResultRecords);
+        Boolean result = null;
+        try {
+            result = uploadUtil.parseSingleRowFieldAsBoolean(Headings.GAP, certHeadingRecord, certResultRecords);
+        } catch (Exception e) {
+        }
+        return result;
+    }
+
+    private String parseGapStr(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
+        return uploadUtil.parseSingleRowField(Headings.GAP, certHeadingRecord, certResultRecords);
     }
 
     private String parsePrivacyAndSecurityFramework(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
@@ -88,7 +109,16 @@ public class CertificationResultUploadHandler {
     }
 
     private Boolean parseAttestationAnswer(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
-        return uploadUtil.parseSingleRowFieldAsBoolean(Headings.ATTESTATION_ANSWER, certHeadingRecord, certResultRecords);
+        Boolean result = null;
+        try {
+            result = uploadUtil.parseSingleRowFieldAsBoolean(Headings.ATTESTATION_ANSWER, certHeadingRecord, certResultRecords);
+        } catch (Exception e) {
+        }
+        return result;
+    }
+
+    private String parseAttestationAnswerStr(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
+        return uploadUtil.parseSingleRowField(Headings.ATTESTATION_ANSWER, certHeadingRecord, certResultRecords);
     }
 
     private String parseDocumentationUrl(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {

@@ -6,8 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
-import javax.validation.ValidationException;
-
 import org.apache.commons.csv.CSVRecord;
 import org.junit.Before;
 import org.junit.Test;
@@ -121,15 +119,18 @@ public class DeveloperDetailsUploadHandlerTest {
         assertEquals(Boolean.FALSE, developer.getSelfDeveloper());
     }
 
-    @Test(expected = ValidationException.class)
-    public void parseDeveloper_SelfDeveloperBad_ThrowsException() {
+    @Test
+    public void parseDeveloper_SelfDeveloperBad_ReturnsNull() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 HEADER_ROW + ",Self-developer").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
                 LISTING_ROW + ",BAD");
         assertNotNull(listingRecords);
-        handler.handle(headingRecord, listingRecords);
+        Developer developer = handler.handle(headingRecord, listingRecords);
+        assertNull(developer.getSelfDeveloper());
+        assertNotNull(developer.getSelfDeveloperStr());
+        assertEquals("BAD", developer.getSelfDeveloperStr());
     }
 
     @Test

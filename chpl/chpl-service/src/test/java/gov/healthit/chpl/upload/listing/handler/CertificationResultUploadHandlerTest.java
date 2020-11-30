@@ -8,8 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.List;
 
-import javax.validation.ValidationException;
-
 import org.apache.commons.csv.CSVRecord;
 import org.junit.Before;
 import org.junit.Test;
@@ -87,13 +85,16 @@ public class CertificationResultUploadHandlerTest {
         assertFalse(certResult.isSuccess());
     }
 
-    @Test(expected = ValidationException.class)
-    public void buildCertResult_SuccessFieldInvalidBoolean_ThrowsException() {
+    @Test
+    public void buildCertResult_SuccessFieldInvalidBoolean_ReturnsNull() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("JUNK");
         assertNotNull(certResultRecords);
-        handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNull(certResult.isSuccess());
+        assertNotNull(certResult.getSuccessStr());
+        assertEquals("JUNK", certResult.getSuccessStr());
     }
 
     @Test
@@ -178,14 +179,17 @@ public class CertificationResultUploadHandlerTest {
         assertFalse(certResult.isGap());
     }
 
-    @Test(expected = ValidationException.class)
-    public void buildCertResult_GapInvalidBoolean_ThrowsException() {
+    @Test
+    public void buildCertResult_GapInvalidBoolean_ReturnsNull() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 HEADER_ROW_BEGIN + ",GAP").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,JUNK");
         assertNotNull(certResultRecords);
-        handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNull(certResult.isGap());
+        assertNotNull(certResult.getGapStr());
+        assertEquals("JUNK", certResult.getGapStr());
     }
 
     @Test
@@ -665,14 +669,17 @@ public class CertificationResultUploadHandlerTest {
         assertFalse(certResult.getAttestationAnswer());
     }
 
-    @Test(expected = ValidationException.class)
-    public void buildCertResult_AttesttionAnswerInvalidBoolean_ThrowsException() {
+    @Test
+    public void buildCertResult_AttesttionAnswerInvalidBoolean_ReturnsNull() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 HEADER_ROW_BEGIN + ",Attestation Answer").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,JUNK");
         assertNotNull(certResultRecords);
-        handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNull(certResult.getAttestationAnswer());
+        assertNotNull(certResult.getAttestationAnswerStr());
+        assertEquals("JUNK", certResult.getAttestationAnswerStr());
     }
 
 }

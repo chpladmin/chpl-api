@@ -26,10 +26,24 @@ public class IcsUploadHandler {
             return null;
         }
         InheritedCertificationStatus ics = InheritedCertificationStatus.builder()
-                .inherits(uploadUtil.parseSingleRowFieldAsBoolean(Headings.ICS, headingRecord, listingRecords))
+                .inherits(parseInherits(headingRecord, listingRecords))
+                .inheritsStr(parseInheritsStr(headingRecord, listingRecords))
                 .parents(parseParents(headingRecord, listingRecords))
                 .build();
         return ics;
+    }
+
+    private Boolean parseInherits(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+        Boolean result = null;
+        try {
+            result = uploadUtil.parseSingleRowFieldAsBoolean(Headings.ICS, headingRecord, listingRecords);
+        } catch (Exception e) {
+        }
+        return result;
+    }
+
+    private String parseInheritsStr(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+        return uploadUtil.parseSingleRowField(Headings.ICS, headingRecord, listingRecords);
     }
 
     private List<CertifiedProduct> parseParents(CSVRecord headingRecord, List<CSVRecord> listingRecords) {

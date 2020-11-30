@@ -69,7 +69,9 @@ public class ListingDetailsUploadHandler {
                 .acbCertificationId(uploadUtil.parseSingleRowField(
                         Headings.ACB_CERTIFICATION_ID, headingRecord, listingRecords))
                 .accessibilityCertified(parseAccessibilityCertified(headingRecord, listingRecords))
+                .accessibilityCertifiedStr(parseAccessibilityCertifiedStr(headingRecord, listingRecords))
                 .certificationDate(certificationDate != null ? certificationDate.getTime() : null)
+                .certificationDateStr(parseCertificationDateStr(headingRecord, listingRecords))
                 .developer(devDetailsUploadHandler.handle(headingRecord, listingRecords))
                 .product(parseProduct(headingRecord, listingRecords))
                 .version(parseVersion(headingRecord, listingRecords))
@@ -83,6 +85,7 @@ public class ListingDetailsUploadHandler {
                 .sedReportFileLocation(parseSedReportLocationUrl(headingRecord, listingRecords))
                 .sedIntendedUserDescription(parseSedIntendedUserDescription(headingRecord, listingRecords))
                 .sedTestingEndDate(parseSedTestingDate(headingRecord, listingRecords))
+                .sedTestingEndDateStr(parseSedTestingDateStr(headingRecord, listingRecords))
                 .sed(sedUploadHandler.parseAsSed(headingRecord, listingRecords))
             .build();
 
@@ -118,15 +121,32 @@ public class ListingDetailsUploadHandler {
     }
 
     private Boolean parseAccessibilityCertified(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        Boolean accessibilityCertified = uploadUtil.parseSingleRowFieldAsBoolean(
-                Headings.ACCESSIBILITY_CERTIFIED, headingRecord, listingRecords);
+        Boolean accessibilityCertified = null;
+        try {
+            accessibilityCertified = uploadUtil.parseSingleRowFieldAsBoolean(
+                    Headings.ACCESSIBILITY_CERTIFIED, headingRecord, listingRecords);
+        } catch (Exception ex) {
+        }
         return accessibilityCertified;
     }
 
+    private String parseAccessibilityCertifiedStr(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+        return uploadUtil.parseSingleRowField(Headings.ACCESSIBILITY_CERTIFIED, headingRecord, listingRecords);
+    }
+
     private Date parseCertificationDate(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        Date certificationDate = uploadUtil.parseSingleRowFieldAsDate(
-                Headings.CERTIFICATION_DATE, headingRecord, listingRecords);
+        Date certificationDate = null;
+        try {
+            certificationDate = uploadUtil.parseSingleRowFieldAsDate(
+                    Headings.CERTIFICATION_DATE, headingRecord, listingRecords);
+        } catch (Exception ex) {
+        }
         return certificationDate;
+    }
+
+    private String parseCertificationDateStr(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+        return uploadUtil.parseSingleRowField(
+                Headings.CERTIFICATION_DATE, headingRecord, listingRecords);
     }
 
     private Product parseProduct(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
@@ -203,9 +223,17 @@ public class ListingDetailsUploadHandler {
     }
 
     private Date parseSedTestingDate(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        Date sedTestingDate = uploadUtil.parseSingleRowFieldAsDate(
-                Headings.SED_TESTING_DATE, headingRecord, listingRecords);
+        Date sedTestingDate = null;
+        try {
+            sedTestingDate = uploadUtil.parseSingleRowFieldAsDate(
+                    Headings.SED_TESTING_DATE, headingRecord, listingRecords);
+        } catch (Exception ex) {
+        }
         return sedTestingDate;
+    }
+
+    private String parseSedTestingDateStr(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+        return uploadUtil.parseSingleRowField(Headings.SED_TESTING_DATE, headingRecord, listingRecords);
     }
 
     private boolean sedExists(CertifiedProductSed sed, CertificationCriterion criterion) {

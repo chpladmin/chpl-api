@@ -13,6 +13,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import gov.healthit.chpl.dto.TestParticipantDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -100,6 +102,7 @@ public class TestParticipant implements Serializable {
     private Integer professionalExperienceMonths;
 
     @XmlTransient
+    @JsonIgnore
     private String professionalExperienceMonthsStr;
 
     /**
@@ -111,6 +114,7 @@ public class TestParticipant implements Serializable {
     private Integer computerExperienceMonths;
 
     @XmlTransient
+    @JsonIgnore
     private String computerExperienceMonthsStr;
 
     /**
@@ -123,6 +127,7 @@ public class TestParticipant implements Serializable {
     private Integer productExperienceMonths;
 
     @XmlTransient
+    @JsonIgnore
     private String productExperienceMonthsStr;
 
     /**
@@ -340,6 +345,30 @@ public class TestParticipant implements Serializable {
 
     public void setAgeRange(final String ageRange) {
         this.ageRange = ageRange;
+    }
+
+    public String getProfessionalExperienceMonthsStr() {
+        return professionalExperienceMonthsStr;
+    }
+
+    public void setProfessionalExperienceMonthsStr(String professionalExperienceMonthsStr) {
+        this.professionalExperienceMonthsStr = professionalExperienceMonthsStr;
+    }
+
+    public String getComputerExperienceMonthsStr() {
+        return computerExperienceMonthsStr;
+    }
+
+    public void setComputerExperienceMonthsStr(String computerExperienceMonthsStr) {
+        this.computerExperienceMonthsStr = computerExperienceMonthsStr;
+    }
+
+    public String getProductExperienceMonthsStr() {
+        return productExperienceMonthsStr;
+    }
+
+    public void setProductExperienceMonthsStr(String productExperienceMonthsStr) {
+        this.productExperienceMonthsStr = productExperienceMonthsStr;
     }
 
 }

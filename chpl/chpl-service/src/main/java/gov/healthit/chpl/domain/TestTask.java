@@ -16,6 +16,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
@@ -68,6 +69,7 @@ public class TestTask implements Serializable {
     private Float taskSuccessAverage;
 
     @XmlTransient
+    @JsonIgnore
     private String taskSuccessAverageStr;
 
     /**
@@ -78,6 +80,7 @@ public class TestTask implements Serializable {
     private Float taskSuccessStddev;
 
     @XmlTransient
+    @JsonIgnore
     private String taskSuccessStddevStr;
 
     /**
@@ -89,6 +92,7 @@ public class TestTask implements Serializable {
     private Integer taskPathDeviationObserved;
 
     @XmlTransient
+    @JsonIgnore
     private String taskPathDeviationObservedStr;
 
     /**
@@ -100,6 +104,7 @@ public class TestTask implements Serializable {
     private Integer taskPathDeviationOptimal;
 
     @XmlTransient
+    @JsonIgnore
     private String taskPathDeviationOptimalStr;
 
     /**
@@ -111,6 +116,7 @@ public class TestTask implements Serializable {
     private Long taskTimeAvg;
 
     @XmlTransient
+    @JsonIgnore
     private String taskTimeAvgStr;
 
     /**
@@ -121,6 +127,7 @@ public class TestTask implements Serializable {
     private Integer taskTimeStddev;
 
     @XmlTransient
+    @JsonIgnore
     private String taskTimeStddevStr;
 
     /**
@@ -132,6 +139,7 @@ public class TestTask implements Serializable {
     private Integer taskTimeDeviationObservedAvg;
 
     @XmlTransient
+    @JsonIgnore
     private String taskTimeDeviationObservedAvgStr;
 
     /**
@@ -143,6 +151,7 @@ public class TestTask implements Serializable {
     private Integer taskTimeDeviationOptimalAvg;
 
     @XmlTransient
+    @JsonIgnore
     private String taskTimeDeviationOptimalAvgStr;
 
     /**
@@ -153,6 +162,7 @@ public class TestTask implements Serializable {
     private Float taskErrors;
 
     @XmlTransient
+    @JsonIgnore
     private String taskErrorsStr;
 
     /**
@@ -164,6 +174,7 @@ public class TestTask implements Serializable {
     private Float taskErrorsStddev;
 
     @XmlTransient
+    @JsonIgnore
     private String taskErrorsStddevStr;
 
     /**
@@ -188,6 +199,7 @@ public class TestTask implements Serializable {
     private Float taskRating;
 
     @XmlTransient
+    @JsonIgnore
     private String taskRatingStr;
 
     /**
@@ -199,6 +211,7 @@ public class TestTask implements Serializable {
     private Float taskRatingStddev;
 
     @XmlTransient
+    @JsonIgnore
     private String taskRatingStddevStr;
 
     /**
@@ -553,6 +566,94 @@ public class TestTask implements Serializable {
 
     public void setCriteria(final Set<CertificationCriterion> criteria) {
         this.criteria = criteria;
+    }
+
+    public String getTaskSuccessAverageStr() {
+        return taskSuccessAverageStr;
+    }
+
+    public void setTaskSuccessAverageStr(String taskSuccessAverageStr) {
+        this.taskSuccessAverageStr = taskSuccessAverageStr;
+    }
+
+    public String getTaskSuccessStddevStr() {
+        return taskSuccessStddevStr;
+    }
+
+    public void setTaskSuccessStddevStr(String taskSuccessStddevStr) {
+        this.taskSuccessStddevStr = taskSuccessStddevStr;
+    }
+
+    public String getTaskPathDeviationObservedStr() {
+        return taskPathDeviationObservedStr;
+    }
+
+    public void setTaskPathDeviationObservedStr(String taskPathDeviationObservedStr) {
+        this.taskPathDeviationObservedStr = taskPathDeviationObservedStr;
+    }
+
+    public String getTaskPathDeviationOptimalStr() {
+        return taskPathDeviationOptimalStr;
+    }
+
+    public void setTaskPathDeviationOptimalStr(String taskPathDeviationOptimalStr) {
+        this.taskPathDeviationOptimalStr = taskPathDeviationOptimalStr;
+    }
+
+    public String getTaskTimeAvgStr() {
+        return taskTimeAvgStr;
+    }
+
+    public void setTaskTimeAvgStr(String taskTimeAvgStr) {
+        this.taskTimeAvgStr = taskTimeAvgStr;
+    }
+
+    public String getTaskTimeStddevStr() {
+        return taskTimeStddevStr;
+    }
+
+    public void setTaskTimeStddevStr(String taskTimeStddevStr) {
+        this.taskTimeStddevStr = taskTimeStddevStr;
+    }
+
+    public String getTaskTimeDeviationObservedAvgStr() {
+        return taskTimeDeviationObservedAvgStr;
+    }
+
+    public void setTaskTimeDeviationObservedAvgStr(String taskTimeDeviationObservedAvgStr) {
+        this.taskTimeDeviationObservedAvgStr = taskTimeDeviationObservedAvgStr;
+    }
+
+    public String getTaskTimeDeviationOptimalAvgStr() {
+        return taskTimeDeviationOptimalAvgStr;
+    }
+
+    public void setTaskTimeDeviationOptimalAvgStr(String taskTimeDeviationOptimalAvgStr) {
+        this.taskTimeDeviationOptimalAvgStr = taskTimeDeviationOptimalAvgStr;
+    }
+
+    public String getTaskErrorsStr() {
+        return taskErrorsStr;
+    }
+
+    public void setTaskErrorsStr(String taskErrorsStr) {
+        this.taskErrorsStr = taskErrorsStr;
+    }
+
+    public String getTaskErrorsStddevStr() {
+        return taskErrorsStddevStr;
+    }
+
+    public void setTaskErrorsStddevStr(String taskErrorsStddevStr) {
+        this.taskErrorsStddevStr = taskErrorsStddevStr;
+    }
+
+    public String getTaskRatingStddevStr() {
+        return taskRatingStddevStr;
+    }
+
+    public void setTaskRatingStddevStr(String taskRatingStddevStr) {
+        this.taskRatingStddevStr = taskRatingStddevStr;
     }
 
     @Override
