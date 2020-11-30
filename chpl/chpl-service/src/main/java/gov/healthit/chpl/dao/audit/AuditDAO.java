@@ -9,7 +9,7 @@ import org.apache.tomcat.dbcp.dbcp2.DelegatingConnection;
 import org.hibernate.Session;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.postgresql.copy.CopyManager;
-import org.postgresql.jdbc.PgConnection;
+import org.postgresql.core.BaseConnection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -33,7 +33,7 @@ public class AuditDAO extends BaseDAOImpl {
         LOGGER.info("STARTING");
 
 
-        CopyManager cm = new CopyManager(getPgConnection());
+        CopyManager cm = new CopyManager((BaseConnection) getPgConnection());
         try (FileWriter fw = new FileWriter(new File(auditDataFilePath + "vendor_auto.csv"))) {
             LOGGER.info("Got this far");
             cm.copyOut("COPY (SELECT * from openchpl.vendor) TO STDOUT DELIMITER ',' CSV HEADER", fw);
@@ -47,12 +47,12 @@ public class AuditDAO extends BaseDAOImpl {
     @SuppressWarnings({
             "resource", "rawtypes"
     })
-    private PgConnection getPgConnection() throws SQLException {
+    private Connection getPgConnection() throws SQLException {
         Session session = getSession();
         SessionImplementor sessImpl = (SessionImplementor) session;
         Connection conn = null;
         conn = sessImpl.getJdbcConnectionAccess().obtainConnection();
 
-        return (PgConnection) ((DelegatingConnection) conn).getInnermostDelegateInternal();
+        return ((DelegatingConnection) conn).getInnermostDelegateInternal();
     }
 }
