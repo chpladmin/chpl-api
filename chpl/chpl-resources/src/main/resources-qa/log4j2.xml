@@ -332,12 +332,25 @@
                      fileName="${logDir}/cache/cacheListenerActivity.log"
                      filePermissions="rw-rw-r--"
                      filePattern="${logDir}/cache/history/cacheListenerActivity-%d{yyyy-MM-dd}.log">
+                    <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                        interval="1" modulate="true" />
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
+        <RollingFile name="realWorldTestingUploadJob"
+            fileName="${logDir}/scheduler/realWorldTestingUploadJob.log"
+            filePattern="${logDir}/scheduler/history/realWorldTestingUploadJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
                 <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
                         interval="1" modulate="true" />
+                    interval="1" modulate="true" />
             </Policies>
         </RollingFile>
     </Appenders>
@@ -461,6 +474,10 @@
         <Logger name="developerAccessEmailJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="developerAccessEmailJob" />
+        </Logger>
+        <Logger name="realWorldTestingUploadJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="realWorldTestingUploadJob" />
         </Logger>
     </Loggers>
 </Configuration>

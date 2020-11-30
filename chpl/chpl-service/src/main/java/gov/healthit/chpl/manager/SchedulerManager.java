@@ -7,12 +7,12 @@ import static org.quartz.TriggerBuilder.newTrigger;
 import static org.quartz.TriggerKey.triggerKey;
 import static org.quartz.impl.matchers.GroupMatcher.groupEquals;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.quartz.CronTrigger;
@@ -448,8 +448,6 @@ public class SchedulerManager extends SecuredManager {
     }
 
     private String createTriggerName(ChplOneTimeTrigger trigger) {
-        Date toFormat = new Date(trigger.getRunDateMillis());
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
-        return sdf.format(toFormat);
+        return UUID.randomUUID().toString();
     }
 }
