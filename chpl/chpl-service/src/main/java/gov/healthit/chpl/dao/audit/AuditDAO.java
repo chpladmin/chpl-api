@@ -33,7 +33,7 @@ public class AuditDAO extends BaseDAOImpl {
         LOGGER.info("STARTING");
 
 
-        CopyManager cm = new CopyManager((BaseConnection) getPgConnection());
+        CopyManager cm = new CopyManager(getPgConnection());
         try (FileWriter fw = new FileWriter(new File(auditDataFilePath + "vendor_auto.csv"))) {
             LOGGER.info("Got this far");
             cm.copyOut("COPY (SELECT * from openchpl.vendor) TO STDOUT DELIMITER ',' CSV HEADER", fw);
@@ -47,12 +47,12 @@ public class AuditDAO extends BaseDAOImpl {
     @SuppressWarnings({
             "resource", "rawtypes"
     })
-    private Connection getPgConnection() throws SQLException {
+    private BaseConnection getPgConnection() throws SQLException {
         Session session = getSession();
         SessionImplementor sessImpl = (SessionImplementor) session;
         Connection conn = null;
         conn = sessImpl.getJdbcConnectionAccess().obtainConnection();
 
-        return ((DelegatingConnection) conn).getInnermostDelegateInternal();
+        return (BaseConnection) ((DelegatingConnection) conn).getInnermostDelegateInternal();
     }
 }
