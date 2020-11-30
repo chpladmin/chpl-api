@@ -53,7 +53,6 @@ public class AuditDAO extends BaseDAOImpl {
         Connection conn = null;
         conn = sessImpl.getJdbcConnectionAccess().obtainConnection();
 
-        return (org.postgresql.jdbc.PgConnection)
-                    ((DelegatingConnection) conn).getInnermostDelegateInternal();
+        return (PgConnection) ((DelegatingConnection) conn).getInnermostDelegateInternal();
     }
 }
