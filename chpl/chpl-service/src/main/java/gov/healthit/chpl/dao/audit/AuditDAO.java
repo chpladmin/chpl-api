@@ -5,14 +5,10 @@ import java.io.FileWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-
-import org.hibernate.jdbc.Work;
+import org.apache.tomcat.dbcp.dbcp2.DelegatingConnection;
+import org.hibernate.Session;
+import org.hibernate.engine.spi.SessionImplementor;
 import org.postgresql.copy.CopyManager;
-import org.postgresql.core.BaseConnection;
 import org.postgresql.jdbc.PgConnection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,45 +28,32 @@ public class AuditDAO extends BaseDAOImpl {
         this.auditDataFilePath = auditDataFilePath;
     }
 
-    public void doSomething() {
+    @SuppressWarnings("resource")
+    public void doSomething() throws SQLException {
         LOGGER.info("STARTING");
-        getSession().doWork(new Work() {
 
-            @SuppressWarnings("resource")
-            @Override
-            public void execute(Connection connection) throws SQLException {
-                CopyManager cm = new CopyManager(getJNDIConnection());
 
-                try (FileWriter fw = new FileWriter(new File(auditDataFilePath + "\\vendor_auto.csv"))) {
-                    LOGGER.info("Got this far");
-                    cm.copyOut("COPY (SELECT * from openchpl.vendor) TO STDOUT DELIMITER ',' CSV HEADER", fw);
-                    LOGGER.info("And even farther");
-                } catch (Exception e) {
-                    LOGGER.catching(e);
-                }
-
-            }
-        });
+        CopyManager cm = new CopyManager(getPgConnection());
+        try (FileWriter fw = new FileWriter(new File(auditDataFilePath + "vendor_auto.csv"))) {
+            LOGGER.info("Got this far");
+            cm.copyOut("COPY (SELECT * from openchpl.vendor) TO STDOUT DELIMITER ',' CSV HEADER", fw);
+            LOGGER.info("And even farther");
+        } catch (Exception e) {
+            LOGGER.catching(e);
+        }
         LOGGER.info("COMPLETED");
     }
 
-    private BaseConnection getJNDIConnection() {
-        String DATASOURCE_CONTEXT = "java:comp/env/jdbc/openchpl";
-        BaseConnection result = null;
-        try {
-            Context initialContext = new InitialContext();
-            // cast is necessary
-            DataSource datasource = (DataSource) initialContext.lookup(DATASOURCE_CONTEXT);
-            if (datasource != null) {
-                result = datasource.getConnection().unwrap(PgConnection.class);
-            } else {
-                LOGGER.error("Failed to lookup datasource.");
-            }
-        } catch (NamingException ex) {
-            LOGGER.catching(ex);
-        } catch (SQLException ex) {
-            LOGGER.catching(ex);
-        }
-        return result;
+    @SuppressWarnings({
+            "resource", "rawtypes"
+    })
+    private PgConnection getPgConnection() throws SQLException {
+        Session session = getSession();
+        SessionImplementor sessImpl = (SessionImplementor) session;
+        Connection conn = null;
+        conn = sessImpl.getJdbcConnectionAccess().obtainConnection();
+
+        return (org.postgresql.jdbc.PgConnection)
+                    ((DelegatingConnection) conn).getInnermostDelegateInternal();
     }
 }

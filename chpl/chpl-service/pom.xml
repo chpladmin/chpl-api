@@ -374,6 +374,13 @@
             <version>1.18.10</version>
             <scope>provided</scope>
         </dependency>
+        
+        <!-- https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-dbcp -->
+		<dependency>
+    		<groupId>org.apache.tomcat</groupId>
+    		<artifactId>tomcat-dbcp</artifactId>
+    		<version>8.5.59</version>
+		</dependency>
     </dependencies>
 
     <build>
