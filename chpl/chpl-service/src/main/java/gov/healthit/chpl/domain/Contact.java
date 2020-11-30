@@ -3,11 +3,6 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.HashMap;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
-
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -25,8 +20,7 @@ import lombok.Builder;
  * @author alarned
  *
  */
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
+@Deprecated
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @AllArgsConstructor
@@ -37,7 +31,6 @@ public class Contact implements Serializable {
     /**
      * Contact internal ID
      */
-    @XmlElement(required = true)
     private Long contactId;
 
     /**
@@ -45,7 +38,6 @@ public class Contact implements Serializable {
      * Edition, and a string variable that does not take any restrictions on
      * formatting or values.
      */
-    @XmlElement(required = true)
     private String fullName;
 
     /**
@@ -53,13 +45,12 @@ public class Contact implements Serializable {
      * and a string variable that does not take any restrictions on formatting
      * or values. Usually only used for Contacts representing Users.
      */
-    @XmlElement(required = false, nillable = true)
+    @Deprecated
     private String friendlyName;
 
     /**
      * Email address of the contact. It is applicable to 2014 and 2015 Edition.
      */
-    @XmlElement(required = true)
     private String email;
 
     /**
@@ -67,13 +58,11 @@ public class Contact implements Serializable {
      * for 2014 and 2015 Edition, and a string variable that does not take any
      * restrictions on formatting or values. Do not include hyphens.
      */
-    @XmlElement(required = true)
     private String phoneNumber;
 
     /**
      * Contact title (Ms., Mr., Dr., etc)
      */
-    @XmlElement(required = false, nillable = true)
     private String title;
 
     /**
@@ -89,7 +78,6 @@ public class Contact implements Serializable {
     public Contact(ContactDTO dto) {
         this.contactId = dto.getId();
         this.fullName = dto.getFullName();
-        this.friendlyName = dto.getFriendlyName();
         this.email = dto.getEmail();
         this.phoneNumber = dto.getPhoneNumber();
         this.title = dto.getTitle();
@@ -105,9 +93,6 @@ public class Contact implements Serializable {
         }
         if (map.containsKey("fullName") && map.get("fullName") != null) {
             this.fullName = map.get("fullName").toString();
-        }
-        if (map.containsKey("friendlyName") && map.get("friendlyName") != null) {
-            this.friendlyName = map.get("friendlyName").toString();
         }
         if (map.containsKey("email") && map.get("email") != null) {
             this.email = map.get("email").toString();
@@ -130,7 +115,6 @@ public class Contact implements Serializable {
                 && this.contactId.longValue() == anotherContact.contactId.longValue())
                 || (this.contactId == null && anotherContact.contactId == null)) {
             return ObjectUtils.equals(this.fullName, anotherContact.fullName)
-                    && ObjectUtils.equals(this.friendlyName, anotherContact.friendlyName)
                     && ObjectUtils.equals(this.email, anotherContact.email)
                     && ObjectUtils.equals(this.phoneNumber, anotherContact.phoneNumber)
                     && ObjectUtils.equals(this.title, anotherContact.title);
@@ -146,9 +130,6 @@ public class Contact implements Serializable {
         int hashCode = 0;
         if (!StringUtils.isEmpty(this.fullName)) {
             hashCode += this.fullName.hashCode();
-        }
-        if (!StringUtils.isEmpty(this.friendlyName)) {
-            hashCode += this.friendlyName.hashCode();
         }
         if (!StringUtils.isEmpty(this.email)) {
             hashCode += this.email.hashCode();
@@ -178,14 +159,6 @@ public class Contact implements Serializable {
         this.fullName = fullName;
     }
 
-    public String getFriendlyName() {
-        return friendlyName;
-    }
-
-    public void setFriendlyName(final String friendlyName) {
-        this.friendlyName = friendlyName;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -212,8 +185,8 @@ public class Contact implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("[Contact domain object: [Id: %d] [Full Name: %s] [Friendly Name: %s] [Email: %s],"
-                + "[Phone Number: %s], [Title: %s]]", this.getContactId(), this.getFullName(), this.getFriendlyName(),
+        return String.format("[Contact domain object: [Id: %d] [Full Name: %s] [Email: %s],"
+                + "[Phone Number: %s], [Title: %s]]", this.getContactId(), this.getFullName(),
                 this.getEmail(), this.getPhoneNumber(), this.getTitle());
 
     }

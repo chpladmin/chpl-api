@@ -1,5 +1,38 @@
 # Release Notes
 
+## Version 25.17.0
+_30 November 2020_
+
+### Features
+* Add upload for Real World Testing
+* Stop showing "System Administration" accounts on User Management page
+* Stop allowing "System Administration" accounts to log in
+
+---
+
+## Version 25.16.0
+_16 November 2020_
+
+### Features
+* Add new endpoint to get developer hierarchy
+* Remove friendly name from developer and product points of contact
+
+### Bug Fixes
+* Correct the wrong URLs in few emails
+* Re-order "reason" element for dev status changes in XML
+
+---
+
+## Version 25.15.0
+_19 October 2020_
+
+### Features
+* Add ability to validate and save Real World Testing data
+* Send email to Direct Review/Jira team upon developer split
+* Revise email subject and body for shared ONC-ACB reports
+
+---
+
 ## Version 25.14.0
 _5 October 2020_
 

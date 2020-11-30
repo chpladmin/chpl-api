@@ -29,9 +29,9 @@ import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Job;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.concept.JobTypeConcept;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
@@ -472,20 +472,15 @@ public class PendingSurveillanceManager extends SecuredManager {
             alreadyDeletedEx.setEndDate(pendingSurv.getEndDate());
 
             try {
-                UserDTO lastModifiedUser = userDao.getById(pendingSurv.getLastModifiedUser());
-                if (lastModifiedUser != null) {
-                    Contact contact = new Contact();
-                    contact.setFullName(lastModifiedUser.getFullName());
-                    contact.setFriendlyName(lastModifiedUser.getFriendlyName());
-                    contact.setEmail(lastModifiedUser.getEmail());
-                    contact.setPhoneNumber(lastModifiedUser.getPhoneNumber());
-                    contact.setTitle(lastModifiedUser.getTitle());
-                    alreadyDeletedEx.setContact(contact);
+                UserDTO lastModifiedUserDto = userDao.getById(pendingSurv.getLastModifiedUser());
+                if (lastModifiedUserDto != null) {
+                    User lastModifiedUser = new User(lastModifiedUserDto);
+                    alreadyDeletedEx.setUser(lastModifiedUser);
                 } else {
-                    alreadyDeletedEx.setContact(null);
+                    alreadyDeletedEx.setUser(null);
                 }
             } catch (UserRetrievalException ex) {
-                alreadyDeletedEx.setContact(null);
+                alreadyDeletedEx.setUser(null);
             }
             throw alreadyDeletedEx;
         }
@@ -683,20 +678,15 @@ public class PendingSurveillanceManager extends SecuredManager {
         alreadyDeletedEx.setStartDate(entity.getStartDate());
         alreadyDeletedEx.setEndDate(entity.getEndDate());
         try {
-            UserDTO lastModifiedUser = userDao.getById(entity.getLastModifiedUser());
-            if (lastModifiedUser != null) {
-                Contact contact = new Contact();
-                contact.setFullName(lastModifiedUser.getFullName());
-                contact.setFriendlyName(lastModifiedUser.getFriendlyName());
-                contact.setEmail(lastModifiedUser.getEmail());
-                contact.setPhoneNumber(lastModifiedUser.getPhoneNumber());
-                contact.setTitle(lastModifiedUser.getTitle());
-                alreadyDeletedEx.setContact(contact);
+            UserDTO lastModifiedUserDto = userDao.getById(entity.getLastModifiedUser());
+            if (lastModifiedUserDto != null) {
+                User lastModifiedUser = new User(lastModifiedUserDto);
+                alreadyDeletedEx.setUser(lastModifiedUser);
             } else {
-                alreadyDeletedEx.setContact(null);
+                alreadyDeletedEx.setUser(null);
             }
         } catch (UserRetrievalException ex) {
-            alreadyDeletedEx.setContact(null);
+            alreadyDeletedEx.setUser(null);
         }
         return alreadyDeletedEx;
     }

@@ -310,22 +310,6 @@
             </job-data-map>
         </job>
 
-        <!-- Job used to mark 2014 upload templates as deleted. -->
-        <job>
-            <name>remove2014UploadTemplates</name>
-            <group>systemJobs</group>
-            <description>Marks 2014 upload templates as deleted</description>
-            <job-class>gov.healthit.chpl.scheduler.job.Remove2014UploadTemplateJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC</value>
-                </entry>
-            </job-data-map>
-        </job>
-
         <!-- Job fired when developer is split -->
         <job>
             <name>splitDeveloperJob</name>
@@ -358,6 +342,26 @@
                 <entry>
                     <key>authorities</key>
                     <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+            </job-data-map>
+        </job>
+
+        <!-- Job fired when real world testing is uploaded -->
+        <job>
+            <name>realWorldTestingUploadJob</name>
+            <group>chplBackgroundJobs</group>
+            <description>Performs the import, validation of listings based on the uploaded file.  An email is sent to the user's email with status for each item in the file</description>
+            <job-class>gov.healthit.chpl.scheduler.job.RealWorldTestingUploadJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
+                </entry>
+                <entry>
+                    <key>email</key>
+                    <value></value>
                 </entry>
             </job-data-map>
         </job>

@@ -163,12 +163,8 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
                                 Long.parseLong(
                                         listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString())));
 
-                String productDetailsUrl = env.getProperty("chplUrlBegin").trim();
+                String productDetailsUrl = env.getProperty("chplUrlBegin").trim() + env.getProperty("listingDetailsUrl") + listing.getId();
                 LOGGER.info("productDetailsUrl = " + productDetailsUrl);
-                if (!productDetailsUrl.endsWith("/")) {
-                    productDetailsUrl += "/";
-                }
-                productDetailsUrl += "#/product/" + listing.getId();
                 item.setUrl(productDetailsUrl);
                 item.setReason(reason);
             }

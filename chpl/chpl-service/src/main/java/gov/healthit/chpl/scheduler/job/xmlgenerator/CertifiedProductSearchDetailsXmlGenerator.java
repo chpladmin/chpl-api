@@ -2,6 +2,7 @@ package gov.healthit.chpl.scheduler.job.xmlgenerator;
 
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -22,6 +23,7 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
         }
     }
 
+    @SuppressWarnings("checkstyle:linelength")
     public static void add(CertifiedProductSearchDetails cp, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (cp != null) {
             sw.writeStartElement(rootNodeName);
@@ -110,6 +112,10 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
             CertifiedProductQmsStandardXmlGenerator.add(cp.getQmsStandards(), "qmsStandards", sw);
             createSimpleElement(cp.getReportFileLocation(), "reportFileLocation", sw);
             createSimpleElement(cp.getRwtEligibilityYear(), "rwtEligibilityYear", sw);
+            createSimpleElement(Objects.nonNull(cp.getRwtPlansCheckDate()) ? cp.getRwtPlansCheckDate().toString() : null, "rwtPlansCheckDate", sw);
+            createSimpleElement(cp.getRwtPlansUrl(), "rwtPlansUrl", sw);
+            createSimpleElement(Objects.nonNull(cp.getRwtResultsCheckDate()) ? cp.getRwtResultsCheckDate().toString() : null, "rwtResultsCheckDate", sw);
+            createSimpleElement(cp.getRwtResultsUrl(), "rwtResultsUrl", sw);
             CertifiedProductSedXmlGenerator.add(cp.getSed(), "sed", sw);
             createSimpleElement(cp.getSedIntendedUserDescription(), "sedIntendedUserDescription", sw);
             createSimpleElement(cp.getSedReportFileLocation(), "sedReportFileLocation", sw);
@@ -120,6 +126,7 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
             TransparencyAttestationXmlGenerator.add(cp.getTransparencyAttestation(), "transparencyAttestation", sw);
             createSimpleElement(cp.getTransparencyAttestationUrl(), "transparencyAttestationUrl", sw);
             ProductVersionXmlGenerator.addProductVersion(cp.getVersion(), "version", sw);
+
             sw.writeEndElement();
         }
     }

@@ -1,11 +1,14 @@
 package gov.healthit.chpl.manager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -32,10 +35,15 @@ import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.DeveloperTransparency;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.developer.hierarchy.DeveloperTree;
+import gov.healthit.chpl.domain.developer.hierarchy.ProductTree;
+import gov.healthit.chpl.domain.developer.hierarchy.SimpleListing;
+import gov.healthit.chpl.domain.developer.hierarchy.VersionTree;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.CertifiedProductSummaryDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTODeprecated;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
@@ -44,6 +52,7 @@ import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventPair;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
+import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.TransparencyAttestationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.AttestationType;
@@ -59,6 +68,7 @@ import gov.healthit.chpl.manager.rules.developer.DeveloperValidationContext;
 import gov.healthit.chpl.manager.rules.developer.DeveloperValidationFactory;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.job.SplitDeveloperJob;
+import gov.healthit.chpl.service.DirectReviewUpdateEmailService;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -74,39 +84,46 @@ public class DeveloperManager extends SecuredManager {
 
     private DeveloperDAO developerDao;
     private ProductManager productManager;
+    private ProductVersionManager versionManager;
     private UserManager userManager;
     private CertificationBodyManager acbManager;
     private CertificationBodyDAO certificationBodyDao;
-    private CertifiedProductDAO certifiedProductDAO;
+    private CertifiedProductDAO certifiedProductDao;
     private ChplProductNumberUtil chplProductNumberUtil;
     private ActivityManager activityManager;
     private ErrorMessageUtil msgUtil;
     private ResourcePermissions resourcePermissions;
     private DeveloperValidationFactory developerValidationFactory;
     private ValidationUtils validationUtils;
+    private CertifiedProductDetailsManager cpdManager;
     private TransparencyAttestationManager transparencyAttestationManager;
     private SchedulerManager schedulerManager;
+    private DirectReviewUpdateEmailService directReviewEmailService;
 
     @Autowired
-    @SuppressWarnings({"checkstyle:parameternumber"})
-    public DeveloperManager(DeveloperDAO developerDao, ProductManager productManager, UserManager userManager,
-            CertificationBodyManager acbManager, CertificationBodyDAO certificationBodyDao,
+    @SuppressWarnings("checkstyle:parameternumber")
+    public DeveloperManager(DeveloperDAO developerDao, ProductManager productManager, ProductVersionManager versionManager,
+            UserManager userManager, CertificationBodyManager acbManager, CertificationBodyDAO certificationBodyDao,
             CertifiedProductDAO certifiedProductDAO, ChplProductNumberUtil chplProductNumberUtil,
             ActivityManager activityManager, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
             DeveloperValidationFactory developerValidationFactory, ValidationUtils validationUtils,
+            CertifiedProductDetailsManager cpdManager, DirectReviewUpdateEmailService directReviewEmailService,
             TransparencyAttestationManager transparencyAttestationManager, SchedulerManager schedulerManager) {
         this.developerDao = developerDao;
         this.productManager = productManager;
+        this.versionManager = versionManager;
         this.userManager = userManager;
         this.acbManager = acbManager;
         this.certificationBodyDao = certificationBodyDao;
-        this.certifiedProductDAO = certifiedProductDAO;
+        this.certifiedProductDao = certifiedProductDAO;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.activityManager = activityManager;
         this.msgUtil = msgUtil;
         this.resourcePermissions = resourcePermissions;
         this.developerValidationFactory = developerValidationFactory;
         this.validationUtils = validationUtils;
+        this.cpdManager = cpdManager;
+        this.directReviewEmailService = directReviewEmailService;
         this.transparencyAttestationManager = transparencyAttestationManager;
         this.schedulerManager = schedulerManager;
     }
@@ -154,6 +171,54 @@ public class DeveloperManager extends SecuredManager {
     @Transactional(readOnly = true)
     public DeveloperDTO getById(Long id) throws EntityRetrievalException {
         return getById(id, false);
+    }
+
+    public DeveloperTree getHierarchyById(Long id) throws EntityRetrievalException {
+        DeveloperDTO developer = getById(id);
+        List<ProductDTO> products = productManager.getByDeveloper(developer.getId());
+        List<ProductVersionDTO> versions = versionManager.getByDeveloper(developer.getId());
+        List<CertifiedProductSummaryDTO> listings = certifiedProductDao.findListingSummariesByDeveloperId(developer.getId());
+        List<CertificationBodyDTO> acbs = acbManager.getAll();
+
+        DeveloperTree developerTree = new DeveloperTree(developer);
+        products.stream().forEach(product -> {
+            developerTree.getProducts().add(new ProductTree(product));
+        });
+
+        developerTree.getProducts().stream().forEach(product -> {
+            List<ProductVersionDTO> productVersions =
+                    versions.stream()
+                    .filter(version -> version.getProductId().equals(product.getProductId()))
+                    .collect(Collectors.toList());
+            productVersions.stream().forEach(version -> {
+                product.getVersions().add(new VersionTree(version));
+            });
+        });
+
+        developerTree.getProducts().stream().forEach(product -> {
+            product.getVersions().stream().forEach(version -> {
+                List<CertifiedProductSummaryDTO> versionListings = listings.stream()
+                        .filter(listing -> listing.getVersion().getId().equals(version.getVersionId()))
+                        .collect(Collectors.toList());
+                versionListings.stream().forEach(listing -> {
+                    SimpleListing listingLeaf = new SimpleListing();
+                    Optional<CertificationBodyDTO> listingAcb = acbs.stream()
+                            .filter(acb -> acb.getId().equals(listing.getAcb().getId())).findFirst();
+                    if (listingAcb != null && listingAcb.isPresent()) {
+                        listingLeaf.setAcb(new CertificationBody(listingAcb.get()));
+                    }
+                    listingLeaf.setCertificationDate(listing.getCertificationDate().getTime());
+                    listingLeaf.setCertificationStatus(listing.getCertificationStatus());
+                    listingLeaf.setChplProductNumber(listing.getChplProductNumber());
+                    listingLeaf.setCuresUpdate(listing.getCuresUpdate());
+                    listingLeaf.setEdition(listing.getYear());
+                    listingLeaf.setId(listing.getId());
+                    listingLeaf.setLastModifiedDate(listing.getLastModifiedDate().getTime());
+                    version.getListings().add(listingLeaf);
+                });
+            });
+        });
+        return developerTree;
     }
 
     @Transactional(readOnly = true)
@@ -353,9 +418,20 @@ public class DeveloperManager extends SecuredManager {
         }
 
         DeveloperDTO createdDeveloper = create(developerToCreate);
+
+        Map<Long, CertifiedProductSearchDetails> preMergeListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
+        Map<Long, CertifiedProductSearchDetails> postMergeListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
         // search for any products assigned to the list of developers passed in
         List<ProductDTO> developerProducts = productManager.getByDevelopers(developerIdsToMerge);
         for (ProductDTO product : developerProducts) {
+            List<CertifiedProductDetailsDTO> affectedListings = certifiedProductDao.getDetailsByProductId(product.getId());
+
+            for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
+                CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(affectedListing.getId());
+                LOGGER.info("Complete retrieving details for id: " + details.getId());
+                preMergeListingDetails.put(details.getId(), details);
+            }
+
             // add an item to the ownership history of each product
             ProductOwnerDTO historyToAdd = new ProductOwnerDTO();
             historyToAdd.setProductId(product.getId());
@@ -368,7 +444,14 @@ public class DeveloperManager extends SecuredManager {
             product.getOwner().setId(createdDeveloper.getId());
             productManager.update(product);
 
+            // get the listing details again - this time they will have the new developer code
+            for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
+                CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(affectedListing.getId());
+                LOGGER.info("Complete retrieving details for id: " + details.getId());
+                postMergeListingDetails.put(details.getId(), details);
+            }
         }
+
         // - mark the passed in developers as deleted
         for (Long developerId : developerIdsToMerge) {
             List<CertificationBodyDTO> availableAcbs = resourcePermissions.getAllAcbsForCurrentUser();
@@ -379,6 +462,18 @@ public class DeveloperManager extends SecuredManager {
             }
             developerDao.delete(developerId);
         }
+
+        LOGGER.info("Logging listing activity for developer merge.");
+        for (Long id : postMergeListingDetails.keySet()) {
+            CertifiedProductSearchDetails preMergeListing = preMergeListingDetails.get(id);
+            CertifiedProductSearchDetails postMergeListing = postMergeListingDetails.get(id);
+            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, preMergeListing.getId(),
+                    "Updated certified product " + postMergeListing.getChplProductNumber() + ".", preMergeListing,
+                    postMergeListing);
+        }
+
+        directReviewEmailService.sendEmail(beforeDevelopers, Arrays.asList(createdDeveloper),
+                preMergeListingDetails, postMergeListingDetails);
 
         activityManager.addActivity(
                 ActivityConcept.DEVELOPER, createdDeveloper.getId(), "Merged " + developerIdsToMerge.size()
@@ -457,7 +552,7 @@ public class DeveloperManager extends SecuredManager {
         List<DuplicateChplProdNumber> duplicatedChplProductNumbers = new ArrayList<DuplicateChplProdNumber>();
 
         for (Long developerId : developerIds) {
-            List<CertifiedProductDetailsDTO> certifiedProducts = certifiedProductDAO.findByDeveloperId(developerId);
+            List<CertifiedProductDetailsDTO> certifiedProducts = certifiedProductDao.findByDeveloperId(developerId);
 
             for (CertifiedProductDetailsDTO certifiedProduct : certifiedProducts) {
                 newChplProductNumber = "";

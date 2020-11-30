@@ -58,7 +58,6 @@ import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
-import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
@@ -66,6 +65,7 @@ import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.TransparencyAttestation;
+import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.entity.FuzzyType;
@@ -76,6 +76,7 @@ import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CuresUpdateService;
+import gov.healthit.chpl.service.DirectReviewUpdateEmailService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.Validator;
@@ -181,7 +182,7 @@ public class CertifiedProductManagerTest {
                 statusEventDao, curesUpdateDao, muuDao,  certResultManager, testToolDao,  testStandardDao,
                 testProcDao,  testDataDao, testFuncDao,  ucdDao, testParticipantDao,  testTaskDao, certStatusDao,
                 listingGraphDao, fuzzyChoicesDao,  resourcePermissions, certifiedProductSearchResultDAO,
-                certifiedProductDetailsManager, activityManager,  validatorFactory, curesUpdateService);
+                certifiedProductDetailsManager, activityManager, validatorFactory, curesUpdateService);
     }
 
     @Test(expected = ValidationException.class)
@@ -293,7 +294,7 @@ public class CertifiedProductManagerTest {
                                 .state("CT")
                                 .zipcode("68800")
                                 .build())
-                        .contact(Contact.builder()
+                        .contact(PointOfContact.builder()
                                 .contactId(1L)
                                 .email("fake@email.com")
                                 .fullName("Chris Ulisse")
