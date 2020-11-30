@@ -173,6 +173,7 @@ public class ListingUploadManager {
         List<CSVRecord> allListingRecords = allCsvRecords.subList(headingRowIndex + 1, allCsvRecords.size());
         CertifiedProductSearchDetails listing =
                 listingDetailsHandler.parseAsListing(headingRecord, allListingRecords);
+        listing.setId(id);
         listingNormalizer.normalize(listing);
         return listing;
     }
