@@ -5,6 +5,8 @@ import java.io.FileWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import javax.persistence.Query;
+
 import org.apache.tomcat.dbcp.dbcp2.DelegatingConnection;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.postgresql.PGConnection;
@@ -27,15 +29,32 @@ public class AuditDAO extends BaseDAOImpl {
         this.auditDataFilePath = auditDataFilePath;
     }
 
-    public void doSomething() throws SQLException {
-        LOGGER.info("STARTING");
+    public Integer getApiKeyActivityCount(Integer month, Integer year) {
+        Query query = entityManager.createQuery(
+                "SELECT a "
+                + "FROM ApiKeyActivityEntity a "
+                + "WHERE MONTH(a.creationDate) = :month "
+                + "AND YEAR(a.creationDate) = : year");
+        query.setParameter("month", month);
+        query.setParameter("year", year);
 
-        PGConnection pgConn = getPgConnection().unwrap(PGConnection.class);
-        //CopyManager cm = new CopyManager(getPgConnection().unwrap(BaseConnection.class));
-        CopyManager cm = pgConn.getCopyAPI();
-        try (FileWriter fw = new FileWriter(new File(auditDataFilePath + "vendor_auto.csv"))) {
+        return query.getResultList().size();
+    }
+
+    public void archiveDataToFile(Integer month, Integer year, String fileName, boolean includeHeaders) throws SQLException {
+        String copyCmd = "COPY "
+                + "(SELECT * "
+                + "FROM openchpl.api_key_activity "
+                + "WHERE EXTRACT(MONTH FROM creation_date) = " + month.toString() + " "
+                + "AND EXTRACT(YEAR FROM creation_date) = " + year.toString() + ") "
+                + "TO STDOUT DELIMITER ',' CSV "
+                + "HEADER";
+
+        LOGGER.info("STARTING");
+        CopyManager cm = getPgConnection().getCopyAPI();
+        try (FileWriter fw = new FileWriter(new File(auditDataFilePath + "/" + fileName))) {
             LOGGER.info("Got this far");
-            cm.copyOut("COPY (SELECT * from openchpl.vendor) TO STDOUT DELIMITER ',' CSV HEADER", fw);
+            cm.copyOut(copyCmd, fw);
             LOGGER.info("And even farther");
         } catch (Exception e) {
             LOGGER.catching(e);
@@ -44,12 +63,12 @@ public class AuditDAO extends BaseDAOImpl {
     }
 
     @SuppressWarnings({"resource", "rawtypes"})
-    private Connection getPgConnection() throws SQLException {
+    private PGConnection getPgConnection() throws SQLException {
         SessionImplementor sessImpl = (SessionImplementor) getSession();
         Connection conn = sessImpl.getJdbcConnectionAccess().obtainConnection();
 
         LOGGER.info(((DelegatingConnection) conn).getInnermostDelegateInternal().getClass().toString());
 
-        return ((DelegatingConnection) conn).getInnermostDelegateInternal();
+        return ((DelegatingConnection) conn).getInnermostDelegateInternal().unwrap(PGConnection.class);
     }
 }

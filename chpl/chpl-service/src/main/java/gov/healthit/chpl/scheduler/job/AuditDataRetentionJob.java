@@ -1,9 +1,18 @@
 package gov.healthit.chpl.scheduler.job;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.Month;
+import java.util.UUID;
+
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -16,18 +25,25 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class AuditDataRetentionJob implements Job {
-
+    private static final Integer MEGABYTE = 1024;
     @Autowired
     private AuditDAO auditDAO;
 
     @Autowired
     private JpaTransactionManager txManager;
 
+    @Autowired
+    private Environment env;
+
+    private String auditDataFilePath;
+
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
         LOGGER.info("STARTING AuditDataRetentionJob");
+
+        auditDataFilePath = env.getProperty("auditDataFilePath");
 
         // We need to manually create a transaction in this case because of how AOP works. When a method is
         // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
@@ -37,11 +53,29 @@ public class AuditDataRetentionJob implements Job {
         TransactionTemplate txTemplate = new TransactionTemplate(txManager);
         txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
         txTemplate.execute(new TransactionCallbackWithoutResult() {
-
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try {
-                    auditDAO.doSomething();
+                    LocalDate d = getStartDate();
+                    LocalDate now = LocalDate.now();
+                    while (now.isAfter(d)) {
+                        LOGGER.info("Processing " + d.getMonthValue() + "/" + d.getYear());
+                        if (doesApiKeyActivityExist(d.getMonthValue(), d.getYear())) {
+
+                            String fileName = getProposedFilename(d.getMonthValue(), d.getYear());
+                            boolean doesArchiveExist = doesFileAlreadyExist(fileName);
+                            if (doesArchiveExist) {
+                                fileName = UUID.randomUUID().toString() + ".csv";
+                                auditDAO.archiveDataToFile(d.getMonthValue(), d.getYear(), fileName, false);
+                                //Append the temporary file to the existing file
+                                appendFiles(getProposedFilename(d.getMonthValue(), d.getYear()), fileName);
+
+                            } else {
+                                auditDAO.archiveDataToFile(d.getMonthValue(), d.getYear(), fileName, true);
+                            }
+                        }
+                        d = d.plusMonths(1);
+                    }
                 } catch (Exception e) {
                     LOGGER.catching(e);
                     status.setRollbackOnly();
@@ -49,8 +83,42 @@ public class AuditDataRetentionJob implements Job {
             }
         });
 
-
         LOGGER.info("COMPLETED AuditDataRetentionJob");
     }
 
+    private boolean doesApiKeyActivityExist(Integer month, Integer year) {
+        Integer count = auditDAO.getApiKeyActivityCount(month, year);
+        LOGGER.info("Found " + count + " records");
+        return  count > 0;
+    }
+
+    @SuppressWarnings({"checkstyle:magicnumber"})
+    private LocalDate getStartDate() {
+        return LocalDate.of(2016, Month.APRIL, 1);
+    }
+
+    private String getProposedFilename(Integer month, Integer year) {
+        return "api-key-activity-" + month.toString() + "-" + year.toString() + ".csv";
+    }
+
+    private boolean doesFileAlreadyExist(String fileName) {
+        File check = new File(auditDataFilePath + fileName);
+        return check.exists();
+    }
+
+    private void appendFiles(String file1, String file2) {
+      try (FileOutputStream file1Stream = new FileOutputStream(auditDataFilePath + file1, true);
+              FileInputStream file2Stream = new FileInputStream(auditDataFilePath + file2)) {
+
+          //The buffer size for reading data
+          byte[] buffer = new byte[MEGABYTE];
+          int length;
+          //Copy data to another file
+          while ((length = file2Stream.read(buffer)) > 0) {
+              file1Stream.write(buffer, 0, length);
+          }
+      } catch (IOException e) {
+          LOGGER.catching(e);
+      }
+    }
 }
