@@ -7,8 +7,8 @@ import java.sql.SQLException;
 
 import org.apache.tomcat.dbcp.dbcp2.DelegatingConnection;
 import org.hibernate.engine.spi.SessionImplementor;
+import org.postgresql.PGConnection;
 import org.postgresql.copy.CopyManager;
-import org.postgresql.core.BaseConnection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -30,8 +30,9 @@ public class AuditDAO extends BaseDAOImpl {
     public void doSomething() throws SQLException {
         LOGGER.info("STARTING");
 
-
-        CopyManager cm = new CopyManager(getPgConnection().unwrap(BaseConnection.class));
+        PGConnection pgConn = getPgConnection().unwrap(PGConnection.class);
+        //CopyManager cm = new CopyManager(getPgConnection().unwrap(BaseConnection.class));
+        CopyManager cm = pgConn.getCopyAPI();
         try (FileWriter fw = new FileWriter(new File(auditDataFilePath + "vendor_auto.csv"))) {
             LOGGER.info("Got this far");
             cm.copyOut("COPY (SELECT * from openchpl.vendor) TO STDOUT DELIMITER ',' CSV HEADER", fw);
