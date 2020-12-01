@@ -4,6 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.UUID;
@@ -61,18 +65,7 @@ public class AuditDataRetentionJob implements Job {
                     while (now.isAfter(d)) {
                         LOGGER.info("Processing " + d.getMonthValue() + "/" + d.getYear());
                         if (doesApiKeyActivityExist(d.getMonthValue(), d.getYear())) {
-
-                            String fileName = getProposedFilename(d.getMonthValue(), d.getYear());
-                            boolean doesArchiveExist = doesFileAlreadyExist(fileName);
-                            if (doesArchiveExist) {
-                                fileName = UUID.randomUUID().toString() + ".csv";
-                                auditDAO.archiveDataToFile(d.getMonthValue(), d.getYear(), fileName, false);
-                                //Append the temporary file to the existing file
-                                appendFiles(getProposedFilename(d.getMonthValue(), d.getYear()), fileName);
-
-                            } else {
-                                auditDAO.archiveDataToFile(d.getMonthValue(), d.getYear(), fileName, true);
-                            }
+                            archiveData(d.getMonthValue(), d.getYear());
                         }
                         d = d.plusMonths(1);
                     }
@@ -84,6 +77,20 @@ public class AuditDataRetentionJob implements Job {
         });
 
         LOGGER.info("COMPLETED AuditDataRetentionJob");
+    }
+
+    private void archiveData(Integer month, Integer year) throws SQLException, IOException {
+        String fileName = getProposedFilename(month, year);
+        boolean doesArchiveExist = doesFileAlreadyExist(fileName);
+        if (doesArchiveExist) {
+            fileName = UUID.randomUUID().toString() + ".csv";
+            auditDAO.archiveDataToFile(month, year, fileName, false);
+            //Append the temporary file to the existing file
+            appendFiles(getProposedFilename(month, year), fileName);
+            deleteFile(fileName);
+        } else {
+            auditDAO.archiveDataToFile(month, year, fileName, true);
+        }
     }
 
     private boolean doesApiKeyActivityExist(Integer month, Integer year) {
@@ -110,7 +117,6 @@ public class AuditDataRetentionJob implements Job {
       try (FileOutputStream file1Stream = new FileOutputStream(auditDataFilePath + file1, true);
               FileInputStream file2Stream = new FileInputStream(auditDataFilePath + file2)) {
 
-          //The buffer size for reading data
           byte[] buffer = new byte[MEGABYTE];
           int length;
           //Copy data to another file
@@ -120,5 +126,10 @@ public class AuditDataRetentionJob implements Job {
       } catch (IOException e) {
           LOGGER.catching(e);
       }
+    }
+
+    private void deleteFile(String fileName) throws IOException {
+        Path fileToDelete = Paths.get(auditDataFilePath + fileName);
+        Files.deleteIfExists(fileToDelete);
     }
 }
