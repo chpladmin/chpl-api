@@ -1,5 +1,15 @@
 # Release Notes
 
+## Version 25.17.0
+_30 November 2020_
+
+### Features
+* Add upload for Real World Testing
+* Stop showing "System Administration" accounts on User Management page
+* Stop allowing "System Administration" accounts to log in
+
+---
+
 ## Version 25.16.0
 _16 November 2020_
 
