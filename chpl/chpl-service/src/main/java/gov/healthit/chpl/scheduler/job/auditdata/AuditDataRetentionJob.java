@@ -9,7 +9,6 @@ import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.UUID;
 
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -89,7 +88,7 @@ public class AuditDataRetentionJob implements Job {
         String fileName = auditDataFile.getProposedFilename(month, year);
         boolean doesArchiveExist = auditDataFile.doesFileAlreadyExist(fileName);
         if (doesArchiveExist) {
-            fileName = UUID.randomUUID().toString() + ".csv";
+            fileName = auditDataFile.getRandomFilename();
             apiKeyActivityAuditDAO.archiveDataToFile(month, year, fileName, false);
             //Append the temporary file to the existing file
             appendFiles(auditDataFile.getProposedFilename(month, year), fileName);

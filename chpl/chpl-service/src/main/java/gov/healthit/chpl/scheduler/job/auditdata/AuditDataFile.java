@@ -1,6 +1,7 @@
 package gov.healthit.chpl.scheduler.job.auditdata;
 
 import java.io.File;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +18,10 @@ public class AuditDataFile {
 
     public String getProposedFilename(Integer month, Integer year) {
         return auditDataFilePath + "api-key-activity-" + year.toString() + "-" + month.toString() + ".csv";
+    }
+
+    public String getRandomFilename() {
+        return auditDataFilePath + UUID.randomUUID().toString() + ".csv";
     }
 
     public boolean doesFileAlreadyExist(String fileName) {
