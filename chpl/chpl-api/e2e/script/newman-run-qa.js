@@ -90,7 +90,7 @@ const jobs = [
     cb => newman.run(developerControllerDataTests,cb),
     cb => newman.run(developerControllerNoDataTests,cb),
     cb => newman.run(productsControllerTests,cb),
-	cb => newman.run(productVersionControllerTests,cb),
+    cb => newman.run(productVersionControllerTests,cb),
     cb => newman.run(statusControllerTests,cb),
     cb => newman.run(testinglabControllerTests,cb),
 ];
