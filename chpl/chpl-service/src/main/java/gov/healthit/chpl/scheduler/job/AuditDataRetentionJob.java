@@ -60,14 +60,14 @@ public class AuditDataRetentionJob implements Job {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try {
-                    LocalDate d = getStartDate();
+                    LocalDate targetDate = getStartDate();
                     LocalDate now = LocalDate.now();
-                    while (now.isAfter(d)) {
-                        LOGGER.info("Processing " + d.getMonthValue() + "/" + d.getYear());
-                        if (doesApiKeyActivityExist(d.getMonthValue(), d.getYear())) {
-                            archiveData(d.getMonthValue(), d.getYear());
+                    while (now.isAfter(targetDate)) {
+                        LOGGER.info("Processing " + targetDate.toString());
+                        if (doesApiKeyActivityExist(targetDate)) {
+                            archiveData(targetDate.getMonthValue(), targetDate.getYear());
                         }
-                        d = d.plusMonths(1);
+                        targetDate = targetDate.plusMonths(1);
                     }
                 } catch (Exception e) {
                     LOGGER.catching(e);
@@ -91,10 +91,11 @@ public class AuditDataRetentionJob implements Job {
         } else {
             auditDAO.archiveDataToFile(month, year, fileName, true);
         }
+        auditDAO.deleteApiKeyActivity(month, year);
     }
 
-    private boolean doesApiKeyActivityExist(Integer month, Integer year) {
-        Integer count = auditDAO.getApiKeyActivityCount(month, year);
+    private boolean doesApiKeyActivityExist(LocalDate targetDate) {
+        Long count = auditDAO.getApiKeyActivityCount(targetDate.getMonthValue(), targetDate.getYear());
         LOGGER.info("Found " + count + " records");
         return  count > 0;
     }
