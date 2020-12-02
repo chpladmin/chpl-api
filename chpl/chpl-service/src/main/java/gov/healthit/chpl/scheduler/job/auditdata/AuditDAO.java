@@ -1,4 +1,4 @@
-package gov.healthit.chpl.dao.audit;
+package gov.healthit.chpl.scheduler.job.auditdata;
 
 import java.io.File;
 import java.io.FileWriter;

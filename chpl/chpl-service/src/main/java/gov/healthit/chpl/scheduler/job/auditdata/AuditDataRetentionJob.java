@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job;
+package gov.healthit.chpl.scheduler.job.auditdata;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,7 +24,6 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.dao.audit.AuditDAO;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -106,7 +105,7 @@ public class AuditDataRetentionJob implements Job {
     }
 
     private String getProposedFilename(Integer month, Integer year) {
-        return "api-key-activity-" + month.toString() + "-" + year.toString() + ".csv";
+        return "api-key-activity-" + year.toString() + "-" + month.toString() + ".csv";
     }
 
     private boolean doesFileAlreadyExist(String fileName) {
