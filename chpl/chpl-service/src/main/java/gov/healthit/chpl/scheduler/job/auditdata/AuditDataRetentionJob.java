@@ -9,6 +9,8 @@ import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.Arrays;
+import java.util.List;
 
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -31,6 +33,9 @@ public class AuditDataRetentionJob implements Job {
     private ApiKeyActivityAuditDAO apiKeyActivityAuditDAO;
 
     @Autowired
+    private LoggedActionsAuditDAO loggedActionsAuditDAO;
+
+    @Autowired
     private AuditDataFile auditDataFile;
 
     @Autowired
@@ -40,6 +45,7 @@ public class AuditDataRetentionJob implements Job {
     private Environment env;
 
     private Integer retentionPolicyInMonths;
+    private AuditDAO currentAuditDAO;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -60,13 +66,10 @@ public class AuditDataRetentionJob implements Job {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try {
-                    LocalDate targetDate = getStartDate();
-                    while (isDateBeforeRetentionPolicy(targetDate)) {
-                        LOGGER.info("Processing " + targetDate.toString());
-                        if (doesAuditDataExist(targetDate.getMonthValue(), targetDate.getYear())) {
-                            archiveData(targetDate.getMonthValue(), targetDate.getYear());
-                        }
-                        targetDate = targetDate.plusMonths(1);
+                    List<AuditDAO> auditDAOs = Arrays.asList(apiKeyActivityAuditDAO, loggedActionsAuditDAO);
+                    for (AuditDAO dao : auditDAOs) {
+                        currentAuditDAO = dao;
+                        archiveData();
                     }
                 } catch (Exception e) {
                     LOGGER.catching(e);
@@ -78,29 +81,40 @@ public class AuditDataRetentionJob implements Job {
         LOGGER.info("COMPLETED AuditDataRetentionJob");
     }
 
+    private void archiveData() throws SQLException, IOException {
+        LocalDate targetDate = getStartDate();
+        while (isDateBeforeRetentionPolicy(targetDate)) {
+            LOGGER.info("Processing " + targetDate.toString());
+            if (doesAuditDataExist(targetDate.getMonthValue(), targetDate.getYear())) {
+                archiveDataForMonth(targetDate.getMonthValue(), targetDate.getYear());
+            }
+            targetDate = targetDate.plusMonths(1);
+        }
+    }
+
     private boolean isDateBeforeRetentionPolicy(LocalDate targetDate) {
         LocalDate now = LocalDate.now();
         now = now.minusMonths(retentionPolicyInMonths + 1);
         return now.isAfter(targetDate);
     }
 
-    private void archiveData(Integer month, Integer year) throws SQLException, IOException {
+    private void archiveDataForMonth(Integer month, Integer year) throws SQLException, IOException {
         String fileName = auditDataFile.getProposedFilename(month, year);
         boolean doesArchiveExist = auditDataFile.doesFileAlreadyExist(fileName);
         if (doesArchiveExist) {
             fileName = auditDataFile.getRandomFilename();
-            apiKeyActivityAuditDAO.archiveDataToFile(month, year, fileName, false);
+            currentAuditDAO.archiveDataToFile(month, year, fileName, false);
             //Append the temporary file to the existing file
             appendFiles(auditDataFile.getProposedFilename(month, year), fileName);
             deleteFile(fileName);
         } else {
-            apiKeyActivityAuditDAO.archiveDataToFile(month, year, fileName, true);
+            currentAuditDAO.archiveDataToFile(month, year, fileName, true);
         }
-        apiKeyActivityAuditDAO.deleteAuditData(month, year);
+        currentAuditDAO.deleteAuditData(month, year);
     }
 
     private boolean doesAuditDataExist(Integer month, Integer year) {
-        Long count = apiKeyActivityAuditDAO.getAuditDataCount(month, year);
+        Long count = currentAuditDAO.getAuditDataCount(month, year);
         LOGGER.info("Found " + count + " records");
         return  count > 0;
     }
