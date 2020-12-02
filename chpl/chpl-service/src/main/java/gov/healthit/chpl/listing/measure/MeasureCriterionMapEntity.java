@@ -40,9 +40,6 @@ public class MeasureCriterionMapEntity {
     @JoinColumn(name = "certification_criterion_id", unique = true, nullable = true, insertable = false, updatable = false)
     private CertificationCriterionEntity criterion;
 
-    @Column(name = "macra_criteria_map_id", nullable = false, updatable = false, insertable = false)
-    private Long legacyMacraMeasureId;
-
     @Column(name = "creation_date", nullable = false, updatable = false, insertable = false)
     private Date creationDate;
 

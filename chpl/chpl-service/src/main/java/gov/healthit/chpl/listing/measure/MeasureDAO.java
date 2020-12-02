@@ -41,10 +41,10 @@ public class MeasureDAO extends BaseDAOImpl {
                 MEASURE_HQL_BEGIN
                 + "WHERE measure.deleted = false "
                 + "AND measure.id = "
-                + " (SELECT DISTINCT measure2.id "
-                +   "FROM MeasureEntity measure2 "
-                +   "JOIN measure2.allowedCriteria ac2 "
-                +   "WHERE ac2.legacyMacraMeasureId = :macraMeasureId)",
+                + " (SELECT DISTINCT mcm.measureId "
+                +   "FROM LegacyMacraMeasureCriterionMapEntity legacyMacraMap "
+                +   "JOIN legacyMacraMap.measureCriterionMap mcm "
+                +   "WHERE legacyMacraMap.legacyMacraMeasureId = :macraMeasureId)",
                 MeasureEntity.class);
         query.setParameter("macraMeasureId", macraMeasureId);
         List<MeasureEntity> entities = query.getResultList();
