@@ -109,6 +109,7 @@ public class ListingUploadManager {
         List<ListingUpload> uploadedListings = new ArrayList<ListingUpload>();
         Set<String> distinctChplProductNumbers = getDistinctChplProductNumbers(headingRecord, allListingRecords);
         distinctChplProductNumbers.stream()
+                .filter(chplProductNumber -> StringUtils.isNotEmpty(chplProductNumber))
                 .map(chplProductNumber -> getListingRecords(chplProductNumber, headingRecord, allListingRecords))
                 .map(listingRecords -> createListingUploadMetadata(headingRecord, listingRecords))
                 .forEach(listingUploadMetadata -> {
