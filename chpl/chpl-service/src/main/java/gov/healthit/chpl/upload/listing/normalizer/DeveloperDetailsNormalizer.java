@@ -6,8 +6,10 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.ContactDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.manager.DeveloperManager;
@@ -71,40 +73,50 @@ public class DeveloperDetailsNormalizer {
         if (entered.getSelfDeveloper() == null) {
             entered.setSelfDeveloper(stored.getSelfDeveloper());
         }
-        if (entered.getContact() == null) {
-            entered.setContact(stored.getContact());
+        if (entered.getContact() == null && stored.getContact() != null) {
+            entered.setContact(new PointOfContact());
         }
-        if (entered.getContact() != null && StringUtils.isEmpty(entered.getContact().getFullName())) {
+        if (entered.getContact() != null && StringUtils.isEmpty(entered.getContact().getFullName())
+                && stored.getContact() != null && !StringUtils.isEmpty(stored.getContact().getFullName())) {
             entered.getContact().setFullName(stored.getContact().getFullName());
         }
-        if (entered.getContact() != null && StringUtils.isEmpty(entered.getContact().getEmail())) {
+        if (entered.getContact() != null && StringUtils.isEmpty(entered.getContact().getEmail())
+                && stored.getContact() != null && !StringUtils.isEmpty(stored.getContact().getEmail())) {
             entered.getContact().setEmail(stored.getContact().getEmail());
         }
-        if (entered.getContact() != null && StringUtils.isEmpty(entered.getContact().getPhoneNumber())) {
+        if (entered.getContact() != null && StringUtils.isEmpty(entered.getContact().getPhoneNumber())
+                && stored.getContact() != null && !StringUtils.isEmpty(stored.getContact().getPhoneNumber())) {
             entered.getContact().setPhoneNumber(stored.getContact().getPhoneNumber());
         }
-        if (entered.getContact() != null && StringUtils.isEmpty(entered.getContact().getTitle())) {
+        if (entered.getContact() != null && StringUtils.isEmpty(entered.getContact().getTitle())
+                && stored.getContact() != null && !StringUtils.isEmpty(stored.getContact().getTitle())) {
             entered.getContact().setTitle(stored.getContact().getTitle());
         }
-        if (entered.getAddress() == null) {
-            entered.setAddress(stored.getAddress());
+        if (entered.getAddress() == null && stored.getAddress() != null) {
+            entered.setAddress(new Address());
         }
-        if (entered.getAddress() != null && StringUtils.isEmpty(entered.getAddress().getLine1())) {
+        if (entered.getAddress() != null && StringUtils.isEmpty(entered.getAddress().getLine1())
+                && stored.getAddress() != null && !StringUtils.isEmpty(stored.getAddress().getLine1())) {
             entered.getAddress().setLine1(stored.getAddress().getLine1());
         }
-        if (entered.getAddress() != null && StringUtils.isEmpty(entered.getAddress().getLine2())) {
+        if (entered.getAddress() != null && StringUtils.isEmpty(entered.getAddress().getLine2())
+                && stored.getAddress() != null && !StringUtils.isEmpty(stored.getAddress().getLine2())) {
             entered.getAddress().setLine2(stored.getAddress().getLine2());
         }
-        if (entered.getAddress() != null && StringUtils.isEmpty(entered.getAddress().getCity())) {
+        if (entered.getAddress() != null && StringUtils.isEmpty(entered.getAddress().getCity())
+                && stored.getAddress() != null && !StringUtils.isEmpty(stored.getAddress().getCity())) {
             entered.getAddress().setCity(stored.getAddress().getCity());
         }
-        if (entered.getAddress() != null && StringUtils.isEmpty(entered.getAddress().getState())) {
+        if (entered.getAddress() != null && StringUtils.isEmpty(entered.getAddress().getState())
+                && stored.getAddress() != null && !StringUtils.isEmpty(stored.getAddress().getState())) {
             entered.getAddress().setState(stored.getAddress().getState());
         }
-        if (entered.getAddress() != null && StringUtils.isEmpty(entered.getAddress().getZipcode())) {
+        if (entered.getAddress() != null && StringUtils.isEmpty(entered.getAddress().getZipcode())
+                && stored.getAddress() != null && !StringUtils.isEmpty(stored.getAddress().getZipcode())) {
             entered.getAddress().setZipcode(stored.getAddress().getZipcode());
         }
-        if (entered.getAddress() != null && StringUtils.isEmpty(entered.getAddress().getCountry())) {
+        if (entered.getAddress() != null && StringUtils.isEmpty(entered.getAddress().getCountry())
+                && stored.getAddress() != null && !StringUtils.isEmpty(stored.getAddress().getCountry())) {
             entered.getAddress().setCountry(stored.getAddress().getCountry());
         }
     }
