@@ -21,11 +21,13 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -34,6 +36,7 @@ import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
@@ -62,6 +65,9 @@ public class MergeDeveloperJob implements Job {
 
     @Autowired
     private DeveloperManager devManager;
+
+    @Autowired
+    private DeveloperDAO devDao;
 
     @Autowired
     private ProductManager productManager;
@@ -118,9 +124,12 @@ public class MergeDeveloperJob implements Job {
                 CacheManager.getInstance().clearAll();
             }
 
+            List<DeveloperDTO> affectedDevelopers = new ArrayList<DeveloperDTO>();
+            affectedDevelopers.addAll(preMergeDevelopers);
+            affectedDevelopers.add(postMergeDeveloper);
             directReviewEmailService.sendEmail(
-                    Arrays.asList(preMergeDevelopers),
-                    Arrays.asList(preMergeDevelopers, postMergeDeveloper),
+                    preMergeDevelopers,
+                    affectedDevelopers,
                     preMergeListingDetails, postMergeListingDetails);
 
             //send email about success/failure of job
@@ -129,7 +138,7 @@ public class MergeDeveloperJob implements Job {
                 recipients.add(user.getEmail());
                 try {
                     sendJobCompletionEmails(postMergeDeveloper != null ? postMergeDeveloper : newDeveloper,
-                            mergeException, recipients);
+                            preMergeDevelopers, mergeException, recipients);
                 } catch (IOException | MessagingException e) {
                     LOGGER.error(e);
                 }
@@ -153,7 +162,8 @@ public class MergeDeveloperJob implements Job {
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 
-    private DeveloperDTO mergeDeveloper(List<DeveloperDTO> beforeDevelopers, DeveloperDTO developerToCreate) {
+    private DeveloperDTO mergeDeveloper(List<DeveloperDTO> beforeDevelopers, DeveloperDTO developerToCreate)
+            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, Exception {
         List<Long> developerIdsToMerge = beforeDevelopers.stream()
                 .map(DeveloperDTO::getId)
                 .collect(Collectors.toList());
@@ -167,16 +177,16 @@ public class MergeDeveloperJob implements Job {
         for (ProductDTO product : developerProducts) {
             List<CertifiedProductDetailsDTO> affectedListings = cpManager.getByProduct(product.getId());
             LOGGER.info("Found " + affectedListings.size() + " affected listings under product " + product.getName());
-            for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
-                CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(affectedListing.getId());
-                LOGGER.info("Complete retrieving details for listing: " + details.getId());
+            // need to get details for affected listings now before the product is re-assigned
+            // so that any listings with a generated new-style CHPL ID have the old developer code
+            List<Future<CertifiedProductSearchDetails>> beforeListingFutures
+                = getCertifiedProductSearchDetailsFutures(affectedListings);
+            for (Future<CertifiedProductSearchDetails> future : beforeListingFutures) {
+                CertifiedProductSearchDetails details = future.get();
+                LOGGER.info("Complete retrieving details for id: " + details.getId());
                 preMergeListingDetails.put(details.getId(), details);
             }
 
-            if (product.getOwner().getId().longValue() != preMergeDevelopers.getId().longValue()) {
-                throw new AccessDeniedException("The product " + product.getName()
-                    + " is not owned by " + preMergeDevelopers.getName());
-            }
             // add an item to the ownership history of each product
             ProductOwnerDTO historyToAdd = new ProductOwnerDTO();
             historyToAdd.setProductId(product.getId());
@@ -190,9 +200,11 @@ public class MergeDeveloperJob implements Job {
             productManager.update(product);
 
             // get the listing details again - this time they will have the new developer code
-            for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
-                CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(affectedListing.getId());
-                LOGGER.info("Complete retrieving details for listing: " + details.getId());
+            List<Future<CertifiedProductSearchDetails>> afterListingFutures
+                = getCertifiedProductSearchDetailsFutures(affectedListings);
+            for (Future<CertifiedProductSearchDetails> future : afterListingFutures) {
+                CertifiedProductSearchDetails details = future.get();
+                LOGGER.info("Complete retrieving details for id: " + details.getId());
                 postMergeListingDetails.put(details.getId(), details);
             }
         }
@@ -202,10 +214,10 @@ public class MergeDeveloperJob implements Job {
             List<CertificationBodyDTO> availableAcbs = resourcePermissions.getAllAcbsForCurrentUser();
             if (availableAcbs != null && availableAcbs.size() > 0) {
                 for (CertificationBodyDTO acb : availableAcbs) {
-                    devManager.deleteTransparencyMapping(developerId, acb.getId());
+                    devDao.deleteTransparencyMapping(developerId, acb.getId());
                 }
             }
-            devManager.delete(developerId);
+            devDao.delete(developerId);
         }
 
         LOGGER.info("Logging listing activity for developer merge.");
@@ -221,15 +233,12 @@ public class MergeDeveloperJob implements Job {
                 preMergeListingDetails, postMergeListingDetails);
 
         LOGGER.info("Logging developer merge activity.");
-        DeveloperDTO origDeveloper = devManager.getById(preMergeDevelopers.getId());
         DeveloperDTO afterDeveloper = devManager.getById(createdDeveloper.getId());
-        List<DeveloperDTO> splitDevelopers = new ArrayList<DeveloperDTO>();
-        splitDevelopers.add(origDeveloper);
-        splitDevelopers.add(afterDeveloper);
+        String beforeDevNames = String.join(",",
+                beforeDevelopers.stream().map(DeveloperDTO::getName).collect(Collectors.toList()));
         activityManager.addActivity(ActivityConcept.DEVELOPER, afterDeveloper.getId(),
-                "Merged developer " + origDeveloper.getName() + " into " + origDeveloper.getName()
-                        + " and " + afterDeveloper.getName(),
-                origDeveloper, splitDevelopers);
+                "Merged developers " + beforeDevNames + " into " + afterDeveloper.getName(),
+                beforeDevelopers, afterDeveloper);
 
         return createdDeveloper;
     }
@@ -250,19 +259,19 @@ public class MergeDeveloperJob implements Job {
         return futures;
     }
 
-    private void sendJobCompletionEmails(DeveloperDTO newDeveloper, Exception mergeException, List<String> recipients)
-            throws IOException, AddressException, MessagingException {
+    private void sendJobCompletionEmails(DeveloperDTO newDeveloper, List<DeveloperDTO> oldDevelopers,
+            Exception mergeException, List<String> recipients) throws IOException, AddressException, MessagingException {
 
         String subject = getSubject(mergeException == null);
         String htmlMessage = "";
         if (mergeException == null) {
-            htmlMessage = createHtmlEmailBodySuccess(newDeveloper);
+            htmlMessage = createHtmlEmailBodySuccess(newDeveloper, oldDevelopers);
         } else {
             String[] errorEmailRecipients = env.getProperty("mergeDeveloperErrorEmailRecipients").split(",");
             for (int i = 0; i < errorEmailRecipients.length; i++) {
                 recipients.add(errorEmailRecipients[i].trim());
             }
-            htmlMessage = createHtmlEmailBodyFailure(newDeveloper, mergeException);
+            htmlMessage = createHtmlEmailBodyFailure(oldDevelopers, mergeException);
         }
 
         for (String emailAddress : recipients) {
