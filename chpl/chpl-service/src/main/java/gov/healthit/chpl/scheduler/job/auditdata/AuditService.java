@@ -11,12 +11,23 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 
 public abstract class AuditService extends BaseDAOImpl {
     private PGConnection pgConnection;
+    private String auditDataFilePath;
 
     public abstract Long getAuditDataCount(Integer month, Integer year);
     public abstract void deleteAuditData(Integer month, Integer year);
     public abstract void archiveDataToFile(Integer month, Integer year, String fileName, boolean includeHeaders)
             throws SQLException;
+    public abstract String getProposedFilename(Integer month, Integer year);
 
+    public AuditService(String auditDataFilePath) {
+        this.auditDataFilePath =  auditDataFilePath;
+    }
+
+    public String getAuditDataFilePath() {
+        return auditDataFilePath;
+    }
+
+    @SuppressWarnings({"resource", "rawtypes"})
     public PGConnection getPgConnection() throws SQLException {
         if (pgConnection == null) {
             SessionImplementor sessImpl = (SessionImplementor) getSession();

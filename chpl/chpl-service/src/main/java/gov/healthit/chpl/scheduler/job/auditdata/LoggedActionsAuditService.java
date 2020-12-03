@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import javax.persistence.Query;
 
 import org.postgresql.copy.CopyManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.log4j.Log4j2;
@@ -14,6 +16,11 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component
 public class LoggedActionsAuditService  extends AuditService {
+
+    @Autowired
+    public LoggedActionsAuditService(@Value("${auditDataFilePath}") String auditDataFilePath) {
+        super(auditDataFilePath);
+    }
 
     @Override
     public Long getAuditDataCount(Integer month, Integer year) {
@@ -47,8 +54,10 @@ public class LoggedActionsAuditService  extends AuditService {
                 + "FROM audit.logged_actions "
                 + "WHERE EXTRACT(MONTH FROM action_tstamp) = " + month.toString() + " "
                 + "AND EXTRACT(YEAR FROM action_tstamp) = " + year.toString() + ") "
-                + "TO STDOUT DELIMITER ',' CSV "
-                + "HEADER";
+                + "TO STDOUT DELIMITER ',' CSV ";
+        if (includeHeaders) {
+            copyCmd += "HEADER";
+        }
 
         CopyManager cm = getPgConnection().getCopyAPI();
         try (FileWriter fw = new FileWriter(new File(fileName))) {
@@ -57,4 +66,10 @@ public class LoggedActionsAuditService  extends AuditService {
             LOGGER.catching(e);
         }
     }
+
+    @Override
+    public String getProposedFilename(Integer month, Integer year) {
+        return getAuditDataFilePath() + "logged-actions-" + year.toString() + "-" + month.toString() + ".csv";
+    }
+
 }

@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import javax.persistence.Query;
 
 import org.postgresql.copy.CopyManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.log4j.Log4j2;
@@ -15,15 +17,18 @@ import lombok.extern.log4j.Log4j2;
 @Component
 public class ApiKeyActivityAuditService extends AuditService {
 
+    @Autowired
+    public ApiKeyActivityAuditService(@Value("${auditDataFilePath}") String auditDataFilePath) {
+        super(auditDataFilePath);
+    }
+
     @Override
     public Long getAuditDataCount(Integer month, Integer year) {
         Query query = entityManager.createQuery(
                 "SELECT count(*) "
                 + "FROM ApiKeyActivityEntity a "
-                //+ "WHERE DAY(a.creationDate) = :day "
                 + "WHERE MONTH(a.creationDate) = :month "
                 + "AND YEAR(a.creationDate) = : year");
-        //query.setParameter("day", targetDate.getDayOfMonth());
         query.setParameter("month", month);
         query.setParameter("year", year);
 
@@ -34,10 +39,8 @@ public class ApiKeyActivityAuditService extends AuditService {
     public void deleteAuditData(Integer month, Integer year) {
         Query query = entityManager.createQuery(
                 "DELETE ApiKeyActivityEntity a "
-                //+ "WHERE DAY(a.creationDate) = :day "
                 + "WHERE MONTH(a.creationDate) = :month "
                 + "AND YEAR(a.creationDate) = : year");
-        //query.setParameter("day", targetDate.getDayOfMonth());
         query.setParameter("month", month);
         query.setParameter("year", month);
 
@@ -49,11 +52,12 @@ public class ApiKeyActivityAuditService extends AuditService {
         String copyCmd = "COPY "
                 + "(SELECT * "
                 + "FROM openchpl.api_key_activity "
-                //+ "WHERE EXTRACT(DAY FROM creation_date) = " + targetDate.getDayOfMonth() + " "
                 + "WHERE EXTRACT(MONTH FROM creation_date) = " + month.toString() + " "
                 + "AND EXTRACT(YEAR FROM creation_date) = " + year.toString() + ") "
-                + "TO STDOUT DELIMITER ',' CSV "
-                + "HEADER";
+                + "TO STDOUT DELIMITER ',' CSV ";
+        if (includeHeaders) {
+               copyCmd += "HEADER";
+        }
 
         LOGGER.info("STARTING");
         CopyManager cm = getPgConnection().getCopyAPI();
@@ -66,4 +70,10 @@ public class ApiKeyActivityAuditService extends AuditService {
         }
         LOGGER.info("COMPLETED");
     }
+
+    @Override
+    public String getProposedFilename(Integer month, Integer year) {
+        return getAuditDataFilePath() + "api-key-activity-" + year.toString() + "-" + month.toString() + ".csv";
+    }
+
 }
