@@ -9,7 +9,6 @@ import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.Arrays;
 import java.util.List;
 
 import org.quartz.Job;
@@ -29,11 +28,10 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class AuditDataRetentionJob implements Job {
     private static final Integer MEGABYTE = 1024;
-    @Autowired
-    private ApiKeyActivityAuditDAO apiKeyActivityAuditDAO;
 
+    //This will inject all implemenations of AuditService
     @Autowired
-    private LoggedActionsAuditDAO loggedActionsAuditDAO;
+    private List<AuditService> auditServices;
 
     @Autowired
     private AuditDataFile auditDataFile;
@@ -45,7 +43,7 @@ public class AuditDataRetentionJob implements Job {
     private Environment env;
 
     private Integer retentionPolicyInMonths;
-    private AuditDAO currentAuditDAO;
+    private AuditService currentAuditService;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -66,9 +64,8 @@ public class AuditDataRetentionJob implements Job {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try {
-                    List<AuditDAO> auditDAOs = Arrays.asList(apiKeyActivityAuditDAO, loggedActionsAuditDAO);
-                    for (AuditDAO dao : auditDAOs) {
-                        currentAuditDAO = dao;
+                    for (AuditService dao : auditServices) {
+                        currentAuditService = dao;
                         archiveData();
                     }
                 } catch (Exception e) {
@@ -103,18 +100,18 @@ public class AuditDataRetentionJob implements Job {
         boolean doesArchiveExist = auditDataFile.doesFileAlreadyExist(fileName);
         if (doesArchiveExist) {
             fileName = auditDataFile.getRandomFilename();
-            currentAuditDAO.archiveDataToFile(month, year, fileName, false);
+            currentAuditService.archiveDataToFile(month, year, fileName, false);
             //Append the temporary file to the existing file
             appendFiles(auditDataFile.getProposedFilename(month, year), fileName);
             deleteFile(fileName);
         } else {
-            currentAuditDAO.archiveDataToFile(month, year, fileName, true);
+            currentAuditService.archiveDataToFile(month, year, fileName, true);
         }
-        currentAuditDAO.deleteAuditData(month, year);
+        currentAuditService.deleteAuditData(month, year);
     }
 
     private boolean doesAuditDataExist(Integer month, Integer year) {
-        Long count = currentAuditDAO.getAuditDataCount(month, year);
+        Long count = currentAuditService.getAuditDataCount(month, year);
         LOGGER.info("Found " + count + " records");
         return  count > 0;
     }

@@ -9,7 +9,7 @@ import org.postgresql.PGConnection;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 
-public abstract class AuditDAO extends BaseDAOImpl {
+public abstract class AuditService extends BaseDAOImpl {
     private PGConnection pgConnection;
 
     public abstract Long getAuditDataCount(Integer month, Integer year);
