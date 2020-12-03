@@ -64,6 +64,7 @@ public class DeveloperDetailsNormalizer {
     }
 
     private void mashupEnteredAndStoredValues(Developer entered, Developer stored) {
+        entered.setDeveloperCode(stored.getDeveloperCode());
         if (StringUtils.isEmpty(entered.getName())) {
             entered.setName(stored.getName());
         }
