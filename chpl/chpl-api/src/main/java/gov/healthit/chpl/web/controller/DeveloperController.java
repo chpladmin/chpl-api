@@ -31,7 +31,7 @@ import gov.healthit.chpl.domain.PermissionDeletedResponse;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.SplitDeveloperRequest;
 import gov.healthit.chpl.domain.TransparencyAttestationMap;
-import gov.healthit.chpl.domain.UpdateDevelopersRequest;
+import gov.healthit.chpl.domain.MergeDevelopersRequest;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.domain.compliance.DirectReview;
@@ -145,21 +145,44 @@ public class DeveloperController {
                 directReviewService.getDirectReviews(developerId), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Update a developer or merge developers.",
-            notes = "This method serves two purposes: to update a single developer's information and to merge two "
-                    + "developers into one.   A user of this service should pass in a single developerId to update "
-                    + "just that developer.  If multiple developer IDs are passed in, the service performs a merge "
-                    + "meaning that a new developer is created with all of the information provided (name, address, "
-                    + "etc.) and all of the products previously assigned to the developerId's specified are "
-                    + "reassigned to the newly created developer. The old developers are then deleted. "
-                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB")
-    @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
+    @ApiOperation(value = "Update a developer.",
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB")
+    @RequestMapping(value = "/{developerId:^-?\\\\d+$}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public ResponseEntity<Developer> updateDeveloper(
-            @RequestBody(required = true) UpdateDevelopersRequest developerInfo) throws InvalidArgumentsException,
-    EntityCreationException, EntityRetrievalException, JsonProcessingException,
-    ValidationException, MissingReasonException {
-        return update(developerInfo);
+    public synchronized ResponseEntity<Developer> update(@PathVariable("developerId") Long developerId,
+            @RequestBody(required = true) Developer developerToUpdate)
+            throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException,
+            JsonProcessingException, ValidationException, MissingReasonException {
+        DeveloperDTO toUpdate = toDto(developerToUpdate);
+        toUpdate.setId(developerId);
+
+        DeveloperDTO result = developerManager.update(toUpdate, true);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+        if (result == null) {
+            throw new EntityCreationException("There was an error inserting or updating the developer information.");
+        }
+        Developer restResult = new Developer(result);
+        return new ResponseEntity<Developer>(restResult, responseHeaders, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Merge developers.",
+            notes = "If multiple developer IDs are passed in, the service performs a merge "
+                    + "meaning that a new developer is created with all of the information provided (name, address, "
+                    + "etc.) and all of the products previously assigned to the specified developerId's are "
+                    + "reassigned to the newly created developer. The old developers are then deleted.\n"
+                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB if all developers involved are active.")
+    @RequestMapping(value = "/merge", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = "application/json; charset=utf-8")
+    public ChplOneTimeTrigger merge(@RequestBody(required = true) MergeDevelopersRequest mergeRequest)
+            throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException, JsonProcessingException,
+            ValidationException, SchedulerException {
+        if (mergeRequest.getDeveloperIds().size() <= 1) {
+            throw new InvalidArgumentsException(
+                    "More than 1 developer ID must be present in the request body to perform a merge.");
+        }
+        DeveloperDTO toCreate = toDto(mergeRequest.getDeveloper());
+        return developerManager.merge(mergeRequest.getDeveloperIds(), toCreate);
     }
 
     @ApiOperation(
@@ -195,51 +218,7 @@ public class DeveloperController {
         }
 
         DeveloperDTO oldDeveloper = developerManager.getById(splitRequest.getOldDeveloper().getDeveloperId());
-        DeveloperDTO newDeveloper = new DeveloperDTO();
-        newDeveloper.setName(splitRequest.getNewDeveloper().getName());
-        newDeveloper.setWebsite(splitRequest.getNewDeveloper().getWebsite());
-        newDeveloper.setSelfDeveloper(splitRequest.getNewDeveloper().getSelfDeveloper());
-        List<DeveloperStatusEvent> newDeveloperStatusEvents = splitRequest.getNewDeveloper().getStatusEvents();
-        if (newDeveloperStatusEvents != null && newDeveloperStatusEvents.size() > 0) {
-            for (DeveloperStatusEvent newDeveloperStatusEvent : newDeveloperStatusEvents) {
-                DeveloperStatusEventDTO statusEvent = new DeveloperStatusEventDTO();
-                DeveloperStatusDTO statusDto = new DeveloperStatusDTO();
-                statusDto.setId(newDeveloperStatusEvent.getStatus().getId());
-                statusDto.setStatusName(newDeveloperStatusEvent.getStatus().getStatus());
-                statusEvent.setStatus(statusDto);
-                statusEvent.setReason(newDeveloperStatusEvent.getReason());
-                statusEvent.setStatusDate(newDeveloperStatusEvent.getStatusDate());
-                newDeveloper.getStatusEvents().add(statusEvent);
-            }
-        }
-        for (TransparencyAttestationMap attMap : splitRequest.getNewDeveloper().getTransparencyAttestations()) {
-            DeveloperACBMapDTO devMap = new DeveloperACBMapDTO();
-            devMap.setAcbId(attMap.getAcbId());
-            devMap.setAcbName(attMap.getAcbName());
-            if (attMap.getAttestation() != null && !StringUtils.isEmpty(attMap.getAttestation().getTransparencyAttestation())) {
-                devMap.setTransparencyAttestation(
-                        new TransparencyAttestationDTO(attMap.getAttestation().getTransparencyAttestation()));
-            }
-            newDeveloper.getTransparencyAttestationMappings().add(devMap);
-        }
-        if (splitRequest.getNewDeveloper().getAddress() != null) {
-            AddressDTO developerAddress = new AddressDTO();
-            developerAddress.setStreetLineOne(splitRequest.getNewDeveloper().getAddress().getLine1());
-            developerAddress.setStreetLineTwo(splitRequest.getNewDeveloper().getAddress().getLine2());
-            developerAddress.setCity(splitRequest.getNewDeveloper().getAddress().getCity());
-            developerAddress.setState(splitRequest.getNewDeveloper().getAddress().getState());
-            developerAddress.setZipcode(splitRequest.getNewDeveloper().getAddress().getZipcode());
-            developerAddress.setCountry(splitRequest.getNewDeveloper().getAddress().getCountry());
-            newDeveloper.setAddress(developerAddress);
-        }
-        if (splitRequest.getNewDeveloper().getContact() != null) {
-            ContactDTO developerContact = new ContactDTO();
-            developerContact.setFullName(splitRequest.getNewDeveloper().getContact().getFullName());
-            developerContact.setEmail(splitRequest.getNewDeveloper().getContact().getEmail());
-            developerContact.setPhoneNumber(splitRequest.getNewDeveloper().getContact().getPhoneNumber());
-            developerContact.setTitle(splitRequest.getNewDeveloper().getContact().getTitle());
-            newDeveloper.setContact(developerContact);
-        }
+        DeveloperDTO newDeveloper = toDto(splitRequest.getNewDeveloper());
         List<Long> newDeveloperProductIds = new ArrayList<Long>(splitRequest.getNewProducts().size());
         for (Product newDeveloperProduct : splitRequest.getNewProducts()) {
             newDeveloperProductIds.add(newDeveloperProduct.getProductId());
@@ -292,126 +271,57 @@ public class DeveloperController {
         return results;
     }
 
-    private synchronized ResponseEntity<Developer> update(UpdateDevelopersRequest developerInfo)
-            throws InvalidArgumentsException, EntityCreationException,
-            EntityRetrievalException, JsonProcessingException,
-            ValidationException, MissingReasonException {
+    private DeveloperDTO toDto(Developer developer) {
+        DeveloperDTO dto = new DeveloperDTO();
+        dto.setDeveloperCode(developer.getDeveloperCode());
+        dto.setName(developer.getName());
+        dto.setWebsite(developer.getWebsite());
+        dto.setSelfDeveloper(developer.getSelfDeveloper());
 
-        DeveloperDTO result = null;
-        HttpHeaders responseHeaders = new HttpHeaders();
-
-        // Merge these developers into one.
-        // create a new developer with the rest of the passed in
-        // information; first validate the new developer
-        if (developerInfo.getDeveloperIds().size() > 1) {
-            DeveloperDTO toCreate = new DeveloperDTO();
-            toCreate.setDeveloperCode(developerInfo.getDeveloper().getDeveloperCode());
-            toCreate.setName(developerInfo.getDeveloper().getName());
-            toCreate.setWebsite(developerInfo.getDeveloper().getWebsite());
-            toCreate.setSelfDeveloper(developerInfo.getDeveloper().getSelfDeveloper());
-            if (developerInfo.getDeveloper().getStatusEvents() != null
-                    && developerInfo.getDeveloper().getStatusEvents().size() > 0) {
-                for (DeveloperStatusEvent providedStatusHistory : developerInfo.getDeveloper().getStatusEvents()) {
-                    DeveloperStatusDTO status = new DeveloperStatusDTO();
-                    status.setStatusName(providedStatusHistory.getStatus().getStatus());
-                    DeveloperStatusEventDTO toCreateHistory = new DeveloperStatusEventDTO();
-                    toCreateHistory.setStatus(status);
-                    toCreateHistory.setStatusDate(providedStatusHistory.getStatusDate());
-                    toCreate.getStatusEvents().add(toCreateHistory);
-                }
-                // if no history is passed in, an Active status gets added in
-                // the DAO when the new developer is created
+        if (developer.getStatusEvents() != null && developer.getStatusEvents().size() > 0) {
+            for (DeveloperStatusEvent newDeveloperStatusEvent : developer.getStatusEvents()) {
+                DeveloperStatusEventDTO statusEvent = new DeveloperStatusEventDTO();
+                DeveloperStatusDTO statusDto = new DeveloperStatusDTO();
+                statusDto.setId(newDeveloperStatusEvent.getStatus().getId());
+                statusDto.setStatusName(newDeveloperStatusEvent.getStatus().getStatus());
+                statusEvent.setStatus(statusDto);
+                statusEvent.setReason(newDeveloperStatusEvent.getReason());
+                statusEvent.setStatusDate(newDeveloperStatusEvent.getStatusDate());
+                dto.getStatusEvents().add(statusEvent);
             }
-
-            Address developerAddress = developerInfo.getDeveloper().getAddress();
-            if (developerAddress != null) {
-                AddressDTO toCreateAddress = new AddressDTO();
-                toCreateAddress.setStreetLineOne(developerAddress.getLine1());
-                toCreateAddress.setStreetLineTwo(developerAddress.getLine2());
-                toCreateAddress.setCity(developerAddress.getCity());
-                toCreateAddress.setState(developerAddress.getState());
-                toCreateAddress.setZipcode(developerAddress.getZipcode());
-                toCreateAddress.setCountry(developerAddress.getCountry());
-                toCreate.setAddress(toCreateAddress);
-            }
-            PointOfContact developerContact = developerInfo.getDeveloper().getContact();
-            if (developerContact != null) {
-                ContactDTO toCreateContact = new ContactDTO();
-                toCreateContact.setEmail(developerContact.getEmail());
-                toCreateContact.setFullName(developerContact.getFullName());
-                toCreateContact.setPhoneNumber(developerContact.getPhoneNumber());
-                toCreateContact.setTitle(developerContact.getTitle());
-                toCreate.setContact(toCreateContact);
-            }
-            result = developerManager.merge(developerInfo.getDeveloperIds(), toCreate);
-            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
-            // re-query because the developer code isn't filled in otherwise
-            result = developerManager.getById(result.getId());
-        } else if (developerInfo.getDeveloperIds().size() == 1) {
-            // update the information for the developer id supplied in the
-            // database.
-            DeveloperDTO toUpdate = new DeveloperDTO();
-            toUpdate.setDeveloperCode(developerInfo.getDeveloper().getDeveloperCode());
-            toUpdate.setId(developerInfo.getDeveloperIds().get(0));
-            toUpdate.setName(developerInfo.getDeveloper().getName());
-            toUpdate.setWebsite(developerInfo.getDeveloper().getWebsite());
-            toUpdate.setSelfDeveloper(developerInfo.getDeveloper().getSelfDeveloper());
-            for (TransparencyAttestationMap attMap : developerInfo.getDeveloper().getTransparencyAttestations()) {
-                DeveloperACBMapDTO devMap = new DeveloperACBMapDTO();
-                devMap.setAcbId(attMap.getAcbId());
-                devMap.setAcbName(attMap.getAcbName());
-                if (attMap.getAttestation() != null) {
-                    devMap.setTransparencyAttestation(new TransparencyAttestationDTO(attMap.getAttestation()));
-                }
-                toUpdate.getTransparencyAttestationMappings().add(devMap);
-            }
-
-            if (developerInfo.getDeveloper().getStatusEvents() != null
-                    && developerInfo.getDeveloper().getStatusEvents().size() > 0) {
-                for (DeveloperStatusEvent providedStatusHistory : developerInfo.getDeveloper().getStatusEvents()) {
-                    DeveloperStatusDTO status = new DeveloperStatusDTO();
-                    status.setId(providedStatusHistory.getStatus().getId());
-                    status.setStatusName(providedStatusHistory.getStatus().getStatus());
-                    DeveloperStatusEventDTO toCreateHistory = new DeveloperStatusEventDTO();
-                    toCreateHistory.setId(providedStatusHistory.getId());
-                    toCreateHistory.setDeveloperId(providedStatusHistory.getDeveloperId());
-                    toCreateHistory.setStatus(status);
-                    toCreateHistory.setStatusDate(providedStatusHistory.getStatusDate());
-                    toCreateHistory.setReason(providedStatusHistory.getReason());
-                    toUpdate.getStatusEvents().add(toCreateHistory);
-                }
-            }
-
-            if (developerInfo.getDeveloper().getAddress() != null) {
-                AddressDTO address = new AddressDTO();
-                address.setId(developerInfo.getDeveloper().getAddress().getAddressId());
-                address.setStreetLineOne(developerInfo.getDeveloper().getAddress().getLine1());
-                address.setStreetLineTwo(developerInfo.getDeveloper().getAddress().getLine2());
-                address.setCity(developerInfo.getDeveloper().getAddress().getCity());
-                address.setState(developerInfo.getDeveloper().getAddress().getState());
-                address.setZipcode(developerInfo.getDeveloper().getAddress().getZipcode());
-                address.setCountry(developerInfo.getDeveloper().getAddress().getCountry());
-                toUpdate.setAddress(address);
-            }
-            if (developerInfo.getDeveloper().getContact() != null) {
-                PointOfContact developerContact = developerInfo.getDeveloper().getContact();
-                ContactDTO toUpdateContact = new ContactDTO();
-                toUpdateContact.setId(developerContact.getContactId());
-                toUpdateContact.setEmail(developerContact.getEmail());
-                toUpdateContact.setFullName(developerContact.getFullName());
-                toUpdateContact.setPhoneNumber(developerContact.getPhoneNumber());
-                toUpdateContact.setTitle(developerContact.getTitle());
-                toUpdate.setContact(toUpdateContact);
-            }
-
-            result = developerManager.update(toUpdate, true);
-            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
         }
 
-        if (result == null) {
-            throw new EntityCreationException("There was an error inserting or updating the developer information.");
+        for (TransparencyAttestationMap attMap : developer.getTransparencyAttestations()) {
+            DeveloperACBMapDTO devMap = new DeveloperACBMapDTO();
+            devMap.setAcbId(attMap.getAcbId());
+            devMap.setAcbName(attMap.getAcbName());
+            if (attMap.getAttestation() != null && !StringUtils.isEmpty(attMap.getAttestation().getTransparencyAttestation())) {
+                devMap.setTransparencyAttestation(
+                        new TransparencyAttestationDTO(attMap.getAttestation().getTransparencyAttestation()));
+            }
+            dto.getTransparencyAttestationMappings().add(devMap);
         }
-        Developer restResult = new Developer(result);
-        return new ResponseEntity<Developer>(restResult, responseHeaders, HttpStatus.OK);
+
+        Address developerAddress = developer.getAddress();
+        if (developerAddress != null) {
+            AddressDTO toCreateAddress = new AddressDTO();
+            toCreateAddress.setStreetLineOne(developerAddress.getLine1());
+            toCreateAddress.setStreetLineTwo(developerAddress.getLine2());
+            toCreateAddress.setCity(developerAddress.getCity());
+            toCreateAddress.setState(developerAddress.getState());
+            toCreateAddress.setZipcode(developerAddress.getZipcode());
+            toCreateAddress.setCountry(developerAddress.getCountry());
+            dto.setAddress(toCreateAddress);
+        }
+        PointOfContact developerContact = developer.getContact();
+        if (developerContact != null) {
+            ContactDTO toCreateContact = new ContactDTO();
+            toCreateContact.setEmail(developerContact.getEmail());
+            toCreateContact.setFullName(developerContact.getFullName());
+            toCreateContact.setPhoneNumber(developerContact.getPhoneNumber());
+            toCreateContact.setTitle(developerContact.getTitle());
+            dto.setContact(toCreateContact);
+        }
+        return dto;
     }
 }
