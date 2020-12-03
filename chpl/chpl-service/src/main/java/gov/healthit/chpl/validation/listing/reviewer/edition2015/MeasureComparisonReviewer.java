@@ -45,7 +45,7 @@ public class MeasureComparisonReviewer implements ComparisonReviewer {
             List<ListingMeasure> listInOriginalListing) {
 
         Predicate<ListingMeasure> notInOriginalListing = updated -> !listInOriginalListing.stream()
-                .anyMatch(original -> updated.getId() == null || updated.getId().equals(original.getId()));
+                .anyMatch(original -> updated.getId() != null && updated.getId().equals(original.getId()));
 
         return listInUpdatedListing.stream()
                 .filter(notInOriginalListing)
