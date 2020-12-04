@@ -269,6 +269,28 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <RollingFile name="directReviewDownloadableResourceCreatorJob"
+            fileName="${logDir}/scheduler/directReviewDownloadableResourceCreatorJob.log"
+            filePattern="${logDir}/scheduler/history/directReviewDownloadableResourceCreatorJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
+        <RollingFile name="directReviewCacheRefreshJob"
+            fileName="${logDir}/scheduler/directReviewCacheRefreshJob.log"
+            filePattern="${logDir}/scheduler/history/directReviewCacheRefreshJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>        
         <RollingFile name="cacheListenerActivity"
                      fileName="${logDir}/cache/cacheListenerActivity.log"
                      filePattern="${logDir}/cache/history/cacheListenerActivity-%d{yyyy-MM-dd}.log">
@@ -430,6 +452,14 @@
         <Logger name="developerAccessEmailJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="developerAccessEmailJob" />
+        </Logger>
+        <Logger name="directReviewDownloadableResourceCreatorJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="directReviewDownloadableResourceCreatorJob" />
+        </Logger>
+        <Logger name="directReviewCacheRefreshJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="directReviewCacheRefreshJob" />
         </Logger>
         <Logger name="realWorldTestingUploadJobLogger" level="INFO"
             additivity="false">
