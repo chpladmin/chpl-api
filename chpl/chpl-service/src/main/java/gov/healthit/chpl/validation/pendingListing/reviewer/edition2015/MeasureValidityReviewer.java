@@ -103,8 +103,11 @@ public class MeasureValidityReviewer implements Reviewer {
 
     private void reviewMeasureHasOnlyAllowedCriteria(
             PendingCertifiedProductDTO listing, PendingCertifiedProductMeasureDTO measure) {
-        if (measure.getMeasure() == null || measure.getAssociatedCriteria() == null
-                || measure.getMeasure().getAllowedCriteria() == null) {
+        if (measure.getMeasure() == null || measure.getMeasure().getId() == null
+                || measure.getAssociatedCriteria() == null
+                || measure.getAssociatedCriteria().size() == 0
+                || measure.getMeasure().getAllowedCriteria() == null
+                || measure.getMeasure().getAllowedCriteria().size() == 0) {
             return;
         }
 

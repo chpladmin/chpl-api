@@ -75,7 +75,9 @@ public class Measure implements Serializable {
     // this is meant to determine if a user would think two measures
     // are the same, not as thorough as equals
     public boolean matches(Measure anotherMeasure) {
-        if (this.id == null && anotherMeasure.id != null || this.id != null && anotherMeasure.id == null) {
+        if (this.id == null && anotherMeasure.id == null) {
+            return false;
+        } else if (this.id == null && anotherMeasure.id != null || this.id != null && anotherMeasure.id == null) {
             return false;
         } else if (ObjectUtils.allNotNull(this.id, anotherMeasure.id)
                 && this.id.longValue() != anotherMeasure.id.longValue()) {
