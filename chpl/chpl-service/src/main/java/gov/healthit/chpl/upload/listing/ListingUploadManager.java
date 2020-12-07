@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
@@ -107,14 +106,17 @@ public class ListingUploadManager {
         checkRequiredHeadings(headingRecord);
 
         List<ListingUpload> uploadedListings = new ArrayList<ListingUpload>();
-        Set<String> distinctChplProductNumbers = getDistinctChplProductNumbers(headingRecord, allListingRecords);
-        List<List<CSVRecord>> separatedListingRecords = distinctChplProductNumbers.stream()
-                .map(chplProductNumber -> getListingRecords(chplProductNumber, headingRecord, allListingRecords))
-                .collect(Collectors.toList());
-        for (List<CSVRecord> listingRecords : separatedListingRecords) {
+        List<List<CSVRecord>> groupedListingRecords = new ArrayList<List<CSVRecord>>();
+        int fileStartIndex = 0;
+        while (fileStartIndex < allListingRecords.size()) {
+            List<CSVRecord> currListingRecords = getNextListingRecordGroup(fileStartIndex, headingRecord, allListingRecords);
+            groupedListingRecords.add(currListingRecords);
+            fileStartIndex += currListingRecords.size();
+        }
+        for (List<CSVRecord> listingRecords : groupedListingRecords) {
             checkRequiredFields(headingRecord, listingRecords);
         }
-        separatedListingRecords.stream()
+        groupedListingRecords.stream()
                 .map(listingRecords -> createListingUploadMetadata(headingRecord, listingRecords))
                 .forEach(listingUploadMetadata -> {
                     uploadedListings.add(listingUploadMetadata);
@@ -296,24 +298,23 @@ public class ListingUploadManager {
        return certificationDate;
     }
 
-    private List<CSVRecord> getListingRecords(String chplProductNumber, CSVRecord headingRecord,
+    private List<CSVRecord> getNextListingRecordGroup(int startRow, CSVRecord headingRecord,
             List<CSVRecord> allListingRecords) {
         List<CSVRecord> listingCsvRecords = new ArrayList<CSVRecord>();
-        Iterator<CSVRecord> listingCsvRecordsIter = allListingRecords.stream().iterator();
+        Iterator<CSVRecord> listingCsvRecordsIter = allListingRecords.stream().skip(startRow).iterator();
+        String chplProductNumber = null;
         while (listingCsvRecordsIter.hasNext()) {
             CSVRecord record = listingCsvRecordsIter.next();
             String recordUniqueId = uploadUtil.parseRequiredSingleRowField(
                     Headings.UNIQUE_ID, headingRecord, record);
-            if (!StringUtils.isEmpty(recordUniqueId) && recordUniqueId.equals(chplProductNumber)) {
+            if (chplProductNumber == null) {
+                chplProductNumber = new String(recordUniqueId);
+                listingCsvRecords.add(record);
+            } else if (StringUtils.isEmpty(recordUniqueId) || recordUniqueId.equals(chplProductNumber)) {
                 listingCsvRecords.add(record);
             }
         }
         return listingCsvRecords;
-    }
-
-    private Set<String> getDistinctChplProductNumbers(CSVRecord headingRecord, List<CSVRecord> allCsvRecords) {
-        List<String> distinctChplProductNumbers = uploadUtil.parseMultiRowField(Headings.UNIQUE_ID, headingRecord, allCsvRecords);
-        return distinctChplProductNumbers.stream().collect(Collectors.toSet());
     }
 
     private ListingUpload createListingUploadMetadata(CSVRecord headingRecord, List<CSVRecord> listingCsvRecords) {

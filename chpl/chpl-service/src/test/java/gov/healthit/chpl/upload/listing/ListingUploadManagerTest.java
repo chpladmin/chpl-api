@@ -143,7 +143,7 @@ public class ListingUploadManagerTest {
         assertEquals(1, parsedListings.size());
     }
 
-    @Test()
+    @Test
     public void uploadV19MultipleListings_Succeeds() throws JsonProcessingException, ValidationException,
         InvalidArgumentsException, DeprecatedUploadTemplateException {
         String fileContents = HEADER_2015_V19 + "\n" + listing1Csv + "\n"
@@ -284,6 +284,35 @@ public class ListingUploadManagerTest {
 
         String fileContents = "UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,VERSION__C" + "\n"
                 + "15.04.04.2669.MDTB.03.01.1.200707,DEV Name,Prod Name,1.0";
+        MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
+
+        List<ListingUpload> parsedListings = uploadManager.parseUploadFile(file);
+        assertNotNull(parsedListings);
+        assertEquals(1, parsedListings.size());
+        ListingUpload metadata = parsedListings.get(0);
+        assertNotNull(metadata.getAcb());
+        assertEquals(1L, metadata.getAcb().getId());
+        assertNotNull(metadata.getCertificationDate());
+        assertEquals(LocalDate.parse("2020-07-07"), metadata.getCertificationDate());
+        assertEquals("DEV Name", metadata.getDeveloper());
+        assertEquals("Prod Name", metadata.getProduct());
+        assertEquals("1.0", metadata.getVersion());
+    }
+
+    @Test
+    public void uploadSingleListing_ChplIdInFirstColumnOnly_ParsesListing()
+            throws JsonProcessingException, ValidationException,
+        InvalidArgumentsException, DeprecatedUploadTemplateException {
+        Mockito.when(acbDao.getByCode(ArgumentMatchers.anyString())).thenReturn(createAcb());
+        Mockito.when(chplProductNumberUtil.getAcbCode(ArgumentMatchers.anyString()))
+            .thenReturn("04");
+        Mockito.when(chplProductNumberUtil.getCertificationDateCode(ArgumentMatchers.anyString()))
+        .thenReturn("200707");
+
+        String fileContents = "UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,VERSION__C" + "\n"
+                + "15.04.04.2669.MDTB.03.01.1.200707,DEV Name,Prod Name,1.0\n"
+                + ",,,,\n"
+                + ",,,,";
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
 
         List<ListingUpload> parsedListings = uploadManager.parseUploadFile(file);
