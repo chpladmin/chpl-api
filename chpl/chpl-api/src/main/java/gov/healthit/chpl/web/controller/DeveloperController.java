@@ -1,13 +1,19 @@
 package gov.healthit.chpl.web.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,11 +33,11 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.domain.MergeDevelopersRequest;
 import gov.healthit.chpl.domain.PermissionDeletedResponse;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.SplitDeveloperRequest;
 import gov.healthit.chpl.domain.TransparencyAttestationMap;
-import gov.healthit.chpl.domain.MergeDevelopersRequest;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.domain.compliance.DirectReview;
@@ -57,20 +63,30 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.service.DirectReviewService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.log4j.Log4j2;
 
 @Api(value = "developers")
 @RestController
 @RequestMapping("/developers")
+@Log4j2
 public class DeveloperController {
 
     private DeveloperManager developerManager;
     private ErrorMessageUtil msgUtil;
     private UserPermissionsManager userPermissionsManager;
     private DirectReviewService directReviewService;
+    private FileUtils fileUtils;
     private FF4j ff4j;
+
+    @Value("${directReviewsReportName}")
+    private String directReviewsReportName;
+
+    @Value("${schemaDirectReviewsName}")
+    private String directReviewsSchemaName;
 
     @Autowired
     public DeveloperController(DeveloperManager developerManager,
@@ -78,11 +94,13 @@ public class DeveloperController {
             UserPermissionsManager userPermissionsManager,
             ErrorMessageUtil msgUtil,
             DirectReviewService directReviewService,
+            FileUtils fileUtils,
             FF4j ff4j) {
         this.developerManager = developerManager;
         this.userPermissionsManager = userPermissionsManager;
         this.msgUtil = msgUtil;
         this.directReviewService = directReviewService;
+        this.fileUtils = fileUtils;
         this.ff4j = ff4j;
     }
 
@@ -143,6 +161,43 @@ public class DeveloperController {
             @PathVariable("developerId") Long developerId) throws JiraRequestFailedException {
         return new ResponseEntity<List<DirectReview>>(
                 directReviewService.getDirectReviews(developerId), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Download all direct reviews as a CSV.",
+            notes = "Once per day, all direct reviews are written out to a CSV "
+                    + "file on the CHPL servers. This method allows any user to download that file.")
+    @RequestMapping(value = "/direct-reviews/download", method = RequestMethod.GET, produces = "text/csv")
+    public void downloadDirectReviews(
+            @RequestParam(value = "definition", defaultValue = "false", required = false) Boolean isDefinition,
+            HttpServletRequest request, HttpServletResponse response) throws IOException {
+        File downloadFile = null;
+        if (isDefinition != null && isDefinition.booleanValue()) {
+            try {
+                downloadFile = fileUtils.getDownloadFile(directReviewsSchemaName);
+            } catch (IOException ex) {
+                response.getWriter().append(ex.getMessage());
+                return;
+            }
+        } else {
+            try {
+                downloadFile = fileUtils.getNewestFileMatchingName("^" + directReviewsReportName + "-.+\\.csv$");
+            } catch (IOException ex) {
+                response.getWriter().append(ex.getMessage());
+                return;
+            }
+        }
+
+        if (downloadFile == null) {
+            response.getWriter().append(msgUtil.getMessage("resources.schemaFileGeneralError"));
+            return;
+        }
+        if (!downloadFile.exists()) {
+            response.getWriter().append(msgUtil.getMessage("resources.schemaFileNotFound", downloadFile.getAbsolutePath()));
+            return;
+        }
+
+        LOGGER.info("Streaming " + downloadFile.getName());
+        fileUtils.streamFileAsResponse(downloadFile, "text/csv", response);
     }
 
     @ApiOperation(value = "Update a developer.",
