@@ -108,9 +108,13 @@ public class ListingUploadManager {
 
         List<ListingUpload> uploadedListings = new ArrayList<ListingUpload>();
         Set<String> distinctChplProductNumbers = getDistinctChplProductNumbers(headingRecord, allListingRecords);
-        distinctChplProductNumbers.stream()
-                .filter(chplProductNumber -> StringUtils.isNotEmpty(chplProductNumber))
+        List<List<CSVRecord>> separatedListingRecords = distinctChplProductNumbers.stream()
                 .map(chplProductNumber -> getListingRecords(chplProductNumber, headingRecord, allListingRecords))
+                .collect(Collectors.toList());
+        for (List<CSVRecord> listingRecords : separatedListingRecords) {
+            checkRequiredFields(headingRecord, listingRecords);
+        }
+        separatedListingRecords.stream()
                 .map(listingRecords -> createListingUploadMetadata(headingRecord, listingRecords))
                 .forEach(listingUploadMetadata -> {
                     uploadedListings.add(listingUploadMetadata);
@@ -229,6 +233,17 @@ public class ListingUploadManager {
         if (missingRequiredHeadings != null && missingRequiredHeadings.size() > 0) {
             throw new ValidationException(msgUtil.getMessage("listing.upload.missingRequiredHeadings",
                     String.join("; ", missingRequiredHeadings)));
+        }
+    }
+
+    private void checkRequiredFields(CSVRecord headingRecord, List<CSVRecord> listingRecords) throws ValidationException {
+        List<String> headingsWithMissingData = Headings.getRequiredHeadings().stream()
+            .filter(heading -> StringUtils.isEmpty(uploadUtil.parseSingleRowField(heading, headingRecord, listingRecords)))
+            .map(headingVal -> headingVal.getNamesAsString())
+            .collect(Collectors.toList());
+        if (headingsWithMissingData != null && headingsWithMissingData.size() > 0) {
+            throw new ValidationException(msgUtil.getMessage("listing.upload.missingRequiredData",
+                    String.join("; ", headingsWithMissingData)));
         }
     }
 

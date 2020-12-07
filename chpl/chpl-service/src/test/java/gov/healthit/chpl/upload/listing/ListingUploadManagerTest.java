@@ -228,6 +228,50 @@ public class ListingUploadManagerTest {
         assertEquals("1.0", metadata.getVersion());
     }
 
+    @Test(expected = ValidationException.class)
+    public void uploadSingleListing_HasRequiredColumnsMissingChplIdData_ThrowsException()
+            throws JsonProcessingException, ValidationException,
+        InvalidArgumentsException, DeprecatedUploadTemplateException {
+
+        String fileContents = "UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,VERSION__C" + "\n"
+                + ",DEV Name,Prod Name,1.0";
+        MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
+        uploadManager.parseUploadFile(file);
+    }
+
+    @Test(expected = ValidationException.class)
+    public void uploadSingleListing_HasRequiredColumnsMissingDeveloperData_ThrowsException()
+            throws JsonProcessingException, ValidationException,
+        InvalidArgumentsException, DeprecatedUploadTemplateException {
+
+        String fileContents = "UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,VERSION__C" + "\n"
+                + "15.04.04.2669.MDTB.03.01.1.200707,,Prod Name,1.0";
+        MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
+        uploadManager.parseUploadFile(file);
+    }
+
+    @Test(expected = ValidationException.class)
+    public void uploadSingleListing_HasRequiredColumnsMissingProductData_ThrowsException()
+            throws JsonProcessingException, ValidationException,
+        InvalidArgumentsException, DeprecatedUploadTemplateException {
+
+        String fileContents = "UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,VERSION__C" + "\n"
+                + "15.04.04.2669.MDTB.03.01.1.200707,DEV Name,,1.0";
+        MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
+        uploadManager.parseUploadFile(file);
+    }
+
+    @Test(expected = ValidationException.class)
+    public void uploadSingleListing_HasRequiredColumnsMissingVersionData_ThrowsException()
+            throws JsonProcessingException, ValidationException,
+        InvalidArgumentsException, DeprecatedUploadTemplateException {
+
+        String fileContents = "UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,VERSION__C" + "\n"
+                + "15.04.04.2669.MDTB.03.01.1.200707,DEV Name,Prod Name,";
+        MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
+        uploadManager.parseUploadFile(file);
+    }
+
     @Test
     public void uploadSingleListing_ValidChplId_ParsesAcbAndCertDate()
             throws JsonProcessingException, ValidationException,
