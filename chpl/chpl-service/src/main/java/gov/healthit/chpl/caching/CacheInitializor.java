@@ -1,6 +1,5 @@
 package gov.healthit.chpl.caching;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -13,28 +12,31 @@ import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.exception.EntityRetrievalException;
+import lombok.extern.log4j.Log4j2;
 
 @Component
+@Log4j2
 @Aspect
 public class CacheInitializor {
+    private static final Double ONE_SECOND_MILLIS = 1000.0;
 
     private Integer initializeTimeoutSecs;
     private Long tInitStart;
     private Long tInitEnd;
     private Double tInitElapsedSecs;
     private Future<Boolean> isInitializeSearchOptionsDone;
-    private Future<Boolean> isInitializeBasicSearch;
+    private Future<Boolean> isInitializeBasicSearchDone;
     private Future<Boolean> isInitializeCertificationIdsGetAllDone;
     private Future<Boolean> isInitializeCertificationIdsGetAllWithProductsDone;
+    private Future<Boolean> isInitializeDirectReviewsDone;
     private String enableCacheInitializationValue;
 
     private AsynchronousCacheInitialization asynchronousCacheInitialization;
     private Environment env;
 
     @Autowired
-    public CacheInitializor(final AsynchronousCacheInitialization asynchronousCacheInitialization,
-            final Environment env) {
+    public CacheInitializor(AsynchronousCacheInitialization asynchronousCacheInitialization,
+            Environment env) {
         this.asynchronousCacheInitialization = asynchronousCacheInitialization;
         this.env = env;
     }
@@ -56,15 +58,15 @@ public class CacheInitializor {
         return caches;
     }
 
-    @PostConstruct
     @Async
-    public void initialize() throws IOException, EntityRetrievalException, InterruptedException {
+    @PostConstruct
+    public void initialize() {
         enableCacheInitializationValue = env.getProperty("enableCacheInitialization");
         initializeTimeoutSecs = Integer.parseInt(env.getProperty("cacheInitializeTimeoutSecs").toString());
 
         tInitStart = System.currentTimeMillis();
         if (tInitEnd != null) {
-            tInitElapsedSecs = (tInitStart - tInitEnd) / 1000.0;
+            tInitElapsedSecs = (tInitStart - tInitEnd) / ONE_SECOND_MILLIS;
         }
 
         if (tInitEnd == null || tInitElapsedSecs > initializeTimeoutSecs) {
@@ -88,13 +90,17 @@ public class CacheInitializor {
                     isInitializeCertificationIdsGetAllWithProductsDone = asynchronousCacheInitialization
                             .initializeCertificationIdsGetAllWithProducts();
 
-                    if (isInitializeBasicSearch != null && !isInitializeBasicSearch.isDone()) {
-                        isInitializeBasicSearch.cancel(true);
+                    if (isInitializeBasicSearchDone != null && !isInitializeBasicSearchDone.isDone()) {
+                        isInitializeBasicSearchDone.cancel(true);
                     }
-                    isInitializeBasicSearch = asynchronousCacheInitialization.initializeBasicSearch();
+                    isInitializeBasicSearchDone = asynchronousCacheInitialization.initializeBasicSearch();
+                    if (isInitializeDirectReviewsDone != null && !isInitializeDirectReviewsDone.isDone()) {
+                        isInitializeDirectReviewsDone.cancel(true);
+                    }
+                    isInitializeDirectReviewsDone = asynchronousCacheInitialization.initializeDirectReviews();
                 }
             } catch (Exception e) {
-                System.out.println("Caching failed to initialize");
+                LOGGER.error("Caching failed to initialize");
                 e.printStackTrace();
             }
         }

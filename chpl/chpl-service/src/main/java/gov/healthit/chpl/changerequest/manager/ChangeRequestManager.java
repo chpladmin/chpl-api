@@ -30,10 +30,10 @@ import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationFactory
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.Address;
-import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -264,7 +264,7 @@ public class ChangeRequestManager extends SecurityManager {
 
         if (crMap.containsKey("contact")) {
             HashMap<String, Object> contactMap = (HashMap) crMap.get("contact");
-            Contact contact = new Contact(contactMap);
+            PointOfContact contact = new PointOfContact(contactMap);
             return !contact.equals(existingDeveloper.getContact());
         }
         return false;

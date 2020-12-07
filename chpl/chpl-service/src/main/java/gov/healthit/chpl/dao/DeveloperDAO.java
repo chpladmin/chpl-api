@@ -695,16 +695,6 @@ public class DeveloperDAO extends BaseDAOImpl {
         return dtos;
     }
 
-    private void create(final DeveloperEntity entity) {
-        entityManager.persist(entity);
-        entityManager.flush();
-    }
-
-    private void update(final DeveloperEntity entity) {
-        entityManager.merge(entity);
-        entityManager.flush();
-    }
-
     private List<DeveloperEntity> getAllEntities() {
         List<DeveloperEntity> result = entityManager.createQuery(
                 "SELECT DISTINCT v from "
@@ -853,5 +843,4 @@ public class DeveloperDAO extends BaseDAOImpl {
                 .setParameter("certificationBodyIds", certificationBodyIds)
                 .getResultList();
     }
-
 }

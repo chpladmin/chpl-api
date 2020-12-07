@@ -3,20 +3,20 @@ package gov.healthit.chpl.domain.error;
 import java.io.Serializable;
 import java.util.Collection;
 
-import gov.healthit.chpl.domain.Contact;
+import gov.healthit.chpl.domain.auth.User;
 
 public class ObjectMissingValidationErrorResponse implements Serializable {
     private static final long serialVersionUID = -2186304673031903240L;
     private Collection<String> errorMessages;
     private Collection<String> warningMessages;
     private String objectId;
-    private Contact contact;
+    private User contact;
 
     public Collection<String> getErrorMessages() {
         return errorMessages;
     }
 
-    public void setErrorMessages(final Collection<String> errorMessages) {
+    public void setErrorMessages(Collection<String> errorMessages) {
         this.errorMessages = errorMessages;
     }
 
@@ -24,15 +24,15 @@ public class ObjectMissingValidationErrorResponse implements Serializable {
         return warningMessages;
     }
 
-    public void setWarningMessages(final Collection<String> warningMessages) {
+    public void setWarningMessages(Collection<String> warningMessages) {
         this.warningMessages = warningMessages;
     }
 
-    public Contact getContact() {
+    public User getContact() {
         return contact;
     }
 
-    public void setContact(final Contact contact) {
+    public void setContact(User contact) {
         this.contact = contact;
     }
 
@@ -40,7 +40,7 @@ public class ObjectMissingValidationErrorResponse implements Serializable {
         return objectId;
     }
 
-    public void setObjectId(final String objectId) {
+    public void setObjectId(String objectId) {
         this.objectId = objectId;
     }
 }
