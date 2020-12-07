@@ -202,7 +202,7 @@ public class DeveloperController {
 
     @ApiOperation(value = "Update a developer.",
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB")
-    @RequestMapping(value = "/{developerId:^-?\\\\d+$}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
+    @RequestMapping(value = "/{developerId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<Developer> update(@PathVariable("developerId") Long developerId,
             @RequestBody(required = true) Developer developerToUpdate)
