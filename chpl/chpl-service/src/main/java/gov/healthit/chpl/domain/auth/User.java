@@ -10,9 +10,11 @@ import gov.healthit.chpl.domain.contact.Person;
 import gov.healthit.chpl.dto.OrganizationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class User extends Person implements Serializable {
     private static final long serialVersionUID = 8408154701107113148L;
@@ -30,6 +32,7 @@ public class User extends Person implements Serializable {
     private String hash;
 
     public User(UserDTO dto) {
+        super();
         this.setUserId(dto.getId());
         if (dto.getPermission() != null) {
             this.setRole(dto.getPermission().getAuthority());
