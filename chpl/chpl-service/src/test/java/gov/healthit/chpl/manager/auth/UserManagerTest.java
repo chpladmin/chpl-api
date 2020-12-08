@@ -88,7 +88,7 @@ public class UserManagerTest {
         Mockito.doNothing()
                 .when(userDAO)
                 .updateAccountLockedStatus(ArgumentMatchers.anyString(), ArgumentMatchers.anyBoolean());
-        Mockito.when(userDAO.findUserByNameAndEmail(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+        Mockito.when(userDAO.findUserByEmail(ArgumentMatchers.anyString()))
                 .thenReturn(getUserDTO(1L));
 
         Mockito.when(mutableAclService.readAclById(ArgumentMatchers.any(ObjectIdentity.class)))
@@ -278,7 +278,7 @@ public class UserManagerTest {
 
     @Test
     public void updateFailedLoginCount_FailedLoginCountLessThanMaxFailedAttempts_NoErrors()
-            throws UserRetrievalException {
+            throws UserRetrievalException, MultipleUserAccountsException {
 
         UserManager userManager = new UserManager(env, userDAO, null, null, null, null, null);
 
@@ -288,7 +288,8 @@ public class UserManagerTest {
     }
 
     @Test(expected = UserRetrievalException.class)
-    public void updateFailedLoginCount_UserNotFound_UserRetrievalExceptionThrown() throws UserRetrievalException {
+    public void updateFailedLoginCount_UserNotFound_UserRetrievalExceptionThrown() throws UserRetrievalException,
+    MultipleUserAccountsException {
 
         Mockito.doThrow(UserRetrievalException.class).when(userDAO).updateFailedLoginCount(
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyInt());
@@ -302,7 +303,7 @@ public class UserManagerTest {
 
     @Test
     public void updateFailedLoginCount_FailedLoginCountGreaterThanMaxFailedAttempts_AccountIsLocked()
-            throws UserRetrievalException {
+            throws UserRetrievalException, MultipleUserAccountsException {
 
         UserManager userManager = new UserManager(env, userDAO, null, null, null, null, null);
 
@@ -317,18 +318,18 @@ public class UserManagerTest {
     @Test
     public void createResetUserPasswordToken_UserIsValid_ValidUserResetTokenDTO() throws UserRetrievalException {
         UserManager userManager = new UserManager(null, userDAO, userResetTokenDAO, null, null, null, null);
-        UserResetTokenDTO token = userManager.createResetUserPasswordToken("user_a", "abc@def.com");
+        UserResetTokenDTO token = userManager.createResetUserPasswordToken("abc@def.com");
 
         assertNotNull(token);
     }
 
     @Test(expected = UserRetrievalException.class)
     public void createResetUserPasswordToken_UserIsNotValid_UserRetrievalExceptionThrown() throws UserRetrievalException {
-        Mockito.when(userDAO.findUserByNameAndEmail(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+        Mockito.when(userDAO.findUserByEmail(ArgumentMatchers.anyString()))
                 .thenReturn(null);
 
         UserManager userManager = new UserManager(null, userDAO, userResetTokenDAO, null, null, null, null);
-        userManager.createResetUserPasswordToken("user_a", "abc@def.com");
+        userManager.createResetUserPasswordToken("abc@def.com");
 
         fail();
     }

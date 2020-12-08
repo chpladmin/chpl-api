@@ -202,26 +202,16 @@ public class InvitationManager extends SecuredManager {
         Authentication authenticator = AuthUtil.getInvitedUserAuthenticator(invitation.getLastModifiedUserId());
         SecurityContextHolder.getContext().setAuthentication(authenticator);
 
-        UserDTO existingUser = null;
         try {
-            existingUser = userManager.getByNameOrEmail(user.getSubjectName());
+            UserDTO existingUser = userManager.getByNameOrEmail(user.getEmail());
+            if (existingUser != null) {
+                throw new InvalidArgumentsException(msgUtil.getMessage("user.accountAlreadyExists", user.getEmail()));
+            }
+        } catch (UserRetrievalException urex) {
+            //ignore
         } catch (MultipleUserAccountsException ex) {
             //hitting this block means there are multiple users registered with this account.
             //don't let them make a new one!
-            throw new InvalidArgumentsException(msgUtil.getMessage("user.accountAlreadyExists", user.getSubjectName()));
-        }
-        if (existingUser != null) {
-            throw new InvalidArgumentsException(msgUtil.getMessage("user.accountAlreadyExists", user.getSubjectName()));
-        } else {
-            try {
-                existingUser = userManager.getByNameOrEmail(user.getEmail());
-            } catch (MultipleUserAccountsException ex) {
-                //hitting this block means there are multiple users registered with this account.
-                //don't let them make a new one!
-                throw new InvalidArgumentsException(msgUtil.getMessage("user.accountAlreadyExists", user.getEmail()));
-            }
-        }
-        if (existingUser != null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("user.accountAlreadyExists", user.getEmail()));
         }
 
@@ -244,7 +234,7 @@ public class InvitationManager extends SecuredManager {
     }
 
     @Transactional
-    public UserDTO confirmAccountEmail(InvitationDTO invitation) throws UserRetrievalException {
+    public UserDTO confirmAccountEmail(InvitationDTO invitation) throws UserRetrievalException, MultipleUserAccountsException {
         Authentication authenticator = AuthUtil.getInvitedUserAuthenticator(invitation.getLastModifiedUserId());
         SecurityContextHolder.getContext().setAuthentication(authenticator);
 
@@ -262,7 +252,7 @@ public class InvitationManager extends SecuredManager {
             userDao.update(user);
             invitationDao.delete(invitation.getId());
 
-            String activityDescription = "User " + user.getSubjectName() + " was confirmed.";
+            String activityDescription = "User " + user.getEmail() + " was confirmed.";
             try {
                 activityManager.addActivity(ActivityConcept.USER, user.getId(), activityDescription, origUser, user,
                         user.getId());
@@ -361,7 +351,6 @@ public class InvitationManager extends SecuredManager {
     private UserDTO constructUser(InvitationDTO invitation, CreateUserRequest user) {
         UserDTO userDto = new UserDTO();
         userDto.setTitle(user.getTitle());
-        userDto.setSubjectName(user.getSubjectName());
         userDto.setPermission(invitation.getPermission());
         userDto.setPhoneNumber(user.getPhoneNumber());
         userDto.setPasswordResetRequired(false);
