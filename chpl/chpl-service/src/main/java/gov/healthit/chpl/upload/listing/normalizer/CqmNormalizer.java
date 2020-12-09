@@ -189,15 +189,16 @@ public class CqmNormalizer {
     }
 
     private CQMResultDetails buildCqmDetails(CQMCriterionDTO cqmDto) {
-        CQMResultDetails cqmDetails = new CQMResultDetails();
-        cqmDetails.setCmsId(cqmDto.getCmsId());
-        cqmDetails.setNqfNumber(cqmDto.getNqfNumber());
-        cqmDetails.setNumber(cqmDto.getNumber());
-        cqmDetails.setTitle(cqmDto.getTitle());
-        cqmDetails.setDescription(cqmDto.getDescription());
-        cqmDetails.setSuccess(Boolean.FALSE);
+        CQMResultDetails cqmDetails = CQMResultDetails.builder()
+                .cmsId(cqmDto.getCmsId())
+                .nqfNumber(cqmDto.getNqfNumber())
+                .number(cqmDto.getNumber())
+                .title(cqmDto.getTitle())
+                .description(cqmDto.getDescription())
+                .success(Boolean.FALSE)
+                .typeId(cqmDto.getCqmCriterionTypeId())
+                .build();
         cqmDetails.getAllVersions().add(cqmDto.getCqmVersion());
-        cqmDetails.setTypeId(cqmDto.getCqmCriterionTypeId());
         return cqmDetails;
     }
 }
