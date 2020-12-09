@@ -76,9 +76,9 @@ public class ListingUploadController {
 
     @ApiOperation(value = "Get all uploaded listings to which the current user has access.",
             notes = "Security Restrictions: User will be presented the uploaded listings that "
-                    + "they have access to according to ACB(s) and CHPL permissions.")
+                    + "they have access to according to ONC-ACB(s) and CHPL permissions.")
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ListingUpload> geAll() {
+    public List<ListingUpload> getAll() {
         if (!ff4j.check(FeatureList.ENHANCED_UPLOAD)) {
             throw new NotImplementedException();
         }
@@ -87,7 +87,7 @@ public class ListingUploadController {
 
     @ApiOperation(value = "Get the details of an uploaded listing.",
             notes = "Security Restrictions: User must be authorized to view the uploaded listing "
-                    + "according to ACB(s) and CHPL permissions.")
+                    + "according to ONC-ACB(s) and CHPL permissions.")
     @RequestMapping(value = "/pending/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public CertifiedProductSearchDetails geById(@PathVariable("id") Long id)
             throws ValidationException, EntityRetrievalException {
@@ -100,7 +100,7 @@ public class ListingUploadController {
     @ApiOperation(value = "Upload a file with certified products",
             notes = "Accepts a CSV file with a valid set of fields to upload a listing. "
                     + "Security Restrictions: ROLE_ADMIN or user uploading the file must have ROLE_ACB "
-                    + "and administrative authority on the ACB(s) specified in the file.")
+                    + "and administrative authority on the ONC-ACB(s) specified in the file.")
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public List<ListingUpload> upload(@RequestParam("file") MultipartFile file)
             throws ValidationException, MaxUploadSizeExceededException {
@@ -128,7 +128,7 @@ public class ListingUploadController {
 
     @ApiOperation(value = "Reject an uploaded listing.",
             notes = "Deletes an uploaded listing. Security Restrictions: ROLE_ADMIN or have ROLE_ACB "
-                    + "and administrative authority on the ACB for each uploaded listing is required.")
+                    + "and administrative authority on the ONC-ACB for each uploaded listing is required.")
     @RequestMapping(value = "/pending/{id}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public void rejectListingUpload(@PathVariable("id") Long id)
@@ -146,7 +146,7 @@ public class ListingUploadController {
 
     @ApiOperation(value = "Reject several uploaded listings.",
             notes = "Marks a list of uploaded listings as deleted. ROLE_ADMIN or ROLE_ACB "
-                    + " and administrative authority on the ACB for each uploaded listing is required.")
+                    + " and administrative authority on the ONC-ACB for each uploaded listing is required.")
     @RequestMapping(value = "/pending", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public void rejectListingUploads(@RequestBody IdListContainer idList)
@@ -177,14 +177,6 @@ public class ListingUploadController {
         }
     }
 
-    /**
-     * Creates an email message to the configured recipients
-     * with configured subject and uses the stack trace as the
-     * email body. Creates a temporary file that is the uploaded
-     * CSV and attaches it to the email.
-     * @param file
-     * @param ex
-     */
     private void sendUploadError(MultipartFile file, Exception ex) {
         if (StringUtils.isEmpty(uploadErrorEmailRecipients)) {
             return;
