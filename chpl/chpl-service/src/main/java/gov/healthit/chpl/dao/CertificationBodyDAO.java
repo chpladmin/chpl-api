@@ -108,7 +108,8 @@ public class CertificationBodyDAO extends BaseDAOImpl {
 
     public List<CertificationBodyDTO> findAllActive() {
         List<CertificationBodyEntity> entities = entityManager
-                .createQuery("SELECT acb from CertificationBodyEntity acb "
+                .createQuery("SELECT acb "
+                        + "FROM CertificationBodyEntity acb "
                         + "LEFT OUTER JOIN FETCH acb.address "
                         + "WHERE acb.retired = false "
                         + "AND acb.deleted = false", CertificationBodyEntity.class)
@@ -144,11 +145,11 @@ public class CertificationBodyDAO extends BaseDAOImpl {
     }
 
     public CertificationBodyDTO getByCode(String code) {
-        Query query = entityManager.createQuery(
-                "SELECT acb from CertificationBodyEntity acb "
-                        + "LEFT OUTER JOIN FETCH acb.address "
-                        + "WHERE (acb.deleted = false) "
-                        + "AND (UPPER(acb.acbCode) = :code) ",
+        Query query = entityManager.createQuery("SELECT acb "
+                + "FROM CertificationBodyEntity acb "
+                + "LEFT OUTER JOIN FETCH acb.address "
+                + "WHERE (acb.deleted = false) "
+                + "AND (UPPER(acb.acbCode) = :code) ",
                 CertificationBodyEntity.class);
         query.setParameter("code", code.toUpperCase());
         List<CertificationBodyEntity> result = query.getResultList();
@@ -177,7 +178,7 @@ public class CertificationBodyDAO extends BaseDAOImpl {
     public String getMaxCode() {
         String maxCode = null;
         Query query = entityManager.createQuery("SELECT acb.acbCode "
-                        + "from CertificationBodyEntity acb "
+                        + "FROM CertificationBodyEntity acb "
                         + "ORDER BY acb.acbCode DESC",
                 String.class);
         List<String> result = query.getResultList();
@@ -234,8 +235,10 @@ public class CertificationBodyDAO extends BaseDAOImpl {
      * @return
      */
     private List<CertificationBodyEntity> getAllEntities() {
-        return entityManager.createQuery("SELECT acb from CertificationBodyEntity acb "
-                + "LEFT OUTER JOIN FETCH acb.address " + "WHERE (acb.deleted = false)", CertificationBodyEntity.class)
+        return entityManager.createQuery("SELECT acb "
+                + "FROM CertificationBodyEntity acb "
+                + "LEFT OUTER JOIN FETCH acb.address "
+                + "WHERE (acb.deleted = false)", CertificationBodyEntity.class)
                 .getResultList();
     }
 
@@ -249,8 +252,11 @@ public class CertificationBodyDAO extends BaseDAOImpl {
     private CertificationBodyEntity getEntityById(final Long entityId) throws EntityRetrievalException {
         CertificationBodyEntity entity = null;
 
-        String queryStr = "SELECT acb from CertificationBodyEntity acb " + "LEFT OUTER JOIN FETCH acb.address "
-                + "WHERE (acb.id = :entityid)" + " AND (acb.deleted = false)";
+        String queryStr = "SELECT acb "
+                + "FROM CertificationBodyEntity acb "
+                + "LEFT OUTER JOIN FETCH acb.address "
+                + "WHERE (acb.id = :entityid) "
+                + "AND (acb.deleted = false)";
 
         Query query = entityManager.createQuery(queryStr, CertificationBodyEntity.class);
         query.setParameter("entityid", entityId);
@@ -277,9 +283,11 @@ public class CertificationBodyDAO extends BaseDAOImpl {
     private CertificationBodyEntity getEntityByName(final String name) {
         CertificationBodyEntity entity = null;
 
-        Query query = entityManager.createQuery(
-                "SELECT acb from CertificationBodyEntity acb " + "LEFT OUTER JOIN FETCH acb.address "
-                        + "WHERE (acb.deleted = false) " + "AND (UPPER(acb.name) = :name) ",
+        Query query = entityManager.createQuery("SELECT acb "
+                + "FROM CertificationBodyEntity acb "
+                + "LEFT OUTER JOIN FETCH acb.address "
+                + "WHERE (acb.deleted = false) "
+                + "AND (UPPER(acb.name) = :name) ",
                 CertificationBodyEntity.class);
         query.setParameter("name", name.toUpperCase());
         List<CertificationBodyEntity> result = query.getResultList();
