@@ -29,6 +29,9 @@ public class SvapEntity {
     @Column(name = "approved_standard_version", nullable = false)
     private String approvedStandardVersion;
 
+    @Column(name = "replaced", nullable = false)
+    private Boolean replaced;
+
     @Column(name = "deleted", nullable = false)
     private Boolean deleted;
 

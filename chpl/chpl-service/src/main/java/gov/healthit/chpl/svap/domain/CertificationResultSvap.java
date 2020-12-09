@@ -54,6 +54,12 @@ public class CertificationResultSvap implements Serializable {
     @XmlElement(required = true)
     private String approvedStandardVersion;
 
+    /**
+     *  Indicates if the SVAP has been deprecated
+     */
+    @XmlElement(required = true)
+    private boolean replaced;
+
     public CertificationResultSvap() {
 
     }
@@ -63,6 +69,7 @@ public class CertificationResultSvap implements Serializable {
         this.svapId = entity.getSvapId();
         this.regulatoryTextCitation = entity.getSvap().getRegulatoryTextCitation();
         this.approvedStandardVersion = entity.getSvap().getApprovedStandardVersion();
+        this.replaced = entity.getSvap().getReplaced();
     }
 
     public Long getId() {
@@ -96,4 +103,12 @@ public class CertificationResultSvap implements Serializable {
     public void setApprovedStandardVersion(String approvedStandardVersion) {
         this.approvedStandardVersion = approvedStandardVersion;
     }
-}
+
+    public boolean getReplaced() {
+        return replaced;
+    }
+
+    public void setReplaced(boolean replaced) {
+        this.replaced = replaced;
+    }
+ }

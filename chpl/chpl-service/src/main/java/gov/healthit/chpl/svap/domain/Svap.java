@@ -15,10 +15,12 @@ public class Svap {
     private Long svapId;
     private String regulatoryTextCitation;
     private String approvedStandardVersion;
+    private boolean replaced;
 
     public Svap(SvapEntity entity) {
         this.svapId = entity.getSvapId();
         this.regulatoryTextCitation = entity.getRegulatoryTextCitation();
         this.approvedStandardVersion = entity.getApprovedStandardVersion();
+        this.replaced = entity.getReplaced();
     }
 }
