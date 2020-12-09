@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.domain.Contact;
+import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import lombok.extern.log4j.Log4j2;
@@ -27,7 +27,7 @@ public class ContactValidation extends ValidationRule<ChangeRequestValidationCon
         if (resourcePermissions.isUserRoleDeveloperAdmin()) {
             HashMap<String, Object> details = (HashMap) context.getChangeRequest().getDetails();
             if (details.containsKey("contact")) {
-                Contact crContact = new Contact((HashMap<String, Object>) details.get("contact"));
+                PointOfContact crContact = new PointOfContact((HashMap<String, Object>) details.get("contact"));
                 boolean contactComponentsValid = true;
                 if (!isNameValid(crContact)) {
                     getMessages().add(getErrorMessage("developer.contact.nameRequired"));
@@ -47,15 +47,15 @@ public class ContactValidation extends ValidationRule<ChangeRequestValidationCon
         return true;
     }
 
-    private boolean isNameValid(Contact contact) {
+    private boolean isNameValid(PointOfContact contact) {
         return !StringUtils.isEmpty(contact.getFullName());
     }
 
-    private boolean isEmailValid(Contact contact) {
+    private boolean isEmailValid(PointOfContact contact) {
         return !StringUtils.isEmpty(contact.getEmail());
     }
 
-    private boolean isPhoneNumberValid(Contact contact) {
+    private boolean isPhoneNumberValid(PointOfContact contact) {
         return !StringUtils.isEmpty(contact.getPhoneNumber());
     }
 }

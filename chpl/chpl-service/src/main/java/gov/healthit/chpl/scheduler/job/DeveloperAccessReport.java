@@ -34,7 +34,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.domain.Contact;
+import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.auth.UserContactEntity;
@@ -183,7 +183,7 @@ public class DeveloperAccessReport extends QuartzJob {
         currRow.set(DEVELOPER_CONTACT_EMAIL, devAcbMap.getContactEmail());
         currRow.set(DEVELOPER_CONTACT_PHONE_NUMBER, devAcbMap.getContactPhoneNumber());
         currRow.set(DEVELOPER_USER_COUNT, developerAccessDao.getUserCountForDeveloper(devAcbMap.getDeveloperId()) + "");
-        List<Contact> userContactList = developerAccessDao.getContactForDeveloperUsers(devAcbMap.developerId);
+        List<PointOfContact> userContactList = developerAccessDao.getContactForDeveloperUsers(devAcbMap.developerId);
         currRow.set(DEVELOPER_USER_EMAILS, (userContactList == null) ? "" : formatContacts(userContactList));
         Date lastLoginDate = developerAccessDao.getLastLoginDateForDeveloper(devAcbMap.getDeveloperId());
         currRow.set(LAST_LOGIN_DATE, lastLoginDate == null ? "" : getTimestampFormatter().format(lastLoginDate));
@@ -208,7 +208,7 @@ public class DeveloperAccessReport extends QuartzJob {
         return row;
     }
 
-    private String formatContacts(List<Contact> userContactList) {
+    private String formatContacts(List<PointOfContact> userContactList) {
         List<String> contactStrings = new ArrayList<String>();
         userContactList.stream()
             .forEach(contact -> contactStrings.add(contact.getFullName() + " <" + contact.getEmail() + ">"));
@@ -344,8 +344,8 @@ public class DeveloperAccessReport extends QuartzJob {
         }
 
         @Transactional
-        public List<Contact> getContactForDeveloperUsers(Long developerId) {
-            List<Contact> contacts = new ArrayList<Contact>();
+        public List<PointOfContact> getContactForDeveloperUsers(Long developerId) {
+            List<PointOfContact> contacts = new ArrayList<PointOfContact>();
             Query query = entityManager.createQuery("SELECT contact "
                     + "FROM UserDeveloperMapEntity udm "
                     + "JOIN udm.developer developer "
@@ -364,7 +364,7 @@ public class DeveloperAccessReport extends QuartzJob {
                 return contacts;
             }
             for (UserContactEntity queryResult : queryResults) {
-                Contact contact = new Contact();
+                PointOfContact contact = new PointOfContact();
                 contact.setEmail(queryResult.getEmail());
                 contact.setFullName(queryResult.getFullName());
                 contacts.add(contact);

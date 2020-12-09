@@ -6,24 +6,23 @@ import java.util.Date;
 import java.util.List;
 
 import gov.healthit.chpl.domain.Organization;
+import gov.healthit.chpl.domain.contact.Person;
 import gov.healthit.chpl.dto.OrganizationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-public class User implements Serializable {
+public class User extends Person implements Serializable {
     private static final long serialVersionUID = 8408154701107113148L;
 
     private Long userId;
     private String role;
     private String subjectName;
-    private String fullName;
     private String friendlyName;
-    private String email;
-    private String phoneNumber;
-    private String title;
     private Boolean accountLocked;
     private Boolean accountEnabled;
     private Boolean credentialsExpired;
@@ -32,7 +31,8 @@ public class User implements Serializable {
     private List<Organization> organizations = new ArrayList<Organization>();
     private String hash;
 
-    public User(final UserDTO dto) {
+    public User(UserDTO dto) {
+        super();
         this.setUserId(dto.getId());
         if (dto.getPermission() != null) {
             this.setRole(dto.getPermission().getAuthority());

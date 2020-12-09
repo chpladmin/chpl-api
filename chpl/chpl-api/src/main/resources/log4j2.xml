@@ -264,15 +264,26 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
-        <RollingFile name="cacheListenerActivity"
-                     fileName="${logDir}/cache/cacheListenerActivity.log"
-                     filePattern="${logDir}/cache/history/cacheListenerActivity-%d{yyyy-MM-dd}.log">
+        <RollingFile name="directReviewDownloadableResourceCreatorJob"
+            fileName="${logDir}/scheduler/directReviewDownloadableResourceCreatorJob.log"
+            filePattern="${logDir}/scheduler/history/directReviewDownloadableResourceCreatorJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
                 <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
-                        interval="1" modulate="true" />
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
+        <RollingFile name="directReviewCacheRefreshJob"
+            fileName="${logDir}/scheduler/directReviewCacheRefreshJob.log"
+            filePattern="${logDir}/scheduler/history/directReviewCacheRefreshJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
             </Policies>
         </RollingFile>
         <RollingFile name="developerAccessEmailJob"
@@ -297,6 +308,17 @@
                         interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <RollingFile name="realWorldTestingUploadJob"
+            fileName="${logDir}/scheduler/realWorldTestingUploadJob.log"
+            filePattern="${logDir}/scheduler/history/realWorldTestingUploadJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
     </Appenders>
     <Loggers>
         <Logger name="org.jose4j" level="ERROR" additivity="false">
@@ -313,7 +335,7 @@
             <AppenderRef ref="cacheListenerActivity" />
         </Logger>
         <logger name="org.springframework.cache" level="INFO">
-            <appender-ref ref="cacheListenerActivity" />
+            <AppenderRef ref="cacheListenerActivity" />
         </logger>
         <Logger name="gov.healthit.chpl" level="DEBUG" additivity="false">
             <AppenderRef ref="STDOUT" />
@@ -414,6 +436,18 @@
         <Logger name="developerAccessEmailJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="developerAccessEmailJob" />
+        </Logger>
+        <Logger name="directReviewDownloadableResourceCreatorJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="directReviewDownloadableResourceCreatorJob" />
+        </Logger>
+        <Logger name="directReviewCacheRefreshJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="directReviewCacheRefreshJob" />
+        </Logger>
+        <Logger name="realWorldTestingUploadJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="realWorldTestingUploadJob" />
         </Logger>
     </Loggers>
 </Configuration>

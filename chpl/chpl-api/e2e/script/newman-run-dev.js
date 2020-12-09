@@ -4,6 +4,7 @@ const path = require('path');
 
 const collection_path = path.resolve('chpl/chpl-api/e2e/collections');
 const reports_path = path.resolve('newman');
+const data_path = path.resolve('chpl/chpl-api/e2e/data');
 
 const commonOptions = {
     reporters: ['junit','cli'],
@@ -21,15 +22,28 @@ const acbControllerTests = {
     },
 };
 
-const developerControllerTests = {
+const developerControllerDataTests = {
     ...commonOptions,
     collection: collection_path + '/developer-controller.postman_collection.json',
+    folder: 'GET : Developers: data driven tests',
+    iterationData: data_path + '/developerIds-test-data.json',
     reporter: {
         junit: {
-            export: reports_path + '/developer-controller-tests.xml',
+            export: reports_path + '/developer-controller-data-tests.xml',
         },
     },
 };
+
+const developerControllerNoDataTests = {
+	    ...commonOptions,
+	    collection: collection_path + '/developer-controller.postman_collection.json',
+	    folder: 'GET : Developers: non-data driven tests',
+	    reporter: {
+	        junit: {
+	            export: reports_path + '/developer-controller-nodata-tests.xml',
+	        },
+	    },
+	};
 
 const productsControllerTests = {
     ...commonOptions,
@@ -73,7 +87,8 @@ const searchviewControllerTests = {
 
 const jobs = [
     cb => newman.run(acbControllerTests,cb),
-    cb => newman.run(developerControllerTests,cb),
+    cb => newman.run(developerControllerDataTests,cb),
+    cb => newman.run(developerControllerNoDataTests,cb),
     cb => newman.run(productsControllerTests,cb),
     cb => newman.run(statusControllerTests,cb),
     cb => newman.run(testinglabControllerTests,cb),

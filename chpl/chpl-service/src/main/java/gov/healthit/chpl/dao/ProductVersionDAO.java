@@ -148,6 +148,25 @@ public class ProductVersionDAO extends BaseDAOImpl {
         return dto;
     }
 
+    public List<ProductVersionDTO> getByDeveloper(Long developerId) {
+        Query query = entityManager.createQuery("SELECT pve "
+                        + " FROM ProductVersionEntity pve "
+                        + " JOIN FETCH pve.product product "
+                        + "JOIN FETCH product.developer dev "
+                        + "WHERE pve.deleted = false "
+                        + "AND dev.id = :developerId",
+                ProductVersionEntity.class);
+
+        query.setParameter("developerId", developerId);
+        List<ProductVersionEntity> results = query.getResultList();
+
+        List<ProductVersionDTO> dtoResults = new ArrayList<ProductVersionDTO>();
+        for (ProductVersionEntity result : results) {
+            dtoResults.add(new ProductVersionDTO(result));
+        }
+        return dtoResults;
+    }
+
     public List<ProductVersionDTO> getByProductId(final Long productId) {
         Query query = entityManager.createQuery("SELECT pve "
                 + "FROM ProductVersionEntity pve "

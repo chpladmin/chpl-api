@@ -1,17 +1,15 @@
 {
 	"info": {
-		"_postman_id": "6e1c03a3-35b0-496f-99c3-30c89f93aaa3",
 		"name": "products-controller",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
-		{
+	    {
 			"name": "GET /products - invalid API Key parameter",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "e517dbed-0a00-403e-8fe6-429adda650cc",
 						"exec": [
 							"pm.test(\"Invalid api key parameter should return 401 status\", function () {\r",
 							"    pm.response.to.have.status(401);\r",
@@ -56,7 +54,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "73b68fdc-ede9-4922-89e8-5b56606bd091",
 						"exec": [
 							"pm.test(\"Valid API Key parameter should return 200 and response body should not be empty\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
@@ -85,6 +82,269 @@
 							"key": "api_key",
 							"value": "{{apiKey}}"
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /products - product schema and response validation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const developerSchema =\r",
+							"{\r",
+							"  \"products\": [\r",
+							"    {\r",
+							"      \"contact\": {\r",
+							"        \"contactId\": 0,\r",
+							"        \"email\": \"string\",\r",
+							"        \"fullName\": \"string\",\r",
+							"        \"phoneNumber\": \"string\",\r",
+							"        \"title\": \"string\"\r",
+							"      },\r",
+							"      \"lastModifiedDate\": \"string\",\r",
+							"      \"name\": \"string\",\r",
+							"      \"owner\": {\r",
+							"        \"address\": {\r",
+							"          \"addressId\": 0,\r",
+							"          \"city\": \"string\",\r",
+							"          \"country\": \"string\",\r",
+							"          \"line1\": \"string\",\r",
+							"          \"line2\": \"string\",\r",
+							"          \"state\": \"string\",\r",
+							"          \"zipcode\": \"string\"\r",
+							"        },\r",
+							"        \"contact\": {\r",
+							"          \"contactId\": 0,\r",
+							"          \"email\": \"string\",\r",
+							"          \"fullName\": \"string\",\r",
+							"          \"phoneNumber\": \"string\",\r",
+							"          \"title\": \"string\"\r",
+							"        },\r",
+							"        \"deleted\": false,\r",
+							"        \"developerCode\": \"string\",\r",
+							"        \"developerId\": 0,\r",
+							"        \"lastModifiedDate\": \"string\",\r",
+							"        \"name\": \"string\",\r",
+							"        \"selfDeveloper\": false,\r",
+							"        \"status\": {\r",
+							"          \"id\": 0,\r",
+							"          \"status\": \"string\"\r",
+							"        },\r",
+							"        \"statusEvents\": [\r",
+							"          {\r",
+							"            \"developerId\": 0,\r",
+							"            \"id\": 0,\r",
+							"            \"reason\": \"string\",\r",
+							"            \"status\": {\r",
+							"              \"id\": 0,\r",
+							"              \"status\": \"string\"\r",
+							"            },\r",
+							"            \"statusDate\": \"2020-10-20T13:16:36.892Z\"\r",
+							"          }\r",
+							"        ],\r",
+							"        \"transparencyAttestations\": [\r",
+							"          {\r",
+							"            \"acbId\": 0,\r",
+							"            \"acbName\": \"string\",\r",
+							"            \"attestation\": {\r",
+							"              \"removed\": false,\r",
+							"              \"transparencyAttestation\": \"string\"\r",
+							"            }\r",
+							"          }\r",
+							"        ],\r",
+							"        \"website\": \"string\"\r",
+							"      },\r",
+							"      \"ownerHistory\": [\r",
+							"        {\r",
+							"          \"developer\": {\r",
+							"            \"address\": {\r",
+							"              \"addressId\": 0,\r",
+							"              \"city\": \"string\",\r",
+							"              \"country\": \"string\",\r",
+							"              \"line1\": \"string\",\r",
+							"              \"line2\": \"string\",\r",
+							"              \"state\": \"string\",\r",
+							"              \"zipcode\": \"string\"\r",
+							"            },\r",
+							"            \"contact\": {\r",
+							"              \"contactId\": 0,\r",
+							"              \"email\": \"string\",\r",
+							"              \"fullName\": \"string\",\r",
+							"              \"phoneNumber\": \"string\",\r",
+							"              \"title\": \"string\"\r",
+							"            },\r",
+							"            \"deleted\": false,\r",
+							"            \"developerCode\": \"string\",\r",
+							"            \"developerId\": 0,\r",
+							"            \"lastModifiedDate\": \"string\",\r",
+							"            \"name\": \"string\",\r",
+							"            \"selfDeveloper\": false,\r",
+							"            \"status\": {\r",
+							"              \"id\": 0,\r",
+							"              \"status\": \"string\"\r",
+							"            },\r",
+							"            \"statusEvents\": [\r",
+							"              {\r",
+							"                \"developerId\": 0,\r",
+							"                \"id\": 0,\r",
+							"                \"reason\": \"string\",\r",
+							"                \"status\": {\r",
+							"                  \"id\": 0,\r",
+							"                  \"status\": \"string\"\r",
+							"                },\r",
+							"                \"statusDate\": \"2020-10-20T13:16:36.892Z\"\r",
+							"              }\r",
+							"            ],\r",
+							"            \"transparencyAttestations\": [\r",
+							"              {\r",
+							"                \"acbId\": 0,\r",
+							"                \"acbName\": \"string\",\r",
+							"                \"attestation\": {\r",
+							"                  \"removed\": false,\r",
+							"                  \"transparencyAttestation\": \"string\"\r",
+							"                }\r",
+							"              }\r",
+							"            ],\r",
+							"            \"website\": \"string\"\r",
+							"          },\r",
+							"          \"id\": 0,\r",
+							"          \"transferDate\": 0\r",
+							"        }\r",
+							"      ],\r",
+							"      \"productId\": 0,\r",
+							"      \"reportFileLocation\": \"string\"\r",
+							"    }\r",
+							"  ]\r",
+							"}\r",
+							"var jsonResponse = pm.response.json();\r",
+							"pm.test('product schema is valid', function() {\r",
+							"  pm.expect(tv4.validate(jsonResponse, developerSchema)).to.be.true;  \r",
+							"});\r",
+							"\r",
+							"pm.test(\"product contact details should not include friendly name\", function () {\r",
+							"    pm.expect(pm.response.text()).to.not.include(\"friendlyName\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-KEY",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/products",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+					    "rest",
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT /products - edit response validation on successful product edit",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"valid product edit request should return valid response\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"validate edit response-product name is correct\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.name).to.eql('Centricity Perinatal');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"product contact details should not include friendly name\", function () {\r",
+							"    pm.expect(pm.response.text()).to.not.include(\"friendlyName\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"usernameACB\"),password:pm.environment.get(\"passwordACB\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+			"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "API-KEY",
+						"value": "{{apiKey}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"productIds\":[778],\"product\":{\"productId\":778,\"name\":\"Centricity Perinatal\",\"reportFileLocation\":null,\"contact\":{\"fullName\":\"Tamara Grassle\",\"email\":\"Tamara.grassle@med.ge.com\",\"phoneNumber\":\"847-277-5000\",\"title\":null,\"contactId\":782},\"owner\":{\"developerId\":2070,\"developerCode\":\"3069\",\"name\":\"GE Healthcare\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":null,\"deleted\":null,\"transparencyAttestations\":[],\"statusEvents\":[],\"status\":null},\"ownerHistory\":[{\"id\":115,\"developer\":{\"developerId\":1903,\"developerCode\":\"2902\",\"name\":\"Virence Health Technologies\",\"website\":\"http://www.athenahealth.com\",\"selfDeveloper\":false,\"address\":{\"addressId\":106,\"line1\":\"925 Fourth Avenue\",\"line2\":null,\"city\":\"Seattle\",\"state\":\"WA\",\"zipcode\":\"98104-1157\",\"country\":\"USA\"},\"contact\":{\"fullName\":\"Geoff Lay\",\"email\":\"glay@athenahealth.com\",\"phoneNumber\":\"971-282-5818\",\"title\":null,\"contactId\":906},\"lastModifiedDate\":\"1599256081508\",\"deleted\":false,\"transparencyAttestations\":[],\"statusEvents\":[{\"id\":1833,\"developerId\":1903,\"status\":{\"id\":1,\"status\":\"Active\"},\"statusDate\":1471551235098,\"reason\":null}],\"status\":{\"id\":1,\"status\":\"Active\"}},\"transferDate\":1580342432407,\"displayName\":\"undefined - active\"}],\"lastModifiedDate\":\"1580342432374\"}}"
+				},
+				"url": {
+					"raw": "{{url}}/products",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+					    "rest",
+						"products"
 					]
 				}
 			},
