@@ -25,6 +25,7 @@ import gov.healthit.chpl.dto.TestTaskDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Singular;
+import lombok.ToString;
 
 /**
  * A task used for SED testing for a given criteria.
@@ -34,6 +35,7 @@ import lombok.Singular;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder(toBuilder = true)
 @AllArgsConstructor
+@ToString
 public class TestTask implements Serializable {
     private static final long serialVersionUID = -3761135258451736516L;
 
@@ -654,17 +656,5 @@ public class TestTask implements Serializable {
 
     public void setTaskRatingStddevStr(String taskRatingStddevStr) {
         this.taskRatingStddevStr = taskRatingStddevStr;
-    }
-
-    @Override
-    public String toString() {
-        return "TestTask [id=" + id + ", uniqueId=" + uniqueId + ", description=" + description
-                + ", taskSuccessAverage=" + taskSuccessAverage + ", taskSuccessStddev=" + taskSuccessStddev
-                + ", taskPathDeviationObserved=" + taskPathDeviationObserved + ", taskPathDeviationOptimal="
-                + taskPathDeviationOptimal + ", taskTimeAvg=" + taskTimeAvg + ", taskTimeStddev=" + taskTimeStddev
-                + ", taskTimeDeviationObservedAvg=" + taskTimeDeviationObservedAvg + ", taskTimeDeviationOptimalAvg="
-                + taskTimeDeviationOptimalAvg + ", taskErrors=" + taskErrors + ", taskErrorsStddev=" + taskErrorsStddev
-                + ", taskRatingScale=" + taskRatingScale + ", taskRating=" + taskRating + ", taskRatingStddev="
-                + taskRatingStddev + ", criteria=" + criteria + ", testParticipants=" + testParticipants + "]";
     }
 }
