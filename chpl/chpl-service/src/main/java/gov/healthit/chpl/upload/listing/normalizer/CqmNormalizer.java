@@ -15,14 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CQMCriterionDAO;
-import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
@@ -32,14 +31,14 @@ public class CqmNormalizer {
     private static final String CMS_ID_BEGIN = "CMS";
 
     private CQMCriterionDAO cqmDao;
-    private CertificationCriterionDAO criterionDao;
+    private CertificationCriterionService criterionService;
 
     private List<CQMCriterionDTO> allCqmsWithVersions;
 
     @Autowired
-    public CqmNormalizer(CQMCriterionDAO cqmDao, CertificationCriterionDAO criterionDao) {
+    public CqmNormalizer(CQMCriterionDAO cqmDao, CertificationCriterionService criterionService) {
         this.cqmDao = cqmDao;
-        this.criterionDao = criterionDao;
+        this.criterionService = criterionService;
     }
 
     @PostConstruct
@@ -103,25 +102,27 @@ public class CqmNormalizer {
         }
     }
 
-    private void normalizeCriterion(CertifiedProductSearchDetails listing, CQMResultCertification criterion) {
-        String criterionNumber = criterion.getCertificationNumber();
+    private void normalizeCriterion(CertifiedProductSearchDetails listing, CQMResultCertification cqmCriterion) {
+        String criterionNumber = cqmCriterion.getCertificationNumber();
         if (StringUtils.isEmpty(criterionNumber)) {
             return;
         }
-        if (criterionNumber.equals("c1") || criterionNumber.equals("(c)(1)")) {
-            criterion.setCertificationNumber("170.315 (c)(1)");
-        } else if (criterionNumber.equals("c2") || criterionNumber.equals("(c)(2)")) {
-            criterion.setCertificationNumber("170.315 (c)(2)");
-        } else if (criterionNumber.equals("c3") || criterionNumber.equals("(c)(3)")) {
-            criterion.setCertificationNumber("170.315 (c)(3)");
-        } else if (criterionNumber.equals("c4") || criterionNumber.equals("(c)(4)")) {
-            criterion.setCertificationNumber("170.315 (c)(4)");
+        String criterionNumberToLookup = null;
+        if (criterionNumber.equalsIgnoreCase("c1") || criterionNumber.equalsIgnoreCase("(c)(1)")) {
+            criterionNumberToLookup = "criterion.170_315_c_1";
+        } else if (criterionNumber.equalsIgnoreCase("c2") || criterionNumber.equalsIgnoreCase("(c)(2)")) {
+            criterionNumberToLookup = "criterion.170_315_c_2";
+        } else if (criterionNumber.equalsIgnoreCase("c3") || criterionNumber.equalsIgnoreCase("(c)(3)")) {
+            criterionNumberToLookup = "criterion.170_315_c_3";
+        } else if (criterionNumber.equalsIgnoreCase("c4") || criterionNumber.equalsIgnoreCase("(c)(4)")) {
+            criterionNumberToLookup = "criterion.170_315_c_4";
         }
-        CertificationCriterion foundCriteron = lookupCriterion(criterion.getCertificationNumber(),
-                determineCures(listing, criterion.getCertificationNumber()));
-        if (foundCriteron != null) {
-            criterion.setCertificationId(foundCriteron.getId());
-            criterion.setCriterion(foundCriteron);
+        CertificationCriterion foundCriterion = lookupCriterion(criterionNumberToLookup,
+                determineCures(listing, cqmCriterion.getCertificationNumber()));
+        if (foundCriterion != null) {
+            cqmCriterion.setCertificationId(foundCriterion.getId());
+            cqmCriterion.setCertificationNumber(foundCriterion.getNumber());
+            cqmCriterion.setCriterion(foundCriterion);
         }
     }
 
@@ -137,28 +138,11 @@ public class CqmNormalizer {
         return Util.isCures(attestedCert.get().getCriterion());
     }
 
-    private CertificationCriterion lookupCriterion(String number, boolean isCures) {
-        List<CertificationCriterionDTO> certDtos = criterionDao.getAllByNumber(number);
-        if (certDtos == null || certDtos.size() == 0) {
-            LOGGER.error("Could not find a certification criterion matching " + number);
-        }
-
-        Optional<CertificationCriterionDTO> foundCriterion = null;
+    private CertificationCriterion lookupCriterion(String criterionLookupKey, boolean isCures) {
         if (isCures) {
-            foundCriterion = certDtos.stream()
-                    .filter(certDto -> Util.isCures(certDto))
-                    .findFirst();
-        } else {
-            foundCriterion = certDtos.stream()
-                    .filter(certDto -> !Util.isCures(certDto))
-                    .findFirst();
+            criterionLookupKey += "_cures";
         }
-
-        if (foundCriterion == null || !foundCriterion.isPresent()) {
-            LOGGER.error("Could not find a certification criterion (cures=" + isCures + ") matching " + number);
-            return null;
-        }
-        return new CertificationCriterion(foundCriterion.get());
+        return criterionService.get(criterionLookupKey);
     }
 
     private void addUnattestedCqms(CertifiedProductSearchDetails listing) {
