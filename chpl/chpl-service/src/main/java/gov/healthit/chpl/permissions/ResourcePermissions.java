@@ -81,9 +81,15 @@ public class ResourcePermissions {
         }
     }
 
+    @Deprecated
     @Transactional(readOnly = true)
     public UserDTO getUserByName(String userName) throws UserRetrievalException {
         return userDAO.getByName(userName);
+    }
+
+    @Transactional(readOnly = true)
+    public UserDTO getUserById(Long userId) throws UserRetrievalException {
+        return userDAO.getById(userId);
     }
 
     @Transactional(readOnly = true)
