@@ -232,7 +232,7 @@ public class ListingUploadManager {
             .filter(heading -> !uploadUtil.hasHeading(heading, headingRecord))
             .map(headingVal -> headingVal.getNamesAsString())
             .collect(Collectors.toList());
-        if (missingRequiredHeadings != null && missingRequiredHeadings.size() > 0) {
+        if (missingRequiredHeadings.size() > 0) {
             throw new ValidationException(msgUtil.getMessage("listing.upload.missingRequiredHeadings",
                     String.join("; ", missingRequiredHeadings)));
         }
@@ -243,7 +243,7 @@ public class ListingUploadManager {
             .filter(heading -> StringUtils.isEmpty(uploadUtil.parseSingleRowField(heading, headingRecord, listingRecords)))
             .map(headingVal -> headingVal.getNamesAsString())
             .collect(Collectors.toList());
-        if (headingsWithMissingData != null && headingsWithMissingData.size() > 0) {
+        if (headingsWithMissingData.size() > 0) {
             throw new ValidationException(msgUtil.getMessage("listing.upload.missingRequiredData",
                     String.join("; ", headingsWithMissingData)));
         }
