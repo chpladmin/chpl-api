@@ -7,6 +7,7 @@ import java.util.Set;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -65,7 +66,9 @@ public class Measure implements Serializable {
     @XmlElement(required = true)
     private Boolean removed;
 
-    @XmlElement(required = true)
+    @XmlElementWrapper(name = "allowedCriteria", nillable = true, required = false)
+    @XmlElement(required = true, name = "criteria")
+    @Builder.Default
     private Set<CertificationCriterion> allowedCriteria = new LinkedHashSet<CertificationCriterion>();
 
     public Measure() {

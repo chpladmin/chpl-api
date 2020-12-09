@@ -7,6 +7,7 @@ import java.util.Set;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -43,7 +44,9 @@ public class ListingMeasure implements Serializable {
     @XmlElement(required = true)
     private MeasureType measureType;
 
-    @XmlElement(required = true)
+    @XmlElementWrapper(name = "associatedCriteria", nillable = true, required = false)
+    @XmlElement(required = true, name = "criteria")
+    @Builder.Default
     private Set<CertificationCriterion> associatedCriteria = new LinkedHashSet<CertificationCriterion>();
 
     public ListingMeasure() {
