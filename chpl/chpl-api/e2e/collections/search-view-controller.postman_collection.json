@@ -1,17 +1,15 @@
 {
 	"info": {
-		"_postman_id": "cbf3ffef-47da-4944-b0cf-2e81ead99247",
 		"name": "search-view-controller",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "GET /data/svap- valid API Key",
+			"name": "GET /data/svap- 200 response for valid API Key header",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "be6a49d6-0ead-407b-acb0-44f80dc2d61c",
 						"exec": [
 							"pm.test(\"Valid api key header should return 200 status for SVAP\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
@@ -57,7 +55,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "eff9001e-9439-40ff-bb73-a4ddc33e72ac",
 						"exec": [
 							"const schema = {\r",
 							"  \"results\": [\r",
@@ -123,7 +120,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "db8f451f-8610-4a7a-8c51-9df2a68dce75",
 						"exec": [
 							"pm.test(\"Invalid api key header should return 401 status for SVAP\", function () {\r",
 							"    pm.response.to.have.status(401);\r",
@@ -169,7 +165,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "56830396-ae6c-467c-9726-f36324f03c1c",
 						"exec": [
 							"pm.test(\"Requests without API Key should return 400 status for SVAP\", function () {\r",
 							"    pm.response.to.have.status(400);\r",
