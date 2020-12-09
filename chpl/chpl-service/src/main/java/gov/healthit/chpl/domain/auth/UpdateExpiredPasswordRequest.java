@@ -1,28 +1,15 @@
 package gov.healthit.chpl.domain.auth;
 
-/**
- * Object containing fields required for changing an expired password.
- * @author alarned
- *
- */
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class UpdateExpiredPasswordRequest extends UpdatePasswordRequest {
 
-    private String userName;
-
-    /** Default constructor. */
-    public UpdateExpiredPasswordRequest() {
-        super();
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(final String userName) {
-        this.userName = userName;
-    }
+    private String email;
 
     public LoginCredentials getLoginCredentials() {
-        return new LoginCredentials(this.userName, this.getOldPassword());
+        return new LoginCredentials(this.email, this.getOldPassword());
     }
 }

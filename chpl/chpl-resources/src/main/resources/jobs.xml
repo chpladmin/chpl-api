@@ -79,6 +79,16 @@
             <recover>false</recover>
         </job>
 
+        <!-- Generate direct review download file -->
+        <job>
+            <name>directReviewDownloadFileGeneration</name>
+            <group>systemJobs</group>
+            <description>Generate direct review download file</description>
+            <job-class>gov.healthit.chpl.scheduler.job.DirectReviewDownloadableResourceCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+
         <!-- Summary statistics generator -->
         <job>
             <name>summaryStatisticsCreator</name>
@@ -492,6 +502,16 @@
                     <value>true</value>
                 </entry>
             </job-data-map>
+        </job>
+
+        <!-- Refresh the direct review cache -->
+        <job>
+            <name>directReviewCacheRefresh</name>
+            <group>systemJobs</group>
+            <description>Periodically refresh the direct review cache</description>
+            <job-class>gov.healthit.chpl.scheduler.job.DirectReviewCacheRefreshJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
         </job>
     </schedule>
 </job-scheduling-data>

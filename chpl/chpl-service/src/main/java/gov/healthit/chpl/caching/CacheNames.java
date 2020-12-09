@@ -32,6 +32,7 @@ public final class CacheNames {
     public static final String TEST_FUNCTIONALITY_MAPS = "testFunctionalityMaps";
     public static final String COLLECTIONS_DEVELOPERS = "developerCollection";
     public static final String COLLECTIONS_LISTINGS = "listingCollection";
+    public static final String DIRECT_REVIEWS = "directReviews";
 
     //caches that are pre-fetched due to longish load times
     public static final String PREFETCHED_COLLECTIONS_LISTINGS = "prefetchedListingCollection";

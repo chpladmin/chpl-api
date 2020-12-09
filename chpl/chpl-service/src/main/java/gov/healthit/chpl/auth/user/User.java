@@ -11,8 +11,8 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 
 public interface User extends UserDetails, Authentication {
 
-    public static final Long ADMIN_USER_ID = -2L;
-    public static final Long SYSTEM_USER_ID = -3L;
+    Long ADMIN_USER_ID = -2L;
+    Long SYSTEM_USER_ID = -3L;
 
     Long getId();
     String getSubjectName();
@@ -23,7 +23,7 @@ public interface User extends UserDetails, Authentication {
     void setFriendlyName(String friendlyName);
     String getFriendlyName();
     boolean getPasswordResetRequired();
-    void setPasswordResetRequired(final boolean setPasswordResetRequired);
+    void setPasswordResetRequired(boolean setPasswordResetRequired);
     Set<GrantedPermission> getPermissions();
     void addPermission(GrantedPermission permission);
     void removePermission(String permissionValue);
