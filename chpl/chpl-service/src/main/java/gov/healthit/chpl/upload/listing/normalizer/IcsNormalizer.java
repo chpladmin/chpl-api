@@ -24,11 +24,11 @@ public class IcsNormalizer {
     public void normalize(CertifiedProductSearchDetails listing) {
         if (listing.getIcs() != null && listing.getIcs().getParents() != null && listing.getIcs().getParents().size() > 0) {
             listing.getIcs().getParents().stream()
-                .forEach(icsParent -> lookupParentId(icsParent));
+                .forEach(icsParent -> populateParentId(icsParent));
         }
     }
 
-    private void lookupParentId(CertifiedProduct parent) {
+    private void populateParentId(CertifiedProduct parent) {
         if (!StringUtils.isEmpty(parent.getChplProductNumber())) {
             try {
                 CertifiedProduct foundListing = cpSearchDao.getByChplProductNumber(parent.getChplProductNumber());

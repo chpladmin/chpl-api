@@ -28,20 +28,20 @@ public class TestParticipantNoramlizer {
                 && listing.getSed().getTestTasks().size() > 0) {
             listing.getSed().getTestTasks().stream()
                 .forEach(testTask -> {
-                    lookupTestParticipantAges(testTask);
-                    lookupTestParticipantEducationTypes(testTask);
+                    populateTestParticipantAges(testTask);
+                    populateTestParticipantEducationTypes(testTask);
                 });
         }
     }
 
-    private void lookupTestParticipantAges(TestTask testTask) {
+    private void populateTestParticipantAges(TestTask testTask) {
         if (testTask.getTestParticipants() != null && testTask.getTestParticipants().size() > 0) {
             testTask.getTestParticipants().stream()
-                .forEach(participant -> lookupTestParticipantAge(participant));
+                .forEach(participant -> populateTestParticipantAge(participant));
         }
     }
 
-    private void lookupTestParticipantAge(TestParticipant participant) {
+    private void populateTestParticipantAge(TestParticipant participant) {
         if (participant != null && !StringUtils.isEmpty(participant.getAgeRange())) {
             AgeRangeDTO ageRangeDto = ageRangeDao.getByName(participant.getAgeRange());
             if (ageRangeDto != null) {
@@ -50,14 +50,14 @@ public class TestParticipantNoramlizer {
         }
     }
 
-    private void lookupTestParticipantEducationTypes(TestTask testTask) {
+    private void populateTestParticipantEducationTypes(TestTask testTask) {
         if (testTask.getTestParticipants() != null && testTask.getTestParticipants().size() > 0) {
             testTask.getTestParticipants().stream()
-                .forEach(participant -> lookupTestParticipantEducationType(participant));
+                .forEach(participant -> populateTestParticipantEducationType(participant));
         }
     }
 
-    private void lookupTestParticipantEducationType(TestParticipant participant) {
+    private void populateTestParticipantEducationType(TestParticipant participant) {
         if (participant != null && !StringUtils.isEmpty(participant.getAgeRange())) {
             EducationTypeDTO educationTypeDto = educationTypeDao.getByName(participant.getEducationTypeName());
             if (educationTypeDto != null) {

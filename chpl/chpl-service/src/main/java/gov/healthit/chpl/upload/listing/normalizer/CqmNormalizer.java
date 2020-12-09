@@ -54,8 +54,8 @@ public class CqmNormalizer {
             listing.getCqmResults().stream()
                 .forEach(cqmResult -> {
                     normalizeCmsId(cqmResult);
-                    lookupCqmCriterionData(cqmResult);
-                    lookupMappedCriteriaIds(listing, cqmResult);
+                    populateCqmCriterionData(cqmResult);
+                    populateMappedCriteriaIds(listing, cqmResult);
                 });
         }
         addUnattestedCqms(listing);
@@ -72,7 +72,7 @@ public class CqmNormalizer {
         }
     }
 
-    private void lookupCqmCriterionData(CQMResultDetails cqmResult) {
+    private void populateCqmCriterionData(CQMResultDetails cqmResult) {
         CQMCriterionDTO cqmDto = cqmDao.getCMSByNumber(cqmResult.getCmsId());
         if (cqmDto != null) {
             cqmResult.setDescription(cqmDto.getDescription());
@@ -95,7 +95,7 @@ public class CqmNormalizer {
         }
     }
 
-    private void lookupMappedCriteriaIds(CertifiedProductSearchDetails listing, CQMResultDetails cqmResult) {
+    private void populateMappedCriteriaIds(CertifiedProductSearchDetails listing, CQMResultDetails cqmResult) {
         if (cqmResult.getCriteria() != null && cqmResult.getCriteria().size() > 0) {
             cqmResult.getCriteria().stream()
                 .forEach(criterion -> normalizeCriterion(listing, criterion));
@@ -117,7 +117,7 @@ public class CqmNormalizer {
         } else if (criterionNumber.equalsIgnoreCase("c4") || criterionNumber.equalsIgnoreCase("(c)(4)")) {
             criterionNumberToLookup = "criterion.170_315_c_4";
         }
-        CertificationCriterion foundCriterion = lookupCriterion(criterionNumberToLookup,
+        CertificationCriterion foundCriterion = populateCriterion(criterionNumberToLookup,
                 determineCures(listing, cqmCriterion.getCertificationNumber()));
         if (foundCriterion != null) {
             cqmCriterion.setCertificationId(foundCriterion.getId());
@@ -138,7 +138,7 @@ public class CqmNormalizer {
         return Util.isCures(attestedCert.get().getCriterion());
     }
 
-    private CertificationCriterion lookupCriterion(String criterionLookupKey, boolean isCures) {
+    private CertificationCriterion populateCriterion(String criterionLookupKey, boolean isCures) {
         if (isCures) {
             criterionLookupKey += "_cures";
         }

@@ -21,11 +21,11 @@ public class AccessibilityStandardNormalizer {
     public void normalize(CertifiedProductSearchDetails listing) {
         if (listing.getAccessibilityStandards() != null && listing.getAccessibilityStandards().size() > 0) {
             listing.getAccessibilityStandards().stream()
-                .forEach(accessibilityStandard -> lookupAccessibilityStandardId(accessibilityStandard));
+                .forEach(accessibilityStandard -> populateAccessibilityStandardId(accessibilityStandard));
         }
     }
 
-    private void lookupAccessibilityStandardId(CertifiedProductAccessibilityStandard accessibilityStandard) {
+    private void populateAccessibilityStandardId(CertifiedProductAccessibilityStandard accessibilityStandard) {
         if (!StringUtils.isEmpty(accessibilityStandard.getAccessibilityStandardName())) {
             AccessibilityStandardDTO accStdDto =
                     accessibilityStandardDao.getByName(accessibilityStandard.getAccessibilityStandardName());

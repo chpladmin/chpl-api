@@ -21,11 +21,11 @@ public class TargetedUserNormalizer {
     public void normalize(CertifiedProductSearchDetails listing) {
         if (listing.getTargetedUsers() != null && listing.getTargetedUsers().size() > 0) {
             listing.getTargetedUsers().stream()
-                .forEach(targetedUser -> lookupTargetedUserId(targetedUser));
+                .forEach(targetedUser -> populateTargetedUserId(targetedUser));
         }
     }
 
-    private void lookupTargetedUserId(CertifiedProductTargetedUser targetedUser) {
+    private void populateTargetedUserId(CertifiedProductTargetedUser targetedUser) {
         if (!StringUtils.isEmpty(targetedUser.getTargetedUserName())) {
             TargetedUserDTO targetedUserDto =
                     targetedUserDao.getByName(targetedUser.getTargetedUserName());

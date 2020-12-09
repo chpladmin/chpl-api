@@ -27,15 +27,15 @@ public class AdditionalSoftwareNormalizer {
     public void normalize(CertifiedProductSearchDetails listing) {
         if (listing.getCertificationResults() != null && listing.getCertificationResults().size() > 0) {
             listing.getCertificationResults().stream()
-                .forEach(certResult -> lookupAdditionalSoftwareIds(certResult.getAdditionalSoftware()));
+                .forEach(certResult -> populateAdditionalSoftwareIds(certResult.getAdditionalSoftware()));
         }
     }
 
-    private void lookupAdditionalSoftwareIds(List<CertificationResultAdditionalSoftware> additionalSoftwares) {
+    private void populateAdditionalSoftwareIds(List<CertificationResultAdditionalSoftware> additionalSoftwares) {
         if (additionalSoftwares != null && additionalSoftwares.size() > 0) {
             additionalSoftwares.stream()
                 .filter(additionalSoftware -> hasListingAsAdditionalSoftware(additionalSoftware))
-                .forEach(additionalSoftware -> lookupAdditionalSoftwareId(additionalSoftware));
+                .forEach(additionalSoftware -> populateAdditionalSoftwareId(additionalSoftware));
         }
     }
 
@@ -44,7 +44,7 @@ public class AdditionalSoftwareNormalizer {
                 && additionalSoftware.getCertifiedProductId() == null;
     }
 
-    private void lookupAdditionalSoftwareId(CertificationResultAdditionalSoftware additionalSoftware) {
+    private void populateAdditionalSoftwareId(CertificationResultAdditionalSoftware additionalSoftware) {
         String chplProductNumber = additionalSoftware.getCertifiedProductNumber();
         if (chplProductNumber.startsWith("CHP-")) {
             CertifiedProductDTO cp = cpDao.getByChplNumber(chplProductNumber);

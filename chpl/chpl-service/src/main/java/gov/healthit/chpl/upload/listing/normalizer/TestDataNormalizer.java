@@ -25,18 +25,18 @@ public class TestDataNormalizer {
     public void normalize(CertifiedProductSearchDetails listing) {
         if (listing.getCertificationResults() != null && listing.getCertificationResults().size() > 0) {
             listing.getCertificationResults().stream()
-                .forEach(certResult -> lookupTestDataIds(certResult.getCriterion(), certResult.getTestDataUsed()));
+                .forEach(certResult -> populateTestDataIds(certResult.getCriterion(), certResult.getTestDataUsed()));
         }
     }
 
-    private void lookupTestDataIds(CertificationCriterion criterion,
+    private void populateTestDataIds(CertificationCriterion criterion,
             List<CertificationResultTestData> testDatas) {
         if (testDatas != null && testDatas.size() > 0) {
             testDatas.stream()
                 .filter(testData -> isMissingName(testData))
                 .forEach(testData -> fillInDefaultName(testData));
             testDatas.stream()
-                .forEach(testData -> lookupTestDataId(criterion, testData));
+                .forEach(testData -> populateTestDataId(criterion, testData));
         }
     }
 
@@ -57,7 +57,7 @@ public class TestDataNormalizer {
         }
     }
 
-    private void lookupTestDataId(CertificationCriterion criterion, CertificationResultTestData testData) {
+    private void populateTestDataId(CertificationCriterion criterion, CertificationResultTestData testData) {
         if (testData != null && testData.getTestData() != null
                 && !StringUtils.isEmpty(testData.getTestData().getName())) {
 

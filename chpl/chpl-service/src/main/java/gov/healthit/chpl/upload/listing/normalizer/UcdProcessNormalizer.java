@@ -22,11 +22,11 @@ public class UcdProcessNormalizer {
         if (listing.getSed() != null && listing.getSed().getUcdProcesses() != null
                 && listing.getSed().getUcdProcesses().size() > 0) {
             listing.getSed().getUcdProcesses().stream()
-                .forEach(ucdProcess -> lookupUcdProcessId(ucdProcess));
+                .forEach(ucdProcess -> populateUcdProcessId(ucdProcess));
         }
     }
 
-    private void lookupUcdProcessId(UcdProcess ucdProcess) {
+    private void populateUcdProcessId(UcdProcess ucdProcess) {
         if (!StringUtils.isEmpty(ucdProcess.getName())) {
             UcdProcessDTO ucdProcessDto = ucdDao.getByName(ucdProcess.getName());
             if (ucdProcessDto != null) {

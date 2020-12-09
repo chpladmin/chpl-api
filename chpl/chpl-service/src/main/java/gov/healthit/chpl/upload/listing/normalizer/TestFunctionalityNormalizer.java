@@ -25,19 +25,19 @@ public class TestFunctionalityNormalizer {
     public void normalize(CertifiedProductSearchDetails listing) {
         if (listing.getCertificationResults() != null && listing.getCertificationResults().size() > 0) {
             listing.getCertificationResults().stream()
-                .forEach(certResult -> lookupTestFunctionalityIds(listing, certResult.getTestFunctionality()));
+                .forEach(certResult -> populateTestFunctionalityIds(listing, certResult.getTestFunctionality()));
         }
     }
 
-    private void lookupTestFunctionalityIds(CertifiedProductSearchDetails listing,
+    private void populateTestFunctionalityIds(CertifiedProductSearchDetails listing,
             List<CertificationResultTestFunctionality> testFunctionalities) {
         if (testFunctionalities != null && testFunctionalities.size() > 0) {
             testFunctionalities.stream()
-                .forEach(testFunctionality -> lookupTestFunctionalityId(listing, testFunctionality));
+                .forEach(testFunctionality -> populateTestFunctionalityId(listing, testFunctionality));
         }
     }
 
-    private void lookupTestFunctionalityId(CertifiedProductSearchDetails listing,
+    private void populateTestFunctionalityId(CertifiedProductSearchDetails listing,
             CertificationResultTestFunctionality testFunctionality) {
         if (!StringUtils.isEmpty(testFunctionality.getName())
                 && listing.getCertificationEdition() != null

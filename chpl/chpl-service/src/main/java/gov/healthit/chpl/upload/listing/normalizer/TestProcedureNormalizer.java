@@ -25,18 +25,18 @@ public class TestProcedureNormalizer {
     public void normalize(CertifiedProductSearchDetails listing) {
         if (listing.getCertificationResults() != null && listing.getCertificationResults().size() > 0) {
             listing.getCertificationResults().stream()
-                .forEach(certResult -> lookupTestProcedureIds(certResult.getCriterion(), certResult.getTestProcedures()));
+                .forEach(certResult -> populateTestProcedureIds(certResult.getCriterion(), certResult.getTestProcedures()));
         }
     }
 
-    private void lookupTestProcedureIds(CertificationCriterion criterion,
+    private void populateTestProcedureIds(CertificationCriterion criterion,
             List<CertificationResultTestProcedure> testProcedures) {
         if (testProcedures != null && testProcedures.size() > 0) {
             testProcedures.stream()
                 .filter(testProcedure -> isMissingName(testProcedure))
                 .forEach(testProcedure -> fillInDefaultName(testProcedure));
             testProcedures.stream()
-                .forEach(testProcedure -> lookupTestProcedureId(criterion, testProcedure));
+                .forEach(testProcedure -> populateTestProcedureId(criterion, testProcedure));
         }
     }
 
@@ -57,7 +57,7 @@ public class TestProcedureNormalizer {
         }
     }
 
-    private void lookupTestProcedureId(CertificationCriterion criterion, CertificationResultTestProcedure testProcedure) {
+    private void populateTestProcedureId(CertificationCriterion criterion, CertificationResultTestProcedure testProcedure) {
         if (testProcedure != null && testProcedure.getTestProcedure() != null
                 && !StringUtils.isEmpty(testProcedure.getTestProcedure().getName())) {
 

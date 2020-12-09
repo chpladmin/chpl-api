@@ -23,18 +23,18 @@ public class TestToolNormalizer {
     public void normalize(CertifiedProductSearchDetails listing) {
         if (listing.getCertificationResults() != null && listing.getCertificationResults().size() > 0) {
             listing.getCertificationResults().stream()
-                .forEach(certResult -> lookupTestToolIds(certResult.getTestToolsUsed()));
+                .forEach(certResult -> populateTestToolIds(certResult.getTestToolsUsed()));
         }
     }
 
-    private void lookupTestToolIds(List<CertificationResultTestTool> testTools) {
+    private void populateTestToolIds(List<CertificationResultTestTool> testTools) {
         if (testTools != null && testTools.size() > 0) {
             testTools.stream()
-                .forEach(testStandard -> lookupTestToolId(testStandard));
+                .forEach(testStandard -> populateTestToolId(testStandard));
         }
     }
 
-    private void lookupTestToolId(CertificationResultTestTool testTool) {
+    private void populateTestToolId(CertificationResultTestTool testTool) {
         if (!StringUtils.isEmpty(testTool.getTestToolName())) {
             TestToolDTO testToolDto =
                     testToolDao.getByName(testTool.getTestToolName());

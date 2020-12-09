@@ -25,19 +25,19 @@ public class TestStandardNormalizer {
     public void normalize(CertifiedProductSearchDetails listing) {
         if (listing.getCertificationResults() != null && listing.getCertificationResults().size() > 0) {
             listing.getCertificationResults().stream()
-                .forEach(certResult -> lookupTestStandardIds(listing, certResult.getTestStandards()));
+                .forEach(certResult -> populateTestStandardIds(listing, certResult.getTestStandards()));
         }
     }
 
-    private void lookupTestStandardIds(CertifiedProductSearchDetails listing,
+    private void populateTestStandardIds(CertifiedProductSearchDetails listing,
             List<CertificationResultTestStandard> testStandards) {
         if (testStandards != null && testStandards.size() > 0) {
             testStandards.stream()
-                .forEach(testStandard -> lookupTestStandardId(listing, testStandard));
+                .forEach(testStandard -> populateTestStandardId(listing, testStandard));
         }
     }
 
-    private void lookupTestStandardId(CertifiedProductSearchDetails listing, CertificationResultTestStandard testStandard) {
+    private void populateTestStandardId(CertifiedProductSearchDetails listing, CertificationResultTestStandard testStandard) {
         if (!StringUtils.isEmpty(testStandard.getTestStandardName())
                 && listing.getCertificationEdition() != null
                 && listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY) != null) {

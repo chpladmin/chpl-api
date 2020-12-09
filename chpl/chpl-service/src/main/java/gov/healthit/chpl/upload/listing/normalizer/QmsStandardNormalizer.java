@@ -21,11 +21,11 @@ public class QmsStandardNormalizer {
     public void normalize(CertifiedProductSearchDetails listing) {
         if (listing.getQmsStandards() != null && listing.getQmsStandards().size() > 0) {
             listing.getQmsStandards().stream()
-                .forEach(qmsStandard -> lookupQmsStandardId(qmsStandard));
+                .forEach(qmsStandard -> populateQmsStandardId(qmsStandard));
         }
     }
 
-    private void lookupQmsStandardId(CertifiedProductQmsStandard qmsStandard) {
+    private void populateQmsStandardId(CertifiedProductQmsStandard qmsStandard) {
         if (!StringUtils.isEmpty(qmsStandard.getQmsStandardName())) {
             QmsStandardDTO qmsStdDto =
                     qmsStandardDao.getByName(qmsStandard.getQmsStandardName());
