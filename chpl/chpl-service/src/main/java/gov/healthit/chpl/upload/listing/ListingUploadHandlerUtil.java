@@ -56,7 +56,7 @@ public class ListingUploadHandlerUtil {
         if (allCsvRecords != null) {
             Optional<CSVRecord> headingRecord =
                     allCsvRecords.stream().filter(currRecord -> hasHeading(currRecord))
-                    .findFirst();
+                    .findAny();
             if (headingRecord.isPresent() && headingRecord.get() != null) {
                 headingIndex = (int) headingRecord.get().getRecordNumber() - 1;
             } else {
