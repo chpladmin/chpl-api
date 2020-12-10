@@ -1,5 +1,6 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -22,7 +23,6 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.service.CertificationCriterionService;
-import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -107,18 +107,20 @@ public class CqmNormalizer {
         if (StringUtils.isEmpty(criterionNumber)) {
             return;
         }
-        String criterionNumberToLookup = null;
+        List<String> criterionLookupKeys = new ArrayList<String>();
         if (criterionNumber.equalsIgnoreCase("c1") || criterionNumber.equalsIgnoreCase("(c)(1)")) {
-            criterionNumberToLookup = "criterion.170_315_c_1";
+            criterionLookupKeys.add("criterion.170_315_c_1");
         } else if (criterionNumber.equalsIgnoreCase("c2") || criterionNumber.equalsIgnoreCase("(c)(2)")) {
-            criterionNumberToLookup = "criterion.170_315_c_2";
+            criterionLookupKeys.add("criterion.170_315_c_2");
         } else if (criterionNumber.equalsIgnoreCase("c3") || criterionNumber.equalsIgnoreCase("(c)(3)")) {
-            criterionNumberToLookup = "criterion.170_315_c_3";
+            criterionLookupKeys.add("criterion.170_315_c_3");
+            criterionLookupKeys.add("criterion.170_315_c_3_cures");
         } else if (criterionNumber.equalsIgnoreCase("c4") || criterionNumber.equalsIgnoreCase("(c)(4)")) {
-            criterionNumberToLookup = "criterion.170_315_c_4";
+            criterionLookupKeys.add("criterion.170_315_c_4");
         }
-        CertificationCriterion foundCriterion = populateCriterion(criterionNumberToLookup,
-                determineCures(listing, cqmCriterion.getCertificationNumber()));
+
+        CertificationCriterion foundCriterion = determineCqmCriterionByAttestedCriteria(
+                listing, criterionLookupKeys);
         if (foundCriterion != null) {
             cqmCriterion.setCertificationId(foundCriterion.getId());
             cqmCriterion.setCertificationNumber(foundCriterion.getNumber());
@@ -126,23 +128,32 @@ public class CqmNormalizer {
         }
     }
 
-    private boolean determineCures(CertifiedProductSearchDetails listing, String criterionNumber) {
+    private CertificationCriterion determineCqmCriterionByAttestedCriteria(
+            CertifiedProductSearchDetails listing, List<String> lookupKeys) {
+        if (lookupKeys != null && lookupKeys.size() == 1) {
+            return criterionService.get(lookupKeys.get(0));
+        } else if (lookupKeys != null) {
+            Optional<CertificationCriterion> foundCriterion = lookupKeys.stream()
+                .map(lookupKey -> criterionService.get(lookupKey))
+                .filter(lookupCriterion -> isCriterionAttestedInListing(listing, lookupCriterion))
+                .findAny();
+            if (foundCriterion.isPresent()) {
+                return foundCriterion.get();
+            }
+        }
+        return null;
+    }
+
+    private boolean isCriterionAttestedInListing(CertifiedProductSearchDetails listing, CertificationCriterion criterion) {
         Optional<CertificationResult> attestedCert = listing.getCertificationResults().stream()
             .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess())
             .filter(certResult -> certResult.getCriterion() != null
-                && certResult.getCriterion().getNumber().equals(criterionNumber))
+                && certResult.getCriterion().getId().equals(criterion.getId()))
             .findAny();
         if (attestedCert == null || !attestedCert.isPresent()) {
             return false;
         }
-        return Util.isCures(attestedCert.get().getCriterion());
-    }
-
-    private CertificationCriterion populateCriterion(String criterionLookupKey, boolean isCures) {
-        if (isCures) {
-            criterionLookupKey += "_cures";
-        }
-        return criterionService.get(criterionLookupKey);
+        return true;
     }
 
     private void addUnattestedCqms(CertifiedProductSearchDetails listing) {
