@@ -39,7 +39,7 @@ public class ApiKeyActivityAuditService extends AuditService {
     @Override
     public void deleteAuditData(Integer month, Integer year) {
         Query query = entityManager.createQuery(
-                "DELETE ApiKeyActivityEntity a "
+                "DELETE FROM ApiKeyActivityEntity a "
                 + "WHERE MONTH(a.creationDate) = :month "
                 + "AND YEAR(a.creationDate) = :year");
         query.setParameter("month", month);
@@ -60,16 +60,12 @@ public class ApiKeyActivityAuditService extends AuditService {
                copyCmd += "HEADER";
         }
 
-        LOGGER.info("STARTING");
         CopyManager cm = getPgConnection().getCopyAPI();
         try (FileWriter fw = new FileWriter(new File(fileName))) {
-            LOGGER.info("Got this far");
             cm.copyOut(copyCmd, fw);
-            LOGGER.info("And even farther");
         } catch (Exception e) {
             LOGGER.catching(e);
         }
-        LOGGER.info("COMPLETED");
     }
 
     @Override

@@ -51,7 +51,7 @@ public class AuditDataRetentionJob implements Job {
 
         LOGGER.info("STARTING AuditDataRetentionJob");
 
-        retentionPolicyInMonths = new Integer(env.getProperty("auditDataRetentionPolicyInMonths"));
+        retentionPolicyInMonths = Integer.valueOf(env.getProperty("auditDataRetentionPolicyInMonths"));
 
         // We need to manually create a transaction in this case because of how AOP works. When a method is
         // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
@@ -81,7 +81,7 @@ public class AuditDataRetentionJob implements Job {
     private void archiveData() throws SQLException, IOException {
         LocalDate targetDate = getStartDate();
         while (isDateBeforeRetentionPolicy(targetDate)) {
-            LOGGER.info("Processing " + targetDate.toString());
+            LOGGER.info("Processing " + currentAuditService.getAuditTableNme() + " for: " + targetDate.toString());
             if (doesAuditDataExist(targetDate.getMonthValue(), targetDate.getYear())) {
                 archiveDataForMonth(targetDate.getMonthValue(), targetDate.getYear());
             }
@@ -99,14 +99,20 @@ public class AuditDataRetentionJob implements Job {
         String fileName = currentAuditService.getProposedFilename(month, year);
         boolean doesArchiveExist = auditDataFile.doesFileAlreadyExist(fileName);
         if (doesArchiveExist) {
+            LOGGER.info("Archive file already exists: " + fileName);
             fileName = auditDataFile.getRandomFilename();
             currentAuditService.archiveDataToFile(month, year, fileName, false);
             //Append the temporary file to the existing file
+            LOGGER.info("Appending results to: " + currentAuditService.getProposedFilename(month, year));
             appendFiles(currentAuditService.getProposedFilename(month, year), fileName);
+
+            LOGGER.info("Deleting temporary file: " + fileName);
             deleteFile(fileName);
         } else {
+            LOGGER.info("Archiving data to: " + fileName);
             currentAuditService.archiveDataToFile(month, year, fileName, true);
         }
+        LOGGER.info("Deleting archived data from table");
         currentAuditService.deleteAuditData(month, year);
     }
 

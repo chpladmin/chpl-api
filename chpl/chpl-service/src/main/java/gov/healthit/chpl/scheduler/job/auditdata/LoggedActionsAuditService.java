@@ -39,7 +39,7 @@ public class LoggedActionsAuditService  extends AuditService {
     @Override
     public void deleteAuditData(Integer month, Integer year) {
         Query query = entityManager.createQuery(
-                "DELETE LoggedActionEntity a "
+                "DELETE FROM LoggedActionEntity a "
                 + "WHERE MONTH(a.actionTStamp) = :month "
                 + "AND YEAR(a.actionTStamp) = :year");
         query.setParameter("month", month);
