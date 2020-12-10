@@ -10,6 +10,7 @@ import gov.healthit.chpl.validation.listing.reviewer.duplicate.AccessibilityStan
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.AdditionalSoftwareDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.AtlDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.IcsSourceDuplicateReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.duplicate.MeasureDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.QmsStandardDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TargetedUserDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestDataDuplicateReviewer;
@@ -28,6 +29,7 @@ public class DuplicateDataReviewer implements Reviewer {
     private AdditionalSoftwareDuplicateReviewer additionalSoftwareDuplicateReviewer;
     private AccessibilityStandardDuplicateReviewer accessibilityStandardDuplicateReviewer;
     private QmsStandardDuplicateReviewer qmsStandardDuplicateReviewer;
+    private MeasureDuplicateReviewer measureDuplicateReviewer;
     private IcsSourceDuplicateReviewer icsSourceDuplicateReviewer;
     private AtlDuplicateReviewer atlDuplicateReviewer;
     private TargetedUserDuplicateReviewer targetedUserDuplicateReviewer;
@@ -42,6 +44,7 @@ public class DuplicateDataReviewer implements Reviewer {
             @Qualifier("additionalSoftwareDuplicateReviewer") AdditionalSoftwareDuplicateReviewer additionalSoftwareDuplicateReviewer,
             @Qualifier("accessibilityStandardDuplicateReviewer") AccessibilityStandardDuplicateReviewer accessibilityStandardDuplicateReviewer,
             @Qualifier("qmsStandardDuplicateReviewer") QmsStandardDuplicateReviewer qmsStandardDuplicateReviewer,
+            @Qualifier("measureDuplicateReviewer") MeasureDuplicateReviewer measureDuplicateReviewer,
             @Qualifier("icsSourceDuplicateReviewer") IcsSourceDuplicateReviewer icsSourceDuplicateReviewer,
             @Qualifier("atlDuplicateReviewer") AtlDuplicateReviewer atlDuplicateReviewer,
             @Qualifier("targetedUserDuplicateReviewer") TargetedUserDuplicateReviewer targetedUserDuplicateReviewer) {
@@ -53,6 +56,7 @@ public class DuplicateDataReviewer implements Reviewer {
         this.additionalSoftwareDuplicateReviewer = additionalSoftwareDuplicateReviewer;
         this.accessibilityStandardDuplicateReviewer = accessibilityStandardDuplicateReviewer;
         this.qmsStandardDuplicateReviewer = qmsStandardDuplicateReviewer;
+        this.measureDuplicateReviewer = measureDuplicateReviewer;
         this.icsSourceDuplicateReviewer = icsSourceDuplicateReviewer;
         this.atlDuplicateReviewer = atlDuplicateReviewer;
         this.targetedUserDuplicateReviewer = targetedUserDuplicateReviewer;
@@ -63,6 +67,7 @@ public class DuplicateDataReviewer implements Reviewer {
         atlDuplicateReviewer.review(listing);
         accessibilityStandardDuplicateReviewer.review(listing);
         qmsStandardDuplicateReviewer.review(listing);
+        measureDuplicateReviewer.review(listing);
         icsSourceDuplicateReviewer.review(listing);
         targetedUserDuplicateReviewer.review(listing);
 

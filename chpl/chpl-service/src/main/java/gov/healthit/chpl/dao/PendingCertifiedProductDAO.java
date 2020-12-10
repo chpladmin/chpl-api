@@ -18,8 +18,6 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMetadataDTO;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultAdditionalSoftwareEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity;
-import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultG1MacraMeasureEntity;
-import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultG2MacraMeasureEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestDataEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestFunctionalityEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestProcedureEntity;
@@ -41,14 +39,11 @@ import gov.healthit.chpl.entity.listing.pending.PendingTestParticipantEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingTestTaskEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.listing.measure.PendingListingMeasureCriterionMapEntity;
+import gov.healthit.chpl.listing.measure.PendingListingMeasureEntity;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-/**
- * Data Access Object for Pending Certified Products.
- * @author alarned
- *
- */
 @Repository(value = "pendingCertifiedProductDAO")
 public class PendingCertifiedProductDAO extends BaseDAOImpl {
     private static final Logger LOGGER = LogManager.getLogger(PendingCertifiedProductDAO.class);
@@ -132,6 +127,32 @@ throws EntityCreationException {
                 String msg = msgUtil.getMessage("listing.badTargetedUser", targetedUser.getName());
                 LOGGER.error(msg, ex);
                 throw new EntityCreationException(msg);
+            }
+        }
+
+        for (PendingListingMeasureEntity measure : toCreate.getMeasures()) {
+            measure.setPendingCertifiedProductId(toCreate.getId());
+            measure.setDeleted(false);
+            measure.setLastModifiedUser(AuthUtil.getAuditId());
+            try {
+                entityManager.persist(measure);
+            } catch (Exception ex) {
+                String msg = msgUtil.getMessage("listing.badMeasure", measure.getUploadedValue());
+                LOGGER.error(msg, ex);
+                throw new EntityCreationException(msg);
+            }
+            for (PendingListingMeasureCriterionMapEntity measureCriterionMap : measure.getAssociatedCriteria()) {
+                measureCriterionMap.setPendingListingMeasureId(measure.getId());
+                measureCriterionMap.setDeleted(false);
+                measureCriterionMap.setLastModifiedUser(AuthUtil.getAuditId());
+                try {
+                    entityManager.persist(measureCriterionMap);
+                } catch (Exception ex) {
+                    String msg = msgUtil.getMessage("listing.badMeasureCriterionMap",
+                            measure.getUploadedValue(), measureCriterionMap.getCertificationCriterionId());
+                    LOGGER.error(msg, ex);
+                    throw new EntityCreationException(msg);
+                }
             }
         }
 
@@ -292,40 +313,6 @@ throws EntityCreationException {
                     entityManager.persist(ttEntity);
                 } catch (Exception ex) {
                     String msg = msgUtil.getMessage("listing.criteria.badTestTool", ttEntity.getTestToolName());
-                    LOGGER.error(msg, ex);
-                    throw new EntityCreationException(msg);
-                }
-            }
-        }
-
-        if (pendingCertResult.getG1MacraMeasures() != null && pendingCertResult.getG1MacraMeasures().size() > 0) {
-            for (PendingCertificationResultG1MacraMeasureEntity mmEntity : pendingCertResult.getG1MacraMeasures()) {
-                mmEntity.setPendingCertificationResultId(pendingCertResult.getId());
-                mmEntity.setLastModifiedDate(new Date());
-                mmEntity.setLastModifiedUser(AuthUtil.getAuditId());
-                mmEntity.setCreationDate(new Date());
-                mmEntity.setDeleted(false);
-                try {
-                    entityManager.persist(mmEntity);
-                } catch (Exception ex) {
-                    String msg = msgUtil.getMessage("listing.criteria.badG1MacraMeasure", mmEntity.getEnteredValue());
-                    LOGGER.error(msg, ex);
-                    throw new EntityCreationException(msg);
-                }
-            }
-        }
-
-        if (pendingCertResult.getG2MacraMeasures() != null && pendingCertResult.getG2MacraMeasures().size() > 0) {
-            for (PendingCertificationResultG2MacraMeasureEntity mmEntity : pendingCertResult.getG2MacraMeasures()) {
-                mmEntity.setPendingCertificationResultId(pendingCertResult.getId());
-                mmEntity.setLastModifiedDate(new Date());
-                mmEntity.setLastModifiedUser(AuthUtil.getAuditId());
-                mmEntity.setCreationDate(new Date());
-                mmEntity.setDeleted(false);
-                try {
-                    entityManager.persist(mmEntity);
-                } catch (Exception ex) {
-                    String msg = msgUtil.getMessage("listing.criteria.badG2MacraMeasure", mmEntity.getEnteredValue());
                     LOGGER.error(msg, ex);
                     throw new EntityCreationException(msg);
                 }

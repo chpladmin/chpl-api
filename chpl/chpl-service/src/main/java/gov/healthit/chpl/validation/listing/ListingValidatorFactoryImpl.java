@@ -27,22 +27,6 @@ public class ListingValidatorFactoryImpl implements ListingValidatorFactory {
 
     //pending listing validators (for upload)
     @Autowired
-    @Qualifier("ambulatoryModular2014PendingListingValidator")
-    private AmbulatoryModular2014PendingListingValidator ambulatoryModularPendingValidator;
-
-    @Autowired
-    @Qualifier("ambulatoryComplete2014PendingListingValidator")
-    private AmbulatoryComplete2014PendingListingValidator ambulatoryCompletePendingValidator;
-
-    @Autowired
-    @Qualifier("inpatientModular2014PendingListingValidator")
-    private InpatientModular2014PendingListingValidator inpatientModularPendingValidator;
-
-    @Autowired
-    @Qualifier("inpatientComplete2014PendingListingValidator")
-    private InpatientComplete2014PendingListingValidator inpatientCompletePendingValidator;
-
-    @Autowired
     private Edition2015PendingListingValidator pending2015Validator;
 
     //legacy validators (for update of CHP- listings)
@@ -89,36 +73,11 @@ public class ListingValidatorFactoryImpl implements ListingValidatorFactory {
 
     @Override
     public PendingValidator getValidator(PendingCertifiedProductDTO listing) {
-        if (listing.getCertificationEdition().equals("2014")) {
-            if (listing.getPracticeType().equalsIgnoreCase(PRACTICE_TYPE_AMBULATORY)) {
-                if (listing.getProductClassificationName().equalsIgnoreCase(PRODUCT_CLASSIFICATION_MODULAR)) {
-                    return ambulatoryModularPendingValidator;
-                } else if (listing.getProductClassificationName().equalsIgnoreCase(PRODUCT_CLASSIFICATION_COMPLETE)) {
-                    return ambulatoryCompletePendingValidator;
-                } else {
-                    String errMsg = msgUtil.getMessage("listing.validator.2014AmbulatoryClassificationNotFound");
-                    listing.getErrorMessages().add(errMsg);
-                    LOGGER.error(errMsg);
-                }
-            } else if (listing.getPracticeType().equalsIgnoreCase(PRACTICE_TYPE_INPATIENT)) {
-                if (listing.getProductClassificationName().equalsIgnoreCase(PRODUCT_CLASSIFICATION_MODULAR)) {
-                    return inpatientModularPendingValidator;
-                } else if (listing.getProductClassificationName().equalsIgnoreCase(PRODUCT_CLASSIFICATION_COMPLETE)) {
-                    return inpatientCompletePendingValidator;
-                } else {
-                    String errMsg = msgUtil.getMessage("listing.validator.2014InpatientClassificationNotFound");
-                    listing.getErrorMessages().add(errMsg);
-                    LOGGER.error(errMsg);
-                }
-            } else {
-                String errMsg = msgUtil.getMessage("listing.validator.2014PracticeTypeNotFound");
-                listing.getErrorMessages().add(errMsg);
-                LOGGER.error(errMsg);
-            }
-        } else if (listing.getCertificationEdition().equals("2015")) {
+        if (listing.getCertificationEdition().equals("2015")) {
             return pending2015Validator;
         } else {
-            String errMsg = msgUtil.getMessage("listing.validator.certificationEditionNotFound", listing.getCertificationEdition());
+            String errMsg = msgUtil.getMessage(
+                    "listing.validator.certificationEditionNotFound", listing.getCertificationEdition());
             listing.getErrorMessages().add(errMsg);
             LOGGER.error(errMsg);
         }
@@ -185,7 +144,7 @@ public class ListingValidatorFactoryImpl implements ListingValidatorFactory {
             //new-style ID could be 2014 or 2015 listing
             if (edition.equals("2015")) {
                 return edition2015Validator;
-            } else if(edition.equals("2014")) {
+            } else if (edition.equals("2014")) {
                 String practiceTypeName = listing.getPracticeType().get("name").toString();
                 String productClassificationName = listing.getClassificationType().get("name").toString();
 

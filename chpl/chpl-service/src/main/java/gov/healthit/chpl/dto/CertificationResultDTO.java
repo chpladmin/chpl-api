@@ -38,8 +38,6 @@ public class CertificationResultDTO implements Serializable {
     private List<CertificationResultTestStandardDTO> testStandards;
     private List<CertificationResultAdditionalSoftwareDTO> additionalSoftware;
     private List<CertificationResultTestTaskDTO> testTasks;
-    private List<CertificationResultMacraMeasureDTO> g1Measures;
-    private List<CertificationResultMacraMeasureDTO> g2Measures;
 
     public CertificationResultDTO() {
         ucdProcesses = new ArrayList<CertificationResultUcdProcessDTO>();
@@ -50,8 +48,6 @@ public class CertificationResultDTO implements Serializable {
         testProcedures = new ArrayList<CertificationResultTestProcedureDTO>();
         testFunctionality = new ArrayList<CertificationResultTestFunctionalityDTO>();
         testTasks = new ArrayList<CertificationResultTestTaskDTO>();
-        g1Measures = new ArrayList<CertificationResultMacraMeasureDTO>();
-        g2Measures = new ArrayList<CertificationResultMacraMeasureDTO>();
     }
 
     public CertificationResultDTO(CertificationResultEntity entity) {
@@ -293,22 +289,6 @@ public class CertificationResultDTO implements Serializable {
 
     public void setPrivacySecurityFramework(final String privacySecurityFramework) {
         this.privacySecurityFramework = privacySecurityFramework;
-    }
-
-    public List<CertificationResultMacraMeasureDTO> getG1Measures() {
-        return g1Measures;
-    }
-
-    public void setG1Measures(final List<CertificationResultMacraMeasureDTO> g1Measures) {
-        this.g1Measures = g1Measures;
-    }
-
-    public List<CertificationResultMacraMeasureDTO> getG2Measures() {
-        return g2Measures;
-    }
-
-    public void setG2Measures(final List<CertificationResultMacraMeasureDTO> g2Measures) {
-        this.g2Measures = g2Measures;
     }
 
     public List<CertificationResultTestProcedureDTO> getTestProcedures() {

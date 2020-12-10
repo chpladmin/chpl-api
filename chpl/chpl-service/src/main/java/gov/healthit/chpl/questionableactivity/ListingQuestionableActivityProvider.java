@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.TimeZone;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
+import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.service.CertificationCriterionService;
@@ -464,6 +466,72 @@ public class ListingQuestionableActivityProvider {
             activity.setBefore("Removed Results URL: " + origListing.getRwtResultsUrl());
         }
         return activity;
+    }
+
+    public List<QuestionableActivityListingDTO> checkMeasuresAdded(
+            CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
+
+        List<QuestionableActivityListingDTO> measuresAddedActivities = new ArrayList<QuestionableActivityListingDTO>();
+        if (origListing.getMeasures() != null && origListing.getMeasures().size() > 0
+                && newListing.getMeasures() != null && newListing.getMeasures().size() > 0) {
+            for (ListingMeasure newMeasure : newListing.getMeasures()) {
+                Optional<ListingMeasure> matchingOrigMeasure = origListing.getMeasures().stream()
+                    .filter(origMeasure -> origMeasure.getId().equals(newMeasure.getId()))
+                    .findAny();
+                if (!matchingOrigMeasure.isPresent()) {
+                    QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
+                    activity.setBefore(null);
+                    activity.setAfter(newMeasure.getMeasureType().getName()
+                            + " measure " + newMeasure.getMeasure().getName()
+                            + " for " + newMeasure.getMeasure().getAbbreviation());
+                    measuresAddedActivities.add(activity);
+                }
+            }
+        } else if (newListing.getMeasures() != null
+                && (origListing.getMeasures() == null || origListing.getMeasures().size() == 0)) {
+            for (ListingMeasure newMeasure : newListing.getMeasures()) {
+                    QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
+                    activity.setBefore(null);
+                    activity.setAfter(newMeasure.getMeasureType().getName()
+                            + " measure " + newMeasure.getMeasure().getName()
+                            + " for " + newMeasure.getMeasure().getAbbreviation());
+                    measuresAddedActivities.add(activity);
+            }
+        }
+        return measuresAddedActivities;
+    }
+
+    public List<QuestionableActivityListingDTO> checkMeasuresRemoved(
+            CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
+
+        List<QuestionableActivityListingDTO> measuresRemovedActivities = new ArrayList<QuestionableActivityListingDTO>();
+        if (origListing.getMeasures() != null && origListing.getMeasures().size() > 0
+                && newListing.getMeasures() != null && newListing.getMeasures().size() > 0) {
+            for (ListingMeasure origMeasure : origListing.getMeasures()) {
+                Optional<ListingMeasure> matchingNewMeasure = newListing.getMeasures().stream()
+                    .filter(newMeasure -> origMeasure.getId().equals(newMeasure.getId()))
+                    .findAny();
+                if (!matchingNewMeasure.isPresent()) {
+                    QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
+                    activity.setBefore(origMeasure.getMeasureType().getName()
+                            + " measure " + origMeasure.getMeasure().getName()
+                            + " for " + origMeasure.getMeasure().getAbbreviation());
+                    activity.setAfter(null);
+                    measuresRemovedActivities.add(activity);
+                }
+            }
+        } else if (origListing.getMeasures() != null
+                && (newListing.getMeasures() == null || newListing.getMeasures().size() == 0)) {
+            for (ListingMeasure origMeasure : origListing.getMeasures()) {
+                    QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
+                    activity.setBefore(origMeasure.getMeasureType().getName()
+                            + " measure " + origMeasure.getMeasure().getName()
+                            + " for " + origMeasure.getMeasure().getAbbreviation());
+                    activity.setAfter(null);
+                    measuresRemovedActivities.add(activity);
+            }
+        }
+        return measuresRemovedActivities;
     }
 
     private Date getB3ChangeDate() throws ParseException {
