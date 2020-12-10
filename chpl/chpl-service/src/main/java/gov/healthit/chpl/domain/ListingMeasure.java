@@ -46,7 +46,6 @@ public class ListingMeasure implements Serializable {
 
     @XmlElementWrapper(name = "associatedCriteria", nillable = true, required = false)
     @XmlElement(required = true, name = "criteria")
-    @Builder.Default
     private Set<CertificationCriterion> associatedCriteria = new LinkedHashSet<CertificationCriterion>();
 
     public ListingMeasure() {

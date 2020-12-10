@@ -68,7 +68,6 @@ public class Measure implements Serializable {
 
     @XmlElementWrapper(name = "allowedCriteria", nillable = true, required = false)
     @XmlElement(required = true, name = "criteria")
-    @Builder.Default
     private Set<CertificationCriterion> allowedCriteria = new LinkedHashSet<CertificationCriterion>();
 
     public Measure() {
