@@ -16,6 +16,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component
 public class LoggedActionsAuditService  extends AuditService {
+    private static final String AUDIT_NAME = "audit.logged_actions";
 
     @Autowired
     public LoggedActionsAuditService(@Value("${auditDataFilePath}") String auditDataFilePath) {
@@ -28,7 +29,7 @@ public class LoggedActionsAuditService  extends AuditService {
                 "SELECT count(*) "
                 + "FROM LoggedActionEntity a "
                 + "WHERE MONTH(a.actionTStamp) = :month "
-                + "AND YEAR(a.actionTStamp) = : year");
+                + "AND YEAR(a.actionTStamp) = :year");
         query.setParameter("month", month);
         query.setParameter("year", year);
 
@@ -40,7 +41,7 @@ public class LoggedActionsAuditService  extends AuditService {
         Query query = entityManager.createQuery(
                 "DELETE LoggedActionEntity a "
                 + "WHERE MONTH(a.actionTStamp) = :month "
-                + "AND YEAR(a.actionTStamp) = : year");
+                + "AND YEAR(a.actionTStamp) = :year");
         query.setParameter("month", month);
         query.setParameter("year", month);
 
@@ -72,4 +73,8 @@ public class LoggedActionsAuditService  extends AuditService {
         return getAuditDataFilePath() + "logged-actions-" + year.toString() + "-" + month.toString() + ".csv";
     }
 
+    @Override
+    public String getAuditTableNme() {
+        return AUDIT_NAME;
+    }
 }

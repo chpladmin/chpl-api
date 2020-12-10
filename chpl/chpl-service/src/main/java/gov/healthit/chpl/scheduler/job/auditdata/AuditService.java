@@ -18,6 +18,7 @@ public abstract class AuditService extends BaseDAOImpl {
     public abstract void archiveDataToFile(Integer month, Integer year, String fileName, boolean includeHeaders)
             throws SQLException;
     public abstract String getProposedFilename(Integer month, Integer year);
+    public abstract String getAuditTableNme();
 
     public AuditService(String auditDataFilePath) {
         this.auditDataFilePath =  auditDataFilePath;

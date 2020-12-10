@@ -16,6 +16,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component
 public class ApiKeyActivityAuditService extends AuditService {
+    private static final String AUDIT_NAME = "openchpl.api_key_activity";
 
     @Autowired
     public ApiKeyActivityAuditService(@Value("${auditDataFilePath}") String auditDataFilePath) {
@@ -28,7 +29,7 @@ public class ApiKeyActivityAuditService extends AuditService {
                 "SELECT count(*) "
                 + "FROM ApiKeyActivityEntity a "
                 + "WHERE MONTH(a.creationDate) = :month "
-                + "AND YEAR(a.creationDate) = : year");
+                + "AND YEAR(a.creationDate) = :year");
         query.setParameter("month", month);
         query.setParameter("year", year);
 
@@ -40,7 +41,7 @@ public class ApiKeyActivityAuditService extends AuditService {
         Query query = entityManager.createQuery(
                 "DELETE ApiKeyActivityEntity a "
                 + "WHERE MONTH(a.creationDate) = :month "
-                + "AND YEAR(a.creationDate) = : year");
+                + "AND YEAR(a.creationDate) = :year");
         query.setParameter("month", month);
         query.setParameter("year", month);
 
@@ -76,4 +77,8 @@ public class ApiKeyActivityAuditService extends AuditService {
         return getAuditDataFilePath() + "api-key-activity-" + year.toString() + "-" + month.toString() + ".csv";
     }
 
+    @Override
+    public String getAuditTableNme() {
+        return AUDIT_NAME;
+    }
 }
