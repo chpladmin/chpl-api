@@ -96,13 +96,13 @@ public class AuditDataRetentionJob implements Job {
     }
 
     private void archiveDataForMonth(Integer month, Integer year) throws SQLException, IOException {
-        String fileName = auditDataFile.getProposedFilename(month, year);
+        String fileName = currentAuditService.getProposedFilename(month, year);
         boolean doesArchiveExist = auditDataFile.doesFileAlreadyExist(fileName);
         if (doesArchiveExist) {
             fileName = auditDataFile.getRandomFilename();
             currentAuditService.archiveDataToFile(month, year, fileName, false);
             //Append the temporary file to the existing file
-            appendFiles(auditDataFile.getProposedFilename(month, year), fileName);
+            appendFiles(currentAuditService.getProposedFilename(month, year), fileName);
             deleteFile(fileName);
         } else {
             currentAuditService.archiveDataToFile(month, year, fileName, true);

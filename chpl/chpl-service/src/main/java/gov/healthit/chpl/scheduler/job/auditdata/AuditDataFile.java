@@ -16,9 +16,6 @@ public class AuditDataFile {
         this.auditDataFilePath = auditDataFilePath;
     }
 
-    public String getProposedFilename(Integer month, Integer year) {
-        return auditDataFilePath + "api-key-activity-" + year.toString() + "-" + month.toString() + ".csv";
-    }
 
     public String getRandomFilename() {
         return auditDataFilePath + UUID.randomUUID().toString() + ".csv";
