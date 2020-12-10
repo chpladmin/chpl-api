@@ -92,6 +92,7 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
             createSimpleElement(cp.getId(), "id", sw);
             createSimpleElement(cp.getLastModifiedDate(), "lastModifiedDate", sw);
             MeaningfulUseUserXmlGenerator.add(cp.getMeaningfulUseUserHistory(), "meaningfulUseUserHistory", sw);
+            ListingMeasureXmlGenerator.add(cp.getMeasures(), "measures", sw);
             createSimpleElement(cp.getOtherAcb(), "otherAcb", sw);
             if (cp.getPracticeType() != null && cp.getPracticeType().size() > 0) {
                 sw.writeStartElement("practiceType");

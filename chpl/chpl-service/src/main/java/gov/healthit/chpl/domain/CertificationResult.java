@@ -143,9 +143,6 @@ public class CertificationResult implements Serializable {
     private String privacySecurityFramework;
 
     @XmlTransient
-    private List<MacraMeasure> allowedMacraMeasures = new ArrayList<MacraMeasure>();
-
-    @XmlTransient
     private List<TestFunctionality> allowedTestFunctionalities;
 
     /**
@@ -206,26 +203,6 @@ public class CertificationResult implements Serializable {
     private List<CertificationResultTestTool> testToolsUsed = new ArrayList<CertificationResultTestTool>();
 
     /**
-     * This variable indicates if the corresponding certification criteria was successfully tested for automated
-     * numerator recording. It is applicable for the 2015 edition. The allowable values vary by certification criteria,
-     * and include values such as "EP", "EH/CAH", "EP Individual", "EC Individual (TIN/NPI)", "EC Group", etc.
-     */
-    @XmlElementWrapper(name = "g1MacraMeasures", nillable = true, required = false)
-    @XmlElement(name = "macraMeasure")
-    @Singular
-    private List<MacraMeasure> g1MacraMeasures = new ArrayList<MacraMeasure>();
-
-    /**
-     * This variable indicates if the corresponding certification criteria was successfully tested for automated measure
-     * calculation. It is applicable for the 2015 edition. The allowable values vary by certification criteria, and
-     * include values such as "EP", "EH/CAH", "EP Individual", "EC Individual (TIN/NPI)", "EC Group", etc.
-     */
-    @XmlElementWrapper(name = "g2MacraMeasures", nillable = true, required = false)
-    @XmlElement(name = "macraMeasure")
-    @Singular
-    private List<MacraMeasure> g2MacraMeasures = new ArrayList<MacraMeasure>();
-
-    /**
      * Detailed information about the relevant certification criterion.
      */
     @XmlElement(name = "criterion")
@@ -261,14 +238,6 @@ public class CertificationResult implements Serializable {
 
     public void setId(final Long id) {
         this.id = id;
-    }
-
-    public List<MacraMeasure> getAllowedMacraMeasures() {
-        return allowedMacraMeasures;
-    }
-
-    public void setAllowedMacraMeasures(final List<MacraMeasure> allowedMacraMeasures) {
-        this.allowedMacraMeasures = allowedMacraMeasures;
     }
 
     public List<CertificationResultTestProcedure> getTestProcedures() {
@@ -421,22 +390,6 @@ public class CertificationResult implements Serializable {
 
     public void setPrivacySecurityFramework(final String privacySecurityFramework) {
         this.privacySecurityFramework = privacySecurityFramework;
-    }
-
-    public List<MacraMeasure> getG1MacraMeasures() {
-        return g1MacraMeasures;
-    }
-
-    public void setG1MacraMeasures(final List<MacraMeasure> g1MacraMeasures) {
-        this.g1MacraMeasures = g1MacraMeasures;
-    }
-
-    public List<MacraMeasure> getG2MacraMeasures() {
-        return g2MacraMeasures;
-    }
-
-    public void setG2MacraMeasures(final List<MacraMeasure> g2MacraMeasures) {
-        this.g2MacraMeasures = g2MacraMeasures;
     }
 
     public List<TestFunctionality> getAllowedTestFunctionalities() {

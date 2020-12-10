@@ -306,6 +306,15 @@ public class CertifiedProductSearchDetails implements Serializable {
     private List<CertifiedProductQmsStandard> qmsStandards = new ArrayList<CertifiedProductQmsStandard>();
 
     /**
+     * This variable indicates if the listing utilizes automated numerator or automated measure
+     * required tests.
+     */
+    @XmlElementWrapper(name = "measures", nillable = true, required = false)
+    @XmlElement(name = "measure")
+    @Singular
+    private List<ListingMeasure> measures = new ArrayList<ListingMeasure>();
+
+    /**
      * The criteria to which this listing attests
      */
     @XmlElementWrapper(name = "certificationResults", nillable = true, required = false)
@@ -629,6 +638,14 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     public void setQmsStandards(List<CertifiedProductQmsStandard> qmsStandards) {
         this.qmsStandards = qmsStandards;
+    }
+
+    public List<ListingMeasure> getMeasures() {
+        return this.measures;
+    }
+
+    public void setMeasures(List<ListingMeasure> measures) {
+        this.measures = measures;
     }
 
     public List<CertifiedProductTargetedUser> getTargetedUsers() {
