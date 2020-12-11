@@ -1,871 +1,871 @@
-{
-	"info": {
-		"name": "developer-controller",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"item": [
-		{
-			"name": "GET : Developers: data driven tests",
-			"item": [
-				{
-					"name": "GET /hierarchy - valid Deverloper Ids",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"const developerId= pm.iterationData.get(\"developerId\");\r",
-									"pm.environment.set(\"developerId\",\"developerId\");"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Valid api key header should return 200 status and response is not  null\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.response).not.eq(null);\r",
-									"});\r",
-									"pm.test(\"Developer details are correct as per the id passed in\", function () {\r",
-									"    var actualBody= pm.response.json();\r",
-									"    var expectedname= pm.iterationData.get(\"name\");\r",
-									"    pm.expect(actualBody.name).to.equal(expectedname);\r",
-									"    var expectedcode= pm.iterationData.get(\"developerCode\");\r",
-									"    pm.expect(actualBody.developerCode).to.equal(expectedcode);\r",
-									"    var expectedid= pm.iterationData.get(\"developerId\");\r",
-									"    pm.expect(actualBody.developerId).to.equal(expectedid);\r",
-									"});\r",
-									"const schema = {\r",
-									"  \"address\": {\r",
-									"    \"addressId\": 0,\r",
-									"    \"city\": \"string\",\r",
-									"    \"country\": \"string\",\r",
-									"    \"line1\": \"string\",\r",
-									"    \"line2\": \"string\",\r",
-									"    \"state\": \"string\",\r",
-									"    \"zipcode\": \"string\"\r",
-									"  },\r",
-									"  \"contact\": {\r",
-									"    \"contactId\": 0,\r",
-									"    \"email\": \"string\",\r",
-									"    \"friendlyName\": \"string\",\r",
-									"    \"fullName\": \"string\",\r",
-									"    \"phoneNumber\": \"string\",\r",
-									"    \"title\": \"string\"\r",
-									"  },\r",
-									"  \"deleted\": false,\r",
-									"  \"developerCode\": \"string\",\r",
-									"  \"developerId\": 0,\r",
-									"  \"lastModifiedDate\": \"string\",\r",
-									"  \"name\": \"string\",\r",
-									"  \"products\": [\r",
-									"    {\r",
-									"      \"contact\": {\r",
-									"        \"contactId\": 0,\r",
-									"        \"email\": \"string\",\r",
-									"        \"friendlyName\": \"string\",\r",
-									"        \"fullName\": \"string\",\r",
-									"        \"phoneNumber\": \"string\",\r",
-									"        \"title\": \"string\"\r",
-									"      },\r",
-									"      \"lastModifiedDate\": \"string\",\r",
-									"      \"name\": \"string\",\r",
-									"      \"owner\": {\r",
-									"        \"address\": {\r",
-									"          \"addressId\": 0,\r",
-									"          \"city\": \"string\",\r",
-									"          \"country\": \"string\",\r",
-									"          \"line1\": \"string\",\r",
-									"          \"line2\": \"string\",\r",
-									"          \"state\": \"string\",\r",
-									"          \"zipcode\": \"string\"\r",
-									"        },\r",
-									"        \"contact\": {\r",
-									"          \"contactId\": 0,\r",
-									"          \"email\": \"string\",\r",
-									"          \"friendlyName\": \"string\",\r",
-									"          \"fullName\": \"string\",\r",
-									"          \"phoneNumber\": \"string\",\r",
-									"          \"title\": \"string\"\r",
-									"        },\r",
-									"        \"deleted\": false,\r",
-									"        \"developerCode\": \"string\",\r",
-									"        \"developerId\": 0,\r",
-									"        \"lastModifiedDate\": \"string\",\r",
-									"        \"name\": \"string\",\r",
-									"        \"selfDeveloper\": false,\r",
-									"        \"status\": {\r",
-									"          \"id\": 0,\r",
-									"          \"status\": \"string\"\r",
-									"        },\r",
-									"        \"statusEvents\": [\r",
-									"          {\r",
-									"            \"developerId\": 0,\r",
-									"            \"id\": 0,\r",
-									"            \"reason\": \"string\",\r",
-									"            \"status\": {\r",
-									"              \"id\": 0,\r",
-									"              \"status\": \"string\"\r",
-									"            },\r",
-									"            \"statusDate\": \"2020-10-09T20:00:35.961Z\"\r",
-									"          }\r",
-									"        ],\r",
-									"        \"transparencyAttestations\": [\r",
-									"          {\r",
-									"            \"acbId\": 0,\r",
-									"            \"acbName\": \"string\",\r",
-									"            \"attestation\": {\r",
-									"              \"removed\": false,\r",
-									"              \"transparencyAttestation\": \"string\"\r",
-									"            }\r",
-									"          }\r",
-									"        ],\r",
-									"        \"website\": \"string\"\r",
-									"      },\r",
-									"      \"ownerHistory\": [\r",
-									"        {\r",
-									"          \"developer\": {\r",
-									"            \"address\": {\r",
-									"              \"addressId\": 0,\r",
-									"              \"city\": \"string\",\r",
-									"              \"country\": \"string\",\r",
-									"              \"line1\": \"string\",\r",
-									"              \"line2\": \"string\",\r",
-									"              \"state\": \"string\",\r",
-									"              \"zipcode\": \"string\"\r",
-									"            },\r",
-									"            \"contact\": {\r",
-									"              \"contactId\": 0,\r",
-									"              \"email\": \"string\",\r",
-									"              \"friendlyName\": \"string\",\r",
-									"              \"fullName\": \"string\",\r",
-									"              \"phoneNumber\": \"string\",\r",
-									"              \"title\": \"string\"\r",
-									"            },\r",
-									"            \"deleted\": false,\r",
-									"            \"developerCode\": \"string\",\r",
-									"            \"developerId\": 0,\r",
-									"            \"lastModifiedDate\": \"string\",\r",
-									"            \"name\": \"string\",\r",
-									"            \"selfDeveloper\": false,\r",
-									"            \"status\": {\r",
-									"              \"id\": 0,\r",
-									"              \"status\": \"string\"\r",
-									"            },\r",
-									"            \"statusEvents\": [\r",
-									"              {\r",
-									"                \"developerId\": 0,\r",
-									"                \"id\": 0,\r",
-									"                \"reason\": \"string\",\r",
-									"                \"status\": {\r",
-									"                  \"id\": 0,\r",
-									"                  \"status\": \"string\"\r",
-									"                },\r",
-									"                \"statusDate\": \"2020-10-09T20:00:35.961Z\"\r",
-									"              }\r",
-									"            ],\r",
-									"            \"transparencyAttestations\": [\r",
-									"              {\r",
-									"                \"acbId\": 0,\r",
-									"                \"acbName\": \"string\",\r",
-									"                \"attestation\": {\r",
-									"                  \"removed\": false,\r",
-									"                  \"transparencyAttestation\": \"string\"\r",
-									"                }\r",
-									"              }\r",
-									"            ],\r",
-									"            \"website\": \"string\"\r",
-									"          },\r",
-									"          \"id\": 0,\r",
-									"          \"transferDate\": 0\r",
-									"        }\r",
-									"      ],\r",
-									"      \"productId\": 0,\r",
-									"      \"reportFileLocation\": \"string\",\r",
-									"      \"versions\": [\r",
-									"        {\r",
-									"          \"details\": \"string\",\r",
-									"          \"lastModifiedDate\": \"string\",\r",
-									"          \"listings\": [\r",
-									"            {\r",
-									"              \"acb\": {\r",
-									"                \"acbCode\": \"string\",\r",
-									"                \"address\": {\r",
-									"                  \"addressId\": 0,\r",
-									"                  \"city\": \"string\",\r",
-									"                  \"country\": \"string\",\r",
-									"                  \"line1\": \"string\",\r",
-									"                  \"line2\": \"string\",\r",
-									"                  \"state\": \"string\",\r",
-									"                  \"zipcode\": \"string\"\r",
-									"                },\r",
-									"                \"id\": 0,\r",
-									"                \"name\": \"string\",\r",
-									"                \"retired\": false,\r",
-									"                \"retirementDate\": \"2020-10-09T20:00:35.962Z\",\r",
-									"                \"website\": \"string\"\r",
-									"              },\r",
-									"              \"certificationDate\": 0,\r",
-									"              \"certificationStatus\": \"string\",\r",
-									"              \"chplProductNumber\": \"string\",\r",
-									"              \"curesUpdate\": false,\r",
-									"              \"edition\": \"string\",\r",
-									"              \"id\": 0,\r",
-									"              \"lastModifiedDate\": 0\r",
-									"            }\r",
-									"          ],\r",
-									"          \"version\": \"string\",\r",
-									"          \"versionId\": 0\r",
-									"        }\r",
-									"      ]\r",
-									"    }\r",
-									"  ],\r",
-									"  \"selfDeveloper\": false,\r",
-									"  \"status\": {\r",
-									"    \"id\": 0,\r",
-									"    \"status\": \"string\"\r",
-									"  },\r",
-									"  \"statusEvents\": [\r",
-									"    {\r",
-									"      \"developerId\": 0,\r",
-									"      \"id\": 0,\r",
-									"      \"reason\": \"string\",\r",
-									"      \"status\": {\r",
-									"        \"id\": 0,\r",
-									"        \"status\": \"string\"\r",
-									"      },\r",
-									"      \"statusDate\": \"2020-10-09T20:00:35.961Z\"\r",
-									"    }\r",
-									"  ],\r",
-									"  \"transparencyAttestations\": [\r",
-									"    {\r",
-									"      \"acbId\": 0,\r",
-									"      \"acbName\": \"string\",\r",
-									"      \"attestation\": {\r",
-									"        \"removed\": false,\r",
-									"        \"transparencyAttestation\": \"string\"\r",
-									"      }\r",
-									"    }\r",
-									"  ],\r",
-									"  \"website\": \"string\"\r",
-									"};\r",
-									"pm.test(\"Validate that /hierarchy end point has correct schema\", () => {\r",
-									"            pm.response.to.have.jsonSchema(schema);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "API-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{url}}/rest/developers/{{developerId}}/hierarchy",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"rest",
-								"developers",
-								"{{developerId}}",
-								"hierarchy"
-							]
-						},
-						"description": "/hierarchy end point returns 200 status and correct response for valid Developer Ids"
-					},
-					"response": []
-				},
-				{
-					"name": "GET /hierarchy - Invalid developer Id",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Invalid DeveloperId returns 404 status\", function () {\r",
-									"    pm.response.to.have.status(404);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "API-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{url}}/rest/developers/100/hierarchy",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"rest",
-								"developers",
-								"100",
-								"hierarchy"
-							]
-						},
-						"description": "Invalid Developer Id returns 404 status"
-					},
-					"response": []
-				},
-				{
-					"name": "GET /developers/deverloperId ",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"const developerId= pm.iterationData.get(\"developerId\");\r",
-									"pm.environment.set(\"developerId\",\"developerId\");"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"For valid developer Id ,valid api key header should return 200 status and response is not null\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.response).not.eq(null);\r",
-									"});\r",
-									"pm.test(\"Developer Names are correct as per the id passed in\", function () {\r",
-									"    var actualBody= pm.response.json();\r",
-									"    var expected= pm.iterationData.get(\"name\");\r",
-									"    pm.expect(actualBody.name).to.equal(expected);\r",
-									"    var expected= pm.iterationData.get(\"developerCode\");\r",
-									"    pm.expect(actualBody.developerCode).to.equal(expected);\r",
-									"    var expected= pm.iterationData.get(\"developerId\");\r",
-									"    pm.expect(actualBody.developerId).to.equal(expected);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "API-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{url}}/rest/developers/{{developerId}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"rest",
-								"developers",
-								"{{developerId}}"
-							]
-						},
-						"description": "/developers/developerId end point functions as expected"
-					},
-					"response": []
-				}
-            ],
-			"protocolProfileBehavior": {}
-		},
-		{
-			"name": "GET : Developers: non-data driven tests",
-			"item": [
-				{
-					"name": "GET /developers -invalid API Key header",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Invalid api key header should return 401 status\", function () {\r",
-									"    pm.response.to.have.status(401);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "API-Key",
-								"value": "atest123cg",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{url}}/rest/developers",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"rest",
-								"developers"
-							]
-						},
-						"description": "Request with Invalid API-Key header returns 401 status"
-					},
-					"response": []
-				},
-				{
-					"name": "GET /developers - valid API Key header",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Valid api key header should return 200 status and response body should not be empty\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.response).not.eq(null);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "API-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{url}}/rest/developers",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"rest",
-								"developers"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-                    "name": "GET /developers - developer schema and response validation",
-                    "event": [
-                        {
-                            "listen": "test",
-                            "script": {
-                                "exec": [
-                                    "const developerSchema =",
-                                    "{",
-                                    "  \"developers\": [",
-                                    "    {",
-                                    "      \"address\": {",
-                                    "        \"addressId\": 0,",
-                                    "        \"city\": \"string\",",
-                                    "        \"country\": \"string\",",
-                                    "        \"line1\": \"string\",",
-                                    "        \"line2\": \"string\",",
-                                    "        \"state\": \"string\",",
-                                    "        \"zipcode\": \"string\"",
-                                    "      },",
-                                    "      \"contact\": {",
-                                    "        \"contactId\": 0,",
-                                    "        \"email\": \"string\",",
-                                    "        \"fullName\": \"string\",",
-                                    "        \"phoneNumber\": \"string\",",
-                                    "        \"title\": \"string\"",
-                                    "      },",
-                                    "      \"deleted\": false,",
-                                    "      \"developerCode\": \"string\",",
-                                    "      \"developerId\": 0,",
-                                    "      \"lastModifiedDate\": \"string\",",
-                                    "      \"name\": \"string\",",
-                                    "      \"selfDeveloper\": false,",
-                                    "      \"status\": {",
-                                    "        \"id\": 0,",
-                                    "        \"status\": \"string\"",
-                                    "      },",
-                                    "      \"statusEvents\": [",
-                                    "        {",
-                                    "          \"developerId\": 0,",
-                                    "          \"id\": 0,",
-                                    "          \"reason\": \"string\",",
-                                    "          \"status\": {",
-                                    "            \"id\": 0,",
-                                    "            \"status\": \"string\"",
-                                    "          },",
-                                    "          \"statusDate\": \"2020-10-09T17:08:51.022Z\"",
-                                    "        }",
-                                    "      ],",
-                                    "      \"transparencyAttestations\": [",
-                                    "        {",
-                                    "          \"acbId\": 0,",
-                                    "          \"acbName\": \"string\",",
-                                    "          \"attestation\": {",
-                                    "            \"removed\": false,",
-                                    "            \"transparencyAttestation\": \"string\"",
-                                    "          }",
-                                    "        }",
-                                    "      ],",
-                                    "      \"website\": \"string\"",
-                                    "    }",
-                                    "  ]",
-                                    "}",
-                                    "var jsonResponse = pm.response.json();",
-                                    "pm.test('developer schema is valid', function() {",
-                                    "  pm.expect(tv4.validate(jsonResponse, developerSchema)).to.be.true;  ",
-                                    "});",
-                                    "",
-                                    "pm.test(\"developer contact details should not include friendly name\", function () {",
-                                    "    pm.expect(pm.response.text()).to.not.include(\"friendlyName\");",
-                                    "});",
-                                    ""
-                                ],
-                                "type": "text/javascript"
-                            }
-                        }
-                    ],
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "API-KEY",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json",
-                                "type": "text"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{url}}/rest/developers/107",
-                            "host": [
-                                "{{url}}"
-                            ],
-                            "path": [
-                                "rest",
-                                "developers"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "PUT /developers - developer edit response validation",
-                    "event": [
-                        {
-                            "listen": "test",
-                            "script": {
-                                "exec": [
-                                    "\r",
-                                    "pm.test(\"valid developer edit request should return valid response\", function () {\r",
-                                    "    pm.response.to.have.status(200);\r",
-                                    "});\r",
-                                    "\r",
-                                    "pm.test(\"validate edit response-developer name is correct\", function () {\r",
-                                    "    var jsonData = pm.response.json();\r",
-                                    "    pm.expect(jsonData.name).to.eql('DSS, Inc.');\r",
-                                    "});\r",
-                                    "\r",
-                                    "pm.test(\"developer contact details should not include friendly name\", function () {\r",
-                                    "    pm.expect(pm.response.text()).to.not.include(\"friendlyName\");\r",
-                                    "});\r",
-                                    ""
-                                ],
-                                "type": "text/javascript"
-                            }
-                        },
-                        {
-                            "listen": "prerequest",
-                            "script": {
-                                "exec": [
-                                    "var ReqBody= {\r",
-                                    "        userName:pm.environment.get(\"usernameACB\"),password:pm.environment.get(\"passwordACB\")\r",
-                                    "    };\r",
-                                    "pm.sendRequest({\r",
-                                    "    url: pm.environment.get(\"authurl\"),\r",
-                                    "    method: \"POST\",\r",
-                                    "    header: {\r",
-                                    "        \"Content-Type\": \"application/json\",\r",
-                                    "        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
-                                    "    },\r",
-                                    "    body: JSON.stringify(ReqBody)\r",
-                                    "}, function (err, response) {\r",
-                                    "   var jsonData = response.json();\r",
-                                    "   pm.environment.set(\"token\",jsonData[\"token\"])\r",
-                                    "});"
-                                ],
-                                "type": "text/javascript"
-                            }
-                        }
-                    ],
-                    "request": {
-                        "auth": {
-                            "type": "bearer",
-                            "bearer": [
-                                {
-                                    "key": "token",
-                                    "value": "{{token}}",
-                                    "type": "string"
-                                }
-                            ]
-                        },
-                        "method": "PUT",
-                        "header": [
-                            {
-                                "key": "API-KEY",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\"developerId\":1926,\"developerCode\":\"2925\",\"name\":\"DSS, Inc.\",\"website\":\"https://www.dssinc.com/\",\"selfDeveloper\":false,\"address\":{\"addressId\":978,\"line1\":\"12575 US Hwy 1, Suite 200\",\"line2\":null,\"city\":\"Juno Beach,\",\"state\":\"FL\",\"zipcode\":\"33408\",\"country\":\"USA\"},\"contact\":{\"fullName\":\"DSS, Inc.\",\"email\":\"certifications@dssinc.com\",\"phoneNumber\":\"561-284-7129\",\"title\":null,\"contactId\":1169},\"lastModifiedDate\":\"1607532962583\",\"deleted\":false,\"transparencyAttestations\":[{\"acbName\":\"Drummond Group\",\"attestation\":{\"transparencyAttestation\":\"Affirmative\",\"removed\":true}},{\"acbName\":\"SLI Compliance\",\"attestation\":null},{\"acbName\":\"ICSA Labs\",\"attestation\":{\"transparencyAttestation\":\"Affirmative\",\"removed\":true}},{\"acbName\":\"CCHIT\",\"attestation\":null},{\"acbName\":\"Surescripts LLC\",\"attestation\":null},{\"acbName\":\"UL LLC\",\"attestation\":null}],\"statusEvents\":[{\"id\":2086,\"developerId\":1926,\"status\":{\"id\":1,\"status\":\"Active\"},\"statusDate\":1472149701321,\"reason\":null,\"statusDateObject\":\"2016-08-25T18:28:21.321Z\"}],\"status\":{\"id\":1,\"status\":\"Active\"},\"products\":[{\"productId\":72,\"name\":\"AMR Patient Portal\",\"reportFileLocation\":null,\"contact\":{\"fullName\":\"Sheree Kimani\",\"email\":\"certifications@dssinc.com\",\"phoneNumber\":\"561-284-7000\",\"title\":null,\"contactId\":1171},\"owner\":{\"developerId\":1926,\"developerCode\":\"2925\",\"name\":\"DSS, Inc.\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":null,\"deleted\":null,\"transparencyAttestations\":[],\"statusEvents\":[],\"status\":null},\"ownerHistory\":[{\"id\":82,\"developer\":{\"developerId\":34,\"developerCode\":\"1033\",\"name\":\"Document Storage Systems, Inc.\",\"website\":\"http://www.dssinc.com\",\"selfDeveloper\":false,\"address\":{\"addressId\":314,\"line1\":\"12575 US HWY 1\",\"line2\":\"Suite 200\",\"city\":\"Juno Beach\",\"state\":\"FL\",\"zipcode\":\"12575 US HWY 1\",\"country\":\"USA\"},\"contact\":{\"fullName\":\"Scott Kinnear\",\"email\":\"ltambasco@healthcareholdingsgroup.com\",\"phoneNumber\":\"(561) 981-6281\",\"title\":null,\"contactId\":895},\"lastModifiedDate\":\"1507839380013\",\"deleted\":false,\"transparencyAttestations\":[],\"statusEvents\":[{\"id\":37,\"developerId\":34,\"status\":{\"id\":1,\"status\":\"Active\"},\"statusDate\":1459469973474,\"reason\":null}],\"status\":{\"id\":1,\"status\":\"Active\"}},\"transferDate\":1532708245548}],\"lastModifiedDate\":\"1532708818465\",\"versions\":[{\"versionId\":1080,\"version\":\"2.0\",\"details\":null,\"lastModifiedDate\":\"1459469993738\",\"listings\":[{\"id\":6574,\"chplProductNumber\":\"CHP-022000\",\"lastModifiedDate\":1593513909098,\"edition\":\"2014\",\"certificationDate\":1392681600000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":6,\"acbCode\":\"07\",\"name\":\"ICSA Labs\",\"website\":\"https://www.icsalabs.com\",\"address\":{\"addressId\":7,\"line1\":\"1000 Bent Creek Blvd.\",\"line2\":\"Suite 200\",\"city\":\"Mechanicsburg\",\"state\":\"PA\",\"zipcode\":\"17050\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":6818,\"chplProductNumber\":\"CHP-022985\",\"lastModifiedDate\":1593496358582,\"edition\":\"2014\",\"certificationDate\":1401926400000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":6,\"acbCode\":\"07\",\"name\":\"ICSA Labs\",\"website\":\"https://www.icsalabs.com\",\"address\":{\"addressId\":7,\"line1\":\"1000 Bent Creek Blvd.\",\"line2\":\"Suite 200\",\"city\":\"Mechanicsburg\",\"state\":\"PA\",\"zipcode\":\"17050\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]}]},{\"productId\":2581,\"name\":\"veEDIS\",\"reportFileLocation\":null,\"contact\":null,\"owner\":{\"developerId\":1926,\"developerCode\":\"2925\",\"name\":\"DSS, Inc.\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":null,\"deleted\":null,\"transparencyAttestations\":[],\"statusEvents\":[],\"status\":null},\"ownerHistory\":[{\"id\":87,\"developer\":{\"developerId\":1645,\"developerCode\":\"2644\",\"name\":\"veEDIS Clinical Systems, LLC\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":\"1459469979605\",\"deleted\":false,\"transparencyAttestations\":[],\"statusEvents\":[{\"id\":1472,\"developerId\":1645,\"status\":{\"id\":1,\"status\":\"Active\"},\"statusDate\":1459469979605,\"reason\":null}],\"status\":{\"id\":1,\"status\":\"Active\"}},\"transferDate\":1560297600000}],\"lastModifiedDate\":\"1607533078260\",\"versions\":[{\"versionId\":5682,\"version\":\"v2\",\"details\":null,\"lastModifiedDate\":\"1459470012385\",\"listings\":[{\"id\":4189,\"chplProductNumber\":\"CHP-021841\",\"lastModifiedDate\":1459472484844,\"edition\":\"2011\",\"certificationDate\":1389830400000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":4177,\"chplProductNumber\":\"CHP-021838\",\"lastModifiedDate\":1593495174702,\"edition\":\"2014\",\"certificationDate\":1389830400000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]},{\"versionId\":5700,\"version\":\"v2.1\",\"details\":null,\"lastModifiedDate\":\"1459470012459\",\"listings\":[{\"id\":3180,\"chplProductNumber\":\"CHP-024060\",\"lastModifiedDate\":1593490497396,\"edition\":\"2014\",\"certificationDate\":1410998400000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":5071,\"chplProductNumber\":\"CHP-023883\",\"lastModifiedDate\":1593501464005,\"edition\":\"2014\",\"certificationDate\":1409184000000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]}]},{\"productId\":2636,\"name\":\"vxVistA Ambulatory\",\"reportFileLocation\":\"https://www.drummondgroup.com/products/certified-products/2014-edition-ehr-products/download/file?fid=53.3863\",\"contact\":null,\"owner\":{\"developerId\":1926,\"developerCode\":\"2925\",\"name\":\"DSS, Inc.\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":null,\"deleted\":null,\"transparencyAttestations\":[],\"statusEvents\":[],\"status\":null},\"ownerHistory\":[],\"lastModifiedDate\":\"1474305678512\",\"versions\":[{\"versionId\":6252,\"version\":\"15.0\",\"details\":null,\"lastModifiedDate\":\"1474305678516\",\"listings\":[{\"id\":8041,\"chplProductNumber\":\"14.04.04.2925.vxVi.15.01.0.160915\",\"lastModifiedDate\":1593522078716,\"edition\":\"2014\",\"certificationDate\":1473897600000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]},{\"versionId\":6360,\"version\":\"15.0.1\",\"details\":null,\"lastModifiedDate\":\"1479739517455\",\"listings\":[{\"id\":8176,\"chplProductNumber\":\"14.04.04.2925.vxVi.01.01.1.161117\",\"lastModifiedDate\":1593523565979,\"edition\":\"2014\",\"certificationDate\":1479340800000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]},{\"versionId\":6847,\"version\":\"Version 15.0.2\",\"details\":null,\"lastModifiedDate\":\"1504284137439\",\"listings\":[{\"id\":8816,\"chplProductNumber\":\"15.04.04.2925.vxVi.AM.00.0.170828\",\"lastModifiedDate\":1581721106024,\"edition\":\"2015\",\"certificationDate\":1503878400000,\"certificationStatus\":\"Withdrawn by Developer\",\"curesUpdate\":false,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]}]},{\"productId\":2764,\"name\":\"vxVistA Inpatient\",\"reportFileLocation\":null,\"contact\":null,\"owner\":{\"developerId\":1926,\"developerCode\":\"2925\",\"name\":\"DSS, Inc.\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":null,\"deleted\":null,\"transparencyAttestations\":[],\"statusEvents\":[],\"status\":null},\"ownerHistory\":[],\"lastModifiedDate\":\"1504284280836\",\"versions\":[{\"versionId\":6848,\"version\":\"Version 15.0.2\",\"details\":null,\"lastModifiedDate\":\"1504284261945\",\"listings\":[{\"id\":8817,\"chplProductNumber\":\"15.04.04.2925.vxVi.IN.00.0.170828\",\"lastModifiedDate\":1581721160174,\"edition\":\"2015\",\"certificationDate\":1503878400000,\"certificationStatus\":\"Withdrawn by Developer\",\"curesUpdate\":false,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]}]},{\"productId\":2938,\"name\":\"Juno EHR\",\"reportFileLocation\":null,\"contact\":null,\"owner\":{\"developerId\":1926,\"developerCode\":\"2925\",\"name\":\"DSS, Inc.\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":null,\"deleted\":null,\"transparencyAttestations\":[],\"statusEvents\":[],\"status\":null},\"ownerHistory\":[],\"lastModifiedDate\":\"1607533066118\",\"versions\":[{\"versionId\":7916,\"version\":\"17.1\",\"details\":null,\"lastModifiedDate\":\"1574356578323\",\"listings\":[{\"id\":10178,\"chplProductNumber\":\"15.04.04.2925.Juno.17.02.1.191120\",\"lastModifiedDate\":1576624324656,\"edition\":\"2015\",\"certificationDate\":1574208000000,\"certificationStatus\":\"Active\",\"curesUpdate\":false,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]},{\"versionId\":7397,\"version\":\"17\",\"details\":null,\"lastModifiedDate\":\"1532269411359\",\"listings\":[{\"id\":9561,\"chplProductNumber\":\"15.04.04.2925.Juno.17.01.0.180701\",\"lastModifiedDate\":1581720963016,\"edition\":\"2015\",\"certificationDate\":1530403200000,\"certificationStatus\":\"Withdrawn by Developer\",\"curesUpdate\":false,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]}]},{\"productId\":3088,\"name\":\"RxTracker\",\"reportFileLocation\":null,\"contact\":null,\"owner\":{\"developerId\":1926,\"developerCode\":\"2925\",\"name\":\"DSS, Inc.\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":null,\"deleted\":null,\"transparencyAttestations\":[],\"statusEvents\":[],\"status\":null},\"ownerHistory\":[],\"lastModifiedDate\":\"1562162700943\",\"versions\":[{\"versionId\":7804,\"version\":\"Version 8\",\"details\":null,\"lastModifiedDate\":\"1562162694070\",\"listings\":[{\"id\":10051,\"chplProductNumber\":\"15.04.04.2925.RxTr.08.01.1.190614\",\"lastModifiedDate\":1562162693908,\"edition\":\"2015\",\"certificationDate\":1560470400000,\"certificationStatus\":\"Active\",\"curesUpdate\":false,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]},{\"versionId\":8075,\"version\":\"Version 9\",\"details\":null,\"lastModifiedDate\":\"1585671828152\",\"listings\":[{\"id\":10348,\"chplProductNumber\":\"15.04.04.2925.RxTr.09.02.1.200330\",\"lastModifiedDate\":1585671828095,\"edition\":\"2015\",\"certificationDate\":1585526400000,\"certificationStatus\":\"Active\",\"curesUpdate\":false,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]}]},{\"productId\":3472,\"name\":\"vxVistA\",\"reportFileLocation\":null,\"contact\":null,\"owner\":{\"developerId\":1926,\"developerCode\":\"2925\",\"name\":\"DSS, Inc.\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":null,\"deleted\":null,\"transparencyAttestations\":[],\"statusEvents\":[],\"status\":null},\"ownerHistory\":[],\"lastModifiedDate\":\"1569591221589\",\"versions\":[{\"versionId\":2084,\"version\":\"2012.0\",\"details\":null,\"lastModifiedDate\":\"1569591221589\",\"listings\":[{\"id\":3705,\"chplProductNumber\":\"CHP-009340\",\"lastModifiedDate\":1459470029365,\"edition\":\"2011\",\"certificationDate\":1346284800000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]},{\"versionId\":2057,\"version\":\"2011.1\",\"details\":null,\"lastModifiedDate\":\"1569591221589\",\"listings\":[{\"id\":3709,\"chplProductNumber\":\"CHP-007257\",\"lastModifiedDate\":1459470029381,\"edition\":\"2011\",\"certificationDate\":1307577600000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]},{\"versionId\":2931,\"version\":\"2014.0\",\"details\":null,\"lastModifiedDate\":\"1569591221589\",\"listings\":[{\"id\":4012,\"chplProductNumber\":\"CHP-023385\",\"lastModifiedDate\":1593487898989,\"edition\":\"2014\",\"certificationDate\":1406764800000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":4008,\"chplProductNumber\":\"CHP-023384\",\"lastModifiedDate\":1593491563164,\"edition\":\"2014\",\"certificationDate\":1406764800000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]},{\"versionId\":2953,\"version\":\"2014.1\",\"details\":null,\"lastModifiedDate\":\"1569591221589\",\"listings\":[{\"id\":3763,\"chplProductNumber\":\"CHP-025045\",\"lastModifiedDate\":1593492082929,\"edition\":\"2014\",\"certificationDate\":1418860800000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":3767,\"chplProductNumber\":\"CHP-025046\",\"lastModifiedDate\":1593492059860,\"edition\":\"2014\",\"certificationDate\":1418860800000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]},{\"versionId\":2965,\"version\":\"2014.2\",\"details\":null,\"lastModifiedDate\":\"1569591221589\",\"listings\":[{\"id\":4768,\"chplProductNumber\":\"CHP-028036\",\"lastModifiedDate\":1593490081429,\"edition\":\"2014\",\"certificationDate\":1440633600000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":4766,\"chplProductNumber\":\"CHP-028035\",\"lastModifiedDate\":1593527569286,\"edition\":\"2014\",\"certificationDate\":1440633600000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]},{\"versionId\":6123,\"version\":\"15.0\",\"details\":null,\"lastModifiedDate\":\"1569591221589\",\"listings\":[{\"id\":7856,\"chplProductNumber\":\"14.04.04.2925.vxVi.IN.01.0.160630\",\"lastModifiedDate\":1593512404195,\"edition\":\"2014\",\"certificationDate\":1467244800000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":7855,\"chplProductNumber\":\"14.04.04.2925.vxVi.AM.01.0.160630\",\"lastModifiedDate\":1593521774505,\"edition\":\"2014\",\"certificationDate\":1467244800000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]}]},{\"productId\":3539,\"name\":\"Juno Emergency Services Solution\",\"reportFileLocation\":null,\"contact\":null,\"owner\":{\"developerId\":1926,\"developerCode\":\"2925\",\"name\":\"DSS, Inc.\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":null,\"deleted\":null,\"transparencyAttestations\":[],\"statusEvents\":[],\"status\":null},\"ownerHistory\":[],\"lastModifiedDate\":\"1592858752672\",\"versions\":[{\"versionId\":8134,\"version\":\"v. 3.1\",\"details\":null,\"lastModifiedDate\":\"1592858752801\",\"listings\":[{\"id\":10411,\"chplProductNumber\":\"15.04.04.2925.JESS.03.00.0.200619\",\"lastModifiedDate\":1600104562632,\"edition\":\"2015\",\"certificationDate\":1592524800000,\"certificationStatus\":\"Active\",\"curesUpdate\":false,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]}]}]}"
-                        },
-                        "url": {
-                            "raw": "{{url}}/rest/developers/1926",
-                            "host": [
-                                "{{url}}"
-                            ],
-                            "path": [
-                                "rest",
-                                "developers",
-                                "1926"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-				{
-			        "name": "POST /developers - merge request permission restriction validation - anonymous",
-			        "event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"developer merge request attempt by anonymous user should return Status code 401\", function () {\r",
-							"    pm.response.to.have.status(401);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"anonymous user should be denied access to merge developers\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "API-KEY",
-						"value": "{{apiKey}}",
-						"type": "text"
-					},
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\"developer\":{\"developerId\":2069,\"developerCode\":\"3068\",\"name\":\"Accelerated Care Plus\",\"website\":\"https://acplus.com/index.php/acplustm\",\"selfDeveloper\":false,\"address\":{\"addressId\":811,\"line1\":\"4999 Aircenter Cir., STE 103\",\"line2\":null,\"city\":\"Reno,\",\"state\":\"NV\",\"zipcode\":\"89502\",\"country\":\"US\"},\"contact\":{\"fullName\":\"Barry Thomson\",\"email\":\"BThomson@hanger.com\",\"phoneNumber\":\"775-287-4955\",\"title\":null,\"contactId\":1369},\"lastModifiedDate\":\"1580312732548\",\"deleted\":false,\"transparencyAttestations\":[{\"acbName\":\"Drummond Group\",\"attestation\":{\"transparencyAttestation\":\"Affirmative\",\"removed\":true}},{\"acbName\":\"SLI Compliance\",\"attestation\":null},{\"acbName\":\"ICSA Labs\",\"attestation\":null},{\"acbName\":\"CCHIT\",\"attestation\":null},{\"acbName\":\"Surescripts LLC\",\"attestation\":null},{\"acbName\":\"UL LLC\",\"attestation\":null}],\"statusEvents\":[{\"id\":2072,\"developerId\":2069,\"status\":{\"id\":1,\"status\":\"Active\"},\"statusDate\":1580312732548,\"reason\":null,\"statusDateObject\":\"2020-01-29T15:45:32.548Z\"}],\"status\":{\"id\":1,\"status\":\"Active\"},\"products\":[{\"productId\":3522,\"name\":\"ACPlus™ MDS\",\"reportFileLocation\":null,\"contact\":null,\"owner\":{\"developerId\":2069,\"developerCode\":\"3068\",\"name\":\"Accelerated Care Plus\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":null,\"deleted\":null,\"transparencyAttestations\":[],\"statusEvents\":[],\"status\":null},\"ownerHistory\":[],\"lastModifiedDate\":\"1580313127273\",\"versions\":[{\"versionId\":8014,\"version\":\"V1\",\"details\":null,\"lastModifiedDate\":\"1580312732667\",\"listings\":[{\"id\":10284,\"chplProductNumber\":\"15.04.04.3068.ACPl.01.00.0.200129\",\"lastModifiedDate\":1580313075116,\"edition\":\"2015\",\"certificationDate\":1580256000000,\"certificationStatus\":\"Active\",\"curesUpdate\":false,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]}]}]},\"developerIds\":[6,2069]}"
-				},
-				"url": {
-					"raw": "{{url}}/rest/developers/merge",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-					    "rest",
-						"developers",
-						"merge"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-                    "name": "POST /developers - merge request permission restriction validation - ACB",
-                    "event": [
-                        {
-                            "listen": "test",
-                            "script": {
-                                "exec": [
-                                    "pm.test(\"developer merge request attempt by ACB user should return Status code 401\", function () {\r",
-                                    "    pm.response.to.have.status(401);\r",
-                                    "});\r",
-                                    "\r",
-                                    "pm.test(\"ACB user should be denied access to merge developers\", function () {\r",
-                                    "    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
-                                    "});"
-                                ],
-                                "type": "text/javascript"
-                            }
-                        },
-                        {
-                            "listen": "prerequest",
-                            "script": {
-                                "exec": [
-                                    "var ReqBody= {\r",
-                                    "        userName:pm.environment.get(\"usernameACB\"),password:pm.environment.get(\"passwordACB\")\r",
-                                    "    };\r",
-                                    "pm.sendRequest({\r",
-                                    "    url: pm.environment.get(\"authurl\"),\r",
-                                    "    method: \"POST\",\r",
-                                    "    header: {\r",
-                                    "        \"Content-Type\": \"application/json\",\r",
-                                    "        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
-                                    "    },\r",
-                                    "    body: JSON.stringify(ReqBody)\r",
-                                    "}, function (err, response) {\r",
-                                    "   var jsonData = response.json();\r",
-                                    "   pm.environment.set(\"token\",jsonData[\"token\"])\r",
-                                    "});"
-                                ],
-                                "type": "text/javascript"
-                            }
-                        }
-                    ],
-                    "request": {
-                        "auth": {
-                            "type": "bearer",
-                            "bearer": [
-                                {
-                                    "key": "token",
-                                    "value": "{{token}}",
-                                    "type": "string"
-                                }
-                            ]
-                        },
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "API-KEY",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\"developer\":{\"developerId\":2069,\"developerCode\":\"3068\",\"name\":\"Accelerated Care Plus\",\"website\":\"https://acplus.com/index.php/acplustm\",\"selfDeveloper\":false,\"address\":{\"addressId\":811,\"line1\":\"4999 Aircenter Cir., STE 103\",\"line2\":null,\"city\":\"Reno,\",\"state\":\"NV\",\"zipcode\":\"89502\",\"country\":\"US\"},\"contact\":{\"fullName\":\"Barry Thomson\",\"email\":\"BThomson@hanger.com\",\"phoneNumber\":\"775-287-4955\",\"title\":null,\"contactId\":1369},\"lastModifiedDate\":\"1580312732548\",\"deleted\":false,\"transparencyAttestations\":[{\"acbName\":\"Drummond Group\",\"attestation\":{\"transparencyAttestation\":\"Affirmative\",\"removed\":true}},{\"acbName\":\"SLI Compliance\",\"attestation\":null},{\"acbName\":\"ICSA Labs\",\"attestation\":null},{\"acbName\":\"CCHIT\",\"attestation\":null},{\"acbName\":\"Surescripts LLC\",\"attestation\":null},{\"acbName\":\"UL LLC\",\"attestation\":null}],\"statusEvents\":[{\"id\":2072,\"developerId\":2069,\"status\":{\"id\":1,\"status\":\"Active\"},\"statusDate\":1580312732548,\"reason\":null,\"statusDateObject\":\"2020-01-29T15:45:32.548Z\"}],\"status\":{\"id\":1,\"status\":\"Active\"},\"products\":[{\"productId\":3522,\"name\":\"ACPlus� MDS\",\"reportFileLocation\":null,\"contact\":null,\"owner\":{\"developerId\":2069,\"developerCode\":\"3068\",\"name\":\"Accelerated Care Plus\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":null,\"deleted\":null,\"transparencyAttestations\":[],\"statusEvents\":[],\"status\":null},\"ownerHistory\":[],\"lastModifiedDate\":\"1580313127273\",\"versions\":[{\"versionId\":8014,\"version\":\"V1\",\"details\":null,\"lastModifiedDate\":\"1580312732667\",\"listings\":[{\"id\":10284,\"chplProductNumber\":\"15.04.04.3068.ACPl.01.00.0.200129\",\"lastModifiedDate\":1580313075116,\"edition\":\"2015\",\"certificationDate\":1580256000000,\"certificationStatus\":\"Active\",\"curesUpdate\":false,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]}]}]},\"developerIds\":[6,2069]}"
-                        },
-                        "url": {
-                            "raw": "{{url}}/rest/developers/merge",
-                            "host": [
-                                "{{url}}"
-                            ],
-                            "path": [
-                                "rest",
-                                "developers",
-                                "merge"
-                            ]
-                        }
-                    },
-                    "response": []
-                }
-			],
-			"protocolProfileBehavior": {}
-		},
-		{
-			"name": "GET /developers - valid API Key header",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-					     "exec": [
-							"pm.test(\"Valid api key header should return 200 status and response body should not be empty\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"    var jsonData = pm.response.json();\r",
-							"    pm.expect(jsonData.response).not.eq(null);\r",
-							"});"
-						],
-						"url": {
-							"raw": "{{url}}/rest/developers/{{developerId}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"rest",
-								"developers",
-								"{{developerId}}"
-							]
-						},
-						"description": "/developers/developerId end point functions as expected",
-						"type": "text/javascript",
-						"id": "5676bb79-bbbc-4905-937b-25e14e723df1"
-					},
-					"response": []
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": ""
-				}
-			},
-			"response": []
-		}
-	],
-	"protocolProfileBehavior": {}
-}
+  {
+  	"info": {
+  		"name": "developer-controller",
+  		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  	},
+  	"item": [
+  		{
+  			"name": "GET : Developers: data driven tests",
+  			"item": [
+  				{
+  					"name": "GET /hierarchy - valid Deverloper Ids",
+  					"event": [
+  						{
+  							"listen": "prerequest",
+  							"script": {
+  								"exec": [
+  									"const developerId= pm.iterationData.get(\"developerId\");\r",
+  									"pm.environment.set(\"developerId\",\"developerId\");"
+  								],
+  								"type": "text/javascript"
+  							}
+  						},
+  						{
+  							"listen": "test",
+  							"script": {
+  								"exec": [
+  									"pm.test(\"Valid api key header should return 200 status and response is not  null\", function () {\r",
+  									"    pm.response.to.have.status(200);\r",
+  									"    var jsonData = pm.response.json();\r",
+  									"    pm.expect(jsonData.response).not.eq(null);\r",
+  									"});\r",
+  									"pm.test(\"Developer details are correct as per the id passed in\", function () {\r",
+  									"    var actualBody= pm.response.json();\r",
+  									"    var expectedname= pm.iterationData.get(\"name\");\r",
+  									"    pm.expect(actualBody.name).to.equal(expectedname);\r",
+  									"    var expectedcode= pm.iterationData.get(\"developerCode\");\r",
+  									"    pm.expect(actualBody.developerCode).to.equal(expectedcode);\r",
+  									"    var expectedid= pm.iterationData.get(\"developerId\");\r",
+  									"    pm.expect(actualBody.developerId).to.equal(expectedid);\r",
+  									"});\r",
+  									"const schema = {\r",
+  									"  \"address\": {\r",
+  									"    \"addressId\": 0,\r",
+  									"    \"city\": \"string\",\r",
+  									"    \"country\": \"string\",\r",
+  									"    \"line1\": \"string\",\r",
+  									"    \"line2\": \"string\",\r",
+  									"    \"state\": \"string\",\r",
+  									"    \"zipcode\": \"string\"\r",
+  									"  },\r",
+  									"  \"contact\": {\r",
+  									"    \"contactId\": 0,\r",
+  									"    \"email\": \"string\",\r",
+  									"    \"friendlyName\": \"string\",\r",
+  									"    \"fullName\": \"string\",\r",
+  									"    \"phoneNumber\": \"string\",\r",
+  									"    \"title\": \"string\"\r",
+  									"  },\r",
+  									"  \"deleted\": false,\r",
+  									"  \"developerCode\": \"string\",\r",
+  									"  \"developerId\": 0,\r",
+  									"  \"lastModifiedDate\": \"string\",\r",
+  									"  \"name\": \"string\",\r",
+  									"  \"products\": [\r",
+  									"    {\r",
+  									"      \"contact\": {\r",
+  									"        \"contactId\": 0,\r",
+  									"        \"email\": \"string\",\r",
+  									"        \"friendlyName\": \"string\",\r",
+  									"        \"fullName\": \"string\",\r",
+  									"        \"phoneNumber\": \"string\",\r",
+  									"        \"title\": \"string\"\r",
+  									"      },\r",
+  									"      \"lastModifiedDate\": \"string\",\r",
+  									"      \"name\": \"string\",\r",
+  									"      \"owner\": {\r",
+  									"        \"address\": {\r",
+  									"          \"addressId\": 0,\r",
+  									"          \"city\": \"string\",\r",
+  									"          \"country\": \"string\",\r",
+  									"          \"line1\": \"string\",\r",
+  									"          \"line2\": \"string\",\r",
+  									"          \"state\": \"string\",\r",
+  									"          \"zipcode\": \"string\"\r",
+  									"        },\r",
+  									"        \"contact\": {\r",
+  									"          \"contactId\": 0,\r",
+  									"          \"email\": \"string\",\r",
+  									"          \"friendlyName\": \"string\",\r",
+  									"          \"fullName\": \"string\",\r",
+  									"          \"phoneNumber\": \"string\",\r",
+  									"          \"title\": \"string\"\r",
+  									"        },\r",
+  									"        \"deleted\": false,\r",
+  									"        \"developerCode\": \"string\",\r",
+  									"        \"developerId\": 0,\r",
+  									"        \"lastModifiedDate\": \"string\",\r",
+  									"        \"name\": \"string\",\r",
+  									"        \"selfDeveloper\": false,\r",
+  									"        \"status\": {\r",
+  									"          \"id\": 0,\r",
+  									"          \"status\": \"string\"\r",
+  									"        },\r",
+  									"        \"statusEvents\": [\r",
+  									"          {\r",
+  									"            \"developerId\": 0,\r",
+  									"            \"id\": 0,\r",
+  									"            \"reason\": \"string\",\r",
+  									"            \"status\": {\r",
+  									"              \"id\": 0,\r",
+  									"              \"status\": \"string\"\r",
+  									"            },\r",
+  									"            \"statusDate\": \"2020-10-09T20:00:35.961Z\"\r",
+  									"          }\r",
+  									"        ],\r",
+  									"        \"transparencyAttestations\": [\r",
+  									"          {\r",
+  									"            \"acbId\": 0,\r",
+  									"            \"acbName\": \"string\",\r",
+  									"            \"attestation\": {\r",
+  									"              \"removed\": false,\r",
+  									"              \"transparencyAttestation\": \"string\"\r",
+  									"            }\r",
+  									"          }\r",
+  									"        ],\r",
+  									"        \"website\": \"string\"\r",
+  									"      },\r",
+  									"      \"ownerHistory\": [\r",
+  									"        {\r",
+  									"          \"developer\": {\r",
+  									"            \"address\": {\r",
+  									"              \"addressId\": 0,\r",
+  									"              \"city\": \"string\",\r",
+  									"              \"country\": \"string\",\r",
+  									"              \"line1\": \"string\",\r",
+  									"              \"line2\": \"string\",\r",
+  									"              \"state\": \"string\",\r",
+  									"              \"zipcode\": \"string\"\r",
+  									"            },\r",
+  									"            \"contact\": {\r",
+  									"              \"contactId\": 0,\r",
+  									"              \"email\": \"string\",\r",
+  									"              \"friendlyName\": \"string\",\r",
+  									"              \"fullName\": \"string\",\r",
+  									"              \"phoneNumber\": \"string\",\r",
+  									"              \"title\": \"string\"\r",
+  									"            },\r",
+  									"            \"deleted\": false,\r",
+  									"            \"developerCode\": \"string\",\r",
+  									"            \"developerId\": 0,\r",
+  									"            \"lastModifiedDate\": \"string\",\r",
+  									"            \"name\": \"string\",\r",
+  									"            \"selfDeveloper\": false,\r",
+  									"            \"status\": {\r",
+  									"              \"id\": 0,\r",
+  									"              \"status\": \"string\"\r",
+  									"            },\r",
+  									"            \"statusEvents\": [\r",
+  									"              {\r",
+  									"                \"developerId\": 0,\r",
+  									"                \"id\": 0,\r",
+  									"                \"reason\": \"string\",\r",
+  									"                \"status\": {\r",
+  									"                  \"id\": 0,\r",
+  									"                  \"status\": \"string\"\r",
+  									"                },\r",
+  									"                \"statusDate\": \"2020-10-09T20:00:35.961Z\"\r",
+  									"              }\r",
+  									"            ],\r",
+  									"            \"transparencyAttestations\": [\r",
+  									"              {\r",
+  									"                \"acbId\": 0,\r",
+  									"                \"acbName\": \"string\",\r",
+  									"                \"attestation\": {\r",
+  									"                  \"removed\": false,\r",
+  									"                  \"transparencyAttestation\": \"string\"\r",
+  									"                }\r",
+  									"              }\r",
+  									"            ],\r",
+  									"            \"website\": \"string\"\r",
+  									"          },\r",
+  									"          \"id\": 0,\r",
+  									"          \"transferDate\": 0\r",
+  									"        }\r",
+  									"      ],\r",
+  									"      \"productId\": 0,\r",
+  									"      \"reportFileLocation\": \"string\",\r",
+  									"      \"versions\": [\r",
+  									"        {\r",
+  									"          \"details\": \"string\",\r",
+  									"          \"lastModifiedDate\": \"string\",\r",
+  									"          \"listings\": [\r",
+  									"            {\r",
+  									"              \"acb\": {\r",
+  									"                \"acbCode\": \"string\",\r",
+  									"                \"address\": {\r",
+  									"                  \"addressId\": 0,\r",
+  									"                  \"city\": \"string\",\r",
+  									"                  \"country\": \"string\",\r",
+  									"                  \"line1\": \"string\",\r",
+  									"                  \"line2\": \"string\",\r",
+  									"                  \"state\": \"string\",\r",
+  									"                  \"zipcode\": \"string\"\r",
+  									"                },\r",
+  									"                \"id\": 0,\r",
+  									"                \"name\": \"string\",\r",
+  									"                \"retired\": false,\r",
+  									"                \"retirementDate\": \"2020-10-09T20:00:35.962Z\",\r",
+  									"                \"website\": \"string\"\r",
+  									"              },\r",
+  									"              \"certificationDate\": 0,\r",
+  									"              \"certificationStatus\": \"string\",\r",
+  									"              \"chplProductNumber\": \"string\",\r",
+  									"              \"curesUpdate\": false,\r",
+  									"              \"edition\": \"string\",\r",
+  									"              \"id\": 0,\r",
+  									"              \"lastModifiedDate\": 0\r",
+  									"            }\r",
+  									"          ],\r",
+  									"          \"version\": \"string\",\r",
+  									"          \"versionId\": 0\r",
+  									"        }\r",
+  									"      ]\r",
+  									"    }\r",
+  									"  ],\r",
+  									"  \"selfDeveloper\": false,\r",
+  									"  \"status\": {\r",
+  									"    \"id\": 0,\r",
+  									"    \"status\": \"string\"\r",
+  									"  },\r",
+  									"  \"statusEvents\": [\r",
+  									"    {\r",
+  									"      \"developerId\": 0,\r",
+  									"      \"id\": 0,\r",
+  									"      \"reason\": \"string\",\r",
+  									"      \"status\": {\r",
+  									"        \"id\": 0,\r",
+  									"        \"status\": \"string\"\r",
+  									"      },\r",
+  									"      \"statusDate\": \"2020-10-09T20:00:35.961Z\"\r",
+  									"    }\r",
+  									"  ],\r",
+  									"  \"transparencyAttestations\": [\r",
+  									"    {\r",
+  									"      \"acbId\": 0,\r",
+  									"      \"acbName\": \"string\",\r",
+  									"      \"attestation\": {\r",
+  									"        \"removed\": false,\r",
+  									"        \"transparencyAttestation\": \"string\"\r",
+  									"      }\r",
+  									"    }\r",
+  									"  ],\r",
+  									"  \"website\": \"string\"\r",
+  									"};\r",
+  									"pm.test(\"Validate that /hierarchy end point has correct schema\", () => {\r",
+  									"            pm.response.to.have.jsonSchema(schema);\r",
+  									"});"
+  								],
+  								"type": "text/javascript"
+  							}
+  						}
+  					],
+  					"request": {
+  						"method": "GET",
+  						"header": [
+  							{
+  								"key": "API-Key",
+  								"value": "{{apiKey}}",
+  								"type": "text"
+  							},
+  							{
+  								"key": "Content-Type",
+  								"value": "application/json",
+  								"type": "text"
+  							}
+  						],
+  						"url": {
+  							"raw": "{{url}}/rest/developers/{{developerId}}/hierarchy",
+  							"host": [
+  								"{{url}}"
+  							],
+  							"path": [
+  								"rest",
+  								"developers",
+  								"{{developerId}}",
+  								"hierarchy"
+  							]
+  						},
+  						"description": "/hierarchy end point returns 200 status and correct response for valid Developer Ids"
+  					},
+  					"response": []
+  				},
+  				{
+  					"name": "GET /hierarchy - Invalid developer Id",
+  					"event": [
+  						{
+  							"listen": "test",
+  							"script": {
+  								"exec": [
+  									"pm.test(\"Invalid DeveloperId returns 404 status\", function () {\r",
+  									"    pm.response.to.have.status(404);\r",
+  									"});"
+  								],
+  								"type": "text/javascript"
+  							}
+  						}
+  					],
+  					"request": {
+  						"method": "GET",
+  						"header": [
+  							{
+  								"key": "API-Key",
+  								"value": "{{apiKey}}",
+  								"type": "text"
+  							},
+  							{
+  								"key": "Content-Type",
+  								"value": "application/json",
+  								"type": "text"
+  							}
+  						],
+  						"url": {
+  							"raw": "{{url}}/rest/developers/100/hierarchy",
+  							"host": [
+  								"{{url}}"
+  							],
+  							"path": [
+  								"rest",
+  								"developers",
+  								"100",
+  								"hierarchy"
+  							]
+  						},
+  						"description": "Invalid Developer Id returns 404 status"
+  					},
+  					"response": []
+  				},
+  				{
+  					"name": "GET /developers/deverloperId ",
+  					"event": [
+  						{
+  							"listen": "prerequest",
+  							"script": {
+  								"exec": [
+  									"const developerId= pm.iterationData.get(\"developerId\");\r",
+  									"pm.environment.set(\"developerId\",\"developerId\");"
+  								],
+  								"type": "text/javascript"
+  							}
+  						},
+  						{
+  							"listen": "test",
+  							"script": {
+  								"exec": [
+  									"pm.test(\"For valid developer Id ,valid api key header should return 200 status and response is not null\", function () {\r",
+  									"    pm.response.to.have.status(200);\r",
+  									"    var jsonData = pm.response.json();\r",
+  									"    pm.expect(jsonData.response).not.eq(null);\r",
+  									"});\r",
+  									"pm.test(\"Developer Names are correct as per the id passed in\", function () {\r",
+  									"    var actualBody= pm.response.json();\r",
+  									"    var expected= pm.iterationData.get(\"name\");\r",
+  									"    pm.expect(actualBody.name).to.equal(expected);\r",
+  									"    var expected= pm.iterationData.get(\"developerCode\");\r",
+  									"    pm.expect(actualBody.developerCode).to.equal(expected);\r",
+  									"    var expected= pm.iterationData.get(\"developerId\");\r",
+  									"    pm.expect(actualBody.developerId).to.equal(expected);\r",
+  									"});"
+  								],
+  								"type": "text/javascript"
+  							}
+  						}
+  					],
+  					"request": {
+  						"method": "GET",
+  						"header": [
+  							{
+  								"key": "API-Key",
+  								"value": "{{apiKey}}",
+  								"type": "text"
+  							},
+  							{
+  								"key": "Content-Type",
+  								"value": "application/json",
+  								"type": "text"
+  							}
+  						],
+  						"url": {
+  							"raw": "{{url}}/rest/developers/{{developerId}}",
+  							"host": [
+  								"{{url}}"
+  							],
+  							"path": [
+  								"rest",
+  								"developers",
+  								"{{developerId}}"
+  							]
+  						},
+  						"description": "/developers/developerId end point functions as expected"
+  					},
+  					"response": []
+  				}
+              ],
+  			"protocolProfileBehavior": {}
+  		},
+  		{
+  			"name": "GET : Developers: non-data driven tests",
+  			"item": [
+  				{
+  					"name": "GET /developers -invalid API Key header",
+  					"event": [
+  						{
+  							"listen": "test",
+  							"script": {
+  								"exec": [
+  									"pm.test(\"Invalid api key header should return 401 status\", function () {\r",
+  									"    pm.response.to.have.status(401);\r",
+  									"});"
+  								],
+  								"type": "text/javascript"
+  							}
+  						}
+  					],
+  					"request": {
+  						"method": "GET",
+  						"header": [
+  							{
+  								"key": "API-Key",
+  								"value": "atest123cg",
+  								"type": "text"
+  							},
+  							{
+  								"key": "Content-Type",
+  								"value": "application/json",
+  								"type": "text"
+  							}
+  						],
+  						"url": {
+  							"raw": "{{url}}/rest/developers",
+  							"host": [
+  								"{{url}}"
+  							],
+  							"path": [
+  								"rest",
+  								"developers"
+  							]
+  						},
+  						"description": "Request with Invalid API-Key header returns 401 status"
+  					},
+  					"response": []
+  				},
+  				{
+  					"name": "GET /developers - valid API Key header",
+  					"event": [
+  						{
+  							"listen": "test",
+  							"script": {
+  								"exec": [
+  									"pm.test(\"Valid api key header should return 200 status and response body should not be empty\", function () {\r",
+  									"    pm.response.to.have.status(200);\r",
+  									"    var jsonData = pm.response.json();\r",
+  									"    pm.expect(jsonData.response).not.eq(null);\r",
+  									"});"
+  								],
+  								"type": "text/javascript"
+  							}
+  						}
+  					],
+  					"request": {
+  						"method": "GET",
+  						"header": [
+  							{
+  								"key": "API-Key",
+  								"value": "{{apiKey}}",
+  								"type": "text"
+  							},
+  							{
+  								"key": "Content-Type",
+  								"value": "application/json",
+  								"type": "text"
+  							}
+  						],
+  						"url": {
+  							"raw": "{{url}}/rest/developers",
+  							"host": [
+  								"{{url}}"
+  							],
+  							"path": [
+  								"rest",
+  								"developers"
+  							]
+  						}
+  					},
+  					"response": []
+  				},
+  				{
+                      "name": "GET /developers - developer schema and response validation",
+                      "event": [
+                          {
+                              "listen": "test",
+                              "script": {
+                                  "exec": [
+                                      "const developerSchema =",
+                                      "{",
+                                      "  \"developers\": [",
+                                      "    {",
+                                      "      \"address\": {",
+                                      "        \"addressId\": 0,",
+                                      "        \"city\": \"string\",",
+                                      "        \"country\": \"string\",",
+                                      "        \"line1\": \"string\",",
+                                      "        \"line2\": \"string\",",
+                                      "        \"state\": \"string\",",
+                                      "        \"zipcode\": \"string\"",
+                                      "      },",
+                                      "      \"contact\": {",
+                                      "        \"contactId\": 0,",
+                                      "        \"email\": \"string\",",
+                                      "        \"fullName\": \"string\",",
+                                      "        \"phoneNumber\": \"string\",",
+                                      "        \"title\": \"string\"",
+                                      "      },",
+                                      "      \"deleted\": false,",
+                                      "      \"developerCode\": \"string\",",
+                                      "      \"developerId\": 0,",
+                                      "      \"lastModifiedDate\": \"string\",",
+                                      "      \"name\": \"string\",",
+                                      "      \"selfDeveloper\": false,",
+                                      "      \"status\": {",
+                                      "        \"id\": 0,",
+                                      "        \"status\": \"string\"",
+                                      "      },",
+                                      "      \"statusEvents\": [",
+                                      "        {",
+                                      "          \"developerId\": 0,",
+                                      "          \"id\": 0,",
+                                      "          \"reason\": \"string\",",
+                                      "          \"status\": {",
+                                      "            \"id\": 0,",
+                                      "            \"status\": \"string\"",
+                                      "          },",
+                                      "          \"statusDate\": \"2020-10-09T17:08:51.022Z\"",
+                                      "        }",
+                                      "      ],",
+                                      "      \"transparencyAttestations\": [",
+                                      "        {",
+                                      "          \"acbId\": 0,",
+                                      "          \"acbName\": \"string\",",
+                                      "          \"attestation\": {",
+                                      "            \"removed\": false,",
+                                      "            \"transparencyAttestation\": \"string\"",
+                                      "          }",
+                                      "        }",
+                                      "      ],",
+                                      "      \"website\": \"string\"",
+                                      "    }",
+                                      "  ]",
+                                      "}",
+                                      "var jsonResponse = pm.response.json();",
+                                      "pm.test('developer schema is valid', function() {",
+                                      "  pm.expect(tv4.validate(jsonResponse, developerSchema)).to.be.true;  ",
+                                      "});",
+                                      "",
+                                      "pm.test(\"developer contact details should not include friendly name\", function () {",
+                                      "    pm.expect(pm.response.text()).to.not.include(\"friendlyName\");",
+                                      "});",
+                                      ""
+                                  ],
+                                  "type": "text/javascript"
+                              }
+                          }
+                      ],
+                      "request": {
+                          "method": "GET",
+                          "header": [
+                              {
+                                  "key": "API-KEY",
+                                  "value": "{{apiKey}}",
+                                  "type": "text"
+                              },
+                              {
+                                  "key": "Content-Type",
+                                  "value": "application/json",
+                                  "type": "text"
+                              }
+                          ],
+                          "url": {
+                              "raw": "{{url}}/rest/developers/107",
+                              "host": [
+                                  "{{url}}"
+                              ],
+                              "path": [
+                                  "rest",
+                                  "developers"
+                              ]
+                          }
+                      },
+                      "response": []
+                  },
+                  {
+                      "name": "PUT /developers - developer edit response validation",
+                      "event": [
+                          {
+                              "listen": "test",
+                              "script": {
+                                  "exec": [
+                                      "\r",
+                                      "pm.test(\"valid developer edit request should return valid response\", function () {\r",
+                                      "    pm.response.to.have.status(200);\r",
+                                      "});\r",
+                                      "\r",
+                                      "pm.test(\"validate edit response-developer name is correct\", function () {\r",
+                                      "    var jsonData = pm.response.json();\r",
+                                      "    pm.expect(jsonData.name).to.eql('DSS, Inc.');\r",
+                                      "});\r",
+                                      "\r",
+                                      "pm.test(\"developer contact details should not include friendly name\", function () {\r",
+                                      "    pm.expect(pm.response.text()).to.not.include(\"friendlyName\");\r",
+                                      "});\r",
+                                      ""
+                                  ],
+                                  "type": "text/javascript"
+                              }
+                          },
+                          {
+                              "listen": "prerequest",
+                              "script": {
+                                  "exec": [
+                                      "var ReqBody= {\r",
+                                      "        userName:pm.environment.get(\"usernameACB\"),password:pm.environment.get(\"passwordACB\")\r",
+                                      "    };\r",
+                                      "pm.sendRequest({\r",
+                                      "    url: pm.environment.get(\"authurl\"),\r",
+                                      "    method: \"POST\",\r",
+                                      "    header: {\r",
+                                      "        \"Content-Type\": \"application/json\",\r",
+                                      "        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+                                      "    },\r",
+                                      "    body: JSON.stringify(ReqBody)\r",
+                                      "}, function (err, response) {\r",
+                                      "   var jsonData = response.json();\r",
+                                      "   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+                                      "});"
+                                  ],
+                                  "type": "text/javascript"
+                              }
+                          }
+                      ],
+                      "request": {
+                          "auth": {
+                              "type": "bearer",
+                              "bearer": [
+                                  {
+                                      "key": "token",
+                                      "value": "{{token}}",
+                                      "type": "string"
+                                  }
+                              ]
+                          },
+                          "method": "PUT",
+                          "header": [
+                              {
+                                  "key": "API-KEY",
+                                  "value": "{{apiKey}}",
+                                  "type": "text"
+                              },
+                              {
+                                  "key": "Content-Type",
+                                  "value": "application/json",
+                                  "type": "text"
+                              }
+                          ],
+                          "body": {
+                              "mode": "raw",
+                              "raw": "{\"developerId\":1926,\"developerCode\":\"2925\",\"name\":\"DSS, Inc.\",\"website\":\"https://www.dssinc.com/\",\"selfDeveloper\":false,\"address\":{\"addressId\":978,\"line1\":\"12575 US Hwy 1, Suite 200\",\"line2\":null,\"city\":\"Juno Beach,\",\"state\":\"FL\",\"zipcode\":\"33408\",\"country\":\"USA\"},\"contact\":{\"fullName\":\"DSS, Inc.\",\"email\":\"certifications@dssinc.com\",\"phoneNumber\":\"561-284-7129\",\"title\":null,\"contactId\":1169},\"lastModifiedDate\":\"1607532962583\",\"deleted\":false,\"transparencyAttestations\":[{\"acbName\":\"Drummond Group\",\"attestation\":{\"transparencyAttestation\":\"Affirmative\",\"removed\":true}},{\"acbName\":\"SLI Compliance\",\"attestation\":null},{\"acbName\":\"ICSA Labs\",\"attestation\":{\"transparencyAttestation\":\"Affirmative\",\"removed\":true}},{\"acbName\":\"CCHIT\",\"attestation\":null},{\"acbName\":\"Surescripts LLC\",\"attestation\":null},{\"acbName\":\"UL LLC\",\"attestation\":null}],\"statusEvents\":[{\"id\":2086,\"developerId\":1926,\"status\":{\"id\":1,\"status\":\"Active\"},\"statusDate\":1472149701321,\"reason\":null,\"statusDateObject\":\"2016-08-25T18:28:21.321Z\"}],\"status\":{\"id\":1,\"status\":\"Active\"},\"products\":[{\"productId\":72,\"name\":\"AMR Patient Portal\",\"reportFileLocation\":null,\"contact\":{\"fullName\":\"Sheree Kimani\",\"email\":\"certifications@dssinc.com\",\"phoneNumber\":\"561-284-7000\",\"title\":null,\"contactId\":1171},\"owner\":{\"developerId\":1926,\"developerCode\":\"2925\",\"name\":\"DSS, Inc.\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":null,\"deleted\":null,\"transparencyAttestations\":[],\"statusEvents\":[],\"status\":null},\"ownerHistory\":[{\"id\":82,\"developer\":{\"developerId\":34,\"developerCode\":\"1033\",\"name\":\"Document Storage Systems, Inc.\",\"website\":\"http://www.dssinc.com\",\"selfDeveloper\":false,\"address\":{\"addressId\":314,\"line1\":\"12575 US HWY 1\",\"line2\":\"Suite 200\",\"city\":\"Juno Beach\",\"state\":\"FL\",\"zipcode\":\"12575 US HWY 1\",\"country\":\"USA\"},\"contact\":{\"fullName\":\"Scott Kinnear\",\"email\":\"ltambasco@healthcareholdingsgroup.com\",\"phoneNumber\":\"(561) 981-6281\",\"title\":null,\"contactId\":895},\"lastModifiedDate\":\"1507839380013\",\"deleted\":false,\"transparencyAttestations\":[],\"statusEvents\":[{\"id\":37,\"developerId\":34,\"status\":{\"id\":1,\"status\":\"Active\"},\"statusDate\":1459469973474,\"reason\":null}],\"status\":{\"id\":1,\"status\":\"Active\"}},\"transferDate\":1532708245548}],\"lastModifiedDate\":\"1532708818465\",\"versions\":[{\"versionId\":1080,\"version\":\"2.0\",\"details\":null,\"lastModifiedDate\":\"1459469993738\",\"listings\":[{\"id\":6574,\"chplProductNumber\":\"CHP-022000\",\"lastModifiedDate\":1593513909098,\"edition\":\"2014\",\"certificationDate\":1392681600000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":6,\"acbCode\":\"07\",\"name\":\"ICSA Labs\",\"website\":\"https://www.icsalabs.com\",\"address\":{\"addressId\":7,\"line1\":\"1000 Bent Creek Blvd.\",\"line2\":\"Suite 200\",\"city\":\"Mechanicsburg\",\"state\":\"PA\",\"zipcode\":\"17050\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":6818,\"chplProductNumber\":\"CHP-022985\",\"lastModifiedDate\":1593496358582,\"edition\":\"2014\",\"certificationDate\":1401926400000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":6,\"acbCode\":\"07\",\"name\":\"ICSA Labs\",\"website\":\"https://www.icsalabs.com\",\"address\":{\"addressId\":7,\"line1\":\"1000 Bent Creek Blvd.\",\"line2\":\"Suite 200\",\"city\":\"Mechanicsburg\",\"state\":\"PA\",\"zipcode\":\"17050\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]}]},{\"productId\":2581,\"name\":\"veEDIS\",\"reportFileLocation\":null,\"contact\":null,\"owner\":{\"developerId\":1926,\"developerCode\":\"2925\",\"name\":\"DSS, Inc.\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":null,\"deleted\":null,\"transparencyAttestations\":[],\"statusEvents\":[],\"status\":null},\"ownerHistory\":[{\"id\":87,\"developer\":{\"developerId\":1645,\"developerCode\":\"2644\",\"name\":\"veEDIS Clinical Systems, LLC\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":\"1459469979605\",\"deleted\":false,\"transparencyAttestations\":[],\"statusEvents\":[{\"id\":1472,\"developerId\":1645,\"status\":{\"id\":1,\"status\":\"Active\"},\"statusDate\":1459469979605,\"reason\":null}],\"status\":{\"id\":1,\"status\":\"Active\"}},\"transferDate\":1560297600000}],\"lastModifiedDate\":\"1607533078260\",\"versions\":[{\"versionId\":5682,\"version\":\"v2\",\"details\":null,\"lastModifiedDate\":\"1459470012385\",\"listings\":[{\"id\":4189,\"chplProductNumber\":\"CHP-021841\",\"lastModifiedDate\":1459472484844,\"edition\":\"2011\",\"certificationDate\":1389830400000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":4177,\"chplProductNumber\":\"CHP-021838\",\"lastModifiedDate\":1593495174702,\"edition\":\"2014\",\"certificationDate\":1389830400000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]},{\"versionId\":5700,\"version\":\"v2.1\",\"details\":null,\"lastModifiedDate\":\"1459470012459\",\"listings\":[{\"id\":3180,\"chplProductNumber\":\"CHP-024060\",\"lastModifiedDate\":1593490497396,\"edition\":\"2014\",\"certificationDate\":1410998400000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":5071,\"chplProductNumber\":\"CHP-023883\",\"lastModifiedDate\":1593501464005,\"edition\":\"2014\",\"certificationDate\":1409184000000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]}]},{\"productId\":2636,\"name\":\"vxVistA Ambulatory\",\"reportFileLocation\":\"https://www.drummondgroup.com/products/certified-products/2014-edition-ehr-products/download/file?fid=53.3863\",\"contact\":null,\"owner\":{\"developerId\":1926,\"developerCode\":\"2925\",\"name\":\"DSS, Inc.\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":null,\"deleted\":null,\"transparencyAttestations\":[],\"statusEvents\":[],\"status\":null},\"ownerHistory\":[],\"lastModifiedDate\":\"1474305678512\",\"versions\":[{\"versionId\":6252,\"version\":\"15.0\",\"details\":null,\"lastModifiedDate\":\"1474305678516\",\"listings\":[{\"id\":8041,\"chplProductNumber\":\"14.04.04.2925.vxVi.15.01.0.160915\",\"lastModifiedDate\":1593522078716,\"edition\":\"2014\",\"certificationDate\":1473897600000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]},{\"versionId\":6360,\"version\":\"15.0.1\",\"details\":null,\"lastModifiedDate\":\"1479739517455\",\"listings\":[{\"id\":8176,\"chplProductNumber\":\"14.04.04.2925.vxVi.01.01.1.161117\",\"lastModifiedDate\":1593523565979,\"edition\":\"2014\",\"certificationDate\":1479340800000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]},{\"versionId\":6847,\"version\":\"Version 15.0.2\",\"details\":null,\"lastModifiedDate\":\"1504284137439\",\"listings\":[{\"id\":8816,\"chplProductNumber\":\"15.04.04.2925.vxVi.AM.00.0.170828\",\"lastModifiedDate\":1581721106024,\"edition\":\"2015\",\"certificationDate\":1503878400000,\"certificationStatus\":\"Withdrawn by Developer\",\"curesUpdate\":false,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]}]},{\"productId\":2764,\"name\":\"vxVistA Inpatient\",\"reportFileLocation\":null,\"contact\":null,\"owner\":{\"developerId\":1926,\"developerCode\":\"2925\",\"name\":\"DSS, Inc.\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":null,\"deleted\":null,\"transparencyAttestations\":[],\"statusEvents\":[],\"status\":null},\"ownerHistory\":[],\"lastModifiedDate\":\"1504284280836\",\"versions\":[{\"versionId\":6848,\"version\":\"Version 15.0.2\",\"details\":null,\"lastModifiedDate\":\"1504284261945\",\"listings\":[{\"id\":8817,\"chplProductNumber\":\"15.04.04.2925.vxVi.IN.00.0.170828\",\"lastModifiedDate\":1581721160174,\"edition\":\"2015\",\"certificationDate\":1503878400000,\"certificationStatus\":\"Withdrawn by Developer\",\"curesUpdate\":false,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]}]},{\"productId\":2938,\"name\":\"Juno EHR\",\"reportFileLocation\":null,\"contact\":null,\"owner\":{\"developerId\":1926,\"developerCode\":\"2925\",\"name\":\"DSS, Inc.\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":null,\"deleted\":null,\"transparencyAttestations\":[],\"statusEvents\":[],\"status\":null},\"ownerHistory\":[],\"lastModifiedDate\":\"1607533066118\",\"versions\":[{\"versionId\":7916,\"version\":\"17.1\",\"details\":null,\"lastModifiedDate\":\"1574356578323\",\"listings\":[{\"id\":10178,\"chplProductNumber\":\"15.04.04.2925.Juno.17.02.1.191120\",\"lastModifiedDate\":1576624324656,\"edition\":\"2015\",\"certificationDate\":1574208000000,\"certificationStatus\":\"Active\",\"curesUpdate\":false,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]},{\"versionId\":7397,\"version\":\"17\",\"details\":null,\"lastModifiedDate\":\"1532269411359\",\"listings\":[{\"id\":9561,\"chplProductNumber\":\"15.04.04.2925.Juno.17.01.0.180701\",\"lastModifiedDate\":1581720963016,\"edition\":\"2015\",\"certificationDate\":1530403200000,\"certificationStatus\":\"Withdrawn by Developer\",\"curesUpdate\":false,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]}]},{\"productId\":3088,\"name\":\"RxTracker\",\"reportFileLocation\":null,\"contact\":null,\"owner\":{\"developerId\":1926,\"developerCode\":\"2925\",\"name\":\"DSS, Inc.\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":null,\"deleted\":null,\"transparencyAttestations\":[],\"statusEvents\":[],\"status\":null},\"ownerHistory\":[],\"lastModifiedDate\":\"1562162700943\",\"versions\":[{\"versionId\":7804,\"version\":\"Version 8\",\"details\":null,\"lastModifiedDate\":\"1562162694070\",\"listings\":[{\"id\":10051,\"chplProductNumber\":\"15.04.04.2925.RxTr.08.01.1.190614\",\"lastModifiedDate\":1562162693908,\"edition\":\"2015\",\"certificationDate\":1560470400000,\"certificationStatus\":\"Active\",\"curesUpdate\":false,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]},{\"versionId\":8075,\"version\":\"Version 9\",\"details\":null,\"lastModifiedDate\":\"1585671828152\",\"listings\":[{\"id\":10348,\"chplProductNumber\":\"15.04.04.2925.RxTr.09.02.1.200330\",\"lastModifiedDate\":1585671828095,\"edition\":\"2015\",\"certificationDate\":1585526400000,\"certificationStatus\":\"Active\",\"curesUpdate\":false,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]}]},{\"productId\":3472,\"name\":\"vxVistA\",\"reportFileLocation\":null,\"contact\":null,\"owner\":{\"developerId\":1926,\"developerCode\":\"2925\",\"name\":\"DSS, Inc.\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":null,\"deleted\":null,\"transparencyAttestations\":[],\"statusEvents\":[],\"status\":null},\"ownerHistory\":[],\"lastModifiedDate\":\"1569591221589\",\"versions\":[{\"versionId\":2084,\"version\":\"2012.0\",\"details\":null,\"lastModifiedDate\":\"1569591221589\",\"listings\":[{\"id\":3705,\"chplProductNumber\":\"CHP-009340\",\"lastModifiedDate\":1459470029365,\"edition\":\"2011\",\"certificationDate\":1346284800000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]},{\"versionId\":2057,\"version\":\"2011.1\",\"details\":null,\"lastModifiedDate\":\"1569591221589\",\"listings\":[{\"id\":3709,\"chplProductNumber\":\"CHP-007257\",\"lastModifiedDate\":1459470029381,\"edition\":\"2011\",\"certificationDate\":1307577600000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]},{\"versionId\":2931,\"version\":\"2014.0\",\"details\":null,\"lastModifiedDate\":\"1569591221589\",\"listings\":[{\"id\":4012,\"chplProductNumber\":\"CHP-023385\",\"lastModifiedDate\":1593487898989,\"edition\":\"2014\",\"certificationDate\":1406764800000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":4008,\"chplProductNumber\":\"CHP-023384\",\"lastModifiedDate\":1593491563164,\"edition\":\"2014\",\"certificationDate\":1406764800000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]},{\"versionId\":2953,\"version\":\"2014.1\",\"details\":null,\"lastModifiedDate\":\"1569591221589\",\"listings\":[{\"id\":3763,\"chplProductNumber\":\"CHP-025045\",\"lastModifiedDate\":1593492082929,\"edition\":\"2014\",\"certificationDate\":1418860800000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":3767,\"chplProductNumber\":\"CHP-025046\",\"lastModifiedDate\":1593492059860,\"edition\":\"2014\",\"certificationDate\":1418860800000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]},{\"versionId\":2965,\"version\":\"2014.2\",\"details\":null,\"lastModifiedDate\":\"1569591221589\",\"listings\":[{\"id\":4768,\"chplProductNumber\":\"CHP-028036\",\"lastModifiedDate\":1593490081429,\"edition\":\"2014\",\"certificationDate\":1440633600000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":4766,\"chplProductNumber\":\"CHP-028035\",\"lastModifiedDate\":1593527569286,\"edition\":\"2014\",\"certificationDate\":1440633600000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]},{\"versionId\":6123,\"version\":\"15.0\",\"details\":null,\"lastModifiedDate\":\"1569591221589\",\"listings\":[{\"id\":7856,\"chplProductNumber\":\"14.04.04.2925.vxVi.IN.01.0.160630\",\"lastModifiedDate\":1593512404195,\"edition\":\"2014\",\"certificationDate\":1467244800000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}},{\"id\":7855,\"chplProductNumber\":\"14.04.04.2925.vxVi.AM.01.0.160630\",\"lastModifiedDate\":1593521774505,\"edition\":\"2014\",\"certificationDate\":1467244800000,\"certificationStatus\":\"Retired\",\"curesUpdate\":null,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]}]},{\"productId\":3539,\"name\":\"Juno Emergency Services Solution\",\"reportFileLocation\":null,\"contact\":null,\"owner\":{\"developerId\":1926,\"developerCode\":\"2925\",\"name\":\"DSS, Inc.\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":null,\"deleted\":null,\"transparencyAttestations\":[],\"statusEvents\":[],\"status\":null},\"ownerHistory\":[],\"lastModifiedDate\":\"1592858752672\",\"versions\":[{\"versionId\":8134,\"version\":\"v. 3.1\",\"details\":null,\"lastModifiedDate\":\"1592858752801\",\"listings\":[{\"id\":10411,\"chplProductNumber\":\"15.04.04.2925.JESS.03.00.0.200619\",\"lastModifiedDate\":1600104562632,\"edition\":\"2015\",\"certificationDate\":1592524800000,\"certificationStatus\":\"Active\",\"curesUpdate\":false,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]}]}]}"
+                          },
+                          "url": {
+                              "raw": "{{url}}/rest/developers/1926",
+                              "host": [
+                                  "{{url}}"
+                              ],
+                              "path": [
+                                  "rest",
+                                  "developers",
+                                  "1926"
+                              ]
+                          }
+                      },
+                      "response": []
+                  },
+  				 {
+  			        "name": "POST /developers - merge request permission restriction validation - anonymous",
+  			        "event": [
+  				{
+  					"listen": "test",
+  					"script": {
+  						"exec": [
+  							"pm.test(\"developer merge request attempt by anonymous user should return Status code 401\", function () {\r",
+  							"    pm.response.to.have.status(401);\r",
+  							"});\r",
+  							"\r",
+  							"pm.test(\"anonymous user should be denied access to merge developers\", function () {\r",
+  							"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+  							"});"
+  						],
+  						"type": "text/javascript"
+  					}
+  				}
+  			],
+  			"request": {
+  				"method": "POST",
+  				"header": [
+  					{
+  						"key": "API-KEY",
+  						"value": "{{apiKey}}",
+  						"type": "text"
+  					},
+  					{
+  						"key": "Content-Type",
+  						"value": "application/json",
+  						"type": "text"
+  					}
+  				],
+  				"body": {
+  					"mode": "raw",
+  					"raw": "{\"developer\":{\"developerId\":2069,\"developerCode\":\"3068\",\"name\":\"Accelerated Care Plus\",\"website\":\"https://acplus.com/index.php/acplustm\",\"selfDeveloper\":false,\"address\":{\"addressId\":811,\"line1\":\"4999 Aircenter Cir., STE 103\",\"line2\":null,\"city\":\"Reno,\",\"state\":\"NV\",\"zipcode\":\"89502\",\"country\":\"US\"},\"contact\":{\"fullName\":\"Barry Thomson\",\"email\":\"BThomson@hanger.com\",\"phoneNumber\":\"775-287-4955\",\"title\":null,\"contactId\":1369},\"lastModifiedDate\":\"1580312732548\",\"deleted\":false,\"transparencyAttestations\":[{\"acbName\":\"Drummond Group\",\"attestation\":{\"transparencyAttestation\":\"Affirmative\",\"removed\":true}},{\"acbName\":\"SLI Compliance\",\"attestation\":null},{\"acbName\":\"ICSA Labs\",\"attestation\":null},{\"acbName\":\"CCHIT\",\"attestation\":null},{\"acbName\":\"Surescripts LLC\",\"attestation\":null},{\"acbName\":\"UL LLC\",\"attestation\":null}],\"statusEvents\":[{\"id\":2072,\"developerId\":2069,\"status\":{\"id\":1,\"status\":\"Active\"},\"statusDate\":1580312732548,\"reason\":null,\"statusDateObject\":\"2020-01-29T15:45:32.548Z\"}],\"status\":{\"id\":1,\"status\":\"Active\"},\"products\":[{\"productId\":3522,\"name\":\"ACPlus™ MDS\",\"reportFileLocation\":null,\"contact\":null,\"owner\":{\"developerId\":2069,\"developerCode\":\"3068\",\"name\":\"Accelerated Care Plus\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":null,\"deleted\":null,\"transparencyAttestations\":[],\"statusEvents\":[],\"status\":null},\"ownerHistory\":[],\"lastModifiedDate\":\"1580313127273\",\"versions\":[{\"versionId\":8014,\"version\":\"V1\",\"details\":null,\"lastModifiedDate\":\"1580312732667\",\"listings\":[{\"id\":10284,\"chplProductNumber\":\"15.04.04.3068.ACPl.01.00.0.200129\",\"lastModifiedDate\":1580313075116,\"edition\":\"2015\",\"certificationDate\":1580256000000,\"certificationStatus\":\"Active\",\"curesUpdate\":false,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]}]}]},\"developerIds\":[6,2069]}"
+  				},
+  				"url": {
+  					"raw": "{{url}}/rest/developers/merge",
+  					"host": [
+  						"{{url}}"
+  					],
+  					"path": [
+  					    "rest",
+  						"developers",
+  						"merge"
+  					]
+  				}
+  			},
+  			"response": []
+  		},
+  		{
+                      "name": "POST /developers - merge request permission restriction validation - ACB",
+                      "event": [
+                          {
+                              "listen": "test",
+                              "script": {
+                                  "exec": [
+                                      "pm.test(\"developer merge request attempt by ACB user should return Status code 401\", function () {\r",
+                                      "    pm.response.to.have.status(401);\r",
+                                      "});\r",
+                                      "\r",
+                                      "pm.test(\"ACB user should be denied access to merge developers\", function () {\r",
+                                      "    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+                                      "});"
+                                  ],
+                                  "type": "text/javascript"
+                              }
+                          },
+                          {
+                              "listen": "prerequest",
+                              "script": {
+                                  "exec": [
+                                      "var ReqBody= {\r",
+                                      "        userName:pm.environment.get(\"usernameACB\"),password:pm.environment.get(\"passwordACB\")\r",
+                                      "    };\r",
+                                      "pm.sendRequest({\r",
+                                      "    url: pm.environment.get(\"authurl\"),\r",
+                                      "    method: \"POST\",\r",
+                                      "    header: {\r",
+                                      "        \"Content-Type\": \"application/json\",\r",
+                                      "        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+                                      "    },\r",
+                                      "    body: JSON.stringify(ReqBody)\r",
+                                      "}, function (err, response) {\r",
+                                      "   var jsonData = response.json();\r",
+                                      "   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+                                      "});"
+                                  ],
+                                  "type": "text/javascript"
+                              }
+                          }
+                      ],
+                      "request": {
+                          "auth": {
+                              "type": "bearer",
+                              "bearer": [
+                                  {
+                                      "key": "token",
+                                      "value": "{{token}}",
+                                      "type": "string"
+                                  }
+                              ]
+                          },
+                          "method": "POST",
+                          "header": [
+                              {
+                                  "key": "API-KEY",
+                                  "value": "{{apiKey}}",
+                                  "type": "text"
+                              },
+                              {
+                                  "key": "Content-Type",
+                                  "value": "application/json",
+                                  "type": "text"
+                              }
+                          ],
+                          "body": {
+                              "mode": "raw",
+                              "raw": "{\"developer\":{\"developerId\":2069,\"developerCode\":\"3068\",\"name\":\"Accelerated Care Plus\",\"website\":\"https://acplus.com/index.php/acplustm\",\"selfDeveloper\":false,\"address\":{\"addressId\":811,\"line1\":\"4999 Aircenter Cir., STE 103\",\"line2\":null,\"city\":\"Reno,\",\"state\":\"NV\",\"zipcode\":\"89502\",\"country\":\"US\"},\"contact\":{\"fullName\":\"Barry Thomson\",\"email\":\"BThomson@hanger.com\",\"phoneNumber\":\"775-287-4955\",\"title\":null,\"contactId\":1369},\"lastModifiedDate\":\"1580312732548\",\"deleted\":false,\"transparencyAttestations\":[{\"acbName\":\"Drummond Group\",\"attestation\":{\"transparencyAttestation\":\"Affirmative\",\"removed\":true}},{\"acbName\":\"SLI Compliance\",\"attestation\":null},{\"acbName\":\"ICSA Labs\",\"attestation\":null},{\"acbName\":\"CCHIT\",\"attestation\":null},{\"acbName\":\"Surescripts LLC\",\"attestation\":null},{\"acbName\":\"UL LLC\",\"attestation\":null}],\"statusEvents\":[{\"id\":2072,\"developerId\":2069,\"status\":{\"id\":1,\"status\":\"Active\"},\"statusDate\":1580312732548,\"reason\":null,\"statusDateObject\":\"2020-01-29T15:45:32.548Z\"}],\"status\":{\"id\":1,\"status\":\"Active\"},\"products\":[{\"productId\":3522,\"name\":\"ACPlus� MDS\",\"reportFileLocation\":null,\"contact\":null,\"owner\":{\"developerId\":2069,\"developerCode\":\"3068\",\"name\":\"Accelerated Care Plus\",\"website\":null,\"selfDeveloper\":false,\"address\":null,\"contact\":null,\"lastModifiedDate\":null,\"deleted\":null,\"transparencyAttestations\":[],\"statusEvents\":[],\"status\":null},\"ownerHistory\":[],\"lastModifiedDate\":\"1580313127273\",\"versions\":[{\"versionId\":8014,\"version\":\"V1\",\"details\":null,\"lastModifiedDate\":\"1580312732667\",\"listings\":[{\"id\":10284,\"chplProductNumber\":\"15.04.04.3068.ACPl.01.00.0.200129\",\"lastModifiedDate\":1580313075116,\"edition\":\"2015\",\"certificationDate\":1580256000000,\"certificationStatus\":\"Active\",\"curesUpdate\":false,\"acb\":{\"id\":3,\"acbCode\":\"04\",\"name\":\"Drummond Group\",\"website\":\"http://www.drummondgroup.com\",\"address\":{\"addressId\":2,\"line1\":\"13359 North Hwy. 183\",\"line2\":\"Suite B 406-238\",\"city\":\"Austin\",\"state\":\"Texas\",\"zipcode\":\"78750\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null}}]}]}]},\"developerIds\":[6,2069]}"
+                          },
+                          "url": {
+                              "raw": "{{url}}/rest/developers/merge",
+                              "host": [
+                                  "{{url}}"
+                              ],
+                              "path": [
+                                  "rest",
+                                  "developers",
+                                  "merge"
+                              ]
+                          }
+                      },
+                      "response": []
+                  }
+  			],
+  			"protocolProfileBehavior": {}
+  		},
+  		{
+  			"name": "GET /developers - valid API Key header",
+  			"event": [
+  				{
+  					"listen": "test",
+  					"script": {
+  					     "exec": [
+  							"pm.test(\"Valid api key header should return 200 status and response body should not be empty\", function () {\r",
+  							"    pm.response.to.have.status(200);\r",
+  							"    var jsonData = pm.response.json();\r",
+  							"    pm.expect(jsonData.response).not.eq(null);\r",
+  							"});"
+  						],
+  						"url": {
+  							"raw": "{{url}}/rest/developers/{{developerId}}",
+  							"host": [
+  								"{{url}}"
+  							],
+  							"path": [
+  								"rest",
+  								"developers",
+  								"{{developerId}}"
+  							]
+  						},
+  						"description": "/developers/developerId end point functions as expected",
+  						"type": "text/javascript",
+  						"id": "5676bb79-bbbc-4905-937b-25e14e723df1"
+  					},
+  					"response": []
+  				}
+  			],
+  			"request": {
+  				"method": "GET",
+  				"header": [],
+  				"url": {
+  					"raw": ""
+  				}
+  			},
+  			"response": []
+  		}
+  	],
+  	"protocolProfileBehavior": {}
+  }
