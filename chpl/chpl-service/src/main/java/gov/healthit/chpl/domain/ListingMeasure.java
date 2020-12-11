@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Singular;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -46,9 +47,12 @@ public class ListingMeasure implements Serializable {
 
     @XmlElementWrapper(name = "associatedCriteria", nillable = true, required = false)
     @XmlElement(required = true, name = "criteria")
-    private Set<CertificationCriterion> associatedCriteria = new LinkedHashSet<CertificationCriterion>();
+    @Singular("associatedCriterion")
+    private Set<CertificationCriterion> associatedCriteria;
 
     public ListingMeasure() {
+        super();
+        associatedCriteria = new LinkedHashSet<CertificationCriterion>();
     }
 
     public boolean matches(ListingMeasure anotherMeasure) {

@@ -50,7 +50,6 @@ public class CertificationResultUploadHandler {
                 .privacySecurityFramework(parsePrivacyAndSecurityFramework(certHeadingRecord, certResultRecords))
                 .testFunctionality(parseTestFunctionalities(certHeadingRecord, certResultRecords))
                 .testStandards(parseTestStandards(certHeadingRecord, certResultRecords))
-                //TODO: Macra measures
                 .additionalSoftware(additionalSoftwareHandler.handle(certHeadingRecord, certResultRecords))
                 .testDataUsed(testDataHandler.handle(certHeadingRecord, certResultRecords))
                 .testProcedures(testProcedureHandler.handle(certHeadingRecord, certResultRecords))
@@ -63,7 +62,6 @@ public class CertificationResultUploadHandler {
                 .apiDocumentation(parseApiDocumentation(certHeadingRecord, certResultRecords))
             .build();
 
-        //TODO: should these be filled in?
         if (certResult.getCriterion() != null) {
             certResult.setNumber(certResult.getCriterion().getNumber());
             certResult.setTitle(certResult.getCriterion().getTitle());
