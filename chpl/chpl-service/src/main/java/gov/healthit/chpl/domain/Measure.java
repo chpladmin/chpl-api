@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Singular;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -71,8 +70,8 @@ public class Measure implements Serializable {
 
     @XmlElementWrapper(name = "allowedCriteria", nillable = true, required = false)
     @XmlElement(required = true, name = "criteria")
-    @Singular("allowedCriterion")
-    private Set<CertificationCriterion> allowedCriteria;
+    @Builder.Default
+    private Set<CertificationCriterion> allowedCriteria = new LinkedHashSet<CertificationCriterion>();
 
     @XmlTransient
     @JsonIgnore
@@ -80,7 +79,6 @@ public class Measure implements Serializable {
 
     public Measure() {
         super();
-        allowedCriteria = new LinkedHashSet<CertificationCriterion>();
     }
 
     // not overriding equals on purpose

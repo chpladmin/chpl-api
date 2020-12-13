@@ -1,7 +1,9 @@
 package gov.healthit.chpl.upload.listing.handler;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.validation.ValidationException;
@@ -48,10 +50,10 @@ public class MeasureUploadHandler {
             if (criterion != null) {
                 List<ListingMeasure> g1CertResultMeasures = parseG1MeasuresFromCertificationResult(criterion,
                         certHeadingRecord, parsedCertResultRecords.subList(1, parsedCertResultRecords.size()));
-                updateListingMeasureList(listingMeasures, g1CertResultMeasures);
+                listingMeasures.addAll(g1CertResultMeasures);
                 List<ListingMeasure> g2CertResultMeasures = parseG2MeasuresFromCertificationResult(criterion,
                         certHeadingRecord, parsedCertResultRecords.subList(1, parsedCertResultRecords.size()));
-                updateListingMeasureList(listingMeasures, g2CertResultMeasures);
+                listingMeasures.addAll(g2CertResultMeasures);
             }
             prevCertResultIndex = nextCertResultIndex;
             nextCertResultIndex = uploadUtil.getNextIndexOfCertificationResult(
@@ -62,7 +64,6 @@ public class MeasureUploadHandler {
 
     private List<ListingMeasure> parseG1MeasuresFromCertificationResult(CertificationCriterion criterion,
             CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
-        List<ListingMeasure> certResultMeasures = new ArrayList<ListingMeasure>();
         List<String> g1MeasureValues = uploadUtil.parseMultiRowFieldWithoutEmptyValues(
                 Headings.MACRA_MEASURE_G1, certHeadingRecord, certResultRecords);
         if (g1MeasureValues == null || g1MeasureValues.size() == 0) {
@@ -75,7 +76,6 @@ public class MeasureUploadHandler {
 
     private List<ListingMeasure> parseG2MeasuresFromCertificationResult(CertificationCriterion criterion,
             CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
-        List<ListingMeasure> certResultMeasures = new ArrayList<ListingMeasure>();
         List<String> g2MeasureValues = uploadUtil.parseMultiRowFieldWithoutEmptyValues(
                 Headings.MACRA_MEASURE_G2, certHeadingRecord, certResultRecords);
         if (g2MeasureValues == null || g2MeasureValues.size() == 0) {
@@ -88,38 +88,13 @@ public class MeasureUploadHandler {
 
     private ListingMeasure toListingMeasure(String measureVal, CertificationCriterion criterion,
             String measureTypeName) {
+        Set<CertificationCriterion> criteria = new LinkedHashSet<CertificationCriterion>();
+        criteria.add(criterion);
+
         return ListingMeasure.builder()
                 .measureType(MeasureType.builder().name(measureTypeName).build())
-                .associatedCriterion(criterion)
+                .associatedCriteria(criteria)
                 .measure(Measure.builder().legacyMacraMeasureValue(measureVal).build())
                 .build();
-    }
-
-    private void updateListingMeasureList(List<ListingMeasure> listingMeasures, List<ListingMeasure> certResultMeasures) {
-        certResultMeasures.stream().forEach(certResultMeasure -> {
-            if (listingContainsMeasure(listingMeasures, certResultMeasure)) {
-                addCriteriaToExistingListingMeasure(listingMeasures, certResultMeasure);
-            } else {
-                listingMeasures.add(certResultMeasure);
-            }
-        });
-    }
-
-    private boolean listingContainsMeasure(List<ListingMeasure> listingMeasures, ListingMeasure certResultMeasure) {
-        return listingMeasures.stream()
-            .filter(listingMeasure -> listingMeasure.getMeasure() != null
-                && listingMeasure.getMeasure().getLegacyMacraMeasureValue().equalsIgnoreCase(
-                        certResultMeasure.getMeasure().getLegacyMacraMeasureValue()))
-            .findAny().isPresent();
-    }
-
-    private void addCriteriaToExistingListingMeasure(List<ListingMeasure> listingMeasures, ListingMeasure certResultMeasure) {
-        listingMeasures.stream()
-            .filter(listingMeasure -> listingMeasure.getMeasure() != null
-                && listingMeasure.getMeasure().getLegacyMacraMeasureValue().equalsIgnoreCase(
-                        certResultMeasure.getMeasure().getLegacyMacraMeasureValue()))
-            .forEach(listingMeasure -> {
-                listingMeasure.getAssociatedCriteria().addAll(certResultMeasure.getAssociatedCriteria());
-            });
     }
 }

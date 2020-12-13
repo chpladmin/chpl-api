@@ -18,6 +18,7 @@ public class ListingDetailsNormalizer {
     private TargetedUserNormalizer targetedUserNormalizer;
     private CertificationResultNormalizer certResultNormalizer;
     private CqmNormalizer cqmNormalizer;
+    private MeasureNormalizer measureNormalizer;
     private SedNormalizer sedNormalizer;
 
     @SuppressWarnings("checkstyle:parameternumber")
@@ -33,6 +34,7 @@ public class ListingDetailsNormalizer {
         TargetedUserNormalizer targetedUserNormalizer,
         CertificationResultNormalizer certResultNormalizer,
         CqmNormalizer cqmNormalizer,
+        MeasureNormalizer measureNormalizer,
         SedNormalizer sedNormalizer) {
         this.editionNormalizer = editionNormalizer;
         this.acbNormalizer = acbNormalizer;
@@ -45,6 +47,7 @@ public class ListingDetailsNormalizer {
         this.targetedUserNormalizer = targetedUserNormalizer;
         this.certResultNormalizer = certResultNormalizer;
         this.cqmNormalizer = cqmNormalizer;
+        this.measureNormalizer = measureNormalizer;
         this.sedNormalizer = sedNormalizer;
     }
 
@@ -60,6 +63,7 @@ public class ListingDetailsNormalizer {
         this.targetedUserNormalizer.normalize(listing);
         this.certResultNormalizer.normalize(listing);
         this.cqmNormalizer.normalize(listing);
+        this.measureNormalizer.normalize(listing);
         this.sedNormalizer.normalize(listing);
     }
 
