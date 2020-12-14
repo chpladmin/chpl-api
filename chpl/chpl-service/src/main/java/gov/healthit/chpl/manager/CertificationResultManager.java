@@ -24,7 +24,6 @@ import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.FuzzyChoicesDAO;
-import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestParticipantDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
@@ -40,7 +39,6 @@ import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.UcdProcess;
@@ -48,7 +46,6 @@ import gov.healthit.chpl.dto.AgeRangeDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
-import gov.healthit.chpl.dto.CertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
@@ -58,7 +55,6 @@ import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
-import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestParticipantDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
@@ -68,6 +64,7 @@ import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.listing.measure.MeasureDAO;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.svap.dao.SvapDAO;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
@@ -75,8 +72,6 @@ import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 @Service
 public class CertificationResultManager extends SecuredManager {
     private static final Logger LOGGER = LogManager.getLogger(CertificationResultManager.class);
-    private static final String G1_MEASURE = "G1";
-    private static final String G2_MEASURE = "G2";
 
     private CertifiedProductSearchDAO cpDao;
     private CertificationCriterionDAO criteriaDao;
@@ -89,16 +84,17 @@ public class CertificationResultManager extends SecuredManager {
     private EducationTypeDAO educDao;
     private TestTaskDAO testTaskDAO;
     private UcdProcessDAO ucdDao;
-    private MacraMeasureDAO mmDao;
+    private MeasureDAO mmDao;
     private FuzzyChoicesDAO fuzzyChoicesDao;
-    private SvapDAO svapDao;
+
+private SvapDAO svapDao;
 
     @SuppressWarnings("checkstyle:parameternumber")
     @Autowired
     public CertificationResultManager(CertifiedProductSearchDAO cpDao, CertificationCriterionDAO criteriaDao,
             CertificationResultDAO certResultDAO, TestStandardDAO testStandardDAO, TestToolDAO testToolDAO,
             TestFunctionalityDAO testFunctionalityDAO, TestParticipantDAO testParticipantDAO, AgeRangeDAO ageDao,
-            EducationTypeDAO educDao, TestTaskDAO testTaskDAO, UcdProcessDAO ucdDao, MacraMeasureDAO mmDao,
+            EducationTypeDAO educDao, TestTaskDAO testTaskDAO, UcdProcessDAO ucdDao, MeasureDAO mmDao,
             FuzzyChoicesDAO fuzzyChoicesDao, SvapDAO svapDao) {
         this.cpDao = cpDao;
         this.criteriaDao = criteriaDao;
@@ -181,14 +177,6 @@ public class CertificationResultManager extends SecuredManager {
             numChanges++;
         }
 
-        if (!updated.isSuccess() && (haveMacraMeasuresChanged(orig.getG1MacraMeasures(), updated.getG1MacraMeasures())
-                || haveMacraMeasuresChanged(orig.getG2MacraMeasures(), updated.getG2MacraMeasures()))) {
-            numChanges += updateMacraMeasures(updated, orig.getG1MacraMeasures(), updated.getG1MacraMeasures(),
-                    G1_MEASURE);
-            numChanges += updateMacraMeasures(updated, orig.getG2MacraMeasures(), updated.getG2MacraMeasures(),
-                    G2_MEASURE);
-        }
-
         if (updated.isSuccess() == null || !updated.isSuccess()) {
             // similar to delete - remove all related items
             numChanges += updateAdditionalSoftware(updated, orig.getAdditionalSoftware(), null);
@@ -234,8 +222,6 @@ public class CertificationResultManager extends SecuredManager {
         } else {
             // create/update all related items
             numChanges += updateAdditionalSoftware(updated, orig.getAdditionalSoftware(), updated.getAdditionalSoftware());
-            numChanges += updateMacraMeasures(updated, orig.getG1MacraMeasures(), updated.getG1MacraMeasures(), G1_MEASURE);
-            numChanges += updateMacraMeasures(updated, orig.getG2MacraMeasures(), updated.getG2MacraMeasures(), G2_MEASURE);
             numChanges += updateTestStandards(updatedListing, updated, orig.getTestStandards(), updated.getTestStandards());
             numChanges += updateTestTools(updated, orig.getTestToolsUsed(), updated.getTestToolsUsed());
             numChanges += updateTestData(updated, orig.getTestDataUsed(), updated.getTestDataUsed());
@@ -345,19 +331,6 @@ public class CertificationResultManager extends SecuredManager {
         return numChanges;
     }
 
-    private Boolean haveMacraMeasuresChanged(List<MacraMeasure> orig, List<MacraMeasure> updated) {
-        if (orig != null && updated != null) {
-            return !orig.equals(updated);
-        } else if (orig != null && updated == null) {
-            return true;
-        } else if (orig == null && updated != null) {
-            return true;
-        } else { // Both are null
-            return false;
-        }
-    }
-
-    @SuppressWarnings("checkstyle:linelength")
     private int updateAdditionalSoftware(CertificationResult certResult,
             List<CertificationResultAdditionalSoftware> existingAdditionalSoftware,
             List<CertificationResultAdditionalSoftware> updatedAdditionalSoftware)
@@ -451,93 +424,6 @@ public class CertificationResultManager extends SecuredManager {
 
         for (Long idToRemove : idsToRemove) {
             certResultDAO.deleteAdditionalSoftwareMapping(idToRemove);
-        }
-        return numChanges;
-    }
-
-    private int updateMacraMeasures(CertificationResult certResult, List<MacraMeasure> existingMeasures,
-            List<MacraMeasure> updatedMeasures, String g1OrG2) throws EntityCreationException {
-        int numChanges = 0;
-        List<CertificationResultMacraMeasureDTO> measureToAdd = new ArrayList<CertificationResultMacraMeasureDTO>();
-        List<Long> macraIdsToRemove = new ArrayList<Long>();
-
-        // figure out which macra measures to add
-        if (updatedMeasures != null && updatedMeasures.size() > 0) {
-            // fill in potentially missing macra measure id info
-            for (MacraMeasure updatedItem : updatedMeasures) {
-                if (updatedItem != null && updatedItem.getId() == null && !StringUtils.isEmpty(updatedItem.getName())) {
-                    MacraMeasureDTO foundMeasure = mmDao.getByCriterionAndValue(certResult.getCriterion().getId(),
-                            updatedItem.getName());
-                    updatedItem.setId(foundMeasure.getId());
-                }
-            }
-
-            if (existingMeasures == null || existingMeasures.size() == 0) {
-                // existing listing has none, add all from the update
-                for (MacraMeasure updatedItem : updatedMeasures) {
-                    CertificationResultMacraMeasureDTO toAdd = new CertificationResultMacraMeasureDTO();
-                    toAdd.setCertificationResultId(certResult.getId());
-                    MacraMeasureDTO measure = new MacraMeasureDTO();
-                    measure.setId(updatedItem.getId());
-                    toAdd.setMeasure(measure);
-                    measureToAdd.add(toAdd);
-                }
-            } else if (existingMeasures.size() > 0) {
-                // existing listing has some, compare to the update to see if
-                // any are different
-                for (MacraMeasure updatedItem : updatedMeasures) {
-                    boolean inExistingListing = false;
-                    for (MacraMeasure existingItem : existingMeasures) {
-                        inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
-                    }
-
-                    if (!inExistingListing) {
-                        CertificationResultMacraMeasureDTO toAdd = new CertificationResultMacraMeasureDTO();
-                        toAdd.setCertificationResultId(certResult.getId());
-                        MacraMeasureDTO measure = new MacraMeasureDTO();
-                        measure.setId(updatedItem.getId());
-                        toAdd.setMeasure(measure);
-                        measureToAdd.add(toAdd);
-                    }
-                }
-            }
-        }
-
-        // figure out which macra measures to remove
-        if (existingMeasures != null && existingMeasures.size() > 0) {
-            // if the updated listing has none, remove them all from existing
-            if (updatedMeasures == null || updatedMeasures.size() == 0) {
-                for (MacraMeasure existingItem : existingMeasures) {
-                    macraIdsToRemove.add(existingItem.getId());
-                }
-            } else if (updatedMeasures.size() > 0) {
-                for (MacraMeasure existingItem : existingMeasures) {
-                    boolean inUpdatedListing = false;
-                    for (MacraMeasure updatedItem : updatedMeasures) {
-                        inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
-                    }
-                    if (!inUpdatedListing) {
-                        macraIdsToRemove.add(existingItem.getId());
-                    }
-                }
-            }
-        }
-
-        numChanges = measureToAdd.size() + macraIdsToRemove.size();
-        for (CertificationResultMacraMeasureDTO toAdd : measureToAdd) {
-            if (g1OrG2.equalsIgnoreCase(G1_MEASURE)) {
-                certResultDAO.addG1MacraMeasureMapping(toAdd);
-            } else if (g1OrG2.equalsIgnoreCase(G2_MEASURE)) {
-                certResultDAO.addG2MacraMeasureMapping(toAdd);
-            }
-        }
-
-        for (Long idToRemove : macraIdsToRemove) {
-            if (g1OrG2.equalsIgnoreCase(G1_MEASURE)) {
-                certResultDAO.deleteG1MacraMeasureMapping(certResult.getId(), idToRemove);
-            } else if (g1OrG2.equalsIgnoreCase(G2_MEASURE)) {
-                certResultDAO.deleteG2MacraMeasureMapping(certResult.getId(), idToRemove);
-            }
         }
         return numChanges;
     }
@@ -1444,16 +1330,6 @@ public class CertificationResultManager extends SecuredManager {
     public List<CertificationResultTestFunctionalityDTO> getTestFunctionalityForCertificationResult(
             Long certificationResultId) {
         return certResultDAO.getTestFunctionalityForCertificationResult(certificationResultId);
-    }
-
-    public List<CertificationResultMacraMeasureDTO> getG1MacraMeasuresForCertificationResult(
-            Long certificationResultId) {
-        return certResultDAO.getG1MacraMeasuresForCertificationResult(certificationResultId);
-    }
-
-    public List<CertificationResultMacraMeasureDTO> getG2MacraMeasuresForCertificationResult(
-            Long certificationResultId) {
-        return certResultDAO.getG2MacraMeasuresForCertificationResult(certificationResultId);
     }
 
     public List<CertificationResultTestTaskDTO> getTestTasksForCertificationResult(Long certificationResultId) {

@@ -78,6 +78,7 @@ import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
+import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
@@ -91,7 +92,6 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
-import gov.healthit.chpl.dto.CertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
@@ -131,7 +131,6 @@ import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestProcedureDTO;
@@ -142,6 +141,7 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestToolD
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMeasureDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTestingLabDTO;
@@ -157,14 +157,15 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CuresUpdateService;
-import gov.healthit.chpl.service.DirectReviewUpdateEmailService;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.Validator;
+import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -179,6 +180,7 @@ public class CertifiedProductManager extends SecuredManager {
     private TargetedUserDAO targetedUserDao;
     private AccessibilityStandardDAO asDao;
     private CertifiedProductQmsStandardDAO cpQmsDao;
+    private ListingMeasureDAO cpMeasureDao;
     private CertifiedProductTestingLabDAO cpTestingLabDao;
     private CertifiedProductTargetedUserDAO cpTargetedUserDao;
     private CertifiedProductAccessibilityStandardDAO cpAccStdDao;
@@ -228,6 +230,7 @@ public class CertifiedProductManager extends SecuredManager {
             CertificationResultDAO certDao, CertificationCriterionDAO certCriterionDao,
             QmsStandardDAO qmsDao, TargetedUserDAO targetedUserDao,
             AccessibilityStandardDAO asDao, CertifiedProductQmsStandardDAO cpQmsDao,
+            ListingMeasureDAO cpMeasureDao,
             CertifiedProductTestingLabDAO cpTestingLabDao,
             CertifiedProductTargetedUserDAO cpTargetedUserDao,
             CertifiedProductAccessibilityStandardDAO cpAccStdDao, CQMResultDAO cqmResultDAO,
@@ -257,6 +260,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.targetedUserDao = targetedUserDao;
         this.asDao = asDao;
         this.cpQmsDao = cpQmsDao;
+        this.cpMeasureDao = cpMeasureDao;
         this.cpTestingLabDao = cpTestingLabDao;
         this.cpTargetedUserDao = cpTargetedUserDao;
         this.cpAccStdDao = cpAccStdDao;
@@ -559,6 +563,16 @@ public class CertifiedProductManager extends SecuredManager {
             }
         }
 
+        if (pendingCp.getMeasures() != null && pendingCp.getMeasures().size() > 0) {
+            for (PendingCertifiedProductMeasureDTO pendingMeasure : pendingCp.getMeasures()) {
+                ListingMeasure measureToAdd = new ListingMeasure();
+                measureToAdd.setMeasure(pendingMeasure.getMeasure());
+                measureToAdd.setMeasureType(pendingMeasure.getMeasureType());
+                measureToAdd.setAssociatedCriteria(pendingMeasure.getAssociatedCriteria());
+                cpMeasureDao.createCertifiedProductMeasureMapping(newCertifiedProduct.getId(), measureToAdd);
+            }
+        }
+
         // targeted users
         if (pendingCp.getTargetedUsers() != null && pendingCp.getTargetedUsers().size() > 0) {
             for (PendingCertifiedProductTargetedUserDTO tu : pendingCp.getTargetedUsers()) {
@@ -660,8 +674,6 @@ public class CertifiedProductManager extends SecuredManager {
                 certResultToCreate.setExportDocumentation(isCertified ? certResult.getExportDocumentation() : null);
                 certResultToCreate.setUseCases(isCertified ? certResult.getUseCases() : null);
                 CertificationResultDTO createdCert = certDao.create(certResultToCreate);
-
-                createdCert = addG1G2MacraMeasures(certResult, createdCert);
 
                 if (isCertified) {
                     if (certResult.getAdditionalSoftware() != null && certResult.getAdditionalSoftware().size() > 0) {
@@ -1013,41 +1025,6 @@ public class CertifiedProductManager extends SecuredManager {
         return newCertifiedProduct;
     }
 
-    private CertificationResultDTO addG1G2MacraMeasures(PendingCertificationResultDTO certResult,
-            CertificationResultDTO createdCert) throws EntityCreationException {
-        if (certResult.getG1MacraMeasures() != null && certResult.getG1MacraMeasures().size() > 0) {
-            for (PendingCertificationResultMacraMeasureDTO pendingMeasure : certResult.getG1MacraMeasures()) {
-                // the validator set the macraMeasure value so it's
-                // definitely filled in
-                if (pendingMeasure.getMacraMeasure() != null && pendingMeasure.getMacraMeasure().getId() != null) {
-                    CertificationResultMacraMeasureDTO crMeasure = new CertificationResultMacraMeasureDTO();
-                    crMeasure.setMeasure(pendingMeasure.getMacraMeasure());
-                    crMeasure.setCertificationResultId(createdCert.getId());
-                    certDao.addG1MacraMeasureMapping(crMeasure);
-                } else {
-                    LOGGER.error("Found G1 Macra Measure with null value for " + certResult.getCriterion().getNumber());
-                }
-            }
-        }
-
-        if (certResult.getG2MacraMeasures() != null && certResult.getG2MacraMeasures().size() > 0) {
-            for (PendingCertificationResultMacraMeasureDTO pendingMeasure : certResult.getG2MacraMeasures()) {
-                // the validator set the macraMeasure value so it's
-                // definitely filled in
-                if (pendingMeasure.getMacraMeasure() != null && pendingMeasure.getMacraMeasure().getId() != null) {
-                    CertificationResultMacraMeasureDTO crMeasure = new CertificationResultMacraMeasureDTO();
-                    crMeasure.setMeasure(pendingMeasure.getMacraMeasure());
-                    crMeasure.setCertificationResultId(createdCert.getId());
-                    certDao.addG2MacraMeasureMapping(crMeasure);
-                } else {
-                    LOGGER.error("Found G2 Macra Measure with null value for " + certResult.getCriterion().getNumber());
-                }
-            }
-        }
-
-        return createdCert;
-    }
-
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
@@ -1159,6 +1136,7 @@ public class CertifiedProductManager extends SecuredManager {
         updateIcsChildren(updatedListing.getId(), existingListing.getIcs(), updatedListing.getIcs());
         updateIcsParents(updatedListing.getId(), existingListing.getIcs(), updatedListing.getIcs());
         updateQmsStandards(updatedListing.getId(), existingListing.getQmsStandards(), updatedListing.getQmsStandards());
+        updateMeasures(updatedListing.getId(), existingListing.getMeasures(), updatedListing.getMeasures());
         updateTargetedUsers(updatedListing.getId(), existingListing.getTargetedUsers(),
                 updatedListing.getTargetedUsers());
         updateAccessibilityStandards(updatedListing.getId(), existingListing.getAccessibilityStandards(),
@@ -1589,6 +1567,86 @@ public class CertifiedProductManager extends SecuredManager {
 
         for (Long idToRemove : idsToRemove) {
             cpQmsDao.deleteCertifiedProductQms(idToRemove);
+        }
+        return numChanges;
+    }
+
+    private int updateMeasures(Long listingId, List<ListingMeasure> existingMeasures,
+            List<ListingMeasure> updatedMeasures)
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
+
+        int numChanges = 0;
+        List<ListingMeasure> measuresToAdd = new ArrayList<ListingMeasure>();
+        List<MeasurePair> measuresToUpdate = new ArrayList<MeasurePair>();
+        List<Long> idsToRemove = new ArrayList<Long>();
+
+        // figure out which measures to add
+        if (updatedMeasures != null && updatedMeasures.size() > 0) {
+            if (existingMeasures == null || existingMeasures.size() == 0) {
+                // existing listing has none, add all from the update
+                for (ListingMeasure updatedItem : updatedMeasures) {
+                    measuresToAdd.add(updatedItem);
+                }
+            } else if (existingMeasures.size() > 0) {
+                // existing listing has some, compare to the update to see if
+                // any are different
+                for (ListingMeasure updatedItem : updatedMeasures) {
+                    boolean inExistingListing = false;
+                    for (ListingMeasure existingItem : existingMeasures) {
+                        if (updatedItem.getId() != null && updatedItem.getId().equals(existingItem.getId())) {
+                            inExistingListing = true;
+                            measuresToUpdate.add(new MeasurePair(existingItem, updatedItem));
+                        }
+                    }
+
+                    if (!inExistingListing) {
+                        measuresToAdd.add(updatedItem);
+                    }
+                }
+            }
+        }
+
+        // figure out which measures to remove
+        if (existingMeasures != null && existingMeasures.size() > 0) {
+            // if the updated listing has none, remove them all from existing
+            if (updatedMeasures == null || updatedMeasures.size() == 0) {
+                for (ListingMeasure existingItem : existingMeasures) {
+                    idsToRemove.add(existingItem.getId());
+                }
+            } else if (updatedMeasures.size() > 0) {
+                for (ListingMeasure existingItem : existingMeasures) {
+                    boolean inUpdatedListing = false;
+                    for (ListingMeasure updatedItem : updatedMeasures) {
+                        inUpdatedListing = !inUpdatedListing
+                                ? existingItem.getId().equals(updatedItem.getId()) : inUpdatedListing;
+                    }
+                    if (!inUpdatedListing) {
+                        idsToRemove.add(existingItem.getId());
+                    }
+                }
+            }
+        }
+
+        numChanges = measuresToAdd.size() + idsToRemove.size();
+
+        for (ListingMeasure toAdd : measuresToAdd) {
+            cpMeasureDao.createCertifiedProductMeasureMapping(listingId, toAdd);
+        }
+
+        for (MeasurePair toUpdate : measuresToUpdate) {
+            boolean hasChanged = false;
+            if (!toUpdate.getUpdated().matches(toUpdate.getOrig())) {
+                hasChanged = true;
+            }
+
+            if (hasChanged) {
+                cpMeasureDao.updateCertifiedProductMeasureMapping(toUpdate.getUpdated());
+                numChanges++;
+            }
+        }
+
+        for (Long idToRemove : idsToRemove) {
+            cpMeasureDao.deleteCertifiedProductMeasure(idToRemove);
         }
         return numChanges;
     }
@@ -2324,6 +2382,7 @@ public class CertifiedProductManager extends SecuredManager {
         return scheduler;
     }
 
+    @Data
     private static class CertificationStatusEventPair {
         private CertificationStatusEvent orig;
         private CertificationStatusEvent updated;
@@ -2336,25 +2395,9 @@ public class CertifiedProductManager extends SecuredManager {
             this.orig = orig;
             this.updated = updated;
         }
-
-        public CertificationStatusEvent getOrig() {
-            return orig;
-        }
-
-        public void setOrig(CertificationStatusEvent orig) {
-            this.orig = orig;
-        }
-
-        public CertificationStatusEvent getUpdated() {
-            return updated;
-        }
-
-        public void setUpdated(CertificationStatusEvent updated) {
-            this.updated = updated;
-        }
-
     }
 
+    @Data
     private static class MeaningfulUseUserPair {
         private MeaningfulUseUser orig;
         private MeaningfulUseUser updated;
@@ -2367,25 +2410,9 @@ public class CertifiedProductManager extends SecuredManager {
             this.orig = orig;
             this.updated = updated;
         }
-
-        public MeaningfulUseUser getOrig() {
-            return orig;
-        }
-
-        public void setOrig(MeaningfulUseUser orig) {
-            this.orig = orig;
-        }
-
-        public MeaningfulUseUser getUpdated() {
-            return updated;
-        }
-
-        public void setUpdated(MeaningfulUseUser updated) {
-            this.updated = updated;
-        }
-
     }
 
+    @Data
     private static class QmsStandardPair {
         private CertifiedProductQmsStandard orig;
         private CertifiedProductQmsStandard updated;
@@ -2397,25 +2424,23 @@ public class CertifiedProductManager extends SecuredManager {
             this.orig = orig;
             this.updated = updated;
         }
-
-        public CertifiedProductQmsStandard getOrig() {
-            return orig;
-        }
-
-        public void setOrig(CertifiedProductQmsStandard orig) {
-            this.orig = orig;
-        }
-
-        public CertifiedProductQmsStandard getUpdated() {
-            return updated;
-        }
-
-        public void setUpdated(CertifiedProductQmsStandard updated) {
-            this.updated = updated;
-        }
-
     }
 
+    @Data
+    private static class MeasurePair {
+        private ListingMeasure orig;
+        private ListingMeasure updated;
+
+        MeasurePair() {
+        }
+
+        MeasurePair(ListingMeasure orig, ListingMeasure updated) {
+            this.orig = orig;
+            this.updated = updated;
+        }
+    }
+
+    @Data
     private static class CQMResultDetailsPair {
         private CQMResultDetailsDTO orig;
         private CQMResultDetailsDTO updated;
@@ -2425,22 +2450,6 @@ public class CertifiedProductManager extends SecuredManager {
 
         CQMResultDetailsPair(CQMResultDetailsDTO orig, CQMResultDetailsDTO updated) {
             this.orig = orig;
-            this.updated = updated;
-        }
-
-        public CQMResultDetailsDTO getOrig() {
-            return orig;
-        }
-
-        public void setOrig(CQMResultDetailsDTO orig) {
-            this.orig = orig;
-        }
-
-        public CQMResultDetailsDTO getUpdated() {
-            return updated;
-        }
-
-        public void setUpdated(CQMResultDetailsDTO updated) {
             this.updated = updated;
         }
     }

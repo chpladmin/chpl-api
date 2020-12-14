@@ -49,7 +49,7 @@ import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
-import gov.healthit.chpl.domain.MacraMeasure;
+import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
@@ -61,7 +61,6 @@ import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
-import gov.healthit.chpl.dto.CertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
@@ -79,6 +78,7 @@ import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
 import gov.healthit.chpl.dto.MeaningfulUseUserDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.manager.impl.CertifiedProductDetailsManagerAsync;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.svap.dao.SvapDAO;
@@ -97,6 +97,7 @@ public class CertifiedProductDetailsManager {
     private CQMResultDAO cqmResultDao;
     private CertificationResultDetailsDAO certificationResultDetailsDAO;
     private CertifiedProductQmsStandardDAO certifiedProductQmsStandardDao;
+    private ListingMeasureDAO listingMeasureDao;
     private CertifiedProductTargetedUserDAO certifiedProductTargetedUserDao;
     private CertifiedProductAccessibilityStandardDAO certifiedProductAsDao;
     private CertificationResultManager certResultManager;
@@ -125,6 +126,7 @@ public class CertifiedProductDetailsManager {
             CQMResultDAO cqmResultDao,
             CertificationResultDetailsDAO certificationResultDetailsDAO,
             CertifiedProductQmsStandardDAO certifiedProductQmsStandardDao,
+            ListingMeasureDAO listingMeasureDao,
             CertifiedProductTargetedUserDAO certifiedProductTargetedUserDao,
             CertifiedProductAccessibilityStandardDAO certifiedProductAsDao,
             CertificationResultManager certResultManager,
@@ -148,6 +150,7 @@ public class CertifiedProductDetailsManager {
         this.cqmResultDao = cqmResultDao;
         this.certificationResultDetailsDAO = certificationResultDetailsDAO;
         this.certifiedProductQmsStandardDao = certifiedProductQmsStandardDao;
+        this.listingMeasureDao = listingMeasureDao;
         this.certifiedProductTargetedUserDao = certifiedProductTargetedUserDao;
         this.certifiedProductAsDao = certifiedProductAsDao;
         this.certResultManager = certResultManager;
@@ -594,35 +597,6 @@ public class CertifiedProductDetailsManager {
             result.setTestFunctionality(null);
         }
 
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G1_MACRA)
-                && !certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_MACRA)) {
-            result.setAllowedMacraMeasures(null);
-            result.setG1MacraMeasures(null);
-            result.setG2MacraMeasures(null);
-        } else {
-            if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G1_MACRA)) {
-                List<CertificationResultMacraMeasureDTO> measures = certResultManager
-                        .getG1MacraMeasuresForCertificationResult(certResult.getId());
-                for (CertificationResultMacraMeasureDTO currResult : measures) {
-                    MacraMeasure mmResult = new MacraMeasure(currResult.getMeasure());
-                    result.getG1MacraMeasures().add(mmResult);
-                }
-            } else {
-                result.setG1MacraMeasures(null);
-            }
-
-            if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_MACRA)) {
-                List<CertificationResultMacraMeasureDTO> measures = certResultManager
-                        .getG2MacraMeasuresForCertificationResult(certResult.getId());
-                for (CertificationResultMacraMeasureDTO currResult : measures) {
-                    MacraMeasure mmResult = new MacraMeasure(currResult.getMeasure());
-                    result.getG2MacraMeasures().add(mmResult);
-                }
-            } else {
-                result.setG2MacraMeasures(null);
-            }
-        }
-
         // get all SED data for the listing
         // ucd processes and test tasks with participants
         CertificationCriterion criteria = result.getCriterion();
@@ -666,13 +640,6 @@ public class CertifiedProductDetailsManager {
             }
         }
 
-
-        // set allowed macra measures (if any)
-        for (MacraMeasure measure : dimensionalDataManager.getMacraMeasures()) {
-            if (measure.getCriteria().getId().equals(result.getCriterion().getId())) {
-                result.getAllowedMacraMeasures().add(measure);
-            }
-        }
         result.setAllowedTestFunctionalities(getAvailableTestFunctionalities(result, searchDetails));
 
         // set allowed svap for criteria
@@ -751,6 +718,7 @@ public class CertifiedProductDetailsManager {
         searchDetails.setCountClosedNonconformities(dto.getCountClosedNonconformities());
         searchDetails.setSurveillance(survManager.getByCertifiedProduct(dto.getId()));
         searchDetails.setQmsStandards(getCertifiedProductQmsStandards(dto.getId()));
+        searchDetails.setMeasures(getCertifiedProductMeasures(dto.getId()));
         searchDetails.setTargetedUsers(getCertifiedProductTargetedUsers(dto.getId()));
         searchDetails.setAccessibilityStandards(getCertifiedProductAccessibilityStandards(dto.getId()));
         searchDetails.setRwtPlansUrl(dto.getRwtPlansUrl());
@@ -830,6 +798,11 @@ public class CertifiedProductDetailsManager {
             qmsStandardResults.add(result);
         }
         return qmsStandardResults;
+    }
+
+    private List<ListingMeasure> getCertifiedProductMeasures(Long listingId)
+            throws EntityRetrievalException {
+        return listingMeasureDao.getMeasuresByListingId(listingId);
     }
 
     private List<CertifiedProductTargetedUser> getCertifiedProductTargetedUsers(Long id)

@@ -14,8 +14,6 @@
             <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -40,8 +38,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -66,8 +62,6 @@
             <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -92,8 +86,6 @@
             <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -118,8 +110,6 @@
             <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -145,8 +135,6 @@
             <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -172,8 +160,6 @@
             <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -198,8 +184,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -224,8 +208,6 @@
             <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -250,8 +232,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -276,8 +256,6 @@
             <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -302,8 +280,6 @@
             <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -328,8 +304,6 @@
             <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -354,8 +328,6 @@
             <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -380,8 +352,6 @@
             <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -406,8 +376,6 @@
             <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -433,8 +401,6 @@
             <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -460,8 +426,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -487,8 +451,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -514,8 +476,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -540,8 +500,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -566,8 +524,6 @@
             <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -592,8 +548,6 @@
             <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -618,8 +572,6 @@
             <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -644,8 +596,6 @@
             <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -671,8 +621,6 @@
             <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -697,8 +645,6 @@
             <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -723,8 +669,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -749,8 +693,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -775,8 +717,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -801,8 +741,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -827,8 +765,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -853,8 +789,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -880,8 +814,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -906,8 +838,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -932,8 +862,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -958,8 +886,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -985,8 +911,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -1012,8 +936,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -1038,8 +960,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -1065,8 +985,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -1092,8 +1010,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -1118,8 +1034,6 @@
             <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -1144,8 +1058,6 @@
             <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -1170,8 +1082,6 @@
             <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -1197,8 +1107,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -1223,8 +1131,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -1249,8 +1155,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -1275,8 +1179,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -1301,8 +1203,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -1327,8 +1227,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -1354,8 +1252,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -1380,8 +1276,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -1406,8 +1300,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -1432,8 +1324,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -1458,8 +1348,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -1485,8 +1373,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -1512,8 +1398,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -1540,8 +1424,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -1554,7 +1436,6 @@
             <svap>false</svap>
         </properties>
     </certificationResult>
-
     <certificationResult>
         <number>170.315 (a)(1)</number>
         <properties>
@@ -1568,8 +1449,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>true</g1Macra>
-            <g2Macra>true</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -1595,8 +1474,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>true</g1Macra>
-            <g2Macra>true</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -1622,8 +1499,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>true</g1Macra>
-            <g2Macra>true</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -1649,8 +1524,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -1675,8 +1548,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -1701,8 +1572,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -1728,8 +1597,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -1755,8 +1622,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -1781,8 +1646,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -1808,8 +1671,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>true</g1Macra>
-            <g2Macra>true</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -1835,8 +1696,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -1861,8 +1720,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -1887,8 +1744,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>true</g1Macra>
-            <g2Macra>true</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -1913,8 +1768,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -1939,8 +1792,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -1965,8 +1816,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>true</g1Macra>
-            <g2Macra>true</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -1991,8 +1840,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>true</g1Macra>
-            <g2Macra>true</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -2017,8 +1864,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>true</g1Macra>
-            <g2Macra>true</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -2043,8 +1888,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -2069,8 +1912,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -2095,8 +1936,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -2121,8 +1960,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -2147,8 +1984,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -2173,8 +2008,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -2199,8 +2032,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -2225,8 +2056,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -2251,8 +2080,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -2277,8 +2104,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -2303,8 +2128,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -2330,8 +2153,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -2356,8 +2177,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -2382,8 +2201,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -2409,8 +2226,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -2436,8 +2251,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -2463,8 +2276,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -2490,8 +2301,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -2516,8 +2325,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -2542,8 +2349,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -2568,8 +2373,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -2595,8 +2398,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -2621,8 +2422,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>true</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -2647,8 +2446,6 @@
             <useCases>true</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>true</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -2673,8 +2470,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>true</g1Macra>
-            <g2Macra>true</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -2699,8 +2494,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>true</g1Macra>
-            <g2Macra>true</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -2725,8 +2518,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>true</g1Macra>
-            <g2Macra>true</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -2751,8 +2542,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -2777,8 +2566,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -2804,8 +2591,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -2830,8 +2615,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -2856,8 +2639,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -2882,8 +2663,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -2908,8 +2687,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -2934,8 +2711,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -2960,8 +2735,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -2986,8 +2759,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -3012,8 +2783,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -3038,8 +2807,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -3064,8 +2831,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -3090,8 +2855,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -3116,8 +2879,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>true</g1Macra>
-            <g2Macra>true</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>false</testTool>
@@ -3142,8 +2903,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>true</g1Macra>
-            <g2Macra>true</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -3168,8 +2927,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>true</g1Macra>
-            <g2Macra>true</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -3194,8 +2951,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>
@@ -3220,8 +2975,6 @@
             <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
-            <g1Macra>false</g1Macra>
-            <g2Macra>false</g2Macra>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
             <testTool>true</testTool>

@@ -13,8 +13,8 @@ public class GetByPermissionActionPermissions extends ActionPermissions {
     @Override
     public boolean hasAccess() {
         return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()
-                || getResourcePermissions().isUserRoleAcbAdmin() || getResourcePermissions().isUserRoleAtlAdmin()
-                || getResourcePermissions().isUserRoleCmsStaff();
+                || getResourcePermissions().isUserRoleOncStaff() || getResourcePermissions().isUserRoleAcbAdmin()
+                || getResourcePermissions().isUserRoleAtlAdmin() || getResourcePermissions().isUserRoleCmsStaff();
     }
 
     @Override
