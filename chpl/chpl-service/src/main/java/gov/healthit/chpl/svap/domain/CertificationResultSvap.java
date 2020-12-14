@@ -55,7 +55,7 @@ public class CertificationResultSvap implements Serializable {
     private String approvedStandardVersion;
 
     /**
-     *  Indicates if the SVAP has been deprecated
+     *  Indicates if the SVAP has been replaced
      */
     @XmlElement(required = true)
     private boolean replaced;
