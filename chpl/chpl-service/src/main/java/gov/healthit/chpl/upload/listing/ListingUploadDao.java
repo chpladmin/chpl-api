@@ -63,7 +63,8 @@ public class ListingUploadDao extends BaseDAOImpl {
 
     public List<ListingUpload> getAll() {
         Query query = entityManager.createQuery(GET_ENTITY_HQL_BEGIN
-                + "WHERE ul.deleted = false", ListingUploadEntity.class);
+                + "WHERE ul.certifiedProductId IS NULL "
+                + "AND ul.deleted = false", ListingUploadEntity.class);
         List<ListingUploadEntity> entities = query.getResultList();
         List<ListingUpload> allUploadedListings = entities.stream()
                 .map(entity -> convert(entity))

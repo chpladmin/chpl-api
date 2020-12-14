@@ -54,6 +54,9 @@ public class ListingUploadEntity {
     @Column(name = "warning_count")
     private Integer warningCount;
 
+    @Column(name = "certified_product_id")
+    private Long certifiedProductId;
+
     @Column(name = "contents")
     private String fileContents;
 
