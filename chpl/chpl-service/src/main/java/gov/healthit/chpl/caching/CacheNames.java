@@ -15,7 +15,8 @@ public final class CacheNames {
     public static final String CLASSIFICATION_NAMES = "classificationNames";
     public static final String PRODUCT_NAMES = "productNames";
     public static final String DEVELOPER_NAMES = "developerNames";
-    public static final String MACRA_MEASURES = "macrameasures";
+    public static final String MEASURES = "measures";
+    public static final String MEASURE_TYPES = "measureTypes";
     public static final String CQM_CRITERION = "cqmCriterion";
     public static final String CQM_CRITERION_NUMBERS = "cqmCriterionNumbers";
     public static final String CERTIFICATION_CRITERION_NUMBERS = "certificationCriterionNumbers";
@@ -31,6 +32,7 @@ public final class CacheNames {
     public static final String TEST_FUNCTIONALITY_MAPS = "testFunctionalityMaps";
     public static final String COLLECTIONS_DEVELOPERS = "developerCollection";
     public static final String COLLECTIONS_LISTINGS = "listingCollection";
+    public static final String DIRECT_REVIEWS = "directReviews";
 
     //caches that are pre-fetched due to longish load times
     public static final String PREFETCHED_COLLECTIONS_LISTINGS = "prefetchedListingCollection";

@@ -27,7 +27,7 @@ import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
-import gov.healthit.chpl.domain.MacraMeasure;
+import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
@@ -37,7 +37,6 @@ import gov.healthit.chpl.dto.AgeRangeDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
-import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.dto.TransparencyAttestationDTO;
@@ -49,7 +48,7 @@ import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductQmsStanda
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTargetedUserEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTestingLabMapEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCqmCriterionEntity;
-import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.listing.measure.PendingListingMeasureEntity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -92,8 +91,6 @@ public class PendingCertifiedProductDTO implements Serializable {
     private String acbCertificationId;
     private String certificationBodyName;
     private String productClassificationName;
-    @Setter(AccessLevel.NONE)
-    @Getter(AccessLevel.NONE)
     private Date certificationDate;
     private String developerStreetAddress;
     private String developerCity;
@@ -108,8 +105,6 @@ public class PendingCertifiedProductDTO implements Serializable {
     private String reportFileLocation;
     private String sedReportFileLocation;
     private String sedIntendedUserDescription;
-    @Setter(AccessLevel.NONE)
-    @Getter(AccessLevel.NONE)
     private Date sedTestingEnd;
     private Boolean ics;
     private Boolean hasQms;
@@ -134,6 +129,9 @@ public class PendingCertifiedProductDTO implements Serializable {
 
     @Singular
     private List<PendingCertifiedProductQmsStandardDTO> qmsStandards = new ArrayList<PendingCertifiedProductQmsStandardDTO>();
+
+    @Singular
+    private List<PendingCertifiedProductMeasureDTO> measures = new ArrayList<PendingCertifiedProductMeasureDTO>();
 
     @Singular
     private List<PendingCertifiedProductTargetedUserDTO> targetedUsers = new ArrayList<PendingCertifiedProductTargetedUserDTO>();
@@ -247,9 +245,9 @@ public class PendingCertifiedProductDTO implements Serializable {
             }
         }
 
-        List<CertifiedProductTestingLab> testingLabs = details.getTestingLabs();
-        if (testingLabs != null && testingLabs.size() > 0) {
-            for (CertifiedProductTestingLab tl : testingLabs) {
+        List<CertifiedProductTestingLab> testingLabDomains = details.getTestingLabs();
+        if (testingLabDomains != null && testingLabDomains.size() > 0) {
+            for (CertifiedProductTestingLab tl : testingLabDomains) {
                 PendingCertifiedProductTestingLabDTO tlDto = new PendingCertifiedProductTestingLabDTO();
                 if (tl.getTestingLabId() != null) {
                     tlDto.setTestingLabId(tl.getTestingLabId());
@@ -261,15 +259,39 @@ public class PendingCertifiedProductDTO implements Serializable {
             }
         }
 
-        List<CertifiedProductQmsStandard> qmsStandards = details.getQmsStandards();
-        if (qmsStandards != null && qmsStandards.size() > 0) {
-            for (CertifiedProductQmsStandard qms : qmsStandards) {
+        List<CertifiedProductQmsStandard> qmsStandardDomains = details.getQmsStandards();
+        if (qmsStandardDomains != null && qmsStandardDomains.size() > 0) {
+            for (CertifiedProductQmsStandard qms : qmsStandardDomains) {
                 PendingCertifiedProductQmsStandardDTO qmsDto = new PendingCertifiedProductQmsStandardDTO();
                 qmsDto.setApplicableCriteria(qms.getApplicableCriteria());
                 qmsDto.setModification(qms.getQmsModification());
                 qmsDto.setQmsStandardId(qms.getQmsStandardId());
                 qmsDto.setName(qms.getQmsStandardName());
                 this.qmsStandards.add(qmsDto);
+            }
+        }
+
+        List<ListingMeasure> listingMeasures = details.getMeasures();
+        if (listingMeasures != null && listingMeasures.size() > 0) {
+            for (ListingMeasure listingMeasure : listingMeasures) {
+                PendingCertifiedProductMeasureDTO pendingMeasureDto = new PendingCertifiedProductMeasureDTO();
+                pendingMeasureDto.setId(listingMeasure.getId());
+                if (listingMeasure.getMeasure() == null || listingMeasure.getMeasure().getId() == null) {
+                    pendingMeasureDto.setMeasure(null);
+                    if (listingMeasure.getMeasure() != null) {
+                        pendingMeasureDto.setUploadedValue(listingMeasure.getMeasure().getName());
+                    }
+                } else {
+                    pendingMeasureDto.setMeasure(listingMeasure.getMeasure());
+                    pendingMeasureDto.setUploadedValue(null);
+                }
+                pendingMeasureDto.setMeasure(listingMeasure.getMeasure());
+                pendingMeasureDto.setMeasureType(listingMeasure.getMeasureType());
+                pendingMeasureDto.setPendingCertifiedProductId(details.getId());
+                listingMeasure.getAssociatedCriteria().stream().forEach(criterion -> {
+                    pendingMeasureDto.getAssociatedCriteria().add(criterion);
+                });
+                this.measures.add(pendingMeasureDto);
             }
         }
 
@@ -382,36 +404,6 @@ public class PendingCertifiedProductDTO implements Serializable {
                     toolDto.setVersion(tool.getTestToolVersion());
                     toolDto.setTestToolId(tool.getTestToolId());
                     certDto.getTestTools().add(toolDto);
-                }
-            }
-
-            if (crResult.getG1MacraMeasures() != null && crResult.getG1MacraMeasures().size() > 0) {
-                for (MacraMeasure mm : crResult.getG1MacraMeasures()) {
-                    PendingCertificationResultMacraMeasureDTO mmDto = new PendingCertificationResultMacraMeasureDTO();
-                    mmDto.setId(mm.getId());
-                    mmDto.setMacraMeasureId(mm.getId());
-
-                    MacraMeasureDTO measure = new MacraMeasureDTO();
-                    measure.setId(mm.getId());
-                    measure.setValue(mm.getAbbreviation());
-                    measure.setRemoved(mm.getRemoved());
-                    mmDto.setMacraMeasure(measure);
-                    certDto.getG1MacraMeasures().add(mmDto);
-                }
-            }
-
-            if (crResult.getG2MacraMeasures() != null && crResult.getG2MacraMeasures().size() > 0) {
-                for (MacraMeasure mm : crResult.getG2MacraMeasures()) {
-                    PendingCertificationResultMacraMeasureDTO mmDto = new PendingCertificationResultMacraMeasureDTO();
-                    mmDto.setId(mm.getId());
-                    mmDto.setMacraMeasureId(mm.getId());
-
-                    MacraMeasureDTO measure = new MacraMeasureDTO();
-                    measure.setId(mm.getId());
-                    measure.setValue(mm.getAbbreviation());
-                    measure.setRemoved(mm.getRemoved());
-                    mmDto.setMacraMeasure(measure);
-                    certDto.getG2MacraMeasures().add(mmDto);
                 }
             }
 
@@ -566,7 +558,7 @@ public class PendingCertifiedProductDTO implements Serializable {
     public PendingCertifiedProductDTO(PendingCertifiedProductEntity entity) {
         this();
         this.id = entity.getId();
-        this.hasQms = entity.isHasQms();
+        this.hasQms = entity.getHasQms();
         this.practiceTypeId = entity.getPracticeTypeId();
         this.deleted = entity.getDeleted();
         this.lastModifiedUser = entity.getLastModifiedUser();
@@ -611,23 +603,30 @@ public class PendingCertifiedProductDTO implements Serializable {
 
         this.uploadDate = entity.getCreationDate();
 
-        Set<PendingCertifiedProductTestingLabMapEntity> testingLabs = entity.getTestingLabs();
-        if (testingLabs != null && testingLabs.size() > 0) {
-            for (PendingCertifiedProductTestingLabMapEntity testingLab : testingLabs) {
+        Set<PendingCertifiedProductTestingLabMapEntity> testingLabEntities = entity.getTestingLabs();
+        if (testingLabEntities != null && testingLabEntities.size() > 0) {
+            for (PendingCertifiedProductTestingLabMapEntity testingLab : testingLabEntities) {
                 this.testingLabs.add(new PendingCertifiedProductTestingLabDTO(testingLab));
             }
         }
 
-        Set<PendingCertifiedProductQmsStandardEntity> qmsStandards = entity.getQmsStandards();
-        if (qmsStandards != null && qmsStandards.size() > 0) {
-            for (PendingCertifiedProductQmsStandardEntity qmsStandard : qmsStandards) {
+        Set<PendingCertifiedProductQmsStandardEntity> qmsStandardEntities = entity.getQmsStandards();
+        if (qmsStandardEntities != null && qmsStandardEntities.size() > 0) {
+            for (PendingCertifiedProductQmsStandardEntity qmsStandard : qmsStandardEntities) {
                 this.qmsStandards.add(new PendingCertifiedProductQmsStandardDTO(qmsStandard));
             }
         }
 
-        Set<PendingCertifiedProductTargetedUserEntity> targetedUsers = entity.getTargetedUsers();
-        if (targetedUsers != null && targetedUsers.size() > 0) {
-            for (PendingCertifiedProductTargetedUserEntity tu : targetedUsers) {
+        Set<PendingListingMeasureEntity> measureEntities = entity.getMeasures();
+        if (measureEntities != null && measureEntities.size() > 0) {
+            for (PendingListingMeasureEntity measureEntity : measureEntities) {
+                this.measures.add(new PendingCertifiedProductMeasureDTO(measureEntity));
+            }
+        }
+
+        Set<PendingCertifiedProductTargetedUserEntity> targetedUserEntities = entity.getTargetedUsers();
+        if (targetedUserEntities != null && targetedUserEntities.size() > 0) {
+            for (PendingCertifiedProductTargetedUserEntity tu : targetedUserEntities) {
                 this.targetedUsers.add(new PendingCertifiedProductTargetedUserDTO(tu));
             }
         }
@@ -666,30 +665,6 @@ public class PendingCertifiedProductDTO implements Serializable {
                 this.cqmCriterion.add(new PendingCqmCriterionDTO(cqmEntity));
             }
         }
-    }
-
-    public Date getCertificationDate() {
-        return Util.getNewDate(certificationDate);
-    }
-
-    public void setCertificationDate(Date certificationDate) {
-        this.certificationDate = Util.getNewDate(certificationDate);
-    }
-
-    public Date getUploadDate() {
-        return Util.getNewDate(uploadDate);
-    }
-
-    public void setUploadDate(Date uploadDate) {
-        this.uploadDate = Util.getNewDate(uploadDate);
-    }
-
-    public Date getSedTestingEnd() {
-        return Util.getNewDate(sedTestingEnd);
-    }
-
-    public void setSedTestingEnd(Date sedTestingEnd) {
-        this.sedTestingEnd = Util.getNewDate(sedTestingEnd);
     }
 
     private void copyCriterionIdsToCqmMappings(PendingCertifiedProductDetails listing) {
