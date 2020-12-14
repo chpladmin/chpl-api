@@ -16,11 +16,11 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
-public class LoggedActionsAuditService  extends AuditService {
+public class LoggedActionsAuditDataRetentionService  extends AuditDataRetentionService {
     private static final String AUDIT_NAME = "audit.logged_actions";
 
     @Autowired
-    public LoggedActionsAuditService(@Value("${auditDataFilePath}") String auditDataFilePath) {
+    public LoggedActionsAuditDataRetentionService(@Value("${auditDataFilePath}") String auditDataFilePath) {
         super(auditDataFilePath);
     }
 

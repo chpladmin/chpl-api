@@ -16,11 +16,11 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
-public class ApiKeyActivityAuditService extends AuditService {
+public class ApiKeyActivityAuditDataRetentionService extends AuditDataRetentionService {
     private static final String AUDIT_NAME = "openchpl.api_key_activity";
 
     @Autowired
-    public ApiKeyActivityAuditService(@Value("${auditDataFilePath}") String auditDataFilePath) {
+    public ApiKeyActivityAuditDataRetentionService(@Value("${auditDataFilePath}") String auditDataFilePath) {
         super(auditDataFilePath);
     }
 

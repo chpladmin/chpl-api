@@ -9,7 +9,7 @@ import org.postgresql.PGConnection;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 
-public abstract class AuditService extends BaseDAOImpl {
+public abstract class AuditDataRetentionService extends BaseDAOImpl {
     private PGConnection pgConnection;
     private String auditDataFilePath;
 
@@ -20,7 +20,7 @@ public abstract class AuditService extends BaseDAOImpl {
     public abstract String getProposedFilename(Integer month, Integer year);
     public abstract String getAuditTableNme();
 
-    public AuditService(String auditDataFilePath) {
+    public AuditDataRetentionService(String auditDataFilePath) {
         this.auditDataFilePath =  auditDataFilePath;
     }
 

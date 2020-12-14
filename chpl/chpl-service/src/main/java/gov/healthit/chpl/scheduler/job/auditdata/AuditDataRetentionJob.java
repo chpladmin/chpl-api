@@ -29,9 +29,9 @@ import lombok.extern.log4j.Log4j2;
 public class AuditDataRetentionJob implements Job {
     private static final Integer MEGABYTE = 1024;
 
-    //This will inject all implemenations of AuditService
+    //This will inject all implementations of AuditService
     @Autowired
-    private List<AuditService> auditServices;
+    private List<AuditDataRetentionService> auditDataRetentionServices;
 
     @Autowired
     private AuditDataFile auditDataFile;
@@ -43,45 +43,29 @@ public class AuditDataRetentionJob implements Job {
     private Environment env;
 
     private Integer retentionPolicyInMonths;
-    private AuditService currentAuditService;
+    private AuditDataRetentionService currentAuditDataRetentionService;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
         LOGGER.info("STARTING AuditDataRetentionJob");
-
-        retentionPolicyInMonths = Integer.valueOf(env.getProperty("auditDataRetentionPolicyInMonths"));
-
-        // We need to manually create a transaction in this case because of how AOP works. When a method is
-        // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
-        // The object's proxy is not called when the method is called from within this class. The object's proxy
-        // is called when the method is public and is called from a different object.
-        // https://stackoverflow.com/questions/3037006/starting-new-transaction-in-spring-bean
-        TransactionTemplate txTemplate = new TransactionTemplate(txManager);
-        txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-        txTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                try {
-                    for (AuditService dao : auditServices) {
-                        currentAuditService = dao;
-                        archiveData();
-                    }
-                } catch (Exception e) {
-                    LOGGER.catching(e);
-                    status.setRollbackOnly();
-                }
+        try {
+            retentionPolicyInMonths = Integer.valueOf(env.getProperty("auditDataRetentionPolicyInMonths"));
+            for (AuditDataRetentionService service : auditDataRetentionServices) {
+                currentAuditDataRetentionService = service;
+                archiveData();
             }
-        });
-
+        } catch (Exception e) {
+            LOGGER.catching(e);
+        }
         LOGGER.info("COMPLETED AuditDataRetentionJob");
     }
 
     private void archiveData() throws SQLException, IOException {
         LocalDate targetDate = getStartDate();
         while (isDateBeforeRetentionPolicy(targetDate)) {
-            LOGGER.info("Processing " + currentAuditService.getAuditTableNme() + " for: " + targetDate.toString());
+            LOGGER.info("Processing " + currentAuditDataRetentionService.getAuditTableNme() + " for: " + targetDate.toString());
             if (doesAuditDataExist(targetDate.getMonthValue(), targetDate.getYear())) {
                 archiveDataForMonth(targetDate.getMonthValue(), targetDate.getYear());
             }
@@ -96,28 +80,45 @@ public class AuditDataRetentionJob implements Job {
     }
 
     private void archiveDataForMonth(Integer month, Integer year) throws SQLException, IOException {
-        String fileName = currentAuditService.getProposedFilename(month, year);
-        boolean doesArchiveExist = auditDataFile.doesFileAlreadyExist(fileName);
-        if (doesArchiveExist) {
-            LOGGER.info("Archive file already exists: " + fileName);
-            fileName = auditDataFile.getRandomFilename();
-            currentAuditService.archiveDataToFile(month, year, fileName, false);
-            //Append the temporary file to the existing file
-            LOGGER.info("Appending results to: " + currentAuditService.getProposedFilename(month, year));
-            appendFiles(currentAuditService.getProposedFilename(month, year), fileName);
+        // We need to manually create a transaction in this case because of how AOP works. When a method is
+        // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
+        // The object's proxy is not called when the method is called from within this class. The object's proxy
+        // is called when the method is public and is called from a different object.
+        // https://stackoverflow.com/questions/3037006/starting-new-transaction-in-spring-bean
+        TransactionTemplate txTemplate = new TransactionTemplate(txManager);
+        txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        txTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                try {
+                    String fileName = currentAuditDataRetentionService.getProposedFilename(month, year);
+                    boolean doesArchiveExist = auditDataFile.doesFileAlreadyExist(fileName);
+                    if (doesArchiveExist) {
+                        LOGGER.info("Archive file already exists: " + fileName);
+                        fileName = auditDataFile.getRandomFilename();
+                        currentAuditDataRetentionService.archiveDataToFile(month, year, fileName, false);
+                        //Append the temporary file to the existing file
+                        LOGGER.info("Appending results to: " + currentAuditDataRetentionService.getProposedFilename(month, year));
+                        appendFiles(currentAuditDataRetentionService.getProposedFilename(month, year), fileName);
 
-            LOGGER.info("Deleting temporary file: " + fileName);
-            deleteFile(fileName);
-        } else {
-            LOGGER.info("Archiving data to: " + fileName);
-            currentAuditService.archiveDataToFile(month, year, fileName, true);
-        }
-        LOGGER.info("Deleting archived data from table");
-        currentAuditService.deleteAuditData(month, year);
+                        LOGGER.info("Deleting temporary file: " + fileName);
+                        deleteFile(fileName);
+                    } else {
+                        LOGGER.info("Archiving data to: " + fileName);
+                        currentAuditDataRetentionService.archiveDataToFile(month, year, fileName, true);
+                    }
+                    LOGGER.info("Deleting archived data from table");
+                    currentAuditDataRetentionService.deleteAuditData(month, year);
+                } catch (Exception e) {
+                    status.setRollbackOnly();
+                    LOGGER.catching(e);
+                }
+            }
+        });
     }
 
     private boolean doesAuditDataExist(Integer month, Integer year) {
-        Long count = currentAuditService.getAuditDataCount(month, year);
+        Long count = currentAuditDataRetentionService.getAuditDataCount(month, year);
         LOGGER.info("Found " + count + " records");
         return  count > 0;
     }
