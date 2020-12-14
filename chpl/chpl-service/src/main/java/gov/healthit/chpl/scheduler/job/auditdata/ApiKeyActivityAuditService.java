@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.sql.SQLException;
 
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 
 import org.postgresql.copy.CopyManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,13 +38,14 @@ public class ApiKeyActivityAuditService extends AuditService {
     }
 
     @Override
+    @Transactional
     public void deleteAuditData(Integer month, Integer year) {
         Query query = entityManager.createQuery(
                 "DELETE FROM ApiKeyActivityEntity a "
                 + "WHERE MONTH(a.creationDate) = :month "
                 + "AND YEAR(a.creationDate) = :year");
         query.setParameter("month", month);
-        query.setParameter("year", month);
+        query.setParameter("year", year);
 
         query.executeUpdate();
     }

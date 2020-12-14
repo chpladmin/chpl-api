@@ -25,7 +25,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "auditDataRetentionJobLogger")
 public class AuditDataRetentionJob implements Job {
     private static final Integer MEGABYTE = 1024;
 
