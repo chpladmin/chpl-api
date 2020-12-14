@@ -116,6 +116,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         emailMessage.append(listingStatisticsSectionCreator.build(stats, activeAcbs));
         emailMessage.append(surveillanceStatisticsSectionCreator.build(stats, activeAcbs));
         emailMessage.append(nonConformityStatisticsSectionCreator.build(stats, activeAcbs));
+        emailMessage.append(createMessageFoter());
 
         return emailMessage.toString();
     }
@@ -128,6 +129,16 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         ret.append("Email body has current statistics as of " + currDateCal.getTime());
         ret.append("<br/>");
         ret.append("Email attachment has weekly statistics ending " + endDateCal.getTime());
+        return ret.toString();
+    }
+
+    private String createMessageFoter() {
+        StringBuilder ret = new StringBuilder();
+        ret.append("<br/><br/>");
+        ret.append("In the attached CSV file: <br/>");
+        ret.append("<ul>");
+        ret.append("<li>Total Closed NonConformities - Some Non-Conformities may be closed that are not counted in these statistics</li>");
+        ret.append("</ul>");
         return ret.toString();
     }
 }

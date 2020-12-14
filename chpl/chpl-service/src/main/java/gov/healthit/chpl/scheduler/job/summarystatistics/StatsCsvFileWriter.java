@@ -38,7 +38,7 @@ public class StatsCsvFileWriter {
             "Total Closed Surveillance Activities",
             "Total NonConformities",
             "Total Open NonConformities",
-            "Total Closed NonConformities"
+            "Total Closed NonConformities (See email for definition)"
     };
 
     public void writeCsvFile(String fileName, List<CsvStatistics> statsCsvOutput) {
