@@ -214,9 +214,24 @@ public class QuestionableActivityManager implements EnvironmentAware {
                         QuestionableActivityTriggerConcept.REAL_WORLD_TESTING_REMOVED, activityReason);
             }
             activity = listingQuestionableActivityProvider.checkRealWorldTestingResultsRemoved(origListing, newListing);
-            if (activity != null    ) {
+            if (activity != null) {
                 createListingActivity(activity, origListing.getId(), activityDate, activityUser,
                         QuestionableActivityTriggerConcept.REAL_WORLD_TESTING_REMOVED, activityReason);
+            }
+            List<QuestionableActivityListingDTO> activities
+                = listingQuestionableActivityProvider.checkMeasuresAdded(origListing, newListing);
+            if (activities != null && activities.size() > 0) {
+                activities.stream().forEach(measureActivity -> {
+                    createListingActivity(measureActivity, origListing.getId(), activityDate, activityUser,
+                            QuestionableActivityTriggerConcept.MEASURE_ADDED, activityReason);
+                });
+            }
+            activities = listingQuestionableActivityProvider.checkMeasuresRemoved(origListing, newListing);
+            if (activities != null && activities.size() > 0) {
+                activities.stream().forEach(measureActivity -> {
+                    createListingActivity(measureActivity, origListing.getId(), activityDate, activityUser,
+                            QuestionableActivityTriggerConcept.MEASURE_REMOVED, activityReason);
+                });
             }
 
             // finally check for other changes that are only questionable
@@ -247,7 +262,7 @@ public class QuestionableActivityManager implements EnvironmentAware {
                             activityReason);
                 }
 
-                List<QuestionableActivityListingDTO> activities = listingQuestionableActivityProvider
+                activities = listingQuestionableActivityProvider
                         .checkCqmsAdded(origListing, newListing);
                 for (QuestionableActivityListingDTO currActivity : activities) {
                     createListingActivity(currActivity, origListing.getId(), activityDate,
@@ -303,38 +318,6 @@ public class QuestionableActivityManager implements EnvironmentAware {
             if (certActivity != null) {
                 createCertificationActivity(certActivity, origCertResult.getId(), activityDate,
                         activityUser, QuestionableActivityTriggerConcept.GAP_EDITED, activityReason);
-            }
-        }
-        if (certResultRules.hasCertOption(origCertResult.getNumber(), CertificationResultRules.G1_MACRA)) {
-            certActivities = certResultQuestionableActivityProvider
-                    .checkG1MacraMeasuresAdded(origCertResult, newCertResult);
-            for (QuestionableActivityCertificationResultDTO currCertActivity : certActivities) {
-                createCertificationActivity(currCertActivity, origCertResult.getId(), activityDate,
-                        activityUser, QuestionableActivityTriggerConcept.G1_MEASURE_ADDED, activityReason);
-            }
-        }
-        if (certResultRules.hasCertOption(origCertResult.getNumber(), CertificationResultRules.G1_MACRA)) {
-            certActivities = certResultQuestionableActivityProvider
-                    .checkG1MacraMeasuresRemoved(origCertResult, newCertResult);
-            for (QuestionableActivityCertificationResultDTO currCertActivity : certActivities) {
-                createCertificationActivity(currCertActivity, origCertResult.getId(), activityDate,
-                        activityUser, QuestionableActivityTriggerConcept.G1_MEASURE_REMOVED, activityReason);
-            }
-        }
-        if (certResultRules.hasCertOption(origCertResult.getNumber(), CertificationResultRules.G2_MACRA)) {
-            certActivities = certResultQuestionableActivityProvider
-                    .checkG2MacraMeasuresAdded(origCertResult, newCertResult);
-            for (QuestionableActivityCertificationResultDTO currCertActivity : certActivities) {
-                createCertificationActivity(currCertActivity, origCertResult.getId(), activityDate,
-                        activityUser, QuestionableActivityTriggerConcept.G2_MEASURE_ADDED, activityReason);
-            }
-        }
-        if (certResultRules.hasCertOption(origCertResult.getNumber(), CertificationResultRules.G2_MACRA)) {
-            certActivities = certResultQuestionableActivityProvider
-                    .checkG2MacraMeasuresRemoved(origCertResult, newCertResult);
-            for (QuestionableActivityCertificationResultDTO currCertActivity : certActivities) {
-                createCertificationActivity(currCertActivity, origCertResult.getId(), activityDate,
-                        activityUser, QuestionableActivityTriggerConcept.G2_MEASURE_REMOVED, activityReason);
             }
         }
     }

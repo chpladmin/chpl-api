@@ -98,13 +98,13 @@ public class UserManagementController {
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm ")
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public @ResponseBody User createUser(@RequestBody final CreateUserFromInvitationRequest userInfo)
+    public @ResponseBody User createUser(@RequestBody CreateUserFromInvitationRequest userInfo)
             throws ValidationException, EntityRetrievalException, InvalidArgumentsException,
             UserRetrievalException, MultipleUserAccountsException, UserCreationException,
             MessagingException, JsonProcessingException, EntityCreationException {
 
-        if (userInfo.getUser() == null || userInfo.getUser().getSubjectName() == null) {
-            throw new ValidationException(errorMessageUtil.getMessage("user.subjectName.required"));
+        if (userInfo.getUser() == null || userInfo.getUser().getEmail() == null) {
+            throw new ValidationException(errorMessageUtil.getMessage("user.email.required"));
         }
 
         Set<String> errors = validateCreateUserFromInvitationRequest(userInfo);
@@ -139,7 +139,7 @@ public class UserManagementController {
         .htmlMessage(htmlMessage)
         .sendEmail();
 
-        String activityDescription = "User " + createdUser.getSubjectName() + " was created.";
+        String activityDescription = "User " + createdUser.getEmail() + " was created.";
         activityManager.addActivity(ActivityConcept.USER, createdUser.getId(), activityDescription,
                 null, createdUser, createdUser.getId());
 
@@ -148,13 +148,9 @@ public class UserManagementController {
         return result;
     }
 
-    private Set<String> validateCreateUserFromInvitationRequest(final CreateUserFromInvitationRequest request) {
+    private Set<String> validateCreateUserFromInvitationRequest(CreateUserFromInvitationRequest request) {
         Set<String> validationErrors = new HashSet<String>();
 
-        if (request.getUser().getSubjectName().length() > errorMessageUtil.getMessageAsInteger("maxLength.subjectName")) {
-            validationErrors.add(errorMessageUtil.getMessage("user.subjectName.maxlength",
-                    errorMessageUtil.getMessageAsInteger("maxLength.subjectName")));
-        }
         if (request.getUser().getFullName().length() > errorMessageUtil.getMessageAsInteger("maxLength.fullName")) {
             validationErrors.add(errorMessageUtil.getMessage("user.fullName.maxlength",
                     errorMessageUtil.getMessageAsInteger("maxLength.fullName")));
@@ -189,8 +185,9 @@ public class UserManagementController {
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm ")
     @RequestMapping(value = "/confirm", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public User confirmUser(@RequestBody final String hash) throws InvalidArgumentsException, UserRetrievalException,
-    EntityRetrievalException, MessagingException, JsonProcessingException, EntityCreationException {
+    public User confirmUser(@RequestBody String hash) throws InvalidArgumentsException, UserRetrievalException,
+    EntityRetrievalException, MessagingException, JsonProcessingException, EntityCreationException,
+    MultipleUserAccountsException {
         InvitationDTO invitation = invitationManager.getByConfirmationHash(hash);
 
         if (invitation == null || invitation.isOlderThan(VALID_INVITATION_LENGTH)) {
@@ -210,7 +207,7 @@ public class UserManagementController {
     @RequestMapping(value = "/{userId}/authorize", method = RequestMethod.POST,
     consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public String authorizeUser(@RequestBody final AuthorizeCredentials credentials)
+    public String authorizeUser(@RequestBody AuthorizeCredentials credentials)
             throws InvalidArgumentsException, JWTCreationException, UserRetrievalException,
             EntityRetrievalException, MultipleUserAccountsException {
 
@@ -261,7 +258,7 @@ public class UserManagementController {
                     + "ROLE_ACB and ROLE_ATL can add users to their own organization.")
     @RequestMapping(value = "/invite", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public UserInvitation inviteUser(@RequestBody final UserInvitation invitation)
+    public UserInvitation inviteUser(@RequestBody UserInvitation invitation)
             throws InvalidArgumentsException, UserCreationException, UserRetrievalException,
             UserPermissionRetrievalException, AddressException, MessagingException {
 
@@ -274,6 +271,8 @@ public class UserManagementController {
             createdInvite = invitationManager.inviteAdmin(invitation.getEmailAddress());
         } else if (invitation.getRole().equals(Authority.ROLE_ONC)) {
             createdInvite = invitationManager.inviteOnc(invitation.getEmailAddress());
+        } else if (invitation.getRole().equals(Authority.ROLE_ONC_STAFF)) {
+            createdInvite = invitationManager.inviteOncStaff(invitation.getEmailAddress());
         } else if (invitation.getRole().equals(Authority.ROLE_CMS_STAFF)) {
             createdInvite = invitationManager.inviteCms(invitation.getEmailAddress());
         } else if (invitation.getRole().equals(Authority.ROLE_ACB)
@@ -291,7 +290,8 @@ public class UserManagementController {
         }
 
         // send email
-        String htmlMessage = "<p>Hi,</p>" + "<p>You have been granted a new role on ONC's Certified Health IT Product List (CHPL) "
+        String htmlMessage = "<p>Hi,</p>"
+                + "<p>You have been granted a new role on ONC's Certified Health IT Product List (CHPL) "
                 + "which will allow you to manage certified product listings on the CHPL. "
                 + "Please click the link below to create or update your account: <br/>"
                 + env.getProperty("chplUrlBegin") + "/#/registration/create-user/" + createdInvite.getInviteToken()
@@ -317,7 +317,7 @@ public class UserManagementController {
     @ApiOperation(value = "Modify user information.", notes = "")
     @RequestMapping(value = "/{userId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public User updateUserDetails(@RequestBody final User userInfo)
+    public User updateUserDetails(@RequestBody User userInfo)
             throws UserRetrievalException, UserPermissionRetrievalException, JsonProcessingException,
             EntityCreationException, EntityRetrievalException, ValidationException, UserAccountExistsException,
             MultipleUserAccountsException {
@@ -335,7 +335,7 @@ public class UserManagementController {
                     + "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
-    public String deleteUser(@PathVariable("userId") final Long userId)
+    public String deleteUser(@PathVariable("userId") Long userId)
             throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException,
             JsonProcessingException, EntityCreationException, EntityRetrievalException {
 
@@ -376,14 +376,26 @@ public class UserManagementController {
         return response;
     }
 
-    @ApiOperation(value = "View a specific user's details.",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. View a specific user's details.",
             notes = "The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "
                     + "have ROLE_ACB.")
     @RequestMapping(value = "/{userName}/details", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
-    public @ResponseBody User getUser(@PathVariable("userName") final String userName)
+    public @ResponseBody User getUserByUsername(@PathVariable("userName") String userName)
             throws UserRetrievalException {
 
-        return userManager.getUserInfo(userName);
+        return userManager.getUserInfoByName(userName);
+    }
+
+    @ApiOperation(value = "View a specific user's details.",
+            notes = "The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "
+                    + "have ROLE_ACB.")
+    @RequestMapping(value = "/beta/{id}/details", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public @ResponseBody User getUser(@PathVariable("id") Long id)
+            throws UserRetrievalException {
+
+        return userManager.getUserInfo(id);
     }
 }
