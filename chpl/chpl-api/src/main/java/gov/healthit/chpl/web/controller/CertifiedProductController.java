@@ -182,10 +182,9 @@ public class CertifiedProductController {
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductById(
             @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
 
-            LOGGER.info("In this method");
-            CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetails(certifiedProductId);
-            certifiedProduct = validateCertifiedProduct(certifiedProduct);
-            return certifiedProduct;
+        CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetails(certifiedProductId);
+        certifiedProduct = validateCertifiedProduct(certifiedProduct);
+        return certifiedProduct;
     }
 
     /**
