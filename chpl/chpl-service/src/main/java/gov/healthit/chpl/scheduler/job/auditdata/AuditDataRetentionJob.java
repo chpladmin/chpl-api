@@ -48,8 +48,7 @@ public class AuditDataRetentionJob implements Job {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-
-        LOGGER.info("STARTING AuditDataRetentionJob");
+        LOGGER.info("********* Starting the AuditDataRetentionJob. *********");
         try {
             retentionPolicyInMonths = Integer.valueOf(env.getProperty("auditDataRetentionPolicyInMonths"));
             for (AuditDataRetentionService service : auditDataRetentionServices) {
@@ -59,7 +58,7 @@ public class AuditDataRetentionJob implements Job {
         } catch (Exception e) {
             LOGGER.catching(e);
         }
-        LOGGER.info("COMPLETED AuditDataRetentionJob");
+        LOGGER.info("********* Completed the AuditDataRetentionJob. *********");
     }
 
     private void archiveData() throws SQLException, IOException {
