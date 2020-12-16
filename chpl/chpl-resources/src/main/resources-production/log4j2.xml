@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Configuration>
 <Configuration status="warn" monitorInterval="300"
-    name="CHPL-Service-DEV" packages="">
+    name="CHPL-Service-PROD" packages="">
     <Properties>
         <Property name="logDir">/opt/tomcat8/logs</Property>
     </Properties>
