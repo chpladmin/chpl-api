@@ -210,7 +210,6 @@ public class Edition2015ListingValidator extends Validator {
             reviewers.add(attestedCriteriaCqmReviewer);
             reviewers.add(cqmAttestedCriteriaReviewer);
             reviewers.add(duplicateDataReviewer);
-            reviewers.add(svapReviewer);
             reviewers.add(gapAllowedReviewer);
             reviewers.add(measureReviewer);
         }
@@ -231,6 +230,7 @@ public class Edition2015ListingValidator extends Validator {
             comparisonReviewers.add(listingStatusAndUserRoleReviewer);
             comparisonReviewers.add(privacyAndSecurityCriteriaReviewer);
             comparisonReviewers.add(realWorldTestingReviewer);
+            comparisonReviewers.add(svapReviewer);
         }
         return comparisonReviewers;
     }

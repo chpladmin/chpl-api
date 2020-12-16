@@ -25,6 +25,7 @@ import gov.healthit.chpl.validation.listing.reviewer.SvapReviewer;
 public class SvapReviewerTest {
     private static final String INVALID_EDITION_ERROR_KEY = "listing.criteria.svap.invalidEdition";
     private static final String INVALID_SVAP_CRITERIA_ERROR_KEY = "listing.criteria.svap.invalidCriteria";
+    private static final String REMOVED_SVAP_WARNING_KEY = "listing.criteria.svap.removed";
 
     private SvapDAO svapDao;
     private ErrorMessageUtil errorMessageUtil;
@@ -53,7 +54,19 @@ public class SvapReviewerTest {
         certEdition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 3L);
         certEdition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
 
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+        CertifiedProductSearchDetails origlisting = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (a)(1)")
+                                .id(1L)
+                                .build())
+                        .build())
+                .certificationEdition(certEdition)
+                .build();
+
+        CertifiedProductSearchDetails updatedlisting = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .id(1L)
                         .success(true)
@@ -70,9 +83,9 @@ public class SvapReviewerTest {
                 .certificationEdition(certEdition)
                 .build();
 
-        svapReviewer.review(listing);
+        svapReviewer.review(origlisting, updatedlisting);
 
-        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(0, updatedlisting.getErrorMessages().size());
     }
 
     @Test
@@ -81,7 +94,19 @@ public class SvapReviewerTest {
         certEdition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 3L);
         certEdition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
 
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+        CertifiedProductSearchDetails origListing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (a)(2)")
+                                .id(2L)
+                                .build())
+                        .build())
+                .certificationEdition(certEdition)
+                .build();
+
+        CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .id(1L)
                         .success(true)
@@ -98,9 +123,9 @@ public class SvapReviewerTest {
                 .certificationEdition(certEdition)
                 .build();
 
-        svapReviewer.review(listing);
+        svapReviewer.review(origListing, updatedListing);
 
-        assertEquals(1, listing.getErrorMessages().size());
+        assertEquals(1, updatedListing.getErrorMessages().size());
     }
 
     @Test
@@ -109,7 +134,19 @@ public class SvapReviewerTest {
         certEdition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 2L);
         certEdition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2014");
 
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+        CertifiedProductSearchDetails origListing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.314 (a)(1)")
+                                .id(1L)
+                                .build())
+                        .build())
+                .certificationEdition(certEdition)
+                .build();
+
+        CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .id(1L)
                         .success(true)
@@ -126,11 +163,51 @@ public class SvapReviewerTest {
                 .certificationEdition(certEdition)
                 .build();
 
-        svapReviewer.review(listing);
+        svapReviewer.review(origListing, updatedListing);
 
-        assertEquals(1, listing.getErrorMessages().size());
+        assertEquals(1, updatedListing.getErrorMessages().size());
     }
 
+    @Test
+    public void review_addedReplacedSvap_WarningMessageExists() {
+        Map<String, Object> certEdition = new HashMap<String, Object>();
+        certEdition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 3L);
+        certEdition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
+
+        CertifiedProductSearchDetails origListing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (a)(2)")
+                                .id(2L)
+                                .build())
+                        .build())
+                .certificationEdition(certEdition)
+                .build();
+
+        CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (a)(2)")
+                                .id(2L)
+                                .build())
+                        .svap(CertificationResultSvap.builder()
+                                .svapId(1L)
+                                .regulatoryTextCitation("reg1")
+                                .approvedStandardVersion("ver1")
+                                .build())
+                        .build())
+                .certificationEdition(certEdition)
+                .build();
+
+        svapReviewer.review(origListing, updatedListing);
+
+        assertEquals(1, updatedListing.getWarningMessages().size());
+
+    }
 
     private List<SvapCriteriaMap> getSvapCriteriaMaps() {
         List<SvapCriteriaMap> map = new ArrayList<SvapCriteriaMap>();
@@ -148,6 +225,7 @@ public class SvapReviewerTest {
                         .svapId(1L)
                         .regulatoryTextCitation("reg1")
                         .approvedStandardVersion("ver1")
+                        .replaced(true)
                         .build())
                 .build());
 
@@ -164,6 +242,7 @@ public class SvapReviewerTest {
                         .svapId(2L)
                         .regulatoryTextCitation("reg2")
                         .approvedStandardVersion("ver2")
+                        .replaced(false)
                         .build())
                 .build());
 
@@ -180,6 +259,7 @@ public class SvapReviewerTest {
                         .svapId(2L)
                         .regulatoryTextCitation("reg2")
                         .approvedStandardVersion("ver2")
+                        .replaced(false)
                         .build())
                 .build());
 
