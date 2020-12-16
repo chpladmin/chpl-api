@@ -44,7 +44,7 @@ public class SvapReviewer implements ComparisonReviewer{
         //Make sure there are no SVAPs for non-2015 listings
 
         if (!isListing2015Edition(existingListing)) {
-            existingListing.getCertificationResults().stream()
+            updatedListing.getCertificationResults().stream()
                     .filter(cr -> cr.getSvaps() != null && cr.getSvaps().size() > 0)
                     .forEach(cr -> updatedListing.getErrorMessages().add(
                             errorMessageUtil.getMessage("listing.criteria.svap.invalidEdition",
