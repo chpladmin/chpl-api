@@ -16,7 +16,6 @@ public class AuditDataFile {
         this.auditDataFilePath = auditDataFilePath;
     }
 
-
     public String getRandomFilename() {
         return auditDataFilePath + UUID.randomUUID().toString() + ".csv";
     }
