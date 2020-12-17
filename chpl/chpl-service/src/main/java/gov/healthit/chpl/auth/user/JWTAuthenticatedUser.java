@@ -8,12 +8,14 @@ import org.springframework.security.core.GrantedAuthority;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import lombok.Data;
 
+@Data
 public class JWTAuthenticatedUser implements User {
 
     private static final long serialVersionUID = 1L;
     private Long id;
-    private String subjectName;
+    private String email;
     private String fullName;
     private String friendlyName;
     private Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
@@ -27,52 +29,20 @@ public class JWTAuthenticatedUser implements User {
 
     /** Default constructor. */
     public JWTAuthenticatedUser() {
-        this.subjectName = null;
+        this.email = null;
     }
 
-    public JWTAuthenticatedUser(final String subjectName) {
-        this.subjectName = subjectName;
-    }
-
-    public String getSubjectName() {
-        return subjectName;
-    }
-
-    public void setSubjectName(final String subject) {
-        this.subjectName = subject;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(final String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getFriendlyName() {
-        return friendlyName;
-    }
-
-    public void setFriendlyName(final String friendlyName) {
-        this.friendlyName = friendlyName;
-    }
-
-    public Set<GrantedPermission> getPermissions() {
-        return this.permissions;
-    }
-
-    public void addPermission(final GrantedPermission permission) {
+    public void addPermission(GrantedPermission permission) {
         this.permissions.add(permission);
     }
 
-    public void addPermission(final String permissionValue) {
+    public void addPermission(String permissionValue) {
         GrantedPermission permission = new GrantedPermission(permissionValue);
         this.permissions.add(permission);
     }
 
     @Override
-    public void removePermission(final String permissionValue) {
+    public void removePermission(String permissionValue) {
         this.permissions.remove(new GrantedPermission(permissionValue));
     }
 
@@ -102,21 +72,13 @@ public class JWTAuthenticatedUser implements User {
     }
 
     @Override
-    public void setAuthenticated(final boolean arg0) throws IllegalArgumentException {
+    public void setAuthenticated(boolean arg0) throws IllegalArgumentException {
         this.authenticated = arg0;
-    }
-
-    public UserDTO getImpersonatingUser() {
-        return impersonatingUser;
-    }
-
-    public void setImpersonatingUser(final UserDTO impersonatingUser) {
-        this.impersonatingUser = impersonatingUser;
     }
 
     @Override
     public String getName() {
-        return subjectName;
+        return email;
     }
 
     @Override
@@ -126,7 +88,7 @@ public class JWTAuthenticatedUser implements User {
 
     @Override
     public String getUsername() {
-        return subjectName;
+        return email;
     }
 
     @Override
@@ -149,21 +111,18 @@ public class JWTAuthenticatedUser implements User {
         return accountEnabled;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
     @Override
     public boolean getPasswordResetRequired() {
-        return passwordResetRequired;
+        return this.passwordResetRequired;
     }
 
     @Override
-    public void setPasswordResetRequired(final boolean passwordResetRequired) {
-        this.passwordResetRequired = passwordResetRequired;
+    public String getSubjectName() {
+        return email;
+    }
+
+    @Override
+    public void setSubjectName(String subject) {
+        this.email = subject;
     }
 }

@@ -65,7 +65,8 @@ public class ChplCacheConfig {
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.GET_ALL_UNRESTRICTED_APIKEYS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.GET_DECERTIFIED_DEVELOPERS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.JOB_TYPES));
-        backingManager.addCacheIfAbsent(createEternalCache(CacheNames.MACRA_MEASURES));
+        backingManager.addCacheIfAbsent(createEternalCache(CacheNames.MEASURES));
+        backingManager.addCacheIfAbsent(createEternalCache(CacheNames.MEASURE_TYPES));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.PRACTICE_TYPE_NAMES));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.PRODUCT_NAMES));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.TEST_DATA));
@@ -78,7 +79,6 @@ public class ChplCacheConfig {
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.PREFETCHED_ALL_CERT_IDS_WITH_PRODUCTS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.PREFETCHED_PRODUCT_NAMES));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.PREFETCHED_DEVELOPER_NAMES));
-
         return cacheManager;
     }
 
