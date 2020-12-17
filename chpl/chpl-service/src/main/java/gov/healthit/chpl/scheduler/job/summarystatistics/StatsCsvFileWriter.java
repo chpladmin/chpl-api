@@ -26,9 +26,9 @@ public class StatsCsvFileWriter {
             "Total Developers With 2014 Listings",
             "Total Developers With 2015 Listings",
             "Total Unique Products",
-            "Total Products With Active 2014 Listings",
-            "Total Products With Active 2015 Listings",
-            "Total Products With Active Listings",
+            "Total Unique Products With Active 2014 Listings",
+            "Total Unique Products With Active 2015 Listings",
+            "Total Unique Products With Active Listings",
             "Total Listings",
             "Total 2014 Listings",
             "Total 2015 Listings",
@@ -38,10 +38,11 @@ public class StatsCsvFileWriter {
             "Total Closed Surveillance Activities",
             "Total NonConformities",
             "Total Open NonConformities",
-            "Total Closed NonConformities"
+            "Total Closed NonConformities (See email for definition)"
     };
 
     public void writeCsvFile(String fileName, List<CsvStatistics> statsCsvOutput) {
+        getLogger().info("Writing statistics CSV");
         CSVFormat csvFileFormat = CSVFormat.DEFAULT.withRecordSeparator(NEW_LINE_SEPARATOR);
         SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM dd yyyy");
 
@@ -54,15 +55,15 @@ public class StatsCsvFileWriter {
             for (CsvStatistics stat : statsCsvOutput) {
                 List<String> statRecord = new ArrayList<String>();
                 dateFormat.setTimeZone(TimeZone.getTimeZone(ZoneOffset.UTC));
-                String dateString = dateFormat.format(stat.getDateRange().getEndDate());
+                String dateString = dateFormat.format(stat.getEndDate());
                 statRecord.add(dateString);
                 statRecord.add(String.valueOf(stat.getTotalDevelopers()));
                 statRecord.add(String.valueOf(stat.getTotalDevelopersWith2014Listings()));
                 statRecord.add(String.valueOf(stat.getTotalDevelopersWith2015Listings()));
-                statRecord.add(String.valueOf(stat.getTotalCertifiedProducts()));
-                statRecord.add(String.valueOf(stat.getTotalCPsActive2014Listings()));
-                statRecord.add(String.valueOf(stat.getTotalCPsActive2015Listings()));
-                statRecord.add(String.valueOf(stat.getTotalCPsActiveListings()));
+                statRecord.add(String.valueOf(stat.getTotalUniqueProducts()));
+                statRecord.add(String.valueOf(stat.getTotalUniqueProductsActive2014Listings()));
+                statRecord.add(String.valueOf(stat.getTotalUniqueProductsActive2015Listings()));
+                statRecord.add(String.valueOf(stat.getTotalUniqueProductsActiveListings()));
                 statRecord.add(String.valueOf(stat.getTotalListings()));
                 statRecord.add(String.valueOf(stat.getTotal2014Listings()));
                 statRecord.add(String.valueOf(stat.getTotal2015Listings()));
