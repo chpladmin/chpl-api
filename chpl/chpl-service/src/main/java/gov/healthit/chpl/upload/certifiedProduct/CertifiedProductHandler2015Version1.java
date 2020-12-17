@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
@@ -22,7 +23,6 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
-import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
@@ -35,8 +35,6 @@ import gov.healthit.chpl.entity.CQMCriterionEntity;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultAdditionalSoftwareEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity;
-import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultG1MacraMeasureEntity;
-import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultG2MacraMeasureEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestDataEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestFunctionalityEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestProcedureEntity;
@@ -55,6 +53,11 @@ import gov.healthit.chpl.entity.listing.pending.PendingTestParticipantEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingTestTaskEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.listing.measure.ListingMeasureTypeEntity;
+import gov.healthit.chpl.listing.measure.MeasureCriterionMapEntity;
+import gov.healthit.chpl.listing.measure.MeasureEntity;
+import gov.healthit.chpl.listing.measure.PendingListingMeasureCriterionMapEntity;
+import gov.healthit.chpl.listing.measure.PendingListingMeasureEntity;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap2015Version1;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -63,20 +66,19 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler {
 
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductHandler2015Version1.class);
-    @Autowired
-    private ErrorMessageUtil msgUtil;
     private TemplateColumnIndexMap templateColumnIndexMap;
+    private static final String G1_MEASUREMENT_TYPE_NAME = "G1";
+    private static final String G2_MEASUREMENT_TYPE_NAME = "G2";
 
     // we will ignore g1 and g2 macra measures for (g)(7) criteria for now
     // they shouldn't be there but it's hard for users to change the spreadsheet
-    protected static final String G1_CRITERIA_TO_IGNORE = "170.315 (g)(7)";
-    protected static final String G2_CRITERIA_TO_IGNORE = "170.315 (g)(7)";
+    protected static final String MEASURE_CRITERIA_TO_IGNORE = "170.315 (g)(7)";
 
     private List<PendingTestParticipantEntity> participants;
     private List<PendingTestTaskEntity> tasks;
 
     @Autowired
-    public CertifiedProductHandler2015Version1(final ErrorMessageUtil msgUtil) {
+    public CertifiedProductHandler2015Version1(ErrorMessageUtil msgUtil) {
         super(msgUtil);
         templateColumnIndexMap = new TemplateColumnIndexMap2015Version1();
     }
@@ -463,10 +465,12 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                         parseTestFunctionality(pendingCertifiedProduct, cert, currIndex);
                         currIndex += getColumnIndexMap().getTestFunctionalityColumnCount();
                     } else if (colTitle.equalsIgnoreCase(getColumnIndexMap().getG1MeasureColumnLabel())) {
-                        parseG1Measures(cert, currIndex);
+                        parseMeasures(pendingCertifiedProduct, cert,
+                                listingMeasureDao.getMeasureTypeEntity(G1_MEASUREMENT_TYPE_NAME), currIndex);
                         currIndex += getColumnIndexMap().getG1MeasureColumnCount();
                     } else if (colTitle.equalsIgnoreCase(getColumnIndexMap().getG2MeasureColumnLabel())) {
-                        parseG2Measures(cert, currIndex);
+                        parseMeasures(pendingCertifiedProduct, cert,
+                                listingMeasureDao.getMeasureTypeEntity(G2_MEASUREMENT_TYPE_NAME), currIndex);
                         currIndex += getColumnIndexMap().getG2MeasureColumnCount();
                     } else if (colTitle.equalsIgnoreCase(getColumnIndexMap().getAdditionalSoftwareColumnLabel())) {
                         Boolean hasAdditionalSoftware = asBoolean(firstRow.get(currIndex).trim());
@@ -683,9 +687,10 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
         }
     }
 
-    protected void parseG1Measures(final PendingCertificationResultEntity cert, final int measureCol) {
+    protected void parseMeasures(PendingCertifiedProductEntity listing, PendingCertificationResultEntity cert,
+            ListingMeasureTypeEntity type, int measureCol) {
         // ignore measures for G7
-        if (cert.getMappedCriterion().getNumber().equals(G1_CRITERIA_TO_IGNORE)) {
+        if (cert.getMappedCriterion().getNumber().equals(MEASURE_CRITERIA_TO_IGNORE)) {
             return;
         }
 
@@ -693,38 +698,98 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
             String measureVal = row.get(measureCol).trim();
             if (!StringUtils.isEmpty(measureVal) && !measureVal.equalsIgnoreCase(Boolean.FALSE.toString())
                     && !measureVal.equals("0")) {
-                PendingCertificationResultG1MacraMeasureEntity mmEntity = new PendingCertificationResultG1MacraMeasureEntity();
-                mmEntity.setEnteredValue(measureVal);
-                MacraMeasureDTO mmDto = macraDao.getByCriterionAndValue(cert.getMappedCriterion().getId(),
-                        measureVal);
-                if (mmDto != null) {
-                    mmEntity.setMacraId(mmDto.getId());
+                Long macraId = macraMeasureDao.getMacraMeasureIdByCriterionAndValue(
+                        cert.getMappedCriterion().getId(), measureVal);
+                if (macraId == null) {
+                    //no macra measure could be found - save entered values so we can make an error msg
+                    PendingListingMeasureEntity measureEntity = getNotFoundMeasureEntityFromListing(listing, measureVal, type);
+                    if (measureEntity != null) {
+                        addAssociatedCriterionToMeasure(measureEntity, cert);
+                    } else {
+                        measureEntity = new PendingListingMeasureEntity();
+                        measureEntity.setUploadedValue(measureVal);
+                        measureEntity.setMeasureTypeId(type.getId());
+                        measureEntity.setType(type);
+                        addAssociatedCriterionToMeasure(measureEntity, cert);
+                        listing.getMeasures().add(measureEntity);
+                    }
+                } else {
+                    MeasureEntity mappedMeasure = measureDao.getEntityByMacraMeasureId(macraId);
+                    if (mappedMeasure == null) {
+                        //no measure was mapped to this macra measure - save entered values so we can make an error msg
+                        PendingListingMeasureEntity measureEntity
+                            = getNotFoundMeasureEntityFromListing(listing, measureVal, type);
+                        if (measureEntity != null) {
+                            addAssociatedCriterionToMeasure(measureEntity, cert);
+                        } else {
+                            measureEntity = new PendingListingMeasureEntity();
+                            measureEntity.setUploadedValue(measureVal);
+                            measureEntity.setMeasureTypeId(type.getId());
+                            measureEntity.setType(type);
+                            addAssociatedCriterionToMeasure(measureEntity, cert);
+                            listing.getMeasures().add(measureEntity);
+                        }
+                    } else {
+                        PendingListingMeasureEntity measureEntity
+                            = getMeasureEntityFromListing(listing, mappedMeasure, type);
+                        if (measureEntity == null) {
+                            measureEntity = new PendingListingMeasureEntity();
+                            measureEntity.setUploadedValue(measureVal);
+                            measureEntity.setMeasureId(mappedMeasure.getId());
+                            measureEntity.setMeasure(mappedMeasure);
+                            measureEntity.setMeasureTypeId(type.getId());
+                            measureEntity.setType(type);
+                            //add all allowed criteria if the user cannot select
+                            if (!mappedMeasure.getCriteriaSelectionRequired()) {
+                                for (MeasureCriterionMapEntity requiredCriterionMap : mappedMeasure.getAllowedCriteria()) {
+                                    PendingListingMeasureCriterionMapEntity criterionMap
+                                        = new PendingListingMeasureCriterionMapEntity();
+                                    criterionMap.setCertificationCriterionId(requiredCriterionMap.getCertificationCriterionId());
+                                    criterionMap.setCriterion(requiredCriterionMap.getCriterion());
+                                    measureEntity.getAssociatedCriteria().add(criterionMap);
+                                }
+                            }
+                            listing.getMeasures().add(measureEntity);
+                        }
+                        addAssociatedCriterionToMeasure(measureEntity, cert);
+                    }
                 }
-                cert.getG1MacraMeasures().add(mmEntity);
             }
         }
     }
 
-    protected void parseG2Measures(final PendingCertificationResultEntity cert, final int measureCol) {
-        // ignore measures for G7
-        if (cert.getMappedCriterion().getNumber().equals(G2_CRITERIA_TO_IGNORE)) {
-            return;
-        }
+    private void addAssociatedCriterionToMeasure(PendingListingMeasureEntity mmEntity, PendingCertificationResultEntity cert) {
+        PendingListingMeasureCriterionMapEntity criterionMap = new PendingListingMeasureCriterionMapEntity();
+        criterionMap.setCertificationCriterionId(cert.getMappedCriterion().getId());
+        try {
+            criterionMap.setCriterion(certDao.getEntityById(criterionMap.getCertificationCriterionId()));
+        } catch (EntityRetrievalException ignore) { }
+        mmEntity.getAssociatedCriteria().add(criterionMap);
+    }
 
-        for (CSVRecord row : getRecord()) {
-            String measureVal = row.get(measureCol).trim();
-            if (!StringUtils.isEmpty(measureVal) && !measureVal.equalsIgnoreCase(Boolean.FALSE.toString())
-                    && !measureVal.equals("0")) {
-                PendingCertificationResultG2MacraMeasureEntity mmEntity = new PendingCertificationResultG2MacraMeasureEntity();
-                mmEntity.setEnteredValue(measureVal.trim());
-                MacraMeasureDTO mmDto = macraDao.getByCriterionAndValue(cert.getMappedCriterion().getId(),
-                        measureVal);
-                if (mmDto != null) {
-                    mmEntity.setMacraId(mmDto.getId());
-                }
-                cert.getG2MacraMeasures().add(mmEntity);
-            }
-        }
+    private PendingListingMeasureEntity getMeasureEntityFromListing(PendingCertifiedProductEntity listing,
+            MeasureEntity measureToFind, ListingMeasureTypeEntity measureType) {
+        Optional<PendingListingMeasureEntity> foundMeasure =
+                listing.getMeasures().stream()
+                .filter(listingMeasure -> listingMeasure.getMeasureId() != null
+                                                && measureToFind.getId() != null
+                                                && listingMeasure.getMeasureId().equals(measureToFind.getId()))
+                .filter(listingMeasureSameId ->
+                    listingMeasureSameId.getMeasureTypeId().equals(measureType.getId()))
+                .findFirst();
+        return foundMeasure.isPresent() ? foundMeasure.get() : null;
+    }
+
+    private PendingListingMeasureEntity getNotFoundMeasureEntityFromListing(PendingCertifiedProductEntity listing,
+            String uploadedText, ListingMeasureTypeEntity measureType) {
+        Optional<PendingListingMeasureEntity> foundMeasure =
+                listing.getMeasures().stream()
+                .filter(listingMeasure -> listingMeasure.getUploadedValue() != null
+                                                && listingMeasure.getUploadedValue().equals(uploadedText))
+                .filter(listingMeasureSameId ->
+                    listingMeasureSameId.getMeasureTypeId().equals(measureType.getId()))
+                .findFirst();
+        return foundMeasure.isPresent() ? foundMeasure.get() : null;
     }
 
     protected void parseTasksAndParticipants(final PendingCertifiedProductEntity product,
@@ -771,7 +836,8 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                                             + product.getUniqueId() + " has no participant with unique id '"
                                             + participantUniqueIds[i] + "'  defined in the file.");
                         } else {
-                            PendingCertificationResultTestTaskParticipantEntity ttPartEntity = new PendingCertificationResultTestTaskParticipantEntity();
+                            PendingCertificationResultTestTaskParticipantEntity ttPartEntity
+                                = new PendingCertificationResultTestTaskParticipantEntity();
                             ttPartEntity.setCertTestTask(certTask);
                             ttPartEntity.setTestParticipant(participantEntity);
                             certTask.getTestParticipants().add(ttPartEntity);

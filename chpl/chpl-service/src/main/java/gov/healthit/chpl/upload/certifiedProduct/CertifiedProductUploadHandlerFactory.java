@@ -22,8 +22,6 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 @Component
 public class CertifiedProductUploadHandlerFactory {
     private UploadTemplateVersionDAO templateVersionDao;
-    private CertifiedProductHandler2014Version1 handler2014Version1;
-    private CertifiedProductHandler2014Version2 handler2014Version2;
     private CertifiedProductHandler2015Version1 handler2015Version1;
     private CertifiedProductHandler2015Version2 handler2015Version2;
     private CertifiedProductHandler2015Version3 handler2015Version3;
@@ -34,8 +32,6 @@ public class CertifiedProductUploadHandlerFactory {
     @Autowired
     public CertifiedProductUploadHandlerFactory(
             UploadTemplateVersionDAO templateVersionDao,
-            @Qualifier("certifiedProductHandler2014Version1") CertifiedProductHandler2014Version1 handler2014Version1,
-            @Qualifier("certifiedProductHandler2014Version2") CertifiedProductHandler2014Version2 handler2014Version2,
             @Qualifier("certifiedProductHandler2015Version1") CertifiedProductHandler2015Version1 handler2015Version1,
             @Qualifier("certifiedProductHandler2015Version2") CertifiedProductHandler2015Version2 handler2015Version2,
             @Qualifier("certifiedProductHandler2015Version3") CertifiedProductHandler2015Version3 handler2015Version3,
@@ -43,8 +39,6 @@ public class CertifiedProductUploadHandlerFactory {
             @Qualifier("certifiedProductHandler2015Version5") CertifiedProductHandler2015Version5 handler2015Version5,
             ErrorMessageUtil msgUtil) {
         this.templateVersionDao = templateVersionDao;
-        this.handler2014Version1 = handler2014Version1;
-        this.handler2014Version2 = handler2014Version2;
         this.handler2015Version1 = handler2015Version1;
         this.handler2015Version2 = handler2015Version2;
         this.handler2015Version3 = handler2015Version3;
@@ -130,10 +124,6 @@ public class CertifiedProductUploadHandlerFactory {
         if (templateVersion == null) {
             String msg = msgUtil.getMessage("listing.upload.badHeader", trimmedHeadingStr);
             throw new InvalidArgumentsException(msg);
-        } else if (templateVersion.getName().equals(UploadTemplateVersion.EDITION_2014_VERSION_1.getName())) {
-            handler = handler2014Version1;
-        } else if (templateVersion.getName().equals(UploadTemplateVersion.EDITION_2014_VERSION_2.getName())) {
-            handler = handler2014Version2;
         } else if (templateVersion.getName().equals(UploadTemplateVersion.EDITION_2015_VERSION_1.getName())) {
             handler = handler2015Version1;
         } else if (templateVersion.getName().equals(UploadTemplateVersion.EDITION_2015_VERSION_2.getName())) {
