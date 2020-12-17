@@ -1,16 +1,10 @@
 package gov.healthit.chpl.validation.pendingListing.reviewer;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
@@ -118,59 +112,6 @@ public class RequiredDataReviewer extends PermissionBasedReviewer {
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 }
             }
-
-            //macra measures are saved regardless of whether the criteria has been met
-            //so check for duplicates no matter what
-            if (cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 1) {
-                List<String> g1Warnings =
-                        validateMacraMeasuresAreUniqueForCertificationResult(
-                                cert.getG1MacraMeasures(),
-                                Util.formatCriteriaNumber(cert.getCriterion()),
-                                "listing.criteria.duplicateG1MacraMeasure");
-                if (g1Warnings.size() > 0) {
-                    listing.getWarningMessages().addAll(g1Warnings);
-                    cert.setG1MacraMeasures(removeDuplicateMacraMeasures(cert.getG1MacraMeasures()));
-                }
-            }
-
-            if (cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 1) {
-                List<String> g2Warnings =
-                        validateMacraMeasuresAreUniqueForCertificationResult(
-                                cert.getG2MacraMeasures(),
-                                Util.formatCriteriaNumber(cert.getCriterion()),
-                                "listing.criteria.duplicateG2MacraMeasure");
-                if (g2Warnings.size() > 0) {
-                    listing.getWarningMessages().addAll(g2Warnings);
-                    cert.setG2MacraMeasures(removeDuplicateMacraMeasures(cert.getG2MacraMeasures()));
-                }
-            }
         }
-    }
-
-    private List<String> validateMacraMeasuresAreUniqueForCertificationResult(List<PendingCertificationResultMacraMeasureDTO> macraMeasures, String certNumber, String messageCode) {
-        List<String> messages = new ArrayList<String>();
-        Set<String> uniqueMacras = new HashSet<String>();
-        for (PendingCertificationResultMacraMeasureDTO macraMeasure : macraMeasures) {
-            if (macraMeasure.getEnteredValue() != null
-                    && uniqueMacras.contains(macraMeasure.getEnteredValue())) { // Duplicate
-                messages.add(msgUtil.getMessage(messageCode, certNumber, macraMeasure.getEnteredValue()));
-            } else {
-                uniqueMacras.add(macraMeasure.getEnteredValue());
-            }
-        }
-        return messages;
-    }
-
-    private List<PendingCertificationResultMacraMeasureDTO> removeDuplicateMacraMeasures(List<PendingCertificationResultMacraMeasureDTO> macraMeasures) {
-        List<PendingCertificationResultMacraMeasureDTO> dedupedMacraMeasures = new ArrayList<PendingCertificationResultMacraMeasureDTO>();
-        Set<String> uniqueMacras = new HashSet<String>();
-        for (PendingCertificationResultMacraMeasureDTO macraMeasure : macraMeasures) {
-            if (macraMeasure.getEnteredValue() != null
-                    && !uniqueMacras.contains(macraMeasure.getEnteredValue())) {
-                dedupedMacraMeasures.add(macraMeasure);
-                uniqueMacras.add(macraMeasure.getEnteredValue());
-            }
-        }
-        return dedupedMacraMeasures;
     }
 }
