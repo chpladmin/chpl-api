@@ -4,6 +4,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.validator.routines.UrlValidator;
@@ -127,7 +128,7 @@ public class ValidationUtils {
         return hasCert;
     }
 
-    public boolean hasCert(CertificationCriterion criterion, List<CertificationCriterion> allCerts) {
+    public boolean hasCriterion(CertificationCriterion criterion, List<CertificationCriterion> allCerts) {
         boolean hasCert = false;
         for (int i = 0; i < allCerts.size() && !hasCert; i++) {
             if (allCerts.get(i).getId().equals(criterion.getId())) {
@@ -135,6 +136,14 @@ public class ValidationUtils {
             }
         }
         return hasCert;
+    }
+
+    public boolean hasAnyCriteria(List<CertificationCriterion> criteriaToFind,
+            List<CertificationCriterion> allCriteria) {
+        Optional<CertificationCriterion> foundCriterion = criteriaToFind.stream()
+                .filter(criterionToFind -> hasCriterion(criterionToFind, allCriteria))
+                .findAny();
+        return foundCriterion.isPresent();
     }
 
     public CertificationCriterion getCert(String certNumber, List<CertificationCriterion> allCerts) {
@@ -392,27 +401,16 @@ public class ValidationUtils {
     }
 
     public List<CertificationCriterion> getAttestedCriteria(CertifiedProductSearchDetails listing) {
-        List<CertificationResult> attestedCertificationResults = listing.getCertificationResults().stream()
+        return listing.getCertificationResults().stream()
                 .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess().equals(Boolean.TRUE))
-                .collect(Collectors.<CertificationResult>toList());
-
-        List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
-        for (CertificationResult cr : attestedCertificationResults) {
-            criteria.add(cr.getCriterion());
-        }
-        return criteria;
+                .map(attestedCertResult -> attestedCertResult.getCriterion())
+                .collect(Collectors.<CertificationCriterion>toList());
     }
 
     public List<CertificationCriterion> getAttestedCriteria(PendingCertifiedProductDTO listing) {
-        List<PendingCertificationResultDTO> attestedCertificationResults = listing.getCertificationCriterion().stream()
+        return listing.getCertificationCriterion().stream()
                 .filter(certResult -> certResult.getMeetsCriteria() != null && certResult.getMeetsCriteria().equals(Boolean.TRUE))
-                .collect(Collectors.<PendingCertificationResultDTO>toList());
-
-        List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
-        for (PendingCertificationResultDTO cr : attestedCertificationResults) {
-            CertificationCriterionDTO criterionDto = cr.getCriterion();
-            criteria.add(new CertificationCriterion(criterionDto));
-        }
-        return criteria;
+                .map(attestedCertResult -> new CertificationCriterion(attestedCertResult.getCriterion()))
+                .collect(Collectors.<CertificationCriterion>toList());
     }
 }

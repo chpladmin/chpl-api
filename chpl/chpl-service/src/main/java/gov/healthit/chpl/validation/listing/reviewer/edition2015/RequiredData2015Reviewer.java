@@ -363,19 +363,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         validateG3(listing);
         validateG3Inverse(listing);
         validateG6(listing);
-
-        // g4 check
-        boolean hasG4 = validationUtils.hasCert("170.315 (g)(4)", attestedCriteria);
-        if (!hasG4) {
-            listing.getErrorMessages().add("170.315 (g)(4) is required but was not found.");
-        }
-
-        // g5 check
-        boolean hasG5 = validationUtils.hasCert("170.315 (g)(5)", attestedCriteria);
-        if (!hasG5) {
-            listing.getErrorMessages().add("170.315 (g)(5) is required but was not found.");
-        }
-
         validateH1PlusB1(listing);
 
         if (listing.getQmsStandards() == null || listing.getQmsStandards().size() == 0) {
