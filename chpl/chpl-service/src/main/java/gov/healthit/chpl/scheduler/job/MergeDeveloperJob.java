@@ -14,8 +14,7 @@ import javax.mail.internet.AddressException;
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -47,15 +46,17 @@ import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.scheduler.SchedulerCertifiedProductSearchDetailsAsync;
 import gov.healthit.chpl.service.DirectReviewUpdateEmailService;
 import gov.healthit.chpl.util.EmailBuilder;
+import lombok.extern.log4j.Log4j2;
 import net.sf.ehcache.CacheManager;
 
+@DisallowConcurrentExecution
+@Log4j2(topic = "mergeDeveloperJobLogger")
 public class MergeDeveloperJob implements Job {
     public static final String JOB_NAME = "mergeDeveloperJob";
     public static final String OLD_DEVELOPERS_KEY = "oldDevelopers";
     public static final String NEW_DEVELOPER_KEY = "newDeveloper";
     public static final String PRODUCT_IDS_TO_MOVE_KEY = "productIdsToMove";
     public static final String USER_KEY = "user";
-    private static final Logger LOGGER = LogManager.getLogger("mergeDeveloperJobLogger");
 
     @Autowired
     private Environment env;
