@@ -25,10 +25,9 @@ public class CertificationResultSvapXmlGenerator extends XmlGenerator {
             createSimpleElement(svap.getApprovedStandardVersion(), "approvedStandardVersion", sw);
             createSimpleElement(svap.getId(), "id", sw);
             createSimpleElement(svap.getRegulatoryTextCitation(), "regulatoryTextCitation", sw);
+            createSimpleElement(svap.getReplaced(), "replaced", sw);
             createSimpleElement(svap.getSvapId(), "svapId", sw);
             sw.writeEndElement();
         }
     }
-
-
 }
