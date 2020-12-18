@@ -510,33 +510,21 @@ public class QuestionableActivityEmailJob extends QuartzJob {
                 + activity.getListing().getId());
         currRow.set(ACTIVITY_USER_COL, activity.getUser().getSubjectName());
 
-        if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G1_SUCCESS_EDITED.getName())) {
-            String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
-            if (!StringUtils.isEmpty(currActivityRowValue)) {
-                currActivityRowValue += "; ";
-            }
-            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": from " + activity.getBefore()
-            + " to " + activity.getAfter();
-            currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-        } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G2_SUCCESS_EDITED
-                .getName())) {
-            String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
-            if (!StringUtils.isEmpty(currActivityRowValue)) {
-                currActivityRowValue += "; ";
-            }
-            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": from " + activity.getBefore()
-            + " to " + activity.getAfter();
-            currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-        } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.GAP_EDITED.getName())) {
-            String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
-            if (!StringUtils.isEmpty(currActivityRowValue)) {
-                currActivityRowValue += "; ";
-            }
-            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + " from " + activity.getBefore()
-            + " to " + activity.getAfter();
-            currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
+        String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
+        if (!StringUtils.isEmpty(currActivityRowValue)) {
+            currActivityRowValue += "; ";
         }
 
+        if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G1_SUCCESS_EDITED.getName())
+                || activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G2_SUCCESS_EDITED.getName())
+                || activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.GAP_EDITED.getName())) {
+
+            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": from " + activity.getBefore() + " to " + activity.getAfter();
+        } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.REPLACED_SVAP_ADDED.getName())) {
+
+            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": added " + activity.getAfter();
+        }
+        currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
         currRow.set(ACTIVITY_REASON_COL, activity.getReason());
     }
 
