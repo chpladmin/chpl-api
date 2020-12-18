@@ -374,6 +374,12 @@
             <version>1.18.10</version>
             <scope>provided</scope>
         </dependency>
+        <!-- Enhanced stream functions -->
+        <dependency>
+            <groupId>one.util</groupId> 
+            <artifactId>streamex</artifactId> 
+            <version>0.7.3</version> 
+        </dependency>
     </dependencies>
 
     <build>
