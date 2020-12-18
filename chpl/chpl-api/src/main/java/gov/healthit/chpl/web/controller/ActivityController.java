@@ -952,7 +952,7 @@ public class ActivityController {
     }
 
     @Deprecated
-    @ApiOperation(value = "Get auditable data for all API keys",
+    @ApiOperation(value = "DEPRECATED. Get auditable data for all API keys",
         notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
             + "Security Restrictions: Only ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/metadata/api-keys", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
@@ -989,9 +989,8 @@ public class ActivityController {
         return getActivityEventsForCertifiedProducts(startDate, endDate);
     }
 
-    //this is left undeprecated intentionally because
-    //the UI uses it on the details page to load the "eye" data
-    @ApiOperation(value = "Get auditable data for a specific certified product.",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Get auditable data for a specific certified product.",
             notes = "A start and end date may optionally be provided to limit activity results.")
     @RequestMapping(value = "/certified_products/{id:^-?\\d+$}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
