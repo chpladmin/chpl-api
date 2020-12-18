@@ -110,6 +110,7 @@ public class MergeDeveloperJob implements Job {
             DeveloperDTO newDeveloper = (DeveloperDTO) jobDataMap.get(NEW_DEVELOPER_KEY);
             Exception mergeException = null;
             try {
+                checkPreMergeDevelopers();
                 //merge within transaction so changes will be rolled back
                 TransactionalDeveloperMerge merger = new TransactionalDeveloperMerge();
                 postMergeDeveloper = merger.merge(preMergeDevelopers, newDeveloper);
@@ -155,6 +156,13 @@ public class MergeDeveloperJob implements Job {
 
         SecurityContextHolder.getContext().setAuthentication(mergeUser);
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
+    }
+
+    private void checkPreMergeDevelopers() throws EntityRetrievalException {
+        List<Long> preMergeDeveloperIds = preMergeDevelopers.stream().map(dev -> dev.getId()).collect(Collectors.toList());
+        for (Long developerId : preMergeDeveloperIds) {
+            devDao.getById(developerId);
+        }
     }
 
     private List<Future<CertifiedProductSearchDetails>> getCertifiedProductSearchDetailsFutures(
