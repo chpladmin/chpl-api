@@ -29,36 +29,30 @@ public class EmailStatisticsCreator {
     private ListingDataCreator listingDataCreator;
     private SurveillanceDataCreator surveillanceDataCreator;
     private NonConformityDataCreator nonConformityDataCreator;
-    private CertifiedProductDAO certifiedProductDAO;
     private Environment env;
 
     @Autowired
     public EmailStatisticsCreator(DeveloperDataCreator developerDataCreator, ProductDataCreator productDataCreator,
             ListingDataCreator listingDataCreator,  SurveillanceDataCreator surveillanceDataCreator,
-            NonConformityDataCreator nonConformityDataCreator, CertifiedProductDAO certifiedProductDAO, Environment env) {
+            NonConformityDataCreator nonConformityDataCreator, Environment env) {
 
         this.developerDataCreator = developerDataCreator;
         this.productDataCreator = productDataCreator;
         this.listingDataCreator = listingDataCreator;
         this.surveillanceDataCreator = surveillanceDataCreator;
         this.nonConformityDataCreator = nonConformityDataCreator;
-        this.certifiedProductDAO = certifiedProductDAO;
         this.env = env;
     }
 
     @SuppressWarnings({"checkstyle:linelength", "checkstyle:methodlength"})
     @Transactional(readOnly = true)
-    public EmailStatistics getStatistics() throws InterruptedException, ExecutionException {
+    public EmailStatistics getStatistics(List<CertifiedProductDetailsDTO> allListings) throws InterruptedException, ExecutionException {
         ExecutorService executorService = Executors.newFixedThreadPool(getThreadCountForJob());
 
         LOGGER.info("Getting all current statistics.");
 
         EmailStatistics stats = new EmailStatistics();
         List<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
-
-        LOGGER.info("Getting all listings.");
-        List<CertifiedProductDetailsDTO> allListings = certifiedProductDAO.findAll();
-        LOGGER.info("Completing getting all listings.");
 
         try {
             /////////////////////////////////////////////////////////////////////////////////////
