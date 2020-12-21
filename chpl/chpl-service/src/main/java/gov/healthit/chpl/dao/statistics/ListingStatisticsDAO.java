@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dao.statistics;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -7,15 +8,13 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.domain.DateRange;
 
 @Repository("listingStatisticsDAO")
 public class ListingStatisticsDAO extends BaseDAOImpl {
 
-    public Long getTotalUniqueProductsByEditionAndStatus(final DateRange dateRange,
-            final String edition, final List<String> statuses) {
+    public Long getTotalUniqueProductsByEditionAndStatus(Date endDate, String edition, List<String> statuses) {
         String hql = "SELECT DISTINCT UPPER(productName) || UPPER(developerName) "
-                + "FROM CertifiedProductSummaryEntity ";
+                + "FROM CertifiedProductDetailsEntity ";
 
         boolean hasWhere = false;
         if (edition != null) {
@@ -29,9 +28,9 @@ public class ListingStatisticsDAO extends BaseDAOImpl {
             } else {
                 hql += " AND ";
             }
-            hql += " UPPER(certificationStatus) IN (:statuses) ";
+            hql += " UPPER(certificationStatusName) IN (:statuses) ";
         }
-        if (dateRange == null) {
+        if (endDate == null) {
             if (!hasWhere) {
                 hql += " WHERE ";
                 hasWhere = true;
@@ -46,9 +45,9 @@ public class ListingStatisticsDAO extends BaseDAOImpl {
             } else {
                 hql += " AND ";
             }
-            hql += "((deleted = false AND creationDate <= :endDate) "
+            hql += "((deleted = false AND certificationDate <= :endDate) "
                     + " OR "
-                    + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate)) ";
+                    + "(deleted = true AND certificationDate <= :endDate AND lastModifiedDate > :endDate)) ";
         }
 
         Query query = entityManager.createQuery(hql);
@@ -58,8 +57,8 @@ public class ListingStatisticsDAO extends BaseDAOImpl {
         if (statuses != null && statuses.size() > 0) {
             query.setParameter("statuses", statuses);
         }
-        if (dateRange != null) {
-            query.setParameter("endDate", dateRange.getEndDate());
+        if (endDate != null) {
+            query.setParameter("endDate", endDate);
         }
         return (long) query.getResultList().size();
     }
@@ -75,10 +74,9 @@ public class ListingStatisticsDAO extends BaseDAOImpl {
         return (long) query.getResultList().size();
     }
 
-    public Long getTotalListingsByEditionAndStatus(final DateRange dateRange,
-            final String edition, final List<String> statuses) {
+    public Long getTotalListingsByEditionAndStatus(Date endDate, String edition, List<String> statuses) {
         String hql = "SELECT COUNT(*) "
-                + "FROM CertifiedProductSummaryEntity ";
+                + "FROM CertifiedProductDetailsEntity ";
         boolean hasWhere = false;
         if (edition != null) {
             hql += " WHERE year = :edition ";
@@ -91,9 +89,9 @@ public class ListingStatisticsDAO extends BaseDAOImpl {
             } else {
                 hql += " AND ";
             }
-            hql += " UPPER(certificationStatus) IN (:statuses) ";
+            hql += " UPPER(certificationStatusName) IN (:statuses) ";
         }
-        if (dateRange == null) {
+        if (endDate == null) {
             if (!hasWhere) {
                 hql += " WHERE ";
                 hasWhere = true;
@@ -108,9 +106,9 @@ public class ListingStatisticsDAO extends BaseDAOImpl {
             } else {
                 hql += " AND ";
             }
-            hql += "((deleted = false AND creationDate <= :endDate) "
+            hql += "((deleted = false AND certificationDate <= :endDate) "
                     + " OR "
-                    + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate)) ";
+                    + "(deleted = true AND certificationDate <= :endDate AND lastModifiedDate > :endDate)) ";
         }
 
         Query query = entityManager.createQuery(hql);
@@ -120,8 +118,8 @@ public class ListingStatisticsDAO extends BaseDAOImpl {
         if (statuses != null && statuses.size() > 0) {
             query.setParameter("statuses", statuses);
         }
-        if (dateRange != null) {
-            query.setParameter("endDate", dateRange.getEndDate());
+        if (endDate != null) {
+            query.setParameter("endDate", endDate);
         }
 
         return (Long) query.getSingleResult();
