@@ -109,12 +109,14 @@ public class ListingUploadController {
         }
 
         List<ListingUpload> createdListingUploads = new ArrayList<ListingUpload>();
-        List<ListingUpload> listingsToAdd = listingUploadManager.parseUploadFile(file);
-        for (ListingUpload listingToAdd : listingsToAdd) {
             try {
-                ListingUpload created = listingUploadManager.createOrReplaceListingUpload(listingToAdd);
-                createdListingUploads.add(created);
-            } catch (Exception ex) {
+                List<ListingUpload> listingsToAdd = listingUploadManager.parseUploadFile(file);
+                for (ListingUpload listingToAdd : listingsToAdd) {
+                    ListingUpload created = listingUploadManager.createOrReplaceListingUpload(listingToAdd);
+                    createdListingUploads.add(created);
+                }
+            } catch (NullPointerException | IndexOutOfBoundsException | ValidationException
+                    | JsonProcessingException | EntityRetrievalException | EntityCreationException ex) {
                 String error = "Error uploading listing(s) from file " + file.getOriginalFilename()
                 + ". Error was: " + ex.getMessage();
                 LOGGER.error(error);
@@ -122,7 +124,6 @@ public class ListingUploadController {
                 sendUploadError(file, ex);
                 throw new ValidationException(error);
             }
-        }
         return createdListingUploads;
     }
 
