@@ -115,8 +115,8 @@ public class ListingUploadController {
                     ListingUpload created = listingUploadManager.createOrReplaceListingUpload(listingToAdd);
                     createdListingUploads.add(created);
                 }
-            } catch (NullPointerException | IndexOutOfBoundsException | ValidationException
-                    | JsonProcessingException | EntityRetrievalException | EntityCreationException ex) {
+            } catch (NullPointerException | IndexOutOfBoundsException | JsonProcessingException
+                    | EntityRetrievalException | EntityCreationException ex) {
                 String error = "Error uploading listing(s) from file " + file.getOriginalFilename()
                 + ". Error was: " + ex.getMessage();
                 LOGGER.error(error);
