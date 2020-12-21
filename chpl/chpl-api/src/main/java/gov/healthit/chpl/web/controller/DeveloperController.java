@@ -340,6 +340,8 @@ public class DeveloperController {
                 statusDto.setId(newDeveloperStatusEvent.getStatus().getId());
                 statusDto.setStatusName(newDeveloperStatusEvent.getStatus().getStatus());
                 statusEvent.setStatus(statusDto);
+                statusEvent.setId(newDeveloperStatusEvent.getId());
+                statusEvent.setDeveloperId(newDeveloperStatusEvent.getDeveloperId());
                 statusEvent.setReason(newDeveloperStatusEvent.getReason());
                 statusEvent.setStatusDate(newDeveloperStatusEvent.getStatusDate());
                 dto.getStatusEvents().add(statusEvent);
