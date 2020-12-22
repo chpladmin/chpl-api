@@ -381,6 +381,13 @@
             <artifactId>tomcat-dbcp</artifactId>
             <version>8.5.59</version>
         </dependency>
+                
+        <!-- Enhanced stream functions -->
+        <dependency>
+            <groupId>one.util</groupId> 
+            <artifactId>streamex</artifactId> 
+            <version>0.7.3</version> 
+        </dependency>
     </dependencies>
 
     <build>
