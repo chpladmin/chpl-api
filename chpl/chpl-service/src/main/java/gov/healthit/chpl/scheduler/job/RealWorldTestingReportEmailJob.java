@@ -33,6 +33,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReport;
 import gov.healthit.chpl.util.EmailBuilder;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2()
@@ -45,12 +46,10 @@ public class RealWorldTestingReportEmailJob implements Job {
     private CertificationBodyDAO certificationBodyDAO;
 
     @Autowired
-    private Environment env;
+    private ErrorMessageUtil errorMsg;
 
-    //private LocalDate planStartDate;
-    //private LocalDate planLateDate;
-    //private LocalDate resultsStartDate;
-    //private LocalDate resultsLateDate;
+    @Autowired
+    private Environment env;
 
     private List<Long> acbIds = new ArrayList<Long>();
 
@@ -153,16 +152,24 @@ public class RealWorldTestingReportEmailJob implements Job {
     private RealWorldTestingReport addMessages(RealWorldTestingReport report) {
         if (isRwtPlansEmpty(report)) {
             if (arePlansLateWarning(report.getRwtEligibilityYear())) {
-                report.setRwtPlansMessage("WARNING: Listing requires RWT Plans by " + getPlansLateDate(report.getRwtEligibilityYear()).toString());
+                report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.missingPlansWarning",
+                        report.getRwtEligibilityYear().toString(),
+                        getPlansLateDate(report.getRwtEligibilityYear()).toString()));
             } else if (arePlansLateError(report.getRwtEligibilityYear())) {
-                report.setRwtPlansMessage("Listing requires RWT Plans by " + getPlansLateDate(report.getRwtEligibilityYear()).toString());
+                report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.missingPlansError",
+                        report.getRwtEligibilityYear().toString(),
+                        getPlansLateDate(report.getRwtEligibilityYear()).toString()));
             }
         }
         if (isRwtResultsEmpty(report)) {
             if (areResultsLateWarning(report.getRwtEligibilityYear())) {
-                report.setRwtResultsMessage("WARNING: Listing requires RWT Results by " + getResultsLateDate(report.getRwtEligibilityYear()).toString());
+                report.setRwtResultsMessage(errorMsg.getMessage("realWorldTesting.report.missingResultsWarning",
+                        report.getRwtEligibilityYear().toString(),
+                        getResultsLateDate(report.getRwtEligibilityYear()).toString()));
             } else if (areResultsLateError(report.getRwtEligibilityYear())) {
-                report.setRwtResultsMessage("Listing requires RWT Results by " + getResultsLateDate(report.getRwtEligibilityYear()).toString());
+                report.setRwtResultsMessage(errorMsg.getMessage("realWorldTesting.report.missingResultsError",
+                        report.getRwtEligibilityYear().toString(),
+                        getResultsLateDate(report.getRwtEligibilityYear()).toString()));
             }
         }
         return report;
