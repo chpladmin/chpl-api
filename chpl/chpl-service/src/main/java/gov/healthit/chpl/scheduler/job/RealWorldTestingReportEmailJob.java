@@ -47,19 +47,19 @@ public class RealWorldTestingReportEmailJob implements Job {
     @Autowired
     private Environment env;
 
-    private LocalDate planStartDate;
-
-    private LocalDate planLateDate;
+    //private LocalDate planStartDate;
+    //private LocalDate planLateDate;
+    //private LocalDate resultsStartDate;
+    //private LocalDate resultsLateDate;
 
     private List<Long> acbIds = new ArrayList<Long>();
 
+    @SuppressWarnings("checkstyle:linelength")
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Real World Report Email job for " + context.getMergedJobDataMap().getString("email") + " *********");
         try {
-            setPlanStartDate();
-            setPlanLateDate();
             setAcbIds(context);
 
             List<RealWorldTestingReport> reportRows =
@@ -82,8 +82,12 @@ public class RealWorldTestingReportEmailJob implements Job {
         return rwtEligYear != null;
     }
 
-    private boolean isRwtPlanEmpty(RealWorldTestingReport report) {
+    private boolean isRwtPlansEmpty(RealWorldTestingReport report) {
         return StringUtils.isEmpty(report.getRwtPlansUrl());
+    }
+
+    private boolean isRwtResultsEmpty(RealWorldTestingReport report) {
+        return StringUtils.isEmpty(report.getRwtResultsUrl());
     }
 
     private boolean isInListOfAcbs(CertifiedProductDetailsDTO listing) {
@@ -93,18 +97,32 @@ public class RealWorldTestingReportEmailJob implements Job {
                 .isPresent();
     }
 
-    private void setPlanStartDate() {
+    private LocalDate getPlansStartDate(Integer rwtEligYear) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
         String mmdd = env.getProperty("rwtPlanStartDayOfYear");
-        String mmddyyyy = mmdd + "/" + String.valueOf(LocalDate.now().getYear());
-        planStartDate = LocalDate.parse(mmddyyyy, formatter);
+        String mmddyyyy = mmdd + "/" + String.valueOf(rwtEligYear - 1);
+        return LocalDate.parse(mmddyyyy, formatter);
     }
 
-    private void setPlanLateDate() {
+    private LocalDate getPlansLateDate(Integer rwtEligYear) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
         String mmdd = env.getProperty("rwtPlanDueDate");
-        String mmddyyyy = mmdd + "/" + String.valueOf(LocalDate.now().getYear());
-        planLateDate = LocalDate.parse(mmddyyyy, formatter);
+        String mmddyyyy = mmdd + "/" + String.valueOf(rwtEligYear - 1);
+        return LocalDate.parse(mmddyyyy, formatter);
+    }
+
+    private LocalDate getResultsStartDate(Integer rwtEligYear) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+        String mmdd = env.getProperty("rwtResultsStartDayOfYear");
+        String mmddyyyy = mmdd + "/" + String.valueOf(rwtEligYear + 1);
+        return LocalDate.parse(mmddyyyy, formatter);
+    }
+
+    private LocalDate getResultsLateDate(Integer rwtEligYear) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+        String mmdd = env.getProperty("rwtResultsDueDate");
+        String mmddyyyy = mmdd + "/" + String.valueOf(rwtEligYear + 1);
+        return LocalDate.parse(mmddyyyy, formatter);
     }
 
     private void setAcbIds(JobExecutionContext context) {
@@ -125,29 +143,47 @@ public class RealWorldTestingReportEmailJob implements Job {
                 .rwtPlansCheckDate(listing.getRwtPlansCheckDate())
                 .rwtResultsUrl(listing.getRwtResultsUrl())
                 .rwtResultsCheckDate(listing.getRwtResultsCheckDate())
+                .rwtEligibilityYear(listing.getRwtEligibilityYear())
                 .build();
 
         return addMessages(report);
     }
 
+    @SuppressWarnings("checkstyle:linelength")
     private RealWorldTestingReport addMessages(RealWorldTestingReport report) {
-        if (isRwtPlanEmpty(report)) {
-            if (arePlansLateWarning()) {
-                report.setRwtPlansMessage("WARNING: Listing requires RWT Plans by " + planLateDate.toString());
-            } else if (arePlansLateError()) {
-                report.setRwtPlansMessage("Listing requires RWT Plans by " + planLateDate.toString());
+        if (isRwtPlansEmpty(report)) {
+            if (arePlansLateWarning(report.getRwtEligibilityYear())) {
+                report.setRwtPlansMessage("WARNING: Listing requires RWT Plans by " + getPlansLateDate(report.getRwtEligibilityYear()).toString());
+            } else if (arePlansLateError(report.getRwtEligibilityYear())) {
+                report.setRwtPlansMessage("Listing requires RWT Plans by " + getPlansLateDate(report.getRwtEligibilityYear()).toString());
+            }
+        }
+        if (isRwtResultsEmpty(report)) {
+            if (areResultsLateWarning(report.getRwtEligibilityYear())) {
+                report.setRwtResultsMessage("WARNING: Listing requires RWT Results by " + getResultsLateDate(report.getRwtEligibilityYear()).toString());
+            } else if (areResultsLateError(report.getRwtEligibilityYear())) {
+                report.setRwtResultsMessage("Listing requires RWT Results by " + getResultsLateDate(report.getRwtEligibilityYear()).toString());
             }
         }
         return report;
     }
 
-    private boolean arePlansLateWarning() {
-        return isLocalDateEqualOrAfter(LocalDate.now(), planStartDate)
-                && LocalDate.now().isBefore(planLateDate);
+    private boolean arePlansLateWarning(Integer rwtEligYear) {
+        return isLocalDateEqualOrAfter(LocalDate.now(), getPlansStartDate(rwtEligYear))
+                && LocalDate.now().isBefore(getPlansLateDate(rwtEligYear));
     }
 
-    private boolean arePlansLateError() {
-        return isLocalDateEqualOrAfter(LocalDate.now(), planLateDate);
+    private boolean arePlansLateError(Integer rwtEligYear) {
+        return isLocalDateEqualOrAfter(LocalDate.now(), getPlansLateDate(rwtEligYear));
+    }
+
+    private boolean areResultsLateWarning(Integer rwtEligYear) {
+        return isLocalDateEqualOrAfter(LocalDate.now(), getResultsStartDate(rwtEligYear))
+                && LocalDate.now().isBefore(getResultsLateDate(rwtEligYear));
+    }
+
+    private boolean areResultsLateError(Integer rwtEligYear) {
+        return isLocalDateEqualOrAfter(LocalDate.now(), getResultsLateDate(rwtEligYear));
     }
 
     private boolean isLocalDateEqualOrAfter(LocalDate date1, LocalDate date2) {

@@ -25,6 +25,9 @@ public class RealWorldTestingReport {
     private String rwtPlansMessage;
     private String rwtResultsMessage;
 
+    //Not displayed on report
+    private Integer rwtEligibilityYear;
+
     public List<String> toListOfStrings() {
         List<String> results = new ArrayList<String>();
         results.add(acbName);
