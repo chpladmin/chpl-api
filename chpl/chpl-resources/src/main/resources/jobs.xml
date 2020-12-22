@@ -513,5 +513,30 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
+        
+        <!-- Generate email report for Real World Testing  -->
+        <job>
+            <name>Real World Testing Email Report</name>
+            <group>chplJobs</group>
+            <description>Sends a report providing information about Real World Testing for each listing the user has access to</description>
+            <job-class>gov.healthit.chpl.scheduler.job.RealWorldTestingReportEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+                <entry>
+                    <key>acbSpecific</key>
+                    <value>true</value>
+                </entry>
+            </job-data-map>
+        </job>
+        
     </schedule>
 </job-scheduling-data>
