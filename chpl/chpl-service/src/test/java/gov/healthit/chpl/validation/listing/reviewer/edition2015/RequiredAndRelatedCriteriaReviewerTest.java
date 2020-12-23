@@ -25,6 +25,8 @@ import gov.healthit.chpl.util.ValidationUtils;
 public class RequiredAndRelatedCriteriaReviewerTest {
     private static final String CRITERIA_REQUIRED_ERROR_KEY = "listing.criteriaRequired";
     private static final String CRITERIA_REQUIRED_ERROR = "%s is required but was not found.";
+    private static final String DEPENDENT_CRITERIA_REQUIRED_ERROR_KEY = "listing.criteria.dependentCriteriaRequired";
+    private static final String DEPENDENT_CRITERIA_REQUIRED_ERROR = "Attesting to Criteria %s requires that Criteria %s must also be attested to.";
 
     private RequiredAndRelatedCriteriaReviewer reviewer;
     private CertificationCriterionService certificationCriterionService;
@@ -173,6 +175,384 @@ public class RequiredAndRelatedCriteriaReviewerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq(CRITERIA_REQUIRED_ERROR_KEY),
                 ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format(CRITERIA_REQUIRED_ERROR, i.getArgument(1), ""));
+        reviewer.review(listing);
+        assertNotNull(listing.getErrorMessages());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void reviewListing_g10NotPresent_NoError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (g)(4)")
+                                .id(1L)
+                                .title("g4 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (g)(5)")
+                                .id(2L)
+                                .title("g5 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertNotNull(listing.getErrorMessages());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void reviewListing_g10NotAttested_NoError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (g)(4)")
+                                .id(1L)
+                                .title("g4 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (g)(5)")
+                                .id(2L)
+                                .title("g5 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (g)(10)")
+                                .id(15L)
+                                .title("g10 title")
+                                .build())
+                        .success(Boolean.FALSE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertNotNull(listing.getErrorMessages());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void reviewListing_g10AttestedMissingAllDependentCriteria_ReturnsErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (g)(4)")
+                                .id(1L)
+                                .title("g4 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (g)(5)")
+                                .id(2L)
+                                .title("g5 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (g)(10)")
+                                .id(15L)
+                                .title("g10 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq(DEPENDENT_CRITERIA_REQUIRED_ERROR_KEY),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+                .thenAnswer(i -> String.format(DEPENDENT_CRITERIA_REQUIRED_ERROR, i.getArgument(1), i.getArgument(2)));
+        reviewer.review(listing);
+        assertNotNull(listing.getErrorMessages());
+        assertEquals(3, listing.getErrorMessages().size());
+        listing.getErrorMessages().stream()
+            .forEach(errorMessage -> assertTrue(errorMessage.contains("must also be attested to")));
+    }
+
+    @Test
+    public void reviewListing_g10AttestedMissingD2AndD10_ReturnsError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (g)(4)")
+                                .id(1L)
+                                .title("g4 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (g)(5)")
+                                .id(2L)
+                                .title("g5 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (g)(10)")
+                                .id(15L)
+                                .title("g10 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (d)(1)")
+                                .id(3L)
+                                .title("d1 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (d)(9)")
+                                .id(12L)
+                                .title("d9 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq(DEPENDENT_CRITERIA_REQUIRED_ERROR_KEY),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+                .thenAnswer(i -> String.format(DEPENDENT_CRITERIA_REQUIRED_ERROR, i.getArgument(1), i.getArgument(2)));
+        reviewer.review(listing);
+        assertNotNull(listing.getErrorMessages());
+        assertEquals(1, listing.getErrorMessages().size());
+        listing.getErrorMessages().stream()
+            .forEach(errorMessage -> assertTrue(errorMessage.contains("must also be attested to")));
+    }
+
+    @Test
+    public void reviewListing_g10AttestedWithD1D9D2_NoErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (g)(4)")
+                                .id(1L)
+                                .title("g4 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (g)(5)")
+                                .id(2L)
+                                .title("g5 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (g)(10)")
+                                .id(15L)
+                                .title("g10 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (d)(1)")
+                                .id(3L)
+                                .title("d1 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (d)(9)")
+                                .id(12L)
+                                .title("d9 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (d)(2)")
+                                .id(4L)
+                                .title("d2 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertNotNull(listing.getErrorMessages());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void reviewListing_g10AttestedWithD1D9D2Cures_NoErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (g)(4)")
+                                .id(1L)
+                                .title("g4 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (g)(5)")
+                                .id(2L)
+                                .title("g5 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (g)(10)")
+                                .id(15L)
+                                .title("g10 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (d)(1)")
+                                .id(3L)
+                                .title("d1 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (d)(9)")
+                                .id(12L)
+                                .title("d9 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (d)(2)")
+                                .id(5L)
+                                .title("d2 title (Cures Update)")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertNotNull(listing.getErrorMessages());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void reviewListing_g10AttestedWithD1D9D10_NoErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (g)(4)")
+                                .id(1L)
+                                .title("g4 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (g)(5)")
+                                .id(2L)
+                                .title("g5 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (g)(10)")
+                                .id(15L)
+                                .title("g10 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (d)(1)")
+                                .id(3L)
+                                .title("d1 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (d)(9)")
+                                .id(12L)
+                                .title("d9 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (d)(10)")
+                                .id(13L)
+                                .title("d10 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertNotNull(listing.getErrorMessages());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void reviewListing_g10AttestedWithD1D9D10Cures_NoErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (g)(4)")
+                                .id(1L)
+                                .title("g4 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (g)(5)")
+                                .id(2L)
+                                .title("g5 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (g)(10)")
+                                .id(15L)
+                                .title("g10 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (d)(1)")
+                                .id(3L)
+                                .title("d1 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (d)(9)")
+                                .id(12L)
+                                .title("d9 title")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (d)(10)")
+                                .id(14L)
+                                .title("d10 title (Cures Update)")
+                                .build())
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
         reviewer.review(listing);
         assertNotNull(listing.getErrorMessages());
         assertEquals(0, listing.getErrorMessages().size());
