@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +16,6 @@ import javax.mail.MessagingException;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.lang3.StringUtils;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -26,27 +24,21 @@ import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReport;
+import gov.healthit.chpl.realworldtesting.manager.RealWorldTestingReportService;
 import gov.healthit.chpl.util.EmailBuilder;
-import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "realWorldTestingReportEmailJobLogger")
 public class RealWorldTestingReportEmailJob implements Job {
 
     @Autowired
-    private CertifiedProductDAO certifiedProductDAO;
+    private RealWorldTestingReportService rwtReportService;
 
     @Autowired
     private CertificationBodyDAO certificationBodyDAO;
-
-    @Autowired
-    private ErrorMessageUtil errorMsg;
 
     @Autowired
     private Environment env;
@@ -60,15 +52,8 @@ public class RealWorldTestingReportEmailJob implements Job {
         LOGGER.info("********* Starting the Real World Report Email job for " + context.getMergedJobDataMap().getString("email") + " *********");
         try {
             setAcbIds(context);
-
-            List<RealWorldTestingReport> reportRows = getListingWith2015Edition().stream()
-                    .filter(listing -> isListingRwtEligible(listing.getRwtEligibilityYear()))
-                    .filter(listing -> isInListOfAcbs(listing))
-                    .map(listing -> getRealWorldTestingReport(listing))
-                    .collect(Collectors.toList());
-
+            List<RealWorldTestingReport> reportRows = rwtReportService.getRealWorldTestingReport(acbIds);
             sendEmail(context, reportRows);
-
         } catch (Exception e) {
             LOGGER.catching(e);
         } finally {
@@ -76,133 +61,10 @@ public class RealWorldTestingReportEmailJob implements Job {
         }
     }
 
-    private List<CertifiedProductDetailsDTO> getListingWith2015Edition() {
-        LOGGER.info("Retrieving 2015 Listings");
-        List<CertifiedProductDetailsDTO> listings = certifiedProductDAO.findByEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
-        LOGGER.info("Completed Retreiving 2015 Listings");
-        return listings;
-    }
-
-    private boolean isListingRwtEligible(Integer rwtEligYear) {
-        return rwtEligYear != null;
-    }
-
-    private boolean isRwtPlansEmpty(RealWorldTestingReport report) {
-        return StringUtils.isEmpty(report.getRwtPlansUrl());
-    }
-
-    private boolean isRwtResultsEmpty(RealWorldTestingReport report) {
-        return StringUtils.isEmpty(report.getRwtResultsUrl());
-    }
-
-    private boolean isInListOfAcbs(CertifiedProductDetailsDTO listing) {
-        return acbIds.stream()
-                .filter(acbId -> acbId.equals(listing.getCertificationBodyId()))
-                .findAny()
-                .isPresent();
-    }
-
-    private LocalDate getPlansStartDate(Integer rwtEligYear) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-        String mmdd = env.getProperty("rwtPlanStartDayOfYear");
-        String mmddyyyy = mmdd + "/" + String.valueOf(rwtEligYear - 1);
-        return LocalDate.parse(mmddyyyy, formatter);
-    }
-
-    private LocalDate getPlansLateDate(Integer rwtEligYear) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-        String mmdd = env.getProperty("rwtPlanDueDate");
-        String mmddyyyy = mmdd + "/" + String.valueOf(rwtEligYear - 1);
-        return LocalDate.parse(mmddyyyy, formatter);
-    }
-
-    private LocalDate getResultsStartDate(Integer rwtEligYear) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-        String mmdd = env.getProperty("rwtResultsStartDayOfYear");
-        String mmddyyyy = mmdd + "/" + String.valueOf(rwtEligYear + 1);
-        return LocalDate.parse(mmddyyyy, formatter);
-    }
-
-    private LocalDate getResultsLateDate(Integer rwtEligYear) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-        String mmdd = env.getProperty("rwtResultsDueDate");
-        String mmddyyyy = mmdd + "/" + String.valueOf(rwtEligYear + 1);
-        return LocalDate.parse(mmddyyyy, formatter);
-    }
-
     private void setAcbIds(JobExecutionContext context) {
         acbIds = Arrays.asList(context.getMergedJobDataMap().getString("acb").split(SchedulerManager.DATA_DELIMITER)).stream()
                 .map(acb -> Long.parseLong(acb))
                 .collect(Collectors.toList());
-    }
-
-    private RealWorldTestingReport getRealWorldTestingReport(CertifiedProductDetailsDTO listing) {
-        RealWorldTestingReport report = RealWorldTestingReport.builder()
-                .acbName(listing.getCertificationBodyName())
-                .chplProductNumber(listing.getChplProductNumber())
-                .productName(listing.getProduct().getName())
-                .productId(listing.getProduct().getId())
-                .developerName(listing.getDeveloper().getName())
-                .developerId(listing.getDeveloper().getId())
-                .rwtPlansUrl(listing.getRwtPlansUrl())
-                .rwtPlansCheckDate(listing.getRwtPlansCheckDate())
-                .rwtResultsUrl(listing.getRwtResultsUrl())
-                .rwtResultsCheckDate(listing.getRwtResultsCheckDate())
-                .rwtEligibilityYear(listing.getRwtEligibilityYear())
-                .build();
-
-        return addMessages(report);
-    }
-
-    @SuppressWarnings("checkstyle:linelength")
-    private RealWorldTestingReport addMessages(RealWorldTestingReport report) {
-        LOGGER.info("Checking/Adding messages for listing: " + report.getChplProductNumber());
-        if (isRwtPlansEmpty(report)) {
-            if (arePlansLateWarning(report.getRwtEligibilityYear())) {
-                report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.missingPlansWarning",
-                        report.getRwtEligibilityYear().toString(),
-                        getPlansLateDate(report.getRwtEligibilityYear()).toString()));
-            } else if (arePlansLateError(report.getRwtEligibilityYear())) {
-                report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.missingPlansError",
-                        report.getRwtEligibilityYear().toString(),
-                        getPlansLateDate(report.getRwtEligibilityYear()).toString()));
-            }
-        }
-        if (isRwtResultsEmpty(report)) {
-            if (areResultsLateWarning(report.getRwtEligibilityYear())) {
-                report.setRwtResultsMessage(errorMsg.getMessage("realWorldTesting.report.missingResultsWarning",
-                        report.getRwtEligibilityYear().toString(),
-                        getResultsLateDate(report.getRwtEligibilityYear()).toString()));
-            } else if (areResultsLateError(report.getRwtEligibilityYear())) {
-                report.setRwtResultsMessage(errorMsg.getMessage("realWorldTesting.report.missingResultsError",
-                        report.getRwtEligibilityYear().toString(),
-                        getResultsLateDate(report.getRwtEligibilityYear()).toString()));
-            }
-        }
-        LOGGER.info("Completed Checking/Adding messages for listing: " + report.getChplProductNumber());
-        return report;
-    }
-
-    private boolean arePlansLateWarning(Integer rwtEligYear) {
-        return isLocalDateEqualOrAfter(LocalDate.now(), getPlansStartDate(rwtEligYear))
-                && LocalDate.now().isBefore(getPlansLateDate(rwtEligYear));
-    }
-
-    private boolean arePlansLateError(Integer rwtEligYear) {
-        return isLocalDateEqualOrAfter(LocalDate.now(), getPlansLateDate(rwtEligYear));
-    }
-
-    private boolean areResultsLateWarning(Integer rwtEligYear) {
-        return isLocalDateEqualOrAfter(LocalDate.now(), getResultsStartDate(rwtEligYear))
-                && LocalDate.now().isBefore(getResultsLateDate(rwtEligYear));
-    }
-
-    private boolean areResultsLateError(Integer rwtEligYear) {
-        return isLocalDateEqualOrAfter(LocalDate.now(), getResultsLateDate(rwtEligYear));
-    }
-
-    private boolean isLocalDateEqualOrAfter(LocalDate date1, LocalDate date2) {
-        return date1.isEqual(date2) || date1.isAfter(date2);
     }
 
     private void sendEmail(JobExecutionContext context, List<RealWorldTestingReport> rows) throws MessagingException {
