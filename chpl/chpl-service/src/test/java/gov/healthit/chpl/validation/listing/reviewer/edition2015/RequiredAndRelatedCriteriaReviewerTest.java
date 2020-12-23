@@ -5,17 +5,21 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
@@ -34,7 +38,7 @@ public class RequiredAndRelatedCriteriaReviewerTest {
     private ErrorMessageUtil errorMessageUtil;
     private ResourcePermissions resourcePermissions;
 
-    private CertificationCriterion b1, b10, g4, g5, d1, d2, d2Cures, d3, d3Cures, d5, d6, d7, d8, d9, d10, d10Cures, g10;
+    private CertificationCriterion b1, b2, b10, g4, g5, d1, d2, d2Cures, d3, d3Cures, d5, d6, d7, d8, d9, d10, d10Cures, g10;
 
     @Before
     @SuppressWarnings("checkstyle:magicnumber")
@@ -55,7 +59,8 @@ public class RequiredAndRelatedCriteriaReviewerTest {
         d10Cures = getCriterion(14L, "170.315 (d)(10)", "d10 title (Cures Update)");
         g10 = getCriterion(15L, "170.315 (g)(10)", "g10 title");
         b1 = getCriterion(16L, "170.315 (b)(1)", "b1 title");
-        b10 = getCriterion(17L, "170.315 (b)(10)", "b10 title");
+        b2 = getCriterion(17L, "170.315 (b)(2)", "b2 title");
+        b10 = getCriterion(18L, "170.315 (b)(10)", "b10 title");
 
         certificationCriterionService = Mockito.mock(CertificationCriterionService.class);
         Mockito.when(certificationCriterionService.get(Criteria2015.G_4)).thenReturn(g4);
@@ -76,7 +81,23 @@ public class RequiredAndRelatedCriteriaReviewerTest {
 
         resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.doesUserHaveRole(ArgumentMatchers.any(List.class))).thenReturn(true);
-        validationUtil = new ValidationUtils(Mockito.mock(CertificationCriterionDAO.class));
+
+        CertificationCriterionDAO criteriaDao = Mockito.mock(CertificationCriterionDAO.class);
+        Mockito.when(criteriaDao.getAllByNumber(ArgumentMatchers.anyString()))
+            .thenAnswer(new Answer<List<CertificationCriterionDTO>>() {
+
+                @Override
+                public List<CertificationCriterionDTO> answer(InvocationOnMock invocation) throws Throwable {
+                    Object[] args = invocation.getArguments();
+                    List<CertificationCriterionDTO> criteriaWithNumber = new ArrayList<CertificationCriterionDTO>();
+                    criteriaWithNumber.add(CertificationCriterionDTO.builder()
+                            .number(args[0].toString())
+                            .build());
+                    return criteriaWithNumber;
+                }
+            });
+
+        validationUtil = new ValidationUtils(criteriaDao);
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
 
         reviewer = new RequiredAndRelatedCriteriaReviewer(certificationCriterionService, errorMessageUtil,
@@ -434,7 +455,7 @@ public class RequiredAndRelatedCriteriaReviewerTest {
     }
 
     @Test
-    public void reviewListing_b1CriteriaAttestedWithoutDependencies_HasError() {
+    public void reviewListing_b1CriteriaAttestedWithoutDependencies_HasAllErrors() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .criterion(g4)
@@ -451,9 +472,116 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                 .build();
         reviewer.review(listing);
         assertNotNull(listing.getErrorMessages());
-        assertEquals(1, listing.getErrorMessages().size());
+        assertEquals(7, listing.getErrorMessages().size());
         listing.getErrorMessages().stream()
-            .forEach(errorMessage -> assertTrue(errorMessage.contains("(*) was found")));
+            .forEach(errorMessage -> assertTrue(errorMessage.contains("(b)(*) was found")));
+    }
+
+    @Test
+    public void reviewListing_b1b2CriteriaAttestedWithoutDependencies_HasAllErrorsNoDuplicates() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(b1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(b2)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertNotNull(listing.getErrorMessages());
+        assertEquals(7, listing.getErrorMessages().size());
+        listing.getErrorMessages().stream()
+            .forEach(errorMessage -> assertTrue(errorMessage.contains("(b)(*) was found")));
+    }
+
+    @Test
+    public void reviewListing_b1CriteriaAttestedWithD1AndD5Dependencies_HasCorrectErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(b1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertNotNull(listing.getErrorMessages());
+        assertEquals(5, listing.getErrorMessages().size());
+        listing.getErrorMessages().stream()
+            .forEach(errorMessage -> assertTrue(errorMessage.contains("(b)(*) was found")));
+    }
+
+    @Test
+    public void reviewListing_b1CriteriaAttestedWithAllDependencies_HasNoErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(b1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d2Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d3)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d6)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d7)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d8)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertNotNull(listing.getErrorMessages());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     private CertificationCriterion getCriterion(Long id, String number, String title) {
