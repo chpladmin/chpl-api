@@ -319,6 +319,17 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <RollingFile name="realWorldTestingReportEmailJob"
+            fileName="${logDir}/scheduler/realWorldTestingReportEmailJob.log"
+            filePattern="${logDir}/scheduler/history/realWorldTestingReportEmailJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
     </Appenders>
     <Loggers>
         <Logger name="org.jose4j" level="ERROR" additivity="false">
@@ -448,6 +459,10 @@
         <Logger name="realWorldTestingUploadJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="realWorldTestingUploadJob" />
+        </Logger>
+        <Logger name="realWorldTestingReportEmailJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="realWorldTestingReportEmailJob" />
         </Logger>
     </Loggers>
 </Configuration>

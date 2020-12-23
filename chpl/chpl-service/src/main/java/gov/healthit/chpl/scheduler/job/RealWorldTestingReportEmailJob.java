@@ -36,7 +36,7 @@ import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2()
+@Log4j2(topic = "realWorldTestingReportEmailJobLogger")
 public class RealWorldTestingReportEmailJob implements Job {
 
     @Autowired
@@ -61,8 +61,7 @@ public class RealWorldTestingReportEmailJob implements Job {
         try {
             setAcbIds(context);
 
-            List<RealWorldTestingReport> reportRows =
-                    certifiedProductDAO.findByEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).stream()
+            List<RealWorldTestingReport> reportRows = getListingWith2015Edition().stream()
                     .filter(listing -> isListingRwtEligible(listing.getRwtEligibilityYear()))
                     .filter(listing -> isInListOfAcbs(listing))
                     .map(listing -> getRealWorldTestingReport(listing))
@@ -75,6 +74,13 @@ public class RealWorldTestingReportEmailJob implements Job {
         } finally {
             LOGGER.info("********* Completed the Real World Report Email job. *********");
         }
+    }
+
+    private List<CertifiedProductDetailsDTO> getListingWith2015Edition() {
+        LOGGER.info("Retrieving 2015 Listings");
+        List<CertifiedProductDetailsDTO> listings = certifiedProductDAO.findByEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
+        LOGGER.info("Completed Retreiving 2015 Listings");
+        return listings;
     }
 
     private boolean isListingRwtEligible(Integer rwtEligYear) {
@@ -150,6 +156,7 @@ public class RealWorldTestingReportEmailJob implements Job {
 
     @SuppressWarnings("checkstyle:linelength")
     private RealWorldTestingReport addMessages(RealWorldTestingReport report) {
+        LOGGER.info("Checking/Adding messages for listing: " + report.getChplProductNumber());
         if (isRwtPlansEmpty(report)) {
             if (arePlansLateWarning(report.getRwtEligibilityYear())) {
                 report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.missingPlansWarning",
@@ -172,6 +179,7 @@ public class RealWorldTestingReportEmailJob implements Job {
                         getResultsLateDate(report.getRwtEligibilityYear()).toString()));
             }
         }
+        LOGGER.info("Completed Checking/Adding messages for listing: " + report.getChplProductNumber());
         return report;
     }
 
@@ -198,17 +206,21 @@ public class RealWorldTestingReportEmailJob implements Job {
     }
 
     private void sendEmail(JobExecutionContext context, List<RealWorldTestingReport> rows) throws MessagingException {
+        LOGGER.info("Sending email to: " + context.getMergedJobDataMap().getString("email"));
         EmailBuilder emailBuilder = new EmailBuilder(env);
         emailBuilder.recipient(context.getMergedJobDataMap().getString("email"))
                 .subject(env.getProperty("rwt.report.subject"))
                 .htmlMessage(String.format(env.getProperty("rwt.report.body"), getAcbNamesAsCommaSeparatedList(context)))
                 .fileAttachments(new ArrayList<File>(Arrays.asList(generateCsvFile(context, rows))))
                 .sendEmail();
+        LOGGER.info("Completed Sending email to: " + context.getMergedJobDataMap().getString("email"));
     }
 
     private File generateCsvFile(JobExecutionContext context, List<RealWorldTestingReport> rows) {
+        LOGGER.info("Generating CSV attachment");
         File outputFile = getOutputFile(env.getProperty("rwt.report.filename") + LocalDate.now().toString());
         outputFile = writeToFile(rows, outputFile);
+        LOGGER.info("Completed Generating CSV attachment");
         return outputFile;
     }
 
