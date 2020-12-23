@@ -52,7 +52,7 @@ public class RealWorldTestingReportEmailJob implements Job {
         LOGGER.info("********* Starting the Real World Report Email job for " + context.getMergedJobDataMap().getString("email") + " *********");
         try {
             setAcbIds(context);
-            List<RealWorldTestingReport> reportRows = rwtReportService.getRealWorldTestingReport(acbIds);
+            List<RealWorldTestingReport> reportRows = rwtReportService.getRealWorldTestingReports(acbIds, LOGGER);
             sendEmail(context, reportRows);
         } catch (Exception e) {
             LOGGER.catching(e);

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -32,13 +33,13 @@ public class RealWorldTestingReportService {
         this.env = env;
     }
 
-    public List<RealWorldTestingReport> getRealWorldTestingReport(List<Long> acbIds) {
+    public List<RealWorldTestingReport> getRealWorldTestingReports(List<Long> acbIds, Logger logger) {
         List<RealWorldTestingReport> reports = null;
         try {
-            reports = getListingWith2015Edition().stream()
+            reports = getListingWith2015Edition(logger).stream()
                     .filter(listing -> isListingRwtEligible(listing.getRwtEligibilityYear()))
                     .filter(listing -> isInListOfAcbs(listing, acbIds))
-                    .map(listing -> getRealWorldTestingReport(listing))
+                    .map(listing -> getRealWorldTestingReport(listing, logger))
                     .collect(Collectors.toList());
         } catch (Exception e) {
             LOGGER.catching(e);
@@ -46,11 +47,11 @@ public class RealWorldTestingReportService {
         return reports;
     }
 
-    private List<CertifiedProductDetailsDTO> getListingWith2015Edition() {
-        LOGGER.info("Retrieving 2015 Listings");
+    private List<CertifiedProductDetailsDTO> getListingWith2015Edition(Logger logger) {
+        logger.info("Retrieving 2015 Listings");
         List<CertifiedProductDetailsDTO> listings =
                 certifiedProductDAO.findByEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
-        LOGGER.info("Completed Retreiving 2015 Listings");
+        logger.info("Completed Retreiving 2015 Listings");
         return listings;
     }
 
@@ -73,7 +74,7 @@ public class RealWorldTestingReportService {
                 .isPresent();
     }
 
-    private RealWorldTestingReport getRealWorldTestingReport(CertifiedProductDetailsDTO listing) {
+    private RealWorldTestingReport getRealWorldTestingReport(CertifiedProductDetailsDTO listing, Logger logger) {
         RealWorldTestingReport report = RealWorldTestingReport.builder()
                 .acbName(listing.getCertificationBodyName())
                 .chplProductNumber(listing.getChplProductNumber())
@@ -88,12 +89,12 @@ public class RealWorldTestingReportService {
                 .rwtEligibilityYear(listing.getRwtEligibilityYear())
                 .build();
 
-        return addMessages(report);
+        return addMessages(report, logger);
     }
 
     @SuppressWarnings("checkstyle:linelength")
-    private RealWorldTestingReport addMessages(RealWorldTestingReport report) {
-        LOGGER.info("Checking/Adding messages for listing: " + report.getChplProductNumber());
+    private RealWorldTestingReport addMessages(RealWorldTestingReport report, Logger logger) {
+        logger.info("Checking/Adding messages for listing: " + report.getChplProductNumber());
         if (isRwtPlansEmpty(report)) {
             if (arePlansLateWarning(report.getRwtEligibilityYear())) {
                 report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.missingPlansWarning",
@@ -116,7 +117,7 @@ public class RealWorldTestingReportService {
                         getResultsLateDate(report.getRwtEligibilityYear()).toString()));
             }
         }
-        LOGGER.info("Completed Checking/Adding messages for listing: " + report.getChplProductNumber());
+        logger.info("Completed Checking/Adding messages for listing: " + report.getChplProductNumber());
         return report;
     }
 
