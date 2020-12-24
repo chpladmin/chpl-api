@@ -29,6 +29,7 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.InvalidC
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.MeasureValidityReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.OldCriteriaWithoutIcsReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.PrivacyAndSecurityCriteriaReviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.RequiredAndRelatedCriteriaReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.SedG32015Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.TestFunctionality2015Reviewer;
@@ -86,6 +87,10 @@ public class Edition2015PendingListingValidator extends PendingValidator {
     @Autowired
     @Qualifier("pendingRequiredData2015Reviewer")
     private RequiredData2015Reviewer requiredDataReviewer;
+
+    @Autowired
+    @Qualifier("pendingRequiredAndRelatedCriteriaReviewer")
+    private RequiredAndRelatedCriteriaReviewer requiredAndRelatedCriteriaReviewer;
 
     @Autowired
     @Qualifier("pendingTestToolReviewer")
@@ -162,6 +167,7 @@ public class Edition2015PendingListingValidator extends PendingValidator {
             reviewers.add(validDataReviewer);
             reviewers.add(fieldLengthReviewer);
             reviewers.add(requiredDataReviewer);
+            reviewers.add(requiredAndRelatedCriteriaReviewer);
             reviewers.add(oldCriteriaWithoutIcsReviewer);
             reviewers.add(sedG3Reviewer);
             reviewers.add(ttReviewer);
